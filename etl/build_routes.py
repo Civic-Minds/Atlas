@@ -1,44 +1,70 @@
-# etl/build_routes.py
-"""
-Frequent Transit Map — version 2
-This script now opens any GTFS .zip file you drop into data/gtfs/
-and lists all of its route short names + long names.
-"""
+"""GTFS routes to GeoJSON converter."""
+from __future__ import annotations
 
+import json
 import zipfile
-import pandas as pd
 from pathlib import Path
+from typing import Iterable, List
+
+import pandas as pd
 
 GTFS_DIR = Path("../data/gtfs")
 OUT_DIR = Path("../data/out")
+OUT_FILE = OUT_DIR / "routes.geojson"
+REQUIRED_COLUMNS = [
+    "route_id",
+    "route_short_name",
+    "route_long_name",
+    "route_type",
+]
 
-def list_routes(gtfs_zip_path: Path):
-    """Return a DataFrame of routes from a GTFS zip."""
-    with zipfile.ZipFile(gtfs_zip_path, "r") as z:
-        if "routes.txt" not in z.namelist():
-            print(f"⚠️  {gtfs_zip_path.name} is missing routes.txt")
-            return None
-        with z.open("routes.txt") as f:
-            df = pd.read_csv(f)
-    # show only a few helpful columns
-    cols = [c for c in ["route_id", "route_short_name", "route_long_name", "route_type"] if c in df.columns]
-    return df[cols]
 
-def main():
-    print("👋 Frequent Transit Map – Route Lister")
+def _read_routes_from_zip(zip_path: Path) -> pd.DataFrame:
+    """Read routes.txt from a GTFS zip archive."""
+    with zipfile.ZipFile(zip_path, "r") as archive:
+        if "routes.txt" not in archive.namelist():
+            return pd.DataFrame(columns=REQUIRED_COLUMNS)
+        with archive.open("routes.txt") as routes_file:
+            df = pd.read_csv(routes_file)
+    # ensure required columns exist
+    for column in REQUIRED_COLUMNS:
+        if column not in df.columns:
+            df[column] = None
+    return df[REQUIRED_COLUMNS]
+
+
+def _collect_routes(zip_paths: Iterable[Path]) -> pd.DataFrame:
+    frames: List[pd.DataFrame] = []
+    for zip_path in zip_paths:
+        frames.append(_read_routes_from_zip(zip_path))
+    if not frames:
+        return pd.DataFrame(columns=REQUIRED_COLUMNS)
+    return pd.concat(frames, ignore_index=True)
+
+
+def _routes_to_geojson(df: pd.DataFrame) -> dict:
+    features = []
+    for _, row in df.iterrows():
+        properties = {column: row[column] for column in REQUIRED_COLUMNS}
+        features.append({
+            "type": "Feature",
+            "geometry": None,
+            "properties": properties,
+        })
+    return {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+
+def main() -> None:
+    zip_paths = sorted(GTFS_DIR.glob("*.zip"))
+    routes_df = _collect_routes(zip_paths)
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    geojson = _routes_to_geojson(routes_df)
+    OUT_FILE.write_text(json.dumps(geojson, indent=2))
 
-    if not GTFS_DIR.exists():
-        print("⚠️  Folder data/gtfs/ doesn’t exist yet.")
-        print("    Create it and add at least one GTFS .zip (e.g., ttc.zip).")
-        return
 
-    zips = list(GTFS_DIR.glob("*.zip"))
-    if not zips:
-        print("⚠️  No GTFS .zip files found in data/gtfs/.")
-        print("    Download one and put it there, then rerun this script.")
-        return
-
-    for z in zips:
-        print(f"\n📦 Reading {z.name} …")
-        routes =
+if __name__ == "__main__":
+    main()
