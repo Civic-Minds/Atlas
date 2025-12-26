@@ -1,1 +1,50 @@
-html, body, #map { height: 100%; margin: 0; }
+html, body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+#map { height: calc(100% - 50px); }
+
+nav {
+  background: #333;
+  padding: 0 20px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+nav a {
+  color: #fff;
+  text-decoration: none;
+}
+nav a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.upload-area {
+  border: 2px dashed #ccc;
+  padding: 40px;
+  text-align: center;
+  margin: 20px 0;
+  border-radius: 8px;
+}
+.upload-area input[type="file"] {
+  font-size: 16px;
+}
+
+.check-item, .agency-item, .route-item {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+.check-item h3, .agency-item h2, .route-item h3 {
+  margin-top: 0;
+}
+.check-item a, .agency-item a {
+  display: inline-block;
+  margin-top: 10px;
+  color: #0066cc;
+}
