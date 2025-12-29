@@ -39,13 +39,20 @@ function loadCheckData() {
       const routeId = route.route_id;
       if (!routeId) continue;
 
-      // Store tier data for each day type
+      // Store tier data and service periods for each day type
       tierLookup[routeId] = {
         weekday: route.weekday_tier || route.tier || null,
         saturday: route.saturday_tier || route.tier || null,
         sunday: route.sunday_tier || route.tier || null,
         route_short_name: route.route_short_name,
-        route_long_name: route.route_long_name
+        route_long_name: route.route_long_name,
+        // Service periods (first and last departure times)
+        weekday_first: route.weekday_first_departure || null,
+        weekday_last: route.weekday_last_departure || null,
+        saturday_first: route.saturday_first_departure || null,
+        saturday_last: route.saturday_last_departure || null,
+        sunday_first: route.sunday_first_departure || null,
+        sunday_last: route.sunday_last_departure || null
       };
     }
   }
@@ -67,6 +74,63 @@ function getRouteTier(routeId) {
 // Get color for a tier
 function getTierColor(tier) {
   return TIER_CONFIG[tier]?.color || TIER_CONFIG.unknown.color;
+}
+
+// Format time string (HH:MM:SS or HH:MM) to readable format (e.g., "5am", "11pm")
+function formatTime(timeStr) {
+  if (!timeStr) return null;
+
+  // Parse hours from HH:MM:SS or HH:MM format
+  const parts = timeStr.split(':');
+  let hours = parseInt(parts[0], 10);
+
+  // Handle times past midnight (e.g., 25:00:00 = 1am next day)
+  hours = hours % 24;
+
+  const suffix = hours >= 12 ? 'pm' : 'am';
+  const displayHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+
+  return `${displayHour}${suffix}`;
+}
+
+// Format service period for a day type (e.g., "5am-11pm")
+function formatServicePeriod(firstDeparture, lastDeparture) {
+  const first = formatTime(firstDeparture);
+  const last = formatTime(lastDeparture);
+
+  if (!first || !last) return null;
+  return `${first}-${last}`;
+}
+
+// Get service periods HTML for a route
+function getServicePeriodsHtml(routeId) {
+  const tierData = tierLookup[routeId];
+  if (!tierData) return '';
+
+  const periods = [];
+
+  // Day type icons and labels
+  const dayTypes = [
+    { key: 'weekday', icon: '&#128188;', label: 'Weekday', first: tierData.weekday_first, last: tierData.weekday_last },
+    { key: 'saturday', icon: '&#128197;', label: 'Sat', first: tierData.saturday_first, last: tierData.saturday_last },
+    { key: 'sunday', icon: '&#9728;', label: 'Sun', first: tierData.sunday_first, last: tierData.sunday_last }
+  ];
+
+  for (const day of dayTypes) {
+    const period = formatServicePeriod(day.first, day.last);
+    if (period) {
+      periods.push(`
+        <span class="service-period" title="${day.label}">
+          <span class="day-icon">${day.icon}</span>
+          <span class="period-time">${period}</span>
+        </span>
+      `);
+    }
+  }
+
+  if (periods.length === 0) return '';
+
+  return `<div class="service-periods">${periods.join('')}</div>`;
 }
 
 // Style function for routes
@@ -97,6 +161,7 @@ function createPopupContent(feature) {
   const tierConfig = TIER_CONFIG[tier];
 
   const name = [p.route_short_name, p.route_long_name].filter(Boolean).join(' — ');
+  const servicePeriodsHtml = getServicePeriodsHtml(routeId);
 
   return `
     <div class="route-popup">
@@ -104,6 +169,7 @@ function createPopupContent(feature) {
       <div class="tier-badge" style="background-color: ${tierConfig.color}">
         ${tierConfig.label}
       </div>
+      ${servicePeriodsHtml}
     </div>
   `;
 }
