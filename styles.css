@@ -227,3 +227,49 @@ nav a:hover {
   font-size: 11px;
   font-weight: 600;
 }
+
+/* Service Periods */
+.service-periods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.service-period {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #555;
+}
+
+.day-icon {
+  font-size: 14px;
+}
+
+.period-time {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Service periods in route cards (agency page) */
+.route-item .service-periods {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.route-item .service-period {
+  background: #e8f4fd;
+}
+
+/* Service periods in map popups */
+.route-popup .service-periods {
+  justify-content: center;
+  border-top-color: #ddd;
+}
