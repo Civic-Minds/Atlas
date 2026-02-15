@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Soft Precision Theme (Cloud) */
+  --bg: #ffffff;
+  --fg: #1e293b;
+  --card: #ffffff;
+  --panel: #ffffff;
+  --border: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --item-bg: #f1f5f9;
+  --item-hover: #e2e8f0;
+  --text-muted: #64748b;
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+
+  /* Shared Properties */
+  --radius-sm: 0.375rem;
+  /* 6px */
+  --radius-md: 0.75rem;
+  /* 12px */
+  --radius-lg: 1rem;
+  /* 16px */
+  --radius-xl: 1.5rem;
+  /* 24px */
+}
+
+.dark {
+  /* Soft Precision Theme (Midnight) */
+  --bg: #0f172a;
+  --fg: #f1f5f9;
+  --card: #1e293b;
+  --panel: #1e293b;
+  --border: #334155;
+  --border-hover: #475569;
+  --item-bg: #1e293b;
+  --item-hover: #334155;
+  --text-muted: #94a3b8;
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Precision Utilities */
+.precision-panel {
+  background-color: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-md);
+}
+
+.precision-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.precision-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Map Overrides */
+.leaflet-container {
+  background-color: #0f172a;
+}
+
+@utility atlas-h1 {
+  @apply text-4xl md:text-5xl font-bold tracking-tight text-[var(--fg)];
+}
+
+@utility atlas-h2 {
+  @apply text-3xl font-bold tracking-tight text-[var(--fg)];
+}
+
+@utility atlas-h3 {
+  @apply text-xl font-bold tracking-tight text-[var(--fg)];
+}
+
+@utility atlas-label {
+  @apply text-[10px] font-bold text-[var(--text-muted)] font-mono;
+}
+
+@utility atlas-mono {
+  @apply font-mono font-bold font-semibold;
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+@utility glass-panel {
+  @apply bg-[var(--panel)] backdrop-blur-xl border border-[var(--border)];
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-lg);
+}
+
+@utility btn-primary {
+  @apply flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20 transition-all text-xs font-bold;
+}
+
+@utility btn-secondary {
+  @apply px-4 py-2.5 rounded-lg bg-[var(--item-bg)] border border-[var(--border)] text-[var(--fg)] hover:bg-[var(--item-hover)] transition-all text-xs font-bold flex items-center gap-2;
+}
+
+@utility btn-ghost {
+  @apply p-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--fg)] hover:bg-[var(--item-bg)] transition-all;
+}

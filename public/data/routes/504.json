@@ -1,0 +1,391 @@
+{
+    "id": "504",
+    "name": "504 King",
+    "color": "#DA291C",
+    "stops": [
+        {
+            "id": "dws",
+            "name": "Dundas West Station",
+            "lat": 43.6568,
+            "lng": -79.4527,
+            "isTerminal": true
+        },
+        {
+            "id": "edna",
+            "name": "Edna Ave at Dundas St W",
+            "lat": 43.6558,
+            "lng": -79.4498
+        },
+        {
+            "id": "dundas-bloor",
+            "name": "Dundas St W at Bloor St W",
+            "lat": 43.6545,
+            "lng": -79.447
+        },
+        {
+            "id": "boustead",
+            "name": "Roncesvalles at Boustead Ave",
+            "lat": 43.651,
+            "lng": -79.4465
+        },
+        {
+            "id": "howard-park",
+            "name": "Roncesvalles at Howard Park Ave",
+            "lat": 43.649,
+            "lng": -79.4458
+        },
+        {
+            "id": "grenadier",
+            "name": "Roncesvalles at Greenadier Rd",
+            "lat": 43.647,
+            "lng": -79.4452
+        },
+        {
+            "id": "high-park",
+            "name": "Roncesvalles at High Park Blvd",
+            "lat": 43.645,
+            "lng": -79.4445
+        },
+        {
+            "id": "galley",
+            "name": "Roncesvalles at Galley Ave",
+            "lat": 43.6435,
+            "lng": -79.444
+        },
+        {
+            "id": "marion",
+            "name": "Roncesvalles at Marion St",
+            "lat": 43.6418,
+            "lng": -79.4433
+        },
+        {
+            "id": "queen-roncy",
+            "name": "Roncesvalles at Queen St W",
+            "lat": 43.6398,
+            "lng": -79.4425
+        },
+        {
+            "id": "wilson-park",
+            "name": "King St W at Wilson Park Rd",
+            "lat": 43.6388,
+            "lng": -79.4385
+        },
+        {
+            "id": "dowling",
+            "name": "King St W at Dowling Ave",
+            "lat": 43.6381,
+            "lng": -79.4345
+        },
+        {
+            "id": "jameson",
+            "name": "King St W at Jameson Ave",
+            "lat": 43.6375,
+            "lng": -79.4305
+        },
+        {
+            "id": "dunn",
+            "name": "King St W at Dunn Ave",
+            "lat": 43.637,
+            "lng": -79.4265
+        },
+        {
+            "id": "spencer",
+            "name": "King St W at Spencer Ave",
+            "lat": 43.6367,
+            "lng": -79.423
+        },
+        {
+            "id": "dufferin",
+            "name": "King St W at Dufferin St",
+            "lat": 43.6363,
+            "lng": -79.4195
+        },
+        {
+            "id": "atlantic",
+            "name": "King St W at Atlantic Ave",
+            "lat": 43.6383,
+            "lng": -79.415
+        },
+        {
+            "id": "sudbury",
+            "name": "King St W at Sudbury St",
+            "lat": 43.639,
+            "lng": -79.411
+        },
+        {
+            "id": "shaw",
+            "name": "King St W at Shaw St",
+            "lat": 43.6395,
+            "lng": -79.4065
+        },
+        {
+            "id": "strachan",
+            "name": "King St W at Strachan Ave",
+            "lat": 43.6398,
+            "lng": -79.4025
+        },
+        {
+            "id": "niagara",
+            "name": "King St W at Niagara St",
+            "lat": 43.6405,
+            "lng": -79.399
+        },
+        {
+            "id": "bathurst",
+            "name": "King St W at Bathurst St",
+            "lat": 43.6412,
+            "lng": -79.396
+        },
+        {
+            "id": "portland",
+            "name": "King St W at Portland St",
+            "lat": 43.6428,
+            "lng": -79.391
+        },
+        {
+            "id": "spadina",
+            "name": "King St W at Spadina Ave",
+            "lat": 43.6445,
+            "lng": -79.3865
+        },
+        {
+            "id": "peter",
+            "name": "King St W at Peter St",
+            "lat": 43.6455,
+            "lng": -79.3835
+        },
+        {
+            "id": "john",
+            "name": "King St W at John St",
+            "lat": 43.6462,
+            "lng": -79.381
+        },
+        {
+            "id": "simcoe",
+            "name": "King St W at Simcoe St (St. Andrew Stn)",
+            "lat": 43.6472,
+            "lng": -79.3785
+        },
+        {
+            "id": "bay",
+            "name": "King St W at Bay St",
+            "lat": 43.6485,
+            "lng": -79.3755
+        },
+        {
+            "id": "yonge",
+            "name": "King St at Yonge St (King Stn)",
+            "lat": 43.6498,
+            "lng": -79.372
+        },
+        {
+            "id": "church",
+            "name": "King St E at Church St",
+            "lat": 43.651,
+            "lng": -79.369
+        },
+        {
+            "id": "jarvis",
+            "name": "King St E at Jarvis St",
+            "lat": 43.6518,
+            "lng": -79.3665
+        },
+        {
+            "id": "sherbourne",
+            "name": "King St E at Sherbourne St",
+            "lat": 43.6525,
+            "lng": -79.3635
+        },
+        {
+            "id": "ontario",
+            "name": "King St E at Ontario St",
+            "lat": 43.653,
+            "lng": -79.36
+        },
+        {
+            "id": "parliament",
+            "name": "King St E at Parliament St",
+            "lat": 43.6535,
+            "lng": -79.357
+        },
+        {
+            "id": "sackville",
+            "name": "King St E at Sackville St",
+            "lat": 43.654,
+            "lng": -79.354
+        },
+        {
+            "id": "sumach",
+            "name": "King St E at Sumach St",
+            "lat": 43.6545,
+            "lng": -79.351
+        },
+        {
+            "id": "cherry",
+            "name": "Cherry St at Front St E",
+            "lat": 43.653,
+            "lng": -79.358
+        },
+        {
+            "id": "distillery",
+            "name": "Distillery Loop",
+            "lat": 43.6503,
+            "lng": -79.3596,
+            "isTerminal": true
+        }
+    ],
+    "shape": [
+        [
+            43.6568,
+            -79.4527
+        ],
+        [
+            43.6558,
+            -79.4498
+        ],
+        [
+            43.6545,
+            -79.447
+        ],
+        [
+            43.651,
+            -79.4465
+        ],
+        [
+            43.649,
+            -79.4458
+        ],
+        [
+            43.647,
+            -79.4452
+        ],
+        [
+            43.645,
+            -79.4445
+        ],
+        [
+            43.6435,
+            -79.444
+        ],
+        [
+            43.6418,
+            -79.4433
+        ],
+        [
+            43.6398,
+            -79.4425
+        ],
+        [
+            43.6388,
+            -79.4385
+        ],
+        [
+            43.6381,
+            -79.4345
+        ],
+        [
+            43.6375,
+            -79.4305
+        ],
+        [
+            43.637,
+            -79.4265
+        ],
+        [
+            43.6367,
+            -79.423
+        ],
+        [
+            43.6363,
+            -79.4195
+        ],
+        [
+            43.6383,
+            -79.415
+        ],
+        [
+            43.639,
+            -79.411
+        ],
+        [
+            43.6395,
+            -79.4065
+        ],
+        [
+            43.6398,
+            -79.4025
+        ],
+        [
+            43.6405,
+            -79.399
+        ],
+        [
+            43.6412,
+            -79.396
+        ],
+        [
+            43.6428,
+            -79.391
+        ],
+        [
+            43.6445,
+            -79.3865
+        ],
+        [
+            43.6455,
+            -79.3835
+        ],
+        [
+            43.6462,
+            -79.381
+        ],
+        [
+            43.6472,
+            -79.3785
+        ],
+        [
+            43.6485,
+            -79.3755
+        ],
+        [
+            43.6498,
+            -79.372
+        ],
+        [
+            43.651,
+            -79.369
+        ],
+        [
+            43.6518,
+            -79.3665
+        ],
+        [
+            43.6525,
+            -79.3635
+        ],
+        [
+            43.653,
+            -79.36
+        ],
+        [
+            43.6535,
+            -79.357
+        ],
+        [
+            43.654,
+            -79.354
+        ],
+        [
+            43.6545,
+            -79.351
+        ],
+        [
+            43.653,
+            -79.358
+        ],
+        [
+            43.6503,
+            -79.3596
+        ]
+    ]
+}
