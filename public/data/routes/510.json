@@ -1,0 +1,161 @@
+{
+    "id": "510",
+    "name": "510 Spadina",
+    "color": "#DA291C",
+    "stops": [
+        {
+            "id": "spadina-stn",
+            "name": "Spadina Station",
+            "lat": 43.6673,
+            "lng": -79.4038,
+            "isTerminal": true
+        },
+        {
+            "id": "sussex",
+            "name": "Spadina Ave at Sussex Ave",
+            "lat": 43.6655,
+            "lng": -79.4032
+        },
+        {
+            "id": "harbord",
+            "name": "Spadina Ave at Harbord St",
+            "lat": 43.6635,
+            "lng": -79.4027
+        },
+        {
+            "id": "willcocks",
+            "name": "Spadina Ave at Willcocks St",
+            "lat": 43.6618,
+            "lng": -79.4022
+        },
+        {
+            "id": "college",
+            "name": "Spadina Ave at College St",
+            "lat": 43.6598,
+            "lng": -79.4015
+        },
+        {
+            "id": "nassau",
+            "name": "Spadina Ave at Nassau St",
+            "lat": 43.6578,
+            "lng": -79.4010
+        },
+        {
+            "id": "dundas",
+            "name": "Spadina Ave at Dundas St W",
+            "lat": 43.6548,
+            "lng": -79.4002
+        },
+        {
+            "id": "sullivan",
+            "name": "Spadina Ave at Sullivan St",
+            "lat": 43.6528,
+            "lng": -79.3995
+        },
+        {
+            "id": "queen",
+            "name": "Spadina Ave at Queen St W",
+            "lat": 43.6498,
+            "lng": -79.3988
+        },
+        {
+            "id": "richmond",
+            "name": "Spadina Ave at Richmond St W",
+            "lat": 43.6478,
+            "lng": -79.3982
+        },
+        {
+            "id": "king",
+            "name": "Spadina Ave at King St W",
+            "lat": 43.6455,
+            "lng": -79.3975
+        },
+        {
+            "id": "front",
+            "name": "Spadina Ave at Front St W",
+            "lat": 43.6435,
+            "lng": -79.3970
+        },
+        {
+            "id": "fort-york",
+            "name": "Spadina Ave at Fort York Blvd",
+            "lat": 43.6415,
+            "lng": -79.3963
+        },
+        {
+            "id": "queens-quay",
+            "name": "Spadina Ave at Queens Quay W",
+            "lat": 43.6385,
+            "lng": -79.3955
+        },
+        {
+            "id": "spadina-quay",
+            "name": "Queens Quay & Spadina Loop",
+            "lat": 43.6375,
+            "lng": -79.3917,
+            "isTerminal": true
+        }
+    ],
+    "shape": [
+        [
+            43.6673,
+            -79.4038
+        ],
+        [
+            43.6655,
+            -79.4032
+        ],
+        [
+            43.6635,
+            -79.4027
+        ],
+        [
+            43.6618,
+            -79.4022
+        ],
+        [
+            43.6598,
+            -79.4015
+        ],
+        [
+            43.6578,
+            -79.4010
+        ],
+        [
+            43.6548,
+            -79.4002
+        ],
+        [
+            43.6528,
+            -79.3995
+        ],
+        [
+            43.6498,
+            -79.3988
+        ],
+        [
+            43.6478,
+            -79.3982
+        ],
+        [
+            43.6455,
+            -79.3975
+        ],
+        [
+            43.6435,
+            -79.3970
+        ],
+        [
+            43.6415,
+            -79.3963
+        ],
+        [
+            43.6385,
+            -79.3955
+        ],
+        [
+            43.6375,
+            -79.3917
+        ]
+    ]
+}

@@ -1,0 +1,7 @@
+/* Screener Module Specific Styles */
+
+/* 
+Most styling has been migrated to Tailwind CSS and global precision-panel utilities 
+to maintain the Soft Precision aesthetic. This file is kept for any rare 
+module-specific overrides that don't fit into the utility system.
+*/

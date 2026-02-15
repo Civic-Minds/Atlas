@@ -1,0 +1,161 @@
+{
+    "id": "501",
+    "name": "501 Queen",
+    "color": "#DA291C",
+    "stops": [
+        {
+            "id": "humber",
+            "name": "Humber Loop",
+            "lat": 43.6295,
+            "lng": -79.4842,
+            "isTerminal": true
+        },
+        {
+            "id": "windermere",
+            "name": "Queen St W at Windermere Ave",
+            "lat": 43.6335,
+            "lng": -79.4772
+        },
+        {
+            "id": "ellis",
+            "name": "Queen St W at Ellis Ave",
+            "lat": 43.6348,
+            "lng": -79.4745
+        },
+        {
+            "id": "colborne",
+            "name": "Queen St W at Colborne Lodge Dr",
+            "lat": 43.6375,
+            "lng": -79.4678
+        },
+        {
+            "id": "roncy",
+            "name": "Queen St W at Roncesvalles Ave",
+            "lat": 43.6398,
+            "lng": -79.4425
+        },
+        {
+            "id": "lansdowne",
+            "name": "Queen St W at Lansdowne Ave",
+            "lat": 43.6425,
+            "lng": -79.4358
+        },
+        {
+            "id": "dufferin",
+            "name": "Queen St W at Dufferin St",
+            "lat": 43.6438,
+            "lng": -79.4285
+        },
+        {
+            "id": "ossington",
+            "name": "Queen St W at Ossington Ave",
+            "lat": 43.6455,
+            "lng": -79.4182
+        },
+        {
+            "id": "strachan",
+            "name": "Queen St W at Strachan Ave",
+            "lat": 43.6465,
+            "lng": -79.4115
+        },
+        {
+            "id": "bathurst",
+            "name": "Queen St W at Bathurst St",
+            "lat": 43.6482,
+            "lng": -79.4035
+        },
+        {
+            "id": "spadina",
+            "name": "Queen St W at Spadina Ave",
+            "lat": 43.6498,
+            "lng": -79.3988
+        },
+        {
+            "id": "university",
+            "name": "Queen St W at University Ave (Osgoode Stn)",
+            "lat": 43.6508,
+            "lng": -79.3875
+        },
+        {
+            "id": "bay",
+            "name": "Queen St W at Bay St",
+            "lat": 43.6518,
+            "lng": -79.3812
+        },
+        {
+            "id": "yonge",
+            "name": "Queen St at Yonge St (Queen Stn)",
+            "lat": 43.6525,
+            "lng": -79.3785
+        },
+        {
+            "id": "neville",
+            "name": "Neville Park Loop",
+            "lat": 43.6705,
+            "lng": -79.2785,
+            "isTerminal": true
+        }
+    ],
+    "shape": [
+        [
+            43.6295,
+            -79.4842
+        ],
+        [
+            43.6335,
+            -79.4772
+        ],
+        [
+            43.6348,
+            -79.4745
+        ],
+        [
+            43.6375,
+            -79.4678
+        ],
+        [
+            43.6398,
+            -79.4425
+        ],
+        [
+            43.6425,
+            -79.4358
+        ],
+        [
+            43.6438,
+            -79.4285
+        ],
+        [
+            43.6455,
+            -79.4182
+        ],
+        [
+            43.6465,
+            -79.4115
+        ],
+        [
+            43.6482,
+            -79.4035
+        ],
+        [
+            43.6498,
+            -79.3988
+        ],
+        [
+            43.6508,
+            -79.3875
+        ],
+        [
+            43.6518,
+            -79.3812
+        ],
+        [
+            43.6525,
+            -79.3785
+        ],
+        [
+            43.6705,
+            -79.2785
+        ]
+    ]
+}
