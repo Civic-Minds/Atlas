@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.6.0] - 2026-02-21
+
+### Added
+- **Page Transitions**: Smooth motion transitions between all modules using `AnimatePresence`.
+- **Premium Design System**: Applied glassmorphism, refined shadows, and scale micro-interactions across the UI.
+- **Custom Scrollbars**: Integrated custom-styled scrollbars for a more cohesive "Atlas" feel.
+
+### Changed
+- **UI Unification**: Standardized the `Predict` module header to match the ecosystem-wide `ModuleHeader` style.
+- **Layout Shell**: Refactored the main application shell for better stability and navigation flow.
+
+### Fixed
+- **Deployment Paths**: Resolved critical "blank screen" issue on GitHub Pages by fixing absolute pathing in `index.html`.
+- **Navigation Inconsistency**: Corrected disparate header implementations across modules.
+
 ## [1.5.0] - 2026-02-20
 
 ### Added

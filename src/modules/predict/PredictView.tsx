@@ -17,37 +17,36 @@ const PredictViewContent: React.FC = () => {
     return (
         <div className="module-container">
             <div className="flex flex-col gap-6 py-8">
-                <header className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-600 dark:text-blue-400">
-                                <Zap className="w-5 h-5" />
-                            </div>
-                            <h1 className="atlas-h2">Predict</h1>
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-6">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-600 dark:text-blue-400">
+                            <Zap className="w-5 h-5 transition-transform group-hover:scale-110" />
                         </div>
-                        <div className="flex items-center gap-1 bg-[var(--item-bg)] p-1 rounded-2xl border border-[var(--border)]">
-                            {[
-                                { id: 'demand', label: 'Demand', color: 'indigo' },
-                                { id: 'supply', label: 'Supply', color: 'emerald' },
-                                { id: 'opportunity', label: 'Predict', color: 'blue' }
-                            ].map(mode => (
-                                <button
-                                    key={mode.id}
-                                    onClick={() => setViewMode(mode.id as any)}
-                                    className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${viewMode === mode.id
-                                        ? mode.id === 'demand' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 px-6 scale-105 relative z-10'
-                                            : mode.id === 'supply' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 px-6 scale-105 relative z-10'
-                                                : 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 px-6 scale-105 relative z-10'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--fg)] hover:bg-[var(--item-hover)]'}`}
-                                >
-                                    {mode.label}
-                                </button>
-                            ))}
+                        <div className="flex flex-col">
+                            <h1 className="atlas-h2">Predict</h1>
+                            <p className="text-xs text-[var(--text-muted)] font-medium mt-1">Map transit deserts and system intelligence zones.</p>
                         </div>
                     </div>
-                    <p className="text-[var(--text-muted)] font-medium max-w-2xl">
-                        Map transit deserts and system intelligence zones by cross-referencing population density, job hubs, and existing transit supply.
-                    </p>
+
+                    <div className="flex items-center gap-1 bg-[var(--item-bg)]/40 backdrop-blur-xl p-1 rounded-2xl border border-[var(--border)] shadow-xl">
+                        {[
+                            { id: 'demand', label: 'Demand', color: 'indigo' },
+                            { id: 'supply', label: 'Supply', color: 'emerald' },
+                            { id: 'opportunity', label: 'Opportunity', color: 'blue' }
+                        ].map(mode => (
+                            <button
+                                key={mode.id}
+                                onClick={() => setViewMode(mode.id as any)}
+                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === mode.id
+                                    ? mode.id === 'demand' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 px-6 scale-105 relative z-10'
+                                        : mode.id === 'supply' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 px-6 scale-105 relative z-10'
+                                            : 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 px-6 scale-105 relative z-10'
+                                    : 'text-[var(--text-muted)] hover:text-[var(--fg)] hover:bg-[var(--item-bg)]'}`}
+                            >
+                                {mode.label}
+                            </button>
+                        ))}
+                    </div>
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
