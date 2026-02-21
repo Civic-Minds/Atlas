@@ -5,8 +5,8 @@
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* Soft Precision Theme (Cloud) */
-  --bg: #ffffff;
-  --fg: #1e293b;
+  --bg: #f8fafc;
+  --fg: #0f172a;
   --card: #ffffff;
   --panel: #ffffff;
   --border: #e2e8f0;
@@ -14,8 +14,10 @@
   --item-bg: #f1f5f9;
   --item-hover: #e2e8f0;
   --text-muted: #64748b;
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --accent: #4f46e5;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-tactile: 0 1px 1px 0 rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  --shadow-soft: 0 10px 15px -3px rgb(0 0 0 / 0.04);
 
   /* Shared Properties */
   --radius-sm: 0.375rem;
@@ -30,17 +32,19 @@
 
 .dark {
   /* Soft Precision Theme (Midnight) */
-  --bg: #0f172a;
+  --bg: #020617;
   --fg: #f1f5f9;
-  --card: #1e293b;
-  --panel: #1e293b;
-  --border: #334155;
-  --border-hover: #475569;
+  --card: #0f172a;
+  --panel: #0f172a;
+  --border: #1e293b;
+  --border-hover: #334155;
   --item-bg: #1e293b;
-  --item-hover: #334155;
+  --item-hover: #2d3a4f;
   --text-muted: #94a3b8;
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
-  --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  --accent: #6366f1;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --shadow-tactile: 0 1px 1px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  --shadow-soft: 0 20px 25px -5px rgb(0 0 0 / 0.5);
 }
 
 body {
@@ -57,20 +61,35 @@ body {
 .precision-panel {
   background-color: var(--panel);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-tactile);
   border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.precision-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
+  opacity: 0.1;
 }
 
 .precision-card {
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  transition: all 0.2s ease-in-out;
+  border-radius: var(--radius-xl);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .precision-card:hover {
+  transform: translateY(-2px);
   border-color: var(--border-hover);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 /* Map Overrides */
@@ -79,11 +98,11 @@ body {
 }
 
 @utility atlas-h1 {
-  @apply text-4xl md:text-5xl font-bold tracking-tight text-[var(--fg)];
+  @apply text-4xl md:text-6xl font-black tracking-tighter text-[var(--fg)];
 }
 
 @utility atlas-h2 {
-  @apply text-3xl font-bold tracking-tight text-[var(--fg)];
+  @apply text-3xl font-black tracking-tight text-[var(--fg)];
 }
 
 @utility atlas-h3 {
@@ -91,11 +110,11 @@ body {
 }
 
 @utility atlas-label {
-  @apply text-[10px] font-bold text-[var(--text-muted)] font-mono;
+  @apply text-[10px] font-black text-[var(--text-muted)] font-mono uppercase tracking-[0.2em];
 }
 
 @utility atlas-mono {
-  @apply font-mono font-bold font-semibold;
+  @apply font-mono font-black;
 }
 
 @utility shadow-soft {
@@ -103,29 +122,30 @@ body {
 }
 
 @utility glass-panel {
-  @apply bg-[var(--card)]/80 backdrop-blur-3xl border border-[var(--border)];
-  box-shadow: var(--shadow-soft);
+  @apply bg-[var(--card)]/60 backdrop-blur-2xl border border-[var(--border)];
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
   border-radius: var(--radius-xl);
 }
 
 @utility atlas-page {
-  @apply flex flex-col px-8 h-[calc(100vh-64px)] overflow-hidden w-full;
+  @apply flex flex-col px-10 h-[calc(100vh-80px)] overflow-hidden w-full;
 }
 
 @utility btn-primary {
-  @apply flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20 transition-all text-xs font-bold;
+  @apply flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all text-xs font-black uppercase tracking-widest;
 }
 
 @utility btn-secondary {
-  @apply px-4 py-2.5 rounded-lg bg-[var(--item-bg)] border border-[var(--border)] text-[var(--fg)] hover:bg-[var(--item-hover)] transition-all text-xs font-bold flex items-center gap-2;
+  @apply px-6 py-3 rounded-2xl bg-[var(--item-bg)]/50 backdrop-blur-xl border border-[var(--border)] text-[var(--fg)] hover:bg-[var(--item-hover)] hover:-translate-y-0.5 active:translate-y-0 shadow-sm hover:shadow-md transition-all text-xs font-black uppercase tracking-widest flex items-center gap-2.5;
 }
 
 @utility btn-ghost {
-  @apply p-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--fg)] hover:bg-[var(--item-bg)] transition-all;
+  @apply p-3 rounded-2xl text-[var(--text-muted)] hover:text-[var(--fg)] hover:bg-[var(--item-bg)] hover:shadow-sm transition-all;
 }
+
 /* Common Layouts */
 @utility module-container {
-  @apply atlas-page overflow-y-auto;
+  @apply atlas-page overflow-y-auto custom-scrollbar;
 }
 
 @utility status-bullet {
@@ -133,13 +153,30 @@ body {
 }
 
 @utility status-bullet-emerald {
-  @apply bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)];
+  @apply bg-emerald-500 shadow-[0_0_12px_rgba(16, 185, 129, 0.5)];
 }
 
 @utility status-bullet-amber {
-  @apply bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)];
+  @apply bg-amber-500 shadow-[0_0_12px_rgba(245, 158, 11, 0.5)];
 }
 
 @utility status-bullet-red {
-  @apply bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)];
+  @apply bg-red-500 shadow-[0_0_12px_rgba(239, 68, 68, 0.5)];
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
 }
