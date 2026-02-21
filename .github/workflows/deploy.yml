@@ -26,7 +26,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps:task_boundary.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,5 +48,5 @@ jobs:
           # Upload entire repository
           path: './dist'
       - name: Deploy to GitHub Pages
-        id: task_boundary
+        id: deployment
         uses: actions/deploy-pages@v4
