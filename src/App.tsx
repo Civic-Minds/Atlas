@@ -6,11 +6,14 @@ import ScreenerView from './modules/screener/ScreenerView';
 import VerifierView from './modules/verifier/VerifierView';
 import MapView from './modules/map/MapView';
 import OptimizeView from './modules/optimize/OptimizeView';
+import ReportCardsView from './modules/report-cards/ReportCardsView';
+import AdminView from './modules/admin/AdminView';
+import PredictView from './modules/predict/PredictView';
 import { TopNav } from './components/TopNav';
 
 const App: React.FC = () => {
     return (
-        <Router>
+        <Router basename="/Atlas">
             <div className="flex flex-col bg-[var(--bg)] text-[var(--fg)] font-sans min-h-screen transition-colors duration-300">
                 <TopNav />
                 <main className="flex-1 flex flex-col overflow-hidden">
@@ -19,8 +22,11 @@ const App: React.FC = () => {
                         <Route path="/simulator/*" element={<SimulatorView />} />
                         <Route path="/screener/*" element={<ScreenerView />} />
                         <Route path="/verifier/*" element={<VerifierView />} />
-                        <Route path="/atlas/*" element={<MapView />} />
+                        <Route path="/explorer/*" element={<MapView />} />
                         <Route path="/optimize/*" element={<OptimizeView />} />
+                        <Route path="/reports/*" element={<ReportCardsView />} />
+                        <Route path="/admin/*" element={<AdminView />} />
+                        <Route path="/predict/*" element={<PredictView />} />
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </main>

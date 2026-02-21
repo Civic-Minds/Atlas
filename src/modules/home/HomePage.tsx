@@ -6,7 +6,8 @@ import {
     Map as MapIcon,
     Activity,
     ArrowRight,
-    Brain
+    Brain,
+    LayoutGrid
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,31 +17,43 @@ const FEATURES = [
         title: 'Screen',
         cta: 'Open Screen',
         description: 'Automated GTFS analysis and route tiering.',
-        icon: <Zap className="w-6 h-6" />,
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" opacity="0.2" />
+                <path d="M3 12h18M12 3v18" opacity="0.2" />
+                <path d="M7 16V8l5 8V8l5 8" />
+            </svg>
+        ),
         color: 'emerald',
         path: '/screener',
         graphic: (
             <div className="w-full h-full flex items-center justify-center p-2">
                 <svg viewBox="0 0 200 180" className="w-full h-full text-emerald-500">
                     <g fill="none" stroke="currentColor" strokeWidth="1">
-                        {/* Unified Grid */}
                         <path d="M 40 0 L 40 180 M 80 0 L 80 180 M 120 0 L 120 180 M 160 0 L 160 180" opacity="0.05" />
                         <path d="M 0 40 L 200 40 M 0 80 L 200 80 M 0 120 L 200 120 M 0 160 L 200 160" opacity="0.05" />
+                        <path d="M 40 10 L 40 170" strokeWidth="1.5" opacity="0.1" />
+                        <path d="M 120 10 L 120 170" strokeWidth="1.5" opacity="0.1" />
+                        <path d="M 10 70 L 190 70" strokeWidth="1.5" opacity="0.15" />
+                        <path d="M 10 120 L 190 120" strokeWidth="1.5" opacity="0.15" />
+                        <path d="M 10 170 L 190 170" strokeWidth="1.5" opacity="0.15" />
 
-                        {/* Routes (Primary Paths) */}
-                        <path d="M 40 20 L 40 160" strokeWidth="1.5" opacity="0.1" />
-                        <path d="M 10 70 L 190 70" strokeWidth="1.5" opacity="0.2" />
-                        <path d="M 10 130 L 190 130" strokeWidth="1.5" opacity="0.2" />
-
-                        {/* Bus: Turning Path (Snap Turn) */}
+                        {/* Bus Route 1: North to East (Constant 25px/s) */}
                         <motion.g
-                            initial={{ x: 40, y: 20, rotate: 90 }}
+                            initial={{ x: 40, y: 0, rotate: 90, opacity: 0 }}
                             animate={{
-                                x: [40, 40, 40, 190],
-                                y: [20, 70, 70, 70],
-                                rotate: [90, 90, 0, 0]
+                                x: [40, 40, 40, 40, 200, 200],
+                                y: [0, 5, 70, 70, 70, 70],
+                                rotate: [90, 90, 90, 0, 0, 0],
+                                opacity: [0, 1, 1, 1, 1, 0]
                             }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "linear", times: [0, 0.25, 0.26, 1] }}
+                            transition={{
+                                duration: 9.4,
+                                repeat: Infinity,
+                                repeatDelay: 6,
+                                ease: "linear",
+                                times: [0, 0.021, 0.297, 0.319, 0.979, 1]
+                            }}
                         >
                             <rect x="-9" y="-4.5" width="18" height="9" rx="2" fill="currentColor" />
                             <rect x="-7" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
@@ -48,20 +61,54 @@ const FEATURES = [
                             <rect x="3" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
                         </motion.g>
 
-                        {/* Train: Straight Fast Path */}
+                        {/* Bus Route 2: East to South (Constant 25px/s) */}
                         <motion.g
-                            animate={{ x: [-20, 220] }}
-                            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                            initial={{ x: 200, y: 120, rotate: 180, opacity: 0 }}
+                            animate={{
+                                x: [200, 195, 120, 120, 120, 120],
+                                y: [120, 120, 120, 120, 150, 150],
+                                rotate: [180, 180, 180, 90, 90, 90],
+                                opacity: [0, 1, 1, 1, 1, 0]
+                            }}
+                            transition={{
+                                duration: 4.6,
+                                repeat: Infinity,
+                                repeatDelay: 8,
+                                delay: 6,
+                                ease: "linear",
+                                times: [0, 0.043, 0.695, 0.739, 0.957, 1]
+                            }}
                         >
-                            <g transform="translate(0, 130)">
-                                <rect x="-17" y="-4" width="10" height="8" rx="1" fill="currentColor" />
-                                <rect x="-15" y="-2.5" width="6" height="4" rx="0.5" fill="#fff" opacity="0.4" />
-                                <rect x="-5" y="-4" width="10" height="8" rx="1" fill="currentColor" />
-                                <rect x="-3" y="-2.5" width="6" height="4" rx="0.5" fill="#fff" opacity="0.4" />
-                                <rect x="7" y="-4" width="10" height="8" rx="1" fill="currentColor" />
-                                <rect x="9" y="-2.5" width="6" height="4" rx="0.5" fill="#fff" opacity="0.4" />
-                            </g>
+                            <rect x="-9" y="-4.5" width="18" height="9" rx="2" fill="currentColor" />
+                            <rect x="-7" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
+                            <rect x="-2" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
+                            <rect x="3" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
                         </motion.g>
+
+                        {/* Train: Dedicated Bottom Corridor (No Collision with Bus) */}
+                        {[0, 1].map((i) => (
+                            <motion.g
+                                key={i}
+                                animate={{ x: [-80, 280], opacity: [0, 1, 1, 0] }}
+                                transition={{
+                                    duration: 5,
+                                    repeat: Infinity,
+                                    repeatDelay: 7,
+                                    delay: i * 6,
+                                    ease: "linear",
+                                    times: [0, 0.05, 0.95, 1]
+                                }}
+                            >
+                                <g transform="translate(0, 170)">
+                                    <rect x="-17" y="-4" width="10" height="8" rx="1" fill="currentColor" />
+                                    <rect x="-15" y="-2.5" width="6" height="4" rx="0.5" fill="#fff" opacity="0.4" />
+                                    <rect x="-5" y="-4" width="10" height="8" rx="1" fill="currentColor" />
+                                    <rect x="-3" y="-2.5" width="6" height="4" rx="0.5" fill="#fff" opacity="0.4" />
+                                    <rect x="7" y="-4" width="10" height="8" rx="1" fill="currentColor" />
+                                    <rect x="9" y="-2.5" width="6" height="4" rx="0.5" fill="#fff" opacity="0.4" />
+                                </g>
+                            </motion.g>
+                        ))}
 
                         {/* Ambient Particles */}
                         {[...Array(5)].map((_, i) => (
@@ -80,7 +127,12 @@ const FEATURES = [
         title: 'Verify',
         cta: 'Open Verify',
         description: 'Human-in-the-loop verification game.',
-        icon: <Target className="w-6 h-6" />,
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="9" opacity="0.2" />
+                <path d="M8 12l3 3 5-5" />
+            </svg>
+        ),
         color: 'amber',
         path: '/verifier',
         graphic: (
@@ -128,46 +180,36 @@ const FEATURES = [
         title: 'Simulate',
         cta: 'Open Simulate',
         description: 'Stop consolidation and performance modeling.',
-        icon: <Activity className="w-6 h-6" />,
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M3 12c3-5 6 5 9 0s6-5 9 0" />
+                <circle cx="3" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="21" cy="12" r="1.5" fill="currentColor" />
+            </svg>
+        ),
         color: 'indigo',
         path: '/simulator',
         graphic: (
             <div className="w-full h-full flex items-center justify-center p-2">
                 <svg viewBox="0 0 200 180" className="w-full h-full text-indigo-500">
                     <g fill="none" stroke="currentColor" strokeWidth="1">
-                        {/* Unified Grid */}
                         <path d="M 40 0 L 40 180 M 80 0 L 80 180 M 120 0 L 120 180 M 160 0 L 160 180" opacity="0.05" />
                         <path d="M 0 40 L 200 40 M 0 80 L 200 80 M 0 120 L 200 120 M 0 160 L 200 160" opacity="0.05" />
 
-                        {/* Route Path */}
-                        <path d="M 20 90 L 180 90" strokeWidth="1.5" opacity="0.1" strokeDasharray="4 4" />
+                        {/* Simulation Nodes */}
+                        <motion.path d="M 40 40 L 160 40 L 160 160 L 40 160 Z" strokeDasharray="4 4" opacity="0.2" animate={{ strokeDashoffset: [0, -8] }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} />
 
-                        {/* Standard "X" Marks (Redesigned for Cohesion) */}
-                        <g opacity="0.3">
-                            <path d="M 45 85 L 55 95 M 55 85 L 45 95" strokeWidth="1" />
-                            <path d="M 85 85 L 95 95 M 95 85 L 85 95" strokeWidth="1" />
-                            <path d="M 155 85 L 165 95 M 165 85 L 155 95" strokeWidth="1" />
-                        </g>
-
-                        {/* Standard Consolidated Hub */}
-                        <g transform="translate(120, 90)">
-                            <motion.circle r="14" strokeWidth="1" opacity="0.2" animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 3, repeat: Infinity }} />
-                            <circle r="6" fill="currentColor" />
-                        </g>
-
-                        {/* Standard Bus with Motion Trail */}
-                        <motion.g
-                            initial={{ x: 20, y: 90 }}
-                            animate={{ x: [20, 180] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "anticipate" }}
-                        >
-                            <rect x="-9" y="-4.5" width="18" height="9" rx="2" fill="currentColor" />
-                            <rect x="-7" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
-                            <rect x="-2" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
-                            <rect x="3" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
-                            {/* Motion Blur */}
-                            <motion.rect x="-25" y="-3.5" width="15" height="7" rx="2" fill="currentColor" opacity="0.1" />
-                        </motion.g>
+                        {[40, 100, 160].map((y, i) => (
+                            <motion.g
+                                key={i}
+                                initial={{ x: 20 }}
+                                animate={{ x: [20, 180] }}
+                                transition={{ duration: 3 + i, repeat: Infinity, ease: "linear" }}
+                            >
+                                <rect x="-6" y={y - 3} width="12" height="6" rx="1" fill="currentColor" />
+                            </motion.g>
+                        ))}
                     </g>
                 </svg>
             </div>
@@ -178,82 +220,82 @@ const FEATURES = [
         title: 'Optimize',
         cta: 'Open Optimize',
         description: 'Generative AI for network redesign.',
-        icon: <Brain className="w-6 h-6" />,
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="3" opacity="0.2" />
+                <path d="M12 9V5m-4 4L5 6m3 7H4m4 4l-3 3m7-4v4m4-4l3 3m-7-4h4m-4-4l3-3" opacity="0.6" />
+                <path d="M12 12l2-2m-2 2l-2 2m2-2l2 2m-2-2l-2-2" strokeWidth="1.5" />
+            </svg>
+        ),
         color: 'purple',
         path: '/optimize',
         graphic: (
             <div className="w-full h-full flex items-center justify-center p-2">
                 <svg viewBox="0 0 200 180" className="w-full h-full text-purple-500">
                     <g fill="none" stroke="currentColor" strokeWidth="1">
-                        {/* Unified Grid */}
                         <path d="M 40 0 L 40 180 M 80 0 L 80 180 M 120 0 L 120 180 M 160 0 L 160 180" opacity="0.05" />
                         <path d="M 0 40 L 200 40 M 0 80 L 200 80 M 0 120 L 200 120 M 0 160 L 200 160" opacity="0.05" />
-
-                        {/* Standardized Neural Hub */}
                         <g transform="translate(100, 90)">
-                            <motion.circle r="35" opacity="0.05" fill="currentColor" animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 4, repeat: Infinity }} />
-                            <circle r="20" strokeWidth="1.5" opacity="0.2" />
-                            <motion.circle r="20" strokeWidth="1.5" strokeDasharray="5 5" animate={{ rotate: 360 }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }} />
-                            <circle r="8" fill="currentColor" />
+                            <motion.circle r="12" strokeWidth="1.5" animate={{ opacity: [0.1, 0.3, 0.1], scale: [1, 1.2, 1] }} transition={{ duration: 3, repeat: Infinity }} />
+                            <circle r="4" fill="currentColor" />
+                            <motion.path d="M -20 -20 L 20 20 M -20 20 L 20 -20" strokeWidth="1" opacity="0.2" animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} />
                         </g>
-
-                        {/* Standardized Convergence Particles */}
-                        {[...Array(8)].map((_, i) => (
-                            <motion.path
-                                key={i}
-                                d={`M ${100 + Math.cos(i * 45) * 80} ${90 + Math.sin(i * 45) * 80} L 100 90`}
-                                strokeWidth="1" opacity="0.1" strokeDasharray="3 3"
-                                animate={{ strokeDashoffset: [10, 0], opacity: [0.1, 0.3, 0.1] }}
-                                transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
-                            />
-                        ))}
                     </g>
                 </svg>
             </div>
         )
     },
     {
-        id: 'atlas',
-        title: 'Atlas',
-        cta: 'Explore Atlas',
+        id: 'explorer',
+        title: 'Explorer',
+        cta: 'Explore Database',
         description: 'National longitudinal database viewer.',
-        icon: <MapIcon className="w-6 h-6" />,
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="9" opacity="0.1" />
+                <path d="M12 3v18M3 12h18" opacity="0.1" />
+                <path d="M12 12l4-4m-8 8l4-4" strokeWidth="2.5" />
+                <circle cx="12" cy="12" r="2" fill="currentColor" />
+            </svg>
+        ),
         color: 'rose',
-        path: '/atlas',
+        path: '/explorer',
         graphic: (
             <div className="w-full h-full flex items-center justify-center p-2">
                 <svg viewBox="0 0 200 180" className="w-full h-full text-rose-500">
                     <g fill="none" stroke="currentColor" strokeWidth="1">
-                        {/* Unified Grid */}
                         <path d="M 40 0 L 40 180 M 80 0 L 80 180 M 120 0 L 120 180 M 160 0 L 160 180" opacity="0.05" />
                         <path d="M 0 40 L 200 40 M 0 80 L 200 80 M 0 120 L 200 120 M 0 160 L 200 160" opacity="0.05" />
-
-                        {/* Standardized Wandering Bus (Snap Turn) */}
-                        <motion.g
-                            initial={{ x: 80, y: 80, rotate: 0 }}
-                            animate={{
-                                x: [80, 160, 160, 80, 80],
-                                y: [80, 80, 160, 160, 80],
-                                rotate: [0, 0, 90, 90, 0]
-                            }}
-                            transition={{ duration: 12, repeat: Infinity, ease: "linear", times: [0, 0.3, 0.31, 0.7, 0.71, 1] }}
-                        >
-                            <rect x="-9" y="-4.5" width="18" height="9" rx="2" fill="currentColor" />
-                            <rect x="-7" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
-                            <rect x="-2" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
-                            <rect x="3" y="-2" width="4" height="4" rx="0.5" fill="#fff" opacity="0.9" />
+                        <motion.g transform="translate(100, 90)" animate={{ y: [0, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}>
+                            <rect x="-30" y="-15" width="60" height="30" rx="4" fill="currentColor" opacity="0.1" stroke="currentColor" />
+                            <rect x="-30" y="-5" width="60" height="30" rx="4" fill="currentColor" opacity="0.2" stroke="currentColor" />
+                            <rect x="-30" y="5" width="60" height="30" rx="4" fill="currentColor" opacity="0.3" stroke="currentColor" />
                         </motion.g>
-
-                        {/* Standardized Isochrones */}
-                        <g transform="translate(120, 120)">
-                            <circle r="40" opacity="0.05" strokeWidth="1.5" />
-                            <motion.circle r="25" opacity="0.1" strokeWidth="1.5" animate={{ scale: [0.95, 1.05, 0.95] }} transition={{ duration: 4, repeat: Infinity }} />
-                            <circle r="8" fill="currentColor" />
-                        </g>
-
-                        {/* Standardized Ambient Pings */}
-                        <motion.circle cx="40" cy="40" r="2" fill="currentColor" animate={{ opacity: [0, 0.2, 0] }} transition={{ duration: 2, repeat: Infinity }} />
-                        <motion.circle cx="160" cy="40" r="2" fill="currentColor" animate={{ opacity: [0, 0.2, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
+                    </g>
+                </svg>
+            </div>
+        )
+    },
+    {
+        id: 'predict',
+        title: 'Predict',
+        cta: 'Run Prediction',
+        description: 'Identify transit deserts and opportunity zones.',
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+        ),
+        color: 'blue',
+        path: '/predict',
+        graphic: (
+            <div className="w-full h-full flex items-center justify-center p-2">
+                <svg viewBox="0 0 200 180" className="w-full h-full text-blue-500">
+                    <g fill="none" stroke="currentColor" strokeWidth="1">
+                        <path d="M 40 0 L 40 180 M 80 0 L 80 180 M 120 0 L 120 180 M 160 0 L 160 180" opacity="0.05" />
+                        <circle cx="100" cy="90" r="40" strokeDasharray="4 4" opacity="0.2" />
+                        <motion.circle cx="100" cy="90" r="40" stroke="currentColor" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, repeat: Infinity }} />
+                        <motion.path d="M 80 90 L 120 90 M 100 70 L 100 110" stroke="currentColor" strokeWidth="1" animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.5, repeat: Infinity }} />
                     </g>
                 </svg>
             </div>
@@ -343,9 +385,30 @@ const HomePage: React.FC = () => {
             </div>
 
             <footer className="mt-40 pt-16 border-t border-[var(--border)]">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-12 px-4">
-                    <div className="text-sm font-bold tracking-widest text-[var(--text-muted)] opacity-40">
-                        © 2026 civic minds <span className="mx-4 text-[var(--border)]">•</span> intelligence for mobility
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 px-4 mb-16">
+                    <div className="flex flex-col gap-4">
+                        <h4 className="text-sm font-black text-[var(--fg)] uppercase tracking-wider">Agencies</h4>
+                        <div className="flex flex-col gap-2">
+                            {FEATURES.map(f => (
+                                <button key={f.id} onClick={() => navigate(f.path)} className="text-sm text-[var(--text-muted)] hover:text-indigo-600 transition-colors text-left font-semibold">
+                                    {f.title}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        <h4 className="text-sm font-black text-[var(--fg)] uppercase tracking-wider">Advocacy</h4>
+                        <div className="flex flex-col gap-2">
+                            <button onClick={() => navigate('/reports')} className="text-sm text-[var(--text-muted)] hover:text-emerald-600 transition-colors text-left font-semibold">
+                                Report Cards
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row justify-between items-center gap-12 px-4 py-8 border-t border-[var(--border)]">
+                    <div className="text-sm font-bold text-[var(--text-muted)]">
+                        © 2026 Civic Minds <span className="mx-4 text-[var(--border)]">•</span> Intelligence For Mobility
                     </div>
                 </div>
             </footer>

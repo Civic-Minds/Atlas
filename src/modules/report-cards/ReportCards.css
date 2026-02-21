@@ -1,0 +1,33 @@
+@import '../../styles/index.css';
+
+.report-cards-container {
+    @apply flex-1 flex flex-col bg-[var(--bg)];
+}
+
+.report-cards-header {
+    @apply px-8 py-12 border-b border-[var(--border)] bg-[var(--card)];
+}
+
+.report-cards-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8;
+}
+
+.agency-card {
+    @apply bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-6 transition-all duration-300 hover:shadow-xl hover:border-indigo-500/30;
+}
+
+.metric-row {
+    @apply flex justify-between items-center py-3 border-b border-[var(--border)] last:border-0;
+}
+
+.metric-label {
+    @apply text-sm text-[var(--text-muted)] font-medium;
+}
+
+.metric-value {
+    @apply text-sm font-bold text-[var(--fg)];
+}
+
+.source-tag {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-wider mt-4;
+}

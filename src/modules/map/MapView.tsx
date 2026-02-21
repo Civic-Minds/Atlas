@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, Layers, Info, RotateCcw, Activity } from 'lucide-react';
 import { GtfsData, AnalysisResult } from '../../utils/gtfsUtils';
 import { storage, STORES } from '../../core/storage';
+import { EmptyStateHero } from '../../components/EmptyStateHero';
 import 'leaflet/dist/leaflet.css';
 import './Map.css';
 
@@ -100,27 +101,24 @@ export default function MapView() {
         return (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
                 <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-                <p className="text-[10px] text-[var(--text-muted)] font-bold">Waking Atlas core...</p>
+                <p className="text-[10px] text-[var(--text-muted)] font-bold">Waking Headway core...</p>
             </div>
         );
     }
 
     if (!gtfsData || gtfsData.routes?.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-6">
-                <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20">
-                    <Layers className="w-10 h-10 text-indigo-400" />
-                </div>
-                <div className="space-y-2">
-                    <h2 className="atlas-h2">No Agency Data</h2>
-                    <p className="text-[var(--text-muted)] max-w-xs mx-auto">Upload a GTFS zip in the Screener module or load sample data to see the city-wide frequency map.</p>
-                </div>
-                <button
-                    onClick={() => window.location.href = '/screener'}
-                    className="btn-primary py-3 px-8 rounded-xl font-bold text-sm bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-500/20"
-                >
-                    Initialize Screener
-                </button>
+            <div className="module-container">
+                <EmptyStateHero
+                    icon={Layers}
+                    title="No Agency Data"
+                    description="Upload a GTFS zip in the Screener module or load sample data to see the city-wide frequency map."
+                    primaryAction={{
+                        label: "Initialize Screener",
+                        icon: Activity,
+                        href: "/screener"
+                    }}
+                />
             </div>
         );
     }
@@ -181,15 +179,15 @@ export default function MapView() {
             </MapContainer>
 
             {/* HUD: Layers & Day Toggle */}
-            <div className="absolute top-6 left-6 z-[1000] flex flex-col gap-4 max-w-xs w-full pointer-events-none">
-                <div className="precision-panel p-5 bg-[var(--card)]/80 backdrop-blur-xl pointer-events-auto border-l-4 border-indigo-500 shadow-2xl">
+            <div className="absolute top-8 left-8 z-[1000] flex flex-col gap-4 max-w-xs w-full pointer-events-none">
+                <div className="glass-panel p-5 pointer-events-auto border-l-4 border-indigo-500 shadow-2xl">
                     <div className="flex items-center justify-between mb-5 border-b border-[var(--border)] pb-4">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
                                 <Layers className="w-4 h-4 text-indigo-400" />
                             </div>
                             <div className="flex flex-col">
-                                <h3 className="atlas-label normal-case tracking-normal">Frequency Atlas</h3>
+                                <h3 className="atlas-label normal-case tracking-normal">Frequency Map</h3>
                                 <p className="text-[9px] text-[var(--text-muted)] font-bold mt-1">Toronto system</p>
                             </div>
                         </div>
@@ -237,9 +235,9 @@ export default function MapView() {
                     </div>
                 </div>
 
-                <div className="precision-panel p-4 bg-[var(--card)]/80 backdrop-blur-xl pointer-events-auto border border-emerald-500/20 shadow-xl">
+                <div className="glass-panel p-4 pointer-events-auto border border-emerald-500/20 shadow-xl">
                     <div className="flex items-center gap-3">
-                        <Activity className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <span className="status-bullet status-bullet-emerald" />
                         <div className="flex-1">
                             <p className="atlas-label normal-case text-emerald-600 dark:text-emerald-400 mb-0.5">Live data synced</p>
                             <p className="text-[10px] text-[var(--text-muted)] leading-tight font-medium">
@@ -251,8 +249,8 @@ export default function MapView() {
             </div>
 
             {/* View Mode Toggle */}
-            <div className="absolute top-6 right-6 z-[1000] flex flex-col gap-3">
-                <div className="bg-[var(--card)]/80 backdrop-blur-xl p-1 rounded-xl border border-[var(--border)] flex gap-1 shadow-2xl">
+            <div className="absolute top-8 right-8 z-[1000] flex flex-col gap-3">
+                <div className="glass-panel p-1 flex gap-1 shadow-2xl">
                     <button
                         onClick={() => setMapStyle('dark')}
                         className={`px-4 py-2 rounded-lg text-[10px] font-bold transition-all ${mapStyle === 'dark' ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--fg)]'}`}
