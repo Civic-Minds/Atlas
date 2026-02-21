@@ -1,14 +1,7 @@
 /* Verifier Module Specific Styles */
 @reference "tailwindcss";
 
-.verifier-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem;
-    width: 100%;
-    height: calc(100vh - 64px);
-    overflow: hidden;
+.verifier-page {
     gap: 1.25rem;
 }
 
@@ -24,13 +17,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: var(--panel);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
     overflow: hidden;
     min-width: 0;
-    box-shadow: var(--shadow-soft);
 }
 
 .pane-header {

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0] - 2026-02-20
+
+### Added
+- **Predict Module**: A new transit intelligence engine for identifying service gaps and transit deserts.
+- **Spatial Grid Engine**: High-fidelity 500m resolution grid for mapping population and employment density.
+- **Frequency-Weighted Supply Analysis**: Algorithm to calculate transit service intensity based on GTFS headway data.
+- **Intelligence Zones**: Automated ranking and visualization of urban areas with the highest transit undersupply.
+- **Dynamic Heatmaps**: Multi-mode visualization for Demand, Supply, and Service Gaps.
+
+### Changed
+- **Generalization**: Refactored the Predict module to remove service-specific branding, adopting neutral transit industry terminology (e.g., "Gap Index", "Intelligence Zones").
+- **Navigation**: Added "Predict" to the main navigation and homepage feature sets.
+
 ## [1.4.0] - 2026-02-14
 
 ### Added

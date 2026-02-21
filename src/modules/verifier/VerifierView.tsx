@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { AnalysisResult, GtfsData } from '../../utils/gtfsUtils';
 import { storage, STORES } from '../../core/storage';
+import { ModuleHeader } from '../../components/ModuleHeader';
+import { EmptyStateHero } from '../../components/EmptyStateHero';
 import './Verifier.css';
 
 export default function VerifierView() {
@@ -128,7 +130,7 @@ export default function VerifierView() {
 
     if (loading) {
         return (
-            <div className="verifier-container items-center justify-center">
+            <div className="atlas-page flex items-center justify-center">
                 <div className="flex flex-col items-center space-y-4">
                     <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
                     <div className="text-center">
@@ -142,39 +144,24 @@ export default function VerifierView() {
 
     if (!gtfsData) {
         return (
-            <div className="verifier-container">
-                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="space-y-4"
-                    >
-                        <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Shield className="w-12 h-12 text-indigo-400" />
-                        </div>
-                        <h2 className="atlas-h1">Manual Validation Mode</h2>
-                        <p className="text-xl text-[var(--text-muted)] max-w-lg mx-auto">
-                            Verify AI-generated frequency claims against real-world agency schedules.
-                        </p>
-                    </motion.div>
-
-                    <input
-                        type="file"
-                        accept=".zip"
-                        className="hidden"
-                        ref={fileInputRef}
-                        onChange={handleFileUpload}
-                    />
-
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => fileInputRef.current?.click()}
-                        className="btn-primary px-8 py-4 rounded-2xl text-lg shadow-lg shadow-indigo-500/20"
-                    >
-                        <Upload className="w-5 h-5" /> Start Validation Task
-                    </motion.button>
-                </div>
+            <div className="module-container">
+                <EmptyStateHero
+                    icon={Shield}
+                    title="Manual Validation Mode"
+                    description="Verify AI-generated frequency claims against real-world agency schedules."
+                    primaryAction={{
+                        label: "Start Validation Task",
+                        icon: Upload,
+                        onClick: () => fileInputRef.current?.click()
+                    }}
+                />
+                <input
+                    type="file"
+                    accept=".zip"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                />
             </div>
         );
     }
@@ -212,30 +199,28 @@ export default function VerifierView() {
     }
 
     return (
-        <div className="verifier-container">
-            <header className="flex items-center justify-between mb-8 px-6 pt-6">
-                <div className="flex items-center gap-4">
-                    <h1 className="atlas-h2">Arcade</h1>
-                    <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-600 dark:text-amber-400">
-                        <Trophy className="w-3 h-3" />
-                        <span className="atlas-label">Phase 2 Verification</span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-[var(--item-bg)] border border-[var(--border)] rounded-xl">
-                        <span className="atlas-label">Streak</span>
-                        <span className="atlas-mono text-indigo-600 dark:text-indigo-400">{streak}</span>
-                    </div>
-                    <button className="btn-secondary">
-                        <Settings className="w-4 h-4" />
-                        Options
-                    </button>
-                </div>
-            </header>
+        <div className="module-container">
+            <ModuleHeader
+                title="Arcade"
+                badge={{ label: "Phase 2 Verification", color: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20" }}
+                actions={[
+                    {
+                        label: `Streak: ${streak}`,
+                        variant: 'secondary',
+                        onClick: () => { }
+                    },
+                    {
+                        label: "Options",
+                        icon: Settings,
+                        onClick: () => { },
+                        variant: 'secondary'
+                    }
+                ]}
+            />
 
             <div className="verifier-arena">
                 {/* AI Claims Feed */}
-                <div className="verifier-pane">
+                <div className="verifier-pane glass-panel">
                     <div className="pane-header">
                         <h2 className="pane-title">AI engine output</h2>
                         <span className="atlas-label bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Live feed</span>

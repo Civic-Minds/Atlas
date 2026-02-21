@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download } from 'lucide-react';
+import { Upload, Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Database } from 'lucide-react';
 import { AnalysisResult, GtfsData } from '../../utils/gtfsUtils';
 import { downloadCsv } from '../../utils/exportUtils';
 import { storage, STORES } from '../../core/storage';
+import { ModuleHeader } from '../../components/ModuleHeader';
+import { EmptyStateHero } from '../../components/EmptyStateHero';
 import './Screener.css';
 
 const TIER_CONFIG = [
@@ -38,55 +40,12 @@ export default function ScreenerView() {
         loadPersisted();
     }, []);
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        setLoading(true);
-        setStatusMessage('Initializing worker...');
-
-        try {
-            const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), {
-                type: 'module'
-            });
-
-            worker.onmessage = async (e) => {
-                const { type, message, gtfsData, analysisResults, error } = e.data;
-
-                if (type === 'STATUS') {
-                    setStatusMessage(message);
-                } else if (type === 'DONE') {
-                    setGtfsData(gtfsData);
-                    setAnalysisResults(analysisResults);
-
-                    // Persist results
-                    await storage.setItem(STORES.GTFS, 'latest', gtfsData);
-                    await storage.setItem(STORES.ANALYSIS, 'latest', analysisResults);
-
-                    setLoading(false);
-                    setStatusMessage('');
-                    worker.terminate();
-                } else if (type === 'ERROR') {
-                    console.error('Analysis failed:', error);
-                    alert('Failed to analyze GTFS: ' + error);
-                    setLoading(false);
-                    setStatusMessage('');
-                    worker.terminate();
-                }
-            };
-
-            worker.postMessage({
-                file,
-                startTimeMins: 7 * 60,
-                endTimeMins: 22 * 60
-            });
-
-        } catch (error) {
-            console.error('Worker initialization failed:', error);
-            alert('Failed to start analysis worker.');
-            setLoading(false);
-            setStatusMessage('');
-        }
+    const handleReset = async () => {
+        if (!confirm('This will clear the current analysis. Ingested data remains in the Admin panel.')) return;
+        setGtfsData(null);
+        setAnalysisResults([]);
+        await storage.clearStore(STORES.GTFS);
+        await storage.clearStore(STORES.ANALYSIS);
     };
 
     const filteredResults = useMemo(() => {
@@ -113,13 +72,6 @@ export default function ScreenerView() {
         setActiveTiers(next);
     };
 
-    const handleReset = async () => {
-        setGtfsData(null);
-        setAnalysisResults([]);
-        await storage.clearStore(STORES.GTFS);
-        await storage.clearStore(STORES.ANALYSIS);
-    };
-
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -136,134 +88,47 @@ export default function ScreenerView() {
 
     if (!gtfsData) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 px-6">
-                <div className="text-center mb-16 max-w-2xl">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="space-y-4"
-                    >
-                        <h2 className="atlas-h1">Screen</h2>
-                        <p className="text-lg text-[var(--text-muted)]">Local, private, and instant GTFS analysis with high-precision reporting.</p>
-                    </motion.div>
-                </div>
-
-                <input
-                    type="file"
-                    accept=".zip"
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                />
-
-                <div className="flex flex-col items-center gap-4">
-                    <motion.button
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full max-w-md p-12 bg-[var(--card)] border border-[var(--border)] rounded-[2rem] shadow-soft hover:border-indigo-500/30 transition-all group"
-                    >
-                        <Upload className="w-10 h-10 mx-auto text-indigo-500 mb-6" />
-                        <div className="text-lg font-bold text-[var(--fg)] mb-2">Upload GTFS Zip</div>
-                        <p className="atlas-label">Supports .zip archives</p>
-                    </motion.button>
-
-                    <button
-                        onClick={async () => {
-                            setLoading(true);
-                            setStatusMessage('Fetching sample data...');
-                            try {
-                                const response = await fetch('/data/samples/gtfs-sample.zip');
-                                if (!response.ok) throw new Error('Sample not found');
-                                const blob = await response.blob();
-                                const file = new File([blob], 'sample.zip', { type: 'application/zip' });
-
-                                setStatusMessage('Initializing worker...');
-                                const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), {
-                                    type: 'module'
-                                });
-
-                                worker.onmessage = async (e) => {
-                                    const { type, message, gtfsData, analysisResults, error } = e.data;
-
-                                    if (type === 'STATUS') {
-                                        setStatusMessage(message);
-                                    } else if (type === 'DONE') {
-                                        setGtfsData(gtfsData);
-                                        setAnalysisResults(analysisResults);
-                                        await storage.setItem(STORES.GTFS, 'latest', gtfsData);
-                                        await storage.setItem(STORES.ANALYSIS, 'latest', analysisResults);
-                                        setLoading(false);
-                                        setStatusMessage('');
-                                        worker.terminate();
-                                    } else if (type === 'ERROR') {
-                                        alert('Failed to analyze sample GTFS: ' + error);
-                                        setLoading(false);
-                                        setStatusMessage('');
-                                        worker.terminate();
-                                    }
-                                };
-
-                                worker.postMessage({
-                                    file,
-                                    startTimeMins: 7 * 60,
-                                    endTimeMins: 22 * 60
-                                });
-
-                            } catch (e) {
-                                alert('Demo data not available. Please upload a GTFS zip.');
-                                setLoading(false);
-                                setStatusMessage('');
-                            }
-                        }}
-                        className="atlas-label hover:text-indigo-500 transition-colors"
-                    >
-                        Or load sample data for verification
-                    </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl pt-24">
-                    {[
-                        { icon: <Clock />, title: 'Instant Results', desc: 'Visualize frequency tiers and headways immediately.' },
-                        { icon: <MapIcon />, title: 'Privacy First', desc: '100% local processing. Data never leaves your browser.' },
+            <div className="module-container">
+                <EmptyStateHero
+                    icon={ShieldCheck}
+                    title="Headway Screen"
+                    description="Analysis-ready frequency reporting. Waiting for data ingest from the administrative console."
+                    primaryAction={{
+                        label: "Open Admin Panel",
+                        icon: Database,
+                        href: "/admin",
+                        onClick: () => { }
+                    }}
+                    features={[
+                        { icon: <Clock />, title: 'Frequency Tiers', desc: 'Auto-categorize routes by headway performance.' },
+                        { icon: <MapIcon />, title: 'System-Wide', desc: 'Identify coverage gaps across the entire network.' },
                         { icon: <Filter />, title: 'Deep Insights', desc: 'Identify gaps and export compliance reports.' }
-                    ].map((f, i) => (
-                        <div key={i} className="text-center group">
-                            <div className="text-indigo-500 w-6 h-6 mx-auto mb-4 opacity-70 group-hover:opacity-100 transition-opacity">{f.icon}</div>
-                            <div className="font-bold text-[var(--fg)] mb-2">{f.title}</div>
-                            <p className="text-sm text-[var(--text-muted)] leading-relaxed">{f.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                    ]}
+                />
             </div>
         );
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto w-full">
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                <div className="flex items-center gap-4">
-                    <h1 className="atlas-h2">Screen</h1>
-                    <span className="atlas-label bg-[var(--item-bg)] border border-[var(--border)] px-3 py-1 rounded-full">
-                        {gtfsData.routes.length} routes detected
-                    </span>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => downloadCsv(filteredResults, 'transit-screener-results.csv')}
-                        className="btn-primary"
-                    >
-                        <Download className="w-4 h-4" />
-                        Export CSV
-                    </button>
-                    <button
-                        onClick={handleReset}
-                        className="btn-secondary"
-                    >
-                        <RotateCcw className="w-4 h-4" /> Reset
-                    </button>
-                </div>
-            </header>
+        <div className="module-container">
+            <ModuleHeader
+                title="Headway Screen"
+                badge={{ label: `${gtfsData.routes.length} routes detected` }}
+                actions={[
+                    {
+                        label: "Export CSV",
+                        icon: Download,
+                        onClick: () => downloadCsv(filteredResults, 'transit-screener-results.csv'),
+                        variant: 'primary'
+                    },
+                    {
+                        label: "Reset",
+                        icon: RotateCcw,
+                        onClick: handleReset,
+                        variant: 'secondary'
+                    }
+                ]}
+            />
 
             <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-8 border border-[var(--border)]">
                 {['Weekday', 'Saturday', 'Sunday'].map(day => (

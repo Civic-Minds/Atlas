@@ -60,9 +60,9 @@ function SimulatorViewContent() {
     }
 
     const badgeStyles = {
-        normal: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-        major: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-        critical: 'bg-red-500/10 text-red-400 border-red-500/20',
+        normal: 'status-bullet-emerald',
+        major: 'status-bullet-amber',
+        critical: 'status-bullet-red',
         loading: 'bg-neutral-500/10 text-neutral-400 border-neutral-500/20'
     };
 
@@ -89,18 +89,12 @@ function SimulatorViewContent() {
                             {/* Live Status Badge */}
                             <div
                                 title={hasAlerts ? liveAlerts[0].description : 'No active alerts'}
-                                className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold border cursor-help ${badgeStyles[statusType]}`}
+                                className={`flex items-center gap-1.5 px-3 py-1 bg-[var(--item-bg)] border border-[var(--border)] rounded-full cursor-help`}
                             >
                                 {statusType === 'loading' ? (
-                                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse mr-2" />
                                 ) : (
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                        {statusType === 'normal' ? (
-                                            <polyline points="20 6 9 17 4 12" />
-                                        ) : (
-                                            <g><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></g>
-                                        )}
-                                    </svg>
+                                    <span className={`status-bullet ${badgeStyles[statusType]}`} />
                                 )}
                                 <span className="atlas-label text-inherit">{statusText}</span>
                             </div>
@@ -121,7 +115,7 @@ function SimulatorViewContent() {
                 </div>
 
                 {/* HUD Footer Stats */}
-                <div className="floating-stats flex items-center divide-x divide-[var(--border)] overflow-hidden">
+                <div className="floating-stats flex items-center divide-x divide-[var(--border)] overflow-hidden glass-panel">
                     <div className="px-4 py-2 flex flex-col items-center">
                         <span className="text-lg font-black atlas-mono">{result.numberOfStops}</span>
                         <span className="atlas-label">Active Stops</span>
@@ -140,7 +134,7 @@ function SimulatorViewContent() {
             </div>
 
             {/* Control Console Overlay */}
-            <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+            <div className={`sidebar glass-panel ${sidebarOpen ? 'open' : 'closed'}`}>
                 <MetricsPanel
                     result={result}
                     baselineResult={baselineResult}

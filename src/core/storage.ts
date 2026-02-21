@@ -1,6 +1,6 @@
 import { GtfsData, AnalysisResult } from '../utils/gtfsUtils';
 
-const DB_NAME = 'AtlasDB';
+const DB_NAME = 'HeadwayDB';
 const DB_VERSION = 1;
 
 export const STORES = {
@@ -89,11 +89,11 @@ class StorageService {
 
     // LocalStorage helpers for simpler small data
     setPreference(key: string, value: any): void {
-        localStorage.setItem(`atlas_pref_${key}`, JSON.stringify(value));
+        localStorage.setItem(`headway_pref_${key}`, JSON.stringify(value));
     }
 
     getPreference<T>(key: string): T | null {
-        const item = localStorage.getItem(`atlas_pref_${key}`);
+        const item = localStorage.getItem(`headway_pref_${key}`);
         if (!item) return null;
         try {
             return JSON.parse(item) as T;
