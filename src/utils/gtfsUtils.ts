@@ -150,9 +150,11 @@ export const calculateTiers = (
         if (!service) continue;
 
         const days = [];
-        if (service.monday === '1') days.push('Weekday');
-        else if (service.saturday === '1') days.push('Saturday');
-        else if (service.sunday === '1') days.push('Sunday');
+        const isWeekday = service.monday === '1' || service.tuesday === '1' ||
+            service.wednesday === '1' || service.thursday === '1' || service.friday === '1';
+        if (isWeekday) days.push('Weekday');
+        if (service.saturday === '1') days.push('Saturday');
+        if (service.sunday === '1') days.push('Sunday');
 
         for (const day of days) {
             const key = `${meta.routeId}::${day}::${meta.dirId}`;
@@ -216,14 +218,14 @@ export const calculateTiers = (
     return results;
 };
 
-const computeMedian = (arr: number[]): number => {
+export const computeMedian = (arr: number[]): number => {
     if (!arr.length) return 0;
     const sorted = [...arr].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
     return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
-const determineTier = (headways: number[], tripCount: number, spanMinutes: number): string => {
+export const determineTier = (headways: number[], tripCount: number, spanMinutes: number): string => {
     const tiers = [10, 15, 20, 30, 60];
     const GRACE = 5;
     const MAX_GRACE_COUNT = 2;
