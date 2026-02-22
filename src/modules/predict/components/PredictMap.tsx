@@ -1,14 +1,27 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import { usePredict } from '../PredictContext';
 import 'leaflet/dist/leaflet.css';
+import { MAP_PRESETS, getTheme } from '../../../core/mapStyles';
 
 // Helper to update map view when data loads
 function MapUpdater({ center }: { center: [number, number] }) {
     const map = useMap();
-    React.useEffect(() => {
+    const [theme, setTheme] = useState(getTheme());
+
+    useEffect(() => {
         if (center) map.setView(center, map.getZoom());
     }, [center, map]);
+
+    // Force re-render on theme change
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setTheme(getTheme());
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
+    }, []);
+
     return null;
 }
 
@@ -18,6 +31,14 @@ interface PredictMapProps {
 
 const PredictMap: React.FC<PredictMapProps> = ({ viewMode }) => {
     const { demandPoints, opportunityPoints, gtfsData } = usePredict();
+    const [theme, setTheme] = useState(getTheme());
+
+    // Sync theme state
+    useEffect(() => {
+        const observer = new MutationObserver(() => setTheme(getTheme()));
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
+    }, []);
 
     const center = useMemo<[number, number]>(() => {
         if (gtfsData && gtfsData.stops.length > 0) {
@@ -32,21 +53,23 @@ const PredictMap: React.FC<PredictMapProps> = ({ viewMode }) => {
     }, [gtfsData]);
 
     const displayPoints = viewMode === 'opportunity' ? opportunityPoints : demandPoints;
+    const preset = MAP_PRESETS[theme as 'light' | 'dark'];
 
     return (
         <MapContainer
             center={center}
             zoom={13}
             zoomControl={false}
-            className="w-full h-full bg-[#0f172a]"
+            className={`w-full h-full ${preset.styles.container}`}
         >
             <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                attribution='&copy; OpenStreetMap &copy; CARTO'
+                key={theme} // Key forces full tile re-load on theme change
+                url={preset.url}
+                attribution={preset.attribution}
             />
             <MapUpdater center={center} />
 
-            {displayPoints.map((p, i) => {
+            {displayPoints.map((p: any, i: number) => {
                 const isDemand = viewMode === 'demand';
                 const isSupply = viewMode === 'supply';
                 const isOpportunity = viewMode === 'opportunity';

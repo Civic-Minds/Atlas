@@ -1,47 +1,56 @@
 # Changelog
 
-## [1.6.0] - 2026-02-21
+## [Unreleased]
 
+## [0.7.0] - 2026-02-22
 ### Added
-- **Page Transitions**: Smooth motion transitions between all modules using `AnimatePresence`.
-- **Premium Design System**: Applied glassmorphism, refined shadows, and scale micro-interactions across the UI.
-- **Custom Scrollbars**: Integrated custom-styled scrollbars for a more cohesive "Atlas" feel.
+- **Atlas Ecosystem Roadmap**: Updated `ROADMAP.md` with long-term vision across Intelligence, Strategy, and Discovery phases.
+- **Universal Design Language**: Standardized UI across all modules (Home, Predict, Screener, Simulator, Verifier) with high-fidelity glassmorphism and tabular metrics.
+- **Alpha Engine Hardening**: Implemented Dynamic Peak Detection (sliding window) and Corridor Aggregation (road-level frequency).
+- **Bus Bunching Detection**: Detects and penalizes "clumped" trips (arriving <25% of average headway) in reliability scoring.
+- **Direct Ingestion UX**: Added direct GTFS upload paths to both Screener and Predict views, bypassing the Admin console for faster analysis.
+- **Stop Spacing Diagnostics**: Integrated spatial redundancy analysis to detect stops with critical walk-shed overlap (<400m).
+- **Stop Health Modal**: New UI diagnostic panel in Screener for auditing route-level stop health and spacing parity.
+
+### Removed
+- **Legacy Redundancy**: Deleted standalone `Screen`, `Simulate`, `Verify`, and `Stops` folders following full integration into the Atlas core.
 
 ### Changed
-- **UI Unification**: Standardized the `Predict` module header to match the ecosystem-wide `ModuleHeader` style.
-- **Layout Shell**: Refactored the main application shell for better stability and navigation flow.
+- **Reliability Scoring**: Refined the algorithm to penalize both wide gaps and bus bunching for professional-grade transit audits.
+- **Persistence Layer**: Optimized IndexedDB storage for GTFS data across sessions, ensuring non-blocking UI performance.
 
-### Fixed
-- **Deployment Paths**: Resolved critical "blank screen" issue on GitHub Pages by fixing absolute pathing in `index.html`.
-- **Navigation Inconsistency**: Corrected disparate header implementations across modules.
 
-## [1.5.0] - 2026-02-20
-
+## [0.6.0] - 2026-02-20
 ### Added
-- **Predict Module**: A new transit intelligence engine for identifying service gaps and transit deserts.
-- **Spatial Grid Engine**: High-fidelity 500m resolution grid for mapping population and employment density.
-- **Frequency-Weighted Supply Analysis**: Algorithm to calculate transit service intensity based on GTFS headway data.
-- **Intelligence Zones**: Automated ranking and visualization of urban areas with the highest transit undersupply.
-- **Dynamic Heatmaps**: Multi-mode visualization for Demand, Supply, and Service Gaps.
+- **Premium Design System**: Transitioned to the "Solid Precision" palette with tabular metrics and cinematic map presets.
+- **Stability Fixes**: Corrected deployment pathing for subdirectory compatibility.
 
 ### Changed
-- **Generalization**: Refactored the Predict module to remove service-specific branding, adopting neutral transit industry terminology (e.g., "Gap Index", "Intelligence Zones").
-- **Navigation**: Added "Predict" to the main navigation and homepage feature sets.
+- **UI Unification**: Standardized headers across Predict and Screener modules.
+- **Agnostic Logic**: Generalized the Verifier to remove MBTA/Metro-specific hardcoding.
 
-## [1.4.0] - 2026-02-14
-
+## [0.5.0] - 2026-02-20
 ### Added
-- **Atlas Map Module**: City-wide frequency heatmap visualization (Leaflet-based).
-- **Spatial Fallback Engine**: Reconstructs route geometries from stop sequences when shapes are unavailable.
-- **IndexedDB Persistence**: Persistent storage for GTFS data and analysis results using `StorageService`.
-- **Web Worker Integration**: Off-thread GTFS processing for non-blocking UI in Screener and Verifier.
+- **Predict Module**: Transit intelligence engine for spatial gap analysis.
+- **Spatial Grid Engine**: High-fidelity mapping of demand (pop/emp) vs. supply (headway).
+- **Intelligence Zones**: Automated ranking of transit deserts.
 
-### Changed
-- **UI Standardization**: Completed full Tailwind CSS migration across all modules (Home, Screener, Verifier, Simulator, Atlas).
-- **Design System**: Refined "Soft Precision" aesthetic with updated glassmorphism and micro-animations.
-- **Home UI**: Fixed alignment issues on dashboard cards (right-justified text and icons).
+## [0.4.0] - 2026-02-14
+### Added
+- **Atlas Map Module**: City-wide frequency heatmap visualization.
+- **Web Worker Analysis**: Off-thread GTFS processing for high-performance UI.
+- **Persistence**: IndexedDB storage for GTFS data across sessions.
 
-### Fixed
-- Runtime crashes in MapView due to missing optional chainings.
-- Data synchronization issues between screening and verification stages.
-- Incorrect map container height in Atlas module.
+## [0.3.0] - 2026-02-08
+### Added
+- **Leaflet MVP**: Transitioned from static HTML to a dynamic map-centric interface.
+- **GTFS Parser**: Initial implementation of `gtfsUtils.ts` with shape and stop indexing.
+
+## [0.2.0] - 2026-02-01
+### Added
+- **Framework Migration**: Shifted to Vite + React + TypeScript architecture.
+- **Modular Structure**: Initialized `Screener` and `Verifier` modules.
+
+## [0.1.0] - 2026-01-15
+### Added
+- **GTFS-Screener MVP**: Single-file HTML/JS tool for basic headway analysis.

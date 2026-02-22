@@ -1,47 +1,141 @@
-import React, { useState } from 'react';
-import { Layers, Activity, Zap, TrendingUp, Users, MapPin, Search, Filter, Play } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Layers, Activity, Zap, TrendingUp, Users, MapPin, Search, Filter, Play, Upload, Database, ShieldCheck, Clock, Map as MapIcon } from 'lucide-react';
 import { PredictProvider, usePredict } from './PredictContext';
 import PredictMap from './components/PredictMap';
+import { EmptyStateHero } from '../../components/EmptyStateHero';
+import { storage, STORES } from '../../core/storage';
 
 const PredictViewContent: React.FC = () => {
     const {
+        gtfsData,
         loading,
         demandPoints,
         opportunityPoints,
         runAnalysis,
         params,
-        setParams
+        setParams,
+        refreshData
     } = usePredict();
     const [viewMode, setViewMode] = useState<'demand' | 'supply' | 'opportunity'>('demand');
+    const [uploading, setUploading] = useState(false);
+    const [statusMessage, setStatusMessage] = useState('');
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        setStatusMessage('Initializing worker...');
+
+        try {
+            const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), {
+                type: 'module'
+            });
+
+            worker.onmessage = async (e) => {
+                const { type, message, gtfsData: newGtfs, analysisResults, error } = e.data;
+
+                if (type === 'STATUS') {
+                    setStatusMessage(message);
+                } else if (type === 'DONE') {
+                    // Persist
+                    await storage.setItem(STORES.GTFS, 'latest', newGtfs);
+                    await storage.setItem(STORES.ANALYSIS, 'latest', analysisResults);
+
+                    await refreshData();
+                    setUploading(false);
+                    worker.terminate();
+                } else if (type === 'ERROR') {
+                    console.error('Analysis failed:', error);
+                    alert('Analysis failed: ' + error);
+                    setUploading(false);
+                    worker.terminate();
+                }
+            };
+
+            worker.postMessage({
+                file,
+                startTimeMins: 7 * 60,
+                endTimeMins: 22 * 60
+            });
+
+        } catch (error) {
+            console.error('Worker failed:', error);
+            alert('Failed to start analysis worker.');
+            setUploading(false);
+        }
+    };
+
+    if (uploading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px]">
+                <div className="flex flex-col items-center space-y-4">
+                    <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+                    <div className="text-center">
+                        <p className="text-[10px] text-[var(--text-muted)] font-bold mb-1">Analyzing GTFS engine</p>
+                        <p className="text-xs font-mono text-indigo-400 font-bold">{statusMessage}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!gtfsData) {
+        return (
+            <div className="module-container">
+                <input
+                    type="file"
+                    accept=".zip"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                />
+                <EmptyStateHero
+                    icon={Zap}
+                    title="Predict Intelligence"
+                    description="Detect transit deserts and service gaps using gravity-based accessibility models."
+                    primaryAction={{
+                        label: "Upload GTFS File",
+                        icon: Upload,
+                        onClick: () => fileInputRef.current?.click()
+                    }}
+                    features={[
+                        { icon: <Users />, title: 'Demand Mapping', desc: 'Identify residential and employment density centers.' },
+                        { icon: <Activity />, title: 'Supply Analysis', desc: 'Measure walking-distance access to frequent transit.' },
+                        { icon: <Zap />, title: 'Gap Detection', desc: 'Identify areas with high demand but insufficient supply.' }
+                    ]}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="module-container">
-            <div className="flex flex-col gap-6 py-8">
-                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-6">
+            <div className="flex flex-col gap-6 w-full">
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 py-4 border-b border-[var(--border)]">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-600 dark:text-blue-400">
-                            <Zap className="w-5 h-5 transition-transform group-hover:scale-110" />
+                        <div className="w-10 h-10 rounded-lg bg-[var(--item-bg)] flex items-center justify-center border border-[var(--border)] text-[var(--accent-primary)] shadow-sm">
+                            <Zap className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
                             <h1 className="atlas-h2">Predict</h1>
-                            <p className="text-xs text-[var(--text-muted)] font-medium mt-1">Map transit deserts and system intelligence zones.</p>
+                            <p className="text-[10px] atlas-label !text-[var(--text-muted)] mt-1 tracking-wider uppercase">National Analysis Engine v1.2</p>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-1 bg-[var(--item-bg)]/40 backdrop-blur-xl p-1 rounded-2xl border border-[var(--border)] shadow-xl">
+                    <div className="flex items-center gap-1 bg-[var(--item-bg)] p-1 rounded-lg border border-[var(--border)]">
                         {[
-                            { id: 'demand', label: 'Demand', color: 'indigo' },
-                            { id: 'supply', label: 'Supply', color: 'emerald' },
-                            { id: 'opportunity', label: 'Opportunity', color: 'blue' }
+                            { id: 'demand', label: 'Demand' },
+                            { id: 'supply', label: 'Supply' },
+                            { id: 'opportunity', label: 'Opportunity' }
                         ].map(mode => (
                             <button
                                 key={mode.id}
                                 onClick={() => setViewMode(mode.id as any)}
-                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === mode.id
-                                    ? mode.id === 'demand' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 px-6 scale-105 relative z-10'
-                                        : mode.id === 'supply' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 px-6 scale-105 relative z-10'
-                                            : 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 px-6 scale-105 relative z-10'
-                                    : 'text-[var(--text-muted)] hover:text-[var(--fg)] hover:bg-[var(--item-bg)]'}`}
+                                className={`px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all duration-200 ${viewMode === mode.id
+                                    ? 'bg-[var(--accent-primary)] text-white shadow-md'
+                                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--panel)]'}`}
                             >
                                 {mode.label}
                             </button>
@@ -49,95 +143,88 @@ const PredictViewContent: React.FC = () => {
                     </div>
                 </header>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="precision-panel p-6 flex flex-col gap-4">
-                        <div className="flex items-center gap-3">
-                            <Users className="w-4 h-4 text-indigo-500" />
-                            <h3 className="atlas-h3 !text-lg">Demand Nodes</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="precision-panel p-6 flex flex-col gap-3">
+                        <div className="flex items-center gap-2 mb-1">
+                            <Users className="w-4 h-4 text-[var(--accent-primary)]" />
+                            <span className="atlas-label">Demand Nodes</span>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black atlas-mono">{demandPoints.length}</span>
-                            <span className="atlas-label">Sampled Analysis Points</span>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-bold atlas-mono tracking-tighter">{demandPoints.length}</span>
+                            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Active points</span>
                         </div>
-                        <p className="atlas-label leading-relaxed !text-[var(--text-muted)]">
-                            Cross-referencing high-density residential clusters with major employment hubs.
+                        <p className="text-[11px] text-[var(--text-secondary)] font-medium leading-relaxed">
+                            Residency-to-employment density mapping enabled for current viewport.
                         </p>
                     </div>
 
-                    <div className="precision-panel p-6 flex flex-col gap-4">
-                        <div className="flex items-center gap-3">
-                            <Activity className="w-4 h-4 text-emerald-500" />
-                            <h3 className="atlas-h3 !text-lg">Supply Coverage</h3>
+                    <div className="precision-panel p-6 flex flex-col gap-3 border-l-2 border-l-[var(--accent-secondary)]">
+                        <div className="flex items-center gap-2 mb-1">
+                            <Activity className="w-4 h-4 text-[var(--accent-secondary)]" />
+                            <span className="atlas-label">Supply Coverage</span>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black atlas-mono">500m</span>
-                            <span className="atlas-label">Walking Buffer Radius</span>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-bold atlas-mono tracking-tighter">500m</span>
+                            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Walk buffer</span>
                         </div>
-                        <p className="atlas-label leading-relaxed !text-[var(--text-muted)]">
-                            Areas outside of a 5-minute walk from frequent transit (headway &lt; 15 min).
+                        <p className="text-[11px] text-[var(--text-secondary)] font-medium leading-relaxed">
+                            Walking distance threshold for frequent transit access (15min headway).
                         </p>
                     </div>
 
-                    <div className="precision-panel p-6 flex flex-col gap-4">
-                        <div className="flex items-center gap-3">
-                            <TrendingUp className="w-4 h-4 text-purple-500" />
-                            <h3 className="atlas-h3 !text-lg">Gap Analysis</h3>
+                    <div className="precision-panel p-6 flex flex-col gap-4 bg-[var(--panel)]">
+                        <div className="flex items-center gap-2 mb-1">
+                            <TrendingUp className="w-4 h-4 text-[var(--accent-warning)]" />
+                            <span className="atlas-label">Gap Analysis</span>
                         </div>
                         <button
                             onClick={runAnalysis}
                             disabled={loading}
-                            className={`w-full btn-primary !py-4 justify-center !text-sm group ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`btn-primary w-full justify-center group ${loading ? 'opacity-50' : ''}`}
                         >
                             {loading ? (
                                 <Activity className="w-4 h-4 animate-spin" />
                             ) : (
                                 <div className="flex items-center gap-2">
-                                    <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" />
-                                    <span>Analyze Service Gaps</span>
+                                    <Play className="w-3.5 h-3.5 fill-current" />
+                                    <span>Run Engine</span>
                                 </div>
                             )}
                         </button>
-                        <p className="atlas-label text-center">
-                            Scores locations based on the "Gap Index"
-                        </p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div className="lg:col-span-3 precision-panel h-[600px] relative overflow-hidden group">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 pb-8">
+                    <div className="lg:col-span-3 precision-panel h-[600px] relative overflow-hidden">
                         <PredictMap viewMode={viewMode} />
 
-                        <div className="absolute bottom-6 left-6 z-[1000] glass-panel p-4 shadow-2xl w-64 pointer-events-auto border-l-4" style={{ borderColor: viewMode === 'demand' ? '#6366f1' : viewMode === 'supply' ? '#10b981' : '#2563eb' }}>
-                            <div className="flex flex-col gap-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="atlas-label">Analysis Resolution</span>
-                                    <span className="atlas-mono text-[10px]">{params.resolution}km</span>
-                                </div>
-                                <input
-                                    type="range"
-                                    min="0.1"
-                                    max="2"
-                                    step="0.1"
-                                    value={params.resolution}
-                                    onChange={(e) => setParams({ ...params, resolution: parseFloat(e.target.value) })}
-                                    className="w-full accent-indigo-500 cursor-pointer"
-                                />
-                                <div className="pt-2 border-t border-[var(--border)]">
+                        <div className="absolute top-4 right-4 z-[1000] precision-panel p-4 w-60 bg-[var(--bg)] shadow-lg border-l-4" style={{ borderColor: 'var(--accent-primary)' }}>
+                            <div className="flex flex-col gap-4">
+                                <div>
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="atlas-label uppercase tracking-widest">{viewMode} Overlay</span>
+                                        <span className="atlas-label">Resolution</span>
+                                        <span className="atlas-mono text-[10px]">{params.resolution}km</span>
                                     </div>
-                                    <div className="flex flex-col gap-2">
+                                    <input
+                                        type="range"
+                                        min="0.1"
+                                        max="2"
+                                        step="0.1"
+                                        value={params.resolution}
+                                        onChange={(e) => setParams({ ...params, resolution: parseFloat(e.target.value) })}
+                                        className="w-full accent-[var(--accent-primary)] cursor-pointer"
+                                    />
+                                </div>
+                                <div className="pt-3 border-t border-[var(--border)]">
+                                    <span className="atlas-label block mb-3">{viewMode} Overlay</span>
+                                    <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <div className={`w-3 h-3 rounded-full ${viewMode === 'demand' ? 'bg-indigo-500' : viewMode === 'supply' ? 'bg-emerald-500' : 'bg-blue-600 shadow-sm shadow-blue-500/50'}`} />
-                                            <span className="text-[10px] font-bold text-[var(--fg)]">
-                                                {viewMode === 'demand' ? 'High Population/Jobs' : viewMode === 'supply' ? 'Frequent Transit Service' : 'System Service Gap'}
-                                            </span>
+                                            <div className="status-indicator status-emerald" />
+                                            <span className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-wider">High Density</span>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-3 h-3 rounded-full opacity-20 ${viewMode === 'demand' ? 'bg-indigo-500' : viewMode === 'supply' ? 'bg-emerald-500' : 'bg-blue-600'}`} />
-                                            <span className="text-[10px] font-bold text-[var(--text-muted)]">
-                                                {viewMode === 'demand' ? 'Low Intensity' : viewMode === 'supply' ? 'Infrequent Service' : 'Well Served / No Demand'}
-                                            </span>
+                                        <div className="flex items-center gap-2 opacity-50">
+                                            <div className="status-indicator status-emerald" />
+                                            <span className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-wider">Low Density</span>
                                         </div>
                                     </div>
                                 </div>
@@ -145,58 +232,53 @@ const PredictViewContent: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="precision-panel p-6 flex flex-col gap-6 bg-[var(--item-bg)]/30">
-                        <div className="flex items-center gap-3">
-                            <Activity className="w-4 h-4 text-blue-500" />
-                            <h3 className="atlas-h3 !text-lg">Intelligence Zones</h3>
+                    <div className="precision-panel flex flex-col bg-[var(--panel)]">
+                        <div className="p-4 border-b border-[var(--border)] bg-[var(--item-bg)] flex items-center justify-between">
+                            <span className="atlas-label">Intelligence Zones</span>
+                            {opportunityPoints.length > 0 && (
+                                <div className="px-2 py-0.5 rounded bg-[var(--accent-primary)] text-white text-[9px] font-bold tabular">
+                                    MAX {Math.max(...opportunityPoints.map(p => p.opportunityScore))}%
+                                </div>
+                            )}
                         </div>
 
-                        {opportunityPoints.length === 0 ? (
-                            <div className="flex-1 flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-[var(--border)] rounded-2xl">
-                                <Search className="w-8 h-8 text-[var(--text-muted)] mb-3 opacity-20" />
-                                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider leading-relaxed">
-                                    No intelligence data.<br />Click "Analyze Service Gaps" to begin.
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col gap-3 overflow-y-auto max-h-[460px] pr-2 custom-scrollbar">
-                                {opportunityPoints
-                                    .sort((a, b) => b.opportunityScore - a.opportunityScore)
-                                    .slice(0, 8)
-                                    .map((p, i) => (
-                                        <div key={i} className="bg-[var(--card)] border border-[var(--border)] p-3 rounded-xl hover:border-blue-500/30 hover:shadow-lg transition-all group cursor-pointer">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-[10px] font-black atlas-mono text-blue-500">ZONE {String(i + 1).padStart(2, '0')}</span>
-                                                <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 text-[9px] font-black">{p.opportunityScore}% Gap</span>
-                                            </div>
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex justify-between text-[11px] font-bold">
-                                                    <span className="text-[var(--text-muted)]">Population</span>
-                                                    <span>{p.population.toLocaleString()}</span>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
+                            {opportunityPoints.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+                                    <Search className="w-8 h-8 mb-4 stroke-1" />
+                                    <span className="atlas-label">No active <br />analysis data</span>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-2">
+                                    {opportunityPoints
+                                        .sort((a, b) => b.opportunityScore - a.opportunityScore)
+                                        .slice(0, 10)
+                                        .map((p, i) => (
+                                            <button key={i} className="flex flex-col gap-2 p-3 bg-[var(--bg)] border border-[var(--border)] rounded-md hover:border-[var(--accent-primary)] transition-all text-left">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="atlas-mono text-[10px] text-[var(--accent-primary)]">ZONE {String(i + 1).padStart(2, '0')}</span>
+                                                    <span className="atlas-mono text-[11px] font-bold font-bold-none">{p.opportunityScore}%</span>
                                                 </div>
-                                                <div className="flex justify-between text-[11px] font-bold">
-                                                    <span className="text-[var(--text-muted)]">Current Supply</span>
-                                                    <span>{Math.round(p.supply * 100)}%</span>
+                                                <div className="flex flex-col gap-1 opacity-70">
+                                                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter">
+                                                        <span>Pop</span>
+                                                        <span className="tabular">{p.population.toLocaleString()}</span>
+                                                    </div>
+                                                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter">
+                                                        <span>Supply</span>
+                                                        <span className="tabular">{Math.round(p.supply * 100)}%</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="mt-3 pt-2 border-t border-[var(--border)] flex justify-end">
-                                                <button className="text-[9px] font-black text-indigo-600 uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-                                                    View Intelligence →
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        )}
+                                            </button>
+                                        ))}
+                                </div>
+                            )}
+                        </div>
 
-                        <div className="mt-auto space-y-2">
-                            <button className="w-full btn-secondary justify-center !py-3">
+                        <div className="p-4 border-t border-[var(--border)] bg-[var(--item-bg)] flex flex-col gap-2">
+                            <button className="btn-secondary w-full justify-center text-[10px]">
                                 Export Gap Report
                             </button>
-                            <p className="text-[9px] text-center text-[var(--text-muted)] font-medium">
-                                Data generated using Atlas Predict Engine
-                            </p>
                         </div>
                     </div>
                 </div>
