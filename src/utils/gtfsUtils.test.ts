@@ -55,11 +55,102 @@ describe('determineTier', () => {
         const headways = Array(72).fill(15);
         expect(determineTier(headways, 73, 1080)).toBe('15');
     });
+
+    it('assigns tier "30" to a mixed 10/20/30-min headway set — LIMITATION: masks peak service', () => {
+        // Real-world peak/off-peak schedule: 24×10 min, 21×20 min, 14×30 min headways
+        // avg headway ≈ 18 min, but the off-peak 30-min gaps prevent any tier below 30.
+        //
+        // T=10: needs ceil(1080/10)=108 trips, have 60 → skip
+        // T=15: needs ceil(1080/15)=72 trips, have 60 → skip
+        // T=20: 30-min gaps exceed T+GRACE (25) → fail
+        // T=30: all gaps ≤ 30 → PASS → returns '30'
+        //
+        // The algorithm correctly enforces the tier rules, but a single tier per day
+        // cannot represent "10 min peak / 30 min base" service.
+        const headways = [
+            ...Array(24).fill(10),  // peak gaps
+            ...Array(21).fill(20),  // midday gaps
+            ...Array(14).fill(30),  // off-peak gaps
+        ];
+        expect(determineTier(headways, 60, 1080)).toBe('30');
+    });
 });
 
 // ---------------------------------------------------------------------------
 // Integration tests — calculateTiers with synthetic GTFS data
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Integration tests — peak/off-peak variable headway route
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a schedule that mirrors real-world peak/base service:
+ *   5:00–7:00 AM   every 30 min  (pre-peak,        4 trips)
+ *   7:00–9:00 AM   every 10 min  (morning peak,   13 trips)
+ *   9:20 AM–3:40 PM every 20 min (midday,         20 trips)
+ *   4:00–6:00 PM   every 10 min  (afternoon peak, 13 trips)
+ *   6:30–11:00 PM  every 30 min  (evening,        10 trips)
+ *                                              ─────────────
+ *                                               total: 60 trips
+ *
+ * Resulting headways: 24×10, 21×20, 14×30  →  avg ≈ 18.3 min
+ */
+function makePeakOffPeakDepartures(): number[] {
+    return [
+        ...makeDepartures(300, 390, 30),   // 5:00–6:30 AM  (pre-peak)
+        ...makeDepartures(420, 540, 10),   // 7:00–9:00 AM  (morning peak)
+        ...makeDepartures(560, 940, 20),   // 9:20 AM–3:40 PM (midday)
+        ...makeDepartures(960, 1080, 10),  // 4:00–6:00 PM  (afternoon peak)
+        ...makeDepartures(1110, 1380, 30), // 6:30–11:00 PM (evening)
+    ];
+}
+
+describe('calculateTiers — peak/off-peak variable headway route', () => {
+    const START = 300;  // 5:00 AM
+    const END = 1380;   // 11:00 PM
+
+    it('builds a schedule with 60 trips and no duplicate departure times', () => {
+        const deps = makePeakOffPeakDepartures();
+        expect(deps.length).toBe(60);
+        expect(new Set(deps).size).toBe(60); // all unique
+    });
+
+    it('classifies the route as tier "30" despite running every 10 min during peak — LIMITATION', () => {
+        // The single-tier-per-day model cannot express "10 min peak / 30 min base".
+        // The 30-min off-peak gaps prevent qualifying for any tier below 30.
+        const gtfs = makeGtfs(makePeakOffPeakDepartures());
+        const results = calculateTiers(gtfs, START, END);
+
+        for (const r of results) {
+            expect(r.tier).toBe('30');
+        }
+    });
+
+    it('reports an average headway significantly better than the assigned tier suggests', () => {
+        // avg ≈ 18.3 min, but tier = '30' — the tier understates service quality
+        const gtfs = makeGtfs(makePeakOffPeakDepartures());
+        const results = calculateTiers(gtfs, START, END);
+
+        for (const r of results) {
+            expect(r.avgHeadway).toBeCloseTo(18.3, 0); // within ±0.5 min
+            expect(r.avgHeadway).toBeLessThan(20);     // clearly better than tier implies
+        }
+    });
+
+    it('reports a reliability score below 70 due to headway variance across service periods', () => {
+        // stdDev ≈ 7.9 min across mixed 10/20/30-min headways
+        // outlier penalty applied for 30-min gaps (> avg*1.5 ≈ 27 min)
+        // expected reliability ≈ 53–55
+        const gtfs = makeGtfs(makePeakOffPeakDepartures());
+        const results = calculateTiers(gtfs, START, END);
+
+        for (const r of results) {
+            expect(r.reliabilityScore).toBeLessThan(70);
+            expect(r.reliabilityScore).toBeGreaterThan(30); // still plausible, not zero
+        }
+    });
+});
 
 describe('calculateTiers — consistent 15-min all-day route', () => {
     // 5:00 AM = 300 min, 11:00 PM = 1380 min
