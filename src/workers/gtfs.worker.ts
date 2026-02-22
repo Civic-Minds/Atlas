@@ -111,9 +111,11 @@ const calculateTiers = (
         if (!service) continue;
 
         const days = [];
-        if (service.monday === '1') days.push('Weekday');
-        else if (service.saturday === '1') days.push('Saturday');
-        else if (service.sunday === '1') days.push('Sunday');
+        const isWeekday = service.monday === '1' || service.tuesday === '1' ||
+            service.wednesday === '1' || service.thursday === '1' || service.friday === '1';
+        if (isWeekday) days.push('Weekday');
+        if (service.saturday === '1') days.push('Saturday');
+        if (service.sunday === '1') days.push('Sunday');
 
         for (const day of days) {
             const key = `${meta.routeId}::${day}::${meta.dirId}`;
@@ -145,7 +147,16 @@ const calculateTiers = (
             ? gaps.reduce((acc, h) => acc + Math.pow(h - avg, 2), 0) / (gaps.length - 1)
             : 0;
         const stdDev = Math.sqrt(variance);
-        const reliability = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 100) : 0;
+
+        // Penalize gaps that are > 1.5x the average
+        const significantGaps = gaps.filter(g => g > avg * 1.5).length;
+        const outlierPenalty = gaps.length > 0 ? (significantGaps / gaps.length) * 50 : 0;
+
+        // Base consistency (0-100) - coefficient of variation approach
+        const consistency = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 80) : 0;
+
+        // Final score combines consistency and outlier penalty
+        const reliability = Math.max(0, consistency - outlierPenalty);
 
         results.push({
             route: routeId,
