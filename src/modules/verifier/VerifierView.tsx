@@ -14,7 +14,8 @@ import {
     Trophy,
     Settings,
     CheckCircle2,
-    AlertTriangle
+    AlertTriangle,
+    Download
 } from 'lucide-react';
 import { AnalysisResult, GtfsData } from '../../utils/gtfsUtils';
 import { storage, STORES } from '../../core/storage';
@@ -26,7 +27,8 @@ export default function VerifierView() {
     const [gtfsData, setGtfsData] = useState<GtfsData | null>(null);
     const [queue, setQueue] = useState<AnalysisResult[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [evidenceUrl, setEvidenceUrl] = useState('https://www.mbta.com/schedules/1/line');
+    const [urlTemplate, setUrlTemplate] = useState('https://agency-website.com/schedules/{{route}}');
+    const [markedHeadway, setMarkedHeadway] = useState<string>('');
     const [streak, setStreak] = useState(0);
     const [stats, setStats] = useState({ correct: 0, wrong: 0, total: 0 });
     const [loading, setLoading] = useState(false);
@@ -100,8 +102,22 @@ export default function VerifierView() {
         }
     };
 
-    const handleDecision = useCallback((type: 'correct' | 'wrong' | 'unsure') => {
+    const handleDecision = useCallback(async (type: 'correct' | 'wrong' | 'unsure') => {
         if (currentIndex >= queue.length) return;
+
+        const current = queue[currentIndex];
+        const updatedClaim = {
+            ...current,
+            verifiedHeadway: markedHeadway ? parseInt(markedHeadway) : undefined,
+            verificationStatus: type
+        };
+
+        const newQueue = [...queue];
+        newQueue[currentIndex] = updatedClaim;
+        setQueue(newQueue);
+
+        // Persist updated results
+        await storage.setItem(STORES.ANALYSIS, 'latest', newQueue);
 
         setStats(prev => ({
             ...prev,
@@ -112,8 +128,9 @@ export default function VerifierView() {
         if (type === 'correct') setStreak(s => s + 1);
         else setStreak(0);
 
+        setMarkedHeadway('');
         setCurrentIndex(prev => prev + 1);
-    }, [currentIndex, queue.length]);
+    }, [currentIndex, queue, markedHeadway]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -173,26 +190,31 @@ export default function VerifierView() {
                     <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
                     <h2 className="atlas-h2">Analysis Complete</h2>
                     <p className="text-[var(--text-muted)]">You've verified all routes in this feed.</p>
-                    <div className="flex justify-center gap-8 py-4">
-                        <div>
-                            <div className="text-2xl font-black text-emerald-400">{stats.correct}</div>
-                            <div className="atlas-label">Correct</div>
-                        </div>
-                        <div>
-                            <div className="text-2xl font-black text-red-400">{stats.wrong}</div>
-                            <div className="atlas-label">Incorrect</div>
-                        </div>
+                    <div className="flex flex-col gap-3 w-full">
+                        <button
+                            onClick={() => {
+                                const blob = new Blob([JSON.stringify(queue, null, 2)], { type: 'application/json' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'verified-frequencies.json';
+                                a.click();
+                            }}
+                            className="btn-primary w-full justify-center py-4"
+                        >
+                            <Download className="w-4 h-4" /> Export Verified Data
+                        </button>
+                        <button
+                            onClick={async () => {
+                                setGtfsData(null);
+                                await storage.clearStore(STORES.GTFS);
+                                await storage.clearStore(STORES.ANALYSIS);
+                            }}
+                            className="btn-secondary w-full justify-center py-4"
+                        >
+                            <RefreshCcw className="w-4 h-4" /> Reset and Restart
+                        </button>
                     </div>
-                    <button
-                        onClick={async () => {
-                            setGtfsData(null);
-                            await storage.clearStore(STORES.GTFS);
-                            await storage.clearStore(STORES.ANALYSIS);
-                        }}
-                        className="btn-secondary w-full justify-center py-4"
-                    >
-                        <RefreshCcw className="w-4 h-4" /> Reset and Restart
-                    </button>
                 </div>
             </div>
         );
@@ -205,15 +227,31 @@ export default function VerifierView() {
                 badge={{ label: "Phase 2 Verification", color: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20" }}
                 actions={[
                     {
-                        label: `Streak: ${streak}`,
+                        label: "Streak: " + streak,
                         variant: 'secondary',
                         onClick: () => { }
                     },
                     {
-                        label: "Options",
+                        label: "Set Schedule URL",
                         icon: Settings,
-                        onClick: () => { },
-                        variant: 'secondary'
+                        variant: 'secondary',
+                        onClick: () => {
+                            const template = prompt('Enter URL template (use {{route}} for route number):', urlTemplate);
+                            if (template) setUrlTemplate(template);
+                        }
+                    },
+                    {
+                        label: "Export",
+                        icon: Download,
+                        variant: 'primary',
+                        onClick: () => {
+                            const blob = new Blob([JSON.stringify(queue, null, 2)], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `verified-progress-${currentIndex}.json`;
+                            a.click();
+                        }
                     }
                 ]}
             />
@@ -264,23 +302,12 @@ export default function VerifierView() {
                     <div className="pane-header">
                         <h2 className="pane-title">Reference material</h2>
                         <div className="flex items-center gap-4">
-                            <span className="atlas-label">Source: mbta.com / pdf</span>
+                            <span className="atlas-label font-mono text-[9px] opacity-60 truncate max-w-[300px]">{urlTemplate}</span>
                         </div>
                     </div>
                     <div className="pane-content">
-                        <div className="evidence-controls">
-                            <input
-                                type="text"
-                                className="url-input"
-                                value={evidenceUrl}
-                                onChange={(e) => setEvidenceUrl(e.target.value)}
-                            />
-                            <button className="p-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors">
-                                <ExternalLink className="w-4 h-4" />
-                            </button>
-                        </div>
                         <iframe
-                            src={evidenceUrl}
+                            src={urlTemplate.replace('{{route}}', currentClaim?.route || '')}
                             className="evidence-frame"
                             title="Evidence Panel"
                         />
@@ -293,6 +320,17 @@ export default function VerifierView() {
                         <h2 className="pane-title">Consensus</h2>
                     </div>
                     <div className="decision-buttons">
+                        <div className="mb-6">
+                            <label className="atlas-label mb-2 block">Mark Frequency (mins)</label>
+                            <input
+                                type="number"
+                                value={markedHeadway}
+                                onChange={(e) => setMarkedHeadway(e.target.value)}
+                                placeholder="Enter observed headway..."
+                                className="w-full bg-[var(--item-bg)] border border-[var(--border)] rounded-xl px-4 py-3 font-mono font-bold text-lg focus:outline-none focus:border-indigo-500"
+                            />
+                        </div>
+
                         <button
                             className="decision-btn btn-correct"
                             onClick={() => handleDecision('correct')}
@@ -302,7 +340,7 @@ export default function VerifierView() {
                             </div>
                             <div className="flex-1 text-left">
                                 <div>Correct</div>
-                                <div className="atlas-label opacity-60">Verify frequency</div>
+                                <div className="atlas-label opacity-60">Verified</div>
                             </div>
                             <span className="key-hint">Q</span>
                         </button>

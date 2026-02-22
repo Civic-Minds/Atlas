@@ -41,4 +41,7 @@ For the full vision and upcoming features (Access, Optimize, Collaborate, Monito
 This repository evolved from the **Frequent Transit Networks** project. The original source code and documentation can be found in the [legacy/](legacy/) directory.
 
 ---
-Project by **Ryan Hanna** | [ryanisnota.pro](https://ryanisnota.pro)
+
+**Happy Analyzing! 🗺️📊**
+
+Built by [Ryan Hanna](https://github.com/ryanphanna)

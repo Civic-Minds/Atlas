@@ -11,6 +11,7 @@ import ReportCardsView from './modules/report-cards/ReportCardsView';
 import AdminView from './modules/admin/AdminView';
 import PredictView from './modules/predict/PredictView';
 import { TopNav } from './components/TopNav';
+import { CommandPalette } from './components/CommandPalette';
 
 const App: React.FC = () => {
     const location = useLocation();
@@ -18,6 +19,7 @@ const App: React.FC = () => {
     return (
         <div className="flex flex-col bg-[var(--bg)] text-[var(--fg)] font-sans min-h-screen transition-colors duration-300">
             <TopNav />
+            <CommandPalette />
             <main className="flex-1 flex flex-col overflow-hidden relative">
                 <AnimatePresence mode="wait">
                     <motion.div

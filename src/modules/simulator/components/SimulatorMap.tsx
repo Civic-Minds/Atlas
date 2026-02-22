@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Polyline, CircleMarker, Tooltip, useMap } from 'react-leaflet';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Stop } from '../data/routeData';
+import { MAP_PRESETS, getTheme } from '../../../core/mapStyles';
 
 interface SimulatorMapProps {
     stops: Stop[];
@@ -39,16 +39,27 @@ function FitBounds({ shape }: { shape: [number, number][] }) {
 }
 
 export default function SimulatorMap({ stops, shape, enabledStopIds, onToggleStop }: SimulatorMapProps) {
+    const [theme, setTheme] = useState(getTheme());
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => setTheme(getTheme()));
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
+    }, []);
+
+    const preset = MAP_PRESETS[theme as 'light' | 'dark'];
+
     return (
         <MapContainer
             center={shape[0] || [43.645, -79.400]}
             zoom={13}
-            className="simulator-map"
+            className={`simulator-map ${preset.styles.container}`}
             zoomControl={false}
         >
             <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                key={theme}
+                attribution={preset.attribution}
+                url={preset.url}
             />
 
             <FitBounds shape={shape} />
@@ -56,11 +67,7 @@ export default function SimulatorMap({ stops, shape, enabledStopIds, onToggleSto
             {/* Route line */}
             <Polyline
                 positions={shape}
-                pathOptions={{
-                    color: '#818cf8', // indigo-400
-                    weight: 4,
-                    opacity: 0.7,
-                }}
+                pathOptions={preset.styles.polyline as L.PathOptions}
             />
 
             {/* Stop markers */}
@@ -75,15 +82,15 @@ export default function SimulatorMap({ stops, shape, enabledStopIds, onToggleSto
                         radius={isTerminal ? 8 : 6}
                         pathOptions={{
                             color: isTerminal
-                                ? '#ffffff'
+                                ? (theme === 'dark' ? '#ffffff' : '#4f46e5')
                                 : isEnabled
-                                    ? '#818cf8'
+                                    ? preset.styles.polyline.color
                                     : '#64748b',
                             fillColor: isTerminal
-                                ? '#818cf8'
+                                ? preset.styles.polyline.color
                                 : isEnabled
-                                    ? '#818cf8'
-                                    : '#1e293b',
+                                    ? preset.styles.polyline.color
+                                    : (theme === 'dark' ? '#020617' : '#f8fafc'),
                             fillOpacity: isEnabled ? 0.9 : 0.4,
                             weight: isTerminal ? 3 : 2,
                         }}

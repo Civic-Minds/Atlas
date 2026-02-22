@@ -62,9 +62,12 @@ graph TD
 ## 🚀 Future Roadmap
 
 ### 📍 1. Access (Equity & Accessibility)
-- **Definition**: High-precision isochrone mapping and demographic equity analysis.
-- **Justification**: Transit is a social service. We must answer: "Who can get to a doctor in 20 minutes?" This justifies funding based on equity goals.
-- **Relationship**: Built on top of **Atlas** data, adding a demographic layer.
+- **Definition**: High-precision isochrone mapping, demographic equity analysis, and **Equity Monitoring**.
+- **Justification**: Transit is a social service. We must answer: "Who can get to a doctor in 20 minutes?" and "Can they afford the trip?" This justifies funding based on both physical access and financial affordability.
+- **Components**: 
+    - **Transit Equity Monitor**: Comparative database of low-income discount programs across regions (Clipper START, LIFE, etc.).
+    - **Accessibility Engine**: Isochrone generation based on GTFS and demographic overlays.
+- **Relationship**: Built on top of **Atlas** data, adding demographic and policy layers.
 
 ### 🧬 2. Optimize (Network Redesign)
 - **Definition**: Generative AI for route optimization.

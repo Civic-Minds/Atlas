@@ -40,6 +40,7 @@ interface PredictContextType {
     };
     setParams: (params: any) => void;
     runAnalysis: () => void;
+    refreshData: () => Promise<void>;
 }
 
 const PredictContext = createContext<PredictContextType | undefined>(undefined);
@@ -55,22 +56,27 @@ export const PredictProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
     const [opportunityPoints, setOpportunityPoints] = useState<OpportunityPoint[]>([]);
 
+    const loadData = async () => {
+        setLoading(true);
+        try {
+            const savedGtfs = await storage.getItem<GtfsData>(STORES.GTFS, 'latest');
+            const savedResults = await storage.getItem<AnalysisResult[]>(STORES.ANALYSIS, 'latest');
+            if (savedGtfs) setGtfsData(savedGtfs);
+            if (savedResults) setAnalysisResults(savedResults);
+        } catch (e) {
+            console.error('Predict: Failed to load data', e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const loadData = async () => {
-            setLoading(true);
-            try {
-                const savedGtfs = await storage.getItem<GtfsData>(STORES.GTFS, 'latest');
-                const savedResults = await storage.getItem<AnalysisResult[]>(STORES.ANALYSIS, 'latest');
-                if (savedGtfs) setGtfsData(savedGtfs);
-                if (savedResults) setAnalysisResults(savedResults);
-            } catch (e) {
-                console.error('Predict: Failed to load data', e);
-            } finally {
-                setLoading(false);
-            }
-        };
         loadData();
     }, []);
+
+    const refreshData = async () => {
+        await loadData();
+    };
 
     // Higher fidelity Demand Points (Simulating Census Dissemination Areas)
     const demandPoints = useMemo(() => {
@@ -223,7 +229,8 @@ export const PredictProvider: React.FC<{ children: React.ReactNode }> = ({ child
             loading,
             params,
             setParams,
-            runAnalysis
+            runAnalysis,
+            refreshData
         }}>
             {children}
         </PredictContext.Provider>

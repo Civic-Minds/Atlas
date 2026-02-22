@@ -25,6 +25,37 @@ export interface AnalysisResult {
     times: number[];
     reliabilityScore: number;
     headwayVariance: number;
+    bunchingFactor: number;
+    peakHeadway?: number;
+    baseHeadway?: number;
+    peakWindow?: { start: number; end: number };
+    serviceSpan?: { start: number; end: number };
+}
+
+export interface SpacingResult {
+    route: string;
+    direction: string;
+    avgSpacing: number;
+    medianSpacing: number;
+    totalStops: number;
+    redundantPairs: Array<{
+        stopA: string;
+        stopAName: string;
+        stopB: string;
+        stopBName: string;
+        distance: number;
+    }>;
+}
+
+export interface CorridorResult {
+    linkId: string;
+    stopA: string;
+    stopB: string;
+    routeIds: string[];
+    tripCount: number;
+    avgHeadway: number;
+    peakHeadway: number;
+    reliabilityScore: number;
 }
 
 const t2m = (s: string): number | null => {
@@ -38,6 +69,67 @@ const computeMedian = (arr: number[]): number => {
     const sorted = [...arr].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
     return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+};
+
+const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371e3;
+    const phi1 = (lat1 * Math.PI) / 180;
+    const phi2 = (lat2 * Math.PI) / 180;
+    const dPhi = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a = Math.sin(dPhi / 2) * Math.sin(dPhi / 2) +
+        Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+const calculateStopSpacing = (
+    gtfs: GtfsData,
+    routeId: string,
+    directionId: string = '0'
+): SpacingResult | null => {
+    const { trips, stopTimes, stops } = gtfs;
+
+    const trip = trips.find(t => t.route_id === routeId && (t.direction_id || '0') === directionId);
+    if (!trip) return null;
+
+    const tst = stopTimes
+        .filter(st => st.trip_id === trip.trip_id)
+        .sort((a, b) => parseInt(a.stop_sequence) - parseInt(b.stop_sequence));
+
+    const stopMap = new Map(stops.map(s => [s.stop_id, s]));
+    const routeStops = tst.map(st => stopMap.get(st.stop_id)).filter(Boolean);
+
+    if (routeStops.length < 2) return null;
+
+    const distances: number[] = [];
+    const redundantPairs: SpacingResult['redundantPairs'] = [];
+    const RADIUS = 400;
+
+    for (let i = 1; i < routeStops.length; i++) {
+        const sA = routeStops[i - 1];
+        const sB = routeStops[i];
+        const dist = haversineDistance(
+            parseFloat(sA.stop_lat), parseFloat(sA.stop_lon),
+            parseFloat(sB.stop_lat), parseFloat(sB.stop_lon)
+        );
+        distances.push(dist);
+        if (dist < RADIUS) {
+            redundantPairs.push({
+                stopA: sA.stop_id, stopAName: sA.stop_name,
+                stopB: sB.stop_id, stopBName: sB.stop_name,
+                distance: Math.round(dist)
+            });
+        }
+    }
+
+    return {
+        route: routeId,
+        direction: directionId,
+        avgSpacing: Math.round(distances.reduce((a, b) => a + b, 0) / distances.length),
+        medianSpacing: Math.round(computeMedian(distances)),
+        totalStops: routeStops.length,
+        redundantPairs
+    };
 };
 
 const determineTier = (headways: number[], tripCount: number, spanMinutes: number): string => {
@@ -141,6 +233,29 @@ const calculateTiers = (
 
         const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
         const median = computeMedian(gaps);
+
+        // Dynamic Peak Detection (2-hour sliding window)
+        let peakHeadway = avg;
+        let peakWindow = { start: sortedTimes[0], end: sortedTimes[0] + 120 };
+        let maxDensity = 0;
+
+        for (let i = 0; i < sortedTimes.length; i++) {
+            const windowStart = sortedTimes[i];
+            const windowEnd = windowStart + 120;
+            const tripsInWindow = sortedTimes.filter(t => t >= windowStart && t <= windowEnd);
+
+            if (tripsInWindow.length > maxDensity) {
+                maxDensity = tripsInWindow.length;
+                peakWindow = { start: windowStart, end: windowEnd };
+
+                const peakGaps = [];
+                for (let j = 1; j < tripsInWindow.length; j++) {
+                    peakGaps.push(tripsInWindow[j] - tripsInWindow[j - 1]);
+                }
+                peakHeadway = peakGaps.length ? peakGaps.reduce((a, b) => a + b, 0) / peakGaps.length : avg;
+            }
+        }
+
         const tier = determineTier(gaps, sortedTimes.length, spanMins);
 
         const variance = gaps.length > 1
@@ -148,15 +263,16 @@ const calculateTiers = (
             : 0;
         const stdDev = Math.sqrt(variance);
 
-        // Penalize gaps that are > 1.5x the average
         const significantGaps = gaps.filter(g => g > avg * 1.5).length;
-        const outlierPenalty = gaps.length > 0 ? (significantGaps / gaps.length) * 50 : 0;
+        const outlierPenalty = (significantGaps / gaps.length) * 40;
 
-        // Base consistency (0-100) - coefficient of variation approach
-        const consistency = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 80) : 0;
+        const bunchedGaps = gaps.filter(g => g < avg * 0.25).length;
+        const bunchingFactor = bunchedGaps / (gaps.length || 1);
+        const bunchingPenalty = bunchingFactor * 60;
 
-        // Final score combines consistency and outlier penalty
-        const reliability = Math.max(0, consistency - outlierPenalty);
+        const consistency = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 50) : 0;
+        const reliability = Math.max(0, consistency - outlierPenalty - bunchingPenalty);
+
 
         results.push({
             route: routeId,
@@ -164,16 +280,124 @@ const calculateTiers = (
             dir: dirId,
             avgHeadway: avg,
             medianHeadway: median,
+            peakHeadway: Math.round(peakHeadway * 10) / 10,
+            baseHeadway: Math.round(avg * 10) / 10,
+            peakWindow,
+            serviceSpan: { start: sortedTimes[0], end: sortedTimes[sortedTimes.length - 1] },
             tier,
             tripCount: sortedTimes.length,
             gaps,
             times: sortedTimes,
             reliabilityScore: Math.round(reliability),
-            headwayVariance: Math.round(variance * 10) / 10
+            headwayVariance: Math.round(variance * 10) / 10,
+            bunchingFactor: Math.round(bunchingFactor * 100) / 100
         });
     }
 
     return results;
+};
+
+const calculateCorridors = (
+    gtfs: GtfsData,
+    day: string,
+    startTimeMins: number,
+    endTimeMins: number
+): CorridorResult[] => {
+    const { trips, stopTimes, calendar } = gtfs;
+    const serviceById = new Map(calendar.map(c => [c.service_id, c]));
+
+    const activeTrips = new Set<string>();
+    const tripToRoute = new Map<string, string>();
+
+    for (const trip of trips) {
+        const service = serviceById.get(trip.service_id);
+        if (!service) continue;
+
+        const isMatch = (day === 'Weekday' && service.monday === '1') ||
+            (day === 'Saturday' && service.saturday === '1') ||
+            (day === 'Sunday' && service.sunday === '1');
+
+        if (isMatch) {
+            activeTrips.add(trip.trip_id);
+            tripToRoute.set(trip.trip_id, trip.route_id);
+        }
+    }
+
+    const linkMap = new Map<string, { times: number[], routes: Set<string>, stopA: string, stopB: string }>();
+    const tripSequences = new Map<string, any[]>();
+    for (const st of stopTimes) {
+        if (!activeTrips.has(st.trip_id)) continue;
+        if (!tripSequences.has(st.trip_id)) tripSequences.set(st.trip_id, []);
+        tripSequences.get(st.trip_id)!.push(st);
+    }
+
+    for (const [tripId, sequence] of tripSequences.entries()) {
+        const sortedSeq = sequence.sort((a, b) => parseInt(a.stop_sequence) - parseInt(b.stop_sequence));
+        const routeId = tripToRoute.get(tripId)!;
+
+        for (let i = 0; i < sortedSeq.length - 1; i++) {
+            const stA = sortedSeq[i];
+            const stB = sortedSeq[i + 1];
+            const depTime = t2m(stA.departure_time);
+
+            if (depTime === null || depTime < startTimeMins || depTime > endTimeMins) continue;
+
+            const linkId = `${stA.stop_id}->${stB.stop_id}`;
+            if (!linkMap.has(linkId)) {
+                linkMap.set(linkId, {
+                    times: [],
+                    routes: new Set(),
+                    stopA: stA.stop_id,
+                    stopB: stB.stop_id
+                });
+            }
+
+            const linkData = linkMap.get(linkId)!;
+            linkData.times.push(depTime);
+            linkData.routes.add(routeId);
+        }
+    }
+
+    const corridorResults: CorridorResult[] = [];
+    for (const [linkId, data] of linkMap.entries()) {
+        if (data.routes.size < 2) continue;
+
+        const sortedTimes = Array.from(new Set(data.times)).sort((a, b) => a - b);
+        if (sortedTimes.length < 2) continue;
+
+        const gaps: number[] = [];
+        for (let i = 1; i < sortedTimes.length; i++) {
+            gaps.push(sortedTimes[i] - sortedTimes[i - 1]);
+        }
+
+        const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+
+        let maxTripsInWindow = 0;
+        let peakAvg = avg;
+        for (let i = 0; i < sortedTimes.length; i++) {
+            const end = sortedTimes[i] + 120;
+            const windowTrips = sortedTimes.filter(t => t >= sortedTimes[i] && t <= end);
+            if (windowTrips.length > maxTripsInWindow) {
+                maxTripsInWindow = windowTrips.length;
+                const pGaps = [];
+                for (let j = 1; j < windowTrips.length; j++) pGaps.push(windowTrips[j] - windowTrips[j - 1]);
+                peakAvg = pGaps.length ? pGaps.reduce((a, b) => a + b, 0) / pGaps.length : avg;
+            }
+        }
+
+        corridorResults.push({
+            linkId,
+            stopA: data.stopA,
+            stopB: data.stopB,
+            routeIds: Array.from(data.routes),
+            tripCount: sortedTimes.length,
+            avgHeadway: Math.round(avg * 10) / 10,
+            peakHeadway: Math.round(peakAvg * 10) / 10,
+            reliabilityScore: 100
+        });
+    }
+
+    return corridorResults.sort((a, b) => a.avgHeadway - b.avgHeadway);
 };
 
 const parseCsv = <T>(text: string): T[] => {
@@ -236,10 +460,24 @@ self.onmessage = async (e) => {
         self.postMessage({ type: 'STATUS', message: 'Calculating frequency tiers...' });
         const results = calculateTiers(gtfsData as GtfsData, startTimeMins, endTimeMins);
 
+        self.postMessage({ type: 'STATUS', message: 'Calculating stop spacing diagnostics...' });
+        const spacingResults: SpacingResult[] = [];
+        const checkedRoutes = new Set<string>();
+
+        for (const res of results) {
+            const key = `${res.route}::${res.dir}`;
+            if (!checkedRoutes.has(key)) {
+                const spacing = calculateStopSpacing(gtfsData as GtfsData, res.route, res.dir);
+                if (spacing) spacingResults.push(spacing);
+                checkedRoutes.add(key);
+            }
+        }
+
         self.postMessage({
             type: 'DONE',
             gtfsData: gtfsData,
-            analysisResults: results
+            analysisResults: results,
+            spacingResults
         });
 
     } catch (error) {
