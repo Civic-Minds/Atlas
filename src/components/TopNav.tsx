@@ -7,7 +7,8 @@ import {
     Map as MapIcon,
     Sun,
     Moon,
-    ShieldCheck
+    ShieldCheck,
+    Brain
 } from 'lucide-react';
 
 const HeadwayLogo = () => (
@@ -19,8 +20,8 @@ const HeadwayLogo = () => (
 
 const NAV_ITEMS = [
     { id: 'screener', title: 'Screen', icon: Target, path: '/screener' },
-    { id: 'verifier', title: 'Verify', icon: ShieldCheck, path: '/verifier' },
     { id: 'simulator', title: 'Simulate', icon: Activity, path: '/simulator' },
+    { id: 'optimize', title: 'Optimize', icon: Brain, path: '/optimize' },
     { id: 'explorer', title: 'Explorer', icon: MapIcon, path: '/explorer' },
     { id: 'predict', title: 'Predict', icon: Zap, path: '/predict' }
 ];

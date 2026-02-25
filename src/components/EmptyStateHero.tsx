@@ -68,7 +68,7 @@ export const EmptyStateHero: React.FC<EmptyStateHeroProps> = ({
                         <div className="relative px-12 py-8 flex flex-col items-center gap-2 border border-white/10 rounded-[3rem] shadow-2xl shadow-indigo-600/30">
                             <primaryAction.icon className="w-8 h-8 text-white mb-2 group-hover:rotate-12 transition-transform duration-500" />
                             <div className="text-2xl font-black text-white tracking-tight">{primaryAction.label}</div>
-                            <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">Initialize Instrument</p>
+                            <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">Initialize Module</p>
                         </div>
                     </motion.button>
                 </div>
