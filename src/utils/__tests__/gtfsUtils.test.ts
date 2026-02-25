@@ -20,27 +20,30 @@ const makeService = (
     }
 ) => ({
     service_id: id,
-    monday:    days.mon ? '1' : '0',
-    tuesday:   days.tue ? '1' : '0',
+    monday: days.mon ? '1' : '0',
+    tuesday: days.tue ? '1' : '0',
     wednesday: days.wed ? '1' : '0',
-    thursday:  days.thu ? '1' : '0',
-    friday:    days.fri ? '1' : '0',
-    saturday:  days.sat ? '1' : '0',
-    sunday:    days.sun ? '1' : '0',
+    thursday: days.thu ? '1' : '0',
+    friday: days.fri ? '1' : '0',
+    saturday: days.sat ? '1' : '0',
+    sunday: days.sun ? '1' : '0',
+    start_date: '20260101',
+    end_date: '20261231',
 });
 
 const makeTrip = (id: string, routeId: string, serviceId: string, dirId = '0') => ({
-    trip_id:      id,
-    route_id:     routeId,
-    service_id:   serviceId,
+    trip_id: id,
+    route_id: routeId,
+    service_id: serviceId,
     direction_id: dirId,
 });
 
 const makeStopTime = (tripId: string, depTime: string, seq = 1) => ({
-    trip_id:        tripId,
-    stop_id:        'S1',
+    trip_id: tripId,
+    stop_id: 'S1',
+    arrival_time: depTime,
     departure_time: depTime,
-    stop_sequence:  String(seq),
+    stop_sequence: String(seq),
 });
 
 /** Build a series of evenly-spaced trips between startMin and endMin (inclusive). */
@@ -66,12 +69,12 @@ const buildRegularService = (
     return { trips, stopTimes };
 };
 
-const BASE_STOPS  = [{ stop_id: 'S1', stop_lat: '0', stop_lon: '0' }];
+const BASE_STOPS = [{ stop_id: 'S1', stop_name: 'Test Stop', stop_lat: '0', stop_lon: '0' }];
 const BASE_SHAPES: any[] = [];
 
 const START = 7 * 60;   // 7:00 AM  = 420 mins
-const END   = 22 * 60;  // 10:00 PM = 1320 mins
-const SPAN  = END - START; // 900 mins
+const END = 22 * 60;  // 10:00 PM = 1320 mins
+const SPAN = END - START; // 900 mins
 
 // ---------------------------------------------------------------------------
 // t2m — time string to minutes
@@ -227,7 +230,7 @@ describe('calculateTiers – day classification', () => {
         const calendar = [makeService(serviceId, serviceDef)];
         const { trips, stopTimes } = buildRegularService(routeId, serviceId, START, END, headway);
         return {
-            routes: [{ route_id: routeId }],
+            routes: [{ route_id: routeId, route_type: '3' }],
             trips,
             stops: BASE_STOPS,
             stopTimes,
@@ -326,7 +329,7 @@ describe('calculateTiers – headway accuracy', () => {
     it('calculates avg and median headway of exactly 15 min for perfect 15-min service', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -340,7 +343,7 @@ describe('calculateTiers – headway accuracy', () => {
     it('calculates avg headway of exactly 30 min for perfect 30-min service', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 30);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -353,7 +356,7 @@ describe('calculateTiers – headway accuracy', () => {
         // 7:00 to 22:00 at 15-min = 61 trips (inclusive on both ends)
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -373,7 +376,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('T2', '07:45:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -397,7 +400,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('T2', '07:30:00', 1),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -412,16 +415,16 @@ describe('calculateTiers – headway accuracy', () => {
         const calendar = [makeService('WD', { mon: true })];
         const trips = [
             makeTrip('EARLY', 'R1', 'WD'), // 6:00 — before window
-            makeTrip('IN1',   'R1', 'WD'), // 7:00 — in window
-            makeTrip('IN2',   'R1', 'WD'), // 8:00 — in window
+            makeTrip('IN1', 'R1', 'WD'), // 7:00 — in window
+            makeTrip('IN2', 'R1', 'WD'), // 8:00 — in window
         ];
         const stopTimes = [
             makeStopTime('EARLY', '06:00:00'),
-            makeStopTime('IN1',   '07:00:00'),
-            makeStopTime('IN2',   '08:00:00'),
+            makeStopTime('IN1', '07:00:00'),
+            makeStopTime('IN2', '08:00:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -435,15 +438,15 @@ describe('calculateTiers – headway accuracy', () => {
     it('excludes trips whose origin departure falls after the end window', () => {
         const calendar = [makeService('WD', { mon: true })];
         const trips = [
-            makeTrip('IN1',  'R1', 'WD'), // 21:30 — in window
+            makeTrip('IN1', 'R1', 'WD'), // 21:30 — in window
             makeTrip('LATE', 'R1', 'WD'), // 22:30 — after window
         ];
         const stopTimes = [
-            makeStopTime('IN1',  '21:30:00'),
+            makeStopTime('IN1', '21:30:00'),
             makeStopTime('LATE', '22:30:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         // Only 1 in-window trip → not enough for analysis (need ≥ 2)
@@ -459,7 +462,7 @@ describe('calculateTiers – headway accuracy', () => {
         d1.stopTimes.forEach((st, i) => { st.trip_id = `D1_${i}`; });
 
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }],
+            routes: [{ route_id: 'R1', route_type: '3' }],
             trips: [...d0.trips, ...d1.trips],
             stops: BASE_STOPS,
             stopTimes: [...d0.stopTimes, ...d1.stopTimes],
@@ -484,7 +487,7 @@ describe('calculateTiers – headway accuracy', () => {
         r2.stopTimes.forEach((st, i) => { st.trip_id = `R2_${i}`; });
 
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }, { route_id: 'R2' }],
+            routes: [{ route_id: 'R1', route_type: '3' }, { route_id: 'R2', route_type: '3' }],
             trips: [...r1.trips, ...r2.trips],
             stops: BASE_STOPS,
             stopTimes: [...r1.stopTimes, ...r2.stopTimes],
@@ -504,7 +507,7 @@ describe('calculateTiers – headway accuracy', () => {
         const calendar = [makeService('WD', { mon: true })];
         const trips = [makeTrip('ORPHAN', 'R1', 'WD')];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes: [], calendar, shapes: BASE_SHAPES,
         };
         expect(() => calculateTiers(gtfs, START, END)).not.toThrow();
@@ -520,7 +523,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('T2', '08:00:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -534,7 +537,7 @@ describe('calculateTiers – headway accuracy', () => {
         const trips = [makeTrip('SOLO', 'R1', 'WD')];
         const stopTimes = [makeStopTime('SOLO', '09:00:00')];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -551,7 +554,7 @@ describe('calculateTiers – reliability score', () => {
         const calendar = [makeService('WD', { mon: true })];
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -570,7 +573,7 @@ describe('calculateTiers – reliability score', () => {
             return makeStopTime(`T${i}`, `${h}:${m}:00`);
         });
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -582,7 +585,7 @@ describe('calculateTiers – reliability score', () => {
         const calendar = [makeService('WD', { mon: true })];
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 30);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
@@ -622,7 +625,7 @@ describe('known limitations', () => {
             makeStopTime('T3', '07:31:00'), // 30-min gap from T2
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1' }], trips, stops: BASE_STOPS,
+            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES,
         };
         const results = calculateTiers(gtfs, START, END);
