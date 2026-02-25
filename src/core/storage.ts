@@ -1,4 +1,4 @@
-import { GtfsData, AnalysisResult } from '../utils/gtfsUtils';
+import { GtfsData, AnalysisResult } from '../types/gtfs';
 
 const DB_NAME = 'HeadwayDB';
 const DB_VERSION = 1;

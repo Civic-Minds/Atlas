@@ -2,104 +2,63 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Shield,
-    Check,
-    X,
-    HelpCircle,
-    ExternalLink,
     RefreshCcw,
     Upload,
-    Search,
-    ChevronRight,
-    Activity,
-    Trophy,
     Settings,
     CheckCircle2,
     AlertTriangle,
-    Download
+    Download,
+    HelpCircle
 } from 'lucide-react';
-import { AnalysisResult, GtfsData } from '../../utils/gtfsUtils';
-import { storage, STORES } from '../../core/storage';
+import { AnalysisResult, GtfsData } from '../../types/gtfs';
 import { ModuleHeader } from '../../components/ModuleHeader';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
+import { useGtfsWorker } from '../../hooks/useGtfsWorker';
+import { useTransitStore } from '../../types/store';
+import { useNotificationStore } from '../../hooks/useNotification';
 import './Verifier.css';
 
 export default function VerifierView() {
-    const [gtfsData, setGtfsData] = useState<GtfsData | null>(null);
+    const {
+        gtfsData,
+        analysisResults,
+        setResults,
+        loadPersistedData,
+        clearData
+    } = useTransitStore();
+
+    const { addToast } = useNotificationStore();
     const [queue, setQueue] = useState<AnalysisResult[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [urlTemplate, setUrlTemplate] = useState('https://agency-website.com/schedules/{{route}}');
     const [markedHeadway, setMarkedHeadway] = useState<string>('');
     const [streak, setStreak] = useState(0);
     const [stats, setStats] = useState({ correct: 0, wrong: 0, total: 0 });
-    const [loading, setLoading] = useState(false);
-    const [statusMessage, setStatusMessage] = useState('');
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const { loading, status, runAnalysis } = useGtfsWorker();
 
     // Persist data on load
     useEffect(() => {
-        const loadPersisted = async () => {
-            const savedGtfs = await storage.getItem<GtfsData>(STORES.GTFS, 'latest');
-            const savedResults = await storage.getItem<AnalysisResult[]>(STORES.ANALYSIS, 'latest');
-            if (savedGtfs && savedResults) {
-                setGtfsData(savedGtfs);
-                setQueue(savedResults.sort(() => Math.random() - 0.5));
-                setCurrentIndex(0);
-            }
-        };
-        loadPersisted();
-    }, []);
+        if (!gtfsData) {
+            loadPersistedData();
+        }
+    }, [loadPersistedData, gtfsData]);
+
+    useEffect(() => {
+        if (analysisResults.length > 0 && queue.length === 0) {
+            setQueue([...analysisResults].sort(() => Math.random() - 0.5));
+        }
+    }, [analysisResults, queue.length]);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        setLoading(true);
-        setStatusMessage('Initializing worker...');
-
-        try {
-            const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), {
-                type: 'module'
-            });
-
-            worker.onmessage = async (e) => {
-                const { type, message, gtfsData, analysisResults, error } = e.data;
-
-                if (type === 'STATUS') {
-                    setStatusMessage(message);
-                } else if (type === 'DONE') {
-                    setGtfsData(gtfsData);
-                    setQueue(analysisResults.sort(() => Math.random() - 0.5));
-                    setCurrentIndex(0);
-
-                    // Persist results
-                    await storage.setItem(STORES.GTFS, 'latest', gtfsData);
-                    await storage.setItem(STORES.ANALYSIS, 'latest', analysisResults);
-
-                    setLoading(false);
-                    setStatusMessage('');
-                    worker.terminate();
-                } else if (type === 'ERROR') {
-                    console.error('Analysis failed:', error);
-                    alert('Failed to analyze GTFS: ' + error);
-                    setLoading(false);
-                    setStatusMessage('');
-                    worker.terminate();
-                }
-            };
-
-            worker.postMessage({
-                file,
-                startTimeMins: 7 * 60,
-                endTimeMins: 22 * 60
-            });
-
-        } catch (error) {
-            console.error('Worker initialization failed:', error);
-            alert('Failed to start analysis worker.');
-            setLoading(false);
-            setStatusMessage('');
-        }
+        runAnalysis(file, async (data) => {
+            await setResults(data);
+            addToast('GTFS loaded for verification', 'success');
+        });
     };
 
     const handleDecision = useCallback(async (type: 'correct' | 'wrong' | 'unsure') => {
@@ -113,11 +72,13 @@ export default function VerifierView() {
         };
 
         const newQueue = [...queue];
-        newQueue[currentIndex] = updatedClaim;
+        newQueue[currentIndex] = (updatedClaim as any);
         setQueue(newQueue);
 
-        // Persist updated results
-        await storage.setItem(STORES.ANALYSIS, 'latest', newQueue);
+        // Update store which handles persistence
+        if (gtfsData) {
+            await setResults({ gtfsData, analysisResults: newQueue, spacingResults: [] });
+        }
 
         setStats(prev => ({
             ...prev,
@@ -152,7 +113,7 @@ export default function VerifierView() {
                     <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
                     <div className="text-center">
                         <p className="atlas-label mb-1">Simulating Validation Engine</p>
-                        <p className="text-xs font-mono text-indigo-400 font-bold">{statusMessage}</p>
+                        <p className="text-xs font-mono text-indigo-400 font-bold">{status}</p>
                     </div>
                 </div>
             </div>
@@ -206,9 +167,8 @@ export default function VerifierView() {
                         </button>
                         <button
                             onClick={async () => {
-                                setGtfsData(null);
-                                await storage.clearStore(STORES.GTFS);
-                                await storage.clearStore(STORES.ANALYSIS);
+                                await clearData();
+                                addToast('Data cleared', 'info');
                             }}
                             className="btn-secondary w-full justify-center py-4"
                         >
@@ -257,7 +217,6 @@ export default function VerifierView() {
             />
 
             <div className="verifier-arena">
-                {/* AI Claims Feed */}
                 <div className="verifier-pane glass-panel">
                     <div className="pane-header">
                         <h2 className="pane-title">AI engine output</h2>
@@ -297,7 +256,6 @@ export default function VerifierView() {
                     </div>
                 </div>
 
-                {/* Evidence Panel (Iframe for verification) */}
                 <div className="verifier-pane flex-[2]">
                     <div className="pane-header">
                         <h2 className="pane-title">Reference material</h2>
@@ -314,7 +272,6 @@ export default function VerifierView() {
                     </div>
                 </div>
 
-                {/* Feedback Panel */}
                 <div className="verifier-pane decision-pane">
                     <div className="pane-header">
                         <h2 className="pane-title">Consensus</h2>

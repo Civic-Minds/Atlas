@@ -12,12 +12,14 @@ import AdminView from './modules/admin/AdminView';
 import PredictView from './modules/predict/PredictView';
 import { TopNav } from './components/TopNav';
 import { CommandPalette } from './components/CommandPalette';
+import { NotificationToast } from './components/NotificationToast';
 
 const App: React.FC = () => {
     const location = useLocation();
 
     return (
         <div className="flex flex-col bg-[var(--bg)] text-[var(--fg)] font-sans min-h-screen transition-colors duration-300">
+            <NotificationToast />
             <TopNav />
             <CommandPalette />
             <main className="flex-1 flex flex-col overflow-hidden relative">
