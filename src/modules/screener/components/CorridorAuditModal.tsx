@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Map as MapIcon, ChevronRight, RotateCcw, Download } from 'lucide-react';
+import { Map as MapIcon, ChevronRight, X, Download } from 'lucide-react';
 import { CorridorResult } from '../../../types/gtfs';
 
 interface CorridorAuditModalProps {
@@ -40,7 +40,7 @@ export const CorridorAuditModal: React.FC<CorridorAuditModalProps> = ({
                                 onClick={onClose}
                                 className="p-2 hover:bg-[var(--item-bg)] rounded-lg transition-colors"
                             >
-                                <RotateCcw className="w-5 h-5" />
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -52,8 +52,8 @@ export const CorridorAuditModal: React.FC<CorridorAuditModalProps> = ({
                                         <p className="atlas-label">No corridors detected <br />with current filters</p>
                                     </div>
                                 ) : (
-                                    results.map((corridor, idx) => (
-                                        <div key={idx} className="precision-panel p-4 flex items-center justify-between group hover:border-indigo-500/30 transition-all">
+                                    results.map((corridor) => (
+                                        <div key={corridor.linkId} className="precision-panel p-4 flex items-center justify-between group hover:border-indigo-500/30 transition-all">
                                             <div className="flex items-center gap-6">
                                                 <div className="flex -space-x-2">
                                                     {corridor.routeIds.slice(0, 3).map((r, i) => (

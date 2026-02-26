@@ -1,69 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Database, CheckCircle2, AlertCircle, RotateCcw, ShieldCheck } from 'lucide-react';
-import { GtfsData, AnalysisResult } from '../../utils/gtfsUtils';
-import { storage, STORES } from '../../core/storage';
+import { useGtfsWorker } from '../../hooks/useGtfsWorker';
+import { useTransitStore } from '../../types/store';
+import { useNotificationStore } from '../../hooks/useNotification';
 
 export default function AdminView() {
-    const [loading, setLoading] = useState(false);
-    const [statusMessage, setStatusMessage] = useState('');
+    const { loading, status, runAnalysis } = useGtfsWorker();
+    const { setResults, clearData } = useTransitStore();
+    const { addToast } = useNotificationStore();
     const [isSuccess, setIsSuccess] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
-
-        setLoading(true);
         setIsSuccess(false);
-        setStatusMessage('Initializing worker...');
 
-        try {
-            const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), {
-                type: 'module'
-            });
-
-            worker.onmessage = async (e) => {
-                const { type, message, gtfsData, analysisResults, error } = e.data;
-
-                if (type === 'STATUS') {
-                    setStatusMessage(message);
-                } else if (type === 'DONE') {
-                    // Persist results
-                    await storage.setItem(STORES.GTFS, 'latest', gtfsData);
-                    await storage.setItem(STORES.ANALYSIS, 'latest', analysisResults);
-
-                    setLoading(false);
-                    setStatusMessage('Data Ingested Successfully');
-                    setIsSuccess(true);
-                    worker.terminate();
-                } else if (type === 'ERROR') {
-                    console.error('Analysis failed:', error);
-                    setStatusMessage('Analysis failed: ' + error);
-                    setLoading(false);
-                    worker.terminate();
-                }
-            };
-
-            worker.postMessage({
-                file,
-                startTimeMins: 7 * 60,
-                endTimeMins: 22 * 60
-            });
-
-        } catch (error) {
-            console.error('Worker initialization failed:', error);
-            setStatusMessage('Failed to start analysis worker.');
-            setLoading(false);
-        }
+        runAnalysis(file, async (data) => {
+            await setResults(data);
+            setIsSuccess(true);
+            addToast('GTFS data ingested successfully', 'success');
+        });
     };
 
     const handleReset = async () => {
         if (!confirm('Clear all ingested data? This cannot be undone.')) return;
-        await storage.clearStore(STORES.GTFS);
-        await storage.clearStore(STORES.ANALYSIS);
+        await clearData();
         setIsSuccess(false);
-        setStatusMessage('Database Cleared');
+        addToast('Database cleared', 'info');
     };
 
     return (
@@ -122,10 +87,10 @@ export default function AdminView() {
                         </div>
                     </motion.button>
 
-                    {statusMessage && (
+                    {(status || isSuccess) && (
                         <div className={`mt-6 p-4 rounded-xl border text-sm font-mono flex items-start gap-3 ${isSuccess ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-600' : 'bg-[var(--item-bg)] border-[var(--border)] text-indigo-500'}`}>
                             {isSuccess ? <CheckCircle2 className="w-4 h-4 mt-0.5" /> : <AlertCircle className="w-4 h-4 mt-0.5" />}
-                            {statusMessage}
+                            {isSuccess ? 'Data Ingested Successfully' : status}
                         </div>
                     )}
                 </div>

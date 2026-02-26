@@ -1,7 +1,0 @@
-__pycache__/
-*.pyc
-.venv/
-data/gtfs/
-data/out/
-.DS_Store
-.vscode/

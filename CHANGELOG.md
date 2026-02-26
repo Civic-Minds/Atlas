@@ -1,6 +1,58 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- **Premium Design System Update**: Enhanced global design tokens with multi-layered elevation shadows and glassmorphism utilities in `index.css`.
+- **Advanced Navigation**: Overhauled `TopNav` with pill-shaped active state indicators and sophisticated hover transitions for a more modern, fluid experience.
+- **Brand Evolution**: Updated the "Atlas" logo to a custom, multi-layered SVG with internal gradients and refined architectural lines.
+- **Cinematic Hero Experience**: Enhanced the `HomePage` hero section with animated, rotating gradient text and improved visual hierarchy for the core value propositions.
+- **Glass-Engine Headers**: Implemented glassmorphism in `ModuleHeader`, featuring high-transparency backgrounds, `backdrop-blur` effects, and animated bottom-border highlights.
+- **Enhanced Visual Hierarchy**: Refined typography across module headers and navigation items, focusing on high-contrast tracking and bold accents.
+- **Redefined Branding**: Transitioned to "Intelligence for Mobility" as the core architectural philosophy.
+- **Unified Nomenclature**: Standardized all module titles and internal labeling to "Screen", "Simulate", and "Verify" (tense-shifted) for professional parity.
+- **Improved Visual Parity**: Standardized capitalization across hero headlines and synchronized the "A" logo with "by Civic Minds" subtext.
+- **Cinematic Backdrop**: Refined the high-fidelity isometric city background with improved full-width scaling and optimized fade-out boundaries for better content clarity.
+- **Premium Readme Re-Architecture**: Rebuilt `README.md` with a high-fidelity "Problem/Features/Stack" framework consistent with the Civic Minds ecosystem.
+- **Security Protocols**: Added `SECURITY.md` to formalize vulnerability reporting and version support.
+- **Premium UI Overhaul**: Overhauled the platform with a high-fidelity, state-of-the-art aesthetic.
+- **Enterprise Navigation**: Implemented hover-triggered drop-down menus in the global header for immediate access to refined toolsets.
+- **Refined Platform Hierarchy**: Optimized the homepage to remove redundant "Intelligence Hub" CTAs and move the core feature grid into primary focus.
+- **Brand Consolidation**: Standardized the logo to a custom architectural 'A' and simplified all branding to "Atlas" for professional parity.
+- **SEO Optimization**: Synchronized page titles and meta descriptions with the new platform identity.
+- **Lifecycle Alignment**: Solidified the "Big 5" sequential workflow: Verify, Screen, Strategy, Simulate, Predict.
+- **Glass Panel Utility**: Defined the `glass-panel` CSS utility with frosted `backdrop-blur-xl`, translucent backgrounds, and glass shadow elevation.
+- **Status Bullet Indicators**: Added `status-bullet-emerald`, `status-bullet-amber`, and `status-bullet-red` CSS utility classes for live status dots.
+- **Sidebar Re-open Toggle**: Added a floating `PanelRightOpen` button with `AnimatePresence` animation that appears when the Simulator console is closed.
+- **Keyboard Shortcuts**: `S` toggles sidebar, `R` resets stops, `1` skip-stops, `2` express mode in the Simulator. Disabled when typing in input fields.
+- **Scenario Export**: Download button in the Simulator sidebar header exports a full JSON scenario file (route info, parameters, baseline vs. simulation metrics, removed stops, per-stop overrides).
+- **Simulation Engine Test Suite**: 22 new tests covering output shape, travel time math, stop removal tracking, max gap detection, per-stop overrides, parameter sensitivity, and deterministic performance generation (`simulationEngine.test.ts`).
+- **Worker Corridor Analysis**: Added `CORRIDORS` message handler to the GTFS web worker so corridor overlap calculations run off the main thread.
+- **ControlPanel Premium Upgrade**: Collapsible engine parameter and stop inventory sections using `framer-motion` `AnimatePresence`, icon-tagged sliders with animated value badges, and keyboard shortcut hints on scenario buttons.
+- **PerformanceChart Upgrade**: Smooth cardinal spline curves, gradient fills under the real-world line, glow filter on the simulation reference line, finer grid, and polished tooltip with delay/ahead indicators.
+- **Dynamic Performance Modeling**: `generatePerformanceData()` uses a seeded Mulberry32 PRNG keyed by `hashRouteId()`, producing deterministic 24-hour congestion curves for any route without hardcoded agency data.
+
+### Changed
+- **Minimalist TopNav**: Removed hover background highlights from the global navigation bar and header buttons for a cleaner, more minimal appearance.
+- **Streamlined Global Navigation**: Integrated "Reports" into the primary `TopNav` to ensure all key platform facets are accessible via the main header.
+- **Footer Deconstruction**: Removed the redundant global footer from `App.tsx` to favor a cleaner, single-nav architecture and reduce visual clutter.
+- **Agency-Agnostic Architecture**: Fully decoupled all legacy TTC/MBTA hardcoding. The platform now dynamically derives routes, colors, and icons from the ZIP data.
+- **Mode-Aware Screener**: Updated results table to include "Mode" tracking and specific teal/cyan color coding for high-frequency rail tiers.
+- **Dynamic Route Selection**: Overhauled the Simulator's route indexing to support dynamic branding and mode-specific iconography based on GTFS metadata.
+- **Integrated Health Audits**: Consolidated validation results and stop-health diagnostics into the primary Screen header.
+- **Standardized Nomenclature**: Realigned all module headers and navigation to strict active verbs (Screen, Simulate, Verify).
+- **Documented Roadmap**: Aligned `ROADMAP.md` with the completed Intelligence foundation and defined next-steps for Strategy and Discovery phases.
+- **Admin Store Sync**: `AdminView` now uses the shared `useGtfsWorker` hook and syncs results to the Zustand store via `useTransitStore().setResults()`, eliminating stale state after GTFS upload.
+- **Predict Worker Deduplication**: `PredictView` now uses the shared `useGtfsWorker` hook instead of an inline worker bootstrap, with Zustand store sync for cross-module consistency.
+- **Corridor Analysis Off-Thread**: `ScreenerView` dispatches corridor analysis to the GTFS web worker instead of running `calculateCorridors()` on the main thread, preventing UI freezes on large feeds.
+
+### Fixed
+- **Time String Parsing**: Fixed edge cases in time utility for GTFS extended times past 24:00:00.
+- **Analysis Robustness**: Improved air-gap handling in headway calculations to prevent crashes on routes with missing stop-sequence data.
+- **Baseline Isolation**: `SimulatorContext` baseline calculation no longer includes per-stop overrides (custom dwell/accel times), ensuring an honest unmodified-system comparison.
+- **Hardcoded Agency Removal**: Removed TTC-specific route entries (504, 501, 510) from `tripPerformance.ts`. Performance data is now generated dynamically for any route.
+
+### Removed
+- **Legacy Components**: Deleted the `legacy/` directory and deprecated agency-specific alert services.
 
 ## [0.8.0] - 2026-02-24
 ### Added

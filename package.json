@@ -1,6 +1,7 @@
 {
   "name": "atlas-platform",
   "private": true,
+  "description": "A transit intelligence platform for mobility precision in North American metros.",
   "version": "0.8.0",
   "type": "module",
   "scripts": {
@@ -11,8 +12,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@types/jszip": "^3.4.0",
-    "@types/papaparse": "^5.5.2",
     "framer-motion": "^12.4.3",
     "jszip": "^3.10.1",
     "leaflet": "^1.9.4",
@@ -26,7 +25,9 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "@types/jszip": "^3.4.0",
     "@types/leaflet": "^1.9.16",
+    "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",

@@ -11,8 +11,11 @@ import {
     Command,
     ArrowRight,
     Sun,
-    Moon
+    Moon,
+    TrendingUp,
+    Globe
 } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 interface CommandItem {
     id: string;
@@ -30,6 +33,7 @@ export const CommandPalette: React.FC = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const navigate = useNavigate();
     const inputRef = useRef<HTMLInputElement>(null);
+    const { toggleTheme } = useTheme();
 
     const COMMANDS: CommandItem[] = [
         {
@@ -57,11 +61,19 @@ export const CommandPalette: React.FC = () => {
             category: 'Navigation'
         },
         {
-            id: 'explorer',
-            title: 'Open Explorer',
-            description: 'National transit database viewer',
-            icon: MapIcon,
-            action: () => navigate('/explorer'),
+            id: 'strategy',
+            title: 'Open Strategy',
+            description: 'Executive performance audits and benchmarks',
+            icon: TrendingUp,
+            action: () => navigate('/strategy'),
+            category: 'Navigation'
+        },
+        {
+            id: 'atlas',
+            title: 'Map Explorer',
+            description: 'Global frequency map and system viewer',
+            icon: Globe,
+            action: () => navigate('/atlas'),
             category: 'Navigation'
         },
         {
@@ -77,14 +89,7 @@ export const CommandPalette: React.FC = () => {
             title: 'Toggle Theme',
             description: 'Switch between light and dark mode',
             icon: Moon,
-            action: () => {
-                const isDark = document.documentElement.classList.contains('dark');
-                if (isDark) {
-                    document.documentElement.classList.remove('dark');
-                } else {
-                    document.documentElement.classList.add('dark');
-                }
-            },
+            action: () => toggleTheme(),
             category: 'Settings'
         }
     ];
@@ -184,13 +189,13 @@ export const CommandPalette: React.FC = () => {
                                             }}
                                             onMouseEnter={() => setSelectedIndex(idx)}
                                             className={`flex items-center gap-4 w-full p-4 rounded-xl transition-all text-left group ${selectedIndex === idx
-                                                    ? 'bg-indigo-600 shadow-lg shadow-indigo-500/20'
-                                                    : 'hover:bg-[var(--item-bg)]'
+                                                ? 'bg-indigo-600 shadow-lg shadow-indigo-500/20'
+                                                : 'hover:bg-[var(--item-bg)]'
                                                 }`}
                                         >
                                             <div className={`p-2.5 rounded-xl border ${selectedIndex === idx
-                                                    ? 'bg-white/20 border-white/20 text-white'
-                                                    : 'bg-[var(--item-bg)] border-[var(--border)] text-indigo-500'
+                                                ? 'bg-white/20 border-white/20 text-white'
+                                                : 'bg-[var(--item-bg)] border-[var(--border)] text-indigo-500'
                                                 }`}>
                                                 <cmd.icon className="w-5 h-5" />
                                             </div>

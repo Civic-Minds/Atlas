@@ -112,8 +112,7 @@ export default function VerifierView() {
                 <div className="flex flex-col items-center space-y-4">
                     <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
                     <div className="text-center">
-                        <p className="atlas-label mb-1">Simulating Validation Engine</p>
-                        <p className="text-xs font-mono text-indigo-400 font-bold">{status}</p>
+                        <p className="atlas-label mb-1">Verify Engine</p>                        <p className="text-xs font-mono text-indigo-400 font-bold">{status}</p>
                     </div>
                 </div>
             </div>
@@ -125,7 +124,7 @@ export default function VerifierView() {
             <div className="module-container">
                 <EmptyStateHero
                     icon={Shield}
-                    title="Manual Validation Mode"
+                    title="Verify"
                     description="Verify AI-generated frequency claims against real-world agency schedules."
                     primaryAction={{
                         label: "Start Validation Task",
@@ -183,7 +182,7 @@ export default function VerifierView() {
     return (
         <div className="module-container">
             <ModuleHeader
-                title="Arcade"
+                title="Verify"
                 badge={{ label: "Phase 2 Verification", color: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20" }}
                 actions={[
                     {

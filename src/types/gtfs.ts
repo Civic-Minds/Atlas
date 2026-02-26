@@ -54,6 +54,12 @@ export interface GtfsCalendar {
     end_date: string;
 }
 
+export interface GtfsCalendarDate {
+    service_id: string;
+    date: string; // YYYYMMDD format
+    exception_type: string; // '1' = added, '2' = removed
+}
+
 export interface GtfsShapePoint {
     shape_id: string;
     shape_pt_lat: string;
@@ -73,6 +79,7 @@ export interface GtfsData {
     stops: GtfsStop[];
     stopTimes: GtfsStopTime[];
     calendar: GtfsCalendar[];
+    calendarDates: GtfsCalendarDate[];
     shapes: GtfsShape[];
     feedInfo?: any;
 }
@@ -94,6 +101,8 @@ export interface AnalysisResult {
     baseHeadway?: number;
     peakWindow?: { start: number; end: number };
     serviceSpan?: { start: number; end: number };
+    routeType?: string;  // GTFS route_type (0=tram, 1=subway, 2=rail, 3=bus, etc.)
+    modeName?: string;   // Human-readable mode label
 }
 
 export interface CorridorResult {

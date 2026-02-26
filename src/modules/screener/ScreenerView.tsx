@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database } from 'lucide-react';
-import { AnalysisResult, GtfsData, calculateCorridors, SpacingResult, CorridorResult } from '../../utils/gtfsUtils';
+import { useNavigate } from 'react-router-dom';
+import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText } from 'lucide-react';
+import { AnalysisResult, GtfsData, SpacingResult, CorridorResult } from '../../utils/gtfsUtils';
 import { downloadCsv } from '../../utils/exportUtils';
 import { storage, STORES } from '../../core/storage';
 import { ModuleHeader } from '../../components/ModuleHeader';
@@ -10,9 +11,13 @@ import { useTransitStore } from '../../types/store';
 import { useNotificationStore } from '../../hooks/useNotification';
 import { CorridorAuditModal } from './components/CorridorAuditModal';
 import { StopHealthModal } from './components/StopHealthModal';
+import { ValidationReportModal } from './components/ValidationReportModal';
+import { RouteDetailModal } from './components/RouteDetailModal';
 import './Screener.css';
 
 const TIER_CONFIG = [
+    { id: '5', label: 'Rapid', name: 'Rapid', color: 'cyan' },
+    { id: '8', label: 'Freq++', name: 'Freq++', color: 'teal' },
     { id: '10', label: 'Freq+', name: 'Freq+', color: 'emerald' },
     { id: '15', label: 'Freq', name: 'Freq', color: 'blue' },
     { id: '20', label: 'Good', name: 'Good', color: 'indigo' },
@@ -21,23 +26,62 @@ const TIER_CONFIG = [
     { id: 'span', label: 'Span', name: 'Span', color: 'slate' }
 ];
 
+/** Static class maps — Tailwind JIT can't detect dynamically interpolated class names */
+const TIER_ACTIVE_CLASSES: Record<string, string> = {
+    cyan: 'border-cyan-500/40 bg-cyan-500/5',
+    teal: 'border-teal-500/40 bg-teal-500/5',
+    emerald: 'border-emerald-500/40 bg-emerald-500/5',
+    blue: 'border-blue-500/40 bg-blue-500/5',
+    indigo: 'border-indigo-500/40 bg-indigo-500/5',
+    amber: 'border-amber-500/40 bg-amber-500/5',
+    orange: 'border-orange-500/40 bg-orange-500/5',
+    slate: 'border-slate-500/40 bg-slate-500/5',
+};
+
+const TIER_VALUE_CLASSES: Record<string, string> = {
+    cyan: 'text-cyan-600 dark:text-cyan-400',
+    teal: 'text-teal-600 dark:text-teal-400',
+    emerald: 'text-emerald-600 dark:text-emerald-400',
+    blue: 'text-blue-600 dark:text-blue-400',
+    indigo: 'text-indigo-600 dark:text-indigo-400',
+    amber: 'text-amber-600 dark:text-amber-400',
+    orange: 'text-orange-600 dark:text-orange-400',
+    slate: 'text-slate-600 dark:text-slate-400',
+};
+
+const TIER_BADGE_CLASSES: Record<string, string> = {
+    cyan: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/5 border-cyan-500/10',
+    teal: 'text-teal-600 dark:text-teal-400 bg-teal-500/5 border-teal-500/10',
+    emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 border-emerald-500/10',
+    blue: 'text-blue-600 dark:text-blue-400 bg-blue-500/5 border-blue-500/10',
+    indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-500/5 border-indigo-500/10',
+    amber: 'text-amber-600 dark:text-amber-400 bg-amber-500/5 border-amber-500/10',
+    orange: 'text-orange-600 dark:text-orange-400 bg-orange-500/5 border-orange-500/10',
+    slate: 'text-slate-600 dark:text-slate-400 bg-slate-500/5 border-slate-500/10',
+};
+
 export default function ScreenerView() {
     const {
         gtfsData,
         analysisResults,
         spacingResults,
+        validationReport,
         setResults,
         loadPersistedData,
         clearData
     } = useTransitStore();
 
     const { addToast } = useNotificationStore();
+    const navigate = useNavigate();
     const [corridorResults, setCorridorResults] = useState<CorridorResult[]>([]);
     const [showCorridors, setShowCorridors] = useState(false);
     const [showDiagnostics, setShowDiagnostics] = useState(false);
+    const [showValidation, setShowValidation] = useState(false);
+    const [selectedRouteResult, setSelectedRouteResult] = useState<AnalysisResult | null>(null);
     const [activeDay, setActiveDay] = useState('Weekday');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTiers, setActiveTiers] = useState<Set<string>>(new Set());
+    const [resetPending, setResetPending] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { loading, status, runAnalysis } = useGtfsWorker();
@@ -50,8 +94,13 @@ export default function ScreenerView() {
     }, [loadPersistedData, gtfsData]);
 
     const handleReset = async () => {
-        // We'll keep the confirm for destructive actions, or we could build a custom modal
-        if (!confirm('This will clear the current analysis. Proceed?')) return;
+        if (!resetPending) {
+            setResetPending(true);
+            addToast('Click Reset again within 3 seconds to confirm.', 'warning');
+            setTimeout(() => setResetPending(false), 3000);
+            return;
+        }
+        setResetPending(false);
         await clearData();
         addToast('Data cleared successfully', 'info');
     };
@@ -116,7 +165,7 @@ export default function ScreenerView() {
                 />
                 <EmptyStateHero
                     icon={ShieldCheck}
-                    title="Headway Screen"
+                    title="Screen"
                     description="Analysis-ready frequency reporting. Waiting for data ingest from the administrative console."
                     primaryAction={{
                         label: "Open Admin Panel",
@@ -136,9 +185,21 @@ export default function ScreenerView() {
     return (
         <div className="module-container">
             <ModuleHeader
-                title="Headway Alpha"
+                title="Screen"
                 badge={{ label: `${gtfsData.routes.length} routes detected` }}
                 actions={[
+                    {
+                        label: "Board Report",
+                        icon: FileText,
+                        onClick: () => navigate('/strategy'),
+                        variant: 'primary'
+                    },
+                    {
+                        label: validationReport ? `Validation (${validationReport.errors}E / ${validationReport.warnings}W)` : 'Validation',
+                        icon: FileCheck,
+                        onClick: () => setShowValidation(true),
+                        variant: 'secondary'
+                    },
                     {
                         label: "Stop Health",
                         icon: ShieldCheck,
@@ -150,9 +211,21 @@ export default function ScreenerView() {
                         icon: MapIcon,
                         onClick: () => {
                             if (!gtfsData) return;
-                            const res = calculateCorridors(gtfsData, activeDay, 360, 600); // 6am-10am peak default
-                            setCorridorResults(res);
-                            setShowCorridors(true);
+                            const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), { type: 'module' });
+                            worker.onmessage = (ev) => {
+                                if (ev.data.type === 'CORRIDORS_DONE') {
+                                    setCorridorResults(ev.data.corridors);
+                                    setShowCorridors(true);
+                                    worker.terminate();
+                                }
+                            };
+                            worker.postMessage({
+                                type: 'CORRIDORS',
+                                gtfsData,
+                                day: activeDay,
+                                startMins: 360,
+                                endMins: 600,
+                            });
                         },
                         variant: 'secondary'
                     },
@@ -192,12 +265,12 @@ export default function ScreenerView() {
                         key={tier.id}
                         onClick={() => toggleTier(tier.id)}
                         className={`precision-panel p-4 text-left transition-all ${activeTiers.has(tier.id)
-                            ? `border-${tier.color}-500/40 bg-${tier.color}-500/5`
+                            ? TIER_ACTIVE_CLASSES[tier.color]
                             : 'hover:border-[var(--border-hover)]'
                             }`}
                     >
                         <div className="atlas-label mb-2">{tier.label}</div>
-                        <div className={`text-2xl font-bold text-${tier.color}-600 dark:text-${tier.color}-400 atlas-mono`}>
+                        <div className={`text-2xl font-bold atlas-mono ${TIER_VALUE_CLASSES[tier.color]}`}>
                             {tierCounts[tier.id] || 0}
                         </div>
                     </button>
@@ -225,6 +298,7 @@ export default function ScreenerView() {
                         <thead>
                             <tr className="bg-[var(--item-bg)] border-b border-[var(--border)]">
                                 <th className="px-6 py-4 atlas-label">Route</th>
+                                <th className="px-6 py-4 atlas-label">Mode</th>
                                 <th className="px-6 py-4 atlas-label">Tier</th>
                                 <th className="px-6 py-4 atlas-label text-right">Trips</th>
                                 <th className="px-6 py-4 atlas-label text-right">Avg</th>
@@ -237,7 +311,11 @@ export default function ScreenerView() {
                             {filteredResults.map((result, i) => {
                                 const config = TIER_CONFIG.find(c => c.id === result.tier);
                                 return (
-                                    <tr key={i} className="hover:bg-[var(--item-bg)] transition-colors group cursor-pointer">
+                                    <tr
+                                        key={i}
+                                        className="hover:bg-[var(--item-bg)] transition-colors group cursor-pointer"
+                                        onClick={() => setSelectedRouteResult(result)}
+                                    >
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-4">
                                                 <span className="bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 atlas-mono font-bold text-xs px-2 py-1 rounded border border-indigo-500/20">{result.route}</span>
@@ -245,7 +323,12 @@ export default function ScreenerView() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`text-${config?.color}-600 dark:text-${config?.color}-400 font-bold text-[9px] px-2 py-1 rounded bg-${config?.color}-500/5 border border-${config?.color}-500/10 shadow-sm`}>
+                                            <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                                                {result.modeName || 'Transit'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`font-bold text-[9px] px-2 py-1 rounded border shadow-sm ${TIER_BADGE_CLASSES[config?.color || 'slate']}`}>
                                                 {config?.name}
                                             </span>
                                         </td>
@@ -284,6 +367,18 @@ export default function ScreenerView() {
                 isOpen={showDiagnostics}
                 onClose={() => setShowDiagnostics(false)}
                 results={spacingResults}
+            />
+
+            <ValidationReportModal
+                isOpen={showValidation}
+                onClose={() => setShowValidation(false)}
+                report={validationReport}
+            />
+
+            <RouteDetailModal
+                isOpen={!!selectedRouteResult}
+                onClose={() => setSelectedRouteResult(null)}
+                result={selectedRouteResult}
             />
         </div>
     );

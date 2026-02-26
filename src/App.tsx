@@ -1,18 +1,26 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import HomePage from './modules/home/HomePage';
-import SimulatorView from './modules/simulator/SimulatorView';
-import ScreenerView from './modules/screener/ScreenerView';
-import VerifierView from './modules/verifier/VerifierView';
-import MapView from './modules/map/MapView';
-import OptimizeView from './modules/optimize/OptimizeView';
-import ReportCardsView from './modules/report-cards/ReportCardsView';
-import AdminView from './modules/admin/AdminView';
-import PredictView from './modules/predict/PredictView';
 import { TopNav } from './components/TopNav';
 import { CommandPalette } from './components/CommandPalette';
 import { NotificationToast } from './components/NotificationToast';
+
+// Lazy-loaded module views — each becomes a separate chunk
+const HomePage = React.lazy(() => import('./modules/home/HomePage'));
+const SimulatorView = React.lazy(() => import('./modules/simulator/SimulatorView'));
+const ScreenerView = React.lazy(() => import('./modules/screener/ScreenerView'));
+const VerifierView = React.lazy(() => import('./modules/verifier/VerifierView'));
+const AtlasView = React.lazy(() => import('./modules/atlas/AtlasView'));
+const ReportCardsView = React.lazy(() => import('./modules/report-cards/ReportCardsView'));
+const AdminView = React.lazy(() => import('./modules/admin/AdminView'));
+const PredictView = React.lazy(() => import('./modules/predict/PredictView'));
+const StrategyView = React.lazy(() => import('./modules/screener/components/StrategyView'));
+
+const LazyFallback = () => (
+    <div className="flex-1 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+    </div>
+);
 
 const App: React.FC = () => {
     const location = useLocation();
@@ -32,18 +40,20 @@ const App: React.FC = () => {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="flex-1 flex flex-col overflow-hidden"
                     >
-                        <Routes location={location}>
-                            <Route path="/" element={<HomePage />} />
-                            <Route path="/simulator/*" element={<SimulatorView />} />
-                            <Route path="/screener/*" element={<ScreenerView />} />
-                            <Route path="/verifier/*" element={<VerifierView />} />
-                            <Route path="/explorer/*" element={<MapView />} />
-                            <Route path="/optimize/*" element={<OptimizeView />} />
-                            <Route path="/reports/*" element={<ReportCardsView />} />
-                            <Route path="/admin/*" element={<AdminView />} />
-                            <Route path="/predict/*" element={<PredictView />} />
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
+                        <Suspense fallback={<LazyFallback />}>
+                            <Routes location={location}>
+                                <Route path="/" element={<HomePage />} />
+                                <Route path="/atlas" element={<AtlasView />} />
+                                <Route path="/screener/*" element={<ScreenerView />} />
+                                <Route path="/strategy" element={<StrategyView />} />
+                                <Route path="/simulator/*" element={<SimulatorView />} />
+                                <Route path="/predict/*" element={<PredictView />} />
+                                <Route path="/verifier/*" element={<VerifierView />} />
+                                <Route path="/reports/*" element={<ReportCardsView />} />
+                                <Route path="/admin/*" element={<AdminView />} />
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </Suspense>
                     </motion.div>
                 </AnimatePresence>
             </main>
@@ -51,10 +61,14 @@ const App: React.FC = () => {
     );
 };
 
-const Root: React.FC = () => (
-    <Router basename="/Atlas">
-        <App />
-    </Router>
-);
+const Root: React.FC = () => {
+    // Strip trailing slash for react-router basename compatibility
+    const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') || '/';
+    return (
+        <Router basename={base}>
+            <App />
+        </Router>
+    );
+};
 
 export default Root;

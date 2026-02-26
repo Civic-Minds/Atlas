@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
-import { RouteConfig, AVAILABLE_ROUTES } from './data/routeData';
+import { RouteConfig, AvailableRoute, getAvailableRoutes, buildRouteConfig } from './data/routeData';
 import { SimulationParams, SimulationResult, DEFAULT_PARAMS, runSimulation, StopOverride } from './engine/simulationEngine';
-import { fetchLiveAlerts, Alert } from '../../services/ttcAlerts';
+import { fetchLiveAlerts, Alert, AgencyConfig } from '../../services/alertService';
+import { useTransitStore } from '../../types/store';
 
 interface SimulatorContextType {
     selectedRouteId: string;
@@ -10,6 +11,7 @@ interface SimulatorContextType {
     setParams: (params: SimulationParams) => void;
     routeData: RouteConfig | null;
     enabledStopIds: Set<string>;
+    availableRoutes: AvailableRoute[];
     toggleStop: (stopId: string) => void;
     resetStops: () => void;
     removeEveryOtherStop: () => void;
@@ -19,6 +21,7 @@ interface SimulatorContextType {
     liveAlerts: Alert[];
     alertsLoading: boolean;
     loading: boolean;
+    hasGtfsData: boolean;
     sidebarOpen: boolean;
     setSidebarOpen: (open: boolean) => void;
     stopOverrides: Record<string, StopOverride>;
@@ -28,47 +31,82 @@ interface SimulatorContextType {
 const SimulatorContext = createContext<SimulatorContextType | undefined>(undefined);
 
 export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [selectedRouteId, setSelectedRouteId] = useState(AVAILABLE_ROUTES[0].id);
+    const { gtfsData, loadPersistedData } = useTransitStore();
+
+    const [selectedRouteId, setSelectedRouteId] = useState('');
     const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
     const [routeData, setRouteData] = useState<RouteConfig | null>(null);
     const [enabledStopIds, setEnabledStopIds] = useState<Set<string>>(new Set());
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [loading, setLoading] = useState(true);
     const [liveAlerts, setLiveAlerts] = useState<Alert[]>([]);
-    const [alertsLoading, setAlertsLoading] = useState(true);
+    const [alertsLoading, setAlertsLoading] = useState(false);
     const [stopOverrides, setStopOverrides] = useState<Record<string, StopOverride>>({});
 
-    // Load route data
-    useEffect(() => {
-        async function loadRoute() {
-            try {
-                setLoading(true);
-                const response = await fetch(`/data/routes/${selectedRouteId}.json`);
-                if (!response.ok) throw new Error('Route not found');
-                const data: RouteConfig = await response.json();
-                setRouteData(data);
-                setEnabledStopIds(new Set(data.stops.map(s => s.id)));
-            } catch (error) {
-                console.error('Failed to load route:', error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        loadRoute();
-    }, [selectedRouteId]);
+    // Agency config for alerts — can be extended to store in IndexedDB later
+    const [agencyConfig] = useState<AgencyConfig | null>(null);
 
-    // Load live alerts
+    // Load persisted GTFS data on mount
     useEffect(() => {
+        if (!gtfsData) {
+            loadPersistedData();
+        }
+    }, [loadPersistedData, gtfsData]);
+
+    // Derive available routes from GTFS data
+    const availableRoutes = useMemo(() => {
+        if (!gtfsData) return [];
+        return getAvailableRoutes(gtfsData);
+    }, [gtfsData]);
+
+    // Auto-select first route when GTFS data loads
+    useEffect(() => {
+        if (availableRoutes.length > 0 && !selectedRouteId) {
+            setSelectedRouteId(availableRoutes[0].id);
+        }
+    }, [availableRoutes, selectedRouteId]);
+
+    // Build route config from GTFS when route selection changes
+    useEffect(() => {
+        if (!gtfsData || !selectedRouteId) {
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const routeIndex = availableRoutes.findIndex(r => r.id === selectedRouteId);
+            const config = buildRouteConfig(gtfsData, selectedRouteId, '0', routeIndex);
+            setRouteData(config);
+            if (config) {
+                setEnabledStopIds(new Set(config.stops.map(s => s.id)));
+            }
+        } catch (error) {
+            console.error('Failed to build route config:', error);
+            setRouteData(null);
+        } finally {
+            setLoading(false);
+        }
+    }, [gtfsData, selectedRouteId, availableRoutes]);
+
+    // Load live alerts (only if agency config provides an endpoint)
+    useEffect(() => {
+        if (!selectedRouteId || !agencyConfig?.alertsUrl) {
+            setLiveAlerts([]);
+            setAlertsLoading(false);
+            return;
+        }
+
         async function getAlerts() {
             setAlertsLoading(true);
-            const alerts = await fetchLiveAlerts(selectedRouteId);
+            const alerts = await fetchLiveAlerts(selectedRouteId, agencyConfig);
             setLiveAlerts(alerts);
             setAlertsLoading(false);
         }
         getAlerts();
         const interval = setInterval(getAlerts, 5 * 60 * 1000);
         return () => clearInterval(interval);
-    }, [selectedRouteId]);
+    }, [selectedRouteId, agencyConfig]);
 
     const toggleStop = useCallback((stopId: string) => {
         setEnabledStopIds(prev => {
@@ -126,8 +164,9 @@ export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const baselineResult = useMemo(() => {
         if (!routeData) return null;
         const allIds = new Set<string>(routeData.stops.map(s => s.id));
-        return runSimulation(routeData.stops, allIds, params, stopOverrides);
-    }, [routeData, params, stopOverrides]);
+        // Baseline must represent the unmodified system — no per-stop overrides
+        return runSimulation(routeData.stops, allIds, params, {});
+    }, [routeData, params]);
 
     const value = {
         selectedRouteId,
@@ -136,6 +175,7 @@ export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setParams,
         routeData,
         enabledStopIds,
+        availableRoutes,
         toggleStop,
         resetStops,
         removeEveryOtherStop,
@@ -145,6 +185,7 @@ export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         liveAlerts,
         alertsLoading,
         loading,
+        hasGtfsData: !!gtfsData,
         sidebarOpen,
         setSidebarOpen,
         stopOverrides,

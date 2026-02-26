@@ -1,12 +1,13 @@
 import { GtfsData, AnalysisResult } from '../types/gtfs';
 
 const DB_NAME = 'HeadwayDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export const STORES = {
     GTFS: 'gtfs_data',
     ANALYSIS: 'analysis_results',
-    PREFERENCES: 'user_preferences'
+    PREFERENCES: 'user_preferences',
+    SPACING: 'spacing_diagnostic'
 };
 
 class StorageService {
@@ -34,6 +35,9 @@ class StorageService {
                 }
                 if (!db.objectStoreNames.contains(STORES.PREFERENCES)) {
                     db.createObjectStore(STORES.PREFERENCES);
+                }
+                if (!db.objectStoreNames.contains(STORES.SPACING)) {
+                    db.createObjectStore(STORES.SPACING);
                 }
             };
         });
