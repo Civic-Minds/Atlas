@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, ChevronRight, RotateCcw } from 'lucide-react';
+import { Database, ChevronRight, X } from 'lucide-react';
 import { SpacingResult } from '../../../types/gtfs';
 
 interface StopHealthModalProps {
@@ -40,7 +40,7 @@ export const StopHealthModal: React.FC<StopHealthModalProps> = ({
                                 onClick={onClose}
                                 className="p-2 hover:bg-[var(--item-bg)] rounded-lg transition-colors"
                             >
-                                <RotateCcw className="w-5 h-5" />
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -52,8 +52,8 @@ export const StopHealthModal: React.FC<StopHealthModalProps> = ({
                                         <p className="atlas-label">No spacing data available. <br />Upload a GTFS file to run diagnostics.</p>
                                     </div>
                                 ) : (
-                                    results.filter(s => s.redundantPairs.length > 0).map((spacing, idx) => (
-                                        <div key={idx} className="precision-panel p-6 flex flex-col gap-4 group hover:border-amber-500/30 transition-all">
+                                    results.filter(s => s.redundantPairs.length > 0).map((spacing) => (
+                                        <div key={`${spacing.route}-${spacing.direction}`} className="precision-panel p-6 flex flex-col gap-4 group hover:border-amber-500/30 transition-all">
                                             <div className="flex justify-between items-start">
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-1">

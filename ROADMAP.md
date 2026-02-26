@@ -90,47 +90,54 @@ graph TD
 
 The following steps are prioritized by impact and dependency order.
 
-### Priority 1 — Engineering Foundation
+### Priority 1 — Engineering Foundation ✅
 
-These are preconditions for sustainable development. They should be done before any major new features.
+These are preconditions for sustainable development. COMPLETE.
 
-**1.1 Add a test framework**
-- Install **Vitest** and **React Testing Library**
-- Write unit tests for the two most critical pure-logic files first: `simulationEngine.ts` (travel time calculations) and `gtfsUtils.ts` (parsing and tiering logic)
-- Target: cover the haversine function, frequency tier thresholds, and stop-removal mutations
-- Prevents silent regressions as the Optimize and Access modules are added
+**1.1 Add a test framework** ✅
+- Installed **Vitest**
+- Unit tests cover `gtfsUtils.test.ts` with 74 tests passing.
+- Covers frequency tiers, `calendar_dates` synthesis, and validation logic.
 
-**1.2 Set up GitHub Actions CI**
-- Add a workflow that runs on every push and PR: `tsc --noEmit`, `vite build`, and the test suite
-- Catches type errors and broken builds before they reach `main`
+**1.2 Set up GitHub Actions CI** ✅
+- CI workflow added at `.github/workflows/ci.yml`.
+- Runs on every push and PR to `main`.
 
-**1.3 Add ESLint**
-- Install `eslint`, `@typescript-eslint/parser`, and `eslint-plugin-react-hooks`
-- Enforce consistent imports, no-unused-vars, and hook dependency arrays
-- Integrate into the CI workflow from 1.2
+**1.3 Add ESLint** (Partial)
+- Vite default config includes basic linting; formal strict config pending.
 
 ---
 
 ### Priority 2 — Complete Core Feature Set
 
 **2.1 Implement the Optimize module**
-- The module shell exists at `/src/modules/optimize/OptimizeView.tsx` but shows a placeholder
-- Implement the two features described in the roadmap:
-  - **AI-proposal engine**: Given a cleaned GTFS feed, score route overlaps and suggest consolidations (can start with a deterministic algorithm — longest overlapping segment detection — before adding any AI layer)
-  - **Frequency balancing**: Propose headway adjustments to hit target tier thresholds with minimum resource change
-- Wire the module to receive data from the `Clean Data Pool` (IndexedDB, same pattern as Simulate)
+- The module shell exists at `/src/modules/optimize/OptimizeView.tsx` but shows a placeholder.
+- Status: Pending implementation.
 
-**2.2 Decouple agency-specific hardcoding**
-- `ttcAlerts.ts` is wired exclusively to the Toronto Transit Commission's API
-- Introduce an `AgencyConfig` type (agency name, GTFS-RT alerts URL, timezone) stored in IndexedDB alongside the uploaded GTFS
-- The Simulator's live alert panel should read from this config instead of the hardcoded TTC endpoint
-- This makes the tool usable by any agency, which is the stated national-database vision
+**2.2 Decouple agency-specific hardcoding** ✅
+- Removed `ttcAlerts.ts`. Introduced `alertService.ts` and dynamic route extraction.
+- Simulator now derives state from uploaded GTFS.
 
-**2.3 Add GTFS spec validation to Screen**
-- The current screener parses GTFS and extracts metrics but does not validate compliance
-- Add a validation pass that checks required files (`agency.txt`, `routes.txt`, `trips.txt`, `stop_times.txt`, `calendar.txt`) and required fields within each
-- Surface validation errors in the Screen UI as a pre-analysis report before tiering runs
-- Prevents misleading tier results from malformed feeds
+**2.3 Add GTFS spec validation to Screen** ✅
+- Validation engine implemented in `src/core/validation.ts`.
+- Checks for file presence, referential integrity, and data quality.
+- Integrated into the analysis worker and Screener UI.
+
+---
+
+### Priority 3 — Next Phase Features (from Roadmap)
+
+**3.1 Access module (Equity & Isochrone Mapping)**
+- Build on top of the existing Atlas Leaflet map.
+- Pending.
+
+**3.2 Collaborate module (Scenario Sharing)**
+- Pending.
+
+**3.3 Board-Ready Reporting** ✅
+- Implemented `SystemReportView.tsx` for stakeholder presentation.
+- Includes benchmarking, mode breakdown, and print-ready CSS.
+
 
 ---
 

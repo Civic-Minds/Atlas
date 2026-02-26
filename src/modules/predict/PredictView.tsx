@@ -3,7 +3,8 @@ import { Layers, Activity, Zap, TrendingUp, Users, MapPin, Search, Filter, Play,
 import { PredictProvider, usePredict } from './PredictContext';
 import PredictMap from './components/PredictMap';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
-import { storage, STORES } from '../../core/storage';
+import { useGtfsWorker } from '../../hooks/useGtfsWorker';
+import { useTransitStore } from '../../types/store';
 
 const PredictViewContent: React.FC = () => {
     const {
@@ -17,54 +18,18 @@ const PredictViewContent: React.FC = () => {
         refreshData
     } = usePredict();
     const [viewMode, setViewMode] = useState<'demand' | 'supply' | 'opportunity'>('demand');
-    const [uploading, setUploading] = useState(false);
-    const [statusMessage, setStatusMessage] = useState('');
+    const { loading: uploading, status: uploadStatus, runAnalysis: runGtfsUpload } = useGtfsWorker();
+    const { setResults } = useTransitStore();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        setUploading(true);
-        setStatusMessage('Initializing worker...');
-
-        try {
-            const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), {
-                type: 'module'
-            });
-
-            worker.onmessage = async (e) => {
-                const { type, message, gtfsData: newGtfs, analysisResults, error } = e.data;
-
-                if (type === 'STATUS') {
-                    setStatusMessage(message);
-                } else if (type === 'DONE') {
-                    // Persist
-                    await storage.setItem(STORES.GTFS, 'latest', newGtfs);
-                    await storage.setItem(STORES.ANALYSIS, 'latest', analysisResults);
-
-                    await refreshData();
-                    setUploading(false);
-                    worker.terminate();
-                } else if (type === 'ERROR') {
-                    console.error('Analysis failed:', error);
-                    alert('Analysis failed: ' + error);
-                    setUploading(false);
-                    worker.terminate();
-                }
-            };
-
-            worker.postMessage({
-                file,
-                startTimeMins: 7 * 60,
-                endTimeMins: 22 * 60
-            });
-
-        } catch (error) {
-            console.error('Worker failed:', error);
-            alert('Failed to start analysis worker.');
-            setUploading(false);
-        }
+        runGtfsUpload(file, async (data) => {
+            await setResults(data);
+            await refreshData();
+        });
     };
 
     if (uploading) {
@@ -74,7 +39,7 @@ const PredictViewContent: React.FC = () => {
                     <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
                     <div className="text-center">
                         <p className="text-[10px] text-[var(--text-muted)] font-bold mb-1">Analyzing GTFS engine</p>
-                        <p className="text-xs font-mono text-indigo-400 font-bold">{statusMessage}</p>
+                        <p className="text-xs font-mono text-indigo-400 font-bold">{uploadStatus}</p>
                     </div>
                 </div>
             </div>

@@ -11,41 +11,48 @@
   --panel: #f8fafc;
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
+
   /* Technical Palette (Light) */
-  --bg: hsl(0, 0%, 100%);
+  --bg: hsl(220, 20%, 98%);
   --fg: hsl(220, 10%, 10%);
   --card: hsl(0, 0%, 100%);
-  --panel: hsl(220, 10%, 98%);
-  --border: hsl(220, 10%, 85%);
-  --border-strong: hsl(220, 10%, 70%);
-  --item-bg: hsl(220, 10%, 95%);
-  --item-hover: hsl(220, 10%, 90%);
+  --panel: hsl(220, 15%, 96%);
+  --border: hsl(220, 15%, 90%);
+  --border-strong: hsl(220, 15%, 82%);
+  --item-bg: hsl(220, 15%, 94%);
+  --item-hover: hsl(220, 15%, 91%);
   --text-primary: hsl(220, 10%, 10%);
-  --text-secondary: hsl(220, 5%, 40%);
-  --text-muted: hsl(220, 5%, 60%);
+  --text-secondary: hsl(220, 10%, 40%);
+  --text-muted: hsl(220, 10%, 60%);
 
-  --accent-primary: hsl(230, 90%, 60%);
+  --accent-primary: hsl(235, 85%, 60%);
   /* Clinical Indigo */
-  --accent-secondary: hsl(142, 70%, 45%);
+  --accent-secondary: hsl(155, 75%, 45%);
   /* Signal Emerald */
-  --accent-warning: hsl(38, 92%, 50%);
+  --accent-warning: hsl(35, 100%, 50%);
   /* Alert Amber */
-  --accent-critical: hsl(0, 84%, 60%);
+  --accent-critical: hsl(0, 85%, 60%);
   /* Danger Red */
 
-  --shadow-flat: none;
-  --shadow-tactile: none;
-  --shadow-elevated: none;
+  /* Precision Elevation */
+  --shadow-flat: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  --shadow-tactile:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  --shadow-elevated:
+    0 10px 15px -3px rgba(0, 0, 0, 0.06),
+    0 4px 6px -2px rgba(0, 0, 0, 0.03),
+    0 20px 25px -5px rgba(0, 0, 0, 0.02);
+  --shadow-glass:
+    0 8px 32px 0 rgba(31, 38, 135, 0.07);
 
   /* Precision Radii */
-  --radius-xs: 0.25rem;
-  /* 4px */
-  --radius-sm: 0.375rem;
-  /* 6px */
-  --radius-md: 0.5rem;
-  /* 8px */
-  --radius-lg: 0.75rem;
-  /* 12px */
+  --radius-xs: 0.3rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
 .dark {
@@ -184,12 +191,30 @@ body {
   }
 }
 
+/* Glass Panel - Frosted overlay effect */
+@utility glass-panel {
+  @apply bg-[var(--panel)]/80 backdrop-blur-xl border border-[var(--border)] rounded-2xl;
+  box-shadow: var(--shadow-glass);
+}
+
+/* Status Bullet Indicators (coloured dots) */
+@utility status-bullet {
+  @apply w-2 h-2 rounded-full inline-block;
+}
+
+.status-bullet-emerald {
+  @apply bg-emerald-500;
+}
+
+.status-bullet-amber {
+  @apply bg-amber-500;
+}
+
+.status-bullet-red {
+  @apply bg-red-500;
+}
+
 /* Map specific overrides */
 .leaflet-container {
   background-color: var(--bg);
-  filter: grayscale(0.2) contrast(1.1);
-}
-
-.dark .leaflet-container {
-  filter: invert(100%) hue-rotate(180deg) brightness(0.9) contrast(1.2);
 }

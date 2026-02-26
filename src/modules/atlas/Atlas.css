@@ -1,0 +1,55 @@
+.glass-panel {
+    background: var(--bg);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.dark .glass-panel {
+    background: hsla(220, 10%, 8%, 0.8);
+    border-color: hsla(220, 10%, 20%, 0.5);
+}
+
+.atlas-popup .leaflet-popup-content-wrapper {
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.dark .atlas-popup .leaflet-popup-content-wrapper {
+    background: var(--card);
+}
+
+.atlas-popup .leaflet-popup-content {
+    margin: 0;
+}
+
+.atlas-popup .leaflet-popup-tip {
+    background: var(--bg);
+}
+
+.dark .atlas-popup .leaflet-popup-tip {
+    background: var(--card);
+}
+
+/* Custom Zoom Control Styling */
+.leaflet-bar {
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+    border-radius: var(--radius-md) !important;
+    overflow: hidden;
+}
+
+.leaflet-bar a {
+    background-color: var(--bg) !important;
+    color: var(--fg) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.leaflet-bar a:hover {
+    background-color: var(--item-bg) !important;
+}

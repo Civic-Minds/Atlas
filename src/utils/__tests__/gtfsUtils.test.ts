@@ -5,6 +5,9 @@ import {
     computeMedian,
     determineTier,
     calculateTiers,
+    synthesizeCalendarFromDates,
+    getModeName,
+    validateGtfs,
     GtfsData,
 } from '../gtfsUtils';
 
@@ -235,7 +238,7 @@ describe('calculateTiers – day classification', () => {
             stops: BASE_STOPS,
             stopTimes,
             calendar,
-            shapes: BASE_SHAPES,
+            shapes: BASE_SHAPES, calendarDates: [],
         };
     };
 
@@ -330,7 +333,7 @@ describe('calculateTiers – headway accuracy', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday' && x.dir === '0');
@@ -344,7 +347,7 @@ describe('calculateTiers – headway accuracy', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 30);
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -357,7 +360,7 @@ describe('calculateTiers – headway accuracy', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -377,7 +380,7 @@ describe('calculateTiers – headway accuracy', () => {
         ];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -401,7 +404,7 @@ describe('calculateTiers – headway accuracy', () => {
         ];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -425,7 +428,7 @@ describe('calculateTiers – headway accuracy', () => {
         ];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -447,7 +450,7 @@ describe('calculateTiers – headway accuracy', () => {
         ];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         // Only 1 in-window trip → not enough for analysis (need ≥ 2)
         const results = calculateTiers(gtfs, START, END);
@@ -467,7 +470,7 @@ describe('calculateTiers – headway accuracy', () => {
             stops: BASE_STOPS,
             stopTimes: [...d0.stopTimes, ...d1.stopTimes],
             calendar: [makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true })],
-            shapes: BASE_SHAPES,
+            shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r0 = results.find(x => x.dir === '0' && x.day === 'Weekday');
@@ -492,7 +495,7 @@ describe('calculateTiers – headway accuracy', () => {
             stops: BASE_STOPS,
             stopTimes: [...r1.stopTimes, ...r2.stopTimes],
             calendar,
-            shapes: BASE_SHAPES,
+            shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const route1 = results.find(x => x.route === 'R1' && x.day === 'Weekday');
@@ -508,7 +511,7 @@ describe('calculateTiers – headway accuracy', () => {
         const trips = [makeTrip('ORPHAN', 'R1', 'WD')];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes: [], calendar, shapes: BASE_SHAPES,
+            stopTimes: [], calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         expect(() => calculateTiers(gtfs, START, END)).not.toThrow();
         expect(calculateTiers(gtfs, START, END).length).toBe(0);
@@ -524,7 +527,7 @@ describe('calculateTiers – headway accuracy', () => {
         ];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         // Only T2 should be counted; T1's service is unknown so it's dropped.
@@ -538,7 +541,7 @@ describe('calculateTiers – headway accuracy', () => {
         const stopTimes = [makeStopTime('SOLO', '09:00:00')];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         expect(results.length).toBe(0);
@@ -555,7 +558,7 @@ describe('calculateTiers – reliability score', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -574,7 +577,7 @@ describe('calculateTiers – reliability score', () => {
         });
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -586,7 +589,7 @@ describe('calculateTiers – reliability score', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 30);
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         for (const r of results) {
@@ -597,21 +600,111 @@ describe('calculateTiers – reliability score', () => {
 });
 
 // ---------------------------------------------------------------------------
+// calendar_dates.txt synthesis (feeds without calendar.txt)
+// ---------------------------------------------------------------------------
+
+describe('calendar_dates synthesis via calculateTiers', () => {
+    // Helper: generate YYYYMMDD date strings for a range of weekdays/weekends
+    const makeDateStr = (year: number, month: number, day: number): string => {
+        return `${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`;
+    };
+
+    // Generate several Mondays in January 2026 for a weekday service
+    // Jan 5, 12, 19, 26 are Mondays in 2026
+    const mondayDates = [
+        makeDateStr(2026, 1, 5),
+        makeDateStr(2026, 1, 12),
+        makeDateStr(2026, 1, 19),
+        makeDateStr(2026, 1, 26),
+    ];
+
+    // Generate Saturdays: Jan 3, 10, 17, 24
+    const saturdayDates = [
+        makeDateStr(2026, 1, 3),
+        makeDateStr(2026, 1, 10),
+        makeDateStr(2026, 1, 17),
+        makeDateStr(2026, 1, 24),
+    ];
+
+    it('synthesizes a Weekday calendar from Monday-only calendar_dates', () => {
+        // Feed has NO calendar.txt — only calendar_dates with Monday dates
+        const calendarDates = mondayDates.map(d => ({
+            service_id: 'WD',
+            date: d,
+            exception_type: '1', // service added
+        }));
+
+        const synth = synthesizeCalendarFromDates(calendarDates);
+
+        expect(synth.length).toBe(1);
+        expect(synth[0].service_id).toBe('WD');
+        expect(synth[0].monday).toBe('1');
+        // Other days should be '0' since only Monday dates were provided
+        expect(synth[0].saturday).toBe('0');
+        expect(synth[0].sunday).toBe('0');
+    });
+
+    it('synthesizes Saturday calendar from Saturday-only calendar_dates', () => {
+        const calendarDates = saturdayDates.map(d => ({
+            service_id: 'SAT',
+            date: d,
+            exception_type: '1',
+        }));
+
+
+        const synth = synthesizeCalendarFromDates(calendarDates);
+
+        expect(synth.length).toBe(1);
+        expect(synth[0].service_id).toBe('SAT');
+        expect(synth[0].saturday).toBe('1');
+        expect(synth[0].monday).toBe('0');
+    });
+
+    it('ignores exception_type 2 (removed) entries during synthesis', () => {
+        const calendarDates = [
+            // Added on Monday
+            ...mondayDates.map(d => ({ service_id: 'WD', date: d, exception_type: '1' })),
+            // "Removed" on Saturday — should be ignored entirely
+            ...saturdayDates.map(d => ({ service_id: 'WD', date: d, exception_type: '2' })),
+        ];
+
+
+        const synth = synthesizeCalendarFromDates(calendarDates);
+
+        expect(synth.length).toBe(1);
+        expect(synth[0].saturday).toBe('0'); // Removed entries don't count
+    });
+
+    it('synthesized calendar works end-to-end with calculateTiers', () => {
+        // Build a synthesized calendar from Monday dates
+
+        const calendarDates = mondayDates.map(d => ({
+            service_id: 'WD', date: d, exception_type: '1',
+        }));
+        const calendar = synthesizeCalendarFromDates(calendarDates);
+
+        // Use it in calculateTiers
+        const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes,
+            calendar,
+            calendarDates,
+            shapes: BASE_SHAPES,
+        };
+
+        const results = calculateTiers(gtfs, START, END);
+        expect(results.some(r => r.day === 'Weekday')).toBe(true);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r!.avgHeadway).toBe(15);
+    });
+});
+
+// ---------------------------------------------------------------------------
 // Known limitations (documented, not bugs introduced here)
 // ---------------------------------------------------------------------------
 
 describe('known limitations', () => {
-    it('KNOWN LIMITATION: calendar_dates.txt is not supported', () => {
-        // Many GTFS feeds use calendar_dates.txt exclusively (no calendar.txt).
-        // The current parser treats calendar.txt as mandatory and will throw
-        // "Missing required GTFS file: calendar.txt" when it is absent.
-        // Feeds from agencies like those using exception-only scheduling cannot
-        // be processed until calendar_dates.txt support is implemented.
-        //
-        // This test documents the limitation rather than testing behaviour.
-        expect(true).toBe(true); // placeholder — see processGtfsFile in gtfsUtils.ts
-    });
-
     it('KNOWN LIMITATION: gaps < 2 min are silently dropped from headway calculation', () => {
         // The gap filter (gap >= 2 && gap <= 240) discards sub-2-minute gaps.
         // If two trips genuinely depart 1 minute apart (e.g. loop routes),
@@ -626,7 +719,7 @@ describe('known limitations', () => {
         ];
         const gtfs: GtfsData = {
             routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
-            stopTimes, calendar, shapes: BASE_SHAPES,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
@@ -637,3 +730,265 @@ describe('known limitations', () => {
         expect(r!.tripCount).toBe(3);
     });
 });
+
+// ---------------------------------------------------------------------------
+// Mode-aware tier thresholds
+// ---------------------------------------------------------------------------
+
+describe('mode-aware tier thresholds', () => {
+    const weekdayCalendar = [
+        makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true }),
+    ];
+
+    it('assigns tighter tiers for subway (route_type 1)', () => {
+        // 5-min headway subway should get tier '5' (rail threshold)
+        const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 5);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r).toBeDefined();
+        expect(r!.tier).toBe('5');
+    });
+
+    it('assigns tier "8" for 8-min subway service', () => {
+        const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 8);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r!.tier).toBe('8');
+    });
+
+    it('subway with 10-min service gets tier "10" (rail threshold)', () => {
+        const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 10);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r!.tier).toBe('10');
+    });
+
+    it('bus with 10-min service gets tier "10" (surface threshold)', () => {
+        const { trips, stopTimes } = buildRegularService('BUS', 'WD', START, END, 10);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'BUS', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r!.tier).toBe('10');
+    });
+
+    it('bus does NOT get tier "5" or "8" (those are rail-only)', () => {
+        const { trips, stopTimes } = buildRegularService('BUS', 'WD', START, END, 5);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'BUS', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        // Bus uses surface tiers [10,15,20,30,60], so 5-min bus should get '10'
+        expect(r!.tier).toBe('10');
+    });
+
+    it('commuter rail (route_type 2) uses rail thresholds', () => {
+        const { trips, stopTimes } = buildRegularService('CR', 'WD', START, END, 8);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'CR', route_type: '2' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r!.tier).toBe('8');
+    });
+
+    it('includes routeType and modeName in analysis results', () => {
+        const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 10);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r!.routeType).toBe('1');
+        expect(r!.modeName).toBe('Subway/Metro');
+    });
+
+    it('defaults to bus (route_type 3) when route_type is missing', () => {
+        const calendar = [makeService('WD', { mon: true })];
+        const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
+        const gtfs: GtfsData = {
+            routes: [{ route_id: 'R1', route_type: '' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const results = calculateTiers(gtfs, START, END);
+        const r = results.find(x => x.day === 'Weekday');
+        expect(r).toBeDefined();
+        // Empty route_type falls back to '3' (bus), which uses surface tiers
+        expect(r!.routeType).toBe('3');
+        expect(r!.modeName).toBe('Bus');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// getModeName
+// ---------------------------------------------------------------------------
+
+describe('getModeName', () => {
+    it('maps standard GTFS route_type values', () => {
+        expect(getModeName('0')).toBe('Tram/Light Rail');
+        expect(getModeName('1')).toBe('Subway/Metro');
+        expect(getModeName('2')).toBe('Commuter Rail');
+        expect(getModeName('3')).toBe('Bus');
+        expect(getModeName('4')).toBe('Ferry');
+    });
+
+    it('returns "Transit" for unknown route_type values', () => {
+        expect(getModeName('999')).toBe('Transit');
+        expect(getModeName('')).toBe('Transit');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// determineTier — custom tier arrays
+// ---------------------------------------------------------------------------
+
+describe('determineTier with custom tiers', () => {
+    it('uses rail tiers when provided', () => {
+        const railTiers = [5, 8, 10, 15, 30];
+        const headways = Array(180).fill(5); // 5-min headways
+        expect(determineTier(headways, 181, SPAN, railTiers)).toBe('5');
+    });
+
+    it('does not assign tier "5" with default surface tiers', () => {
+        const defaultTiers = [10, 15, 20, 30, 60];
+        const headways = Array(180).fill(5);
+        // With default tiers starting at 10, 5-min service qualifies for '10'
+        expect(determineTier(headways, 181, SPAN, defaultTiers)).toBe('10');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// GTFS Validation Engine
+// ---------------------------------------------------------------------------
+
+describe('validateGtfs', () => {
+    const validGtfs: GtfsData = {
+        routes: [{ route_id: 'R1', route_type: '3', route_short_name: 'R1' }],
+        trips: [{ trip_id: 'T1', route_id: 'R1', service_id: 'WD' }],
+        stops: [{ stop_id: 'S1', stop_name: 'Stop 1', stop_lat: '40.7128', stop_lon: '-74.0060' }],
+        stopTimes: [{ trip_id: 'T1', stop_id: 'S1', departure_time: '07:00:00', arrival_time: '07:00:00', stop_sequence: '1' }],
+        calendar: [makeService('WD', { mon: true })],
+        calendarDates: [],
+        shapes: [],
+    };
+
+    it('returns no errors for a valid feed', () => {
+        const report = validateGtfs(validGtfs, 'Test Feed');
+        expect(report.errors).toBe(0);
+        expect(report.feedName).toBe('Test Feed');
+    });
+
+    it('reports feed summary stats', () => {
+        const report = validateGtfs(validGtfs);
+        expect(report.summary.routes).toBe(1);
+        expect(report.summary.trips).toBe(1);
+        expect(report.summary.stops).toBe(1);
+        expect(report.summary.stopTimes).toBe(1);
+    });
+
+    it('detects empty routes file', () => {
+        const gtfs = { ...validGtfs, routes: [] };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'E001')).toBe(true);
+    });
+
+    it('detects orphaned trips (route_id not in routes)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            trips: [{ trip_id: 'T1', route_id: 'NONEXISTENT', service_id: 'WD' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'E010')).toBe(true);
+    });
+
+    it('detects orphaned stop_times (stop_id not in stops)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            stopTimes: [{ trip_id: 'T1', stop_id: 'GHOST', departure_time: '07:00:00', arrival_time: '07:00:00', stop_sequence: '1' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'W012')).toBe(true);
+    });
+
+    it('detects invalid coordinates', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            stops: [{ stop_id: 'S1', stop_name: 'Bad Stop', stop_lat: '999', stop_lon: '-74.0060' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'E020')).toBe(true);
+    });
+
+    it('detects Null Island stops (0, 0)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            stops: [{ stop_id: 'S1', stop_name: 'Null Island', stop_lat: '0', stop_lon: '0' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'W020')).toBe(true);
+    });
+
+    it('detects duplicate route_ids', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            routes: [
+                { route_id: 'R1', route_type: '3' },
+                { route_id: 'R1', route_type: '3' },
+            ],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'E030')).toBe(true);
+    });
+
+    it('warns about missing shapes.txt', () => {
+        const gtfs: GtfsData = { ...validGtfs, shapes: [] };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'W001')).toBe(true);
+    });
+
+    it('detects routes with no trips', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            routes: [
+                { route_id: 'R1', route_type: '3' },
+                { route_id: 'R_EMPTY', route_type: '3' },
+            ],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'I001')).toBe(true);
+    });
+
+    it('includes example IDs in issue details', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            stops: [
+                { stop_id: 'S1', stop_name: 'Bad Stop', stop_lat: '999', stop_lon: '0' },
+                { stop_id: 'S2', stop_name: 'Bad Stop 2', stop_lat: '-999', stop_lon: '0' },
+            ],
+        };
+        const report = validateGtfs(gtfs);
+        const coordIssue = report.issues.find(i => i.code === 'E020');
+        expect(coordIssue).toBeDefined();
+        expect(coordIssue!.examples!.length).toBeGreaterThan(0);
+        expect(coordIssue!.count).toBe(2);
+    });
+});
+

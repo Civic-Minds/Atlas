@@ -1,5 +1,13 @@
 import { useState, useCallback } from 'react';
 import { GtfsData, AnalysisResult, SpacingResult } from '../types/gtfs';
+import { ValidationReport } from '../core/validation';
+
+interface WorkerResult {
+    gtfsData: GtfsData;
+    analysisResults: AnalysisResult[];
+    spacingResults: SpacingResult[];
+    validationReport?: ValidationReport;
+}
 
 interface WorkerState {
     loading: boolean;
@@ -16,7 +24,7 @@ export function useGtfsWorker() {
 
     const runAnalysis = useCallback((
         file: File,
-        onComplete: (data: { gtfsData: GtfsData, analysisResults: AnalysisResult[], spacingResults: SpacingResult[] }) => void,
+        onComplete: (data: WorkerResult) => void,
         startTimeMins: number = 7 * 60,
         endTimeMins: number = 22 * 60
     ) => {
@@ -33,8 +41,8 @@ export function useGtfsWorker() {
                 if (type === 'STATUS') {
                     setState(prev => ({ ...prev, status: message }));
                 } else if (type === 'DONE') {
-                    const { gtfsData, analysisResults, spacingResults } = e.data;
-                    onComplete({ gtfsData, analysisResults, spacingResults });
+                    const { gtfsData, analysisResults, spacingResults, validationReport } = e.data;
+                    onComplete({ gtfsData, analysisResults, spacingResults, validationReport });
                     setState({ loading: false, status: '', error: null });
                     worker.terminate();
                 } else if (type === 'ERROR') {

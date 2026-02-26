@@ -1,31 +1,24 @@
-# Atlas: The Unified Transit Intelligence Ecosystem
+# Atlas
 
-Atlas is a comprehensive platform for urban mobility, designed to provide a closed-loop feedback system for transit planning and analysis.
+A transit intelligence platform for mobility precision in North American metros.
 
-## 🏗️ Pipeline
+## Problem
+The modern transit planning process is fragmented. Agencies juggle siloed GTFS feeds, manual audits, and complex simulation tools without a unified strategy. This disconnect between data and design leads to inefficient networks and unreliable service. Atlas bridges this gap by turning raw transit data into a closed-loop system for auditing, modeling, and sharing the network.
 
-The ecosystem is structured around three core phases:
+## Features
+- **Screen**: Automated GTFS-static analysis and route-level frequency tiering.
+- **Simulate**: High-fidelity stop consolidation and performance modeling.
+- **Verify**: Human-in-the-loop validation interface for data integrity.
+- **Optimize**: Generative AI for route optimization and network redesign.
+- **Explorer**: National longitudinal database viewer for urban mobility trends.
 
-1.  **Intelligence** (Cleaning & Integrity): Ensuring data represents reality.
-2.  **Strategy** (Modeling & Simulation): Testing changes in a safe environment.
-3.  **Discovery** (Viewing & Public Engagement): Understanding and sharing the network.
-
-## 🛠️ Modules
-
--   **[Screen](src/modules/screener)**: Automated GTFS analysis and route tiering.
--   **[Verify](src/modules/verifier)**: human-in-the-loop validation interface.
--   **[Simulate](src/modules/simulator)**: Stop consolidation and performance modeling.
--   **[Optimize](src/modules/optimize)**: (In Development) Generative AI for route optimization.
--   **[Atlas](src/modules/home)**: National longitudinal database viewer and base map.
-
-## 🗺️ Roadmap
-For the full vision and upcoming features (Access, Optimize, Collaborate, Monitor), see [ROADMAP.md](ROADMAP.md).
-
-## 📜 Legacy
-This repository evolved from the **Frequent Transit Networks** project. The original source code and documentation can be found in the [legacy/](legacy/) directory, and the original standalone repositories [Frequency](https://github.com/Civic-Minds/Frequency) and [Simulator](https://github.com/Civic-Minds/Simulator) are now archived.
+## The Stack
+- **Frontend**: React 19, Vite, Tailwind CSS, Framer Motion
+- **Architecture**: Zustand (Global State Management), Web Workers (Off-thread GTFS Parsing)
+- **Data**: IndexedDB (Persistence), Papaparse (CSV), JSZip
+- **Mapping**: Leaflet, React Leaflet
 
 ---
+[Roadmap](ROADMAP.md) • [Changelog](CHANGELOG.md) • [Security](SECURITY.md)
 
-**Happy Analyzing! 🗺️📊**
-
-Built by [Ryan Hanna](https://github.com/ryanphanna)
+Created by [Ryan Hanna](https://github.com/ryanphanna) | [ryanisnota.pro](https://ryanisnota.pro)

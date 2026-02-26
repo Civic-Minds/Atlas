@@ -35,10 +35,50 @@ export const computeMedian = (arr: number[]): number => {
 };
 
 /**
- * Determines the frequency tier for a route based on headway analysis
+ * GTFS route_type mode mapping
+ * See: https://gtfs.org/schedule/reference/#routestxt
  */
-export const determineTier = (headways: number[], tripCount: number, spanMinutes: number): string => {
-    const tiers = [10, 15, 20, 30, 60];
+const MODE_MAP: Record<string, string> = {
+    '0': 'Tram/Light Rail',
+    '1': 'Subway/Metro',
+    '2': 'Commuter Rail',
+    '3': 'Bus',
+    '4': 'Ferry',
+    '5': 'Cable Tram',
+    '6': 'Gondola',
+    '7': 'Funicular',
+    '11': 'Trolleybus',
+    '12': 'Monorail',
+};
+
+export const getModeName = (routeType: string): string =>
+    MODE_MAP[routeType] || 'Transit';
+
+/**
+ * Mode-aware tier thresholds.
+ * Rail modes use tighter thresholds because riders expect higher frequency
+ * on fixed-guideway services.
+ */
+const MODE_TIERS: Record<string, number[]> = {
+    rail: [5, 8, 10, 15, 30],   // subway, metro, commuter rail
+    surface: [10, 15, 20, 30, 60], // bus, tram, trolleybus, ferry, etc.
+};
+
+function getTiersForMode(routeType: string): number[] {
+    const railTypes = new Set(['1', '2']); // subway + commuter rail
+    return railTypes.has(routeType) ? MODE_TIERS.rail : MODE_TIERS.surface;
+}
+
+/**
+ * Determines the frequency tier for a route based on headway analysis.
+ * Accepts an optional custom tiers array for mode-aware thresholding.
+ */
+export const determineTier = (
+    headways: number[],
+    tripCount: number,
+    spanMinutes: number,
+    tiers: number[] = [10, 15, 20, 30, 60]
+): string => {
     const GRACE = 5;
     const MAX_GRACE_COUNT = 2;
 
@@ -74,6 +114,7 @@ export const calculateTiers = (
     const { routes, trips, stopTimes, calendar } = gtfs;
 
     const serviceById = new Map(calendar.map(c => [c.service_id, c]));
+    const routeById = new Map(routes.map(r => [r.route_id, r]));
 
     // 1. Get origin departure per trip
     const tripDepartures = new Map<string, number>();
@@ -147,30 +188,34 @@ export const calculateTiers = (
         const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
         const median = computeMedian(gaps);
 
-        // 4. Dynamic Peak Detection (2-hour sliding window)
+        // 4. Dynamic Peak Detection (2-hour sliding window) — O(n) two-pointer
         let peakHeadway = avg;
         let peakWindow = { start: sortedTimes[0], end: sortedTimes[0] + 120 };
         let maxDensity = 0;
+        let right = 0;
 
-        for (let i = 0; i < sortedTimes.length; i++) {
-            const windowStart = sortedTimes[i];
-            const windowEnd = windowStart + 120;
-            const tripsInWindow = sortedTimes.filter(t => t >= windowStart && t <= windowEnd);
+        for (let left = 0; left < sortedTimes.length; left++) {
+            const windowEnd = sortedTimes[left] + 120;
+            while (right < sortedTimes.length && sortedTimes[right] <= windowEnd) right++;
+            const count = right - left;
 
-            if (tripsInWindow.length > maxDensity) {
-                maxDensity = tripsInWindow.length;
-                peakWindow = { start: windowStart, end: windowEnd };
+            if (count > maxDensity) {
+                maxDensity = count;
+                peakWindow = { start: sortedTimes[left], end: windowEnd };
 
                 // Calculate headway within this peak window
                 const peakGaps = [];
-                for (let j = 1; j < tripsInWindow.length; j++) {
-                    peakGaps.push(tripsInWindow[j] - tripsInWindow[j - 1]);
+                for (let j = left + 1; j < right; j++) {
+                    peakGaps.push(sortedTimes[j] - sortedTimes[j - 1]);
                 }
                 peakHeadway = peakGaps.length ? peakGaps.reduce((a, b) => a + b, 0) / peakGaps.length : avg;
             }
         }
 
-        const tier = determineTier(gaps, sortedTimes.length, spanMins);
+        const route = routeById.get(routeId);
+        const routeType = route?.route_type || '3'; // default to bus
+        const modeTiers = getTiersForMode(routeType);
+        const tier = determineTier(gaps, sortedTimes.length, spanMins, modeTiers);
 
         // Calculate Reliability Score (0-100)
         const variance = gaps.length > 1
@@ -204,7 +249,9 @@ export const calculateTiers = (
             times: sortedTimes,
             reliabilityScore: Math.round(reliability),
             headwayVariance: Math.round(variance * 10) / 10,
-            bunchingFactor: Math.round(bunchingFactor * 100) / 100
+            bunchingFactor: Math.round(bunchingFactor * 100) / 100,
+            routeType,
+            modeName: getModeName(routeType),
         });
     }
 
@@ -290,18 +337,34 @@ export const calculateCorridors = (
 
         const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
 
+        // O(n) two-pointer peak detection
         let maxTripsInWindow = 0;
         let peakAvg = avg;
-        for (let i = 0; i < sortedTimes.length; i++) {
-            const end = sortedTimes[i] + 120;
-            const windowTrips = sortedTimes.filter(t => t >= sortedTimes[i] && t <= end);
-            if (windowTrips.length > maxTripsInWindow) {
-                maxTripsInWindow = windowTrips.length;
+        let rPtr = 0;
+        for (let lPtr = 0; lPtr < sortedTimes.length; lPtr++) {
+            const end = sortedTimes[lPtr] + 120;
+            while (rPtr < sortedTimes.length && sortedTimes[rPtr] <= end) rPtr++;
+            const count = rPtr - lPtr;
+            if (count > maxTripsInWindow) {
+                maxTripsInWindow = count;
                 const pGaps = [];
-                for (let j = 1; j < windowTrips.length; j++) pGaps.push(windowTrips[j] - windowTrips[j - 1]);
+                for (let j = lPtr + 1; j < rPtr; j++) pGaps.push(sortedTimes[j] - sortedTimes[j - 1]);
                 peakAvg = pGaps.length ? pGaps.reduce((a, b) => a + b, 0) / pGaps.length : avg;
             }
         }
+
+        // Calculate actual reliability score for this corridor
+        const corrVariance = gaps.length > 1
+            ? gaps.reduce((acc, h) => acc + Math.pow(h - avg, 2), 0) / (gaps.length - 1)
+            : 0;
+        const corrStdDev = Math.sqrt(corrVariance);
+        const corrConsistency = avg > 0 ? Math.max(0, 100 - (corrStdDev / avg) * 50) : 0;
+        const corrSignificantGaps = gaps.filter(g => g > avg * 1.5).length;
+        const corrOutlierPenalty = (corrSignificantGaps / gaps.length) * 40;
+        const corrBunchedGaps = gaps.filter(g => g < avg * 0.25).length;
+        const corrBunchingFactor = corrBunchedGaps / (gaps.length || 1);
+        const corrBunchingPenalty = corrBunchingFactor * 60;
+        const corrReliability = Math.max(0, corrConsistency - corrOutlierPenalty - corrBunchingPenalty);
 
         corridorResults.push({
             linkId,
@@ -311,7 +374,7 @@ export const calculateCorridors = (
             tripCount: sortedTimes.length,
             avgHeadway: Math.round(avg * 10) / 10,
             peakHeadway: Math.round(peakAvg * 10) / 10,
-            reliabilityScore: 100
+            reliabilityScore: Math.round(corrReliability)
         });
     }
 
