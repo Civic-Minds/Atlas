@@ -1,10 +1,24 @@
 import { haversineDistance } from './utils';
 import {
     GtfsData,
+    GtfsCalendar,
+    GtfsCalendarDate,
     AnalysisResult,
     CorridorResult,
-    SpacingResult
+    SpacingResult,
+    RawRouteDepartures,
+    AnalysisCriteria,
+    DayName,
+    DayType,
+    ALL_DAYS,
+    WEEKDAYS,
+    DAY_TO_TYPE,
 } from '../types/gtfs';
+import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
+
+// ---------------------------------------------------------------------------
+// Utility functions
+// ---------------------------------------------------------------------------
 
 /**
  * Converts HH:MM:SS string to minutes from beginning of day
@@ -36,7 +50,6 @@ export const computeMedian = (arr: number[]): number => {
 
 /**
  * GTFS route_type mode mapping
- * See: https://gtfs.org/schedule/reference/#routestxt
  */
 const MODE_MAP: Record<string, string> = {
     '0': 'Tram/Light Rail',
@@ -54,34 +67,215 @@ const MODE_MAP: Record<string, string> = {
 export const getModeName = (routeType: string): string =>
     MODE_MAP[routeType] || 'Transit';
 
-/**
- * Mode-aware tier thresholds.
- * Rail modes use tighter thresholds because riders expect higher frequency
- * on fixed-guideway services.
- */
-const MODE_TIERS: Record<string, number[]> = {
-    rail: [5, 8, 10, 15, 30],   // subway, metro, commuter rail
-    surface: [10, 15, 20, 30, 60], // bus, tram, trolleybus, ferry, etc.
+// ---------------------------------------------------------------------------
+// Calendar day mapping — maps DayName to the GtfsCalendar field name
+// ---------------------------------------------------------------------------
+
+const DAY_FIELD_MAP: Record<DayName, keyof GtfsCalendar> = {
+    Monday: 'monday',
+    Tuesday: 'tuesday',
+    Wednesday: 'wednesday',
+    Thursday: 'thursday',
+    Friday: 'friday',
+    Saturday: 'saturday',
+    Sunday: 'sunday',
 };
 
-function getTiersForMode(routeType: string): number[] {
-    const railTypes = new Set(['1', '2']); // subway + commuter rail
-    return railTypes.has(routeType) ? MODE_TIERS.rail : MODE_TIERS.surface;
+// ---------------------------------------------------------------------------
+// Phase 1: Raw Extraction
+// ---------------------------------------------------------------------------
+
+/**
+ * Determines which service_ids are active on a specific day, accounting for
+ * both calendar.txt and calendar_dates.txt exceptions.
+ */
+function getActiveServiceIds(
+    calendar: GtfsCalendar[],
+    calendarDates: GtfsCalendarDate[],
+    day: DayName
+): Set<string> {
+    const field = DAY_FIELD_MAP[day];
+    const active = new Set<string>();
+
+    // Step 1: Add service_ids that are active on this day per calendar.txt
+    for (const cal of calendar) {
+        if (cal[field] === '1') {
+            active.add(cal.service_id);
+        }
+    }
+
+    // Step 2: Apply calendar_dates exceptions
+    // We group by service_id and check if any dates for that service fall on
+    // this day of the week, with exception_type=1 (added) or =2 (removed).
+    //
+    // For correctness: if a service is in calendar.txt as active on Mondays,
+    // but calendar_dates removes it on a specific Monday, the service is still
+    // generally active on Mondays (the exception is date-specific, not day-specific).
+    //
+    // However, if a service is NOT in calendar.txt at all, and only appears via
+    // calendar_dates additions, it was already handled by synthesizeCalendarFromDates
+    // in parseGtfs.ts. So here we only need to handle the case where calendar.txt
+    // exists and calendar_dates modifies it.
+    //
+    // For schedule-based analysis (not date-specific), we keep the calendar.txt
+    // day-of-week mapping as the source of truth. calendar_dates exceptions affect
+    // specific dates, not the general schedule pattern.
+
+    return active;
 }
 
 /**
+ * Builds a map of trip_id → origin departure time (minutes from midnight).
+ * Origin = the stop with the lowest stop_sequence for that trip.
+ */
+function buildTripDepartures(
+    gtfs: GtfsData
+): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string }> {
+    const { trips, stopTimes } = gtfs;
+
+    // Group stop_times by trip_id, find first stop per trip
+    const tripFirstDep = new Map<string, number>();
+    const tripFirstSeq = new Map<string, number>();
+
+    for (const st of stopTimes) {
+        const seq = parseInt(st.stop_sequence);
+        const existing = tripFirstSeq.get(st.trip_id);
+        if (existing === undefined || seq < existing) {
+            const dep = t2m(st.departure_time);
+            if (dep !== null) {
+                tripFirstDep.set(st.trip_id, dep);
+                tripFirstSeq.set(st.trip_id, seq);
+            }
+        }
+    }
+
+    // Build result map
+    const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string }>();
+    for (const trip of trips) {
+        const depTime = tripFirstDep.get(trip.trip_id);
+        if (depTime === undefined) continue;
+        result.set(trip.trip_id, {
+            depTime,
+            routeId: trip.route_id,
+            dirId: trip.direction_id || '0',
+            serviceId: trip.service_id,
+        });
+    }
+
+    return result;
+}
+
+/**
+ * Deduplicates departure times that are within 1 minute of each other.
+ * This handles the case where multiple service_ids produce near-duplicate trips.
+ * Returns sorted, deduplicated array.
+ */
+function deduplicateDepartures(times: number[]): number[] {
+    if (times.length === 0) return [];
+    const sorted = [...times].sort((a, b) => a - b);
+    const result = [sorted[0]];
+    for (let i = 1; i < sorted.length; i++) {
+        if (sorted[i] - result[result.length - 1] > 1) {
+            result.push(sorted[i]);
+        }
+    }
+    return result;
+}
+
+/**
+ * Phase 1: Extract raw departure data from GTFS.
+ *
+ * Produces one RawRouteDepartures per route/direction/day (individual days:
+ * Monday through Sunday). No time window filtering, no tier classification.
+ * All gaps are kept — nothing is silently filtered.
+ */
+export function computeRawDepartures(gtfs: GtfsData): RawRouteDepartures[] {
+    const { routes, calendar, calendarDates } = gtfs;
+    const routeById = new Map(routes.map(r => [r.route_id, r]));
+    const tripData = buildTripDepartures(gtfs);
+
+    const results: RawRouteDepartures[] = [];
+
+    // For each individual day, determine active services and group trips
+    for (const day of ALL_DAYS) {
+        const activeServiceIds = getActiveServiceIds(calendar, calendarDates, day);
+        if (activeServiceIds.size === 0) continue;
+
+        // Group departures by route + direction
+        const grouped = new Map<string, { times: number[]; serviceIds: Set<string> }>();
+
+        for (const [, data] of tripData) {
+            if (!activeServiceIds.has(data.serviceId)) continue;
+
+            const key = `${data.routeId}::${data.dirId}`;
+            if (!grouped.has(key)) {
+                grouped.set(key, { times: [], serviceIds: new Set() });
+            }
+            const group = grouped.get(key)!;
+            group.times.push(data.depTime);
+            group.serviceIds.add(data.serviceId);
+        }
+
+        // Process each route/direction group
+        for (const [key, group] of grouped) {
+            const [routeId, dirId] = key.split('::');
+
+            const departureTimes = deduplicateDepartures(group.times);
+            if (departureTimes.length < 2) continue;
+
+            // Compute ALL gaps — no filtering
+            const gaps: number[] = [];
+            for (let i = 1; i < departureTimes.length; i++) {
+                gaps.push(departureTimes[i] - departureTimes[i - 1]);
+            }
+
+            const serviceIds = Array.from(group.serviceIds);
+            const warnings: string[] = [];
+            if (serviceIds.length > 1) {
+                warnings.push(`Multiple service_ids (${serviceIds.join(', ')}) contribute trips on ${day}`);
+            }
+
+            const route = routeById.get(routeId);
+            const routeType = route?.route_type || '3';
+
+            results.push({
+                route: routeId,
+                dir: dirId,
+                day,
+                routeType,
+                modeName: getModeName(routeType),
+                departureTimes,
+                gaps,
+                serviceSpan: {
+                    start: departureTimes[0],
+                    end: departureTimes[departureTimes.length - 1],
+                },
+                tripCount: departureTimes.length,
+                serviceIds,
+                warnings,
+            });
+        }
+    }
+
+    return results;
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2: Criteria Application
+// ---------------------------------------------------------------------------
+
+/**
  * Determines the frequency tier for a route based on headway analysis.
- * Accepts an optional custom tiers array for mode-aware thresholding.
+ * All parameters are explicit — nothing hardcoded.
  */
 export const determineTier = (
     headways: number[],
     tripCount: number,
     spanMinutes: number,
-    tiers: number[] = [10, 15, 20, 30, 60]
+    tiers: number[] = [10, 15, 20, 30, 60],
+    graceMinutes: number = 5,
+    maxGraceViolations: number = 2,
 ): string => {
-    const GRACE = 5;
-    const MAX_GRACE_COUNT = 2;
-
     for (const T of tiers) {
         const minTrips = Math.ceil(spanMinutes / T);
         if (tripCount < minTrips) continue;
@@ -90,9 +284,9 @@ export const determineTier = (
         let fail = false;
         for (const h of headways) {
             if (h <= T) continue;
-            if (h <= T + GRACE) {
+            if (h <= T + graceMinutes) {
                 graceCount++;
-                if (graceCount > MAX_GRACE_COUNT) { fail = true; break; }
+                if (graceCount > maxGraceViolations) { fail = true; break; }
             } else {
                 fail = true; break;
             }
@@ -104,159 +298,246 @@ export const determineTier = (
 };
 
 /**
- * Analyzes GTFS data to calculate frequency tiers for all routes/directions/days
+ * Compute headway statistics and reliability score from gaps.
+ */
+function computeHeadwayStats(gaps: number[], times: number[]) {
+    const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
+    const median = computeMedian(gaps);
+
+    // Peak detection: 2-hour sliding window, O(n) two-pointer
+    let peakHeadway = avg;
+    let peakWindow = { start: times[0], end: times[0] + 120 };
+    let maxDensity = 0;
+    let right = 0;
+
+    for (let left = 0; left < times.length; left++) {
+        const windowEnd = times[left] + 120;
+        while (right < times.length && times[right] <= windowEnd) right++;
+        const count = right - left;
+
+        if (count > maxDensity) {
+            maxDensity = count;
+            peakWindow = { start: times[left], end: windowEnd };
+            const peakGaps = [];
+            for (let j = left + 1; j < right; j++) {
+                peakGaps.push(times[j] - times[j - 1]);
+            }
+            peakHeadway = peakGaps.length ? peakGaps.reduce((a, b) => a + b, 0) / peakGaps.length : avg;
+        }
+    }
+
+    // Reliability score (0-100)
+    const variance = gaps.length > 1
+        ? gaps.reduce((acc, h) => acc + Math.pow(h - avg, 2), 0) / (gaps.length - 1)
+        : 0;
+    const stdDev = Math.sqrt(variance);
+    const significantGaps = gaps.filter(g => g > avg * 1.5).length;
+    const outlierPenalty = gaps.length ? (significantGaps / gaps.length) * 40 : 0;
+    const bunchedGaps = gaps.filter(g => g < avg * 0.25).length;
+    const bunchingFactor = bunchedGaps / (gaps.length || 1);
+    const bunchingPenalty = bunchingFactor * 60;
+    const consistency = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 50) : 0;
+    const reliability = Math.max(0, consistency - outlierPenalty - bunchingPenalty);
+
+    return {
+        avg,
+        median,
+        peakHeadway: Math.round(peakHeadway * 10) / 10,
+        peakWindow,
+        variance: Math.round(variance * 10) / 10,
+        bunchingFactor: Math.round(bunchingFactor * 100) / 100,
+        reliabilityScore: Math.round(reliability),
+    };
+}
+
+/**
+ * Phase 2: Apply analysis criteria to raw departure data.
+ *
+ * For each raw entry (per individual day), filters departures to the time window,
+ * classifies into tiers, then rolls up individual days into day-type summaries
+ * (Weekday/Saturday/Sunday).
+ *
+ * Weekday rollup: uses the WORST tier across Mon-Fri for that route/direction.
+ * This ensures "Weekday FTS @ 15min" means it passes on ALL weekdays.
+ */
+export function applyAnalysisCriteria(
+    rawData: RawRouteDepartures[],
+    criteria: AnalysisCriteria = DEFAULT_CRITERIA
+): AnalysisResult[] {
+    // Step 1: Compute per-individual-day results
+    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult }>();
+
+    for (const raw of rawData) {
+        const dayType = DAY_TO_TYPE[raw.day];
+        const dayConfig = criteria.dayTypes[dayType];
+        if (!dayConfig) continue;
+
+        // Filter departures to time window
+        const { start, end } = dayConfig.timeWindow;
+        const windowedTimes = raw.departureTimes.filter(t => t >= start && t <= end);
+        if (windowedTimes.length < 2) continue;
+
+        // Recompute gaps within the windowed range
+        const windowedGaps: number[] = [];
+        for (let i = 1; i < windowedTimes.length; i++) {
+            windowedGaps.push(windowedTimes[i] - windowedTimes[i - 1]);
+        }
+
+        const spanMins = end - start;
+        const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, criteria.modeTierOverrides);
+        const tier = determineTier(
+            windowedGaps,
+            windowedTimes.length,
+            spanMins,
+            tiers,
+            criteria.graceMinutes,
+            criteria.maxGraceViolations,
+        );
+
+        const stats = computeHeadwayStats(windowedGaps, windowedTimes);
+
+        const key = `${raw.route}::${raw.dir}::${raw.day}`;
+        perDayResults.set(key, {
+            dayType,
+            day: raw.day,
+            result: {
+                route: raw.route,
+                day: raw.day,
+                dir: raw.dir,
+                avgHeadway: stats.avg,
+                medianHeadway: stats.median,
+                peakHeadway: stats.peakHeadway,
+                baseHeadway: Math.round(stats.avg * 10) / 10,
+                peakWindow: stats.peakWindow,
+                serviceSpan: { start: windowedTimes[0], end: windowedTimes[windowedTimes.length - 1] },
+                tier,
+                tripCount: windowedTimes.length,
+                gaps: windowedGaps,
+                times: windowedTimes,
+                reliabilityScore: stats.reliabilityScore,
+                headwayVariance: stats.variance,
+                bunchingFactor: stats.bunchingFactor,
+                routeType: raw.routeType,
+                modeName: raw.modeName,
+                serviceIds: raw.serviceIds,
+                warnings: raw.warnings,
+                daysIncluded: [raw.day],
+            },
+        });
+    }
+
+    // Step 2: Roll up into day-type summaries (Weekday/Saturday/Sunday)
+    // Group per-day results by route/dir/dayType
+    const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult }[] }>();
+
+    for (const [, entry] of perDayResults) {
+        const key = `${entry.result.route}::${entry.result.dir}::${entry.dayType}`;
+        if (!rollupGroups.has(key)) {
+            rollupGroups.set(key, { dayType: entry.dayType, entries: [] });
+        }
+        rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result });
+    }
+
+    const results: AnalysisResult[] = [];
+
+    for (const [, group] of rollupGroups) {
+        const { dayType, entries } = group;
+
+        if (entries.length === 0) continue;
+
+        // For weekdays: use the WORST (highest number = least frequent) tier
+        // For Saturday/Sunday: just use the single day's result
+        const tierValues = entries.map(e => {
+            const t = e.result.tier;
+            return t === 'span' ? Infinity : parseInt(t);
+        });
+        const worstTierValue = Math.max(...tierValues);
+        const worstTier = worstTierValue === Infinity ? 'span' : String(worstTierValue);
+
+        // Aggregate stats: average across days
+        const allGaps = entries.flatMap(e => e.result.gaps);
+        const allTimes = entries.flatMap(e => e.result.times);
+        const totalTrips = entries.reduce((sum, e) => sum + e.result.tripCount, 0);
+        const avgTrips = Math.round(totalTrips / entries.length);
+
+        const stats = allGaps.length > 0
+            ? computeHeadwayStats(allGaps, [...new Set(allTimes)].sort((a, b) => a - b))
+            : { avg: 0, median: 0, peakHeadway: 0, peakWindow: { start: 0, end: 0 }, variance: 0, bunchingFactor: 0, reliabilityScore: 0 };
+
+        // Use first entry as representative for metadata
+        const rep = entries[0].result;
+
+        // Collect all service spans
+        const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
+        const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
+
+        // Collect all warnings and service IDs
+        const allServiceIds = [...new Set(entries.flatMap(e => e.result.serviceIds || []))];
+        const allWarnings = [...new Set(entries.flatMap(e => e.result.warnings || []))];
+        const daysIncluded = entries.map(e => e.day);
+
+        // For weekday rollup: warn if not all 5 weekdays are present
+        if (dayType === 'Weekday' && daysIncluded.length < 5) {
+            const missing = WEEKDAYS.filter(d => !daysIncluded.includes(d));
+            allWarnings.push(`Only runs ${daysIncluded.length}/5 weekdays (missing: ${missing.join(', ')})`);
+        }
+
+        results.push({
+            route: rep.route,
+            day: dayType,
+            dir: rep.dir,
+            avgHeadway: stats.avg,
+            medianHeadway: stats.median,
+            peakHeadway: stats.peakHeadway,
+            baseHeadway: Math.round(stats.avg * 10) / 10,
+            peakWindow: stats.peakWindow,
+            serviceSpan: { start: Math.min(...allStarts), end: Math.max(...allEnds) },
+            tier: worstTier,
+            tripCount: avgTrips,
+            gaps: allGaps,
+            times: [...new Set(allTimes)].sort((a, b) => a - b),
+            reliabilityScore: stats.reliabilityScore,
+            headwayVariance: stats.variance,
+            bunchingFactor: stats.bunchingFactor,
+            routeType: rep.routeType,
+            modeName: rep.modeName,
+            serviceIds: allServiceIds,
+            warnings: allWarnings.length > 0 ? allWarnings : undefined,
+            daysIncluded,
+        });
+    }
+
+    return results;
+}
+
+// ---------------------------------------------------------------------------
+// Backward-compatible wrapper
+// ---------------------------------------------------------------------------
+
+/**
+ * Legacy API — wraps computeRawDepartures + applyAnalysisCriteria.
+ * Produces identical output shape so existing tests and UI continue working.
  */
 export const calculateTiers = (
     gtfs: GtfsData,
     startTimeMins: number,
     endTimeMins: number
 ): AnalysisResult[] => {
-    const { routes, trips, stopTimes, calendar } = gtfs;
-
-    const serviceById = new Map(calendar.map(c => [c.service_id, c]));
-    const routeById = new Map(routes.map(r => [r.route_id, r]));
-
-    // 1. Get origin departure per trip
-    const tripDepartures = new Map<string, number>();
-    const tripToRouteDir = new Map<string, { routeId: string; dirId: string; serviceId: string }>();
-
-    // Efficiently find first stop for each trip
-    const tripStopTimes = new Map<string, any[]>();
-    for (const st of stopTimes) {
-        if (!tripStopTimes.has(st.trip_id)) tripStopTimes.set(st.trip_id, []);
-        tripStopTimes.get(st.trip_id)!.push(st);
-    }
-
-    for (const trip of trips) {
-        const stList = tripStopTimes.get(trip.trip_id);
-        if (!stList) continue;
-
-        // Find earliest stop sequence
-        const firstStop = stList.reduce((prev, curr) =>
-            parseInt(curr.stop_sequence) < parseInt(prev.stop_sequence) ? curr : prev
-        );
-
-        const depTime = t2m(firstStop.departure_time);
-        if (depTime !== null && depTime >= startTimeMins && depTime <= endTimeMins) {
-            tripDepartures.set(trip.trip_id, depTime);
-            tripToRouteDir.set(trip.trip_id, {
-                routeId: trip.route_id,
-                dirId: trip.direction_id || '0',
-                serviceId: trip.service_id
-            });
-        }
-    }
-
-    // 2. Group departures by Route, Day, Direction
-    const grouped = new Map<string, number[]>(); // "routeId::day::dirId" -> [times]
-
-    for (const [tripId, time] of tripDepartures.entries()) {
-        const meta = tripToRouteDir.get(tripId)!;
-        const service = serviceById.get(meta.serviceId);
-        if (!service) continue;
-
-        const days = [];
-        const isWeekday = service.monday === '1' || service.tuesday === '1' ||
-            service.wednesday === '1' || service.thursday === '1' || service.friday === '1';
-        if (isWeekday) days.push('Weekday');
-        if (service.saturday === '1') days.push('Saturday');
-        if (service.sunday === '1') days.push('Sunday');
-
-        for (const day of days) {
-            const key = `${meta.routeId}::${day}::${meta.dirId}`;
-            if (!grouped.has(key)) grouped.set(key, []);
-            grouped.get(key)!.push(time);
-        }
-    }
-
-    // 3. Analyze each group
-    const results: AnalysisResult[] = [];
-    const spanMins = endTimeMins - startTimeMins;
-
-    for (const [key, times] of grouped.entries()) {
-        const [routeId, day, dirId] = key.split('::');
-        const sortedTimes = Array.from(new Set(times)).sort((a, b) => a - b);
-
-        const gaps: number[] = [];
-        for (let i = 1; i < sortedTimes.length; i++) {
-            const gap = sortedTimes[i] - sortedTimes[i - 1];
-            if (gap >= 2 && gap <= 240) gaps.push(gap);
-        }
-
-        if (sortedTimes.length < 2) continue;
-
-        const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
-        const median = computeMedian(gaps);
-
-        // 4. Dynamic Peak Detection (2-hour sliding window) — O(n) two-pointer
-        let peakHeadway = avg;
-        let peakWindow = { start: sortedTimes[0], end: sortedTimes[0] + 120 };
-        let maxDensity = 0;
-        let right = 0;
-
-        for (let left = 0; left < sortedTimes.length; left++) {
-            const windowEnd = sortedTimes[left] + 120;
-            while (right < sortedTimes.length && sortedTimes[right] <= windowEnd) right++;
-            const count = right - left;
-
-            if (count > maxDensity) {
-                maxDensity = count;
-                peakWindow = { start: sortedTimes[left], end: windowEnd };
-
-                // Calculate headway within this peak window
-                const peakGaps = [];
-                for (let j = left + 1; j < right; j++) {
-                    peakGaps.push(sortedTimes[j] - sortedTimes[j - 1]);
-                }
-                peakHeadway = peakGaps.length ? peakGaps.reduce((a, b) => a + b, 0) / peakGaps.length : avg;
-            }
-        }
-
-        const route = routeById.get(routeId);
-        const routeType = route?.route_type || '3'; // default to bus
-        const modeTiers = getTiersForMode(routeType);
-        const tier = determineTier(gaps, sortedTimes.length, spanMins, modeTiers);
-
-        // Calculate Reliability Score (0-100)
-        const variance = gaps.length > 1
-            ? gaps.reduce((acc, h) => acc + Math.pow(h - avg, 2), 0) / (gaps.length - 1)
-            : 0;
-        const stdDev = Math.sqrt(variance);
-
-        const significantGaps = gaps.filter(g => g > avg * 1.5).length;
-        const outlierPenalty = (significantGaps / gaps.length) * 40;
-
-        const bunchedGaps = gaps.filter(g => g < avg * 0.25).length;
-        const bunchingFactor = bunchedGaps / (gaps.length || 1);
-        const bunchingPenalty = bunchingFactor * 60;
-
-        const consistency = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 50) : 0;
-        const reliability = Math.max(0, consistency - outlierPenalty - bunchingPenalty);
-
-        results.push({
-            route: routeId,
-            day,
-            dir: dirId,
-            avgHeadway: avg,
-            medianHeadway: median,
-            peakHeadway: Math.round(peakHeadway * 10) / 10,
-            baseHeadway: Math.round(avg * 10) / 10,
-            peakWindow,
-            serviceSpan: { start: sortedTimes[0], end: sortedTimes[sortedTimes.length - 1] },
-            tier,
-            tripCount: sortedTimes.length,
-            gaps,
-            times: sortedTimes,
-            reliabilityScore: Math.round(reliability),
-            headwayVariance: Math.round(variance * 10) / 10,
-            bunchingFactor: Math.round(bunchingFactor * 100) / 100,
-            routeType,
-            modeName: getModeName(routeType),
-        });
-    }
-
-    return results;
+    const rawData = computeRawDepartures(gtfs);
+    const criteria: AnalysisCriteria = {
+        ...DEFAULT_CRITERIA,
+        dayTypes: {
+            Weekday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: [10, 15, 20, 30, 60] },
+            Saturday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: [10, 15, 20, 30, 60] },
+            Sunday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: [10, 15, 20, 30, 60] },
+        },
+    };
+    return applyAnalysisCriteria(rawData, criteria);
 };
+
+// ---------------------------------------------------------------------------
+// Corridor Analysis (unchanged from original)
+// ---------------------------------------------------------------------------
 
 /**
  * Identifies shared road segments (links) and calculates aggregate frequency.
@@ -353,7 +634,6 @@ export const calculateCorridors = (
             }
         }
 
-        // Calculate actual reliability score for this corridor
         const corrVariance = gaps.length > 1
             ? gaps.reduce((acc, h) => acc + Math.pow(h - avg, 2), 0) / (gaps.length - 1)
             : 0;
@@ -381,6 +661,10 @@ export const calculateCorridors = (
     return corridorResults.sort((a, b) => a.avgHeadway - b.avgHeadway);
 };
 
+// ---------------------------------------------------------------------------
+// Stop Spacing Analysis (unchanged from original)
+// ---------------------------------------------------------------------------
+
 /**
  * Calculates stop spacing and identifies redundant pairs.
  */
@@ -407,7 +691,7 @@ export const calculateStopSpacing = (
 
     const distances: number[] = [];
     const redundantPairs: SpacingResult['redundantPairs'] = [];
-    const RADIUS = 400; // Redundancy threshold in meters
+    const RADIUS = 400;
 
     for (let i = 1; i < routeStops.length; i++) {
         const sA = routeStops[i - 1];
