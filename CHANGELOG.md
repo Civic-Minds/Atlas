@@ -1,6 +1,22 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- **Authentication System**: Implemented `useAuthStore` with Zustand for persistent session management. Features a secure-gated access model for all intelligence modules.
+- **Premium Auth Gates**: Integrated `ModuleLanding` component with cinematic Framer Motion animations to gate-keep modules for unauthenticated users.
+- **Unified Brand Experience**: Redesigned the "Atlas by Civic Minds" navigation architecture, standardizing on a high-fidelity text-based logo and minimized TopNav.
+- **Premium Home Page Redesign**: Engineered a data-driven "Burner" home page at `/burner` featuring full-bleed map visualizations and Bento Box grids. Standardized on a "Technical Precision" aesthetic with high-contrast light mode and CartoDB Positron mapping.
+- **Functional UI Visualization**: Replaced abstract icons with functional mock telemetry and metric grids to demonstrate platform capabilities immediately ("Show, Don't Tell").
+- **Optimized Strategy Module**: Enhanced `ScreenerView` with a "Commit to Catalog" workflow, allowing analyzed GTFS feeds to be permanently stored in the system-wide Atlas.
+
+### Changed
+- **Platform Nomenclature**: Synchronized all product pillars and navigation to the new "Audit / Strategy / Simulate / Predict / Optimize" framework.
+- **High-Fidelity Branding**: Standardized typography and visual hierarchy across all landing pages, including "Atlas by Civic Minds" in the global header.
+- **Footer Brand Refinement**: Transitioned the footer description to the "Intelligence for Mobility" slogan and optimized the copyright bar by removing redundant text for a more premium, anchored aesthetic.
+
+### Fixed
+- **Routing Engine Stability**: Resolved a critical mapping regression where intelligence paths (e.g., `/atlas`) were misrouted to incorrect view components.
+- **Merge Conflict Resolution**: Synchronized the local UI/Auth architecture with the new upstream GTFS Data Pipeline, ensuring feature parity and cross-module consistency.
 
 ## [0.9.0] - 2026-02-27
 ### Added

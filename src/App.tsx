@@ -7,6 +7,7 @@ import { NotificationToast } from './components/NotificationToast';
 
 // Lazy-loaded module views — each becomes a separate chunk
 const HomePage = React.lazy(() => import('./modules/home/HomePage'));
+const BurnerHomePage = React.lazy(() => import('./modules/home/BurnerHomePage'));
 const SimulatorView = React.lazy(() => import('./modules/simulator/SimulatorView'));
 const ScreenerView = React.lazy(() => import('./modules/screener/ScreenerView'));
 const VerifierView = React.lazy(() => import('./modules/verifier/VerifierView'));
@@ -43,6 +44,7 @@ const App: React.FC = () => {
                         <Suspense fallback={<LazyFallback />}>
                             <Routes location={location}>
                                 <Route path="/" element={<HomePage />} />
+                                <Route path="/burner" element={<BurnerHomePage />} />
                                 <Route path="/atlas/*" element={<AtlasView />} />
                                 <Route path="/strategy/*" element={<ScreenerView />} />
                                 <Route path="/simulator/*" element={<SimulatorView />} />
