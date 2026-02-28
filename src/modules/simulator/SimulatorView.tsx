@@ -5,10 +5,13 @@ import SimulatorMap from './components/SimulatorMap';
 import MetricsPanel from './components/MetricsPanel';
 import ControlPanel from './components/ControlPanel';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
-import { Activity, Database, PanelRightOpen, Download } from 'lucide-react';
+import { Activity, Database, PanelRightOpen, Download, Map as MapIcon, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ModuleLanding } from '../../components/ModuleLanding';
+import { useAuthStore } from '../../hooks/useAuthStore';
 
 function SimulatorViewContent() {
+    const { isAuthenticated } = useAuthStore();
     const {
         selectedRouteId,
         setSelectedRouteId,
@@ -50,12 +53,44 @@ function SimulatorViewContent() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleKeyDown]);
 
+    if (!isAuthenticated) {
+        return (
+            <ModuleLanding
+                title="Predict"
+                description="High-precision transit impact modeling and micro-engineering scenario testing."
+                icon={Activity}
+                features={[
+                    {
+                        title: "Scenario Lab",
+                        description: "Model complex stop consolidation scenarios and see travel time impact instantly.",
+                        icon: <Activity className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Micro-Engineering",
+                        description: "Adjust dwell times, signal priority, and stop positioning at the individual level.",
+                        icon: <Zap className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Network Mapping",
+                        description: "Visualize the spatial impact of service changes on real-world transit topography.",
+                        icon: <MapIcon className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Metric-Driven Growth",
+                        description: "Export simulation results to justify capital projects and network realignments.",
+                        icon: <Database className="w-5 h-5 text-indigo-500" />
+                    }
+                ]}
+            />
+        );
+    }
+
     if (!hasGtfsData) {
         return (
             <div className="module-container">
                 <EmptyStateHero
                     icon={Activity}
-                    title="Simulate"
+                    title="Predict"
                     description="Model stop consolidation scenarios with real-time performance metrics. Upload a GTFS feed to begin."
                     primaryAction={{
                         label: "Open Admin Panel",
@@ -208,7 +243,7 @@ function SimulatorViewContent() {
                         <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                             <Activity className="w-4 h-4 text-indigo-500" />
                         </div>
-                        <h2 className="text-sm font-black uppercase tracking-widest text-[var(--fg)]">Logic Engine</h2>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-[var(--fg)]">Predictive Engine</h2>
                     </div>
                     <div className="flex items-center gap-1">
                         <button

@@ -1,12 +1,14 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText } from 'lucide-react';
+import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText, Activity } from 'lucide-react';
 import { AnalysisResult, GtfsData, SpacingResult, CorridorResult } from '../../utils/gtfsUtils';
 import { downloadCsv } from '../../utils/exportUtils';
 import { storage, STORES } from '../../core/storage';
 import { ModuleHeader } from '../../components/ModuleHeader';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
+import { ModuleLanding } from '../../components/ModuleLanding';
 import { useGtfsWorker } from '../../hooks/useGtfsWorker';
+import { useAuthStore } from '../../hooks/useAuthStore';
 import { useTransitStore } from '../../types/store';
 import { useNotificationStore } from '../../hooks/useNotification';
 import { CorridorAuditModal } from './components/CorridorAuditModal';
@@ -61,6 +63,7 @@ const TIER_BADGE_CLASSES: Record<string, string> = {
 };
 
 export default function ScreenerView() {
+    const { isAuthenticated } = useAuthStore();
     const {
         gtfsData,
         analysisResults,
@@ -153,6 +156,38 @@ export default function ScreenerView() {
         );
     }
 
+    if (!isAuthenticated) {
+        return (
+            <ModuleLanding
+                title="Strategy"
+                description="Real-time frequency monitoring and route performance tiering for modern urban mobility."
+                icon={ShieldCheck}
+                features={[
+                    {
+                        title: "Frequency Tiers",
+                        description: "Automatically categorize every route in your network by realized headway performance.",
+                        icon: <Clock className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "System-Wide Integrity",
+                        description: "Identify coverage gaps and service anomalies across the entire transit network.",
+                        icon: <MapIcon className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Corridor Performance",
+                        description: "Analyze combined frequency along shared corridors to detect high-capacity opportunities.",
+                        icon: <Activity className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Administrative Ingest",
+                        description: "Seamlessly ingest GTFS data and technical specs for instant platform analysis.",
+                        icon: <Database className="w-5 h-5 text-indigo-500" />
+                    }
+                ]}
+            />
+        );
+    }
+
     if (!gtfsData) {
         return (
             <div className="module-container">
@@ -165,7 +200,7 @@ export default function ScreenerView() {
                 />
                 <EmptyStateHero
                     icon={ShieldCheck}
-                    title="Screen"
+                    title="Strategy"
                     description="Analysis-ready frequency reporting. Waiting for data ingest from the administrative console."
                     primaryAction={{
                         label: "Open Admin Panel",
@@ -185,13 +220,13 @@ export default function ScreenerView() {
     return (
         <div className="module-container">
             <ModuleHeader
-                title="Screen"
+                title="Strategy"
                 badge={{ label: `${gtfsData.routes.length} routes detected` }}
                 actions={[
                     {
                         label: "Board Report",
                         icon: FileText,
-                        onClick: () => navigate('/strategy'),
+                        onClick: () => navigate('/simulator'),
                         variant: 'primary'
                     },
                     {

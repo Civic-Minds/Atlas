@@ -14,11 +14,9 @@ import {
     Bus
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ModuleLanding } from '../../../components/ModuleLanding';
-import { useAuthStore } from '../../../hooks/useAuthStore';
 import { useTransitStore } from '../../../types/store';
 import { AnalysisResult } from '../../../types/gtfs';
-import './Strategy.css';
+import './SystemReport.css';
 
 const StatCard = ({ title, value, subtext, icon: Icon, color }: any) => (
     <div className="bg-[var(--item-bg)] border border-[var(--border)] p-6 rounded-2xl shadow-sm">
@@ -37,8 +35,7 @@ const StatCard = ({ title, value, subtext, icon: Icon, color }: any) => (
     </div>
 );
 
-export default function StrategyView() {
-    const { isAuthenticated } = useAuthStore();
+export default function SystemReportView() {
     const { analysisResults, gtfsData, validationReport } = useTransitStore();
 
     const stats = useMemo(() => {
@@ -82,46 +79,14 @@ export default function StrategyView() {
         ]
     };
 
-    if (!isAuthenticated) {
-        return (
-            <ModuleLanding
-                title="Simulate"
-                description="Executive audits and national peer benchmarking analysis for transit board directives."
-                icon={TrendingUp}
-                features={[
-                    {
-                        title: "Performance Audits",
-                        description: "Generate detailed system-wide headway performance reports for board-level review.",
-                        icon: <FileText className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Peer Benchmarking",
-                        description: "Compare your agency's reliability and frequency coverage against national top-tier performers.",
-                        icon: <TrendingUp className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Mode Breakdown",
-                        description: "Audit mode-specific performance thresholds across Bus, Rail, and specialized transit.",
-                        icon: <BarChart3 className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Printable Reports",
-                        description: "One-click generation of official internal transit intelligence documents.",
-                        icon: <Printer className="w-5 h-5 text-indigo-500" />
-                    }
-                ]}
-            />
-        );
-    }
-
     if (!stats || !gtfsData) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center">
                 <FileText className="w-16 h-16 text-[var(--text-muted)] mb-4 opacity-20" />
                 <h1 className="text-2xl font-bold text-[var(--fg)] mb-2">No Analysis Data Found</h1>
-                <p className="text-[var(--text-muted)] mb-8">Please upload and analyze a GTFS feed in the Strategy first.</p>
-                <Link to="/strategy" className="atlas-button-primary">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Strategy
+                <p className="text-[var(--text-muted)] mb-8">Please upload and analyze a GTFS feed in the Screener first.</p>
+                <Link to="/screener" className="atlas-button-primary">
+                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Screener
                 </Link>
             </div>
         );
@@ -133,7 +98,7 @@ export default function StrategyView() {
         <div className="report-page bg-[var(--bg)] min-h-screen text-[var(--fg)] pb-20">
             {/* Control Bar (Hidden on Print) */}
             <div className="print:hidden sticky top-0 z-50 bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)] px-6 py-4 flex items-center justify-between">
-                <Link to="/strategy" className="flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-indigo-500 transition-colors">
+                <Link to="/screener" className="flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-indigo-500 transition-colors">
                     <ArrowLeft className="w-4 h-4" /> Back to Analysis
                 </Link>
                 <div className="flex items-center gap-3">
@@ -153,11 +118,11 @@ export default function StrategyView() {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
-                                    <TrendingUp className="w-6 h-6 text-white" />
+                                    <FileText className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
                                     <div className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600">Transit Intelligence Official Report</div>
-                                    <h1 className="text-4xl font-black tracking-tighter">Simulated Performance Audit</h1>
+                                    <h1 className="text-4xl font-black tracking-tighter">System Reliability & Frequency Audit</h1>
                                 </div>
                             </div>
                             <p className="text-[var(--text-muted)] font-medium max-w-xl">
