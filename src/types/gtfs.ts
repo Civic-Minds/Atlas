@@ -1,5 +1,13 @@
+export interface GtfsAgency {
+    agency_id?: string;
+    agency_name: string;
+    agency_url?: string;
+    agency_timezone?: string;
+}
+
 export interface GtfsRoute {
     route_id: string;
+    agency_id?: string;
     route_short_name?: string;
     route_long_name?: string;
     route_type: string;
@@ -74,6 +82,7 @@ export interface GtfsShape {
 }
 
 export interface GtfsData {
+    agencies: GtfsAgency[];
     routes: GtfsRoute[];
     trips: GtfsTrip[];
     stops: GtfsStop[];
@@ -84,9 +93,83 @@ export interface GtfsData {
     feedInfo?: any;
 }
 
+// ---------------------------------------------------------------------------
+// Individual day names for per-day analysis
+// ---------------------------------------------------------------------------
+
+export type DayName = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
+
+export const ALL_DAYS: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const WEEKDAYS: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+export const DAY_TO_TYPE: Record<DayName, DayType> = {
+    Monday: 'Weekday', Tuesday: 'Weekday', Wednesday: 'Weekday',
+    Thursday: 'Weekday', Friday: 'Weekday', Saturday: 'Saturday', Sunday: 'Sunday',
+};
+
+// ---------------------------------------------------------------------------
+// Raw departure data — computed once per GTFS feed, per route/dir/day
+// ---------------------------------------------------------------------------
+
+export interface RawRouteDepartures {
+    route: string;
+    dir: string;
+    day: DayName;
+    routeType: string;
+    modeName: string;
+
+    /** Every departure time in minutes from midnight, sorted ascending, deduplicated */
+    departureTimes: number[];
+
+    /** Every gap between consecutive departures — NO filtering, all gaps kept */
+    gaps: number[];
+
+    /** First to last departure */
+    serviceSpan: { start: number; end: number };
+
+    /** Number of deduplicated departures */
+    tripCount: number;
+
+    /** Which service_ids contributed trips to this group */
+    serviceIds: string[];
+
+    /** Warnings (e.g., "Multiple service_ids overlap on this day") */
+    warnings: string[];
+}
+
+// ---------------------------------------------------------------------------
+// User-configurable analysis criteria
+// ---------------------------------------------------------------------------
+
+export interface TimeWindow {
+    start: number;  // minutes from midnight, e.g. 420 = 7:00 AM
+    end: number;    // minutes from midnight, e.g. 1320 = 10:00 PM
+}
+
+export interface DayTypeCriteria {
+    timeWindow: TimeWindow;
+    tiers: number[];  // e.g. [10, 15, 20, 30, 60]
+}
+
+export interface AnalysisCriteria {
+    id: string;
+    name: string;
+    dayTypes: Partial<Record<DayType, DayTypeCriteria>>;
+    graceMinutes: number;         // default: 5
+    maxGraceViolations: number;   // default: 2
+    /** Override tiers for rail vs surface modes */
+    modeTierOverrides?: Record<string, number[]>;
+    isDefault?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Analysis result — output of applying criteria to raw data
+// ---------------------------------------------------------------------------
+
 export interface AnalysisResult {
     route: string;
-    day: string;
+    day: string;              // DayType ('Weekday' | 'Saturday' | 'Sunday') for rolled-up view
     dir: string;
     avgHeadway: number;
     medianHeadway: number;
@@ -101,8 +184,14 @@ export interface AnalysisResult {
     baseHeadway?: number;
     peakWindow?: { start: number; end: number };
     serviceSpan?: { start: number; end: number };
-    routeType?: string;  // GTFS route_type (0=tram, 1=subway, 2=rail, 3=bus, etc.)
-    modeName?: string;   // Human-readable mode label
+    routeType?: string;
+    modeName?: string;
+    /** Which service_ids contributed to this result */
+    serviceIds?: string[];
+    /** Warnings from raw data extraction */
+    warnings?: string[];
+    /** Which individual days this rolled-up result covers */
+    daysIncluded?: DayName[];
 }
 
 export interface CorridorResult {

@@ -22,7 +22,7 @@ const PredictViewContent: React.FC = () => {
     } = usePredict();
     const [viewMode, setViewMode] = useState<'demand' | 'supply' | 'opportunity'>('demand');
     const { loading: uploading, status: uploadStatus, runAnalysis: runGtfsUpload } = useGtfsWorker();
-    const { setResults } = useTransitStore();
+    const { setRawData } = useTransitStore();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +30,7 @@ const PredictViewContent: React.FC = () => {
         if (!file) return;
 
         runGtfsUpload(file, async (data) => {
-            await setResults(data);
+            await setRawData(data);
             await refreshData();
         });
     };
