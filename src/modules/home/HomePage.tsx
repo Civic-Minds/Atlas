@@ -190,7 +190,7 @@ const HomePage: React.FC = () => {
                                 </span>
                             </div>
                             <p className="text-[13px] text-[var(--text-secondary)] max-w-sm font-medium leading-relaxed">
-                                Engineered for civic integrity and urban mobility planning.
+                                Intelligence for Mobility
                             </p>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -217,10 +217,6 @@ const HomePage: React.FC = () => {
                         <div className="flex items-center">
                             <div className="text-[11px] text-[var(--text-muted)] font-medium leading-none">
                                 © 2026 Civic Minds
-                            </div>
-                            <div className="w-20" /> {/* Extra Space */}
-                            <div className="text-[11px] text-[var(--text-secondary)] font-medium leading-none opacity-60">
-                                Intelligence for Mobility
                             </div>
                         </div>
                         <div className="flex gap-8">
