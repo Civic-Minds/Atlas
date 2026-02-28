@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
-import { GtfsData, AnalysisResult, SpacingResult } from '../types/gtfs';
+import { GtfsData, SpacingResult, RawRouteDepartures } from '../types/gtfs';
 import { ValidationReport } from '../core/validation';
 
-interface WorkerResult {
+interface WorkerRawResult {
     gtfsData: GtfsData;
-    analysisResults: AnalysisResult[];
+    rawDepartures: RawRouteDepartures[];
     spacingResults: SpacingResult[];
     validationReport?: ValidationReport;
 }
@@ -24,9 +24,7 @@ export function useGtfsWorker() {
 
     const runAnalysis = useCallback((
         file: File,
-        onComplete: (data: WorkerResult) => void,
-        startTimeMins: number = 7 * 60,
-        endTimeMins: number = 22 * 60
+        onComplete: (data: WorkerRawResult) => void,
     ) => {
         setState({ loading: true, status: 'Initializing worker...', error: null });
 
@@ -40,9 +38,9 @@ export function useGtfsWorker() {
 
                 if (type === 'STATUS') {
                     setState(prev => ({ ...prev, status: message }));
-                } else if (type === 'DONE') {
-                    const { gtfsData, analysisResults, spacingResults, validationReport } = e.data;
-                    onComplete({ gtfsData, analysisResults, spacingResults, validationReport });
+                } else if (type === 'RAW_DONE') {
+                    const { gtfsData, rawDepartures, spacingResults, validationReport } = e.data;
+                    onComplete({ gtfsData, rawDepartures, spacingResults, validationReport });
                     setState({ loading: false, status: '', error: null });
                     worker.terminate();
                 } else if (type === 'ERROR') {
@@ -51,11 +49,7 @@ export function useGtfsWorker() {
                 }
             };
 
-            worker.postMessage({
-                file,
-                startTimeMins,
-                endTimeMins
-            });
+            worker.postMessage({ file });
 
         } catch (err) {
             setState({

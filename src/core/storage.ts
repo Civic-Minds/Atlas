@@ -1,13 +1,17 @@
 import { GtfsData, AnalysisResult } from '../types/gtfs';
 
 const DB_NAME = 'HeadwayDB';
-const DB_VERSION = 2;
+const DB_VERSION = 4;
 
 export const STORES = {
     GTFS: 'gtfs_data',
     ANALYSIS: 'analysis_results',
     PREFERENCES: 'user_preferences',
-    SPACING: 'spacing_diagnostic'
+    SPACING: 'spacing_diagnostic',
+    RAW_DEPARTURES: 'raw_departures',
+    CRITERIA: 'analysis_criteria',
+    CATALOG: 'route_catalog',
+    FEEDS: 'feed_meta',
 };
 
 class StorageService {
@@ -38,6 +42,18 @@ class StorageService {
                 }
                 if (!db.objectStoreNames.contains(STORES.SPACING)) {
                     db.createObjectStore(STORES.SPACING);
+                }
+                if (!db.objectStoreNames.contains(STORES.RAW_DEPARTURES)) {
+                    db.createObjectStore(STORES.RAW_DEPARTURES);
+                }
+                if (!db.objectStoreNames.contains(STORES.CRITERIA)) {
+                    db.createObjectStore(STORES.CRITERIA);
+                }
+                if (!db.objectStoreNames.contains(STORES.CATALOG)) {
+                    db.createObjectStore(STORES.CATALOG);
+                }
+                if (!db.objectStoreNames.contains(STORES.FEEDS)) {
+                    db.createObjectStore(STORES.FEEDS);
                 }
             };
         });
@@ -88,6 +104,34 @@ class StorageService {
 
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
+        });
+    }
+
+    async getAllItems<T>(storeName: string): Promise<T[]> {
+        const db = await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(storeName, 'readonly');
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async putItems<T>(storeName: string, items: { key: string; value: T }[]): Promise<void> {
+        if (items.length === 0) return;
+        const db = await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(storeName, 'readwrite');
+            const store = transaction.objectStore(storeName);
+
+            for (const item of items) {
+                store.put(item.value, item.key);
+            }
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
         });
     }
 

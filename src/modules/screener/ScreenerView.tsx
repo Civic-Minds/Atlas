@@ -15,6 +15,8 @@ import { CorridorAuditModal } from './components/CorridorAuditModal';
 import { StopHealthModal } from './components/StopHealthModal';
 import { ValidationReportModal } from './components/ValidationReportModal';
 import { RouteDetailModal } from './components/RouteDetailModal';
+import { CommitModal } from './components/CommitModal';
+import { useCatalogStore } from '../../types/catalogStore';
 import './Screener.css';
 
 const TIER_CONFIG = [
@@ -69,7 +71,7 @@ export default function ScreenerView() {
         analysisResults,
         spacingResults,
         validationReport,
-        setResults,
+        setRawData,
         loadPersistedData,
         clearData
     } = useTransitStore();
@@ -85,16 +87,20 @@ export default function ScreenerView() {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTiers, setActiveTiers] = useState<Set<string>>(new Set());
     const [resetPending, setResetPending] = useState(false);
+    const [showCommit, setShowCommit] = useState(false);
+    const [lastFileName, setLastFileName] = useState('feed.zip');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { loading, status, runAnalysis } = useGtfsWorker();
+    const { loadCatalog } = useCatalogStore();
 
     // Load persisted data on mount
     useEffect(() => {
         if (!gtfsData) {
             loadPersistedData();
         }
-    }, [loadPersistedData, gtfsData]);
+        loadCatalog();
+    }, [loadPersistedData, gtfsData, loadCatalog]);
 
     const handleReset = async () => {
         if (!resetPending) {
@@ -135,9 +141,10 @@ export default function ScreenerView() {
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
+        setLastFileName(file.name);
 
         runAnalysis(file, async (data) => {
-            await setResults(data);
+            await setRawData(data);
             addToast('GTFS analysis complete!', 'success');
         });
     };
@@ -223,6 +230,12 @@ export default function ScreenerView() {
                 title="Strategy"
                 badge={{ label: `${gtfsData.routes.length} routes detected` }}
                 actions={[
+                    {
+                        label: "Commit to Catalog",
+                        icon: Database,
+                        onClick: () => setShowCommit(true),
+                        variant: 'primary'
+                    },
                     {
                         label: "Board Report",
                         icon: FileText,
@@ -415,6 +428,19 @@ export default function ScreenerView() {
                 onClose={() => setSelectedRouteResult(null)}
                 result={selectedRouteResult}
             />
+
+            {gtfsData && (
+                <CommitModal
+                    isOpen={showCommit}
+                    onClose={() => setShowCommit(false)}
+                    gtfsData={gtfsData}
+                    analysisResults={analysisResults}
+                    fileName={lastFileName}
+                    onCommitted={(stats) => {
+                        addToast(`Committed: ${stats.added} new, ${stats.updated} updated, ${stats.unchanged} unchanged`, 'success');
+                    }}
+                />
+            )}
         </div>
     );
 }

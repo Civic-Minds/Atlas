@@ -1,6 +1,30 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.9.0] - 2026-02-27
+### Added
+- **Persistent Route Catalog**: New catalog layer (`src/types/catalog.ts`, `src/core/catalog.ts`, `src/types/catalogStore.ts`) that stores committed routes permanently in IndexedDB. Upload GTFS, screen routes, commit to catalog — data persists across sessions.
+- **Multi-Agency Support**: Multiple agencies coexist in the catalog. Upload LA Metro, then BART — both persist and are filterable on the Atlas map.
+- **Multi-Agency GTFS Parsing**: Parser now reads `agency.txt` and assigns per-route `agency_id` from `routes.txt`. Combined feeds (e.g., MassDOT with 20+ operators) properly attribute routes to their operators.
+- **Route Shape Storage**: Shapes resolved at commit time (most common `shape_id` per route/direction, fallback to stop-sequence polyline) and stored inline on each catalog entry for instant map rendering.
+- **Route History Tracking**: Every feed upload creates new catalog snapshots. Old entries are never deleted. Routes grouped by `routeKey` show frequency changes over time (e.g., Route 10 went from 10min to 30min headway).
+- **Direction Pairing**: `routePairKey` groups Dir 0 and Dir 1 of the same route together in the database, associating both directions as a single logical route.
+- **Schedule Change Detection**: When re-uploading for the same agency, compares tier, avgHeadway (within 2min), and tripCount (within 10%). Unchanged routes inherit verification status; changed routes reset to unreviewed.
+- **Commit Flow**: "Commit to Catalog" button in Screener opens a modal with agency name auto-detection, feed date ranges, and change detection preview before writing to catalog.
+- **Verification Controls**: Verify / Flag / Skip buttons in the Route Detail Modal, with notes field for flagged routes. Persists to IndexedDB via catalog store.
+- **Route Detail Audit View**: Complete rewrite of `RouteDetailModal` with Summary and Departure Audit tabs. Audit tab shows per-individual-day breakdown (Mon-Sun), departure table, headway timeline scatter plot, gap distribution chart, and departure strip visualization.
+- **Gap Distribution Chart**: Visual bar chart showing "10 gaps of 10min, 2 gaps of 12min" with red highlighting for gaps exceeding tier threshold.
+- **Two-Phase Analysis Engine**: Complete rewrite of `transit-logic.ts` splitting analysis into raw extraction (per individual day, no filtering) and criteria application (time windows, tier classification, weekday rollup using worst-tier-across-days).
+- **Configurable Analysis Criteria**: `AnalysisCriteria` type with per-day-type time windows, tier thresholds, grace minutes, and mode-specific overrides. `DEFAULT_CRITERIA` in `src/core/defaults.ts`.
+- **Per-Day Raw Departures**: `RawRouteDepartures` stores every departure time, every gap, service span, and service_id provenance for each route/direction/individual-day combination.
+
+### Changed
+- **Atlas Map Rewrite**: `AtlasView.tsx` now reads from the catalog store instead of staging stores. Shapes are pre-resolved. Added agency filter sidebar, tier counts, auto-zoom via `FitBounds`, and verification status in route popups.
+- **IndexedDB Schema**: Bumped to v4 with two new stores (`route_catalog`, `feed_meta`). Added `getAllItems()` and `putItems()` batch methods to `StorageService`.
+- **GTFS Type Extensions**: Added `GtfsAgency` interface, `agency_id` to `GtfsRoute`, `agencies` array to `GtfsData`.
+
+## [0.8.1] - 2026-02-25
 ### Added
 - **Developer Experience Optimization**: Simplified the Vite `base` configuration to root (`/`) for local development, eliminating the forced redirect to `/Atlas/` when opening `localhost`.
 - **Module Nomenclature Alignment**: Synchronized all primary module titles and paths across `TopNav`, `HomePage`, and individual module landing pages to: Audit, Strategy, Simulate, Predict, and Atlas.

@@ -5,10 +5,14 @@ import {
     computeMedian,
     determineTier,
     calculateTiers,
+    computeRawDepartures,
+    applyAnalysisCriteria,
     synthesizeCalendarFromDates,
     getModeName,
     validateGtfs,
     GtfsData,
+    AnalysisCriteria,
+    RawRouteDepartures,
 } from '../gtfsUtils';
 
 // ---------------------------------------------------------------------------
@@ -233,6 +237,7 @@ describe('calculateTiers – day classification', () => {
         const calendar = [makeService(serviceId, serviceDef)];
         const { trips, stopTimes } = buildRegularService(routeId, serviceId, START, END, headway);
         return {
+            agencies: [],
             routes: [{ route_id: routeId, route_type: '3' }],
             trips,
             stops: BASE_STOPS,
@@ -332,7 +337,7 @@ describe('calculateTiers – headway accuracy', () => {
     it('calculates avg and median headway of exactly 15 min for perfect 15-min service', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -346,7 +351,7 @@ describe('calculateTiers – headway accuracy', () => {
     it('calculates avg headway of exactly 30 min for perfect 30-min service', () => {
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 30);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -359,7 +364,7 @@ describe('calculateTiers – headway accuracy', () => {
         // 7:00 to 22:00 at 15-min = 61 trips (inclusive on both ends)
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -379,7 +384,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('T2', '07:45:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -403,7 +408,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('T2', '07:30:00', 1),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -427,7 +432,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('IN2', '08:00:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -449,7 +454,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('LATE', '22:30:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         // Only 1 in-window trip → not enough for analysis (need ≥ 2)
@@ -465,7 +470,7 @@ describe('calculateTiers – headway accuracy', () => {
         d1.stopTimes.forEach((st, i) => { st.trip_id = `D1_${i}`; });
 
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }],
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
             trips: [...d0.trips, ...d1.trips],
             stops: BASE_STOPS,
             stopTimes: [...d0.stopTimes, ...d1.stopTimes],
@@ -490,7 +495,7 @@ describe('calculateTiers – headway accuracy', () => {
         r2.stopTimes.forEach((st, i) => { st.trip_id = `R2_${i}`; });
 
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }, { route_id: 'R2', route_type: '3' }],
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }, { route_id: 'R2', route_type: '3' }],
             trips: [...r1.trips, ...r2.trips],
             stops: BASE_STOPS,
             stopTimes: [...r1.stopTimes, ...r2.stopTimes],
@@ -510,7 +515,7 @@ describe('calculateTiers – headway accuracy', () => {
         const calendar = [makeService('WD', { mon: true })];
         const trips = [makeTrip('ORPHAN', 'R1', 'WD')];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes: [], calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         expect(() => calculateTiers(gtfs, START, END)).not.toThrow();
@@ -526,7 +531,7 @@ describe('calculateTiers – headway accuracy', () => {
             makeStopTime('T2', '08:00:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -540,7 +545,7 @@ describe('calculateTiers – headway accuracy', () => {
         const trips = [makeTrip('SOLO', 'R1', 'WD')];
         const stopTimes = [makeStopTime('SOLO', '09:00:00')];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -557,7 +562,7 @@ describe('calculateTiers – reliability score', () => {
         const calendar = [makeService('WD', { mon: true })];
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -576,7 +581,7 @@ describe('calculateTiers – reliability score', () => {
             return makeStopTime(`T${i}`, `${h}:${m}:00`);
         });
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -588,7 +593,7 @@ describe('calculateTiers – reliability score', () => {
         const calendar = [makeService('WD', { mon: true })];
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 30);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -686,7 +691,7 @@ describe('calendar_dates synthesis via calculateTiers', () => {
         // Use it in calculateTiers
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }],
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
             trips, stops: BASE_STOPS, stopTimes,
             calendar,
             calendarDates,
@@ -704,30 +709,29 @@ describe('calendar_dates synthesis via calculateTiers', () => {
 // Known limitations (documented, not bugs introduced here)
 // ---------------------------------------------------------------------------
 
-describe('known limitations', () => {
-    it('KNOWN LIMITATION: gaps < 2 min are silently dropped from headway calculation', () => {
-        // The gap filter (gap >= 2 && gap <= 240) discards sub-2-minute gaps.
-        // If two trips genuinely depart 1 minute apart (e.g. loop routes),
-        // that gap is excluded from the avg/median but the trips still count
-        // toward tripCount. This can inflate the tier classification.
+describe('near-duplicate departure deduplication', () => {
+    it('deduplicates departures within 1 minute of each other', () => {
+        // Two trips depart 1 minute apart (e.g. loop routes or overlapping service_ids).
+        // The new engine deduplicates within 1 minute, keeping the earlier departure.
+        // This means 7:00 and 7:01 merge into 7:00, so the gap to 7:31 is 31 min.
         const calendar = [makeService('WD', { mon: true })];
         const trips = [makeTrip('T1', 'R1', 'WD'), makeTrip('T2', 'R1', 'WD'), makeTrip('T3', 'R1', 'WD')];
         const stopTimes = [
             makeStopTime('T1', '07:00:00'),
-            makeStopTime('T2', '07:01:00'), // 1-min gap — will be filtered
-            makeStopTime('T3', '07:31:00'), // 30-min gap from T2
+            makeStopTime('T2', '07:01:00'), // within 1 min of T1 — deduplicated
+            makeStopTime('T3', '07:31:00'),
         ];
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
         expect(r).toBeDefined();
-        // The 1-min gap is dropped; only the 30-min gap is retained
-        expect(r!.gaps).toEqual([30]);
-        // tripCount still includes all 3 trips
-        expect(r!.tripCount).toBe(3);
+        // 7:00 and 7:01 deduplicated to 7:00; gap to 7:31 = 31 min
+        expect(r!.gaps).toEqual([31]);
+        // tripCount reflects deduplicated count (2, not 3)
+        expect(r!.tripCount).toBe(2);
     });
 });
 
@@ -744,7 +748,7 @@ describe('mode-aware tier thresholds', () => {
         // 5-min headway subway should get tier '5' (rail threshold)
         const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 5);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -756,7 +760,7 @@ describe('mode-aware tier thresholds', () => {
     it('assigns tier "8" for 8-min subway service', () => {
         const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 8);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -767,7 +771,7 @@ describe('mode-aware tier thresholds', () => {
     it('subway with 10-min service gets tier "10" (rail threshold)', () => {
         const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 10);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -778,7 +782,7 @@ describe('mode-aware tier thresholds', () => {
     it('bus with 10-min service gets tier "10" (surface threshold)', () => {
         const { trips, stopTimes } = buildRegularService('BUS', 'WD', START, END, 10);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'BUS', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'BUS', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -789,7 +793,7 @@ describe('mode-aware tier thresholds', () => {
     it('bus does NOT get tier "5" or "8" (those are rail-only)', () => {
         const { trips, stopTimes } = buildRegularService('BUS', 'WD', START, END, 5);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'BUS', route_type: '3' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'BUS', route_type: '3' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -801,7 +805,7 @@ describe('mode-aware tier thresholds', () => {
     it('commuter rail (route_type 2) uses rail thresholds', () => {
         const { trips, stopTimes } = buildRegularService('CR', 'WD', START, END, 8);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'CR', route_type: '2' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'CR', route_type: '2' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -812,7 +816,7 @@ describe('mode-aware tier thresholds', () => {
     it('includes routeType and modeName in analysis results', () => {
         const { trips, stopTimes } = buildRegularService('SUB', 'WD', START, END, 10);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'SUB', route_type: '1' }], trips, stops: BASE_STOPS,
             stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -825,7 +829,7 @@ describe('mode-aware tier thresholds', () => {
         const calendar = [makeService('WD', { mon: true })];
         const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
         const gtfs: GtfsData = {
-            routes: [{ route_id: 'R1', route_type: '' }], trips, stops: BASE_STOPS,
+            agencies: [], routes: [{ route_id: 'R1', route_type: '' }], trips, stops: BASE_STOPS,
             stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
         };
         const results = calculateTiers(gtfs, START, END);
@@ -881,6 +885,7 @@ describe('determineTier with custom tiers', () => {
 
 describe('validateGtfs', () => {
     const validGtfs: GtfsData = {
+        agencies: [],
         routes: [{ route_id: 'R1', route_type: '3', route_short_name: 'R1' }],
         trips: [{ trip_id: 'T1', route_id: 'R1', service_id: 'WD' }],
         stops: [{ stop_id: 'S1', stop_name: 'Stop 1', stop_lat: '40.7128', stop_lon: '-74.0060' }],
@@ -989,6 +994,282 @@ describe('validateGtfs', () => {
         expect(coordIssue).toBeDefined();
         expect(coordIssue!.examples!.length).toBeGreaterThan(0);
         expect(coordIssue!.count).toBe(2);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// computeRawDepartures — per-individual-day extraction
+// ---------------------------------------------------------------------------
+
+describe('computeRawDepartures', () => {
+    const weekdayCalendar = [
+        makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true }),
+    ];
+
+    it('produces separate entries for each individual day (Mon-Fri)', () => {
+        const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 30);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const days = raw.filter(r => r.route === 'R1' && r.dir === '0').map(r => r.day);
+        expect(days).toContain('Monday');
+        expect(days).toContain('Tuesday');
+        expect(days).toContain('Wednesday');
+        expect(days).toContain('Thursday');
+        expect(days).toContain('Friday');
+        expect(days).not.toContain('Saturday');
+        expect(days).not.toContain('Sunday');
+    });
+
+    it('produces Saturday and Sunday entries for weekend services', () => {
+        const calendar = [makeService('DAILY', {
+            mon: true, tue: true, wed: true, thu: true, fri: true, sat: true, sun: true,
+        })];
+        const { trips, stopTimes } = buildRegularService('R1', 'DAILY', START, END, 30);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const days = raw.filter(r => r.route === 'R1').map(r => r.day);
+        expect(days).toContain('Saturday');
+        expect(days).toContain('Sunday');
+        expect(days.length).toBe(7);
+    });
+
+    it('collects ALL departure times with no time window filter', () => {
+        const calendar = [makeService('WD', { mon: true })];
+        const trips = [
+            makeTrip('EARLY', 'R1', 'WD'),
+            makeTrip('MID', 'R1', 'WD'),
+            makeTrip('LATE', 'R1', 'WD'),
+        ];
+        const stopTimes = [
+            makeStopTime('EARLY', '05:00:00'),  // before typical window
+            makeStopTime('MID', '12:00:00'),
+            makeStopTime('LATE', '23:30:00'),    // after typical window
+        ];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday).toBeDefined();
+        // All 3 departures included — no time filtering
+        expect(monday!.tripCount).toBe(3);
+        expect(monday!.departureTimes).toEqual([300, 720, 1410]);
+    });
+
+    it('keeps ALL gaps with no silent filtering', () => {
+        const calendar = [makeService('WD', { mon: true })];
+        const trips = [
+            makeTrip('T1', 'R1', 'WD'),
+            makeTrip('T2', 'R1', 'WD'),
+            makeTrip('T3', 'R1', 'WD'),
+        ];
+        const stopTimes = [
+            makeStopTime('T1', '07:00:00'),
+            makeStopTime('T2', '07:03:00'),  // 3-min gap (old code would keep)
+            makeStopTime('T3', '12:00:00'),  // 297-min gap (old code would drop > 240)
+        ];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday).toBeDefined();
+        // Both gaps kept — 3 min AND 297 min
+        expect(monday!.gaps).toEqual([3, 297]);
+    });
+
+    it('tracks which service_ids contributed', () => {
+        const calendar = [
+            makeService('WD1', { mon: true }),
+            makeService('WD2', { mon: true }),
+        ];
+        const trips = [
+            makeTrip('T1', 'R1', 'WD1'),
+            makeTrip('T2', 'R1', 'WD2'),
+        ];
+        const stopTimes = [
+            makeStopTime('T1', '07:00:00'),
+            makeStopTime('T2', '08:00:00'),
+        ];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday).toBeDefined();
+        expect(monday!.serviceIds).toContain('WD1');
+        expect(monday!.serviceIds).toContain('WD2');
+        expect(monday!.warnings.length).toBeGreaterThan(0);
+        expect(monday!.warnings[0]).toContain('Multiple service_ids');
+    });
+
+    it('deduplicates departures within 1 minute across service_ids', () => {
+        const calendar = [
+            makeService('WD1', { mon: true }),
+            makeService('WD2', { mon: true }),
+        ];
+        const trips = [
+            makeTrip('T1', 'R1', 'WD1'),
+            makeTrip('T2', 'R1', 'WD2'),
+            makeTrip('T3', 'R1', 'WD1'),
+        ];
+        const stopTimes = [
+            makeStopTime('T1', '07:00:00'),
+            makeStopTime('T2', '07:01:00'),  // within 1 min of T1
+            makeStopTime('T3', '08:00:00'),
+        ];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday!.tripCount).toBe(2); // 7:00 and 8:00 (7:01 deduplicated)
+        expect(monday!.departureTimes).toEqual([420, 480]);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// applyAnalysisCriteria — custom criteria application
+// ---------------------------------------------------------------------------
+
+describe('applyAnalysisCriteria', () => {
+    const weekdayCalendar = [
+        makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true }),
+    ];
+
+    it('filters departures to the configured time window', () => {
+        const { trips, stopTimes } = buildRegularService('R1', 'WD', 300, 1400, 15); // 5:00 to 23:20
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+
+        // Narrow window: 9:00–17:00
+        const criteria: AnalysisCriteria = {
+            id: 'test', name: 'Test',
+            dayTypes: {
+                Weekday: { timeWindow: { start: 540, end: 1020 }, tiers: [10, 15, 20, 30, 60] },
+            },
+            graceMinutes: 5, maxGraceViolations: 2,
+        };
+        const results = applyAnalysisCriteria(raw, criteria);
+        const weekday = results.find(r => r.day === 'Weekday');
+        expect(weekday).toBeDefined();
+        // All departure times should be within 9:00–17:00
+        for (const t of weekday!.times) {
+            expect(t).toBeGreaterThanOrEqual(540);
+            expect(t).toBeLessThanOrEqual(1020);
+        }
+    });
+
+    it('uses custom grace settings', () => {
+        const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar: weekdayCalendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+
+        // Zero grace — any violation fails
+        const strictCriteria: AnalysisCriteria = {
+            id: 'strict', name: 'Strict',
+            dayTypes: {
+                Weekday: { timeWindow: { start: START, end: END }, tiers: [15] },
+            },
+            graceMinutes: 0, maxGraceViolations: 0,
+        };
+        const strictResults = applyAnalysisCriteria(raw, strictCriteria);
+        const strict = strictResults.find(r => r.day === 'Weekday');
+        expect(strict).toBeDefined();
+        // Perfect 15-min service should still pass with zero grace
+        expect(strict!.tier).toBe('15');
+    });
+
+    it('rolls up weekday results using WORST tier across Mon-Fri', () => {
+        // Mon-Thu: 15-min service, Fri: 30-min service
+        const monThu = makeService('MT', { mon: true, tue: true, wed: true, thu: true });
+        const fri = makeService('FRI', { fri: true });
+        const mt = buildRegularService('R1', 'MT', START, END, 15);
+        const fr = buildRegularService('R1', 'FRI', START, END, 30);
+        // Ensure unique trip IDs
+        fr.trips.forEach((t, i) => { t.trip_id = `FRI_${i}`; });
+        fr.stopTimes.forEach((st, i) => { st.trip_id = `FRI_${i}`; });
+
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips: [...mt.trips, ...fr.trips],
+            stops: BASE_STOPS,
+            stopTimes: [...mt.stopTimes, ...fr.stopTimes],
+            calendar: [monThu, fri],
+            shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const results = applyAnalysisCriteria(raw);
+        const weekday = results.find(r => r.day === 'Weekday');
+        expect(weekday).toBeDefined();
+        // Worst tier is Friday's 30-min, so weekday rollup should be '30'
+        expect(weekday!.tier).toBe('30');
+    });
+
+    it('warns when route does not run all 5 weekdays', () => {
+        const calendar = [makeService('MWF', { mon: true, wed: true, fri: true })];
+        const { trips, stopTimes } = buildRegularService('R1', 'MWF', START, END, 15);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const results = applyAnalysisCriteria(raw);
+        const weekday = results.find(r => r.day === 'Weekday');
+        expect(weekday).toBeDefined();
+        expect(weekday!.warnings).toBeDefined();
+        expect(weekday!.warnings!.some(w => w.includes('3/5 weekdays'))).toBe(true);
+        expect(weekday!.daysIncluded).toEqual(['Monday', 'Wednesday', 'Friday']);
+    });
+
+    it('excludes day types not present in criteria', () => {
+        const calendar = [makeService('DAILY', {
+            mon: true, tue: true, wed: true, thu: true, fri: true, sat: true, sun: true,
+        })];
+        const { trips, stopTimes } = buildRegularService('R1', 'DAILY', START, END, 15);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+
+        // Only weekday criteria — no Saturday or Sunday
+        const criteria: AnalysisCriteria = {
+            id: 'wd-only', name: 'Weekday Only',
+            dayTypes: {
+                Weekday: { timeWindow: { start: START, end: END }, tiers: [10, 15, 20, 30, 60] },
+            },
+            graceMinutes: 5, maxGraceViolations: 2,
+        };
+        const results = applyAnalysisCriteria(raw, criteria);
+        expect(results.every(r => r.day === 'Weekday')).toBe(true);
+    });
+
+    it('determineTier respects custom graceMinutes and maxGraceViolations', () => {
+        // 15-min headways with 3 gaps of 18 min (3 min over)
+        const headways = [15, 18, 15, 18, 15, 18, 15, 15, 15, 15];
+        // With grace=5, maxViolations=2 → fails (3 violations)
+        expect(determineTier(headways, 61, SPAN, [15], 5, 2)).toBe('span');
+        // With grace=5, maxViolations=3 → passes
+        expect(determineTier(headways, 61, SPAN, [15], 5, 3)).toBe('15');
+        // With grace=0 → fails (any over)
+        expect(determineTier(headways, 61, SPAN, [15], 0, 0)).toBe('span');
     });
 });
 

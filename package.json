@@ -2,7 +2,7 @@
   "name": "atlas-platform",
   "private": true,
   "description": "A transit intelligence platform for mobility precision in North American metros.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
