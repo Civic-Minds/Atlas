@@ -37,8 +37,7 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
             ]);
             const currentRoutes = deriveCurrentRoutes(catalogRoutes);
             set({ feeds, catalogRoutes, currentRoutes, loading: false });
-        } catch (error) {
-            console.error('Failed to load catalog:', error);
+        } catch {
             set({ loading: false });
         }
     },

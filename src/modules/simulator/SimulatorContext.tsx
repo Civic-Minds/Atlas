@@ -81,8 +81,7 @@ export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             if (config) {
                 setEnabledStopIds(new Set(config.stops.map(s => s.id)));
             }
-        } catch (error) {
-            console.error('Failed to build route config:', error);
+        } catch {
             setRouteData(null);
         } finally {
             setLoading(false);

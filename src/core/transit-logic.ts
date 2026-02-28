@@ -3,6 +3,7 @@ import {
     GtfsData,
     GtfsCalendar,
     GtfsCalendarDate,
+    GtfsFrequency,
     AnalysisResult,
     CorridorResult,
     SpacingResult,
@@ -26,7 +27,8 @@ import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
 export const t2m = (s: string): number | null => {
     const p = (s || '').split(':');
     if (p.length < 2) return null;
-    return (+p[0]) * 60 + (+p[1]);
+    const mins = (+p[0]) * 60 + (+p[1]);
+    return Number.isNaN(mins) ? null : mins;
 };
 
 /**
@@ -86,47 +88,160 @@ const DAY_FIELD_MAP: Record<DayName, keyof GtfsCalendar> = {
 // ---------------------------------------------------------------------------
 
 /**
+ * Auto-detect a reference date from the feed's calendar data.
+ * Returns the midpoint of the latest-starting service period, formatted as YYYYMMDD.
+ * Falls back to today if no calendar entries exist.
+ */
+function detectReferenceDate(calendar: GtfsCalendar[]): string {
+    if (calendar.length === 0) {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}${m}${d}`;
+    }
+
+    // Find the latest start_date and its corresponding end_date — this is
+    // most likely the "current" schedule in feeds with multiple periods.
+    let best = calendar[0];
+    for (const cal of calendar) {
+        if (cal.start_date > best.start_date) best = cal;
+    }
+
+    // Use midpoint of that service period
+    const sy = parseInt(best.start_date.substring(0, 4));
+    const sm = parseInt(best.start_date.substring(4, 6)) - 1;
+    const sd = parseInt(best.start_date.substring(6, 8));
+    const ey = parseInt(best.end_date.substring(0, 4));
+    const em = parseInt(best.end_date.substring(4, 6)) - 1;
+    const ed = parseInt(best.end_date.substring(6, 8));
+
+    const startMs = new Date(sy, sm, sd).getTime();
+    const endMs = new Date(ey, em, ed).getTime();
+    const mid = new Date((startMs + endMs) / 2);
+
+    const ry = mid.getFullYear();
+    const rm = String(mid.getMonth() + 1).padStart(2, '0');
+    const rd = String(mid.getDate()).padStart(2, '0');
+    return `${ry}${rm}${rd}`;
+}
+
+/**
  * Determines which service_ids are active on a specific day, accounting for
  * both calendar.txt and calendar_dates.txt exceptions.
+ *
+ * When a referenceDate (YYYYMMDD) is provided, only includes services from
+ * calendar.txt whose [start_date, end_date] range contains the reference date.
+ * This prevents merging trips from non-overlapping schedule periods (e.g.
+ * summer and winter schedules) into the same day.
  */
 function getActiveServiceIds(
     calendar: GtfsCalendar[],
     calendarDates: GtfsCalendarDate[],
-    day: DayName
+    day: DayName,
+    referenceDate?: string
 ): Set<string> {
     const field = DAY_FIELD_MAP[day];
     const active = new Set<string>();
 
-    // Step 1: Add service_ids that are active on this day per calendar.txt
+    // All service_ids present in calendar.txt
+    const calendarServiceIds = new Set(calendar.map(c => c.service_id));
+
+    // Step 1: Add service_ids that are active on this day per calendar.txt,
+    // filtered to only services whose date range contains the reference date.
     for (const cal of calendar) {
-        if (cal[field] === '1') {
-            active.add(cal.service_id);
-        }
+        if (cal[field] !== '1') continue;
+        if (referenceDate && (referenceDate < cal.start_date || referenceDate > cal.end_date)) continue;
+        active.add(cal.service_id);
     }
 
-    // Step 2: Apply calendar_dates exceptions
-    // We group by service_id and check if any dates for that service fall on
-    // this day of the week, with exception_type=1 (added) or =2 (removed).
-    //
-    // For correctness: if a service is in calendar.txt as active on Mondays,
-    // but calendar_dates removes it on a specific Monday, the service is still
-    // generally active on Mondays (the exception is date-specific, not day-specific).
-    //
-    // However, if a service is NOT in calendar.txt at all, and only appears via
-    // calendar_dates additions, it was already handled by synthesizeCalendarFromDates
-    // in parseGtfs.ts. So here we only need to handle the case where calendar.txt
-    // exists and calendar_dates modifies it.
-    //
-    // For schedule-based analysis (not date-specific), we keep the calendar.txt
-    // day-of-week mapping as the source of truth. calendar_dates exceptions affect
-    // specific dates, not the general schedule pattern.
+    // Step 2: Include services that exist ONLY in calendar_dates.txt (not in
+    // calendar.txt). When both files exist, synthesizeCalendarFromDates doesn't
+    // run, so these services would be invisible without this step.
+    // We check if any exception_type=1 dates for such services fall on this
+    // day-of-week, and if so, include the service.
+    // When a referenceDate is provided, only consider calendar_dates entries
+    // that fall within the same schedule period (within 90 days of reference).
+    const DOW_NAMES: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    for (const cd of calendarDates) {
+        if (calendarServiceIds.has(cd.service_id)) continue;
+        if (cd.exception_type !== '1') continue;
+
+        // Skip dates far from the reference date to avoid mixing schedule periods
+        if (referenceDate) {
+            const diff = Math.abs(parseInt(cd.date) - parseInt(referenceDate));
+            // Rough check: YYYYMMDD difference > ~90 days ≈ 90 in the DD digits,
+            // but date math isn't linear in YYYYMMDD. Use proper date diff.
+            const cy = parseInt(cd.date.substring(0, 4));
+            const cm = parseInt(cd.date.substring(4, 6)) - 1;
+            const cDay = parseInt(cd.date.substring(6, 8));
+            const ry = parseInt(referenceDate.substring(0, 4));
+            const rm = parseInt(referenceDate.substring(4, 6)) - 1;
+            const rDay = parseInt(referenceDate.substring(6, 8));
+            const diffDays = Math.abs(new Date(cy, cm, cDay).getTime() - new Date(ry, rm, rDay).getTime()) / 86400000;
+            if (diffDays > 90) continue;
+        }
+
+        const y = parseInt(cd.date.substring(0, 4));
+        const m = parseInt(cd.date.substring(4, 6)) - 1;
+        const d = parseInt(cd.date.substring(6, 8));
+        const dow = new Date(y, m, d).getDay();
+        if (DOW_NAMES[dow] === day) {
+            active.add(cd.service_id);
+        }
+    }
 
     return active;
 }
 
 /**
+ * Expand frequency-based trips into individual departure times.
+ * For each frequency entry, generates departures from start_time to end_time
+ * at headway_secs intervals. Returns a map of trip_id → array of departure
+ * time offsets (in minutes) from the template trip's first stop.
+ */
+function expandFrequencies(
+    frequencies: GtfsFrequency[] | undefined
+): Map<string, number[]> {
+    const expanded = new Map<string, number[]>();
+    if (!frequencies || frequencies.length === 0) return expanded;
+
+    // Group frequency entries by trip_id (a trip can have multiple time ranges)
+    const byTrip = new Map<string, GtfsFrequency[]>();
+    for (const freq of frequencies) {
+        if (!byTrip.has(freq.trip_id)) byTrip.set(freq.trip_id, []);
+        byTrip.get(freq.trip_id)!.push(freq);
+    }
+
+    for (const [tripId, entries] of byTrip) {
+        const departures: number[] = [];
+        for (const freq of entries) {
+            const startMins = t2m(freq.start_time);
+            const endMins = t2m(freq.end_time);
+            const headwaySecs = parseInt(freq.headway_secs);
+            if (startMins === null || endMins === null || Number.isNaN(headwaySecs) || headwaySecs <= 0) continue;
+
+            const headwayMins = headwaySecs / 60;
+            for (let t = startMins; t < endMins; t += headwayMins) {
+                departures.push(t);
+            }
+        }
+        if (departures.length > 0) {
+            expanded.set(tripId, departures);
+        }
+    }
+
+    return expanded;
+}
+
+/**
  * Builds a map of trip_id → origin departure time (minutes from midnight).
  * Origin = the stop with the lowest stop_sequence for that trip.
+ *
+ * For frequency-based trips (those listed in frequencies.txt), the single
+ * template departure is expanded into multiple departures at the specified
+ * headway intervals. Each expanded departure gets a synthetic trip_id.
  */
 function buildTripDepartures(
     gtfs: GtfsData
@@ -139,6 +254,7 @@ function buildTripDepartures(
 
     for (const st of stopTimes) {
         const seq = parseInt(st.stop_sequence);
+        if (Number.isNaN(seq)) continue;
         const existing = tripFirstSeq.get(st.trip_id);
         if (existing === undefined || seq < existing) {
             const dep = t2m(st.departure_time);
@@ -149,33 +265,53 @@ function buildTripDepartures(
         }
     }
 
+    // Expand frequency-based trips
+    const freqExpanded = expandFrequencies(gtfs.frequencies);
+
     // Build result map
     const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string }>();
     for (const trip of trips) {
-        const depTime = tripFirstDep.get(trip.trip_id);
-        if (depTime === undefined) continue;
-        result.set(trip.trip_id, {
-            depTime,
+        const baseDep = tripFirstDep.get(trip.trip_id);
+        if (baseDep === undefined) continue;
+
+        const tripMeta = {
             routeId: trip.route_id,
             dirId: trip.direction_id || '0',
             serviceId: trip.service_id,
-        });
+        };
+
+        const freqDeps = freqExpanded.get(trip.trip_id);
+        if (freqDeps) {
+            // Frequency-based: use expanded departures instead of the template
+            for (let i = 0; i < freqDeps.length; i++) {
+                result.set(`${trip.trip_id}__freq_${i}`, {
+                    depTime: freqDeps[i],
+                    ...tripMeta,
+                });
+            }
+        } else {
+            // Regular trip: use the stop_times departure directly
+            result.set(trip.trip_id, {
+                depTime: baseDep,
+                ...tripMeta,
+            });
+        }
     }
 
     return result;
 }
 
 /**
- * Deduplicates departure times that are within 1 minute of each other.
- * This handles the case where multiple service_ids produce near-duplicate trips.
- * Returns sorted, deduplicated array.
+ * Deduplicates exact duplicate departure times from overlapping service_ids.
+ * Returns sorted, deduplicated array. Only removes exact matches (same minute),
+ * preserving legitimately close departures on high-frequency routes.
  */
 function deduplicateDepartures(times: number[]): number[] {
     if (times.length === 0) return [];
     const sorted = [...times].sort((a, b) => a - b);
     const result = [sorted[0]];
     for (let i = 1; i < sorted.length; i++) {
-        if (sorted[i] - result[result.length - 1] > 1) {
+        if (sorted[i] !== result[result.length - 1]) {
             result.push(sorted[i]);
         }
     }
@@ -189,16 +325,19 @@ function deduplicateDepartures(times: number[]): number[] {
  * Monday through Sunday). No time window filtering, no tier classification.
  * All gaps are kept — nothing is silently filtered.
  */
-export function computeRawDepartures(gtfs: GtfsData): RawRouteDepartures[] {
+export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string): RawRouteDepartures[] {
     const { routes, calendar, calendarDates } = gtfs;
     const routeById = new Map(routes.map(r => [r.route_id, r]));
     const tripData = buildTripDepartures(gtfs);
+
+    // Auto-detect reference date from feed if not provided
+    const refDate = referenceDate ?? detectReferenceDate(calendar);
 
     const results: RawRouteDepartures[] = [];
 
     // For each individual day, determine active services and group trips
     for (const day of ALL_DAYS) {
-        const activeServiceIds = getActiveServiceIds(calendar, calendarDates, day);
+        const activeServiceIds = getActiveServiceIds(calendar, calendarDates, day, refDate);
         if (activeServiceIds.size === 0) continue;
 
         // Group departures by route + direction
@@ -383,6 +522,10 @@ export function applyAnalysisCriteria(
             windowedGaps.push(windowedTimes[i] - windowedTimes[i - 1]);
         }
 
+        // Use the full configured window span. This is intentional: earning a tier
+        // means sustaining that frequency across the entire analysis window. A peak-only
+        // route running every 5 min for 3 hours should NOT get a 5-min tier — a rider
+        // arriving outside that window has no service.
         const spanMins = end - start;
         const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, criteria.modeTierOverrides);
         const tier = determineTier(
@@ -454,15 +597,30 @@ export function applyAnalysisCriteria(
         const worstTierValue = Math.max(...tierValues);
         const worstTier = worstTierValue === Infinity ? 'span' : String(worstTierValue);
 
-        // Aggregate stats: average across days
+        // Aggregate stats: compute per-day then average, rather than merging
+        // raw gaps from all days (which would produce inconsistent peak detection
+        // and inflated sample sizes).
+        const perDayStats = entries.map(e =>
+            e.result.gaps.length > 0
+                ? computeHeadwayStats(e.result.gaps, e.result.times)
+                : { avg: 0, median: 0, peakHeadway: 0, peakWindow: { start: 0, end: 0 }, variance: 0, bunchingFactor: 0, reliabilityScore: 0 }
+        );
+        const n = perDayStats.length;
+        const stats = {
+            avg: perDayStats.reduce((s, d) => s + d.avg, 0) / n,
+            median: perDayStats.reduce((s, d) => s + d.median, 0) / n,
+            peakHeadway: perDayStats.reduce((s, d) => s + d.peakHeadway, 0) / n,
+            peakWindow: perDayStats[0].peakWindow, // use representative day
+            variance: perDayStats.reduce((s, d) => s + d.variance, 0) / n,
+            bunchingFactor: perDayStats.reduce((s, d) => s + d.bunchingFactor, 0) / n,
+            reliabilityScore: Math.round(perDayStats.reduce((s, d) => s + d.reliabilityScore, 0) / n),
+        };
+
+        // Keep merged gaps/times for downstream consumers that need the full dataset
         const allGaps = entries.flatMap(e => e.result.gaps);
         const allTimes = entries.flatMap(e => e.result.times);
         const totalTrips = entries.reduce((sum, e) => sum + e.result.tripCount, 0);
         const avgTrips = Math.round(totalTrips / entries.length);
-
-        const stats = allGaps.length > 0
-            ? computeHeadwayStats(allGaps, [...new Set(allTimes)].sort((a, b) => a - b))
-            : { avg: 0, median: 0, peakHeadway: 0, peakWindow: { start: 0, end: 0 }, variance: 0, bunchingFactor: 0, reliabilityScore: 0 };
 
         // Use first entry as representative for metadata
         const rep = entries[0].result;
@@ -558,7 +716,9 @@ export const calculateCorridors = (
         const service = serviceById.get(trip.service_id);
         if (!service) continue;
 
-        const isMatch = (day === 'Weekday' && service.monday === '1') ||
+        const isWeekday = service.monday === '1' || service.tuesday === '1' ||
+            service.wednesday === '1' || service.thursday === '1' || service.friday === '1';
+        const isMatch = (day === 'Weekday' && isWeekday) ||
             (day === 'Saturday' && service.saturday === '1') ||
             (day === 'Sunday' && service.sunday === '1');
 
@@ -570,7 +730,7 @@ export const calculateCorridors = (
 
     const linkMap = new Map<string, { times: number[], routes: Set<string>, stopA: string, stopB: string }>();
 
-    const tripSequences = new Map<string, any[]>();
+    const tripSequences = new Map<string, typeof stopTimes>();
     for (const st of stopTimes) {
         if (!activeTrips.has(st.trip_id)) continue;
         if (!tripSequences.has(st.trip_id)) tripSequences.set(st.trip_id, []);
@@ -698,12 +858,13 @@ export const calculateStopSpacing = (
         const sB = routeStops[i];
         if (!sA || !sB) continue;
 
-        const dist = haversineDistance(
-            parseFloat(sA.stop_lat),
-            parseFloat(sA.stop_lon),
-            parseFloat(sB.stop_lat),
-            parseFloat(sB.stop_lon)
-        );
+        const latA = parseFloat(sA.stop_lat);
+        const lonA = parseFloat(sA.stop_lon);
+        const latB = parseFloat(sB.stop_lat);
+        const lonB = parseFloat(sB.stop_lon);
+        if (Number.isNaN(latA) || Number.isNaN(lonA) || Number.isNaN(latB) || Number.isNaN(lonB)) continue;
+
+        const dist = haversineDistance(latA, lonA, latB, lonB);
 
         distances.push(dist);
 

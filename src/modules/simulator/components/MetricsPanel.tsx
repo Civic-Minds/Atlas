@@ -26,7 +26,7 @@ function MetricCard({
     value: string;
     baseline?: string;
     type?: 'positive' | 'negative' | 'neutral';
-    icon: any;
+    icon: React.ElementType;
     delay?: number;
 }) {
     const typeStyles = {

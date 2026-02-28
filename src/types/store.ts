@@ -137,8 +137,7 @@ export const useTransitStore = create<TransitState>((set, get) => ({
             } else {
                 set({ loading: false });
             }
-        } catch (error) {
-            console.error('Failed to load persisted transit data:', error);
+        } catch {
             set({ loading: false });
         }
     },
