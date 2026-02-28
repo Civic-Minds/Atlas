@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, Polyline, ZoomControl, Popup, useMap } from 'react-leaflet';
-import { RotateCcw, Activity, Globe, Info } from 'lucide-react';
+import { RotateCcw, Activity, Globe, Info, Layers, Filter } from 'lucide-react';
 import { useCatalogStore } from '../../types/catalogStore';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
+import { ModuleLanding } from '../../components/ModuleLanding';
+import { useAuthStore } from '../../hooks/useAuthStore';
 import type { LatLngBoundsExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './Atlas.css';
@@ -41,6 +43,7 @@ const FitBounds: React.FC<{ bounds: LatLngBoundsExpression | null }> = ({ bounds
 };
 
 export default function AtlasView() {
+    const { isAuthenticated } = useAuthStore();
     const { currentRoutes, loading, loadCatalog } = useCatalogStore();
     const [activeDay, setActiveDay] = useState('Weekday');
     const [activeTiers, setActiveTiers] = useState<Set<string>>(new Set(['5', '8', '10', '15', '20']));
@@ -114,17 +117,49 @@ export default function AtlasView() {
         );
     }
 
+    if (!isAuthenticated) {
+        return (
+            <ModuleLanding
+                title="Atlas"
+                description="The unified intelligence platform for global network visibility and system-wide transit integrity."
+                icon={Globe}
+                features={[
+                    {
+                        title: "Global Visibility",
+                        description: "Visualize your entire transit network on a high-precision, interactive global map.",
+                        icon: <Globe className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Network Integrity",
+                        description: "Monitor system-wide health and detect anomalies at scale across all routes and modes.",
+                        icon: <Activity className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Intelligent Layers",
+                        description: "Switch between demand heatmaps, supply overlays, and real-time performance diagnostics.",
+                        icon: <Layers className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Unified Dashboard",
+                        description: "The central nervous system for transit planners, combining data from all Atlas modules.",
+                        icon: <Filter className="w-5 h-5 text-indigo-500" />
+                    }
+                ]}
+            />
+        );
+    }
+
     if (currentRoutes.length === 0) {
         return (
             <div className="module-container">
                 <EmptyStateHero
                     icon={Globe}
-                    title="Atlas Empty"
-                    description="No routes in the catalog yet. Upload a GTFS feed in the Screen module, then commit routes to the catalog."
+                    title="Atlas"
+                    description="No routes in the catalog yet. Upload a GTFS feed in the Strategy module, then commit routes to the catalog."
                     primaryAction={{
-                        label: "Go to Screen",
+                        label: "Go to Strategy",
                         icon: Activity,
-                        href: "/screener"
+                        href: "/strategy"
                     }}
                 />
             </div>
