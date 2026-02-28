@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate } from '../types/gtfs';
+import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency } from '../types/gtfs';
 
 /**
  * Parse a CSV string into an array of typed objects.
@@ -35,6 +35,7 @@ const groupShapes = (parsed: any[]): GtfsShape[] => {
  * GTFS file manifest — maps internal keys to filenames inside the ZIP.
  */
 const GTFS_FILES = {
+    agencies: 'agency.txt',
     routes: 'routes.txt',
     trips: 'trips.txt',
     stops: 'stops.txt',
@@ -49,8 +50,9 @@ const GTFS_FILES = {
  * Files that won't throw if missing.
  * calendar.txt is now optional — many agencies (including MTA) use only
  * calendar_dates.txt for exception-based scheduling.
+ * agency.txt is technically required by the spec but some feeds omit it.
  */
-const OPTIONAL_FILES = new Set(['feedInfo', 'shapes', 'calendar', 'calendarDates']);
+const OPTIONAL_FILES = new Set(['feedInfo', 'shapes', 'calendar', 'calendarDates', 'agencies']);
 
 /**
  * Synthesize GtfsCalendar entries from calendar_dates.txt when calendar.txt
@@ -126,6 +128,7 @@ export const parseGtfsZip = async (
     const zip = await JSZip.loadAsync(file);
 
     const gtfsData: Partial<GtfsData> = {
+        agencies: [],     // Default to empty array
         shapes: [],       // Default to empty array
         calendarDates: [] // Default to empty array
     };
@@ -157,6 +160,26 @@ export const parseGtfsZip = async (
     // If both are missing, that's a problem
     if (!gtfsData.calendar || gtfsData.calendar.length === 0) {
         throw new Error('GTFS feed must contain either calendar.txt or calendar_dates.txt');
+    }
+
+    // If agency.txt is missing, synthesize from feed_info or use a default
+    if (!gtfsData.agencies || gtfsData.agencies.length === 0) {
+        const feedInfo = gtfsData.feedInfo;
+        const name = (feedInfo && Array.isArray(feedInfo) && feedInfo.length > 0 && feedInfo[0].feed_publisher_name)
+            ? feedInfo[0].feed_publisher_name
+            : 'Unknown Agency';
+        gtfsData.agencies = [{ agency_name: name }];
+    }
+
+    // For single-agency feeds where routes don't have agency_id,
+    // assign the sole agency's ID to all routes
+    if (gtfsData.agencies.length === 1 && gtfsData.routes) {
+        const soleAgencyId = gtfsData.agencies[0].agency_id;
+        if (soleAgencyId) {
+            for (const route of gtfsData.routes) {
+                if (!route.agency_id) route.agency_id = soleAgencyId;
+            }
+        }
     }
 
     return gtfsData as GtfsData;

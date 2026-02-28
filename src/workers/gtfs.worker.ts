@@ -1,7 +1,7 @@
-import { GtfsData, SpacingResult } from '../types/gtfs';
-import { calculateTiers, calculateStopSpacing, calculateCorridors } from '../core/transit-logic';
+import { SpacingResult } from '../types/gtfs';
+import { computeRawDepartures, calculateStopSpacing, calculateCorridors } from '../core/transit-logic';
 import { parseGtfsZip } from '../core/parseGtfs';
-import { validateGtfs, ValidationReport } from '../core/validation';
+import { validateGtfs } from '../core/validation';
 
 self.onmessage = async (e) => {
     const { type: requestType } = e.data;
@@ -22,8 +22,8 @@ self.onmessage = async (e) => {
         return;
     }
 
-    // Default: full GTFS upload + analysis pipeline
-    const { file, startTimeMins, endTimeMins } = e.data;
+    // Default: full GTFS upload + raw extraction pipeline
+    const { file } = e.data;
 
     try {
         const gtfsData = await parseGtfsZip(file, (message) => {
@@ -34,7 +34,6 @@ self.onmessage = async (e) => {
         self.postMessage({ type: 'STATUS', message: 'Validating GTFS spec compliance...' });
         const validationReport = validateGtfs(gtfsData, file.name || 'Uploaded Feed');
 
-        // If there are critical errors, still continue analysis but report them
         if (validationReport.errors > 0) {
             self.postMessage({
                 type: 'STATUS',
@@ -42,26 +41,29 @@ self.onmessage = async (e) => {
             });
         }
 
-        self.postMessage({ type: 'STATUS', message: 'Calculating frequency tiers...' });
-        const results = calculateTiers(gtfsData, startTimeMins, endTimeMins);
+        // Phase 1: Extract raw departures (per route/dir/day)
+        self.postMessage({ type: 'STATUS', message: 'Extracting departure data per route/day/direction...' });
+        const rawDepartures = computeRawDepartures(gtfsData);
 
+        // Stop spacing diagnostics
         self.postMessage({ type: 'STATUS', message: 'Calculating stop spacing diagnostics...' });
         const spacingResults: SpacingResult[] = [];
         const checkedRoutes = new Set<string>();
 
-        for (const res of results) {
-            const key = `${res.route}::${res.dir}`;
+        for (const raw of rawDepartures) {
+            const key = `${raw.route}::${raw.dir}`;
             if (!checkedRoutes.has(key)) {
-                const spacing = calculateStopSpacing(gtfsData, res.route, res.dir);
+                const spacing = calculateStopSpacing(gtfsData, raw.route, raw.dir);
                 if (spacing) spacingResults.push(spacing);
                 checkedRoutes.add(key);
             }
         }
 
+        // Send raw data to main thread — criteria application happens there
         self.postMessage({
-            type: 'DONE',
+            type: 'RAW_DONE',
             gtfsData,
-            analysisResults: results,
+            rawDepartures,
             spacingResults,
             validationReport
         });
@@ -73,4 +75,3 @@ self.onmessage = async (e) => {
         });
     }
 };
-

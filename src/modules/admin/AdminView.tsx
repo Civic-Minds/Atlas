@@ -7,7 +7,7 @@ import { useNotificationStore } from '../../hooks/useNotification';
 
 export default function AdminView() {
     const { loading, status, runAnalysis } = useGtfsWorker();
-    const { setResults, clearData } = useTransitStore();
+    const { setRawData, clearData } = useTransitStore();
     const { addToast } = useNotificationStore();
     const [isSuccess, setIsSuccess] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -18,7 +18,7 @@ export default function AdminView() {
         setIsSuccess(false);
 
         runAnalysis(file, async (data) => {
-            await setResults(data);
+            await setRawData(data);
             setIsSuccess(true);
             addToast('GTFS data ingested successfully', 'success');
         });
