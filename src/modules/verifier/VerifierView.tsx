@@ -23,6 +23,7 @@ export default function VerifierView() {
         gtfsData,
         analysisResults,
         setResults,
+        setRawData,
         loadPersistedData,
         clearData
     } = useTransitStore();
@@ -56,7 +57,7 @@ export default function VerifierView() {
         if (!file) return;
 
         runAnalysis(file, async (data) => {
-            await setResults(data);
+            await setRawData(data);
             addToast('GTFS loaded for verification', 'success');
         });
     };
