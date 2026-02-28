@@ -81,6 +81,25 @@ export interface GtfsShape {
     points: [number, number][];
 }
 
+export interface GtfsFrequency {
+    trip_id: string;
+    start_time: string;  // HH:MM:SS
+    end_time: string;    // HH:MM:SS
+    headway_secs: string;
+    exact_times?: string; // '0' (default) or '1'
+}
+
+export interface GtfsFeedInfo {
+    feed_publisher_name?: string;
+    feed_publisher_url?: string;
+    feed_lang?: string;
+    feed_start_date?: string;
+    feed_end_date?: string;
+    feed_version?: string;
+    feed_contact_email?: string;
+    feed_contact_url?: string;
+}
+
 export interface GtfsData {
     agencies: GtfsAgency[];
     routes: GtfsRoute[];
@@ -90,7 +109,8 @@ export interface GtfsData {
     calendar: GtfsCalendar[];
     calendarDates: GtfsCalendarDate[];
     shapes: GtfsShape[];
-    feedInfo?: any;
+    feedInfo?: GtfsFeedInfo[];
+    frequencies?: GtfsFrequency[];
 }
 
 // ---------------------------------------------------------------------------

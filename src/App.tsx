@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TopNav } from './components/TopNav';
 import { CommandPalette } from './components/CommandPalette';
@@ -7,7 +7,6 @@ import { NotificationToast } from './components/NotificationToast';
 
 // Lazy-loaded module views — each becomes a separate chunk
 const HomePage = React.lazy(() => import('./modules/home/HomePage'));
-const BurnerHomePage = React.lazy(() => import('./modules/home/BurnerHomePage'));
 const SimulatorView = React.lazy(() => import('./modules/simulator/SimulatorView'));
 const ScreenerView = React.lazy(() => import('./modules/screener/ScreenerView'));
 const VerifierView = React.lazy(() => import('./modules/verifier/VerifierView'));
@@ -15,7 +14,6 @@ const AtlasView = React.lazy(() => import('./modules/atlas/AtlasView'));
 const ReportCardsView = React.lazy(() => import('./modules/report-cards/ReportCardsView'));
 const AdminView = React.lazy(() => import('./modules/admin/AdminView'));
 const PredictView = React.lazy(() => import('./modules/predict/PredictView'));
-const StrategyView = React.lazy(() => import('./modules/screener/components/StrategyView'));
 
 const LazyFallback = () => (
     <div className="flex-1 flex items-center justify-center">
@@ -44,14 +42,13 @@ const App: React.FC = () => {
                         <Suspense fallback={<LazyFallback />}>
                             <Routes location={location}>
                                 <Route path="/" element={<HomePage />} />
-                                <Route path="/burner" element={<BurnerHomePage />} />
-                                <Route path="/atlas/*" element={<AtlasView />} />
-                                <Route path="/strategy/*" element={<ScreenerView />} />
-                                <Route path="/simulator/*" element={<SimulatorView />} />
-                                <Route path="/predict/*" element={<PredictView />} />
-                                <Route path="/verifier/*" element={<VerifierView />} />
-                                <Route path="/reports/*" element={<ReportCardsView />} />
-                                <Route path="/admin/*" element={<AdminView />} />
+                                <Route path="/atlas" element={<AtlasView />} />
+                                <Route path="/strategy" element={<ScreenerView />} />
+                                <Route path="/simulator" element={<SimulatorView />} />
+                                <Route path="/predict" element={<PredictView />} />
+                                <Route path="/verifier" element={<VerifierView />} />
+                                <Route path="/reports" element={<ReportCardsView />} />
+                                <Route path="/admin" element={<AdminView />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />
                             </Routes>
                         </Suspense>

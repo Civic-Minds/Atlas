@@ -136,7 +136,7 @@ class StorageService {
     }
 
     // LocalStorage helpers for simpler small data
-    setPreference(key: string, value: any): void {
+    setPreference(key: string, value: unknown): void {
         localStorage.setItem(`headway_pref_${key}`, JSON.stringify(value));
     }
 

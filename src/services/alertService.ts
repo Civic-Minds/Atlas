@@ -45,11 +45,9 @@ export const fetchLiveAlerts = async (
             return parseFlatAlerts(data.routes, routeId);
         }
 
-        console.warn('Unrecognized alert format from', agencyConfig.alertsUrl);
         return [];
 
-    } catch (error) {
-        console.warn(`Alert fetch error (${agencyConfig.name}):`, error);
+    } catch {
         return [];
     }
 };

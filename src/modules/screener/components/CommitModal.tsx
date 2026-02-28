@@ -56,8 +56,8 @@ export const CommitModal: React.FC<CommitModalProps> = ({
             const stats = await commitFeed(gtfsData, analysisResults, agencyName.trim(), fileName);
             setCommitted(true);
             onCommitted(stats);
-        } catch (error) {
-            console.error('Commit failed:', error);
+        } catch {
+            // commit failed — UI stays on form so user can retry
         } finally {
             setCommitting(false);
         }

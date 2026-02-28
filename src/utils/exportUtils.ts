@@ -40,14 +40,14 @@ const triggerDownload = (blob: Blob, filename: string) => {
 /**
  * Utility to export data as CSV
  */
-export const downloadCsv = (data: any[], filename: string) => {
+export const downloadCsv = (data: object[], filename: string) => {
     if (data.length === 0) return;
 
     const headers = Object.keys(data[0]);
     const csvContent = [
         headers.map(escapeCsvValue).join(','),
         ...data.map(row =>
-            headers.map(header => escapeCsvValue(row[header])).join(',')
+            headers.map(header => escapeCsvValue((row as Record<string, unknown>)[header])).join(',')
         )
     ].join('\n');
 
@@ -58,7 +58,7 @@ export const downloadCsv = (data: any[], filename: string) => {
 /**
  * Utility to export GTFS analysis as GeoJSON
  */
-export const downloadGeoJson = (features: any[], filename: string) => {
+export const downloadGeoJson = (features: object[], filename: string) => {
     const geojson = {
         type: 'FeatureCollection',
         features: features
