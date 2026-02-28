@@ -113,7 +113,11 @@ export function resolveRouteShape(
     for (const st of stopTimes) {
         const stop = gtfsData.stops.find(s => s.stop_id === st.stop_id);
         if (stop) {
-            points.push([parseFloat(stop.stop_lat), parseFloat(stop.stop_lon)]);
+            const lat = parseFloat(stop.stop_lat);
+            const lon = parseFloat(stop.stop_lon);
+            if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+                points.push([lat, lon]);
+            }
         }
     }
 
@@ -147,19 +151,23 @@ export function buildCatalogRoutes(
     // Cache resolved shapes by route+dir to avoid redundant lookups
     const shapeCache = new Map<string, [number, number][]>();
 
+    // Build route lookup map for O(1) access instead of repeated .find() calls
+    const routeByShortName = new Map<string, typeof gtfsData.routes[0]>();
+    const routeById = new Map<string, typeof gtfsData.routes[0]>();
+    for (const r of gtfsData.routes) {
+        if (r.route_short_name) routeByShortName.set(r.route_short_name, r);
+        routeById.set(r.route_id, r);
+    }
+    const findRoute = (key: string) => routeByShortName.get(key) || routeById.get(key);
+
     return analysisResults.map(result => {
+        const gtfsRoute = findRoute(result.route);
+
         const shapeKey = `${result.route}::${result.dir}`;
         if (!shapeCache.has(shapeKey)) {
-            const gtfsRoute = gtfsData.routes.find(
-                r => r.route_short_name === result.route || r.route_id === result.route
-            );
             const routeId = gtfsRoute?.route_id || result.route;
             shapeCache.set(shapeKey, resolveRouteShape(gtfsData, routeId, result.dir));
         }
-
-        const gtfsRoute = gtfsData.routes.find(
-            r => r.route_short_name === result.route || r.route_id === result.route
-        );
 
         // Resolve per-route agency: use route's agency_id → lookup name, fallback to feed-level
         const routeAgencyId = gtfsRoute?.agency_id

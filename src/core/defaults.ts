@@ -37,7 +37,7 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
  * GTFS route_type → mode category for tier override lookup
  */
 export function getModeCategory(routeType: string): string {
-    const railTypes = new Set(['1', '2']); // subway, commuter rail
+    const railTypes = new Set(['0', '1', '2', '12']); // tram/light rail, subway, commuter rail, monorail
     return railTypes.has(routeType) ? 'rail' : 'surface';
 }
 

@@ -38,7 +38,7 @@ interface PredictContextType {
         demandRadius: number; // km
         supplyRadius: number; // km
     };
-    setParams: (params: any) => void;
+    setParams: (params: PredictContextType['params']) => void;
     runAnalysis: () => void;
     refreshData: () => Promise<void>;
 }
@@ -63,8 +63,8 @@ export const PredictProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const savedResults = await storage.getItem<AnalysisResult[]>(STORES.ANALYSIS, 'latest');
             if (savedGtfs) setGtfsData(savedGtfs);
             if (savedResults) setAnalysisResults(savedResults);
-        } catch (e) {
-            console.error('Predict: Failed to load data', e);
+        } catch {
+            // failed to load — module will show empty state
         } finally {
             setLoading(false);
         }
@@ -140,19 +140,10 @@ export const PredictProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const runAnalysis = () => {
         if (!gtfsData || !analysisResults.length || !demandPoints.length) {
-            console.warn('Predict: Missing data for analysis');
             return;
         }
 
         setLoading(true);
-
-        // Pre-index stops by route for faster lookup
-        const routeToStops = new Map<string, any[]>();
-        gtfsData.trips.forEach(trip => {
-            const rid = trip.route_id;
-            if (!routeToStops.has(rid)) routeToStops.set(rid, []);
-            // Get stops for this trip - in a real app we'd use stop_times
-        });
 
         // Analysis Logic: Rank Grid Cells by Gap (Demand - Supply)
         setTimeout(() => {

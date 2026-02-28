@@ -17,17 +17,24 @@ export const parseCsv = <T>(text: string): T[] => {
  * Group raw shape point records into GtfsShape objects keyed by shape_id.
  */
 const groupShapes = (parsed: any[]): GtfsShape[] => {
-    const grouped = new Map<string, [number, number][]>();
+    const grouped = new Map<string, { seq: number; lat: number; lon: number }[]>();
     for (const p of parsed) {
+        if (!p.shape_id) continue;
+        const lat = parseFloat(p.shape_pt_lat);
+        const lon = parseFloat(p.shape_pt_lon);
+        if (Number.isNaN(lat) || Number.isNaN(lon)) continue;
         if (!grouped.has(p.shape_id)) grouped.set(p.shape_id, []);
-        grouped.get(p.shape_id)!.push([
-            parseFloat(p.shape_pt_lat),
-            parseFloat(p.shape_pt_lon)
-        ]);
+        grouped.get(p.shape_id)!.push({
+            seq: parseInt(p.shape_pt_sequence) || 0,
+            lat,
+            lon,
+        });
     }
-    return Array.from(grouped.entries()).map(([id, points]) => ({
+    return Array.from(grouped.entries()).map(([id, pts]) => ({
         id,
-        points
+        points: pts
+            .sort((a, b) => a.seq - b.seq)
+            .map(p => [p.lat, p.lon] as [number, number]),
     }));
 };
 
@@ -43,7 +50,8 @@ const GTFS_FILES = {
     calendar: 'calendar.txt',
     calendarDates: 'calendar_dates.txt',
     shapes: 'shapes.txt',
-    feedInfo: 'feed_info.txt'
+    feedInfo: 'feed_info.txt',
+    frequencies: 'frequencies.txt'
 } as const;
 
 /**
@@ -52,7 +60,7 @@ const GTFS_FILES = {
  * calendar_dates.txt for exception-based scheduling.
  * agency.txt is technically required by the spec but some feeds omit it.
  */
-const OPTIONAL_FILES = new Set(['feedInfo', 'shapes', 'calendar', 'calendarDates', 'agencies']);
+const OPTIONAL_FILES = new Set(['feedInfo', 'shapes', 'calendar', 'calendarDates', 'agencies', 'frequencies']);
 
 /**
  * Synthesize GtfsCalendar entries from calendar_dates.txt when calendar.txt
@@ -130,7 +138,8 @@ export const parseGtfsZip = async (
     const gtfsData: Partial<GtfsData> = {
         agencies: [],     // Default to empty array
         shapes: [],       // Default to empty array
-        calendarDates: [] // Default to empty array
+        calendarDates: [], // Default to empty array
+        frequencies: []   // Default to empty array
     };
 
     for (const [key, filename] of Object.entries(GTFS_FILES)) {
