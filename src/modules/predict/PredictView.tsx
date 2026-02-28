@@ -3,10 +3,13 @@ import { Layers, Activity, Zap, TrendingUp, Users, MapPin, Search, Filter, Play,
 import { PredictProvider, usePredict } from './PredictContext';
 import PredictMap from './components/PredictMap';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
+import { ModuleLanding } from '../../components/ModuleLanding';
 import { useGtfsWorker } from '../../hooks/useGtfsWorker';
+import { useAuthStore } from '../../hooks/useAuthStore';
 import { useTransitStore } from '../../types/store';
 
 const PredictViewContent: React.FC = () => {
+    const { isAuthenticated } = useAuthStore();
     const {
         gtfsData,
         loading,
@@ -46,6 +49,38 @@ const PredictViewContent: React.FC = () => {
         );
     }
 
+    if (!isAuthenticated) {
+        return (
+            <ModuleLanding
+                title="Optimize"
+                description="Long-term network growth planning and gap detection through gravity-based accessibility modeling."
+                icon={Zap}
+                features={[
+                    {
+                        title: "Demand Mapping",
+                        description: "Identify high-density residential and employment centers using demographic data nodes.",
+                        icon: <Users className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Supply Analysis",
+                        description: "Measure walking-distance access to frequent transit across the entire metropolitan area.",
+                        icon: <Activity className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Gap Detection",
+                        description: "Automatically detect transit deserts—areas with high demand but insufficient service supply.",
+                        icon: <Zap className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Mobility Mapping",
+                        description: "Visualize future mobility scenarios with high-resolution resolution-adjustable heatmaps.",
+                        icon: <MapIcon className="w-5 h-5 text-indigo-500" />
+                    }
+                ]}
+            />
+        );
+    }
+
     if (!gtfsData) {
         return (
             <div className="module-container">
@@ -58,7 +93,7 @@ const PredictViewContent: React.FC = () => {
                 />
                 <EmptyStateHero
                     icon={Zap}
-                    title="Predict Intelligence"
+                    title="Atlas Intelligence"
                     description="Detect transit deserts and service gaps using gravity-based accessibility models."
                     primaryAction={{
                         label: "Upload GTFS File",
@@ -84,8 +119,8 @@ const PredictViewContent: React.FC = () => {
                             <Zap className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
-                            <h1 className="atlas-h2">Predict</h1>
-                            <p className="text-[10px] atlas-label !text-[var(--text-muted)] mt-1 tracking-wider uppercase">National Analysis Engine v1.2</p>
+                            <h1 className="atlas-h2">Atlas</h1>
+                            <p className="text-[10px] atlas-label !text-[var(--text-muted)] mt-1 tracking-wider uppercase">Strategic Growth Engine v1.5</p>
                         </div>
                     </div>
 

@@ -37,51 +37,51 @@ export const CommandPalette: React.FC = () => {
 
     const COMMANDS: CommandItem[] = [
         {
-            id: 'screener',
-            title: 'Open Screener',
-            description: 'Analyze GTFS frequency and reliability',
-            icon: Target,
-            action: () => navigate('/screener'),
-            category: 'Navigation'
-        },
-        {
-            id: 'verifier',
-            title: 'Open Verifier',
-            description: 'Human-in-the-loop data validation',
+            id: 'audit',
+            title: 'Open Audit',
+            description: 'Execute technical GTFS validation and spec auditing',
             icon: ShieldCheck,
             action: () => navigate('/verifier'),
             category: 'Navigation'
         },
         {
-            id: 'simulator',
-            title: 'Open Simulator',
-            description: 'Model stop consolidation and travel times',
-            icon: Activity,
-            action: () => navigate('/simulator'),
-            category: 'Navigation'
-        },
-        {
             id: 'strategy',
             title: 'Open Strategy',
-            description: 'Executive performance audits and benchmarks',
-            icon: TrendingUp,
+            description: 'Monitor real-time frequencies and system performance',
+            icon: Target,
             action: () => navigate('/strategy'),
             category: 'Navigation'
         },
         {
-            id: 'atlas',
-            title: 'Map Explorer',
-            description: 'Global frequency map and system viewer',
-            icon: Globe,
-            action: () => navigate('/atlas'),
+            id: 'simulate',
+            title: 'Open Simulate',
+            description: 'Generate executive performance audits and board reports',
+            icon: TrendingUp,
+            action: () => navigate('/simulator'),
             category: 'Navigation'
         },
         {
             id: 'predict',
             title: 'Open Predict',
-            description: 'Identify transit deserts and gaps',
-            icon: Zap,
+            description: 'Model future service changes and scenario impacts',
+            icon: Activity,
             action: () => navigate('/predict'),
+            category: 'Navigation'
+        },
+        {
+            id: 'atlas',
+            title: 'Open Atlas',
+            description: 'Long-term network growth planning and gap detection',
+            icon: Zap,
+            action: () => navigate('/atlas'),
+            category: 'Navigation'
+        },
+        {
+            id: 'map',
+            title: 'Open Map',
+            description: 'Interactive system-wide frequency map viewer',
+            icon: Globe,
+            action: () => navigate('/map'),
             category: 'Navigation'
         },
         {

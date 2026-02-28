@@ -20,54 +20,54 @@ import { CityHero } from './components/CityHero';
 
 const FEATURES = [
     {
-        id: 'verify',
-        title: 'Verify',
+        id: 'audit',
+        title: 'Audit',
         cta: 'Check Metadata',
         description: 'Technical GTFS validation and spec compliance auditing.',
         icon: <FileCheck className="w-5 h-5" />,
         color: 'blue',
         path: '/verifier',
-        meta: 'Spec Validation'
-    },
-    {
-        id: 'screen',
-        title: 'Screen',
-        cta: 'Monitor System',
-        description: 'Real-time frequency monitoring and route performance tiering.',
-        icon: <Target className="w-5 h-5" />,
-        color: 'emerald',
-        path: '/screener',
-        meta: 'Network Pulse'
+        meta: 'Validation'
     },
     {
         id: 'strategy',
         title: 'Strategy',
-        cta: 'View Reports',
-        description: 'Executive audits and national peer benchmarking analysis.',
-        icon: <TrendingUp className="w-5 h-5" />,
-        color: 'indigo',
+        cta: 'Monitor System',
+        description: 'Real-time performance monitoring and headway tracking.',
+        icon: <Target className="w-5 h-5" />,
+        color: 'emerald',
         path: '/strategy',
-        meta: 'Board Directives'
+        meta: 'Real-time'
     },
     {
         id: 'simulate',
         title: 'Simulate',
-        cta: 'Test Changes',
-        description: 'Micro-engineering tweaks and transit impact modeling.',
-        icon: <Activity className="w-5 h-5" />,
-        color: 'purple',
+        cta: 'Generate Reports',
+        description: 'Executive performance audits and national peer benchmarking.',
+        icon: <TrendingUp className="w-5 h-5" />,
+        color: 'indigo',
         path: '/simulator',
-        meta: 'Scenario Lab'
+        meta: 'Audit'
     },
     {
         id: 'predict',
         title: 'Predict',
+        cta: 'Model Scenario',
+        description: 'Predictive impact of service changes on travel times.',
+        icon: <Activity className="w-5 h-5" />,
+        color: 'purple',
+        path: '/predict',
+        meta: 'Analysis'
+    },
+    {
+        id: 'optimize',
+        title: 'Optimize',
         cta: 'Explore Gaps',
         description: 'Long-term network growth planning and gap detection.',
         icon: <Zap className="w-5 h-5" />,
         color: 'rose',
-        path: '/predict',
-        meta: 'Future Planning'
+        path: '/atlas',
+        meta: 'Planning'
     }
 ];
 
@@ -93,14 +93,7 @@ const WORDS = ['Intelligence', 'Precision', 'Efficiency', 'Visibility'];
 
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
-    const [wordIndex, setWordIndex] = React.useState(0);
-
-    React.useEffect(() => {
-        const interval = setInterval(() => {
-            setWordIndex((prev: number) => (prev + 1) % WORDS.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
+    const [wordIndex] = React.useState(() => Math.floor(Math.random() * WORDS.length));
 
     return (
         <div className="flex-1 flex flex-col relative w-full overflow-x-hidden">
@@ -109,14 +102,11 @@ const HomePage: React.FC = () => {
             <div className="px-8 py-12 md:py-20 max-w-7xl mx-auto w-full relative z-10">
                 <div className="mb-12">
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="h-px w-10 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
-                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-indigo-600 dark:text-indigo-400 opacity-90">Civic Minds Atlas v1.5</span>
-                        </div>
+
                         <h1 className="text-6xl md:text-[7rem] font-black tracking-tighter text-slate-950 dark:text-white leading-[0.85] mb-10">
                             Modern Transit <br />
                             <span className="bg-clip-text text-transparent bg-gradient-to-br from-indigo-500 via-indigo-600 to-emerald-500 drop-shadow-sm">
@@ -189,47 +179,49 @@ const HomePage: React.FC = () => {
                 </div>
 
                 <footer className="mt-40 pt-16 border-t border-[var(--border)]">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                        <div className="col-span-2">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="w-8 h-8 rounded bg-[var(--accent-primary)] flex items-center justify-center">
-                                    <Zap className="w-5 h-5 text-white" />
-                                </div>
-                                <span className="text-xl font-bold text-[var(--text-primary)]">Atlas</span>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16">
+                        <div className="col-span-1 md:col-span-3">
+                            <div className="flex items-center gap-1.5 mb-6">
+                                <span className="text-[20px] font-bold tracking-tight text-[var(--text-primary)]">
+                                    Atlas
+                                </span>
+                                <span className="text-[20px] font-medium tracking-normal text-[var(--text-muted)]">
+                                    by Civic Minds
+                                </span>
                             </div>
-                            <p className="text-sm text-[var(--text-secondary)] max-w-sm font-medium">
-                                The professional benchmark for transit integrity and network performance simulation.
+                            <p className="text-[13px] text-[var(--text-secondary)] max-w-sm font-medium leading-relaxed">
+                                Intelligence for Mobility
                             </p>
                         </div>
                         <div className="flex flex-col gap-4">
-                            <span className="atlas-label">Platform</span>
-                            <div className="flex flex-col gap-3">
-                                {FEATURES.slice(0, 3).map(f => (
-                                    <button key={f.id} onClick={() => navigate(f.path)} className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors text-left font-bold">
+                            <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Platform</span>
+                            <div className="flex flex-col gap-4">
+                                {FEATURES.map(f => (
+                                    <button key={f.id} onClick={() => navigate(f.path)} className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-left font-medium">
                                         {f.title}
                                     </button>
                                 ))}
                             </div>
                         </div>
                         <div className="flex flex-col gap-4">
-                            <span className="atlas-label">Analysis</span>
-                            <div className="flex flex-col gap-3">
-                                {FEATURES.slice(3).map(f => (
-                                    <button key={f.id} onClick={() => navigate(f.path)} className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors text-left font-bold">
-                                        {f.title}
-                                    </button>
-                                ))}
+                            <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Resources</span>
+                            <div className="flex flex-col gap-4">
+                                <button className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-left font-medium">
+                                    Docs
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row justify-between items-center gap-8 py-8 border-t border-[var(--border)]">
-                        <div className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest tabular">
-                            © 2026 Civic Minds • Intelligence For Mobility
+                        <div className="flex items-center">
+                            <div className="text-[11px] text-[var(--text-muted)] font-medium leading-none">
+                                © 2026 Civic Minds
+                            </div>
                         </div>
                         <div className="flex gap-8">
-                            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest cursor-pointer hover:text-[var(--text-primary)] transition-colors">Privacy Policy</span>
-                            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest cursor-pointer hover:text-[var(--text-primary)] transition-colors">Terms of Service</span>
+                            <button className="text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Privacy Policy</button>
+                            <button className="text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Terms of Service</button>
                         </div>
                     </div>
                 </footer>
