@@ -1,22 +1,27 @@
 # Changelog
 
-## [Unreleased]
+## [0.9.1] - 2026-02-28
 ### Added
+- **Frequencies.txt Support**: Full expansion of frequency-based GTFS schedules into individual departures. Template trips are expanded at headway intervals with synthetic trip IDs, supporting agencies like LA Metro that use `frequencies.txt`.
+- **Reference Date Auto-Detection**: `detectReferenceDate()` finds the midpoint of the latest service period to prevent merging non-overlapping schedule periods (e.g., summer and winter schedules).
+- **GTFS Pipeline Test Script**: `scripts/test-gtfs-pipeline.ts` for validating real-world GTFS feeds, showing trip counts, headways, and service spans per route/direction/day.
+- **Global Error Boundary**: Moved `ErrorBoundary` to `src/components/` for app-wide crash protection.
 - **Authentication System**: Implemented `useAuthStore` with Zustand for persistent session management. Features a secure-gated access model for all intelligence modules.
 - **Premium Auth Gates**: Integrated `ModuleLanding` component with cinematic Framer Motion animations to gate-keep modules for unauthenticated users.
-- **Unified Brand Experience**: Redesigned the "Atlas by Civic Minds" navigation architecture, standardizing on a high-fidelity text-based logo and minimized TopNav.
-- **Premium Home Page Redesign**: Engineered a data-driven "Burner" home page at `/burner` featuring full-bleed map visualizations and Bento Box grids. Standardized on a "Technical Precision" aesthetic with high-contrast light mode and CartoDB Positron mapping.
-- **Functional UI Visualization**: Replaced abstract icons with functional mock telemetry and metric grids to demonstrate platform capabilities immediately ("Show, Don't Tell").
-- **Optimized Strategy Module**: Enhanced `ScreenerView` with a "Commit to Catalog" workflow, allowing analyzed GTFS feeds to be permanently stored in the system-wide Atlas.
 
 ### Changed
 - **Platform Nomenclature**: Synchronized all product pillars and navigation to the new "Audit / Strategy / Simulate / Predict / Optimize" framework.
-- **High-Fidelity Branding**: Standardized typography and visual hierarchy across all landing pages, including "Atlas by Civic Minds" in the global header.
-- **Footer Brand Refinement**: Transitioned the footer description to the "Intelligence for Mobility" slogan and optimized the copyright bar by removing redundant text for a more premium, anchored aesthetic.
+- **Catalog Route Lookups**: Replaced redundant `.find()` calls with pre-built `Map` lookups for O(1) route resolution.
 
 ### Fixed
+- **NaN Propagation in `t2m()`**: Malformed departure times (e.g., `"7:abc:00"`) now return `null` instead of leaking `NaN` into downstream headway computations.
+- **NaN Propagation in `stop_sequence`**: Malformed sequence values are skipped instead of corrupting departure ordering.
+- **NaN Guards in Shape/Stop Parsing**: Added `Number.isNaN()` guards to coordinate parsing in shapes, stop spacing, and polyline fallbacks.
+- **Calendar Date Range Filtering**: `getActiveServiceIds()` now filters calendar entries by `[start_date, end_date]` range, preventing stale or future schedule periods from inflating trip counts.
 - **Routing Engine Stability**: Resolved a critical mapping regression where intelligence paths (e.g., `/atlas`) were misrouted to incorrect view components.
-- **Merge Conflict Resolution**: Synchronized the local UI/Auth architecture with the new upstream GTFS Data Pipeline, ensuring feature parity and cross-module consistency.
+
+### Removed
+- **Dead Code**: Removed unused `BurnerHomePage`, duplicate `ErrorBoundary` in simulator, and dead `routeToStops` map in `PredictContext`.
 
 ## [0.9.0] - 2026-02-27
 ### Added
