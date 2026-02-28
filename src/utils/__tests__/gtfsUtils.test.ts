@@ -710,15 +710,14 @@ describe('calendar_dates synthesis via calculateTiers', () => {
 // ---------------------------------------------------------------------------
 
 describe('near-duplicate departure deduplication', () => {
-    it('deduplicates departures within 1 minute of each other', () => {
-        // Two trips depart 1 minute apart (e.g. loop routes or overlapping service_ids).
-        // The new engine deduplicates within 1 minute, keeping the earlier departure.
-        // This means 7:00 and 7:01 merge into 7:00, so the gap to 7:31 is 31 min.
+    it('keeps distinct departures 1 minute apart (only exact duplicates are removed)', () => {
+        // Two trips depart 1 minute apart — these are distinct departures on a
+        // high-frequency route. Only exact-same-minute duplicates are removed.
         const calendar = [makeService('WD', { mon: true })];
         const trips = [makeTrip('T1', 'R1', 'WD'), makeTrip('T2', 'R1', 'WD'), makeTrip('T3', 'R1', 'WD')];
         const stopTimes = [
             makeStopTime('T1', '07:00:00'),
-            makeStopTime('T2', '07:01:00'), // within 1 min of T1 — deduplicated
+            makeStopTime('T2', '07:01:00'), // 1 min apart — kept as distinct
             makeStopTime('T3', '07:31:00'),
         ];
         const gtfs: GtfsData = {
@@ -728,10 +727,10 @@ describe('near-duplicate departure deduplication', () => {
         const results = calculateTiers(gtfs, START, END);
         const r = results.find(x => x.day === 'Weekday');
         expect(r).toBeDefined();
-        // 7:00 and 7:01 deduplicated to 7:00; gap to 7:31 = 31 min
-        expect(r!.gaps).toEqual([31]);
-        // tripCount reflects deduplicated count (2, not 3)
-        expect(r!.tripCount).toBe(2);
+        // 7:00, 7:01, 7:31 — gaps are 1 and 30
+        expect(r!.gaps).toEqual([1, 30]);
+        // All 3 departures kept
+        expect(r!.tripCount).toBe(3);
     });
 });
 
@@ -1112,7 +1111,7 @@ describe('computeRawDepartures', () => {
         expect(monday!.warnings[0]).toContain('Multiple service_ids');
     });
 
-    it('deduplicates departures within 1 minute across service_ids', () => {
+    it('keeps departures 1 minute apart across service_ids as distinct', () => {
         const calendar = [
             makeService('WD1', { mon: true }),
             makeService('WD2', { mon: true }),
@@ -1124,7 +1123,7 @@ describe('computeRawDepartures', () => {
         ];
         const stopTimes = [
             makeStopTime('T1', '07:00:00'),
-            makeStopTime('T2', '07:01:00'),  // within 1 min of T1
+            makeStopTime('T2', '07:01:00'),  // 1 min apart — distinct departure
             makeStopTime('T3', '08:00:00'),
         ];
         const gtfs: GtfsData = {
@@ -1133,8 +1132,8 @@ describe('computeRawDepartures', () => {
         };
         const raw = computeRawDepartures(gtfs);
         const monday = raw.find(r => r.day === 'Monday');
-        expect(monday!.tripCount).toBe(2); // 7:00 and 8:00 (7:01 deduplicated)
-        expect(monday!.departureTimes).toEqual([420, 480]);
+        expect(monday!.tripCount).toBe(3); // 7:00, 7:01, 8:00 all kept
+        expect(monday!.departureTimes).toEqual([420, 421, 480]);
     });
 });
 

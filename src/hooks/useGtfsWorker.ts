@@ -33,6 +33,12 @@ export function useGtfsWorker() {
                 type: 'module'
             });
 
+            worker.onerror = (e) => {
+                e.preventDefault();
+                setState({ loading: false, status: '', error: e.message || 'Worker script failed to load' });
+                worker.terminate();
+            };
+
             worker.onmessage = (e) => {
                 const { type, message, error } = e.data;
 

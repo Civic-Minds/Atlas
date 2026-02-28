@@ -18,7 +18,7 @@ import { useTransitStore } from '../../../types/store';
 import { AnalysisResult } from '../../../types/gtfs';
 import './SystemReport.css';
 
-const StatCard = ({ title, value, subtext, icon: Icon, color }: any) => (
+const StatCard = ({ title, value, subtext, icon: Icon, color }: { title: string; value: string | number; subtext?: string; icon: React.ElementType; color: string }) => (
     <div className="bg-[var(--item-bg)] border border-[var(--border)] p-6 rounded-2xl shadow-sm">
         <div className="flex items-start justify-between mb-4">
             <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-600 dark:text-${color}-400`}>
