@@ -43,12 +43,12 @@ const App: React.FC = () => {
                         <Suspense fallback={<LazyFallback />}>
                             <Routes location={location}>
                                 <Route path="/" element={<HomePage />} />
-                                <Route path="/atlas" element={<AtlasView />} />
-                                <Route path="/screener/*" element={<ScreenerView />} />
-                                <Route path="/strategy" element={<StrategyView />} />
-                                <Route path="/simulator/*" element={<SimulatorView />} />
-                                <Route path="/predict/*" element={<PredictView />} />
+                                <Route path="/atlas/*" element={<PredictView />} />
+                                <Route path="/strategy/*" element={<ScreenerView />} />
+                                <Route path="/simulator/*" element={<StrategyView />} />
+                                <Route path="/predict/*" element={<SimulatorView />} />
                                 <Route path="/verifier/*" element={<VerifierView />} />
+                                <Route path="/map" element={<AtlasView />} />
                                 <Route path="/reports/*" element={<ReportCardsView />} />
                                 <Route path="/admin/*" element={<AdminView />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />

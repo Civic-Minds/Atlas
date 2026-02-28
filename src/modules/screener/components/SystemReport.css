@@ -1,0 +1,75 @@
+.report-page {
+    --bg: #ffffff;
+    --fg: #0f172a;
+    --border: #e2e8f0;
+    --item-bg: #f8fafc;
+    --text-muted: #64748b;
+}
+
+.dark .report-page {
+    --bg: #020617;
+    --fg: #f1f5f9;
+    --border: #1e293b;
+    --item-bg: #0f172a;
+    --text-muted: #94a3b8;
+}
+
+@media print {
+    /* Force white background and black text regardless of scheme */
+    .report-page {
+        --bg: #ffffff !important;
+        --fg: #000000 !important;
+        --border: #cccccc !important;
+        --item-bg: #ffffff !important;
+        --text-muted: #444444 !important;
+        background-color: white !important;
+        color: black !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    header {
+        border-bottom-color: #4f46e5 !important;
+    }
+
+    .report-page {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Prevent page breaks inside cards */
+    .bg-\[var\(--item-bg\)\], 
+    section {
+        break-inside: avoid;
+    }
+
+    /* Hide UI elements */
+    .print\:hidden {
+        display: none !important;
+    }
+
+    /* Fixed width for printing */
+    .max-w-4xl {
+        max-width: 100% !important;
+    }
+}
+
+.stat-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.metric-row:last-child {
+    border-bottom: none;
+}

@@ -2,34 +2,31 @@
 
 ## [Unreleased]
 ### Added
+- **Developer Experience Optimization**: Simplified the Vite `base` configuration to root (`/`) for local development, eliminating the forced redirect to `/Atlas/` when opening `localhost`.
+- **Module Nomenclature Alignment**: Synchronized all primary module titles and paths across `TopNav`, `HomePage`, and individual module landing pages to: Audit, Strategy, Simulate, Predict, and Atlas.
+- **Improved Routing Architecture**: Corrected the routing logic in `App.tsx` to ensure that specific URLs correctly map to their intended functional views (e.g., `/strategy` to `ScreenerView`, `/predict` to `SimulatorView`).
+- **Module Landing Pages**: Implemented high-fidelity, agency-agnostic landing pages for all core modules (Verify, Strategy, Simulate, Predict, Atlas) that provide feature summaries for signed-out users.
+- **Premium Component Library**: Engineered a reusable `ModuleLanding` component with Framer Motion micro-animations and a focused "Swiss-style" layout.
+
+### Changed
+- **Unified Branding**: Standardized the "Atlas by Civic Minds" logo presentation and module headers for a more cohesive platform experience.
+- **Navigation Clarity**: Refined the global header to use standardized pathing (`/strategy`, `/simulator`, `/predict`, `/atlas`, `/verifier`) that remains robust across different base URL configurations.
+- **UI Focus**: Removed redundant security and uptime telemetry from landing pages to prioritize core feature visibility.
+- **TopNav Refinement**: Removed UI clutter from the global navigation, including the dark/light mode toggle and login/logout icons. Standardized "Atlas" and "by Civic Minds" to exactly the same font size. Capitalized "Log In" and "Log Out".
+- **Homepage Minimalism**: Removed the small version text ('Civic Minds Atlas v1.5') above the main headline. Adjusted the rotating gradient word in the feature headline to randomly initialize on page load rather than shifting via an interval.
 - **Premium Design System Update**: Enhanced global design tokens with multi-layered elevation shadows and glassmorphism utilities in `index.css`.
-- **Advanced Navigation**: Overhauled `TopNav` with pill-shaped active state indicators and sophisticated hover transitions for a more modern, fluid experience.
-- **Brand Evolution**: Updated the "Atlas" logo to a custom, multi-layered SVG with internal gradients and refined architectural lines.
-- **Cinematic Hero Experience**: Enhanced the `HomePage` hero section with animated, rotating gradient text and improved visual hierarchy for the core value propositions.
-- **Glass-Engine Headers**: Implemented glassmorphism in `ModuleHeader`, featuring high-transparency backgrounds, `backdrop-blur` effects, and animated bottom-border highlights.
 - **Enhanced Visual Hierarchy**: Refined typography across module headers and navigation items, focusing on high-contrast tracking and bold accents.
 - **Redefined Branding**: Transitioned to "Intelligence for Mobility" as the core architectural philosophy.
 - **Unified Nomenclature**: Standardized all module titles and internal labeling to "Screen", "Simulate", and "Verify" (tense-shifted) for professional parity.
 - **Improved Visual Parity**: Standardized capitalization across hero headlines and synchronized the "A" logo with "by Civic Minds" subtext.
 - **Cinematic Backdrop**: Refined the high-fidelity isometric city background with improved full-width scaling and optimized fade-out boundaries for better content clarity.
 - **Premium Readme Re-Architecture**: Rebuilt `README.md` with a high-fidelity "Problem/Features/Stack" framework consistent with the Civic Minds ecosystem.
-- **Security Protocols**: Added `SECURITY.md` to formalize vulnerability reporting and version support.
-- **Premium UI Overhaul**: Overhauled the platform with a high-fidelity, state-of-the-art aesthetic.
-- **Enterprise Navigation**: Implemented hover-triggered drop-down menus in the global header for immediate access to refined toolsets.
-- **Refined Platform Hierarchy**: Optimized the homepage to remove redundant "Intelligence Hub" CTAs and move the core feature grid into primary focus.
-- **Brand Consolidation**: Standardized the logo to a custom architectural 'A' and simplified all branding to "Atlas" for professional parity.
-- **SEO Optimization**: Synchronized page titles and meta descriptions with the new platform identity.
-- **Lifecycle Alignment**: Solidified the "Big 5" sequential workflow: Verify, Screen, Strategy, Simulate, Predict.
-- **Glass Panel Utility**: Defined the `glass-panel` CSS utility with frosted `backdrop-blur-xl`, translucent backgrounds, and glass shadow elevation.
-- **Status Bullet Indicators**: Added `status-bullet-emerald`, `status-bullet-amber`, and `status-bullet-red` CSS utility classes for live status dots.
-- **Sidebar Re-open Toggle**: Added a floating `PanelRightOpen` button with `AnimatePresence` animation that appears when the Simulator console is closed.
-- **Keyboard Shortcuts**: `S` toggles sidebar, `R` resets stops, `1` skip-stops, `2` express mode in the Simulator. Disabled when typing in input fields.
-- **Scenario Export**: Download button in the Simulator sidebar header exports a full JSON scenario file (route info, parameters, baseline vs. simulation metrics, removed stops, per-stop overrides).
-- **Simulation Engine Test Suite**: 22 new tests covering output shape, travel time math, stop removal tracking, max gap detection, per-stop overrides, parameter sensitivity, and deterministic performance generation (`simulationEngine.test.ts`).
-- **Worker Corridor Analysis**: Added `CORRIDORS` message handler to the GTFS web worker so corridor overlap calculations run off the main thread.
-- **ControlPanel Premium Upgrade**: Collapsible engine parameter and stop inventory sections using `framer-motion` `AnimatePresence`, icon-tagged sliders with animated value badges, and keyboard shortcut hints on scenario buttons.
-- **PerformanceChart Upgrade**: Smooth cardinal spline curves, gradient fills under the real-world line, glow filter on the simulation reference line, finer grid, and polished tooltip with delay/ahead indicators.
-- **Dynamic Performance Modeling**: `generatePerformanceData()` uses a seeded Mulberry32 PRNG keyed by `hashRouteId()`, producing deterministic 24-hour congestion curves for any route without hardcoded agency data.
+- **Platform Hierarchy Optimization**: Optimized the homepage to move the core feature grid into primary focus.
+
+### Fixed
+- **Time String Parsing**: Fixed edge cases in time utility for GTFS extended times past 24:00:00.
+- **Analysis Robustness**: Improved air-gap handling in headway calculations to prevent crashes on routes with missing stop-sequence data.
+- **Baseline Isolation**: `SimulatorContext` baseline calculation no longer includes per-stop overrides, ensuring an honest unmodified-system comparison.
 
 ### Changed
 - **Minimalist TopNav**: Removed hover background highlights from the global navigation bar and header buttons for a cleaner, more minimal appearance.

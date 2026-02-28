@@ -5,6 +5,8 @@ import { Layers, RotateCcw, Activity, Globe, Filter, Search, Info } from 'lucide
 import { GtfsData, AnalysisResult } from '../../utils/gtfsUtils';
 import { storage, STORES } from '../../core/storage';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
+import { ModuleLanding } from '../../components/ModuleLanding';
+import { useAuthStore } from '../../hooks/useAuthStore';
 import 'leaflet/dist/leaflet.css';
 import './Atlas.css';
 
@@ -27,6 +29,7 @@ const TIER_LABELS: Record<string, string> = {
 };
 
 export default function AtlasView() {
+    const { isAuthenticated } = useAuthStore();
     const [gtfsData, setGtfsData] = useState<GtfsData | null>(null);
     const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([]);
     const [loading, setLoading] = useState(true);
@@ -108,17 +111,49 @@ export default function AtlasView() {
         );
     }
 
+    if (!isAuthenticated) {
+        return (
+            <ModuleLanding
+                title="Atlas"
+                description="The unified intelligence platform for global network visibility and system-wide transit integrity."
+                icon={Globe}
+                features={[
+                    {
+                        title: "Global Visibility",
+                        description: "Visualize your entire transit network on a high-precision, interactive global map.",
+                        icon: <Globe className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Network Integrity",
+                        description: "Monitor system-wide health and detect anomalies at scale across all routes and modes.",
+                        icon: <Activity className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Intelligent Layers",
+                        description: "Switch between demand heatmaps, supply overlays, and real-time performance diagnostics.",
+                        icon: <Layers className="w-5 h-5 text-indigo-500" />
+                    },
+                    {
+                        title: "Unified Dashboard",
+                        description: "The central nervous system for transit planners, combining data from all Atlas modules.",
+                        icon: <Filter className="w-5 h-5 text-indigo-500" />
+                    }
+                ]}
+            />
+        );
+    }
+
     if (!gtfsData || gtfsData.routes?.length === 0) {
         return (
             <div className="module-container">
                 <EmptyStateHero
                     icon={Globe}
-                    title="Atlas Empty"
-                    description="No transit data available. Upload a GTFS feed in the Screen module or administrative console to see the system-wide Atlas."
+                    title="Atlas"
+                    description="No transit data available. Upload a GTFS feed in the Strategy module or administrative console to see the system-wide Atlas."
                     primaryAction={{
-                        label: "Go to Screen",
+                        label: "Go to Strategy",
                         icon: Activity,
-                        href: "/screener"
+                        href: "/strategy"
                     }}
                 />
             </div>
