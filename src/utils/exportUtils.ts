@@ -67,3 +67,12 @@ export const downloadGeoJson = (features: object[], filename: string) => {
     const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
     triggerDownload(blob, filename);
 };
+
+/**
+ * Utility to export data as a JSON file.
+ * Used for catalog backups.
+ */
+export const downloadJson = (data: any, filename: string) => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    triggerDownload(blob, filename);
+};

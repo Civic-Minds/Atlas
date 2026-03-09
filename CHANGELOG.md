@@ -8,6 +8,14 @@
 - **Global Error Boundary**: Moved `ErrorBoundary` to `src/components/` for app-wide crash protection.
 - **Authentication System**: Implemented `useAuthStore` with Zustand for persistent session management. Features a secure-gated access model for all intelligence modules.
 - **Premium Auth Gates**: Integrated `ModuleLanding` component with cinematic Framer Motion animations to gate-keep modules for unauthenticated users.
+- **Unified Brand Experience**: Redesigned the "Atlas by Civic Minds" navigation architecture, standardizing on a high-fidelity text-based logo and minimized TopNav.
+- **Premium Home Page Redesign**: Engineered a data-driven "Burner" home page at `/burner` featuring full-bleed map visualizations and Bento Box grids. Standardized on a "Technical Precision" aesthetic with high-contrast light mode and CartoDB Positron mapping.
+- **Functional UI Visualization**: Replaced abstract icons with functional mock telemetry and metric grids to demonstrate platform capabilities immediately ("Show, Don't Tell").
+- **Optimized Strategy Module**: Enhanced `ScreenerView` with a "Commit to Catalog" workflow, allowing analyzed GTFS feeds to be permanently stored in the system-wide Atlas.
+- **Feed Management UI**: Refined the `AdminView` adding a "Cataloged Feeds" overview showing metadata and providing single-click deletion controls for committed GTFS libraries.
+- **UI Transparency**: Added a detailed "Reliability Breakdown" panel to the `RouteDetailModal` to explicitly show the arithmetic of consistency scores, bunching penalties, and outlier penalties.
+- **Atomic Commits**: Engineered a `runTransaction` helper in the IndexedDB storage layer and applied it to catalog commits to guarantee transaction safety and prevent partial data corruption.
+- **Data Protection**: Added an "Export DB" feature to the Screener module allowing users to securely download their entire mapped catalog history as a portable JSON backup.
 
 ### Changed
 - **Platform Nomenclature**: Synchronized all product pillars and navigation to the new "Audit / Strategy / Simulate / Predict / Optimize" framework.

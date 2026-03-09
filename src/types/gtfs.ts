@@ -198,6 +198,9 @@ export interface AnalysisResult {
     gaps: number[];
     times: number[];
     reliabilityScore: number;
+    consistencyScore: number;
+    bunchingPenalty: number;
+    outlierPenalty: number;
     headwayVariance: number;
     bunchingFactor: number;
     peakHeadway?: number;
