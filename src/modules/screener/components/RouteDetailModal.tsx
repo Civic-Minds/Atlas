@@ -500,7 +500,7 @@ const VerificationPanel: React.FC<{
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold transition-all border ${currentStatus === 'verified'
                         ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/40 cursor-default'
                         : 'border-[var(--border)] text-[var(--text-muted)] hover:text-emerald-500 hover:border-emerald-500/30 hover:bg-emerald-500/5'
-                    }`}
+                        }`}
                 >
                     <CheckCircle2 className="w-3.5 h-3.5" /> Verify
                 </button>
@@ -510,7 +510,7 @@ const VerificationPanel: React.FC<{
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold transition-all border ${currentStatus === 'flagged'
                         ? 'bg-red-500/20 text-red-500 border-red-500/40'
                         : 'border-[var(--border)] text-[var(--text-muted)] hover:text-red-500 hover:border-red-500/30 hover:bg-red-500/5'
-                    }`}
+                        }`}
                 >
                     <Flag className="w-3.5 h-3.5" /> Flag
                 </button>
@@ -520,7 +520,7 @@ const VerificationPanel: React.FC<{
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold transition-all border ${currentStatus === 'skipped'
                         ? 'bg-slate-500/20 text-slate-400 border-slate-500/40 cursor-default'
                         : 'border-[var(--border)] text-[var(--text-muted)] hover:text-slate-400 hover:border-slate-500/30 hover:bg-slate-500/5'
-                    }`}
+                        }`}
                 >
                     <SkipForward className="w-3.5 h-3.5" /> Skip
                 </button>
@@ -730,14 +730,35 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                             </div>
                                         </div>
 
-                                        <div className="precision-panel p-6 flex flex-col items-center text-center">
-                                            <div className="p-3 bg-indigo-500/10 rounded-2xl mb-4">
-                                                <Zap className={`w-6 h-6 ${reliabilityColor}`} />
+                                        <div className="precision-panel p-6 flex flex-col items-center">
+                                            <div className="flex items-center gap-3 w-full mb-4">
+                                                <div className="p-3 bg-indigo-500/10 rounded-2xl">
+                                                    <Zap className={`w-6 h-6 ${reliabilityColor}`} />
+                                                </div>
+                                                <div className="text-left">
+                                                    <span className="atlas-label block">Reliability</span>
+                                                    <div className={`text-3xl font-black atlas-mono leading-none ${reliabilityColor}`}>
+                                                        {Math.round(result.reliabilityScore)}%
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <span className="atlas-label mb-1">Reliability</span>
-                                            <div className={`text-3xl font-black atlas-mono ${reliabilityColor}`}>{Math.round(result.reliabilityScore)}%</div>
-                                            <div className="mt-2 text-xs text-[var(--text-muted)]">
-                                                CV: {(result.headwayVariance / (result.avgHeadway || 1)).toFixed(2)}
+
+                                            <div className="w-full space-y-2 mt-2 pt-4 border-t border-[var(--border)]">
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-[var(--text-muted)]">Base Consistency</span>
+                                                    <span className="font-bold text-emerald-500 atlas-mono">{Math.round(result.consistencyScore)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-[var(--text-muted)]">Bunching Penalty</span>
+                                                    <span className="font-bold text-amber-500 atlas-mono">-{Math.round(result.bunchingPenalty)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <span className="text-[var(--text-muted)]">Outlier Penalty</span>
+                                                    <span className="font-bold text-red-500 atlas-mono">-{Math.round(result.outlierPenalty)}</span>
+                                                </div>
+                                                <div className="text-[9px] text-[var(--text-muted)] text-right pt-2 border-t border-[var(--border)]/50 mt-2">
+                                                    CV: {(result.headwayVariance / (result.avgHeadway || 1)).toFixed(2)}
+                                                </div>
                                             </div>
                                         </div>
 

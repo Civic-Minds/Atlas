@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText, Activity } from 'lucide-react';
 import { AnalysisResult, GtfsData, SpacingResult, CorridorResult } from '../../utils/gtfsUtils';
-import { downloadCsv } from '../../utils/exportUtils';
+import { downloadCsv, downloadJson } from '../../utils/exportUtils';
 import { storage, STORES } from '../../core/storage';
 import { ModuleHeader } from '../../components/ModuleHeader';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
@@ -278,7 +278,16 @@ export default function ScreenerView() {
                         variant: 'secondary'
                     },
                     {
-                        label: "Export",
+                        label: "Export DB",
+                        icon: Database,
+                        onClick: () => {
+                            const { catalogRoutes } = useCatalogStore.getState();
+                            downloadJson(catalogRoutes, 'atlas-catalog-backup.json');
+                        },
+                        variant: 'secondary'
+                    },
+                    {
+                        label: "Export CSV",
                         icon: Download,
                         onClick: () => downloadCsv(filteredResults, 'transit-screener-results.csv'),
                         variant: 'primary'

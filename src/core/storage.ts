@@ -135,6 +135,53 @@ class StorageService {
         });
     }
 
+    async deleteItems(storeName: string, keys: string[]): Promise<void> {
+        if (keys.length === 0) return;
+        const db = await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(storeName, 'readwrite');
+            const store = transaction.objectStore(storeName);
+
+            for (const key of keys) {
+                store.delete(key);
+            }
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
+    }
+
+    /**
+     * Executes multiple database operations within a single, atomic transaction.
+     * If any operation fails, the entire transaction is rolled back.
+     * 
+     * @param storeNames Array of store names involved in the transaction
+     * @param operation Callback that performs the operations using the provided IDBTransaction
+     */
+    async runTransaction(
+        storeNames: string[],
+        operation: (transaction: IDBTransaction) => void | Promise<void>
+    ): Promise<void> {
+        const db = await this.init();
+        return new Promise(async (resolve, reject) => {
+            const transaction = db.transaction(storeNames, 'readwrite');
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+            transaction.onabort = () => reject(transaction.error || new Error('Transaction aborted'));
+
+            try {
+                const result = operation(transaction);
+                if (result instanceof Promise) {
+                    await result;
+                }
+            } catch (err) {
+                transaction.abort();
+                reject(err);
+            }
+        });
+    }
+
     // LocalStorage helpers for simpler small data
     setPreference(key: string, value: any): void {
         localStorage.setItem(`headway_pref_${key}`, JSON.stringify(value));
