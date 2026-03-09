@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.9.1] - 2026-02-28
+## [Unreleased]
+
+## [0.10.0] - 2026-03-09
 ### Added
 - **Frequencies.txt Support**: Full expansion of frequency-based GTFS schedules into individual departures. Template trips are expanded at headway intervals with synthetic trip IDs, supporting agencies like LA Metro that use `frequencies.txt`.
 - **Reference Date Auto-Detection**: `detectReferenceDate()` finds the midpoint of the latest service period to prevent merging non-overlapping schedule periods (e.g., summer and winter schedules).
