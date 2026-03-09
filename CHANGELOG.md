@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.10.0] - 2026-03-09
 ### Added
 - **Authentication System**: Implemented `useAuthStore` with Zustand for persistent session management. Features a secure-gated access model for all intelligence modules.
 - **Premium Auth Gates**: Integrated `ModuleLanding` component with cinematic Framer Motion animations to gate-keep modules for unauthenticated users.
