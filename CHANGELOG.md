@@ -8,6 +8,9 @@
 - **Premium Home Page Redesign**: Engineered a data-driven "Burner" home page at `/burner` featuring full-bleed map visualizations and Bento Box grids. Standardized on a "Technical Precision" aesthetic with high-contrast light mode and CartoDB Positron mapping.
 - **Functional UI Visualization**: Replaced abstract icons with functional mock telemetry and metric grids to demonstrate platform capabilities immediately ("Show, Don't Tell").
 - **Optimized Strategy Module**: Enhanced `ScreenerView` with a "Commit to Catalog" workflow, allowing analyzed GTFS feeds to be permanently stored in the system-wide Atlas.
+- **UI Transparency**: Added a detailed "Reliability Breakdown" panel to the `RouteDetailModal` to explicitly show the arithmetic of consistency scores, bunching penalties, and outlier penalties.
+- **Atomic Commits**: Engineered a `runTransaction` helper in the IndexedDB storage layer and applied it to catalog commits to guarantee transaction safety and prevent partial data corruption.
+- **Data Protection**: Added an "Export DB" feature to the Screener module allowing users to securely download their entire mapped catalog history as a portable JSON backup.
 
 ### Changed
 - **Platform Nomenclature**: Synchronized all product pillars and navigation to the new "Audit / Strategy / Simulate / Predict / Optimize" framework.
