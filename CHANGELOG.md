@@ -1,7 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
 ## [0.10.0] - 2026-03-09
 ### Added
 - **Frequencies.txt Support**: Full expansion of frequency-based GTFS schedules into individual departures. Template trips are expanded at headway intervals with synthetic trip IDs, supporting agencies like LA Metro that use `frequencies.txt`.
