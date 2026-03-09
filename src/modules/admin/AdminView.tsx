@@ -4,13 +4,20 @@ import { Upload, Database, CheckCircle2, AlertCircle, RotateCcw, ShieldCheck } f
 import { useGtfsWorker } from '../../hooks/useGtfsWorker';
 import { useTransitStore } from '../../types/store';
 import { useNotificationStore } from '../../hooks/useNotification';
+import { useCatalogStore } from '../../types/catalogStore';
 
 export default function AdminView() {
     const { loading, status, runAnalysis } = useGtfsWorker();
     const { setRawData, clearData } = useTransitStore();
+    const { feeds, removeFeed, loadCatalog } = useCatalogStore();
     const { addToast } = useNotificationStore();
     const [isSuccess, setIsSuccess] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Load available feeds when admin mounts
+    useEffect(() => {
+        loadCatalog();
+    }, [loadCatalog]);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -121,6 +128,50 @@ export default function AdminView() {
                         All data ingestion is handled locally in the browser worker thread. Ingested GTFS assets are stored in the local HeadwayDB for persistence across sessions.
                     </div>
                 </div>
+            </div>
+
+            {/* Catalog Feeds */}
+            <div className="mt-8 precision-panel p-8 bg-[var(--item-bg)] border-[var(--border)]">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+                    <Database className="w-5 h-5 text-indigo-500" />
+                    Cataloged Feeds
+                </h2>
+
+                {feeds.length === 0 ? (
+                    <div className="text-center py-8 text-[var(--text-muted)] text-sm italic border border-dashed border-[var(--border)] rounded-2xl">
+                        No feeds currently stored in the catalog.
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {feeds.map(feed => (
+                            <div key={feed.feedId} className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-[var(--bg)] border border-[var(--border)] rounded-2xl gap-4 hover:border-indigo-500/50 transition-colors">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <h3 className="font-bold text-lg text-[var(--fg)]">{feed.agencyName}</h3>
+                                        <span className="atlas-label bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 rounded">{feed.committedRouteCount} routes</span>
+                                    </div>
+                                    <div className="text-xs text-[var(--text-muted)] flex items-center gap-4">
+                                        <span>Uploaded: {new Date(feed.uploadedAt).toLocaleDateString()}</span>
+                                        <span>{feed.feedStartDate} to {feed.feedEndDate}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={async () => {
+                                            if (confirm(`Are you sure you want to delete the catalog data for ${feed.agencyName}?`)) {
+                                                await removeFeed(feed.feedId);
+                                                addToast(`${feed.agencyName} deleted from catalog`, 'info');
+                                            }
+                                        }}
+                                        className="btn-secondary text-red-500 hover:bg-red-500/10 px-4 py-2"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
