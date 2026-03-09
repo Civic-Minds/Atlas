@@ -61,15 +61,22 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
         // All incoming routes (with inherited verification where applicable)
         const allIncoming = [...changes.added, ...changes.updated, ...changes.unchanged];
 
-        // Save feed metadata
+        // Save feed metadata & catalog routes ATOMICALLY
         const feedMeta: FeedMeta = {
             ...feedMetaBase,
             committedRouteCount: allIncoming.length,
         };
-        await storage.setItem(STORES.FEEDS, feedMeta.feedId, feedMeta);
 
-        // Save all catalog routes (batch write)
-        await storage.putItems(STORES.CATALOG, allIncoming.map(r => ({ key: r.id, value: r })));
+        await storage.runTransaction([STORES.FEEDS, STORES.CATALOG], (transaction) => {
+            const feedStore = transaction.objectStore(STORES.FEEDS);
+            const catalogStore = transaction.objectStore(STORES.CATALOG);
+
+            feedStore.put(feedMeta, feedMeta.feedId);
+
+            for (const r of allIncoming) {
+                catalogStore.put(r, r.id);
+            }
+        });
 
         // Update state
         const newCatalogRoutes = [...existing, ...allIncoming];
@@ -111,12 +118,19 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
     removeFeed: async (feedId) => {
         const { feeds, catalogRoutes } = get();
 
-        // Remove all catalog routes for this feed
+        // Remove all catalog routes and feed metadata ATOMICALLY
         const routesToRemove = catalogRoutes.filter(r => r.feedId === feedId);
-        for (const route of routesToRemove) {
-            await storage.deleteItem(STORES.CATALOG, route.id);
-        }
-        await storage.deleteItem(STORES.FEEDS, feedId);
+        const routeIdsToRemove = routesToRemove.map(r => r.id);
+
+        await storage.runTransaction([STORES.FEEDS, STORES.CATALOG], (transaction) => {
+            const feedStore = transaction.objectStore(STORES.FEEDS);
+            const catalogStore = transaction.objectStore(STORES.CATALOG);
+
+            feedStore.delete(feedId);
+            for (const id of routeIdsToRemove) {
+                catalogStore.delete(id);
+            }
+        });
 
         const newFeeds = feeds.filter(f => f.feedId !== feedId);
         const newCatalogRoutes = catalogRoutes.filter(r => r.feedId !== feedId);

@@ -439,7 +439,12 @@ export const determineTier = (
 /**
  * Compute headway statistics and reliability score from gaps.
  */
-function computeHeadwayStats(gaps: number[], times: number[]) {
+export function computeHeadwayStats(times: number[]) {
+    const gaps: number[] = [];
+    for (let i = 1; i < times.length; i++) {
+        gaps.push(times[i] - times[i - 1]);
+    }
+
     const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
     const median = computeMedian(gaps);
 
@@ -465,27 +470,36 @@ function computeHeadwayStats(gaps: number[], times: number[]) {
         }
     }
 
-    // Reliability score (0-100)
     const variance = gaps.length > 1
         ? gaps.reduce((acc, h) => acc + Math.pow(h - avg, 2), 0) / (gaps.length - 1)
         : 0;
     const stdDev = Math.sqrt(variance);
+
+    const bunchedGaps = gaps.filter(g => g < avg * 0.25).length;
+    const bunching = bunchedGaps / (gaps.length || 1);
+    const bunchingPenalty = bunching * 60;
+
     const significantGaps = gaps.filter(g => g > avg * 1.5).length;
     const outlierPenalty = gaps.length ? (significantGaps / gaps.length) * 40 : 0;
-    const bunchedGaps = gaps.filter(g => g < avg * 0.25).length;
-    const bunchingFactor = bunchedGaps / (gaps.length || 1);
-    const bunchingPenalty = bunchingFactor * 60;
-    const consistency = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 50) : 0;
-    const reliability = Math.max(0, consistency - outlierPenalty - bunchingPenalty);
+
+    const consistencyScore = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 50) : 0;
+    const reliability = Math.max(0, consistencyScore - outlierPenalty - bunchingPenalty);
+
+    const base = Math.max(...gaps, avg);
 
     return {
         avg,
         median,
         peakHeadway: Math.round(peakHeadway * 10) / 10,
+        baseHeadway: Math.round(base * 10) / 10,
         peakWindow,
         variance: Math.round(variance * 10) / 10,
-        bunchingFactor: Math.round(bunchingFactor * 100) / 100,
+        bunchingFactor: Math.round(bunching * 100) / 100,
         reliabilityScore: Math.round(reliability),
+        consistencyScore: Math.round(consistencyScore),
+        bunchingPenalty: Math.round(bunchingPenalty),
+        outlierPenalty: Math.round(outlierPenalty),
+        gaps, // Include gaps in the return for later use
     };
 }
 
@@ -537,35 +551,44 @@ export function applyAnalysisCriteria(
             criteria.maxGraceViolations,
         );
 
-        const stats = computeHeadwayStats(windowedGaps, windowedTimes);
+        const stats = computeHeadwayStats(windowedTimes); // Changed to pass windowedTimes
 
         const key = `${raw.route}::${raw.dir}::${raw.day}`;
+        const currentDayType = DAY_TO_TYPE[raw.day]; // Define currentDayType
+        const activeTier = tier; // Define activeTier
+        const validTimes = windowedTimes; // Define validTimes
+
+        // Apply metrics
+        const result: AnalysisResult = {
+            route: raw.route,
+            day: currentDayType,
+            dir: raw.dir,
+            avgHeadway: Math.round(stats.avg),
+            medianHeadway: Math.round(stats.median),
+            tier: activeTier.toString(),
+            tripCount: validTimes.length,
+            gaps: stats.gaps,
+            times: validTimes,
+            peakHeadway: stats.peakHeadway ? Math.round(stats.peakHeadway) : undefined,
+            baseHeadway: stats.baseHeadway ? Math.round(stats.baseHeadway) : undefined,
+            peakWindow: stats.peakWindow,
+            reliabilityScore: stats.reliabilityScore,
+            consistencyScore: stats.consistencyScore,
+            bunchingPenalty: stats.bunchingPenalty,
+            outlierPenalty: stats.outlierPenalty,
+            headwayVariance: stats.variance,
+            bunchingFactor: stats.bunchingFactor,
+            serviceSpan: raw.serviceSpan,
+            routeType: raw.routeType,
+            modeName: raw.modeName,
+            serviceIds: raw.serviceIds,
+            warnings: raw.warnings,
+            daysIncluded: [raw.day]
+        };
         perDayResults.set(key, {
             dayType,
             day: raw.day,
-            result: {
-                route: raw.route,
-                day: raw.day,
-                dir: raw.dir,
-                avgHeadway: stats.avg,
-                medianHeadway: stats.median,
-                peakHeadway: stats.peakHeadway,
-                baseHeadway: Math.round(stats.avg * 10) / 10,
-                peakWindow: stats.peakWindow,
-                serviceSpan: { start: windowedTimes[0], end: windowedTimes[windowedTimes.length - 1] },
-                tier,
-                tripCount: windowedTimes.length,
-                gaps: windowedGaps,
-                times: windowedTimes,
-                reliabilityScore: stats.reliabilityScore,
-                headwayVariance: stats.variance,
-                bunchingFactor: stats.bunchingFactor,
-                routeType: raw.routeType,
-                modeName: raw.modeName,
-                serviceIds: raw.serviceIds,
-                warnings: raw.warnings,
-                daysIncluded: [raw.day],
-            },
+            result: result,
         });
     }
 
@@ -602,18 +625,22 @@ export function applyAnalysisCriteria(
         // and inflated sample sizes).
         const perDayStats = entries.map(e =>
             e.result.gaps.length > 0
-                ? computeHeadwayStats(e.result.gaps, e.result.times)
-                : { avg: 0, median: 0, peakHeadway: 0, peakWindow: { start: 0, end: 0 }, variance: 0, bunchingFactor: 0, reliabilityScore: 0 }
+                ? computeHeadwayStats(e.result.times) // computeHeadwayStats expects times, not gaps
+                : { avg: 0, median: 0, peakHeadway: 0, baseHeadway: 0, peakWindow: { start: 0, end: 0 }, variance: 0, bunchingFactor: 0, reliabilityScore: 0, consistencyScore: 0, bunchingPenalty: 0, outlierPenalty: 0, gaps: [] }
         );
         const n = perDayStats.length;
         const stats = {
             avg: perDayStats.reduce((s, d) => s + d.avg, 0) / n,
             median: perDayStats.reduce((s, d) => s + d.median, 0) / n,
             peakHeadway: perDayStats.reduce((s, d) => s + d.peakHeadway, 0) / n,
+            baseHeadway: perDayStats.reduce((s, d) => s + (d.baseHeadway || 0), 0) / n,
             peakWindow: perDayStats[0].peakWindow, // use representative day
             variance: perDayStats.reduce((s, d) => s + d.variance, 0) / n,
             bunchingFactor: perDayStats.reduce((s, d) => s + d.bunchingFactor, 0) / n,
             reliabilityScore: Math.round(perDayStats.reduce((s, d) => s + d.reliabilityScore, 0) / n),
+            consistencyScore: Math.round(perDayStats.reduce((s, d) => s + d.consistencyScore, 0) / n),
+            bunchingPenalty: Math.round(perDayStats.reduce((s, d) => s + d.bunchingPenalty, 0) / n),
+            outlierPenalty: Math.round(perDayStats.reduce((s, d) => s + d.outlierPenalty, 0) / n),
         };
 
         // Keep merged gaps/times for downstream consumers that need the full dataset
@@ -655,6 +682,9 @@ export function applyAnalysisCriteria(
             gaps: allGaps,
             times: [...new Set(allTimes)].sort((a, b) => a - b),
             reliabilityScore: stats.reliabilityScore,
+            consistencyScore: stats.consistencyScore || 0,
+            bunchingPenalty: stats.bunchingPenalty || 0,
+            outlierPenalty: stats.outlierPenalty || 0,
             headwayVariance: stats.variance,
             bunchingFactor: stats.bunchingFactor,
             routeType: rep.routeType,
