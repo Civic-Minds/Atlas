@@ -31,7 +31,8 @@
     pointer-events: none;
 }
 
-[data-theme='dark'] .city-hero-image {
+:root.dark .city-hero-image,
+.dark .city-hero-image {
     opacity: 0.1;
     filter: saturate(0.3) brightness(0.8);
 }

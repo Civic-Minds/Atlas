@@ -22,8 +22,8 @@ const FEATURES = [
     {
         id: 'audit',
         title: 'Audit',
-        cta: 'Check Metadata',
-        description: 'Technical GTFS validation and spec compliance auditing.',
+        cta: 'Verify Claims',
+        description: 'Technical GTFS validation and AI-generated frequency claim auditing.',
         icon: <FileCheck className="w-5 h-5" />,
         color: 'blue',
         path: '/verifier',
@@ -32,42 +32,42 @@ const FEATURES = [
     {
         id: 'strategy',
         title: 'Strategy',
-        cta: 'Monitor System',
-        description: 'Real-time performance monitoring and headway tracking.',
+        cta: 'Monitor Network',
+        description: 'National-scale network health monitoring and systemic headway screening.',
         icon: <Target className="w-5 h-5" />,
         color: 'emerald',
         path: '/strategy',
-        meta: 'Real-time'
+        meta: 'Network'
     },
     {
         id: 'simulate',
         title: 'Simulate',
-        cta: 'Generate Reports',
-        description: 'Executive performance audits and national peer benchmarking.',
-        icon: <TrendingUp className="w-5 h-5" />,
+        cta: 'Run Scenario',
+        description: 'Tactical stop-consolidation modeling and dwell-time sensitivity analysis.',
+        icon: <Activity className="w-5 h-5" />,
         color: 'indigo',
         path: '/simulator',
-        meta: 'Audit'
+        meta: 'Sim Lab'
     },
     {
         id: 'predict',
         title: 'Predict',
-        cta: 'Model Scenario',
-        description: 'Predictive impact of service changes on travel times.',
-        icon: <Activity className="w-5 h-5" />,
+        cta: 'Model Impact',
+        description: 'High-fidelity travel time forecasting and corridor-level impact studies.',
+        icon: <TrendingUp className="w-5 h-5" />,
         color: 'purple',
         path: '/predict',
-        meta: 'Analysis'
+        meta: 'Forecasting'
     },
     {
         id: 'optimize',
         title: 'Optimize',
-        cta: 'Explore Gaps',
-        description: 'Long-term network growth planning and gap detection.',
+        cta: 'Design Network',
+        description: 'Generative network realignment and long-term capital growth planning.',
         icon: <Zap className="w-5 h-5" />,
         color: 'rose',
         path: '/atlas',
-        meta: 'Planning'
+        meta: 'Synthesis'
     }
 ];
 

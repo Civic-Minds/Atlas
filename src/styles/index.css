@@ -4,14 +4,6 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* Professional Precision Palette (Light) */
-  --bg: #ffffff;
-  --fg: #0f172a;
-  --card: #ffffff;
-  --panel: #f8fafc;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-
   /* Technical Palette (Light) */
   --bg: hsl(220, 20%, 98%);
   --fg: hsl(220, 10%, 10%);

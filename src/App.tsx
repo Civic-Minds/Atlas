@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { TopNav } from './components/TopNav';
 import { CommandPalette } from './components/CommandPalette';
 import { NotificationToast } from './components/NotificationToast';
+import { AuthSplash } from './components/AuthSplash';
+import { useAuthStore } from './hooks/useAuthStore';
 
 // Lazy-loaded module views — each becomes a separate chunk
 const HomePage = React.lazy(() => import('./modules/home/HomePage'));
@@ -14,6 +16,8 @@ const AtlasView = React.lazy(() => import('./modules/atlas/AtlasView'));
 const ReportCardsView = React.lazy(() => import('./modules/report-cards/ReportCardsView'));
 const AdminView = React.lazy(() => import('./modules/admin/AdminView'));
 const PredictView = React.lazy(() => import('./modules/predict/PredictView'));
+const SystemReportView = React.lazy(() => import('./modules/screener/components/SystemReportView'));
+
 
 const LazyFallback = () => (
     <div className="flex-1 flex items-center justify-center">
@@ -21,8 +25,19 @@ const LazyFallback = () => (
     </div>
 );
 
+// Shown while Firebase resolves the persisted session on first load
+const AuthLoadingScreen = () => (
+    <div className="fixed inset-0 bg-[#050505] flex items-center justify-center z-[9999]">
+        <div className="w-6 h-6 border-2 border-white/10 border-t-white/40 rounded-full animate-spin" />
+    </div>
+);
+
 const App: React.FC = () => {
     const location = useLocation();
+    const { isAuthenticated, isLoading } = useAuthStore();
+
+    if (isLoading) return <AuthLoadingScreen />;
+    if (!isAuthenticated) return <AuthSplash />;
 
     return (
         <div className="flex flex-col bg-[var(--bg)] text-[var(--fg)] font-sans min-h-screen transition-colors duration-300">
@@ -44,6 +59,8 @@ const App: React.FC = () => {
                                 <Route path="/" element={<HomePage />} />
                                 <Route path="/atlas" element={<AtlasView />} />
                                 <Route path="/strategy" element={<ScreenerView />} />
+                                <Route path="/strategy/report" element={<SystemReportView />} />
+
                                 <Route path="/simulator" element={<SimulatorView />} />
                                 <Route path="/predict" element={<PredictView />} />
                                 <Route path="/verifier" element={<VerifierView />} />

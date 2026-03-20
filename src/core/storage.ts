@@ -163,21 +163,30 @@ class StorageService {
         operation: (transaction: IDBTransaction) => void | Promise<void>
     ): Promise<void> {
         const db = await this.init();
-        return new Promise(async (resolve, reject) => {
+        // Avoid `new Promise(async ...)` — async executor errors after the first
+        // await are silently swallowed. Use a safe wrapper instead.
+        return new Promise<void>((resolve, reject) => {
             const transaction = db.transaction(storeNames, 'readwrite');
-
             transaction.oncomplete = () => resolve();
             transaction.onerror = () => reject(transaction.error);
             transaction.onabort = () => reject(transaction.error || new Error('Transaction aborted'));
 
-            try {
-                const result = operation(transaction);
-                if (result instanceof Promise) {
-                    await result;
+            // Kick off the operation; any thrown error aborts the transaction
+            const maybePromise = (() => {
+                try {
+                    return operation(transaction);
+                } catch (err) {
+                    transaction.abort();
+                    reject(err);
+                    return undefined;
                 }
-            } catch (err) {
-                transaction.abort();
-                reject(err);
+            })();
+
+            if (maybePromise instanceof Promise) {
+                maybePromise.catch((err) => {
+                    transaction.abort();
+                    reject(err);
+                });
             }
         });
     }

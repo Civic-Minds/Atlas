@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Database, CheckCircle2, AlertTriangle, ArrowRight, RefreshCcw, Plus, Minus } from 'lucide-react';
 import { GtfsData, AnalysisResult } from '../../../types/gtfs';
@@ -26,10 +26,14 @@ export const CommitModal: React.FC<CommitModalProps> = ({
     // Auto-detect agency name from feed_info
     const feedMetaPreview = useMemo(() => {
         if (!gtfsData) return null;
-        const meta = extractFeedMeta(gtfsData, fileName);
-        if (!agencyName) setAgencyName(meta.agencyName);
-        return meta;
+        return extractFeedMeta(gtfsData, fileName);
     }, [gtfsData, fileName]);
+
+    useEffect(() => {
+        if (feedMetaPreview?.agencyName) {
+            setAgencyName(feedMetaPreview.agencyName);
+        }
+    }, [feedMetaPreview]);
 
     // Preview change detection
     const changePreview = useMemo(() => {

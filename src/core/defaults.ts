@@ -34,11 +34,17 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
 };
 
 /**
- * GTFS route_type → mode category for tier override lookup
+ * GTFS route_type → mode category for tier override lookup.
+ * Handles both base types (0–7) and GTFS extended types (HVT spec).
  */
 export function getModeCategory(routeType: string): string {
-    const railTypes = new Set(['0', '1', '2', '12']); // tram/light rail, subway, commuter rail, monorail
-    return railTypes.has(routeType) ? 'rail' : 'surface';
+    // Base GTFS types that are rail/tram
+    const baseRailTypes = new Set(['0', '1', '2', '12']); // tram/light rail, subway, commuter rail, monorail
+    if (baseRailTypes.has(routeType)) return 'rail';
+    // Extended HVT types: 100–199 (Commuter Rail), 400–599 (Urban Rail/Metro/Underground)
+    const n = parseInt(routeType);
+    if (!Number.isNaN(n) && ((n >= 100 && n < 200) || (n >= 400 && n < 600))) return 'rail';
+    return 'surface';
 }
 
 /**

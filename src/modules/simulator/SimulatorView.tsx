@@ -56,8 +56,9 @@ function SimulatorViewContent() {
     if (!isAuthenticated) {
         return (
             <ModuleLanding
-                title="Predict"
+                title="Simulate"
                 description="High-precision transit impact modeling and micro-engineering scenario testing."
+
                 icon={Activity}
                 features={[
                     {
@@ -90,7 +91,7 @@ function SimulatorViewContent() {
             <div className="module-container">
                 <EmptyStateHero
                     icon={Activity}
-                    title="Predict"
+                    title="Simulate"
                     description="Model stop consolidation scenarios with real-time performance metrics. Upload a GTFS feed to begin."
                     primaryAction={{
                         label: "Open Admin Panel",
@@ -243,8 +244,9 @@ function SimulatorViewContent() {
                         <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                             <Activity className="w-4 h-4 text-indigo-500" />
                         </div>
-                        <h2 className="text-sm font-black uppercase tracking-widest text-[var(--fg)]">Predictive Engine</h2>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-[var(--fg)]">Simulator Engine</h2>
                     </div>
+
                     <div className="flex items-center gap-1">
                         <button
                             className="p-2 hover:bg-[var(--item-bg)] rounded-xl transition-colors text-[var(--text-muted)] hover:text-indigo-500"

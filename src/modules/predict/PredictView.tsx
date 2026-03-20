@@ -119,8 +119,9 @@ const PredictViewContent: React.FC = () => {
                             <Zap className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
-                            <h1 className="atlas-h2">Atlas</h1>
+                            <h1 className="atlas-h2">Predict</h1>
                             <p className="text-[10px] atlas-label !text-[var(--text-muted)] mt-1 tracking-wider uppercase">Strategic Growth Engine v1.5</p>
+
                         </div>
                     </div>
 

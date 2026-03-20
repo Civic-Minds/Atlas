@@ -52,17 +52,19 @@ const REQUIRED_CALENDAR_FIELDS = [
     'friday', 'saturday', 'sunday', 'start_date', 'end_date'
 ] as const;
 
-// Valid GTFS route_type values
-const VALID_ROUTE_TYPES = new Set([
-    '0', '1', '2', '3', '4', '5', '6', '7', '11', '12',
-    // Extended GTFS types (100-series)
-    ...Array.from({ length: 20 }, (_, i) => String(100 + i)),
-    ...Array.from({ length: 20 }, (_, i) => String(200 + i)),
-    ...Array.from({ length: 20 }, (_, i) => String(400 + i)),
-    ...Array.from({ length: 20 }, (_, i) => String(700 + i)),
-    ...Array.from({ length: 20 }, (_, i) => String(900 + i)),
-    '1000', '1100', '1200', '1300', '1400', '1500', '1600', '1700',
-]);
+/**
+ * Returns true if the route_type string is a valid GTFS route type.
+ * Covers both the 8 base types (0–7, 11, 12) and the full HVT extended
+ * type spec (100–1799) as published at https://developers.google.com/transit/gtfs/reference/extended-route-types
+ */
+function isValidRouteType(routeType: string): boolean {
+    const baseTypes = new Set(['0', '1', '2', '3', '4', '5', '6', '7', '11', '12']);
+    if (baseTypes.has(routeType)) return true;
+    const n = parseInt(routeType);
+    if (Number.isNaN(n)) return false;
+    // HVT extended ranges: 100–1799
+    return n >= 100 && n <= 1799;
+}
 
 /**
  * Validate a parsed GTFS dataset and return a structured report.
@@ -218,7 +220,7 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
 
     // Invalid route_type values
     if (gtfs.routes?.length) {
-        const invalidTypes = gtfs.routes.filter(r => !VALID_ROUTE_TYPES.has(r.route_type));
+        const invalidTypes = gtfs.routes.filter(r => !isValidRouteType(r.route_type));
         if (invalidTypes.length > 0) {
             issues.push({
                 severity: 'warning', code: 'W021', file: 'routes.txt', field: 'route_type',
@@ -248,6 +250,18 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
             issues.push({
                 severity: 'error', code: 'E031', file: 'stops.txt', field: 'stop_id',
                 message: `${dupes.length} duplicate stop_id values found.`,
+                count: dupes.length,
+                examples: dupes.slice(0, 5),
+            });
+        }
+    }
+
+    if (gtfs.trips?.length) {
+        const dupes = findDuplicates(gtfs.trips.map(t => t.trip_id));
+        if (dupes.length > 0) {
+            issues.push({
+                severity: 'error', code: 'E032', file: 'trips.txt', field: 'trip_id',
+                message: `${dupes.length} duplicate trip_id values found. Duplicate trips are silently dropped by the pipeline — each trip_id must be unique.`,
                 count: dupes.length,
                 examples: dupes.slice(0, 5),
             });
@@ -339,7 +353,7 @@ function validateRequiredFields<T extends Record<string, any>>(
         if (missing.length > 0) {
             issues.push({
                 severity: 'error',
-                code: `E00F`,
+                code: `E040_${field}`,
                 file: filename,
                 field,
                 message: `${missing.length} records in ${filename} are missing required field "${field}".`,

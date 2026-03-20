@@ -75,11 +75,13 @@ export default function AtlasView() {
             }));
     }, [currentRoutes, activeDay, activeTiers, activeAgency]);
 
-    // Compute bounds from all displayed routes
+    // Compute bounds from ALL routes for the current day — independent of tier/agency filters
+    // so toggling filters doesn't re-fit the map and fight the user's pan/zoom
     const bounds = useMemo((): LatLngBoundsExpression | null => {
-        if (filteredMapData.length === 0) return null;
+        const dayRoutes = currentRoutes.filter(r => r.dayType === activeDay && r.shape && r.shape.length > 0);
+        if (dayRoutes.length === 0) return null;
         let minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
-        for (const r of filteredMapData) {
+        for (const r of dayRoutes) {
             for (const [lat, lng] of r.shape) {
                 if (lat < minLat) minLat = lat;
                 if (lat > maxLat) maxLat = lat;
@@ -89,7 +91,7 @@ export default function AtlasView() {
         }
         if (minLat === 90) return null;
         return [[minLat, minLng], [maxLat, maxLng]];
-    }, [filteredMapData]);
+    }, [currentRoutes, activeDay]);
 
     // Tier counts for current filters
     const tierCounts = useMemo(() => {

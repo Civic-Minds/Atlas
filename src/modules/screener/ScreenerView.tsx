@@ -91,7 +91,7 @@ export default function ScreenerView() {
     const [lastFileName, setLastFileName] = useState('feed.zip');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { loading, status, runAnalysis } = useGtfsWorker();
+    const { loading, status, error, runAnalysis } = useGtfsWorker();
     const { loadCatalog } = useCatalogStore();
 
     // Load persisted data on mount
@@ -101,6 +101,11 @@ export default function ScreenerView() {
         }
         loadCatalog();
     }, [loadPersistedData, gtfsData, loadCatalog]);
+
+    // Surface worker errors as toasts
+    useEffect(() => {
+        if (error) addToast(`Analysis failed: ${error}`, 'error');
+    }, [error, addToast]);
 
     const handleReset = async () => {
         if (!resetPending) {
@@ -239,9 +244,10 @@ export default function ScreenerView() {
                     {
                         label: "Board Report",
                         icon: FileText,
-                        onClick: () => navigate('/simulator'),
+                        onClick: () => navigate('/strategy/report'),
                         variant: 'primary'
                     },
+
                     {
                         label: validationReport ? `Validation (${validationReport.errors}E / ${validationReport.warnings}W)` : 'Validation',
                         icon: FileCheck,
@@ -260,6 +266,11 @@ export default function ScreenerView() {
                         onClick: () => {
                             if (!gtfsData) return;
                             const worker = new Worker(new URL('../../workers/gtfs.worker.ts', import.meta.url), { type: 'module' });
+                            worker.onerror = (e) => {
+                                e.preventDefault();
+                                addToast(`Corridor analysis failed: ${e.message || 'Worker error'}`, 'error');
+                                worker.terminate();
+                            };
                             worker.onmessage = (ev) => {
                                 if (ev.data.type === 'CORRIDORS_DONE') {
                                     setCorridorResults(ev.data.corridors);
@@ -365,11 +376,13 @@ export default function ScreenerView() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--border)]">
-                            {filteredResults.map((result, i) => {
+                            {filteredResults.map((result) => {
                                 const config = TIER_CONFIG.find(c => c.id === result.tier);
+                                // Stable key: route identity doesn't change when list is filtered/reordered
+                                const rowKey = `${result.route}::${result.dir}::${result.day}`;
                                 return (
                                     <tr
-                                        key={i}
+                                        key={rowKey}
                                         className="hover:bg-[var(--item-bg)] transition-colors group cursor-pointer"
                                         onClick={() => setSelectedRouteResult(result)}
                                     >

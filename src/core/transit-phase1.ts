@@ -60,7 +60,7 @@ function buildTripDepartures(
         if (Number.isNaN(seq)) continue;
         const existing = tripFirstSeq.get(st.trip_id);
         if (existing === undefined || seq < existing) {
-            const dep = t2m(st.departure_time);
+            const dep = t2m(st.departure_time) ?? t2m(st.arrival_time);
             if (dep !== null) {
                 tripFirstDep.set(st.trip_id, dep);
                 tripFirstSeq.set(st.trip_id, seq);
@@ -121,27 +121,27 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string): Ra
 
     const routeById = new Map(routes.map(r => [r.route_id, r]));
     const tripData = buildTripDepartures(gtfs);
-    const refDate = referenceDate ?? detectReferenceDate(calendar, calendarDates);
+    const refDate = referenceDate ?? detectReferenceDate(calendar, calendarDates, gtfs.trips);
     const results: RawRouteDepartures[] = [];
 
     for (const day of ALL_DAYS) {
         const activeServiceIds = getActiveServiceIds(calendar, calendarDates, day, refDate);
         if (activeServiceIds.size === 0) continue;
 
-        const grouped = new Map<string, { times: number[]; serviceIds: Set<string>; missingDir: boolean }>();
+        const grouped = new Map<string, { routeId: string; dirId: string; times: number[]; serviceIds: Set<string>; missingDir: boolean }>();
 
         for (const [, data] of tripData) {
             if (!activeServiceIds.has(data.serviceId)) continue;
             const key = `${data.routeId}::${data.dirId}`;
-            if (!grouped.has(key)) grouped.set(key, { times: [], serviceIds: new Set(), missingDir: false });
+            if (!grouped.has(key)) grouped.set(key, { routeId: data.routeId, dirId: data.dirId, times: [], serviceIds: new Set(), missingDir: false });
             const group = grouped.get(key)!;
             group.times.push(data.depTime);
             group.serviceIds.add(data.serviceId);
             if (data.missingDir) group.missingDir = true;
         }
 
-        for (const [key, group] of grouped) {
-            const [routeId, dirId] = key.split('::');
+        for (const [, group] of grouped) {
+            const { routeId, dirId } = group;
             const departureTimes = deduplicateDepartures(group.times);
             if (departureTimes.length < 2) continue;
 

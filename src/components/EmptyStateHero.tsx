@@ -18,6 +18,11 @@ interface EmptyStateHeroProps {
         onClick?: () => void;
         href?: string;
     };
+    secondaryAction?: {
+        label: string;
+        icon: LucideIcon;
+        onClick?: () => void;
+    };
     features?: Feature[];
 }
 
@@ -26,6 +31,7 @@ export const EmptyStateHero: React.FC<EmptyStateHeroProps> = ({
     title,
     description,
     primaryAction,
+    secondaryAction,
     features
 }) => {
     const navigate = useNavigate();
@@ -36,6 +42,12 @@ export const EmptyStateHero: React.FC<EmptyStateHeroProps> = ({
         }
         if (primaryAction?.href) {
             navigate(primaryAction.href);
+        }
+    };
+
+    const handleSecondaryClick = () => {
+        if (secondaryAction?.onClick) {
+            secondaryAction.onClick();
         }
     };
 
@@ -56,21 +68,35 @@ export const EmptyStateHero: React.FC<EmptyStateHeroProps> = ({
                 </motion.div>
             </div>
 
-            {primaryAction && (
-                <div className="flex flex-col items-center gap-4 w-full">
-                    <motion.button
-                        onClick={handleActionClick}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full max-w-xl group relative overflow-hidden"
-                    >
-                        <div className="absolute inset-0 bg-indigo-600 transition-all duration-700 group-hover:scale-105" />
-                        <div className="relative px-12 py-8 flex flex-col items-center gap-2 border border-white/10 rounded-[3rem] shadow-2xl shadow-indigo-600/30">
-                            <primaryAction.icon className="w-8 h-8 text-white mb-2 group-hover:rotate-12 transition-transform duration-500" />
-                            <div className="text-2xl font-black text-white tracking-tight">{primaryAction.label}</div>
-                            <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">Initialize Module</p>
-                        </div>
-                    </motion.button>
+            {(primaryAction || secondaryAction) && (
+                <div className="flex flex-col items-center gap-6 w-full">
+                    {primaryAction && (
+                        <motion.button
+                            onClick={handleActionClick}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full max-w-xl group relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-indigo-600 transition-all duration-700 group-hover:scale-105" />
+                            <div className="relative px-12 py-8 flex flex-col items-center gap-2 border border-white/10 rounded-[3rem] shadow-2xl shadow-indigo-600/30">
+                                <primaryAction.icon className="w-8 h-8 text-white mb-2 group-hover:rotate-12 transition-transform duration-500" />
+                                <div className="text-2xl font-black text-white tracking-tight">{primaryAction.label}</div>
+                                <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">Initialize Module</p>
+                            </div>
+                        </motion.button>
+                    )}
+
+                    {secondaryAction && (
+                        <motion.button
+                            onClick={handleSecondaryClick}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="btn-secondary px-8 py-4 rounded-full flex items-center gap-3 font-bold text-sm"
+                        >
+                            <secondaryAction.icon className="w-4 h-4" />
+                            {secondaryAction.label}
+                        </motion.button>
+                    )}
                 </div>
             )}
 
