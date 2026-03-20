@@ -10,6 +10,7 @@ import {
     synthesizeCalendarFromDates,
     getModeName,
     validateGtfs,
+    calculateCorridors,
     GtfsData,
     AnalysisCriteria,
     RawRouteDepartures,
@@ -112,6 +113,12 @@ describe('t2m', () => {
     it('returns null when no colon is present', () => {
         expect(t2m('invalid')).toBeNull();
         expect(t2m('0800')).toBeNull();
+    });
+
+    it('returns null for negative departure times', () => {
+        // Malformed feeds can produce negative values like "-1:00:00"
+        expect(t2m('-1:00:00')).toBeNull();
+        expect(t2m('-0:30:00')).toBeNull();
     });
 });
 
@@ -605,6 +612,66 @@ describe('calculateTiers – reliability score', () => {
 });
 
 // ---------------------------------------------------------------------------
+// all-zero calendar.txt entries (Wellington Metlink pattern)
+// ---------------------------------------------------------------------------
+
+describe('all-zero calendar.txt entries (placeholder pattern)', () => {
+    // Wellington Metlink uses calendar.txt with all days=0 for every service,
+    // relying entirely on calendar_dates.txt exception_type=1 entries for actual
+    // service dates. The old code treated any service_id present in calendar.txt
+    // as "handled by calendar.txt" and skipped its calendar_dates entries.
+
+    it('resolves services with all-zero calendar entries via calendar_dates', () => {
+        // Mondays in March 2026: 2, 9, 16, 23, 30
+        const mondayDates = ['20260302', '20260309', '20260316', '20260323', '20260330'];
+
+        // calendar.txt exists but all days are 0
+        const calendar = [{
+            service_id: 'SVC1',
+            monday: '0', tuesday: '0', wednesday: '0', thursday: '0',
+            friday: '0', saturday: '0', sunday: '0',
+            start_date: '20260301', end_date: '20260430',
+        }];
+
+        // calendar_dates.txt defines the actual run dates
+        const calendarDates = mondayDates.map(date => ({
+            service_id: 'SVC1', date, exception_type: '1',
+        }));
+
+        const { trips, stopTimes } = buildRegularService('R1', 'SVC1', START, END, 15);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes, calendar, calendarDates, shapes: BASE_SHAPES,
+        };
+
+        const raw = computeRawDepartures(gtfs, '20260316');
+        // Should find Monday service via calendar_dates
+        expect(raw.length).toBeGreaterThan(0);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday).toBeDefined();
+        expect(monday!.tripCount).toBeGreaterThan(0);
+    });
+
+    it('does NOT pick up all-zero calendar entries via calendar.txt Step 1', () => {
+        // Step 1 must skip all-zero entries — they have no active days
+        const calendar = [{
+            service_id: 'PLACEHOLDER',
+            monday: '0', tuesday: '0', wednesday: '0', thursday: '0',
+            friday: '0', saturday: '0', sunday: '0',
+            start_date: '20260101', end_date: '20261231',
+        }];
+        // No calendar_dates — so nothing should run
+        const { trips, stopTimes } = buildRegularService('R1', 'PLACEHOLDER', START, END, 15);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes, calendar, calendarDates: [], shapes: BASE_SHAPES,
+        };
+        const raw = computeRawDepartures(gtfs, '20260316');
+        expect(raw.length).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
 // calendar_dates.txt synthesis (feeds without calendar.txt)
 // ---------------------------------------------------------------------------
 
@@ -702,6 +769,33 @@ describe('calendar_dates synthesis via calculateTiers', () => {
         expect(results.some(r => r.day === 'Weekday')).toBe(true);
         const r = results.find(x => x.day === 'Weekday');
         expect(r!.avgHeadway).toBe(15);
+    });
+
+    it('single-date service is visible end-to-end (synthesize + reference date cascade)', () => {
+        // Reproduces the bug where a service appearing on only ONE date was invisible:
+        // 1. synthesizeCalendarFromDates excluded it (below threshold → all-zero entry)
+        // 2. detectReferenceDate fell back to today → 90-day window missed the single date
+        // Fix: all-zero entries are excluded from synthesized calendar, and detectReferenceDate
+        // falls back to the calendarDates midpoint when the synthesized calendar is empty.
+        const singleDate = '20260310'; // a Monday
+        const calendarDates = [{ service_id: 'SINGLE', date: singleDate, exception_type: '1' }];
+        const calendar = synthesizeCalendarFromDates(calendarDates);
+        // The synthesized calendar should NOT contain an all-zero entry for SINGLE
+        expect(calendar.every(e => e.service_id !== 'SINGLE' || Object.values(e).some(v => v === '1'))).toBe(true);
+
+        // Build trips for that service
+        const { trips, stopTimes } = buildRegularService('R1', 'SINGLE', START, END, 15);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes,
+            calendar,
+            calendarDates,
+            shapes: BASE_SHAPES,
+        };
+
+        const raw = computeRawDepartures(gtfs, singleDate);
+        // Service should appear under some day
+        expect(raw.length).toBeGreaterThan(0);
     });
 });
 
@@ -854,8 +948,17 @@ describe('getModeName', () => {
     });
 
     it('returns "Transit" for unknown route_type values', () => {
-        expect(getModeName('999')).toBe('Transit');
+        expect(getModeName('9999')).toBe('Transit');
         expect(getModeName('')).toBe('Transit');
+        expect(getModeName('abc')).toBe('Transit');
+    });
+
+    it('returns correct mode for GTFS extended route types', () => {
+        expect(getModeName('100')).toBe('Commuter Rail');
+        expect(getModeName('700')).toBe('Bus');
+        expect(getModeName('715')).toBe('Bus');
+        expect(getModeName('900')).toBe('Tram/Light Rail');
+        expect(getModeName('999')).toBe('Tram/Light Rail');
     });
 });
 
@@ -960,6 +1063,21 @@ describe('validateGtfs', () => {
         };
         const report = validateGtfs(gtfs);
         expect(report.issues.some(i => i.code === 'E030')).toBe(true);
+    });
+
+    it('detects duplicate trip_ids (E032)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            trips: [
+                { trip_id: 'T1', route_id: 'R1', service_id: 'WD' },
+                { trip_id: 'T1', route_id: 'R1', service_id: 'WD' },
+            ],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'E032')).toBe(true);
+        const issue = report.issues.find(i => i.code === 'E032')!;
+        expect(issue.count).toBeGreaterThanOrEqual(1);
+        expect(issue.examples).toContain('T1');
     });
 
     it('warns about missing shapes.txt', () => {
@@ -1107,8 +1225,25 @@ describe('computeRawDepartures', () => {
         expect(monday).toBeDefined();
         expect(monday!.serviceIds).toContain('WD1');
         expect(monday!.serviceIds).toContain('WD2');
-        expect(monday!.warnings.length).toBeGreaterThan(0);
-        expect(monday!.warnings[0]).toContain('Multiple service_ids');
+        // No warning expected — multiple service_ids contributing to the same day
+        // is normal GTFS practice (peak supplements, Monday-only patterns, etc.)
+        // and was removed as a false-positive noisy warning.
+        expect(monday!.warnings.length).toBe(0);
+    });
+
+    it('returns empty array when required files are missing (crash guard)', () => {
+        // Simulates feeds like nested zips where inner files may not parse
+        const noRoutes: GtfsData = {
+            agencies: [], routes: [], trips: [], stops: BASE_STOPS,
+            stopTimes: [], calendar: [], shapes: [], calendarDates: [],
+        };
+        expect(computeRawDepartures(noRoutes)).toEqual([]);
+
+        const noTrips = { ...noRoutes, routes: [{ route_id: 'R1', route_type: '3' }], trips: undefined as any };
+        expect(computeRawDepartures(noTrips)).toEqual([]);
+
+        const noStopTimes = { ...noRoutes, routes: [{ route_id: 'R1', route_type: '3' }], stopTimes: undefined as any };
+        expect(computeRawDepartures(noStopTimes)).toEqual([]);
     });
 
     it('keeps departures 1 minute apart across service_ids as distinct', () => {
@@ -1272,3 +1407,259 @@ describe('applyAnalysisCriteria', () => {
     });
 });
 
+// ---------------------------------------------------------------------------
+// frequency-based trip expansion
+// ---------------------------------------------------------------------------
+
+describe('frequency-based trip expansion', () => {
+    const calendar = [makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true })];
+    const baseStop = BASE_STOPS[0];
+
+    const makeFreqTrip = (tripId: string, routeId: string) => ({
+        trip_id: tripId,
+        route_id: routeId,
+        service_id: 'WD',
+        direction_id: '0',
+    });
+
+    const makeFreq = (tripId: string, start: string, end: string, headwaySecs: string) => ({
+        trip_id: tripId,
+        start_time: start,
+        end_time: end,
+        headway_secs: headwaySecs,
+    });
+
+    it('expands frequency trips into individual departures', () => {
+        // 15-min headway from 07:00 to 09:00 → 8 departures (0, 15, 30, 45, 60, 75, 90, 105 min past 7:00)
+        const trips = [makeFreqTrip('T1', 'R1')];
+        const stopTimes = [makeStopTime('T1', '07:00:00')];
+        const frequencies = [makeFreq('T1', '07:00:00', '09:00:00', '900')];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: [baseStop], stopTimes, calendar, shapes: [], calendarDates: [], frequencies,
+        };
+        const raw = computeRawDepartures(gtfs);
+        const mon = raw.find(r => r.day === 'Monday');
+        expect(mon).toBeDefined();
+        // 07:00 to 08:45 inclusive at 15-min intervals = 8 trips
+        expect(mon!.tripCount).toBe(8);
+        expect(mon!.departureTimes[0]).toBe(420); // 07:00
+        expect(mon!.departureTimes[7]).toBe(525); // 08:45
+    });
+
+    it('rejects sub-60s headways to prevent trip explosion', () => {
+        // headway_secs=1 would generate 61,200 synthetic trips for a 17-hour day
+        const trips = [makeFreqTrip('T1', 'R1')];
+        const stopTimes = [makeStopTime('T1', '07:00:00')];
+        const frequencies = [makeFreq('T1', '07:00:00', '24:00:00', '1')];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: [baseStop], stopTimes, calendar, shapes: [], calendarDates: [], frequencies,
+        };
+        const raw = computeRawDepartures(gtfs);
+        // Should produce no results — the frequency entry is rejected
+        expect(raw.length).toBe(0);
+    });
+
+    it('rejects headway_secs=59 (just below 60s threshold)', () => {
+        const trips = [makeFreqTrip('T1', 'R1')];
+        const stopTimes = [makeStopTime('T1', '07:00:00')];
+        const frequencies = [makeFreq('T1', '07:00:00', '09:00:00', '59')];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: [baseStop], stopTimes, calendar, shapes: [], calendarDates: [], frequencies,
+        };
+        const raw = computeRawDepartures(gtfs);
+        expect(raw.length).toBe(0);
+    });
+
+    it('accepts headway_secs=60 (minimum valid headway)', () => {
+        const trips = [makeFreqTrip('T1', 'R1')];
+        const stopTimes = [makeStopTime('T1', '07:00:00')];
+        // 60s headway over 2 hours = 120 trips
+        const frequencies = [makeFreq('T1', '07:00:00', '09:00:00', '60')];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: [baseStop], stopTimes, calendar, shapes: [], calendarDates: [], frequencies,
+        };
+        const raw = computeRawDepartures(gtfs);
+        const mon = raw.find(r => r.day === 'Monday');
+        expect(mon).toBeDefined();
+        expect(mon!.tripCount).toBe(120); // 07:00 to 08:59, every minute
+    });
+
+    it('produces no float accumulation at end of long frequency block', () => {
+        // 900s (15-min) headway over 17 hours (07:00–24:00) — many iterations
+        const trips = [makeFreqTrip('T1', 'R1')];
+        const stopTimes = [makeStopTime('T1', '07:00:00')];
+        const frequencies = [makeFreq('T1', '07:00:00', '24:00:00', '900')];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: [baseStop], stopTimes, calendar, shapes: [], calendarDates: [], frequencies,
+        };
+        const raw = computeRawDepartures(gtfs);
+        const mon = raw.find(r => r.day === 'Monday');
+        expect(mon).toBeDefined();
+        // Every departure time should be an exact integer (no float accumulation)
+        for (const t of mon!.departureTimes) {
+            expect(t % 1).toBe(0);
+        }
+        // Last departure should be 23:45 = 1425 min (not 1424.9999...)
+        const last = mon!.departureTimes[mon!.departureTimes.length - 1];
+        expect(last).toBe(1425);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// calculateCorridors — multi-route shared-link analysis
+// ---------------------------------------------------------------------------
+
+describe('calculateCorridors', () => {
+    // Build a minimal GTFS where two routes share a stop pair S1→S2
+    const makeCorridorGtfs = (headwayMins: number): GtfsData => {
+        const calendar = [makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true })];
+        const routes = [
+            { route_id: 'R1', route_type: '3' },
+            { route_id: 'R2', route_type: '3' },
+        ];
+        const stops = [
+            { stop_id: 'S1', stop_name: 'Stop A', stop_lat: '43.6', stop_lon: '-79.4' },
+            { stop_id: 'S2', stop_name: 'Stop B', stop_lat: '43.61', stop_lon: '-79.4' },
+        ];
+
+        const trips: ReturnType<typeof makeTrip>[] = [];
+        const stopTimes: Array<{ trip_id: string; stop_id: string; arrival_time: string; departure_time: string; stop_sequence: string }> = [];
+
+        for (const routeId of ['R1', 'R2']) {
+            for (let t = 420; t <= 540; t += headwayMins) {
+                const h = Math.floor(t / 60).toString().padStart(2, '0');
+                const m = (t % 60).toString().padStart(2, '0');
+                const tripId = `${routeId}_${t}`;
+                trips.push(makeTrip(tripId, routeId, 'WD'));
+                stopTimes.push({ trip_id: tripId, stop_id: 'S1', arrival_time: `${h}:${m}:00`, departure_time: `${h}:${m}:00`, stop_sequence: '1' });
+                const t2 = t + 5;
+                const h2 = Math.floor(t2 / 60).toString().padStart(2, '0');
+                const m2 = (t2 % 60).toString().padStart(2, '0');
+                stopTimes.push({ trip_id: tripId, stop_id: 'S2', arrival_time: `${h2}:${m2}:00`, departure_time: `${h2}:${m2}:00`, stop_sequence: '2' });
+            }
+        }
+
+        return { agencies: [], routes, trips, stops, stopTimes, calendar, calendarDates: [], shapes: [] };
+    };
+
+    it('identifies corridors shared by 2+ routes', () => {
+        const gtfs = makeCorridorGtfs(15);
+        const corridors = calculateCorridors(gtfs, 'Weekday', 420, 540);
+        expect(corridors.length).toBeGreaterThan(0);
+        const link = corridors.find(c => c.linkId === 'S1->S2');
+        expect(link).toBeDefined();
+        expect(link!.routeIds).toContain('R1');
+        expect(link!.routeIds).toContain('R2');
+    });
+
+    it('excludes links served by only one route', () => {
+        // Single-route feed — no corridors
+        const calendar = [makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true })];
+        const { trips, stopTimes } = buildRegularService('R1', 'WD', 420, 540, 15);
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes, calendar, calendarDates: [], shapes: [],
+        };
+        const corridors = calculateCorridors(gtfs, 'Weekday', 420, 540);
+        expect(corridors.length).toBe(0);
+    });
+
+    it('returns empty array when no trips fall in the time window', () => {
+        const gtfs = makeCorridorGtfs(15);
+        // Window entirely outside service hours
+        const corridors = calculateCorridors(gtfs, 'Weekday', 0, 60);
+        expect(corridors.length).toBe(0);
+    });
+
+    it('corridor avgHeadway is lower than single-route headway (combined frequency)', () => {
+        // Two routes each running every 30 min but offset by 15 → combined ~15 min headway
+        const calendar = [makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true })];
+        const routes = [
+            { route_id: 'R1', route_type: '3' },
+            { route_id: 'R2', route_type: '3' },
+        ];
+        const stops = [
+            { stop_id: 'S1', stop_name: 'Stop A', stop_lat: '43.6', stop_lon: '-79.4' },
+            { stop_id: 'S2', stop_name: 'Stop B', stop_lat: '43.61', stop_lon: '-79.4' },
+        ];
+        const trips: ReturnType<typeof makeTrip>[] = [];
+        const stopTimes: Array<{ trip_id: string; stop_id: string; arrival_time: string; departure_time: string; stop_sequence: string }> = [];
+        // R1: 7:00, 7:30, 8:00, 8:30, 9:00
+        // R2: 7:15, 7:45, 8:15, 8:45  (offset +15)
+        const r1Times = [420, 450, 480, 510, 540];
+        const r2Times = [435, 465, 495, 525];
+        for (const t of r1Times) {
+            const h = Math.floor(t / 60).toString().padStart(2, '0');
+            const m = (t % 60).toString().padStart(2, '0');
+            const tripId = `R1_${t}`;
+            trips.push(makeTrip(tripId, 'R1', 'WD'));
+            stopTimes.push({ trip_id: tripId, stop_id: 'S1', arrival_time: `${h}:${m}:00`, departure_time: `${h}:${m}:00`, stop_sequence: '1' });
+            const t2 = t + 5;
+            const h2 = Math.floor(t2 / 60).toString().padStart(2, '0');
+            const m2 = (t2 % 60).toString().padStart(2, '0');
+            stopTimes.push({ trip_id: tripId, stop_id: 'S2', arrival_time: `${h2}:${m2}:00`, departure_time: `${h2}:${m2}:00`, stop_sequence: '2' });
+        }
+        for (const t of r2Times) {
+            const h = Math.floor(t / 60).toString().padStart(2, '0');
+            const m = (t % 60).toString().padStart(2, '0');
+            const tripId = `R2_${t}`;
+            trips.push(makeTrip(tripId, 'R2', 'WD'));
+            stopTimes.push({ trip_id: tripId, stop_id: 'S1', arrival_time: `${h}:${m}:00`, departure_time: `${h}:${m}:00`, stop_sequence: '1' });
+            const t2 = t + 5;
+            const h2 = Math.floor(t2 / 60).toString().padStart(2, '0');
+            const m2 = (t2 % 60).toString().padStart(2, '0');
+            stopTimes.push({ trip_id: tripId, stop_id: 'S2', arrival_time: `${h2}:${m2}:00`, departure_time: `${h2}:${m2}:00`, stop_sequence: '2' });
+        }
+        const gtfs: GtfsData = { agencies: [], routes, trips, stops, stopTimes, calendar, calendarDates: [], shapes: [] };
+        const corridors = calculateCorridors(gtfs, 'Weekday', 420, 540);
+        const link = corridors.find(c => c.linkId === 'S1->S2');
+        expect(link).toBeDefined();
+        // Combined headway should be ~15 min (interleaved 30-min routes)
+        expect(link!.avgHeadway).toBeLessThan(30);
+    });
+
+    it('results are sorted by avgHeadway ascending', () => {
+        const gtfs = makeCorridorGtfs(15);
+        const corridors = calculateCorridors(gtfs, 'Weekday', 420, 540);
+        for (let i = 1; i < corridors.length; i++) {
+            expect(corridors[i].avgHeadway).toBeGreaterThanOrEqual(corridors[i - 1].avgHeadway);
+        }
+    });
+
+    it('handles Saturday day type', () => {
+        const calendar = [
+            makeService('SAT', { sat: true }),
+        ];
+        const routes = [
+            { route_id: 'R1', route_type: '3' },
+            { route_id: 'R2', route_type: '3' },
+        ];
+        const stops = [
+            { stop_id: 'S1', stop_name: 'Stop A', stop_lat: '43.6', stop_lon: '-79.4' },
+            { stop_id: 'S2', stop_name: 'Stop B', stop_lat: '43.61', stop_lon: '-79.4' },
+        ];
+        const trips: ReturnType<typeof makeTrip>[] = [];
+        const stopTimes: Array<{ trip_id: string; stop_id: string; arrival_time: string; departure_time: string; stop_sequence: string }> = [];
+        for (const routeId of ['R1', 'R2']) {
+            for (let t = 420; t <= 540; t += 20) {
+                const h = Math.floor(t / 60).toString().padStart(2, '0');
+                const m = (t % 60).toString().padStart(2, '0');
+                const tripId = `${routeId}_${t}`;
+                trips.push(makeTrip(tripId, routeId, 'SAT'));
+                stopTimes.push({ trip_id: tripId, stop_id: 'S1', arrival_time: `${h}:${m}:00`, departure_time: `${h}:${m}:00`, stop_sequence: '1' });
+                const t2 = t + 5;
+                const h2 = Math.floor(t2 / 60).toString().padStart(2, '0');
+                const m2 = (t2 % 60).toString().padStart(2, '0');
+                stopTimes.push({ trip_id: tripId, stop_id: 'S2', arrival_time: `${h2}:${m2}:00`, departure_time: `${h2}:${m2}:00`, stop_sequence: '2' });
+            }
+        }
+        const gtfs: GtfsData = { agencies: [], routes, trips, stops, stopTimes, calendar, calendarDates: [], shapes: [] };
+        const corridors = calculateCorridors(gtfs, 'Saturday', 420, 540);
+        expect(corridors.length).toBeGreaterThan(0);
+    });
+});
