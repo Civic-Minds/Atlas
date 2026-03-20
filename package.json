@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "firebase": "^12.10.0",
     "framer-motion": "^12.4.3",
     "jszip": "^3.10.1",
     "leaflet": "^1.9.4",

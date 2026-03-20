@@ -55,7 +55,7 @@ export const CommandPalette: React.FC = () => {
         {
             id: 'simulate',
             title: 'Open Simulate',
-            description: 'Generate executive performance audits and board reports',
+            description: 'Tactical stop-consolidation modeling and dwell-time sensitivity analysis',
             icon: TrendingUp,
             action: () => navigate('/simulator'),
             category: 'Navigation'
@@ -74,14 +74,6 @@ export const CommandPalette: React.FC = () => {
             description: 'Long-term network growth planning and gap detection',
             icon: Zap,
             action: () => navigate('/atlas'),
-            category: 'Navigation'
-        },
-        {
-            id: 'map',
-            title: 'Open Map',
-            description: 'Interactive system-wide frequency map viewer',
-            icon: Globe,
-            action: () => navigate('/map'),
             category: 'Navigation'
         },
         {
@@ -242,7 +234,7 @@ export const CommandPalette: React.FC = () => {
                                     <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tight">Select</span>
                                 </div>
                             </div>
-                            <span className="text-[9px] font-black text-indigo-500/50 uppercase tracking-[0.2em]">Atlas Instrument v1.5</span>
+                            <span className="text-[9px] font-black text-indigo-500/50 uppercase tracking-[0.2em]">Atlas v0.10</span>
                         </div>
                     </motion.div>
                 </div>

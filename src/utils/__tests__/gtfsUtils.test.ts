@@ -1231,6 +1231,26 @@ describe('computeRawDepartures', () => {
         expect(monday!.warnings.length).toBe(0);
     });
 
+    it('preserves route_id containing "::" in results (no key-split corruption)', () => {
+        // Some feeds (e.g. SIRI-to-GTFS conversions) use "::" in route IDs.
+        // Old code: key = "agency::route::0", split("::") gave routeId="agency", dirId="route".
+        // Fix: store routeId/dirId in the group directly, never re-parse the key.
+        const calendar = [makeService('WD', { mon: true })];
+        const routeId = 'agency::route';
+        const trips = [makeTrip('T1', routeId, 'WD'), makeTrip('T2', routeId, 'WD')];
+        const stopTimes = [makeStopTime('T1', '07:00:00'), makeStopTime('T2', '08:00:00')];
+        const gtfs: GtfsData = {
+            agencies: [],
+            routes: [{ route_id: routeId, route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday).toBeDefined();
+        expect(monday!.route).toBe(routeId);  // must be full 'agency::route', not 'agency'
+        expect(monday!.dir).toBe('0');         // must be '0', not 'route'
+    });
+
     it('returns empty array when required files are missing (crash guard)', () => {
         // Simulates feeds like nested zips where inner files may not parse
         const noRoutes: GtfsData = {
@@ -1244,6 +1264,26 @@ describe('computeRawDepartures', () => {
 
         const noStopTimes = { ...noRoutes, routes: [{ route_id: 'R1', route_type: '3' }], stopTimes: undefined as any };
         expect(computeRawDepartures(noStopTimes)).toEqual([]);
+    });
+
+    it('falls back to arrival_time when departure_time is empty', () => {
+        // Some GTFS feeds (especially European operators) omit departure_time entirely,
+        // providing only arrival_time. Without the fallback all trips are invisible.
+        const calendar = [makeService('WD', { mon: true })];
+        const trips = [makeTrip('T1', 'R1', 'WD'), makeTrip('T2', 'R1', 'WD')];
+        const stopTimes = [
+            // departure_time intentionally empty — only arrival_time present
+            { trip_id: 'T1', stop_id: 'S1', arrival_time: '07:00:00', departure_time: '', stop_sequence: '1' },
+            { trip_id: 'T2', stop_id: 'S1', arrival_time: '08:00:00', departure_time: '', stop_sequence: '1' },
+        ];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+        const raw = computeRawDepartures(gtfs);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday).toBeDefined();
+        expect(monday!.departureTimes).toEqual([420, 480]);
     });
 
     it('keeps departures 1 minute apart across service_ids as distinct', () => {
@@ -1269,6 +1309,55 @@ describe('computeRawDepartures', () => {
         const monday = raw.find(r => r.day === 'Monday');
         expect(monday!.tripCount).toBe(3); // 7:00, 7:01, 8:00 all kept
         expect(monday!.departureTimes).toEqual([420, 421, 480]);
+    });
+
+    it('anchors reference date to trip-active services (Prague-style long-running placeholders)', () => {
+        // Prague PID Czech pattern:
+        // calendar.txt has year-long entries (Dec 2025 → Dec 2026) with 7 service_ids
+        // sharing one start_date — making them the only "multi-entry" group, so
+        // detectReferenceDate (without trips) picks that group → midpoint ≈ June 2026.
+        // Short-period per-block services each have a unique start_date (singletons),
+        // so they never win the multi-entry selection.
+        // With refDate=June 2026, short-period services ending in March 2026 fail
+        // the range check → 0 routes.
+        // Fix: pass trips to detectReferenceDate; restrict calendar to trip-active
+        // service_ids (short-period only) → reference date lands near 20260317 → routes found.
+
+        // Year-long placeholder services: 7 service_ids sharing start_date '20251215'
+        // (the only multi-entry group in the old logic)
+        const longCalendar = ['PH_1', 'PH_2', 'PH_3', 'PH_4', 'PH_5', 'PH_6', 'PH_7'].map(id => ({
+            service_id: id,
+            start_date: '20251215', end_date: '20261215',
+            monday: '1', tuesday: '1', wednesday: '1', thursday: '1',
+            friday: '1', saturday: '1', sunday: '1',
+        }));
+
+        // Short-period service: unique start_date → singleton in the multi-entry analysis;
+        // ends 20260320, well before the June 2026 midpoint of the placeholder group
+        const shortCalendar = [{
+            service_id: 'BLK_WD',
+            start_date: '20260315', end_date: '20260320',
+            monday: '1', tuesday: '1', wednesday: '1', thursday: '1',
+            friday: '1', saturday: '0', sunday: '0',
+        }];
+
+        const calendar = [...longCalendar, ...shortCalendar];
+
+        // Trips only reference the short-period service (no trips on placeholder services)
+        const trips = [makeTrip('T1', 'R1', 'BLK_WD'), makeTrip('T2', 'R1', 'BLK_WD')];
+        const stopTimes = [makeStopTime('T1', '07:00:00'), makeStopTime('T2', '08:00:00')];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }], trips, stops: BASE_STOPS,
+            stopTimes, calendar, shapes: BASE_SHAPES, calendarDates: [],
+        };
+
+        // Must find Monday departures — proves reference date was anchored near 20260317,
+        // not at June 2026. If June 2026 were used, BLK_WD (end_date=20260320) would
+        // fail the range check and return 0 routes.
+        const raw = computeRawDepartures(gtfs);
+        const monday = raw.find(r => r.day === 'Monday');
+        expect(monday).toBeDefined();
+        expect(monday!.tripCount).toBe(2);
     });
 });
 

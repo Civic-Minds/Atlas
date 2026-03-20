@@ -10,10 +10,12 @@ export const parseCsv = <T>(text: string): T[] => {
         header: true,
         skipEmptyLines: true,
         transform: (value: string) => value.trim(),
-        // Strip surrounding quotes from header names — some agencies (e.g. Saint John Transit,
-        // Metrolink, OCTA) wrap column headers in double quotes: `"agency_name"` instead of
-        // `agency_name`. Without this, all field lookups on those rows silently return undefined.
-        transformHeader: (header: string) => header.trim().replace(/^"|"$/g, ''),
+        // Strip surrounding quotes and leading BOM from header names.
+        // Some agencies (e.g. Saint John Transit, Metrolink, OCTA) wrap headers in double
+        // quotes: `"agency_name"` instead of `agency_name`. Others (e.g. Kingston Transit)
+        // emit a UTF-8 BOM (\uFEFF) at the start of the file, which lands on the first
+        // column header. Without stripping both, all field lookups return undefined silently.
+        transformHeader: (header: string) => header.trim().replace(/^\uFEFF/, '').replace(/^"|"$/g, ''),
     });
     return result.data as T[];
 };

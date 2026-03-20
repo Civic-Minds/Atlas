@@ -3,74 +3,27 @@
  * Usage: npx tsx scripts/test-gtfs-pipeline.ts /path/to/feed.zip
  */
 import { readFileSync } from 'fs';
-import JSZip from 'jszip';
-import Papa from 'papaparse';
+import { parseGtfsZip } from '../src/core/parseGtfs';
 import { computeRawDepartures } from '../src/core/transit-logic';
-import { GtfsData, GtfsShape } from '../src/types/gtfs';
-
-const parseCsv = <T>(text: string): T[] => {
-    const result = Papa.parse(text, { header: true, skipEmptyLines: true });
-    return result.data as T[];
-};
-
-const groupShapes = (parsed: any[]): GtfsShape[] => {
-    const grouped = new Map<string, { seq: number; lat: number; lon: number }[]>();
-    for (const p of parsed) {
-        if (!p.shape_id) continue;
-        const lat = parseFloat(p.shape_pt_lat);
-        const lon = parseFloat(p.shape_pt_lon);
-        if (Number.isNaN(lat) || Number.isNaN(lon)) continue;
-        if (!grouped.has(p.shape_id)) grouped.set(p.shape_id, []);
-        grouped.get(p.shape_id)!.push({
-            seq: parseInt(p.shape_pt_sequence) || 0, lat, lon,
-        });
-    }
-    return Array.from(grouped.entries()).map(([id, pts]) => ({
-        id,
-        points: pts.sort((a, b) => a.seq - b.seq).map(p => [p.lat, p.lon] as [number, number]),
-    }));
-};
-
-const GTFS_FILES: Record<string, string> = {
-    agencies: 'agency.txt',
-    routes: 'routes.txt',
-    trips: 'trips.txt',
-    stops: 'stops.txt',
-    stopTimes: 'stop_times.txt',
-    calendar: 'calendar.txt',
-    calendarDates: 'calendar_dates.txt',
-    shapes: 'shapes.txt',
-    feedInfo: 'feed_info.txt',
-    frequencies: 'frequencies.txt',
-};
-
-const OPTIONAL = new Set(['feedInfo', 'shapes', 'calendar', 'calendarDates', 'agencies', 'frequencies']);
 
 async function main() {
     const zipPath = process.argv[2] || '/tmp/gtfs_test.zip';
     console.log(`\n=== GTFS Pipeline Test: ${zipPath} ===\n`);
 
     const buf = readFileSync(zipPath);
-    const zip = await JSZip.loadAsync(buf);
+    const gtfsData = await parseGtfsZip(buf.buffer as ArrayBuffer);
 
-    const gtfsData: any = { agencies: [], shapes: [], calendarDates: [], frequencies: [] };
-
-    for (const [key, filename] of Object.entries(GTFS_FILES)) {
-        const zipFile = zip.file(filename);
-        if (zipFile) {
-            const text = await zipFile.async('text');
-            const parsed = parseCsv(text);
-            if (key === 'shapes') {
-                gtfsData.shapes = groupShapes(parsed as any[]);
-            } else {
-                gtfsData[key] = parsed;
-            }
-            console.log(`  ✓ ${filename}: ${parsed.length} records`);
-        } else if (!OPTIONAL.has(key)) {
-            console.log(`  ✗ ${filename}: MISSING (required)`);
-        } else {
-            console.log(`  - ${filename}: not present (optional)`);
-        }
+    // Feed summary
+    const GTFS_FILE_LABELS: Record<string, string> = {
+        agencies: 'agency.txt', routes: 'routes.txt', trips: 'trips.txt',
+        stops: 'stops.txt', stopTimes: 'stop_times.txt', calendar: 'calendar.txt',
+        calendarDates: 'calendar_dates.txt', shapes: 'shapes.txt',
+        feedInfo: 'feed_info.txt', frequencies: 'frequencies.txt',
+    };
+    for (const [key, filename] of Object.entries(GTFS_FILE_LABELS)) {
+        const arr = (gtfsData as any)[key];
+        if (arr && arr.length > 0) console.log(`  ✓ ${filename}: ${arr.length} records`);
+        else console.log(`  - ${filename}: not present (optional)`);
     }
 
     // Report frequencies.txt usage
@@ -83,7 +36,6 @@ async function main() {
         console.log();
     }
 
-    // Feed summary
     console.log(`\n--- Feed Summary ---`);
     console.log(`  Agency: ${gtfsData.agencies?.[0]?.agency_name || 'unknown'}`);
     console.log(`  Routes: ${gtfsData.routes?.length || 0}`);
@@ -96,7 +48,7 @@ async function main() {
 
     // Run Phase 1
     console.log(`\n--- Phase 1: Raw Departures ---\n`);
-    const raw = computeRawDepartures(gtfsData as GtfsData);
+    const raw = computeRawDepartures(gtfsData);
 
     if (raw.length === 0) {
         console.log('  No raw departures produced! Check calendar/service matching.');

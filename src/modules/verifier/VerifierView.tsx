@@ -8,7 +8,8 @@ import {
     CheckCircle2,
     AlertTriangle,
     Download,
-    HelpCircle
+    HelpCircle,
+    Database
 } from 'lucide-react';
 import { AnalysisResult, GtfsData } from '../../types/gtfs';
 import { ModuleHeader } from '../../components/ModuleHeader';
@@ -37,7 +38,7 @@ export default function VerifierView() {
     const [urlTemplate, setUrlTemplate] = useState('https://agency-website.com/schedules/{{route}}');
     const [markedHeadway, setMarkedHeadway] = useState<string>('');
     const [streak, setStreak] = useState(0);
-    const [stats, setStats] = useState({ correct: 0, wrong: 0, total: 0 });
+    const [stats, setStats] = useState({ correct: 0, wrong: 0, unsure: 0, total: 0 });
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const { loading, status, runAnalysis } = useGtfsWorker();
@@ -63,6 +64,22 @@ export default function VerifierView() {
             await setRawData(data);
             addToast('GTFS loaded for verification', 'success');
         });
+    };
+
+    const handleLoadSample = async () => {
+        try {
+            const response = await fetch('/data/samples/Portland.zip');
+            const blob = await response.blob();
+            const file = new File([blob], 'Portland.zip', { type: 'application/zip' });
+            
+            runAnalysis(file, async (data) => {
+                await setRawData(data);
+                addToast('Portland sample loaded', 'success');
+            });
+        } catch (error) {
+            addToast('Failed to load sample data', 'error');
+            console.error(error);
+        }
     };
 
     const handleDecision = useCallback(async (type: 'correct' | 'wrong' | 'unsure') => {
@@ -167,6 +184,11 @@ export default function VerifierView() {
                         icon: Upload,
                         onClick: () => fileInputRef.current?.click()
                     }}
+                    secondaryAction={{
+                        label: "Load Portland Sample",
+                        icon: Database,
+                        onClick: handleLoadSample
+                    }}
                 />
                 <input
                     type="file"
@@ -195,6 +217,7 @@ export default function VerifierView() {
                                 a.href = url;
                                 a.download = 'verified-frequencies.json';
                                 a.click();
+                                URL.revokeObjectURL(url);
                             }}
                             className="btn-primary w-full justify-center py-4"
                         >
@@ -246,6 +269,7 @@ export default function VerifierView() {
                             a.href = url;
                             a.download = `verified-progress-${currentIndex}.json`;
                             a.click();
+                            URL.revokeObjectURL(url);
                         }
                     }
                 ]}

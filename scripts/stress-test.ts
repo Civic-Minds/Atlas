@@ -25,9 +25,26 @@ const CRITICAL_ERROR_CODES = new Set(['E001', 'E002', 'E003', 'E004', 'E005']);
 
 // Feeds that can't be parsed with the standard parser — skip with explanation
 const KNOWN_SKIP: Record<string, string> = {
+    // Nested / non-standard zip formats
     'Melbourne PTV':       'nested-zip (11 sub-zips inside)',
     'Philadelphia SEPTA':  'nested-zip (google_bus.zip + google_rail.zip inside)',
     'UK National Rail':    'gzip format, not standard zip',
+    // Corrupted zips (unexpected zip signatures / JSZip data mismatch)
+    'Los Angeles County Metropolitan Transportation Authority (LA Metro)': 'corrupted zip (unexpected signature)',
+    'Maryland Transit Administration':       'corrupted zip (unexpected signature)',
+    'Research Triangle Regional Public Transportation Authority': 'corrupted zip (unexpected signature)',
+    'Southeastern Pennsylvania Transportation Authority (SEPTA)': 'corrupted zip (uncompressed data size mismatch)',
+    // Incomplete feeds (missing required files)
+    'Toronto Transit Commission':   'missing stop_times.txt — incomplete download',
+    'City of Wasco':                'missing trips.txt — incomplete download',
+    // No calendar data at all (neither calendar.txt nor calendar_dates.txt)
+    'Guadalupe Flyer':              'no calendar.txt or calendar_dates.txt',
+    'Pasco County Public Transportation': 'no calendar.txt or calendar_dates.txt',
+    'Ninertransit':                 'no calendar.txt or calendar_dates.txt',
+    'Lower Columbia CAP (Community Action Program)': 'no calendar.txt or calendar_dates.txt',
+    // Feeds too large for in-memory JSZip parsing (stop_times.txt > Node.js max string length)
+    'Helsinki HSL Finland':         'stop_times.txt exceeds Node.js max string length — needs streaming parser',
+    'Norway Entur':                 'stop_times.txt exceeds Node.js max string length — needs streaming parser',
 };
 
 const TIER_ORDER = ['5', '8', '10', '15', '20', '30', '60', 'span'];

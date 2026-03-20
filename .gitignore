@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Claude Code local settings (personal hooks/config, not for commit)
+.claude/settings.local.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +25,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.env.local
+
+# GTFS data files — keep in /Desktop/Data/GTFS/, not in repo
+public/data/samples/*.zip
+!public/data/samples/gtfs-sample.zip
