@@ -9,6 +9,11 @@ export const parseCsv = <T>(text: string): T[] => {
     const result = Papa.parse(text, {
         header: true,
         skipEmptyLines: true,
+        transform: (value: string) => value.trim(),
+        // Strip surrounding quotes from header names — some agencies (e.g. Saint John Transit,
+        // Metrolink, OCTA) wrap column headers in double quotes: `"agency_name"` instead of
+        // `agency_name`. Without this, all field lookups on those rows silently return undefined.
+        transformHeader: (header: string) => header.trim().replace(/^"|"$/g, ''),
     });
     return result.data as T[];
 };
@@ -101,7 +106,7 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
         const totalWeeks = Math.max(1, dates.length / 7);
         const threshold = Math.max(2, totalWeeks * 0.2);
 
-        results.push({
+        const entry: GtfsCalendar = {
             service_id: serviceId,
             monday: dayCounts[1] >= threshold ? '1' : '0',
             tuesday: dayCounts[2] >= threshold ? '1' : '0',
@@ -112,7 +117,15 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
             sunday: dayCounts[0] >= threshold ? '1' : '0',
             start_date: minDate,
             end_date: maxDate,
-        });
+        };
+
+        // Only add to synthesized calendar if at least one day is active.
+        // All-zero entries block getActiveServiceIds Step 2 from rescuing the
+        // service via calendar_dates lookup (it skips services already in the
+        // synthesized calendar). Infrequent or one-off services (fewer dates
+        // than the threshold) are better resolved directly from calendar_dates.
+        const hasActiveDay = Object.values(entry).some(v => v === '1');
+        if (hasActiveDay) results.push(entry);
     }
 
     return results;
@@ -135,6 +148,20 @@ export const parseGtfsZip = async (
     onStatus?.('Loading ZIP archive...');
     const zip = await JSZip.loadAsync(file);
 
+    // Auto-detect subdirectory base path — some feeds wrap GTFS files in a folder
+    // (e.g. "google_transit/routes.txt", "GTFS/routes.txt"). Our parser only looks
+    // at the root level by default, so we find the folder containing routes.txt first.
+    let basePath = '';
+    if (!zip.file('routes.txt')) {
+        const routesEntry = Object.keys(zip.files).find(f =>
+            f.endsWith('/routes.txt') && !zip.files[f].dir
+        );
+        if (routesEntry) {
+            basePath = routesEntry.slice(0, routesEntry.length - 'routes.txt'.length);
+            onStatus?.(`Detected subdirectory layout — base: "${basePath}"`);
+        }
+    }
+
     const gtfsData: Partial<GtfsData> = {
         agencies: [],     // Default to empty array
         shapes: [],       // Default to empty array
@@ -144,7 +171,7 @@ export const parseGtfsZip = async (
 
     for (const [key, filename] of Object.entries(GTFS_FILES)) {
         onStatus?.(`Parsing ${filename}...`);
-        const zipFile = zip.file(filename);
+        const zipFile = zip.file(basePath + filename);
 
         if (zipFile) {
             const text = await zipFile.async('text');
@@ -166,8 +193,11 @@ export const parseGtfsZip = async (
         gtfsData.calendar = synthesizeCalendarFromDates(gtfsData.calendarDates);
     }
 
-    // If both are missing, that's a problem
-    if (!gtfsData.calendar || gtfsData.calendar.length === 0) {
+    // If both are missing (or empty after synthesis), that's a problem.
+    // If calendarDates has entries even with no synthesized calendar, let it
+    // through — getActiveServiceIds Step 2 handles exception-only feeds directly.
+    if ((!gtfsData.calendar || gtfsData.calendar.length === 0) &&
+        (!gtfsData.calendarDates || gtfsData.calendarDates.length === 0)) {
         throw new Error('GTFS feed must contain either calendar.txt or calendar_dates.txt');
     }
 
