@@ -9,15 +9,4 @@ Atlas is a high-fidelity transit intelligence platform that automates network au
 
 ---
 
-## Current State (v0.10.0)
-
-Atlas currently provides a robust foundational pipeline for GTFS data processing and route-level verification:
-
-*   **GTFS Orchestration**: Multi-agency ZIP parsing with support for complex calendar exceptions and feed versioning.
-*   **Two-Phase Analysis Engine**: Raw departure extraction optimized via Web Workers, followed by instant policy-based tier classification.
-*   **Persistent Route Catalog**: IndexedDB-backed storage with schedule change detection and historical preservation.
-*   **Verification Workflow**: Per-route audit views with high-precision headway timelines, gap distribution charts, and provenance tracking.
-
----
-
 [Back to Home](./README.md)
