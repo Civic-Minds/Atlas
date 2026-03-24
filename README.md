@@ -14,7 +14,7 @@ The modern transit planning process is fragmented. Agencies juggle siloed GTFS f
 
 **Catalog** (shared): Persistent multi-agency route database. Commit screened routes with inline shape geometry. Supports route history tracking, schedule change detection, and verification status inheritance across feed uploads.
 
-## The Stack
+## Stack
 - **Frontend**: React 19, Vite 7, TypeScript 5.9, Tailwind CSS, Framer Motion
 - **Architecture**: Zustand (Global State Management), Web Workers (Off-thread GTFS Parsing)
 - **Data**: IndexedDB (Persistent Route Catalog + Feed History), Papaparse (CSV), JSZip
