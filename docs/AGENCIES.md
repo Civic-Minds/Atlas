@@ -43,12 +43,7 @@ Live registry of agencies being polled by Atlas NextGen. Route filters are defin
 - **King County Metro** (`kcm`) — RapidRide A–H. Free OBA key — email oba_api_key@soundtransit.org. Same key unlocks Sound Transit.
 - **Sound Transit** (`soundtransit`) — ST Express 512 (Everett–Northgate), 545 (Redmond–Seattle via SR 520). Same OBA key as KCM.
 - **Madison Metro Transit** (`madison`) — Rapid Route A. Free — [metromap.cityofmadison.com/dev-account](https://metromap.cityofmadison.com/dev-account).
-
----
-
-## Pending — Other Blockers
-
-- **Foothill Transit** (`foothilltransit`) — Silver Streak (route_id `20707`). Requires IP whitelist — email info@foothilltransit.org with your public IP.
+- **Foothill Transit** (`foothilltransit`) — Silver Streak (route_id `20707`). No API key — requires IP whitelist. Email info@foothilltransit.org with your public IP.
 - **CTA (Chicago)** (`cta`) — API key in hand, but feed is non-standard JSON (not GTFS-RT protobuf). Requires a custom adapter before it can be polled.
 
 ---
