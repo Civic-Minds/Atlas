@@ -29,28 +29,27 @@ Live registry of agencies being polled by Atlas NextGen. Route filters are defin
 
 ---
 
-## Pending — Need API Key
+## Pending — Access Requested
 
-| Agency | ID | Type | Routes of Interest | How to Get Key |
-|--------|-----|------|-------------------|----------------|
-| Miami-Dade Transit | `mdt` | BRT + Bus | South Dade Busway (34/38), MAX corridors (2/8/36/MLK), Route 100, Route S | Swiftly — [request form](https://docs.google.com/forms/d/e/1FAIpQLScy9Jye91QPSTS3WVEU-13es0A1rT9Ep5JhAmXUZEiop7fmIw/viewform) |
-| RTC Southern Nevada | `rtcsnv` | BRT + Bus | Deuce (4740) — 24hr Strip service with heavy tourist ridership + BHX (4736), SX (4737), CX (4738), DVX (4739) | Swiftly — [goswift.ly/realtime-api-key](https://www.goswift.ly/realtime-api-key) |
-| LA Metro Rail | `lametro` | LRT | A Line (801), E Line (804) | Key requested 2026-03-27 — Swiftly [request form](https://forms.gle/hXGY6kRGAChDqWwz5) |
-| King County Metro | `kcm` | BRT | RapidRide A–H | Free — email oba_api_key@soundtransit.org (same key as Sound Transit) |
-| Sound Transit | `soundtransit` | Express | ST Express 512 (Everett–Northgate), 545 (Redmond–Seattle via SR 520) | Free — same OBA key as KCM, email oba_api_key@soundtransit.org |
-| Madison Metro Transit | `madison` | BRT | Rapid Route A | Free — [metromap.cityofmadison.com/dev-account](https://metromap.cityofmadison.com/dev-account) |
-| San Diego MTS | `sdmts` | BRT | SuperLoop + Rapid + Rapid Express (201/202/204/215/225/227/235/237/280/290) | Key requested 2026-03-27 — [sdmts.com/business-center/app-developers](https://www.sdmts.com/business-center/app-developers/real-time-data) |
-
-> **Note:** Miami-Dade, Las Vegas RTC, and LA Metro all use Swiftly. One key application at [goswift.ly/realtime-api-key](https://www.goswift.ly/realtime-api-key) unlocks all three.
+- **LA Metro Rail** (`lametro`) — A Line (801), E Line (804). Requested 2026-03-27 via Swiftly [request form](https://forms.gle/hXGY6kRGAChDqWwz5). Key will also unlock Miami-Dade and Las Vegas RTC.
+- **San Diego MTS** (`sdmts`) — SuperLoop + Rapid + Rapid Express (201/202/204/215/225/227/235/237/280/290). Requested 2026-03-27 via [sdmts.com/business-center/app-developers](https://www.sdmts.com/business-center/app-developers/real-time-data).
 
 ---
 
-## Pending — Other Access Requirements
+## Pending — Not Yet Requested
 
-| Agency | ID | Blocker | Notes |
-|--------|-----|---------|-------|
-| Foothill Transit | `foothilltransit` | IP whitelist | Email info@foothilltransit.org with your public IP. Silver Streak route_id: `20707` (short name 707) |
-| CTA (Chicago) | `cta` | Custom JSON format | Feed uses non-standard JSON, not GTFS-RT protobuf. Requires custom adapter before it can be polled. API key in hand. |
+- **Miami-Dade Transit** (`mdt`) — South Dade Busway (34/38), MAX corridors (2/8/36/MLK), Route 100, Route S. Swiftly — [request form](https://docs.google.com/forms/d/e/1FAIpQLScy9Jye91QPSTS3WVEU-13es0A1rT9Ep5JhAmXUZEiop7fmIw/viewform). Same key as LA Metro.
+- **RTC Southern Nevada** (`rtcsnv`) — Deuce (4740, 24hr Strip), BHX (4736), SX (4737), CX (4738), DVX (4739). Swiftly — [goswift.ly/realtime-api-key](https://www.goswift.ly/realtime-api-key). Same key as LA Metro.
+- **King County Metro** (`kcm`) — RapidRide A–H. Free OBA key — email oba_api_key@soundtransit.org. Same key unlocks Sound Transit.
+- **Sound Transit** (`soundtransit`) — ST Express 512 (Everett–Northgate), 545 (Redmond–Seattle via SR 520). Same OBA key as KCM.
+- **Madison Metro Transit** (`madison`) — Rapid Route A. Free — [metromap.cityofmadison.com/dev-account](https://metromap.cityofmadison.com/dev-account).
+
+---
+
+## Pending — Other Blockers
+
+- **Foothill Transit** (`foothilltransit`) — Silver Streak (route_id `20707`). Requires IP whitelist — email info@foothilltransit.org with your public IP.
+- **CTA (Chicago)** (`cta`) — API key in hand, but feed is non-standard JSON (not GTFS-RT protobuf). Requires a custom adapter before it can be polled.
 
 ---
 
