@@ -141,8 +141,8 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
         }
     }
 
-    if (gtfs.trips?.length && gtfs.calendar?.length) {
-        const serviceIds = new Set(gtfs.calendar.map(c => c.service_id));
+    if (gtfs.trips?.length && (gtfs.calendar?.length || gtfs.calendarDates?.length)) {
+        const serviceIds = new Set((gtfs.calendar ?? []).map(c => c.service_id));
         // Also include calendar_dates service_ids
         if (gtfs.calendarDates?.length) {
             for (const cd of gtfs.calendarDates) {

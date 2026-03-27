@@ -195,7 +195,7 @@ export function getActiveServiceIds(
     const DOW_NAMES: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const candidateDates = new Map<string, number[]>();
 
-    for (const cd of calendarDates) {
+    for (const cd of (calendarDates ?? [])) {
         if (calendarServiceIds.has(cd.service_id)) continue;
         if (cd.exception_type !== '1') continue;
 

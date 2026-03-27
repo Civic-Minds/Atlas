@@ -186,28 +186,14 @@ export function applyAnalysisCriteria(
         const worstTierValue = Math.max(...tierValues);
         const worstTier = worstTierValue === Infinity ? 'span' : String(worstTierValue);
 
-        const perDayStats = entries.map(e =>
-            e.result.gaps.length > 0
-                ? computeHeadwayStats(e.result.times)
-                : { avg: 0, median: 0, peakHeadway: 0, baseHeadway: 0, peakWindow: { start: 0, end: 0 }, variance: 0, bunchingFactor: 0, reliabilityScore: 0, consistencyScore: 0, bunchingPenalty: 0, outlierPenalty: 0, gaps: [] }
-        );
-        const n = perDayStats.length;
-        const stats = {
-            avg: perDayStats.reduce((s, d) => s + d.avg, 0) / n,
-            median: perDayStats.reduce((s, d) => s + d.median, 0) / n,
-            peakHeadway: perDayStats.reduce((s, d) => s + d.peakHeadway, 0) / n,
-            baseHeadway: perDayStats.reduce((s, d) => s + (d.baseHeadway || 0), 0) / n,
-            peakWindow: perDayStats[0].peakWindow,
-            variance: perDayStats.reduce((s, d) => s + d.variance, 0) / n,
-            bunchingFactor: perDayStats.reduce((s, d) => s + d.bunchingFactor, 0) / n,
-            reliabilityScore: Math.round(perDayStats.reduce((s, d) => s + d.reliabilityScore, 0) / n),
-            consistencyScore: Math.round(perDayStats.reduce((s, d) => s + d.consistencyScore, 0) / n),
-            bunchingPenalty: Math.round(perDayStats.reduce((s, d) => s + d.bunchingPenalty, 0) / n),
-            outlierPenalty: Math.round(perDayStats.reduce((s, d) => s + d.outlierPenalty, 0) / n),
-        };
-
-        const allGaps = entries.flatMap(e => e.result.gaps);
+        // Build a merged schedule: deduplicate and sort departure times across all
+        // days in the group, then derive all stats from that single merged series.
+        // This keeps gaps, times, avgHeadway, and all other stats self-consistent —
+        // previously gaps was a flatMap of per-day gaps while times was a Set-deduped
+        // union, causing gaps ≠ diff(times) and avgHeadway ≠ avg(gaps).
         const allTimes = entries.flatMap(e => e.result.times);
+        const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
+        const stats = computeHeadwayStats(mergedTimes);
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const rep = entries[0].result;
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
@@ -233,8 +219,8 @@ export function applyAnalysisCriteria(
             serviceSpan: { start: Math.min(...allStarts), end: Math.max(...allEnds) },
             tier: worstTier,
             tripCount: avgTrips,
-            gaps: allGaps,
-            times: [...new Set(allTimes)].sort((a, b) => a - b),
+            gaps: stats.gaps,
+            times: mergedTimes,
             reliabilityScore: stats.reliabilityScore,
             consistencyScore: stats.consistencyScore || 0,
             bunchingPenalty: stats.bunchingPenalty || 0,

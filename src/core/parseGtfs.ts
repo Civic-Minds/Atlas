@@ -121,12 +121,14 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
             end_date: maxDate,
         };
 
-        // Only add to synthesized calendar if at least one day is active.
-        // All-zero entries block getActiveServiceIds Step 2 from rescuing the
-        // service via calendar_dates lookup (it skips services already in the
-        // synthesized calendar). Infrequent or one-off services (fewer dates
-        // than the threshold) are better resolved directly from calendar_dates.
-        const hasActiveDay = Object.values(entry).some(v => v === '1');
+        // Only add to synthesized calendar if at least one day-of-week flag is active.
+        // Must check the 7 DOW fields explicitly — Object.values(entry) would also match
+        // service_id='1' or other non-DOW string fields that happen to equal '1'.
+        // All-zero entries must be excluded so getActiveServiceIds Step 2 can handle
+        // infrequent/one-off services directly via calendar_dates lookup.
+        const hasActiveDay = entry.monday === '1' || entry.tuesday === '1' ||
+            entry.wednesday === '1' || entry.thursday === '1' || entry.friday === '1' ||
+            entry.saturday === '1' || entry.sunday === '1';
         if (hasActiveDay) results.push(entry);
     }
 

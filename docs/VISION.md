@@ -10,4 +10,13 @@ Atlas aims to eliminate the "technical friction" of transit planning by automati
 
 ---
 
+## Atlas NextGen
+
+- **Live Reality Layer**: Agencies see their actual network — not the schedule, but what the network does. Routes coloured by actual vs. scheduled headway, trips coloured by lateness, service coloured by reliability.
+- **Persistent Intelligence**: Historical vehicle position data accumulates continuously, building the record needed to surface where lateness originates, where bunching collapses headways, and which scheduled runtimes are impossible.
+- **Agency Benchmarking**: Agencies see how they compare against regional peers on OTP, actual headway, and frequent transit coverage — data they cannot produce themselves.
+- **Commercial Subscription Layer**: Agency-facing dashboard at ~$500/month. They subscribe; Atlas has already been watching their network.
+
+---
+
 [Back to Roadmap](../ROADMAP.md)

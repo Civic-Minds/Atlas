@@ -3,9 +3,11 @@
 A transit intelligence platform for mobility precision in North American metros.
 
 ## Problem
+
 The modern transit planning process is fragmented. Agencies juggle siloed GTFS feeds, manual audits, and complex simulation tools without a unified strategy. This disconnect between data and design leads to inefficient networks and unreliable service. Atlas bridges this gap by turning raw transit data into a closed-loop system for auditing, modeling, and sharing the network.
 
 ## Features
+
 - **Audit**: Technical GTFS validation and spec auditing. Human-in-the-loop verification — Mark Verified / Flag / Skip with notes, persisted per-route.
 - **Strategy**: Automated GTFS-static analysis with two-phase engine — raw departure extraction per individual day, then configurable criteria application with tier classification. Full audit view with departure tables, gap distribution charts, and headway timelines.
 - **Simulate**: High-fidelity stop consolidation and performance modeling.
@@ -23,8 +25,9 @@ The modern transit planning process is fragmented. Agencies juggle siloed GTFS f
 
 ---
 
-- [Roadmap](ROADMAP.md)
-- [Changelog](CHANGELOG.md)
-- [Security](SECURITY.md)
+- [Roadmap](./ROADMAP.md)
+- [Tracked Agencies](./docs/AGENCIES.md)
+- [Changelog](./CHANGELOG.md)
+- [Security](./SECURITY.md)
 
 Created by Civic Minds
