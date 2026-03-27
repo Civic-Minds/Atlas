@@ -52,7 +52,6 @@ Live registry of agencies being polled by Atlas NextGen. Route filters are defin
 
 - **511 SF Bay API key**: One key covers all Bay Area agencies — SF Muni (`SF`), AC Transit (`AC`), and VTA (`SC`) are now live. BART (`BA`), Caltrain (`CT`), and SamTrans (`SM`) could also be added with no additional key.
 - **Edmonton LRT**: Capital Line, Metro Line, and Valley Line West are not present in ETS's vehicle positions feed. May be on a separate feed — investigate. Edmonton also zero-pads route IDs in their feed (route 4 = `004`).
-- **Spokane Transit developer portal**: Was returning a website error on 2026-03-27 — not permanently offline. Feed itself is open and working fine.
 - **Calgary Transit**: CTrain absent from GTFS-RT entirely; routeId not populated so MAX BRT can't be filtered. Skipping until Calgary improves their real-time data.
 - **New Orleans RTA**: No GTFS-RT feed; custom XML API only (non-standard DMS coordinates, requires signed DLA). Would need a custom adapter.
 
