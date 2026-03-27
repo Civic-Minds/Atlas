@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.12.0] - 2026-03-27
+### Added
+- **SF Muni** (`muni`): Muni Metro light rail (J/K/L/M/N/T), Van Ness BRT (49), and Rapid routes (38R, 14R, 5R, 9R) via 511 SF Bay API.
+- **AC Transit** (`actransit`): Tempo BRT (1T, Uptown Oakland–San Leandro BART), Route 51A (Broadway–Santa Clara), Route 72R (San Pablo Rapid) via 511 SF Bay API. Same key as Muni.
+- **VTA** (`vta`): Rapid 522 (El Camino Real), Rapid 523 (De Anza), Rapid 500 (Diridon–Berryessa), Rapid 568 (Gilroy–Diridon) via 511 SF Bay API (agency code `SC`). Note: VTA route_ids include `"Rapid "` prefix with space.
+- **Sound Transit** (`soundtransit`): Stubbed — ST Express 512 (Everett–Northgate) and 545 (Redmond–Seattle via SR 520). Pending OBA API key from oba_api_key@soundtransit.org (same key unlocks KCM).
+- Updated KCM stub to drop `removeAgencyIds=true` and use prefixed route_ids (`1_` prefix) to match actual feed values.
+- **ROADMAP.md**: Restructured to match Navigator/Transit Stats pattern — NextGen, Agencies, and Research each get their own sentence below the bullet list.
+- **AGENCIES.md**: Added SF Muni, AC Transit, VTA to Active table; Sound Transit to Pending; noted SD MTS and LA Metro API keys requested 2026-03-27; added note that 511 key also covers BART, Caltrain, and SamTrans.
+
 ## [0.11.0] - 2026-03-27
 ### Fixed
 - **`getActiveServiceIds` Short-Period Service Exclusion (MiWay Pattern)**: `MIN_OCCURRENCES = 4` excluded legitimate services that run for only 3–4 weeks (e.g. a schedule block covering 3 Mondays). MiWay's `26JA05` block had exactly 3 Monday calendar_dates entries, cutting weekday trip counts roughly in half vs. Tuesday–Friday. Added a secondary inclusion path: if count ≥ 3 and all consecutive date gaps are exactly 7 days (a regular weekly service), include it. Distinguishes a genuine 3-week schedule (gaps: 7, 7) from irregular holiday replacements like Spokane's Thanksgiving/Christmas/New Year's (gaps: 28, 7). MiWay Route 28 Monday: 53 → 100 trips.

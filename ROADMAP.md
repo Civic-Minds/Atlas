@@ -6,9 +6,10 @@ Atlas is a high-fidelity transit intelligence platform that automates network au
 - **[Product](docs/ROADMAP_PRODUCT.md)**: Feed management, verification workflows, interactive analysis, and agency-facing dashboard features.
 - **[Technical](docs/ROADMAP_TECHNICAL.md)**: Analysis engine refinement, GTFS-RT integration, and infrastructure scaling.
 - **[Platform](docs/ROADMAP_PLATFORM.md)**: Long-term equity modeling, generative network synthesis, and ecosystem initiatives.
-- **[Atlas NextGen](docs/ROADMAP_NEXTGEN.md)**: Live transit intelligence backend — persistent GTFS-RT ingestion, OTP analysis, actual vs. scheduled headway, and commercial agency product layer.
-- **[Tracked Agencies](docs/AGENCIES.md)**: Live registry of agencies being polled and pending integrations.
-- **[Research](docs/RESEARCH.md)**: Agency pain points and problem statements informing product direction.
+
+Behind the scenes, we are building **[Atlas NextGen](docs/ROADMAP_NEXTGEN.md)**: a live transit intelligence backend ingesting real-time vehicle positions across 15 agencies, powering on-time performance analysis, actual headway measurement, and a commercial agency product layer.
+
+The **[Tracked Agencies](docs/AGENCIES.md)** registry lists every agency being polled, pending integrations, and API key status. **[Research](docs/RESEARCH.md)** documents agency pain points and problem statements informing the product direction.
 
 ---
 

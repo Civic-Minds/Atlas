@@ -39,10 +39,13 @@ export const ROUTE_FILTER: Record<string, string[] | null> = {
   mdt:           ['34', '38', '2', '8', '36', 'MLK', '100', 'S'], // South Dade Busway (34 Flyer, 38 Max) + MAX corridors + Route 100 (most frequent) + Route S (highest ridership overall)
   // San Diego MTS Rapid routes — disabled until MTS API key obtained (register at sdmts.com/business-center/app-developers/real-time-data)
   sdmts:         ['201', '202', '204', '215', '225', '227', '235', '237', '280', '290'], // SuperLoop + Rapid + Rapid Express
-  kcm:           ['100512', '102548', '102576', '102581', '102615', '102619', '102745', '102736'], // RapidRide A–H lines
+  kcm:           ['1_100512', '1_102548', '1_102576', '1_102581', '1_102615', '1_102619', '1_102745', '1_102736'], // RapidRide A–H lines (prefixed with agency ID)
+  soundtransit: ['40_512', '40_545'], // ST Express 512 (Everett–Northgate) + 545 (Redmond–Seattle via SR 520, highest ridership)
   madison:       ['A'], // Rapid Route A BRT (east–west, opened Sep 2024)
   translink: ['37808', '38311', '37809', '37810', '37807', '6641', '6636', '6627'], // RapidBus R1–R5 + 99 B-Line (6641, 10.6M annual) + Route 49 (6636, 8.5M annual) + Route 25 (6627)
-  muni:     ['J', 'K', 'L', 'M', 'N', 'T'],   // Muni Metro (disabled until 511 API key added)
+  muni:     ['J', 'K', 'L', 'M', 'N', 'T', '49', '38R', '14R', '5R', '9R'], // Muni Metro + Van Ness BRT (49) + Rapid routes
+  actransit: ['1T', '51A', '72R'],             // Tempo BRT (1T, Uptown Oakland–San Leandro BART) + 51A (Broadway–Santa Clara) + 72R (San Pablo Rapid)
+  vta:      ['Rapid 522', 'Rapid 523', 'Rapid 500', 'Rapid 568'], // VTA Rapid routes (note: route_id includes "Rapid " prefix with space)
   lametro:  ['801', '804'],                    // A Line (Blue), E Line (Expo) — disabled until Swiftly key added
 };
 
@@ -110,10 +113,13 @@ export const AGENCIES: Agency[] = [
   // San Diego MTS — requires API key from sdmts.com/business-center/app-developers/real-time-data
   // API key requested 2026-03-27 — once received, add to .env as MTS_API_KEY and uncomment:
   // { id: 'sdmts', name: 'San Diego MTS', vehiclePositionsUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/vehicle-positions-for-agency/MTS.pb?key=${process.env.MTS_API_KEY}`, tripUpdatesUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/trip-updates-for-agency/MTS.pb?key=${process.env.MTS_API_KEY}` },
-  // King County Metro (Seattle) — requires free OBA API key from oba_api_key@soundtransit.org
-  // RapidRide A–H lines: 100512, 102548, 102576, 102581, 102615, 102619, 102745, 102736
-  // Once you have a key, add to .env as KCM_OBA_API_KEY and uncomment:
-  // { id: 'kcm', name: 'King County Metro', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/1.pb?key=${process.env.KCM_OBA_API_KEY}&removeAgencyIds=true`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/1.pb?key=${process.env.KCM_OBA_API_KEY}&removeAgencyIds=true` },
+  // King County Metro + Sound Transit — same OBA key (email oba_api_key@soundtransit.org)
+  // NOTE: do NOT use removeAgencyIds=true — route_ids in the feed include the agency prefix (e.g. 40_100479)
+  // and ROUTE_FILTER must match the prefixed values exactly.
+  // KCM RapidRide A–H: 1_100512, 1_102548, 1_102576, 1_102581, 1_102615, 1_102619, 1_102745, 1_102736
+  // Once you have a key, add to .env as KCM_OBA_API_KEY and uncomment both:
+  // { id: 'kcm', name: 'King County Metro', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/1.pb?key=${process.env.KCM_OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/1.pb?key=${process.env.KCM_OBA_API_KEY}` },
+  // { id: 'soundtransit', name: 'Sound Transit', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/40.pb?key=${process.env.KCM_OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/40.pb?key=${process.env.KCM_OBA_API_KEY}` },
   // Milwaukee MCTS — no API key required, GTFS-RT is open
   { id: 'mcts', name: 'Milwaukee County Transit System', vehiclePositionsUrl: 'https://realtime.ridemcts.com/gtfsrt/vehicles', tripUpdatesUrl: 'https://realtime.ridemcts.com/gtfsrt/trips' },
   // Madison Metro — requires free API key, register at https://metromap.cityofmadison.com/dev-account
@@ -138,9 +144,10 @@ export const AGENCIES: Agency[] = [
   // { id: 'mdt', name: 'Miami-Dade Transit', vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions', headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' } },
   // TransLink (Metro Vancouver)
   { id: 'translink', name: 'TransLink', vehiclePositionsUrl: `https://gtfsapi.translink.ca/v3/gtfsposition?apikey=${process.env.TRANSLINK_API_KEY}`, tripUpdatesUrl: `https://gtfsapi.translink.ca/v3/gtfsrealtime?apikey=${process.env.TRANSLINK_API_KEY}` },
-  // SF Muni — requires free 511 API key from https://511.org/open-data/token
-  // Once you have a key, add to .env as MUNI_511_API_KEY and uncomment:
-  // { id: 'muni', name: 'SF Muni', vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=SF` },
+  // SF Bay 511 API — one key covers all agencies below (change agency param)
+  { id: 'muni',      name: 'SF Muni',     vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=SF` },
+  { id: 'actransit', name: 'AC Transit',  vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=AC` },
+  { id: 'vta',       name: 'VTA',         vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=SC` },
   // LA Metro — requires Swiftly API key from https://forms.gle/hXGY6kRGAChDqWwz5
   // Route IDs: A Line = 801, E Line = 804 (all LRT: 801,802,803,804,806,807)
   // Once you have a key, add to .env as LA_METRO_API_KEY and uncomment:
