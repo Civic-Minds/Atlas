@@ -29,14 +29,14 @@ Live registry of agencies being polled by Atlas NextGen. Route filters are defin
 
 ---
 
-## Pending — Access Requested
+## Access Requested
 
 - **LA Metro Rail** (`lametro`) — A Line (801), E Line (804). Requested 2026-03-27 via Swiftly [request form](https://forms.gle/hXGY6kRGAChDqWwz5). Key will also unlock Miami-Dade and Las Vegas RTC.
 - **San Diego MTS** (`sdmts`) — SuperLoop + Rapid + Rapid Express (201/202/204/215/225/227/235/237/280/290). Requested 2026-03-27 via [sdmts.com/business-center/app-developers](https://www.sdmts.com/business-center/app-developers/real-time-data).
 
 ---
 
-## Pending — Not Yet Requested
+## Not Yet Requested
 
 - **Miami-Dade Transit** (`mdt`) — South Dade Busway (34/38), MAX corridors (2/8/36/MLK), Route 100, Route S. Swiftly — [request form](https://docs.google.com/forms/d/e/1FAIpQLScy9Jye91QPSTS3WVEU-13es0A1rT9Ep5JhAmXUZEiop7fmIw/viewform). Same key as LA Metro.
 - **RTC Southern Nevada** (`rtcsnv`) — Deuce (4740, 24hr Strip), BHX (4736), SX (4737), CX (4738), DVX (4739). Swiftly — [goswift.ly/realtime-api-key](https://www.goswift.ly/realtime-api-key). Same key as LA Metro.
