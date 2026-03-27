@@ -11,6 +11,10 @@ import {
     getModeName,
     validateGtfs,
     calculateCorridors,
+    calculateStopSpacing,
+    getActiveServiceIds,
+    detectReferenceDate,
+    computeHeadwayStats,
     GtfsData,
     AnalysisCriteria,
     RawRouteDepartures,
@@ -781,7 +785,8 @@ describe('calendar_dates synthesis via calculateTiers', () => {
         const calendarDates = [{ service_id: 'SINGLE', date: singleDate, exception_type: '1' }];
         const calendar = synthesizeCalendarFromDates(calendarDates);
         // The synthesized calendar should NOT contain an all-zero entry for SINGLE
-        expect(calendar.every(e => e.service_id !== 'SINGLE' || Object.values(e).some(v => v === '1'))).toBe(true);
+        const singleEntry = calendar.find(e => e.service_id === 'SINGLE');
+        expect(singleEntry).toBeUndefined();
 
         // Build trips for that service
         const { trips, stopTimes } = buildRegularService('R1', 'SINGLE', START, END, 15);
@@ -796,6 +801,29 @@ describe('calendar_dates synthesis via calculateTiers', () => {
         const raw = computeRawDepartures(gtfs, singleDate);
         // Service should appear under some day
         expect(raw.length).toBeGreaterThan(0);
+    });
+
+    it('BUG: service_id === "1" falsely passes hasActiveDay check via Object.values', () => {
+        // synthesizeCalendarFromDates checks `Object.values(entry).some(v => v === '1')`.
+        // Object.values includes service_id, start_date, end_date — not just day flags.
+        // When service_id is exactly "1" (common in many agency feeds), the check returns
+        // true even when all day flags are '0', causing an all-zero entry to be added
+        // to the synthesized calendar. The correct check should only inspect the 7 DOW fields.
+        const singleMonday = '20260316'; // a Monday
+        const calendarDates = [{ service_id: '1', date: singleMonday, exception_type: '1' }];
+        const calendar = synthesizeCalendarFromDates(calendarDates);
+        // Should exclude the all-zero entry (1 date, below threshold=2)
+        // Bug: calendar contains an all-zero entry because service_id='1' triggers the check
+        const entry = calendar.find(e => e.service_id === '1');
+        if (entry) {
+            // If the entry exists, it must have at least one active day — otherwise the filter failed
+            const hasActiveDay = entry.monday === '1' || entry.tuesday === '1' ||
+                entry.wednesday === '1' || entry.thursday === '1' || entry.friday === '1' ||
+                entry.saturday === '1' || entry.sunday === '1';
+            expect(hasActiveDay).toBe(true); // FAILS: entry exists but all days are '0'
+        }
+        // The correct behavior: no entry added for service_id='1' (below threshold)
+        expect(entry).toBeUndefined(); // FAILS currently: entry is wrongly added
     });
 });
 
@@ -1111,6 +1139,136 @@ describe('validateGtfs', () => {
         expect(coordIssue).toBeDefined();
         expect(coordIssue!.examples!.length).toBeGreaterThan(0);
         expect(coordIssue!.count).toBe(2);
+    });
+
+    it('detects empty trips.txt (E002)', () => {
+        const report = validateGtfs({ ...validGtfs, trips: [] });
+        expect(report.issues.some(i => i.code === 'E002')).toBe(true);
+    });
+
+    it('detects empty stops.txt (E003)', () => {
+        const report = validateGtfs({ ...validGtfs, stops: [] });
+        expect(report.issues.some(i => i.code === 'E003')).toBe(true);
+    });
+
+    it('detects empty stop_times.txt (E004)', () => {
+        const report = validateGtfs({ ...validGtfs, stopTimes: [] });
+        expect(report.issues.some(i => i.code === 'E004')).toBe(true);
+    });
+
+    it('detects feed with neither calendar.txt nor calendar_dates.txt (E005)', () => {
+        const report = validateGtfs({ ...validGtfs, calendar: [], calendarDates: [] });
+        expect(report.issues.some(i => i.code === 'E005')).toBe(true);
+    });
+
+    it('does not raise E005 when only calendar_dates.txt is present', () => {
+        const report = validateGtfs({
+            ...validGtfs,
+            calendar: [],
+            calendarDates: [{ service_id: 'WD', date: '20260316', exception_type: '1' }],
+        });
+        expect(report.issues.some(i => i.code === 'E005')).toBe(false);
+    });
+
+    it('detects trips with stop_times referencing unknown trip_ids (W011)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            stopTimes: [{ trip_id: 'GHOST_TRIP', stop_id: 'S1', departure_time: '07:00:00', arrival_time: '07:00:00', stop_sequence: '1' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'W011')).toBe(true);
+    });
+
+    it('detects non-standard route_type values (W021)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            routes: [{ route_id: 'R1', route_type: '9999' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'W021')).toBe(true);
+    });
+
+    it('accepts all base GTFS route_type values as valid (no W021)', () => {
+        for (const type of ['0', '1', '2', '3', '4', '5', '6', '7', '11', '12']) {
+            const gtfs: GtfsData = { ...validGtfs, routes: [{ route_id: 'R1', route_type: type }] };
+            const report = validateGtfs(gtfs);
+            expect(report.issues.some(i => i.code === 'W021')).toBe(false);
+        }
+    });
+
+    it('detects duplicate stop_ids (E031)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            stops: [
+                { stop_id: 'S1', stop_name: 'Stop 1', stop_lat: '40.7', stop_lon: '-74.0' },
+                { stop_id: 'S1', stop_name: 'Stop 1 Dup', stop_lat: '40.8', stop_lon: '-74.1' },
+            ],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'E031')).toBe(true);
+    });
+
+    it('detects stop_times missing both departure_time and arrival_time (W030)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            stopTimes: [{ trip_id: 'T1', stop_id: 'S1', departure_time: '', arrival_time: '', stop_sequence: '1' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'W030')).toBe(true);
+    });
+
+    it('detects trips with no stop_times entries (W031)', () => {
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            trips: [
+                { trip_id: 'T1', route_id: 'R1', service_id: 'WD' },
+                { trip_id: 'T_EMPTY', route_id: 'R1', service_id: 'WD' },
+            ],
+            stopTimes: [{ trip_id: 'T1', stop_id: 'S1', departure_time: '07:00:00', arrival_time: '07:00:00', stop_sequence: '1' }],
+        };
+        const report = validateGtfs(gtfs);
+        expect(report.issues.some(i => i.code === 'W031')).toBe(true);
+        const issue = report.issues.find(i => i.code === 'W031')!;
+        expect(issue.examples).toContain('T_EMPTY');
+    });
+
+    it('BUG: W010 is not raised for calendar_dates-only feeds with orphaned service_ids', () => {
+        // The W010 check condition is: gtfs.trips?.length && gtfs.calendar?.length
+        // When gtfs.calendar is empty (calendar_dates-only feed), the check is
+        // skipped entirely — even if trips reference service_ids absent from calendarDates.
+        const gtfs: GtfsData = {
+            ...validGtfs,
+            calendar: [],
+            calendarDates: [{ service_id: 'REAL_SVC', date: '20260316', exception_type: '1' }],
+            trips: [{ trip_id: 'T1', route_id: 'R1', service_id: 'GHOST_SVC' }],
+        };
+        const report = validateGtfs(gtfs);
+        // T1 references 'GHOST_SVC' which does not exist in calendarDates
+        // W010 should fire — but it doesn't because calendar is empty
+        expect(report.issues.some(i => i.code === 'W010')).toBe(true); // FAILS
+    });
+});
+
+// ---------------------------------------------------------------------------
+// computeRawDepartures — defensive guard for undefined calendarDates
+// ---------------------------------------------------------------------------
+
+describe('computeRawDepartures — robustness', () => {
+    it('BUG: crashes with TypeError when calendarDates is undefined', () => {
+        // getActiveServiceIds Step 2 does `for (const cd of calendarDates)` with
+        // no null check. If GtfsData.calendarDates is undefined (valid per the type
+        // since it may be optional), the pipeline throws instead of returning [].
+        const calendar = [makeService('WD', { mon: true })];
+        const { trips, stopTimes } = buildRegularService('R1', 'WD', START, END, 15);
+        const gtfs: GtfsData = {
+            agencies: [],
+            routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes, calendar,
+            calendarDates: undefined as any,
+            shapes: [],
+        };
+        // Should return [] gracefully, but currently throws TypeError
+        expect(() => computeRawDepartures(gtfs)).not.toThrow(); // FAILS
     });
 });
 
@@ -1750,5 +1908,602 @@ describe('calculateCorridors', () => {
         const gtfs: GtfsData = { agencies: [], routes, trips, stops, stopTimes, calendar, calendarDates: [], shapes: [] };
         const corridors = calculateCorridors(gtfs, 'Saturday', 420, 540);
         expect(corridors.length).toBeGreaterThan(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// calculateStopSpacing — stop spacing and redundant pair detection
+// ---------------------------------------------------------------------------
+
+describe('calculateStopSpacing', () => {
+    const makeStop = (id: string, lat: string, lon: string) => ({
+        stop_id: id, stop_name: id, stop_lat: lat, stop_lon: lon,
+    });
+
+    const makeSpacingGtfs = (
+        stops: ReturnType<typeof makeStop>[],
+        stopIds: string[],
+        directionId = '0',
+    ): GtfsData => {
+        const stopTimes = stopIds.map((sid, i) => ({
+            trip_id: 'T1', stop_id: sid,
+            arrival_time: '07:00:00', departure_time: '07:00:00',
+            stop_sequence: String(i + 1),
+        }));
+        return {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips: [{ trip_id: 'T1', route_id: 'R1', service_id: 'WD', direction_id: directionId }],
+            stops, stopTimes, calendar: [], calendarDates: [], shapes: [],
+        };
+    };
+
+    it('returns null for an unknown route', () => {
+        const gtfs = makeSpacingGtfs([makeStop('S1', '43.60', '-79.4')], ['S1']);
+        expect(calculateStopSpacing(gtfs, 'NONEXISTENT')).toBeNull();
+    });
+
+    it('returns null when the trip has fewer than 2 resolved stops', () => {
+        const gtfs = makeSpacingGtfs([makeStop('S1', '43.60', '-79.4')], ['S1']);
+        expect(calculateStopSpacing(gtfs, 'R1')).toBeNull();
+    });
+
+    it('returns null when all stops are absent from the stops table', () => {
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips: [{ trip_id: 'T1', route_id: 'R1', service_id: 'WD', direction_id: '0' }],
+            stopTimes: [
+                { trip_id: 'T1', stop_id: 'GHOST1', arrival_time: '07:00:00', departure_time: '07:00:00', stop_sequence: '1' },
+                { trip_id: 'T1', stop_id: 'GHOST2', arrival_time: '07:05:00', departure_time: '07:05:00', stop_sequence: '2' },
+            ],
+            stops: [], calendar: [], calendarDates: [], shapes: [],
+        };
+        expect(calculateStopSpacing(gtfs, 'R1')).toBeNull();
+    });
+
+    it('computes avgSpacing and medianSpacing for a uniform-spaced route', () => {
+        // 3 stops each 0.01° lat apart ≈ 1111m
+        const stops = [
+            makeStop('S1', '43.60', '-79.4'),
+            makeStop('S2', '43.61', '-79.4'),
+            makeStop('S3', '43.62', '-79.4'),
+        ];
+        const result = calculateStopSpacing(makeSpacingGtfs(stops, ['S1', 'S2', 'S3']), 'R1');
+        expect(result).not.toBeNull();
+        expect(result!.route).toBe('R1');
+        expect(result!.direction).toBe('0');
+        expect(result!.totalStops).toBe(3);
+        // 0.01° lat ≈ 1111m; allow ±15m for haversine precision
+        expect(result!.avgSpacing).toBeGreaterThan(1095);
+        expect(result!.avgSpacing).toBeLessThan(1125);
+        expect(result!.medianSpacing).toBeGreaterThan(1095);
+        expect(result!.redundantPairs).toHaveLength(0);
+    });
+
+    it('detects stop pairs closer than 400m as redundant', () => {
+        // S1→S2: 0.002° ≈ 222m (redundant); S2→S3: 0.01° ≈ 1111m (not redundant)
+        const stops = [
+            makeStop('S1', '43.600', '-79.4'),
+            makeStop('S2', '43.602', '-79.4'),
+            makeStop('S3', '43.612', '-79.4'),
+        ];
+        const result = calculateStopSpacing(makeSpacingGtfs(stops, ['S1', 'S2', 'S3']), 'R1');
+        expect(result!.redundantPairs).toHaveLength(1);
+        expect(result!.redundantPairs[0].stopA).toBe('S1');
+        expect(result!.redundantPairs[0].stopB).toBe('S2');
+        expect(result!.redundantPairs[0].distance).toBeLessThan(400);
+    });
+
+    it('does not flag pairs at or above the 400m threshold', () => {
+        // 0.004° lat ≈ 444m — just above threshold
+        const stops = [
+            makeStop('S1', '43.600', '-79.4'),
+            makeStop('S2', '43.604', '-79.4'),
+        ];
+        const result = calculateStopSpacing(makeSpacingGtfs(stops, ['S1', 'S2']), 'R1');
+        expect(result!.redundantPairs).toHaveLength(0);
+    });
+
+    it('selects the correct direction — dir 0 and dir 1 return independent results', () => {
+        const stops = [
+            makeStop('S1', '43.60', '-79.4'),
+            makeStop('S2', '43.61', '-79.4'),  // ~1111m from S1
+            makeStop('S3', '43.60', '-79.5'),
+            makeStop('S4', '43.602', '-79.5'), // ~222m from S3
+        ];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips: [
+                { trip_id: 'T0', route_id: 'R1', service_id: 'WD', direction_id: '0' },
+                { trip_id: 'T1', route_id: 'R1', service_id: 'WD', direction_id: '1' },
+            ],
+            stopTimes: [
+                { trip_id: 'T0', stop_id: 'S1', arrival_time: '07:00:00', departure_time: '07:00:00', stop_sequence: '1' },
+                { trip_id: 'T0', stop_id: 'S2', arrival_time: '07:05:00', departure_time: '07:05:00', stop_sequence: '2' },
+                { trip_id: 'T1', stop_id: 'S3', arrival_time: '07:00:00', departure_time: '07:00:00', stop_sequence: '1' },
+                { trip_id: 'T1', stop_id: 'S4', arrival_time: '07:02:00', departure_time: '07:02:00', stop_sequence: '2' },
+            ],
+            stops, calendar: [], calendarDates: [], shapes: [],
+        };
+        const d0 = calculateStopSpacing(gtfs, 'R1', '0')!;
+        const d1 = calculateStopSpacing(gtfs, 'R1', '1')!;
+        expect(d0.avgSpacing).toBeGreaterThan(1000);
+        expect(d1.avgSpacing).toBeLessThan(400);
+        expect(d1.redundantPairs).toHaveLength(1);
+    });
+
+    it('returns null when stop coordinates are invalid (NaN) — both adjacent pairs skipped', () => {
+        // S2 has empty coords: S1→S2 and S2→S3 both fail the NaN check → 0 valid distances → null
+        const stops = [
+            makeStop('S1', '43.60', '-79.4'),
+            makeStop('S2', '', ''),
+            makeStop('S3', '43.62', '-79.4'),
+        ];
+        const result = calculateStopSpacing(makeSpacingGtfs(stops, ['S1', 'S2', 'S3']), 'R1');
+        expect(result).toBeNull();
+    });
+
+    it('BUG: intermediate stop absent from stops table silently inflates avgSpacing', () => {
+        // Trip visits S1→S2→S3 but S2 is missing from the stops table.
+        // The function silently drops S2 from routeStops, then computes the S1→S3
+        // distance (~2222m) as if they were adjacent stops — double the real spacing.
+        // Ideal behavior would be null (incomplete data) or a warning; current behavior
+        // returns an inflated result without indicating anything was skipped.
+        const stops = [
+            makeStop('S1', '43.60', '-79.4'),
+            // S2 intentionally absent
+            makeStop('S3', '43.62', '-79.4'),
+        ];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips: [{ trip_id: 'T1', route_id: 'R1', service_id: 'WD', direction_id: '0' }],
+            stopTimes: [
+                { trip_id: 'T1', stop_id: 'S1', arrival_time: '07:00:00', departure_time: '07:00:00', stop_sequence: '1' },
+                { trip_id: 'T1', stop_id: 'S2', arrival_time: '07:05:00', departure_time: '07:05:00', stop_sequence: '2' },
+                { trip_id: 'T1', stop_id: 'S3', arrival_time: '07:10:00', departure_time: '07:10:00', stop_sequence: '3' },
+            ],
+            stops, calendar: [], calendarDates: [], shapes: [],
+        };
+        const result = calculateStopSpacing(gtfs, 'R1');
+        // Non-null: function returns a result despite incomplete stop data
+        expect(result).not.toBeNull();
+        // totalStops is 2 (only found stops), not 3 (actual trip stops)
+        expect(result!.totalStops).toBe(2);
+        // avgSpacing reflects S1→S3 gap (~2222m) — about double the real stop spacing
+        expect(result!.avgSpacing).toBeGreaterThan(2000);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// getActiveServiceIds — calendar_dates-only service inclusion thresholds
+// ---------------------------------------------------------------------------
+
+describe('getActiveServiceIds — calendar_dates thresholds', () => {
+    // Build Monday dates anchored around a reference date of 20260316
+    const ref = '20260316';
+
+    it('includes a calendar_dates service with 4+ occurrences on the target DOW', () => {
+        // 4 Mondays within 90 days of 20260316: Mar 2, 9, 16, 23
+        const calendarDates = ['20260302', '20260309', '20260316', '20260323'].map(d => ({
+            service_id: 'SVC4', date: d, exception_type: '1',
+        }));
+        const active = getActiveServiceIds([], calendarDates, 'Monday', ref);
+        expect(active.has('SVC4')).toBe(true);
+    });
+
+    it('includes a calendar_dates service with 3 occurrences all exactly 7 days apart', () => {
+        // 3 Mondays at 7-day intervals: Mar 2, 9, 16
+        const calendarDates = ['20260302', '20260309', '20260316'].map(d => ({
+            service_id: 'SVC3', date: d, exception_type: '1',
+        }));
+        const active = getActiveServiceIds([], calendarDates, 'Monday', ref);
+        expect(active.has('SVC3')).toBe(true);
+    });
+
+    it('excludes a calendar_dates service with 3 occurrences where gaps are not all 7 days', () => {
+        // Irregular pattern (e.g. holiday replacement): gaps 28, 7 — not all weekly
+        // Dates: Jan 19, Feb 16 (gap=28d), Feb 23 (gap=7d) — all Mondays
+        const calendarDates = ['20260119', '20260216', '20260223'].map(d => ({
+            service_id: 'HOLIDAY', date: d, exception_type: '1',
+        }));
+        const active = getActiveServiceIds([], calendarDates, 'Monday', ref);
+        expect(active.has('HOLIDAY')).toBe(false);
+    });
+
+    it('includes a single-date calendar_dates service unconditionally', () => {
+        // Exactly one Monday within the 90-day window
+        const calendarDates = [{ service_id: 'ONCE', date: '20260316', exception_type: '1' }];
+        const active = getActiveServiceIds([], calendarDates, 'Monday', ref);
+        expect(active.has('ONCE')).toBe(true);
+    });
+
+    it('excludes a calendar_dates service outside the 90-day window', () => {
+        // Date is more than 90 days from ref=20260316 → outside window
+        const calendarDates = [{ service_id: 'FAR', date: '20260101', exception_type: '1' }];
+        // 20260101 to 20260316 = 74 days — actually within 90 days, let me use something further
+        // 20250901 to 20260316 = 196 days > 90
+        const calendarDatesFar = [{ service_id: 'FAR', date: '20250901', exception_type: '1' }];
+        const active = getActiveServiceIds([], calendarDatesFar, 'Monday', ref);
+        expect(active.has('FAR')).toBe(false);
+    });
+
+    it('documents count=2 weekly service is excluded (potential false negative for 2-week schedules)', () => {
+        // A service running for exactly 2 weeks has exactly 2 Monday entries, 7 days apart.
+        // count=2 does not satisfy count>=4 (MIN_OCCURRENCES), count>=3 (MIN_WEEKLY_OCCURRENCES),
+        // or count===1 — so it falls through and is NOT included.
+        // This can produce a false negative for genuine 2-week schedule blocks.
+        const calendarDates = ['20260309', '20260316'].map(d => ({
+            service_id: 'TWO_WEEK', date: d, exception_type: '1',
+        }));
+        const active = getActiveServiceIds([], calendarDates, 'Monday', ref);
+        // Currently excluded — documents the gap
+        expect(active.has('TWO_WEEK')).toBe(false);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// detectReferenceDate — directional sanity check
+// ---------------------------------------------------------------------------
+
+describe('detectReferenceDate — calendarDates sanity check direction', () => {
+    it('does NOT override calendar ref when calendarDates midpoint is later (Kingston fix)', () => {
+        // Calendar: real services, start=20260315, end=20260520 → midpoint ≈ Apr 17
+        // calendarDates: phantom all-year service (Jan 1–Dec 31) → midpoint ≈ Jul 1
+        // calendarDates midpoint (Jul) > calendar ref (Apr) → no override, keep Apr
+        const calendar = [
+            { service_id: 'REAL', start_date: '20260315', end_date: '20260520', monday: '1', tuesday: '1', wednesday: '1', thursday: '1', friday: '1', saturday: '0', sunday: '0' },
+            { service_id: 'REAL2', start_date: '20260315', end_date: '20260520', monday: '0', tuesday: '0', wednesday: '0', thursday: '0', friday: '0', saturday: '1', sunday: '1' },
+        ];
+        // All-year phantom service in calendarDates (no trips, just dates)
+        const calendarDates: { service_id: string; date: string; exception_type: string }[] = [];
+        for (let d = new Date(2026, 0, 1); d <= new Date(2026, 11, 31); d.setDate(d.getDate() + 7)) {
+            calendarDates.push({ service_id: 'PHANTOM', date: `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`, exception_type: '1' });
+        }
+        const ref = detectReferenceDate(calendar, calendarDates);
+        // Should land in April (calendar midpoint), not July (calendarDates midpoint)
+        expect(ref >= '20260401').toBe(true);
+        expect(ref <= '20260531').toBe(true);
+    });
+
+    it('DOES override calendar ref when calendarDates midpoint is earlier by >90 days (Foothill fix)', () => {
+        // Calendar: phantom full-year entry → midpoint ≈ Jul 1
+        // calendarDates: actual service runs only in March-April → midpoint ≈ Mar 25
+        // calendarDates midpoint (Mar) < calendar ref (Jul) AND diff > 90 days → override to Mar
+        const calendar = [
+            { service_id: 'FAKE1', start_date: '20260101', end_date: '20261231', monday: '1', tuesday: '0', wednesday: '0', thursday: '0', friday: '0', saturday: '0', sunday: '0' },
+            { service_id: 'FAKE2', start_date: '20260101', end_date: '20261231', monday: '0', tuesday: '1', wednesday: '0', thursday: '0', friday: '0', saturday: '0', sunday: '0' },
+        ];
+        // Real service runs only March 2–April 17 (about 6 weeks)
+        const calendarDates: { service_id: string; date: string; exception_type: string }[] = [];
+        for (let d = new Date(2026, 2, 2); d <= new Date(2026, 3, 17); d.setDate(d.getDate() + 7)) {
+            calendarDates.push({ service_id: 'REAL', date: `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`, exception_type: '1' });
+        }
+        const ref = detectReferenceDate(calendar, calendarDates);
+        // Should be overridden to March-April range, not stay at July
+        expect(ref <= '20260501').toBe(true);
+    });
+
+    it('does not override when calendarDates midpoint is within 90 days of calendar ref', () => {
+        // Calendar: start=20260301, end=20260630 → midpoint ≈ May 1
+        // calendarDates: entries in March → midpoint ≈ Mar 15, diff ≈ 47 days < 90
+        const calendar = [
+            { service_id: 'SVC1', start_date: '20260301', end_date: '20260630', monday: '1', tuesday: '0', wednesday: '0', thursday: '0', friday: '0', saturday: '0', sunday: '0' },
+            { service_id: 'SVC2', start_date: '20260301', end_date: '20260630', monday: '0', tuesday: '1', wednesday: '0', thursday: '0', friday: '0', saturday: '0', sunday: '0' },
+        ];
+        const calendarDates = [
+            { service_id: 'OTHER', date: '20260302', exception_type: '1' },
+            { service_id: 'OTHER', date: '20260316', exception_type: '1' },
+            { service_id: 'OTHER', date: '20260323', exception_type: '1' },
+        ];
+        const ref = detectReferenceDate(calendar, calendarDates);
+        // Diff ~47 days < 90 → no override, stays in calendar range (Mar-Jun)
+        expect(ref >= '20260301').toBe(true);
+        expect(ref <= '20260630').toBe(true);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// applyAnalysisCriteria — weekday rollup: gaps vs times inconsistency
+// ---------------------------------------------------------------------------
+
+describe('applyAnalysisCriteria — weekday rollup data consistency', () => {
+    it('BUG: stored gaps do not equal differences between consecutive times entries when weekdays have different schedules', () => {
+        // Mon: 3 trips at 7:00, 7:30, 8:00 → per-day gaps=[30,30]
+        // Tue: 4 trips at 7:00, 7:20, 7:40, 8:00 → per-day gaps=[20,20,20]
+        //
+        // Rollup times = Set-dedup union: [420,440,450,460,480]
+        // Rollup gaps  = flatMap of per-day gaps: [30,30,20,20,20]
+        // diff(times)  = [20,10,10,20]
+        //
+        // times and gaps are derived from different calculations and do not correspond.
+        // A consumer computing headway from times gets a different answer than from gaps.
+        const monService = makeService('MON', { mon: true });
+        const tueService = makeService('TUE', { tue: true });
+
+        const monTrips = [makeTrip('M1', 'R1', 'MON'), makeTrip('M2', 'R1', 'MON'), makeTrip('M3', 'R1', 'MON')];
+        const monSTs = [makeStopTime('M1', '07:00:00'), makeStopTime('M2', '07:30:00'), makeStopTime('M3', '08:00:00')];
+
+        const tueTrips = [makeTrip('T1', 'R1', 'TUE'), makeTrip('T2', 'R1', 'TUE'), makeTrip('T3', 'R1', 'TUE'), makeTrip('T4', 'R1', 'TUE')];
+        const tueSTs = [makeStopTime('T1', '07:00:00'), makeStopTime('T2', '07:20:00'), makeStopTime('T3', '07:40:00'), makeStopTime('T4', '08:00:00')];
+
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips: [...monTrips, ...tueTrips],
+            stops: BASE_STOPS,
+            stopTimes: [...monSTs, ...tueSTs],
+            calendar: [monService, tueService],
+            calendarDates: [], shapes: [],
+        };
+
+        const raw = computeRawDepartures(gtfs, '20260316');
+        const results = applyAnalysisCriteria(raw);
+        const weekday = results.find(r => r.day === 'Weekday' && r.route === 'R1');
+        expect(weekday).toBeDefined();
+
+        // Verify the scenario is set up correctly
+        expect(weekday!.times).toEqual([420, 440, 450, 460, 480]);
+
+        // gaps should equal consecutive differences in times — but they don't
+        const gapsFromTimes = weekday!.times.slice(1).map((t, i) => t - weekday!.times[i]);
+        // gapsFromTimes = [20, 10, 10, 20]
+        // weekday.gaps  = [30, 30, 20, 20, 20]  ← flatMap of per-day gaps, not derived from times
+        expect(weekday!.gaps).toEqual(gapsFromTimes); // FAILS: [30,30,20,20,20] ≠ [20,10,10,20]
+    });
+
+    it('avgHeadway and headway derived from times diverge when weekdays have different schedules', () => {
+        // Same setup as above: Mon=30min, Tue=20min
+        const monService = makeService('MON2', { mon: true });
+        const tueService = makeService('TUE2', { tue: true });
+
+        const monTrips = [makeTrip('M1B', 'R2', 'MON2'), makeTrip('M2B', 'R2', 'MON2'), makeTrip('M3B', 'R2', 'MON2')];
+        const monSTs = [makeStopTime('M1B', '07:00:00'), makeStopTime('M2B', '07:30:00'), makeStopTime('M3B', '08:00:00')];
+
+        const tueTrips = [makeTrip('T1B', 'R2', 'TUE2'), makeTrip('T2B', 'R2', 'TUE2'), makeTrip('T3B', 'R2', 'TUE2'), makeTrip('T4B', 'R2', 'TUE2')];
+        const tueSTs = [makeStopTime('T1B', '07:00:00'), makeStopTime('T2B', '07:20:00'), makeStopTime('T3B', '07:40:00'), makeStopTime('T4B', '08:00:00')];
+
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R2', route_type: '3' }],
+            trips: [...monTrips, ...tueTrips],
+            stops: BASE_STOPS,
+            stopTimes: [...monSTs, ...tueSTs],
+            calendar: [monService, tueService],
+            calendarDates: [], shapes: [],
+        };
+
+        const raw = computeRawDepartures(gtfs, '20260316');
+        const results = applyAnalysisCriteria(raw);
+        const weekday = results.find(r => r.day === 'Weekday' && r.route === 'R2');
+        expect(weekday).toBeDefined();
+
+        // After fix: avgHeadway is computed from the merged times [420,440,450,460,480]
+        // gaps = [20,10,10,20], avg = 15 — consistent with the times array
+        const timesGaps = weekday!.times.slice(1).map((t, i) => t - weekday!.times[i]);
+        const timesAvg = timesGaps.reduce((a, b) => a + b, 0) / timesGaps.length;
+        expect(Math.round(timesAvg)).toBe(Math.round(weekday!.avgHeadway)); // passes: both 15
+        expect(Math.round(weekday!.avgHeadway)).toBe(15);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// frequency trip with missing stop_times departure
+// ---------------------------------------------------------------------------
+
+describe('frequency-based trip — missing stop_times departure', () => {
+    const calendar = [makeService('WD', { mon: true, tue: true, wed: true, thu: true, fri: true })];
+    const baseStop = BASE_STOPS[0];
+
+    const makeFreqTrip = (tripId: string, routeId: string) => ({
+        trip_id: tripId, route_id: routeId, service_id: 'WD', direction_id: '0',
+    });
+    const makeFreq = (tripId: string, start: string, end: string, headwaySecs: string) => ({
+        trip_id: tripId, start_time: start, end_time: end, headway_secs: headwaySecs,
+    });
+
+    it('BUG: frequency trip is silently dropped when stop_times departure_time is empty', () => {
+        // Trip T1 has a valid frequency entry (07:00–09:00 at 15-min = 8 departures) but
+        // its stop_times row has an empty departure_time — t2m("") returns null, so baseDep
+        // is never set. The current code checks baseDep === undefined BEFORE the frequency
+        // lookup and skips T1 entirely, discarding the frequency expansion.
+        const trips = [makeFreqTrip('T1', 'R1')];
+        const stopTimes = [{
+            trip_id: 'T1', stop_id: 'S1',
+            arrival_time: '', departure_time: '',  // ← empty times, t2m returns null
+            stop_sequence: '1',
+        }];
+        const frequencies = [makeFreq('T1', '07:00:00', '09:00:00', '900')];
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+            trips, stops: [baseStop], stopTimes, calendar, shapes: [], calendarDates: [], frequencies,
+        };
+        const raw = computeRawDepartures(gtfs);
+        const mon = raw.find(r => r.day === 'Monday');
+        // Bug: T1 is silently dropped — expects 8 departures but gets 0
+        expect(mon).toBeDefined();            // FAILS currently
+        expect(mon!.tripCount).toBe(8);       // 8 departures 07:00–08:45 at 15-min
+        expect(mon!.departureTimes[0]).toBe(420);  // 07:00
+    });
+
+    it('BUG: frequency trip is silently dropped when stop_times has no entries at all', () => {
+        // Same scenario but the trip has zero stop_times rows.
+        const trips = [makeFreqTrip('T2', 'R2')];
+        const frequencies = [makeFreq('T2', '08:00:00', '10:00:00', '600')]; // 600s = 10-min, 12 trips
+        const gtfs: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R2', route_type: '3' }],
+            trips, stops: [baseStop],
+            stopTimes: [],  // ← no stop_times rows at all
+            calendar, shapes: [], calendarDates: [], frequencies,
+        };
+        const raw = computeRawDepartures(gtfs);
+        const mon = raw.find(r => r.day === 'Monday');
+        // Bug: T2 is silently dropped — expects 12 departures but gets 0
+        expect(mon).toBeDefined();            // FAILS currently
+        expect(mon!.tripCount).toBe(12);      // 08:00–09:50 at 10-min
+    });
+});
+
+// ---------------------------------------------------------------------------
+// computeHeadwayStats — direct unit tests
+// ---------------------------------------------------------------------------
+
+describe('computeHeadwayStats', () => {
+    it('returns all zeros for empty times array', () => {
+        const s = computeHeadwayStats([]);
+        expect(s.avg).toBe(0);
+        expect(s.median).toBe(0);
+        expect(s.gaps).toHaveLength(0);
+        expect(s.reliabilityScore).toBe(0);
+    });
+
+    it('returns correct values for two times (single gap)', () => {
+        // [420, 430] → gap=[10], avg=10, median=10, base=10
+        const s = computeHeadwayStats([420, 430]);
+        expect(s.avg).toBe(10);
+        expect(s.median).toBe(10);
+        expect(s.gaps).toEqual([10]);
+        expect(s.baseHeadway).toBe(10);
+        // Single gap → variance = 0, stdDev = 0 → consistencyScore = 100, reliability = 100
+        expect(s.consistencyScore).toBe(100);
+        expect(s.reliabilityScore).toBe(100);
+    });
+
+    it('gives perfect reliability for a regular service', () => {
+        // 10-min headway, perfectly regular: gaps all = 10
+        const times = [420, 430, 440, 450, 460, 470, 480];
+        const s = computeHeadwayStats(times);
+        expect(s.avg).toBe(10);
+        expect(s.variance).toBe(0);
+        expect(s.bunchingFactor).toBe(0);
+        expect(s.reliabilityScore).toBe(100);
+        expect(s.consistencyScore).toBe(100);
+    });
+
+    it('penalises a bunched service — alternating 1-min / 19-min gaps', () => {
+        // Bus bunching pattern: pairs of trips arrive close together then large gap
+        // gaps = [1, 19, 1, 19], avg = 10
+        const times = [420, 421, 440, 441, 460];
+        const s = computeHeadwayStats(times);
+        expect(s.avg).toBe(10);
+        // Bunched gaps: g < avg*0.25 = 2.5 → gaps of 1 are bunched (2 out of 4)
+        expect(s.bunchingFactor).toBeGreaterThan(0);
+        expect(s.bunchingPenalty).toBeGreaterThan(0);
+        // Reliability is reduced from perfect
+        expect(s.reliabilityScore).toBeLessThan(100);
+    });
+
+    it('baseHeadway equals the maximum gap', () => {
+        // gaps = [10, 10, 60, 10] → base = 60
+        const times = [420, 430, 440, 500, 510];
+        const s = computeHeadwayStats(times);
+        expect(s.baseHeadway).toBe(60);
+    });
+
+    it('peakHeadway is lower for the denser half of service', () => {
+        // Dense AM (every 5 min, 07:00–09:00) + sparse PM (every 60 min, 09:00–16:00)
+        const dense: number[] = [];
+        for (let t = 420; t <= 540; t += 5) dense.push(t);  // 07:00–09:00, every 5 min
+        const sparse: number[] = [];
+        for (let t = 600; t <= 960; t += 60) sparse.push(t); // 10:00–16:00, every 60 min
+        const times = [...dense, ...sparse];
+        const s = computeHeadwayStats(times);
+        // Peak headway (densest 2-hour window) should be ≈ 5 min
+        expect(s.peakHeadway).toBeLessThanOrEqual(6);
+        // Overall average headway is pulled higher by sparse afternoon gaps
+        expect(s.avg).toBeGreaterThan(s.peakHeadway);
+    });
+
+    it('gaps array equals consecutive differences in times', () => {
+        const times = [420, 435, 455, 460, 490];
+        const s = computeHeadwayStats(times);
+        const expected = [15, 20, 5, 30];
+        expect(s.gaps).toEqual(expected);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Multi-service-id merging in computeRawDepartures
+// ---------------------------------------------------------------------------
+
+describe('computeRawDepartures — multi-service-id merging', () => {
+    // Two weekday service_ids with complementary schedules:
+    // Service A: morning peak (07:00–10:00, every 15 min)
+    // Service B: afternoon peak (15:00–18:00, every 15 min)
+    // Both active on Monday → should merge into one direction entry
+
+    const serviceA = makeService('AM', { mon: true });
+    const serviceB = makeService('PM', { mon: true });
+
+    const { trips: amTrips, stopTimes: amSTs } = (() => {
+        const trips: ReturnType<typeof makeTrip>[] = [];
+        const stopTimes: ReturnType<typeof makeStopTime>[] = [];
+        for (let t = 420; t <= 600; t += 15) {
+            const h = Math.floor(t / 60).toString().padStart(2, '0');
+            const m = (t % 60).toString().padStart(2, '0');
+            const id = `AM_${t}`;
+            trips.push(makeTrip(id, 'R1', 'AM', '0'));
+            stopTimes.push(makeStopTime(id, `${h}:${m}:00`));
+        }
+        return { trips, stopTimes };
+    })();
+
+    const { trips: pmTrips, stopTimes: pmSTs } = (() => {
+        const trips: ReturnType<typeof makeTrip>[] = [];
+        const stopTimes: ReturnType<typeof makeStopTime>[] = [];
+        for (let t = 900; t <= 1080; t += 15) {
+            const h = Math.floor(t / 60).toString().padStart(2, '0');
+            const m = (t % 60).toString().padStart(2, '0');
+            const id = `PM_${t}`;
+            trips.push(makeTrip(id, 'R1', 'PM', '0'));
+            stopTimes.push(makeStopTime(id, `${h}:${m}:00`));
+        }
+        return { trips, stopTimes };
+    })();
+
+    const gtfs: GtfsData = {
+        agencies: [], routes: [{ route_id: 'R1', route_type: '3' }],
+        trips: [...amTrips, ...pmTrips],
+        stops: BASE_STOPS,
+        stopTimes: [...amSTs, ...pmSTs],
+        calendar: [serviceA, serviceB],
+        calendarDates: [], shapes: [],
+    };
+
+    it('merges trips from two service_ids into a single route/direction entry', () => {
+        const raw = computeRawDepartures(gtfs, '20260316');
+        const mon = raw.filter(r => r.day === 'Monday' && r.route === 'R1');
+        // All trips belong to direction '0'; should be a single merged entry
+        expect(mon).toHaveLength(1);
+        // serviceIds field should list both service_ids
+        expect(mon[0].serviceIds).toContain('AM');
+        expect(mon[0].serviceIds).toContain('PM');
+    });
+
+    it('departure times are sorted after merging two service_ids', () => {
+        const raw = computeRawDepartures(gtfs, '20260316');
+        const mon = raw.find(r => r.day === 'Monday' && r.route === 'R1')!;
+        const sorted = [...mon.departureTimes].sort((a, b) => a - b);
+        expect(mon.departureTimes).toEqual(sorted);
+    });
+
+    it('same-minute departures from two service_ids are deduplicated', () => {
+        // Service A and B both have a trip at 07:00 (420 min)
+        const sA = makeService('SVC_A', { mon: true });
+        const sB = makeService('SVC_B', { mon: true });
+        const trips = [
+            makeTrip('A1', 'R2', 'SVC_A'), makeTrip('A2', 'R2', 'SVC_A'),
+            makeTrip('B1', 'R2', 'SVC_B'), makeTrip('B2', 'R2', 'SVC_B'),
+        ];
+        const stopTimes = [
+            makeStopTime('A1', '07:00:00'), makeStopTime('A2', '07:30:00'),
+            makeStopTime('B1', '07:00:00'), makeStopTime('B2', '08:00:00'), // B1 at same time as A1
+        ];
+        const g: GtfsData = {
+            agencies: [], routes: [{ route_id: 'R2', route_type: '3' }],
+            trips, stops: BASE_STOPS, stopTimes,
+            calendar: [sA, sB], calendarDates: [], shapes: [],
+        };
+        const raw = computeRawDepartures(g, '20260316');
+        const mon = raw.find(r => r.day === 'Monday' && r.route === 'R2')!;
+        // 07:00 (duplicate), 07:30, 08:00 → 3 unique times after dedup
+        expect(mon.departureTimes).toHaveLength(3);
+        expect(mon.departureTimes).toEqual([420, 450, 480]);
     });
 });

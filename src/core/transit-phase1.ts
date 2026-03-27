@@ -72,9 +72,6 @@ function buildTripDepartures(
 
     const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean }>();
     for (const trip of trips) {
-        const baseDep = tripFirstDep.get(trip.trip_id);
-        if (baseDep === undefined) continue;
-
         const tripMeta = {
             routeId: trip.route_id,
             dirId: trip.direction_id?.trim() || '0',
@@ -84,10 +81,13 @@ function buildTripDepartures(
 
         const freqDeps = freqExpanded.get(trip.trip_id);
         if (freqDeps) {
+            // Frequency-based trip: use synthetic departures; stop_times baseDep not required.
             for (let i = 0; i < freqDeps.length; i++) {
                 result.set(`${trip.trip_id}__freq_${i}`, { depTime: freqDeps[i], ...tripMeta });
             }
         } else {
+            const baseDep = tripFirstDep.get(trip.trip_id);
+            if (baseDep === undefined) continue;
             result.set(trip.trip_id, { depTime: baseDep, ...tripMeta });
         }
     }

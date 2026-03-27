@@ -30,3 +30,7 @@ dist-ssr
 # GTFS data files — keep in /Desktop/Data/GTFS/, not in repo
 public/data/samples/*.zip
 !public/data/samples/gtfs-sample.zip
+
+# Environment files with secrets
+.env
+server/.env

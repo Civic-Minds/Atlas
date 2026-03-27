@@ -1,10 +1,10 @@
--- Ouija database schema
+-- Atlas NextGen database schema
 -- Run once against a fresh Postgres database:
 --   psql $DATABASE_URL -f src/storage/schema.sql
 
 -- Vehicle position snapshots.
 -- Every GTFS-RT poll writes one row per active vehicle.
--- This is the raw historical record Ouija mines for OTP analysis.
+-- This is the raw historical record Atlas NextGen mines for OTP analysis.
 CREATE TABLE IF NOT EXISTS vehicle_positions (
   id              BIGSERIAL    PRIMARY KEY,
   agency_id       TEXT         NOT NULL,

@@ -1,7 +1,7 @@
 {
-  "name": "ouija",
+  "name": "atlas-nextgen",
   "version": "0.1.0",
-  "description": "Project Ouija — Atlas intelligence backend. Persistent GTFS-RT ingestion and OTP analysis.",
+  "description": "Atlas NextGen — live transit intelligence backend. Persistent GTFS-RT ingestion and OTP analysis.",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node src/server.ts",

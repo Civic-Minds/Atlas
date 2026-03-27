@@ -1,5 +1,5 @@
 /**
- * Ouija ingestion poller.
+ * Atlas NextGen ingestion poller.
  *
  * For each configured agency, polls the GTFS-RT vehicle positions feed
  * on a fixed interval and writes every observed position to Postgres.
