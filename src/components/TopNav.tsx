@@ -9,7 +9,8 @@ const NAV_ITEMS = [
     { id: 'strategy', title: 'Strategy', path: '/strategy' },
     { id: 'simulate', title: 'Simulate', path: '/simulator' },
     { id: 'predict', title: 'Predict', path: '/predict' },
-    { id: 'optimize', title: 'Optimize', path: '/atlas' }
+    { id: 'optimize', title: 'Optimize', path: '/atlas' },
+    { id: 'map', title: 'Live Map', path: '/map' }
 ];
 
 

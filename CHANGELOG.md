@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- **Live Map full-network view**: Map now loads all active vehicles for the selected agency at once (no route required). Optional route field filters/highlights a single route on top of the full picture — other vehicles dim rather than disappear. Vehicle count in status bar shows filtered vs. total when a route is active.
+- **`GET /api/vehicles`** (`server`): New endpoint returning the latest position per active vehicle for an agency (5-minute window, `DISTINCT ON vehicle_id`). Powers the full-network map view.
+- **`idx_vp_agency_vehicle_time` index** (`server`): New Postgres index on `(agency_id, vehicle_id, observed_at DESC)` for the all-vehicles query pattern. Applied to `realtime` DB on OCI.
+- **Live Map view** (`/map`): Real-time vehicle map powered by the Ouija backend. Shows all vehicles on any route across all 18 agencies, coloured by speed (stopped → crawling → slow → moving). Auto-refreshes every 30s. Agency selector + route input + manual reload button.
+- **Tab favicon**: Replaced default Vite logo with 🚇 emoji favicon.
+- **Static database** (`atlas_static` / OCI `static`): Postgres schema for persistent GTFS catalog with full feed versioning — every upload is an immutable snapshot, old versions never deleted. Tables: `agency_accounts`, `gtfs_agencies`, `feed_versions`, `routes`, `stops`, `trips`, `calendar_services`, `calendar_exceptions`, `route_shapes` (PostGIS LineString), `analysis_criteria`, `analysis_runs`, `route_frequency_results`, `feed_version_comparisons`, `audit_log`. Multi-tenant with `agency_account_id` on every row for future row-level security.
+- **GTFS import pipeline** (`server/src/import/`): Server-side Node.js pipeline that parses a GTFS ZIP, runs phase1 + phase2 frequency analysis, and writes all results to the static database in a single transaction. Supports calendar.txt, calendar_dates.txt, frequencies.txt, and shapes.txt. Synthesises calendar from calendar_dates when calendar.txt is absent.
+- **Import API** (`POST /api/import`): Multipart file upload endpoint — accepts a GTFS ZIP + agency metadata, runs the import pipeline, returns feed version ID and summary stats. Also exposes `GET /api/import/agencies`, `GET /api/import/agencies/:slug/versions`, and `GET /api/import/agencies/:slug/routes`.
+- **Realtime/static DB separation**: Renamed OCI database `ouija` → `realtime` (vehicle positions). Created separate `static` database for GTFS catalog. Clean separation with no cross-database foreign keys.
+- **Streaming stop_times parser**: stop_times.txt is now parsed as a Node.js stream directly from the ZIP (never decompressed to a string). Only the first departure time per trip is retained in memory. Reduces peak heap from ~1.5GB to under 200MB — makes large feeds (TTC 131k trips, NYC MTA) importable on the 1GB OCI server.
+
 ## [0.12.0] - 2026-03-27
 ### Added
 - **SF Muni** (`muni`): Muni Metro light rail (J/K/L/M/N/T), Van Ness BRT (49), and Rapid routes (38R, 14R, 5R, 9R) via 511 SF Bay API.

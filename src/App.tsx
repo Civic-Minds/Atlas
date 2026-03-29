@@ -16,6 +16,7 @@ const AtlasView = React.lazy(() => import('./modules/atlas/AtlasView'));
 const ReportCardsView = React.lazy(() => import('./modules/report-cards/ReportCardsView'));
 const AdminView = React.lazy(() => import('./modules/admin/AdminView'));
 const PredictView = React.lazy(() => import('./modules/predict/PredictView'));
+const MapView = React.lazy(() => import('./modules/map/MapView'));
 const SystemReportView = React.lazy(() => import('./modules/screener/components/SystemReportView'));
 
 
@@ -65,6 +66,7 @@ const App: React.FC = () => {
                                 <Route path="/predict" element={<PredictView />} />
                                 <Route path="/verifier" element={<VerifierView />} />
                                 <Route path="/reports" element={<ReportCardsView />} />
+                                <Route path="/map" element={<MapView />} />
                                 <Route path="/admin" element={<AdminView />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />
                             </Routes>
