@@ -32,6 +32,30 @@ router.get('/ingestion', async (req: Request, res: Response) => {
   res.json(result.rows);
 });
 
+// GET /api/vehicles?agency=ttc
+// Latest position per active vehicle for an agency (last 5 minutes).
+// Powers the full-network map view.
+router.get('/vehicles', async (req: Request, res: Response) => {
+  const agency = req.query.agency as string | undefined;
+
+  if (!agency) {
+    res.status(400).json({ error: 'agency is required' });
+    return;
+  }
+
+  const result = await getPool().query(
+    `SELECT DISTINCT ON (vehicle_id)
+       vehicle_id, trip_id, route_id, lat, lon, speed, bearing, observed_at
+     FROM vehicle_positions
+     WHERE agency_id = $1
+       AND observed_at >= NOW() - INTERVAL '5 minutes'
+     ORDER BY vehicle_id, observed_at DESC`,
+    [agency],
+  );
+
+  res.json({ agency, count: result.rows.length, vehicles: result.rows });
+});
+
 // GET /api/positions?agency=drt&route=223&from=2026-03-01&to=2026-03-02
 // Raw vehicle position history for a route — foundation for OTP analysis
 router.get('/positions', async (req: Request, res: Response) => {

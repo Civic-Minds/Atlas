@@ -29,6 +29,10 @@ CREATE INDEX IF NOT EXISTS idx_vp_agency_route_time
 CREATE INDEX IF NOT EXISTS idx_vp_trip
   ON vehicle_positions (trip_id, observed_at DESC);
 
+-- Index for the all-vehicles query: latest position per vehicle across an agency
+CREATE INDEX IF NOT EXISTS idx_vp_agency_vehicle_time
+  ON vehicle_positions (agency_id, vehicle_id, observed_at DESC);
+
 -- Ingestion health log.
 -- One row per poll attempt — tracks success/failure for monitoring.
 CREATE TABLE IF NOT EXISTS ingestion_log (
