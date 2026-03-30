@@ -13,6 +13,7 @@ The modern transit planning process is fragmented. Agencies juggle siloed GTFS f
 - **Simulate**: High-fidelity stop consolidation and performance modeling.
 - **Predict**: Model future service changes and scenario impacts.
 - **Optimize**: Map visualization of all cataloged routes, filterable by frequency tier and agency. Auto-zoom, dark/light basemaps, route popups with verification status. Long-term network growth planning and gap detection.
+- **NextGen (Real-time)**: Continuous GTFS-RT ingestion engine polling 15+ agencies every 30s. Live vehicle map with speed-based color coding and network-wide position awareness. Persistent historical storage for on-time performance and actual headway analysis.
 
 **Catalog** (shared): Persistent multi-agency route database. Commit screened routes with inline shape geometry. Supports route history tracking, schedule change detection, and verification status inheritance across feed uploads.
 
@@ -26,7 +27,6 @@ The modern transit planning process is fragmented. Agencies juggle siloed GTFS f
 ---
 
 - [Roadmap](./ROADMAP.md)
-- [Tracked Agencies](./docs/AGENCIES.md)
 - [Changelog](./CHANGELOG.md)
 - [Security](./SECURITY.md)
 
