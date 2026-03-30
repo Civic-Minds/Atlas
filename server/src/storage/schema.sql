@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS vehicle_positions (
   stop_id         TEXT,
   stop_sequence   INTEGER,
   current_status  SMALLINT,
+  delay_seconds   INTEGER,       -- Difference vs. scheduled time (positive = delayed, negative = early)
+  match_confidence REAL,         -- 0.0–1.0 score for spatial matches
   observed_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 

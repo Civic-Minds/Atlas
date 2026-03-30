@@ -95,6 +95,7 @@ export const AGENCIES: Agency[] = [
     id: 'mtabus',
     name: 'MTA New York City Bus',
     vehiclePositionsUrl: `https://gtfsrt.prod.obanyc.com/vehiclePositions?key=${process.env.MTA_BUS_API_KEY}`,
+    matchRealtime: true,
   },
   // Calgary Transit — CTrain absent from GTFS-RT feed entirely; routeId not populated so MAX BRT can't be filtered.
   // Skipping until Calgary improves their real-time data.

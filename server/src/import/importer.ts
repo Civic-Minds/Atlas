@@ -17,7 +17,9 @@
 import crypto from 'crypto';
 import { PoolClient } from 'pg';
 import { getStaticPool } from '../storage/static-db';
-import { parseGtfsBuffer, ParsedGtfs, GtfsCalendar, GtfsCalendarDate } from './parse-gtfs';
+import JSZip from 'jszip';
+import Papa from 'papaparse';
+import { parseGtfsBuffer, parseStopTimesForCorridors, ParsedGtfs, GtfsCalendar, GtfsCalendarDate } from './parse-gtfs';
 import { log } from '../logger';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -444,6 +446,122 @@ function applyAnalysis(rawData: RawDepartures[]): AnalysisResult[] {
   return results;
 }
 
+// ─── Corridor analysis ────────────────────────────────────────────────────────
+
+interface CorridorResult {
+  linkId: string;
+  stopA: string;
+  stopB: string;
+  routeIds: string[];
+  routeCount: number;
+  dayType: DayType;
+  tripCount: number;
+  avgHeadway: number;
+  peakHeadway: number;
+  reliabilityScore: number;
+}
+
+async function computeCorridors(
+  zipBuffer: Buffer,
+  gtfs: ParsedGtfs,
+  refDate: string,
+  windowStart: number,
+  windowEnd: number,
+): Promise<CorridorResult[]> {
+  const tripToRoute = new Map(gtfs.trips.map(t => [t.trip_id, t.route_id]));
+
+  // Union of all active trips across all day types — do one streaming pass
+  const allActiveTripIds = new Set<string>();
+  const activeByCombinedDay = new Map<DayType, Set<string>>();
+
+  for (const day of ALL_DAYS) {
+    const dayType = DAY_TO_TYPE[day];
+    const active = getActiveServiceIds(gtfs.calendar, gtfs.calendarDates, day, refDate);
+    if (!activeByCombinedDay.has(dayType)) activeByCombinedDay.set(dayType, new Set());
+    for (const trip of gtfs.trips) {
+      if (active.has(trip.service_id)) {
+        allActiveTripIds.add(trip.trip_id);
+        activeByCombinedDay.get(dayType)!.add(trip.trip_id);
+      }
+    }
+  }
+
+  if (allActiveTripIds.size === 0) return [];
+
+  const links = await parseStopTimesForCorridors(zipBuffer, allActiveTripIds);
+
+  const results: CorridorResult[] = [];
+
+  for (const [dayType, activeTripIds] of activeByCombinedDay) {
+    for (const [linkId, link] of links) {
+      // Collect departure times per route for this day type, within time window
+      const routeTimes = new Map<string, number[]>();
+      for (const [tripId, depMins] of link.tripDeps) {
+        if (!activeTripIds.has(tripId)) continue;
+        if (depMins < windowStart || depMins > windowEnd) continue;
+        const routeId = tripToRoute.get(tripId);
+        if (!routeId) continue;
+        if (!routeTimes.has(routeId)) routeTimes.set(routeId, []);
+        routeTimes.get(routeId)!.push(depMins);
+      }
+      if (routeTimes.size < 2) continue;
+
+      // Combined sorted departures across all routes
+      const allTimes = Array.from(routeTimes.values())
+        .flat()
+        .sort((a, b) => a - b);
+      if (allTimes.length < 2) continue;
+
+      const gaps: number[] = [];
+      for (let i = 1; i < allTimes.length; i++) gaps.push(allTimes[i] - allTimes[i - 1]);
+      const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+
+      // Peak 2-hour window headway
+      let peakHeadway = avg;
+      let maxDensity = 0;
+      let right = 0;
+      for (let left = 0; left < allTimes.length; left++) {
+        const windowEnd2 = allTimes[left] + 120;
+        while (right < allTimes.length && allTimes[right] <= windowEnd2) right++;
+        const count = right - left;
+        if (count > maxDensity) {
+          maxDensity = count;
+          const peakGaps: number[] = [];
+          for (let j = left + 1; j < right; j++) peakGaps.push(allTimes[j] - allTimes[j - 1]);
+          peakHeadway = peakGaps.length
+            ? peakGaps.reduce((a, b) => a + b, 0) / peakGaps.length
+            : avg;
+        }
+      }
+
+      // Reliability: penalise variance
+      const variance = gaps.length > 1
+        ? gaps.reduce((acc, h) => acc + (h - avg) ** 2, 0) / (gaps.length - 1)
+        : 0;
+      const stdDev = Math.sqrt(variance);
+      const consistencyScore = avg > 0 ? Math.max(0, 100 - (stdDev / avg) * 50) : 0;
+      const significant = gaps.filter(g => g > avg * 1.5).length;
+      const outlierPenalty = gaps.length ? (significant / gaps.length) * 40 : 0;
+      const reliabilityScore = Math.max(0, consistencyScore - outlierPenalty);
+
+      results.push({
+        linkId,
+        stopA: link.stopA,
+        stopB: link.stopB,
+        routeIds: Array.from(routeTimes.keys()),
+        routeCount: routeTimes.size,
+        dayType,
+        tripCount: allTimes.length,
+        avgHeadway: Math.round(avg * 10) / 10,
+        peakHeadway: Math.round(peakHeadway * 10) / 10,
+        reliabilityScore: Math.round(reliabilityScore),
+      });
+    }
+  }
+
+  return results;
+}
+
 // ─── Shape building ───────────────────────────────────────────────────────────
 
 interface RouteShape {
@@ -692,6 +810,83 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
     }
     log.info('Import', 'trips written', { count: gtfs.trips.length });
 
+    // 5.5 Write stop_times (Streaming Batch)
+    // Using a separate pass for stop_times to keep memory low.
+    log.info('Import', 'writing stop_times...');
+    const zipStopTimes = await JSZip.loadAsync(zipBuffer);
+    let stPath = '';
+    if (!zipStopTimes.file('stop_times.txt')) {
+      const entry = Object.keys(zipStopTimes.files).find(f => f.endsWith('/stop_times.txt'));
+      if (entry) stPath = entry;
+    } else {
+      stPath = 'stop_times.txt';
+    }
+
+    if (stPath) {
+      const stFile = zipStopTimes.file(stPath);
+      if (stFile) {
+        const stream = stFile.nodeStream();
+        let batch: any[] = [];
+        const BATCH_SIZE = 5000;
+
+        await new Promise<void>((resolve, reject) => {
+          Papa.parse(stream as any, {
+            header: true,
+            skipEmptyLines: true,
+            transform: (v: string) => v.trim(),
+            step: async (row: { data: any }, parser: any) => {
+              const st = row.data;
+              const parseTime = (raw: string) => {
+                const p = raw?.split(':');
+                if (!p || p.length < 2) return null;
+                return parseInt(p[0]) * 60 + parseInt(p[1]);
+              };
+              batch.push([
+                feedVersionId, accountId, st.trip_id, st.stop_id,
+                parseInt(st.stop_sequence), parseTime(st.arrival_time), parseTime(st.departure_time),
+                parseInt(st.pickup_type) || 0, parseInt(st.drop_off_type) || 0
+              ]);
+
+              if (batch.length >= BATCH_SIZE) {
+                const currentBatch = [...batch];
+                batch = [];
+                parser.pause();
+                try {
+                  await client.query(`
+                    INSERT INTO stop_times (feed_version_id, agency_account_id, gtfs_trip_id, gtfs_stop_id,
+                      stop_sequence, arrival_time, departure_time, pickup_type, drop_off_type)
+                    VALUES ${currentBatch.map((_, i) =>
+                      `($${i*9+1},$${i*9+2},$${i*9+3},$${i*9+4},$${i*9+5},$${i*9+6},$${i*9+7},$${i*9+8},$${i*9+9})`
+                    ).join(',')}
+                    ON CONFLICT (feed_version_id, gtfs_trip_id, stop_sequence) DO NOTHING`,
+                    currentBatch.flat()
+                  );
+                } finally {
+                  parser.resume();
+                }
+              }
+            },
+            complete: async () => {
+              if (batch.length > 0) {
+                await client.query(`
+                  INSERT INTO stop_times (feed_version_id, agency_account_id, gtfs_trip_id, gtfs_stop_id,
+                    stop_sequence, arrival_time, departure_time, pickup_type, drop_off_type)
+                  VALUES ${batch.map((_, i) =>
+                    `($${i*9+1},$${i*9+2},$${i*9+3},$${i*9+4},$${i*9+5},$${i*9+6},$${i*9+7},$${i*9+8},$${i*9+9})`
+                  ).join(',')}
+                  ON CONFLICT (feed_version_id, gtfs_trip_id, stop_sequence) DO NOTHING`,
+                  batch.flat()
+                );
+              }
+              resolve();
+            },
+            error: (err: any) => reject(err)
+          });
+        });
+      }
+    }
+    log.info('Import', 'stop_times written');
+
     // 6. Write calendar
     for (const c of gtfs.calendar) {
       const bitmask = (c.monday==='1'?1:0)|(c.tuesday==='1'?2:0)|(c.wednesday==='1'?4:0)|
@@ -792,7 +987,28 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
     }
     log.info('Import', 'analysis results written', { count: analysisResults.length });
 
-    // 9. Mark version as current, demote previous
+    // 9. Corridor analysis
+    const corridorResults = await computeCorridors(zipBuffer, gtfs, refDate, TIME_WINDOW.start, TIME_WINDOW.end);
+    log.info('Import', 'corridors computed', { count: corridorResults.length });
+
+    for (const c of corridorResults) {
+      await client.query(
+        `INSERT INTO corridor_results
+           (analysis_run_id, feed_version_id, agency_account_id,
+            link_id, stop_a_id, stop_b_id, route_ids, route_count,
+            day_type, trip_count, avg_headway, peak_headway, reliability_score)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+         ON CONFLICT (analysis_run_id, link_id, day_type) DO NOTHING`,
+        [
+          analysisRunId, feedVersionId, accountId,
+          c.linkId, c.stopA, c.stopB, c.routeIds, c.routeCount,
+          c.dayType, c.tripCount, c.avgHeadway, c.peakHeadway, c.reliabilityScore,
+        ]
+      );
+    }
+    log.info('Import', 'corridors written', { count: corridorResults.length });
+
+    // 10. Mark feed version as current, demote previous
     await client.query(
       `UPDATE feed_versions SET is_current = FALSE
        WHERE gtfs_agency_id = $1 AND is_current = TRUE AND id != $2`,
