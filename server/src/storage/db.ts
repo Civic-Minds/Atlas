@@ -18,24 +18,30 @@ export async function insertVehiclePositions(positions: VehiclePosition[]): Prom
   if (positions.length === 0) return;
   const db = getPool();
 
-  // Build a single multi-row INSERT for efficiency
-  const values: unknown[] = [];
-  const placeholders = positions.map((p, i) => {
-    const base = i * 10;
-    values.push(
-      p.agencyId, p.vehicleId, p.tripId, p.routeId,
-      p.lat, p.lon, p.speed, p.bearing,
-      p.stopId, p.stopSequence,
-    );
-    return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6},$${base+7},$${base+8},$${base+9},$${base+10})`;
-  });
+  const BATCH_SIZE = 1000;
+  for (let i = 0; i < positions.length; i += BATCH_SIZE) {
+    const batch = positions.slice(i, i + BATCH_SIZE);
+    
+    // Build a multi-row INSERT for this batch
+    const values: unknown[] = [];
+    const placeholders = batch.map((p, j) => {
+      const base = j * 12;
+      values.push(
+        p.agencyId, p.vehicleId, p.tripId, p.routeId,
+        p.lat, p.lon, p.speed, p.bearing,
+        p.stopId, p.stopSequence,
+        p.delaySeconds ?? null, p.matchConfidence ?? null
+      );
+      return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6},$${base+7},$${base+8},$${base+9},$${base+10},$${base+11},$${base+12})`;
+    });
 
-  await db.query(
-    `INSERT INTO vehicle_positions
-       (agency_id, vehicle_id, trip_id, route_id, lat, lon, speed, bearing, stop_id, stop_sequence)
-     VALUES ${placeholders.join(',')}`,
-    values,
-  );
+    await db.query(
+      `INSERT INTO vehicle_positions
+         (agency_id, vehicle_id, trip_id, route_id, lat, lon, speed, bearing, stop_id, stop_sequence, delay_seconds, match_confidence)
+       VALUES ${placeholders.join(',')}`,
+      values,
+    );
+  }
 }
 
 export async function logIngestion(

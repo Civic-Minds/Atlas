@@ -8,6 +8,7 @@
 
 import { Agency, VehiclePosition } from '../types';
 import { insertVehiclePositions, logIngestion } from '../storage/db';
+import { matchPositions } from '../intelligence/matcher';
 import { ROUTE_FILTER } from '../config';
 import { log } from '../logger';
 
@@ -45,6 +46,8 @@ async function fetchPositions(agency: Agency): Promise<VehiclePosition[]> {
       stopId:        v.stopId           ?? null,
       stopSequence:  v.currentStopSequence ?? null,
       currentStatus: v.currentStatus    ?? null,
+      delaySeconds:  null,
+      matchConfidence: null,
       observedAt,
     });
   }
@@ -54,7 +57,8 @@ async function fetchPositions(agency: Agency): Promise<VehiclePosition[]> {
 
 async function pollAgency(agency: Agency): Promise<void> {
   try {
-    const positions = await fetchPositions(agency);
+    const rawPositions = await fetchPositions(agency);
+    const positions = await matchPositions(agency, rawPositions);
     await insertVehiclePositions(positions);
     await logIngestion(agency.id, true, positions.length);
     log.info('Poll', 'ok', { agency: agency.id, vehicles: positions.length });

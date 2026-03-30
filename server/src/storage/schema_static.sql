@@ -237,6 +237,28 @@ CREATE INDEX idx_trips_service      ON trips (feed_version_id, service_id);
 CREATE INDEX idx_trips_shape        ON trips (feed_version_id, shape_id) WHERE shape_id IS NOT NULL;
 
 
+-- Scheduled stop times.
+-- One row per trip per stop — foundation for On-Time Performance (OTP).
+CREATE TABLE stop_times (
+  id                UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  feed_version_id   UUID          NOT NULL REFERENCES feed_versions (id) ON DELETE CASCADE,
+  agency_account_id UUID          NOT NULL REFERENCES agency_accounts (id) ON DELETE CASCADE,
+  gtfs_trip_id      TEXT          NOT NULL,
+  gtfs_stop_id      TEXT          NOT NULL,
+  stop_sequence     INTEGER       NOT NULL,
+  arrival_time      INTEGER,      -- minutes from midnight (e.g. 14:05:00 = 845)
+  departure_time    INTEGER,
+  pickup_type       SMALLINT      DEFAULT 0,
+  drop_off_type     SMALLINT      DEFAULT 0,
+  created_at        TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  UNIQUE (feed_version_id, gtfs_trip_id, stop_sequence)
+);
+
+CREATE INDEX idx_stop_times_feed_version ON stop_times (feed_version_id);
+CREATE INDEX idx_stop_times_trip         ON stop_times (feed_version_id, gtfs_trip_id);
+CREATE INDEX idx_stop_times_stop         ON stop_times (feed_version_id, gtfs_stop_id);
+
+
 -- Service patterns from calendar.txt
 CREATE TABLE calendar_services (
   id                UUID          PRIMARY KEY DEFAULT gen_random_uuid(),

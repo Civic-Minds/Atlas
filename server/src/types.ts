@@ -4,6 +4,7 @@ export interface Agency {
   vehiclePositionsUrl: string;
   tripUpdatesUrl?: string;
   headers?: Record<string, string>;
+  matchRealtime?: boolean;
 }
 
 export interface VehiclePosition {
@@ -18,5 +19,15 @@ export interface VehiclePosition {
   stopId:        string | null;
   stopSequence:  number | null;
   currentStatus: number | null;
+  delaySeconds:  number | null;  // New in 0.13.0 Phase 2
+  matchConfidence: number | null; // Spatially matched confidence
   observedAt:    Date;
+}
+
+export interface GtfsStopTime {
+  tripId: string;
+  stopId: string;
+  stopSequence: number;
+  arrivalTime: number;   // Minutes from midnight
+  departureTime: number;
 }

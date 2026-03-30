@@ -275,3 +275,80 @@ export async function parseGtfsBuffer(buffer: Buffer): Promise<ParsedGtfs> {
 
   return { agencies, routes, stops, trips, tripFirstDep, calendar, calendarDates, feedInfo, frequencies, shapePoints };
 }
+
+// ─── Second pass: stop-pair data for corridor analysis ────────────────────────
+
+export interface CorridorLink {
+  stopA: string;
+  stopB: string;
+  /** tripId → departure time (minutes from midnight) at stopA */
+  tripDeps: Map<string, number>;
+}
+
+/**
+ * Stream stop_times.txt a second time to build stop-pair departure data.
+ * Only emits links for trips in `activeTripIds` — keeps memory footprint small.
+ * Returns a Map keyed by "stopA->stopB".
+ */
+export async function parseStopTimesForCorridors(
+  buffer: Buffer,
+  activeTripIds: Set<string>,
+): Promise<Map<string, CorridorLink>> {
+  const zip = await JSZip.loadAsync(buffer);
+
+  let basePath = '';
+  if (!zip.file('routes.txt')) {
+    const routesEntry = Object.keys(zip.files).find(
+      f => f.endsWith('/routes.txt') && !zip.files[f].dir
+    );
+    if (routesEntry) basePath = routesEntry.slice(0, -'routes.txt'.length);
+  }
+
+  const stopTimesEntry = zip.file(basePath + 'stop_times.txt');
+  if (!stopTimesEntry) throw new Error('Missing required GTFS file: stop_times.txt');
+
+  const links = new Map<string, CorridorLink>();
+  // Track the last seen stop per trip: tripId → { stopId, depMins, seq }
+  const prev = new Map<string, { stopId: string; depMins: number; seq: number }>();
+
+  await new Promise<void>((resolve, reject) => {
+    const stream = stopTimesEntry.nodeStream();
+    Papa.parse(stream as any, {
+      header: true,
+      skipEmptyLines: true,
+      transform: (v: string) => v.trim(),
+      transformHeader: (h: string) => h.trim().replace(/^\uFEFF/, '').replace(/^"|"$/g, ''),
+      step: (row: { data: any }) => {
+        const st = row.data as GtfsStopTime;
+        if (!st.trip_id || !activeTripIds.has(st.trip_id)) return;
+        const seq = parseInt(st.stop_sequence);
+        if (isNaN(seq) || !st.stop_id) return;
+
+        const raw = st.departure_time || st.arrival_time || '';
+        const parts = raw.split(':');
+        if (parts.length < 2) return;
+        const h = parseInt(parts[0]), m = parseInt(parts[1]);
+        if (isNaN(h) || isNaN(m)) return;
+        const depMins = h * 60 + m;
+
+        const p = prev.get(st.trip_id);
+        if (p !== undefined && seq > p.seq) {
+          const linkId = `${p.stopId}->${st.stop_id}`;
+          if (!links.has(linkId)) {
+            links.set(linkId, { stopA: p.stopId, stopB: st.stop_id, tripDeps: new Map() });
+          }
+          // Only record the first time we see this trip on this link
+          const link = links.get(linkId)!;
+          if (!link.tripDeps.has(st.trip_id)) {
+            link.tripDeps.set(st.trip_id, p.depMins);
+          }
+        }
+        prev.set(st.trip_id, { stopId: st.stop_id, depMins, seq });
+      },
+      complete: () => resolve(),
+      error: (err: Error) => reject(err),
+    });
+  });
+
+  return links;
+}
