@@ -38,20 +38,21 @@ export function startPositionWorker(): Worker {
                 
                 // Final ingestion logging with Notion sync timestamp if available
                 let syncedAt: Date | undefined;
+                let syncStatus: string | undefined;
 
-                // Optional: Push to Notion (Throttled)
                 const now = Date.now();
                 if (!lastNotionSync[agency.id] || now - lastNotionSync[agency.id] > NOTION_SYNC_THROTTLE_MS) {
                     lastNotionSync[agency.id] = now;
-                    // We'll await this briefly to get the sync time if we're doing it this turn
-                    const syncResult = await syncAgencyToNotion(agency.id, { 
-                        success: true, 
-                        vehicleCount: matched.length 
-                    });
-                    if (syncResult.success) syncedAt = syncResult.syncAt;
+                    const syncRes = await syncAgencyToNotion(agency.id, { success: true, vehicleCount: matched.length });
+                    if (syncRes.success) {
+                        syncedAt = syncRes.syncAt;
+                        syncStatus = syncRes.syncStatus;
+                    }
+                } else {
+                    syncStatus = 'Throttled (15m Cooldown)';
                 }
 
-                await logIngestion(agency.id, true, matched.length, undefined, syncedAt);
+                await logIngestion(agency.id, true, matched.length, undefined, syncedAt, syncStatus);
                 
                 log.info('Queue', 'processed', { 
                     agency: agency.id, 

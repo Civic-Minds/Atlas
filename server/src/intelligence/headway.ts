@@ -19,7 +19,10 @@ export interface CorridorPerformance {
   observedTripCount: number;
   avgDelaySeconds: number;
   reliabilityScore: number; // AHW Reliability (0-100)
-  bunchingCount: number; // Trips arriving < 60s after the previous trip
+  bunchingCount: number; // Trips arriving < threshold after the previous trip
+  earlyCount: number; // Arrivals > 60s before schedule
+  onTimeCount: number; // Arrivals within [-60s, 300s] of schedule
+  lateCount: number; // Arrivals > 300s after schedule
 }
 
 export async function aggregateCorridorPerformance(
@@ -87,6 +90,9 @@ export async function aggregateCorridorPerformance(
     const intervals: number[] = [];
     let totalDelay = 0;
     let bunchingCount = 0;
+    let earlyCount = 0;
+    let onTimeCount = 0;
+    let lateCount = 0;
     
     for (let i = 1; i < arrivals.rows.length; i++) {
         const current = new Date(arrivals.rows[i].arrival_time).getTime();
@@ -97,6 +103,16 @@ export async function aggregateCorridorPerformance(
 
         if (interval < bunchingThresholdSeconds) {
             bunchingCount++;
+        }
+
+        // Categorize adherence based on avg_delay (seconds)
+        const delay = arrivals.rows[i].avg_delay ?? 0;
+        if (delay < -60) {
+            earlyCount++;
+        } else if (delay > 300) {
+            lateCount++;
+        } else {
+            onTimeCount++;
         }
     }
 
@@ -122,7 +138,10 @@ export async function aggregateCorridorPerformance(
       observedTripCount: arrivals.rows.length,
       avgDelaySeconds: avgDelay,
       reliabilityScore,
-      bunchingCount
+      bunchingCount,
+      earlyCount,
+      onTimeCount,
+      lateCount
     });
   }
 

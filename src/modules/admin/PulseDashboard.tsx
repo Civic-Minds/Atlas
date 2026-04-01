@@ -10,6 +10,7 @@ interface IngestionLog {
     vehicle_count: number | null;
     error_msg: string | null;
     notion_sync_at: string | null;
+    notion_sync_status: string | null;
 }
 
 
@@ -21,6 +22,7 @@ interface MatchingStats {
     direct_matches: string;
     spatial_matches: string;
     unmatched: string;
+    healthScore: number;
 }
 
 interface HealthTrend {
@@ -46,6 +48,9 @@ interface CorridorPerformance {
     avgDelaySeconds: number;
     reliabilityScore: number;
     bunchingCount: number;
+    earlyCount: number;
+    onTimeCount: number;
+    lateCount: number;
 }
 
 const TrendSparkline: React.FC<{ data: number[], color: string }> = ({ data, color }) => {
@@ -216,10 +221,12 @@ export default function PulseDashboard() {
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Agency</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Status</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Last Poll</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-indigo-400">Feed Health</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Vehicles</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Trend (24h)</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Match Quality</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#f59e0b]">Bunching</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#10b981]">Adherence</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#ef4444]">Ghosts</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Enterprise Sync</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-right">Engine</th>
@@ -254,6 +261,26 @@ export default function PulseDashboard() {
                                                 {lastSeen ? lastSeen.toLocaleTimeString([], { hour12: false }) : 'Waiting...'}
                                             </div>
                                             <div className="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-widest">UTC SYNC</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <span className={`text-sm font-black ${
+                                                    stat.healthScore >= 90 ? 'text-emerald-500' :
+                                                    stat.healthScore >= 70 ? 'text-amber-500' : 'text-red-500'
+                                                }`}>
+                                                    {stat.healthScore}%
+                                                </span>
+                                                <div className="flex-1 max-w-[40px] h-1 bg-[var(--item-bg)]/50 rounded-full overflow-hidden border border-white/5">
+                                                    <div 
+                                                        className={`h-full transition-all duration-1000 ${
+                                                            stat.healthScore >= 90 ? 'bg-emerald-500' :
+                                                            stat.healthScore >= 70 ? 'bg-amber-500' : 'bg-red-500'
+                                                        }`}
+                                                        style={{ width: `${stat.healthScore}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="text-[9px] text-[var(--text-muted)] font-black uppercase tracking-tighter mt-0.5">COMPOSITE</div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-sm font-black text-[var(--fg)]">{parseInt(stat.total_obs).toLocaleString()}</div>
@@ -297,6 +324,32 @@ export default function PulseDashboard() {
                                         </td>
                                         <td className="px-6 py-4">
                                             {(() => {
+                                                const agencyPerf = corridorPerformance[stat.agency_id] || [];
+                                                const total = agencyPerf.reduce((acc, p) => acc + (p.observedTripCount || 0), 0);
+                                                const early = agencyPerf.reduce((acc, p) => acc + (p.earlyCount || 0), 0);
+                                                const onTime = agencyPerf.reduce((acc, p) => acc + (p.onTimeCount || 0), 0);
+                                                const late = agencyPerf.reduce((acc, p) => acc + (p.lateCount || 0), 0);
+                                                
+                                                if (total === 0) return <span className="opacity-30 text-xs">NO DATA</span>;
+                                                
+                                                const otRate = Math.round((onTime / total) * 100);
+                                                
+                                                return (
+                                                    <div className="space-y-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-sm font-black text-emerald-500">{otRate}%</span>
+                                                            <span className="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-tighter">ON-TIME</span>
+                                                        </div>
+                                                        <div className="flex gap-2 text-[9px] font-mono">
+                                                            <span className="text-amber-500/80">{early}E</span>
+                                                            <span className="text-red-500/80">{late}L</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {(() => {
                                                 const agencyGhosts = ghostStats[stat.agency_id] || [];
                                                 const totalGhosts = agencyGhosts.reduce((acc, g) => acc + (g.ghostCount || 0), 0);
                                                 return (
@@ -310,19 +363,21 @@ export default function PulseDashboard() {
                                             })()}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                {lastLog?.notion_sync_at ? (
-                                                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                                        <Share className="w-2.5 h-2.5 text-emerald-500" />
-                                                        <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter">Synced</span>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2">
+                                                    {lastLog?.notion_sync_at ? (
+                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                                                            <Share className="w-2.5 h-2.5 text-indigo-400" />
+                                                            <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">Synced</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-[9px] text-[var(--text-muted)] font-bold italic opacity-30">Pending</div>
+                                                    )}
+                                                </div>
+                                                {lastLog?.notion_sync_status && (
+                                                    <div className="text-[9px] font-mono text-[var(--fg)] opacity-60 bg-white/5 p-1 rounded border border-white/5 leading-tight">
+                                                        {lastLog.notion_sync_status}
                                                     </div>
-                                                ) : (
-                                                    <div className="text-[9px] text-[var(--text-muted)] font-bold italic opacity-30">Pending</div>
-                                                )}
-                                                {lastLog?.notion_sync_at && (
-                                                    <span className="text-[10px] font-mono text-[var(--fg)] opacity-60">
-                                                        {new Date(lastLog.notion_sync_at).toLocaleTimeString([], { hour12: false })}
-                                                    </span>
                                                 )}
                                             </div>
                                         </td>
