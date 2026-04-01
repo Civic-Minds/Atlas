@@ -5,12 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Phase 3: Strategic Planning & Auditing**: Launched the **Service Change Auditor** suite for automated benchmarking of GTFS uploads.
-- **Service Change Performance Engine**: New `/api/intelligence/audit-service-change` endpoint that identifies schedule pivot points and compares 30-day reliability windows.
+- **Service Change Auditor**: Automated benchmarking suite that identifies GTFS schedule pivot points and compares 30-day reliability windows.
+- **Service Change Scorecard**: High-fidelity UI panel in the Intelligence Hub providing side-by-side "Before vs. After" reliability benchmarks.
 - **Historical Headway Engine**: Refactored the core performance engine to support arbitrary time-windowed audits and explicit GTFS version overrides.
-- **Strategic Audit Scorecard**: New high-fidelity UI panel in the Intelligence Hub that benchmarks **Reliability Delta** across service changes.
-- **Unified Intelligence Types**: Standardized camelCase naming conventions across the API and frontend for robust, type-safe data flow.
 - **Detour Awareness Engine**: Implemented PostGIS-powered shape-deviation detection (`ST_Distance` via `geography` cast).
+...
+### Changed
+- **Unified Intelligence Types**: Standardized camelCase naming conventions across the API and frontend for robust, type-safe data flow.
 - **Reroute Persistence**: Automated calculation and storage of `is_detour` and `dist_from_shape` for all real-time positions.
 - **Visual Detour Alerts**: Added Phase 3 markers to Pulse Dashboard; off-route vehicles now trigger Magenta alerts with tooltip distance diagnostics.
 - **Intelligence Hub & Freedom Auditor** (`/intelligence`): A strategic dashboard implementing the Jarrett Walker "Turn Up and Go" frequency standard (15-min threshold) to track network accessibility.
