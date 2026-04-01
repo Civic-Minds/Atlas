@@ -33,7 +33,9 @@ export async function syncAgencyToNotion(agencyId: string, health: { success: bo
     log.info('NotionSync', `Synchronizing intelligence for ${agencyId}...`);
 
     // 1. Calculate the latest aggregate AHW score for this agency (last 60 mins)
-    const corridors = await aggregateCorridorPerformance(agencyId, 60);
+    const endTime = new Date();
+    const startTime = new Date(endTime.getTime() - 60 * 60 * 1000);
+    const corridors = await aggregateCorridorPerformance(agencyId, startTime, endTime);
     const avgScore = corridors.length > 0 
       ? corridors.reduce((acc, c) => acc + c.reliabilityScore, 0) / corridors.length 
       : null;

@@ -5,12 +5,19 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Mobile Navigation**: Implemented a responsive slide-down hamburger menu for the global top navigation, ensuring accessibility on viewports smaller than 768px.
+- **Live Map Legend**: Extracted the generic status color text labels into a prominent, floating opaque legend overlaid directly on the Live Map.
+- **Dynamic Data Onboarding**: The `useAutoLoadGtfs` hook now seamlessly pulls sample GTFS datasets depending on the authenticated tenant's `agencyId`, falling back to Portland data defaults, to eliminate blank-state friction for first-time signups.
 - **Service Change Auditor**: Automated benchmarking suite that identifies GTFS schedule pivot points and compares 30-day reliability windows.
 - **Service Change Scorecard**: High-fidelity UI panel in the Intelligence Hub providing side-by-side "Before vs. After" reliability benchmarks.
 - **Historical Headway Engine**: Refactored the core performance engine to support arbitrary time-windowed audits and explicit GTFS version overrides.
 - **Detour Awareness Engine**: Implemented PostGIS-powered shape-deviation detection (`ST_Distance` via `geography` cast).
 ...
 ### Changed
+- **Intelligence UX Polish**: Refined the loading state in the Intelligence Hub to overlay the spinner seamlessly beneath the header controls, maintaining visual context when switching agencies instead of unmounting the view.
+- **Module Nomenclature Consistency**: Renamed the "Synthesis" module to "Optimize" on the landing page feature cards to align with the application's vocabulary, and included the missing "Intelligence Hub" entry point.
+- **Internal UI Structure Standardization**: Corrected the core `.module-container` layout across all modules using standard CSS classes, enforcing flex bounds and eliminating inside scroll bar clipping issues without halting the Vite Tailwind v4 compiler.
+- **Locked Default Tenant Dropdown (Strategy View)**: Applied strict RBAC (`isAdmin`) in `NetworkScreener.tsx`. Standard tenant operators are fundamentally locked to their mapped GTFS schema to enforce strict, single-tenant data segregation.
 - **Unified Intelligence Types**: Standardized camelCase naming conventions across the API and frontend for robust, type-safe data flow.
 - **Reroute Persistence**: Automated calculation and storage of `is_detour` and `dist_from_shape` for all real-time positions.
 - **Visual Detour Alerts**: Added Phase 3 markers to Pulse Dashboard; off-route vehicles now trigger Magenta alerts with tooltip distance diagnostics.
@@ -29,15 +36,6 @@ All notable changes to this project will be documented in this file.
 - **Dwell Time Analysis (Backend)**: Implemented a high-fidelity "Dwell State Engine" in the matcher that tracks exactly how long buses remain at the curb (`AT_STOP` status). Data is persisted to a new `stop_dwell_metrics` table to identify fare-payment and boarding bottlenecks.
 - **Predictive Demand Hub**: Unified the "Predict" module branding (previously "Optimize") to "Predict: Strategic Growth" and implemented a functional gravity-based demand forecasting engine.
 - **Headway N+1 Optimization**: Eliminated per-corridor database round-trips by batch-fetching all arrivals in a single `ANY($1::text[])` query.
-
-### Fixed
-- **Precision OTP Matching**: Corrected `delay_seconds` drift by using the vehicle's `observedAt` timestamp instead of the server's wall clock.
-- **Midnight Crossing Logic**: Ghost detection now correctly handles arrival windows that cross the midnight boundary using `OR` logic.
-- **Postgres Batch Alignment**: Resolved a critical parameter mismatch in storage batch inserts that caused ingestion failure on 14-column records.
-- **511.org Rate Mitigation**: Added 30s of random startup jitter and agency-specific polling intervals to prevent `HTTP 429` errors on shared API keys.
-- **Memory Leak**: Fixed a Blob URL leak in the CSV export utility by properly revoking object URLs after download.
-
-### Changed
 - **CORS Whitelist**: Replaced open CORS with an environment-driven origin whitelist (`FRONTEND_URL`).
 - **Auth Hardening**: Added `requireAuth` middleware to the GTFS import pipeline and enforced `Bearer` token validation on all protected API endpoints via Firebase ID tokens.
 - **Infrastructure Privacy**: Transitioned Firebase project IDs, Notion database IDs, and Static DB credentials to environment variables to remove hardcoded fallback secrets.
@@ -48,6 +46,18 @@ All notable changes to this project will be documented in this file.
 - **Halifax Validation**: Verified the Intelligence Hub against the Halifax dataset, identifying 5+ high-priority optimization candidates based on geometric debt.
 - **Version Clean-up**: Updated the stale `V0.1.4` branding in the Pulse Dashboard to the current `V0.13.0`.
 - **Dynamic Schedule Windows**: Replaced hardcoded 'Weekday' logic with dynamic day-type detection (Weekday/Sat/Sun) for reliability calculations.
+
+### Fixed
+- **API URL Construction Reliability**: Fixed critical `Failed to construct 'URL'` exceptions across the platform by standardizing on `window.location.origin` as the fallback base inside `atlasApi.ts` when `ATLAS_BASE` is empty.
+- **Live Map Gateway Visibility**: Enhanced the "Could not reach GTFS-RT Gateway" error in `MapView.tsx` to display as a distinct, pulsing red terminal banner instead of a silent text label.
+- **Resolved Compilation mismatches for GTFS Analytics**: Standardized the `CorridorPerformance` interface mapping to `snake_case` in `src/services/atlasApi.ts` to seamlessly feed robust typing down to `CorridorMonitor.tsx`.
+- **Global Loading State Conflicts**: Patched `VerifierView` checking constraint that was erroneously flashing empty datasets bypassing the `useGtfsWorker` parsing cycle.
+- **Database Schema Sync**: Explicitly enforced `notion_sync_status` columns locally using Postgres to stabilize the realtime `ingestion_log`.
+- **Precision OTP Matching**: Corrected `delay_seconds` drift by using the vehicle's `observedAt` timestamp instead of the server's wall clock.
+- **Midnight Crossing Logic**: Ghost detection now correctly handles arrival windows that cross the midnight boundary using `OR` logic.
+- **Postgres Batch Alignment**: Resolved a critical parameter mismatch in storage batch inserts that caused ingestion failure on 14-column records.
+- **511.org Rate Mitigation**: Added 30s of random startup jitter and agency-specific polling intervals to prevent `HTTP 429` errors on shared API keys.
+- **Memory Leak**: Fixed a Blob URL leak in the CSV export utility by properly revoking object URLs after download.
 
 ## [0.13.0] - 2026-03-30
 ### Added

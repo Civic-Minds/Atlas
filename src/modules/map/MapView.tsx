@@ -132,25 +132,9 @@ export default function MapView() {
         </div>
 
         <div className="ml-auto flex items-center gap-6">
-          {/* Legend */}
-          <div className="flex items-center gap-4 text-[12px] text-[var(--text-muted)]">
-            {[
-              { colour: '#ef4444', label: 'Stopped' },
-              { colour: '#f97316', label: 'Crawling' },
-              { colour: '#eab308', label: 'Slow' },
-              { colour: '#22c55e', label: 'Moving' },
-              { colour: '#d946ef', label: 'Off-Route' },
-            ].map(l => (
-              <div key={l.label} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ background: l.colour }} />
-                {l.label}
-              </div>
-            ))}
-          </div>
 
           <div className="text-[12px] text-[var(--text-muted)]">
             {loading && 'Loading…'}
-            {error && <span className="text-red-400">{error}</span>}
             {!loading && !error && vehicles.length > 0 && (
               <span>
                 {filter
@@ -160,13 +144,37 @@ export default function MapView() {
                 {' · '}updated {lastUpdated?.toLocaleTimeString()}
               </span>
             )}
-            {!loading && !error && vehicles.length === 0 && 'No active vehicles'}
+            {!loading && !error && vehicles.length === 0 && 'No active vehicles found on this feed'}
           </div>
         </div>
       </div>
 
       {/* Map */}
       <div className="flex-1 relative">
+        {error && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-2 rounded-xl backdrop-blur-md font-bold text-sm shadow-xl flex items-center gap-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                {error} - Retrying connection...
+            </div>
+        )}
+        
+        {/* Floating Legend */}
+        <div className="absolute bottom-6 right-6 z-[1000] bg-[var(--surface)]/90 backdrop-blur-md border border-[var(--border)] rounded-xl p-4 shadow-xl flex flex-col gap-3">
+            <span className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-1">Status Legend</span>
+            {[
+              { colour: '#ef4444', label: 'Stopped (0 km/h)' },
+              { colour: '#f97316', label: 'Crawling (<5 km/h)' },
+              { colour: '#eab308', label: 'Slow (<12 km/h)' },
+              { colour: '#22c55e', label: 'Moving' },
+              { colour: '#d946ef', label: 'Off-Route / Detour' },
+            ].map(l => (
+              <div key={l.label} className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: l.colour }} />
+                <span className="text-xs font-bold text-[var(--text-secondary)]">{l.label}</span>
+              </div>
+            ))}
+        </div>
+
         <MapContainer
           key={agency}
           center={center}

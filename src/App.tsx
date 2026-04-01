@@ -34,9 +34,14 @@ const AuthLoadingScreen = () => (
     </div>
 );
 
+import { useAutoLoadGtfs } from './hooks/useAutoLoadGtfs';
+
 const App: React.FC = () => {
     const location = useLocation();
     const { isAuthenticated, isLoading } = useAuthStore();
+    
+    // Auto-load pre-populated network data for users
+    useAutoLoadGtfs();
 
     if (isLoading) return <AuthLoadingScreen />;
     if (!isAuthenticated) return <AuthSplash />;

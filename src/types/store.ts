@@ -34,6 +34,8 @@ interface TransitState {
     setCriteria: (criteria: AnalysisCriteria) => Promise<void>;
     reapplyCriteria: () => void;
 
+    setLoading: (isLoading: boolean) => void;
+
     loadPersistedData: () => Promise<void>;
     clearData: () => Promise<void>;
 }
@@ -46,6 +48,8 @@ export const useTransitStore = create<TransitState>((set, get) => ({
     loading: false,
     rawDepartures: [],
     activeCriteria: DEFAULT_CRITERIA,
+
+    setLoading: (loading: boolean) => set({ loading }),
 
     // Legacy action — still works for backward compat
     setResults: async (data) => {

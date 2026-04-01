@@ -1,6 +1,6 @@
 import { useAuthStore } from '../hooks/useAuthStore';
 
-const ATLAS_BASE = '/api';
+const ATLAS_BASE = '';
 
 // ── Agency list ──────────────────────────────────────────────────────────────
 
@@ -57,7 +57,7 @@ export interface ScreenResponse {
 }
 
 export async function screenRoutes(params: ScreenParams): Promise<ScreenResponse> {
-  const url = new URL(`${ATLAS_BASE}/api/screen`);
+  const url = new URL(`${ATLAS_BASE}/api/screen`, window.location.origin);
   url.searchParams.set('agency',      params.agency);
   url.searchParams.set('maxHeadway',  String(params.maxHeadway));
   url.searchParams.set('windowStart', String(params.windowStart));
@@ -104,7 +104,7 @@ export interface CorridorResponse {
 }
 
 export async function fetchCorridors(params: CorridorParams): Promise<CorridorResponse> {
-  const url = new URL(`${ATLAS_BASE}/api/corridors`);
+  const url = new URL(`${ATLAS_BASE}/api/corridors`, window.location.origin);
   url.searchParams.set('agency',      params.agency);
   url.searchParams.set('maxHeadway',  String(params.maxHeadway));
   url.searchParams.set('windowStart', String(params.windowStart));
@@ -162,19 +162,16 @@ async function fetchWithAuth(url: string | URL, init?: RequestInit): Promise<Res
 }
 
 export interface CorridorPerformance {
-  linkId: string;
-  agencyId: string;
-  startObs: string;
-  endObs: string;
-  observedAvgHeadway: number;
-  scheduledAvgHeadway: number;
-  observedTripCount: number;
-  avgDelaySeconds: number;
-  reliabilityScore: number;
-  bunchingCount: number;
-  earlyCount: number;
-  onTimeCount: number;
-  lateCount: number;
+  link_id: string;
+  agency_id: string;
+  stop_a_name?: string;
+  stop_b_name?: string;
+  route_short_names: string[];
+  is_bunching: boolean;
+  reliability_score: number;
+  actual_headway_min?: number;
+  scheduled_headway_min: number;
+  observed_arrivals: number;
 }
 
 export interface PerformanceResponse {
@@ -233,7 +230,7 @@ export interface StopDwellResponse {
 }
 
 export async function fetchCorridorPerformance(agency: string, windowMinutes: number = 60): Promise<PerformanceResponse> {
-  const url = new URL(`${ATLAS_BASE}/api/corridors/performance`);
+  const url = new URL(`${ATLAS_BASE}/api/corridors/performance`, window.location.origin);
   url.searchParams.set('agency', agency);
   url.searchParams.set('window', String(windowMinutes));
   const res = await fetchWithAuth(url.toString());
@@ -242,7 +239,7 @@ export async function fetchCorridorPerformance(agency: string, windowMinutes: nu
 }
 
 export async function auditServiceChange(agency: string): Promise<AuditResult> {
-  const url = new URL(`${ATLAS_BASE}/api/intelligence/audit-service-change`);
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/audit-service-change`, window.location.origin);
   url.searchParams.set('agency', agency);
   const res = await fetchWithAuth(url.toString());
   if (!res.ok) throw new Error(`Audit query failed: ${res.status}`);
@@ -250,7 +247,7 @@ export async function auditServiceChange(agency: string): Promise<AuditResult> {
 }
 
 export async function fetchSegmentBottlenecks(agency: string, limit: number = 10): Promise<BottleneckResponse> {
-  const url = new URL(`${ATLAS_BASE}/api/intelligence/bottlenecks`);
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/bottlenecks`, window.location.origin);
   url.searchParams.set('agency', agency);
   url.searchParams.set('limit', String(limit));
   const res = await fetchWithAuth(url.toString());
@@ -259,7 +256,7 @@ export async function fetchSegmentBottlenecks(agency: string, limit: number = 10
 }
 
 export async function fetchStopDwells(agency: string, limit: number = 10): Promise<StopDwellResponse> {
-  const url = new URL(`${ATLAS_BASE}/api/intelligence/dwells`);
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/dwells`, window.location.origin);
   url.searchParams.set('agency', agency);
   url.searchParams.set('limit', String(limit));
   const res = await fetchWithAuth(url.toString());

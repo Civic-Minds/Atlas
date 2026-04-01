@@ -60,6 +60,16 @@ const FEATURES = [
         meta: 'Forecasting'
     },
     {
+        id: 'intelligence',
+        title: 'Intelligence',
+        cta: 'Analyze Performance',
+        description: 'Live performance metrics, bottleneck insights and dwell-time breakdown.',
+        icon: <Brain className="w-5 h-5" />,
+        color: 'amber',
+        path: '/intelligence',
+        meta: 'Analytics'
+    },
+    {
         id: 'optimize',
         title: 'Optimize',
         cta: 'Design Network',
@@ -67,7 +77,7 @@ const FEATURES = [
         icon: <Zap className="w-5 h-5" />,
         color: 'rose',
         path: '/atlas',
-        meta: 'Synthesis'
+        meta: 'Network Design'
     }
 ];
 

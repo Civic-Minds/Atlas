@@ -66,7 +66,8 @@ const TIER_BADGE_CLASSES: Record<string, string> = {
 };
 
 export default function ScreenerView() {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, role } = useAuthStore();
+    const isAdmin = role === 'admin';
     const {
         gtfsData,
         analysisResults,
@@ -293,30 +294,29 @@ export default function ScreenerView() {
                 title="Strategy"
                 badge={{ label: `${gtfsData!.routes.length} routes detected` }}
                 actions={[
-                    {
+                    ...(isAdmin ? [{
                         label: "Commit to Catalog",
                         icon: Database,
                         onClick: () => setShowCommit(true),
-                        variant: 'primary'
-                    },
+                        variant: 'primary' as const
+                    }] : []),
                     {
                         label: "Board Report",
                         icon: FileText,
                         onClick: () => navigate('/strategy/report'),
-                        variant: 'primary'
+                        variant: 'primary' as const
                     },
-
                     {
                         label: validationReport ? `Validation (${validationReport.errors}E / ${validationReport.warnings}W)` : 'Validation',
                         icon: FileCheck,
                         onClick: () => setShowValidation(true),
-                        variant: 'secondary'
+                        variant: 'secondary' as const
                     },
                     {
                         label: "Stop Health",
                         icon: ShieldCheck,
                         onClick: () => setShowDiagnostics(true),
-                        variant: 'secondary'
+                        variant: 'secondary' as const
                     },
                     {
                         label: "Corridor Analysis",
@@ -344,29 +344,29 @@ export default function ScreenerView() {
                                 endMins: 600,
                             });
                         },
-                        variant: 'secondary'
+                        variant: 'secondary' as const
                     },
-                    {
+                    ...(isAdmin ? [{
                         label: "Export DB",
                         icon: Database,
                         onClick: () => {
                             const { catalogRoutes } = useCatalogStore.getState();
                             downloadJson(catalogRoutes, 'atlas-catalog-backup.json');
                         },
-                        variant: 'secondary'
-                    },
+                        variant: 'secondary' as const
+                    }] : []),
                     {
                         label: "Export CSV",
                         icon: Download,
                         onClick: () => downloadCsv(filteredResults, 'transit-screener-results.csv'),
-                        variant: 'primary'
+                        variant: 'primary' as const
                     },
-                    {
+                    ...(isAdmin ? [{
                         label: "Reset",
                         icon: RotateCcw,
                         onClick: handleReset,
-                        variant: 'ghost'
-                    }
+                        variant: 'ghost' as const
+                    }] : [])
                 ]}
             />
 

@@ -9,9 +9,11 @@ import { Activity, Database, PanelRightOpen, Download, Map as MapIcon, Zap } fro
 import { motion, AnimatePresence } from 'framer-motion';
 import { ModuleLanding } from '../../components/ModuleLanding';
 import { useAuthStore } from '../../hooks/useAuthStore';
+import { useTransitStore } from '../../types/store';
 
 function SimulatorViewContent() {
     const { isAuthenticated } = useAuthStore();
+    const { loading: globalLoading } = useTransitStore();
     const {
         selectedRouteId,
         setSelectedRouteId,

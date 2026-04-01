@@ -93,8 +93,8 @@ export default function IntelligenceView() {
 
     const auditSummary = useMemo(() => {
         if (!auditResult) return null;
-        const avgA = auditResult.before.results.reduce((acc, c) => acc + c.reliabilityScore, 0) / auditResult.before.results.length || 0;
-        const avgB = auditResult.after.results.reduce((acc, c) => acc + c.reliabilityScore, 0) / auditResult.after.results.length || 0;
+        const avgA = auditResult.before.results.reduce((acc, c) => acc + c.reliability_score, 0) / auditResult.before.results.length || 0;
+        const avgB = auditResult.after.results.reduce((acc, c) => acc + c.reliability_score, 0) / auditResult.after.results.length || 0;
         const delta = avgB - avgA;
         return {
             beforeScore: Math.round(avgA),
@@ -104,14 +104,6 @@ export default function IntelligenceView() {
         };
     }, [auditResult]);
 
-    if (loading && agencies.length > 0) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full space-y-4">
-                <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-                <p className="atlas-label">Auditing Network Intelligence...</p>
-            </div>
-        );
-    }
 
     return (
         <div className="module-container">
@@ -188,6 +180,13 @@ export default function IntelligenceView() {
                 </div>
             </div>
 
+            {loading ? (
+                <div className="flex-1 flex flex-col items-center justify-center py-20 space-y-4">
+                    <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+                    <p className="atlas-label">Auditing Network Intelligence...</p>
+                </div>
+            ) : (
+                <>
             {/* Main Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="precision-panel p-6 border-l-4 border-indigo-500">
@@ -384,6 +383,8 @@ export default function IntelligenceView() {
                     </div>
                 </div>
             </div>
+            </>
+            )}
         </div>
     );
 }
