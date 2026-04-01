@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText, Activity } from 'lucide-react';
+import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText, Activity, Cloud, HardDrive } from 'lucide-react';
 import { AnalysisResult, GtfsData, SpacingResult, CorridorResult } from '../../utils/gtfsUtils';
 import { downloadCsv, downloadJson } from '../../utils/exportUtils';
 import { storage, STORES } from '../../core/storage';
@@ -16,6 +16,7 @@ import { StopHealthModal } from './components/StopHealthModal';
 import { ValidationReportModal } from './components/ValidationReportModal';
 import { RouteDetailModal } from './components/RouteDetailModal';
 import { CommitModal } from './components/CommitModal';
+import { NetworkScreener } from './components/NetworkScreener';
 import { useCatalogStore } from '../../types/catalogStore';
 import './Screener.css';
 
@@ -89,6 +90,8 @@ export default function ScreenerView() {
     const [resetPending, setResetPending] = useState(false);
     const [showCommit, setShowCommit] = useState(false);
     const [lastFileName, setLastFileName] = useState('feed.zip');
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [mode, setMode] = useState<'local' | 'network'>('network');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { loading, status, error, runAnalysis } = useGtfsWorker();
@@ -147,6 +150,8 @@ export default function ScreenerView() {
         const file = event.target.files?.[0];
         if (!file) return;
         setLastFileName(file.name);
+        setPendingFile(file);
+        setMode('local');
 
         runAnalysis(file, async (data) => {
             await setRawData(data);
@@ -200,7 +205,7 @@ export default function ScreenerView() {
         );
     }
 
-    if (!gtfsData) {
+    if (!gtfsData && mode === 'local') {
         return (
             <div className="module-container">
                 <input
@@ -210,6 +215,22 @@ export default function ScreenerView() {
                     ref={fileInputRef}
                     onChange={handleFileUpload}
                 />
+                {/* Mode toggle */}
+                <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-8 border border-[var(--border)]">
+                    <button
+                        onClick={() => setMode('network')}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all text-[var(--text-muted)] hover:text-[var(--fg)]"
+                    >
+                        <Cloud className="w-3.5 h-3.5" />
+                        Network
+                    </button>
+                    <button
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]"
+                    >
+                        <HardDrive className="w-3.5 h-3.5" />
+                        Local
+                    </button>
+                </div>
                 <EmptyStateHero
                     icon={ShieldCheck}
                     title="Strategy"
@@ -229,11 +250,55 @@ export default function ScreenerView() {
         );
     }
 
+    // Network mode — show cloud screener
+    if (mode === 'network') {
+        return (
+            <div className="module-container">
+                <input
+                    type="file"
+                    accept=".zip"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                />
+                <ModuleHeader
+                    title="Strategy"
+                    badge={{ label: 'Network' }}
+                    actions={[
+                        {
+                            label: 'Upload Local GTFS',
+                            icon: Upload,
+                            onClick: () => fileInputRef.current?.click(),
+                            variant: 'secondary' as const,
+                        }
+                    ]}
+                />
+                {/* Mode toggle */}
+                <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-8 border border-[var(--border)]">
+                    <button
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]"
+                    >
+                        <Cloud className="w-3.5 h-3.5" />
+                        Network
+                    </button>
+                    <button
+                        onClick={() => setMode('local')}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all text-[var(--text-muted)] hover:text-[var(--fg)]"
+                    >
+                        <HardDrive className="w-3.5 h-3.5" />
+                        {gtfsData ? 'Local (loaded)' : 'Local'}
+                    </button>
+                </div>
+                <NetworkScreener />
+            </div>
+        );
+    }
+
     return (
         <div className="module-container">
             <ModuleHeader
                 title="Strategy"
-                badge={{ label: `${gtfsData.routes.length} routes detected` }}
+                badge={{ label: `${gtfsData!.routes.length} routes detected` }}
                 actions={[
                     {
                         label: "Commit to Catalog",
@@ -311,6 +376,23 @@ export default function ScreenerView() {
                     }
                 ]}
             />
+
+            {/* Mode toggle */}
+            <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-4 border border-[var(--border)]">
+                <button
+                    onClick={() => setMode('network')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all text-[var(--text-muted)] hover:text-[var(--fg)]"
+                >
+                    <Cloud className="w-3.5 h-3.5" />
+                    Network
+                </button>
+                <button
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]"
+                >
+                    <HardDrive className="w-3.5 h-3.5" />
+                    Local
+                </button>
+            </div>
 
             <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-8 border border-[var(--border)]">
                 {['Weekday', 'Saturday', 'Sunday'].map(day => (
@@ -458,6 +540,7 @@ export default function ScreenerView() {
                     gtfsData={gtfsData}
                     analysisResults={analysisResults}
                     fileName={lastFileName}
+                    file={pendingFile ?? undefined}
                     onCommitted={(stats) => {
                         addToast(`Committed: ${stats.added} new, ${stats.updated} updated, ${stats.unchanged} unchanged`, 'success');
                     }}

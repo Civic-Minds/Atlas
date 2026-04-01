@@ -1,8 +1,60 @@
+import { aggregateCorridorPerformance } from '../intelligence/headway';
+import { detectGhostBuses } from '../intelligence/ghosts';
 import { Router, Request, Response } from 'express';
-import { getPool } from '../storage/db';
+import { getPool, getTenantForUser } from '../storage/db';
 import { getStaticPool } from '../storage/static-db';
+import { requireAuth, requireTenant } from './middleware/auth';
+import { diagnosticsLimiter } from './middleware/rate-limit';
 
 const router = Router();
+
+// GET /api/me
+// Returns current authenticated user's profile and agency tenancy.
+// Used for "Agency-First" dashboard filtering.
+router.get('/me', requireAuth, async (req: Request, res: Response) => {
+  const user = (req as any).user;
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  const tenant = await getTenantForUser(user.uid);
+  
+  res.json({
+    uid: user.uid,
+    email: user.email,
+    name: user.name ?? user.email?.split('@')[0],
+    agencyId: tenant?.agencyId ?? null, // null means Global Admin
+    role: tenant?.role ?? 'viewer'
+  });
+});
+
+// GET /api/corridors/performance?agency=mtabus&window=60
+// Real-time frequency analysis — compares observed vs scheduled headways.
+router.get('/corridors/performance', requireAuth, requireTenant, diagnosticsLimiter, async (req: Request, res: Response) => {
+  const { agency, window, threshold } = req.query as Record<string, string>;
+  
+  if (!agency) {
+    res.status(400).json({ error: 'agency is required' });
+    return;
+  }
+
+  const windowMinutes = parseInt(window ?? '60', 10);
+  const bunchingThresholdSeconds = parseInt(threshold ?? '60', 10);
+  
+  try {
+    const results = await aggregateCorridorPerformance(agency, windowMinutes, bunchingThresholdSeconds);
+    res.json({
+        agency,
+        windowMinutes,
+        bunchingThresholdSeconds,
+        ts: new Date().toISOString(),
+        corridors: results
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
 
 // GET /api/health
 // Basic health check — confirms server is up and DB is reachable
@@ -22,7 +74,7 @@ router.get('/ingestion', async (req: Request, res: Response) => {
   const limit  = Math.min(parseInt(req.query.limit as string ?? '20', 10), 100);
 
   const result = await getPool().query(
-    `SELECT agency_id, polled_at, success, vehicle_count, error_msg
+    `SELECT agency_id, polled_at, success, vehicle_count, error_msg, notion_sync_at
      FROM ingestion_log
      ${agency ? 'WHERE agency_id = $1' : ''}
      ORDER BY polled_at DESC
@@ -33,10 +85,11 @@ router.get('/ingestion', async (req: Request, res: Response) => {
   res.json(result.rows);
 });
 
+
 // GET /api/vehicles?agency=ttc
 // Latest position per active vehicle for an agency (last 5 minutes).
 // Powers the full-network map view.
-router.get('/vehicles', async (req: Request, res: Response) => {
+router.get('/vehicles', requireAuth, requireTenant, async (req: Request, res: Response) => {
   const agency = req.query.agency as string | undefined;
 
   if (!agency) {
@@ -59,7 +112,7 @@ router.get('/vehicles', async (req: Request, res: Response) => {
 
 // GET /api/positions?agency=drt&route=223&from=2026-03-01&to=2026-03-02
 // Raw vehicle position history for a route — foundation for OTP analysis
-router.get('/positions', async (req: Request, res: Response) => {
+router.get('/positions', requireAuth, requireTenant, async (req: Request, res: Response) => {
   const { agency, route, from, to } = req.query as Record<string, string>;
 
   if (!agency || !route) {
@@ -267,6 +320,85 @@ router.get('/corridors', async (req: Request, res: Response) => {
   }));
 
   res.json({ agency, feedVersionId, dayType: day, count: corridors.length, corridors });
+});
+
+// GET /api/intelligence/matching-stats?agency=mtabus
+// Real-time matching success and confidence metrics.
+// Vital for validating the "Big Fish" experiment and spatial fallback logic.
+// GET /api/intelligence/trends?agency=mtabus
+// Historical health trends for the last 24 hours.
+// Used for visualizing reliability and ingestion stability.
+router.get('/intelligence/trends', requireAuth, diagnosticsLimiter, async (req: Request, res: Response) => {
+  const agency = req.query.agency as string | undefined;
+
+  const result = await getPool().query(
+    `SELECT 
+       DATE_TRUNC('hour', polled_at) as hour,
+       agency_id,
+       AVG(vehicle_count) as avg_vehicles,
+       COUNT(*) filter (where success = true) * 100.0 / COUNT(*) as success_rate
+     FROM ingestion_log
+     WHERE polled_at >= NOW() - INTERVAL '24 hours'
+     ${agency ? 'AND agency_id = $1' : ''}
+     GROUP BY hour, agency_id
+     ORDER BY hour ASC`,
+    agency ? [agency] : []
+  );
+
+  res.json({
+    ts: new Date().toISOString(),
+    trends: result.rows
+  });
+});
+
+router.get('/intelligence/matching-stats', requireAuth, diagnosticsLimiter, async (req: Request, res: Response) => {
+  const agency = req.query.agency as string | undefined;
+
+  const result = await getPool().query(
+    `SELECT 
+       agency_id,
+       COUNT(*) as total_obs,
+       COUNT(delay_seconds) as matched_obs,
+       ROUND(AVG(match_confidence)::numeric, 2) as avg_confidence,
+       COUNT(CASE WHEN match_confidence = 1.0 THEN 1 END) as direct_matches,
+       COUNT(CASE WHEN match_confidence < 1.0 AND match_confidence > 0 THEN 1 END) as spatial_matches,
+       COUNT(CASE WHEN delay_seconds IS NULL THEN 1 END) as unmatched
+     FROM vehicle_positions
+     WHERE observed_at >= NOW() - INTERVAL '5 minutes'
+     ${agency ? 'AND agency_id = $1' : ''}
+     GROUP BY agency_id`,
+    agency ? [agency] : []
+  );
+
+  res.json({
+    ts: new Date().toISOString(),
+    stats: result.rows
+  });
+});
+
+// GET /api/intelligence/ghosts?agency=mtabus&window=60
+// Identifies scheduled trips with no observed vehicle positions.
+router.get('/intelligence/ghosts', requireAuth, requireTenant, diagnosticsLimiter, async (req: Request, res: Response) => {
+  const { agency, window } = req.query as Record<string, string>;
+  
+  if (!agency) {
+    res.status(400).json({ error: 'agency is required' });
+    return;
+  }
+
+  const windowMinutes = parseInt(window ?? '60', 10);
+  
+  try {
+    const results = await detectGhostBuses(agency, windowMinutes);
+    res.json({
+        agency,
+        windowMinutes,
+        ts: new Date().toISOString(),
+        routes: results
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
 });
 
 export default router;

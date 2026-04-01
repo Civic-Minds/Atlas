@@ -2,6 +2,12 @@ import { Pool } from 'pg';
 import { VehiclePosition } from '../types';
 import { log } from '../logger';
 
+export interface UserTenantInfo {
+  uid: string;
+  agencyId: string;
+  role: 'admin' | 'viewer' | 'editor';
+}
+
 let pool: Pool;
 
 export function getPool(): Pool {
@@ -25,19 +31,20 @@ export async function insertVehiclePositions(positions: VehiclePosition[]): Prom
     // Build a multi-row INSERT for this batch
     const values: unknown[] = [];
     const placeholders = batch.map((p, j) => {
-      const base = j * 12;
+      const base = j * 14;
       values.push(
         p.agencyId, p.vehicleId, p.tripId, p.routeId,
         p.lat, p.lon, p.speed, p.bearing,
-        p.stopId, p.stopSequence,
-        p.delaySeconds ?? null, p.matchConfidence ?? null
+        p.stopId, p.stopSequence, p.currentStatus,
+        p.delaySeconds ?? null, p.matchConfidence ?? null,
+        p.observedAt
       );
-      return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6},$${base+7},$${base+8},$${base+9},$${base+10},$${base+11},$${base+12})`;
+      return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6},$${base+7},$${base+8},$${base+9},$${base+10},$${base+11},$${base+12},$${base+13},$${base+14})`;
     });
 
     await db.query(
       `INSERT INTO vehicle_positions
-         (agency_id, vehicle_id, trip_id, route_id, lat, lon, speed, bearing, stop_id, stop_sequence, delay_seconds, match_confidence)
+         (agency_id, vehicle_id, trip_id, route_id, lat, lon, speed, bearing, stop_id, stop_sequence, current_status, delay_seconds, match_confidence, observed_at)
        VALUES ${placeholders.join(',')}`,
       values,
     );
@@ -49,11 +56,26 @@ export async function logIngestion(
   success: boolean,
   vehicleCount?: number,
   errorMsg?: string,
+  notionSyncAt?: Date,
 ): Promise<void> {
   const db = getPool();
   await db.query(
-    `INSERT INTO ingestion_log (agency_id, success, vehicle_count, error_msg)
-     VALUES ($1, $2, $3, $4)`,
-    [agencyId, success, vehicleCount ?? null, errorMsg ?? null],
+    `INSERT INTO ingestion_log (agency_id, success, vehicle_count, error_msg, notion_sync_at)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [agencyId, success, vehicleCount ?? null, errorMsg ?? null, notionSyncAt ?? null],
   );
+}
+
+
+export async function getTenantForUser(uid: string): Promise<UserTenantInfo | null> {
+  const db = getPool();
+  const result = await db.query(
+    `SELECT firebase_uid as uid, agency_id as "agencyId", role
+     FROM user_tenants
+     WHERE firebase_uid = $1`,
+    [uid],
+  );
+
+  if (result.rows.length === 0) return null;
+  return result.rows[0];
 }

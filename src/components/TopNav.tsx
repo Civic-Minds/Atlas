@@ -5,11 +5,11 @@ import { useAuthStore } from '../hooks/useAuthStore';
 
 
 const NAV_ITEMS = [
-    { id: 'audit', title: 'Audit', path: '/verifier' },
+    { id: 'audit', title: 'Audit', path: '/verifier', status: 'ALPHA' },
     { id: 'strategy', title: 'Strategy', path: '/strategy' },
-    { id: 'simulate', title: 'Simulate', path: '/simulator' },
-    { id: 'predict', title: 'Predict', path: '/predict' },
-    { id: 'optimize', title: 'Optimize', path: '/atlas' },
+    { id: 'simulate', title: 'Simulate', path: '/simulator', status: 'BETA' },
+    { id: 'predict', title: 'Predict', path: '/predict', status: 'ALPHA' },
+    { id: 'optimize', title: 'Intelligence', path: '/atlas' },
     { id: 'map', title: 'Live Map', path: '/map' }
 ];
 
@@ -50,12 +50,21 @@ export const TopNav: React.FC = () => {
                                 <NavLink
                                     key={item.id}
                                     to={item.path}
-                                    className={`text-[13px] font-semibold transition-colors ${isActive
-                                        ? 'text-[var(--text-primary)]'
+                                    className={`text-[12px] font-bold tracking-tight transition-all duration-200 flex items-center gap-2 group ${isActive
+                                        ? 'text-indigo-400'
                                         : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                                         }`}
                                 >
                                     {item.title}
+                                    {item.status && (
+                                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border transition-all ${
+                                            isActive 
+                                                ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400' 
+                                                : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] opacity-50 group-hover:opacity-100'
+                                        }`}>
+                                            {item.status}
+                                        </span>
+                                    )}
                                 </NavLink>
                             );
                         })}

@@ -3,7 +3,56 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Phase 6: Enterprise Hardening (Completed)
+- **Terminology Standardization**: Sanitized internal jargon; replaced "Ouija" with "GTFS-RT Gateway" and "Ouija Base" with "Gateway Base" throughout the frontend and error messaging.
+- **Enterprise Reporting**: 
+    - Implemented **CSV Export** for the Agency Health Matrix in the Pulse Dashboard.
+    - Integrated **Professional PDF Reporting** in the Strategy module (System Report) for board-level service audits.
+- **Historical Performance Trends**:
+    - Added a new **Intelligence Trends API** (`/api/intelligence/trends`) to aggregate high-resolution vehicle availability and ingestion success rates over a 24-hour sliding window.
+    - Integrated **Trend Sparklines** into the Pulse Dashboard for at-a-glance reliability history.
+- **UX & Onboarding Refinement**:
+    - Overhauled the "Global Admin" empty states to reflect a managed provisioning model rather than a self-service upload flow for enterprise tenants.
+    - Added **Alpha/Beta Module Badges** to the navigation to manage user expectations for maturing predictive and simulation features.
+- **Service Performance Diagnostics (P1)**:
+    - **Real-Time Bunching Detection**: Integrated headway analysis to identify vehicles arriving <60s apart (customizable threshold). Surfaced as "Bunching Events" in the Pulse Dashboard to help managers identify reliability gaps.
+    - **Ghost Bus Identification**: Engineered a schedule-comparison service that flags missing trips by comparing real-time telemetry against static stop_times. Visible in Pulse as "Missing Trips" per agency.
+
 ### Added
+- **Advanced Spatial Matching**: Haversine-based projection for real-time vehicle positions. Vehicles missing `stop_id` are matched to the nearest scheduled stop with a confidence score system (threshold <300m).
+- **Trip Schedule Cache**: High-performance LRU-style schedule cache in the matcher to store static trip patterns in memory, reducing database IOPS significantly for 8,000+ vehicle polling.
+- **Corridor Monitor UI**: New **Monitoring** dashboard in the Strategy module for real-time corridor health, actual vs. scheduled headway tracking, and bunching detection.
+- **AHW Engine**: Backend service for "Big Fish" (MTA) actual headway aggregation and service reliability scoring.
+- **Reliability & Performance**: Optimized `matching-stats` and `corridors` diagnostic endpoints for high-volume "Big Fish" (MTA) feeds to prevent query timeouts under heavy system load.
+- **Infrastructure Stabilization (Phase 3.2)**: Provisioned local `atlas_static` and `atlas_lab` databases on PostgreSQL 18.3 to resolve PostGIS 3.6.2 compatibility issues. Updated backend `.env` to point to reliable local listeners.
+- **Ingestion Pipeline Fix**: Resolved a critical parameter mismatch in `db.ts` where batch inserts for vehicle positions overlapped placeholders. Corrected to a 14-column alignment including the missing `current_status` field.
+- **Rate Limit & Quota Metadata**: Implemented per-agency polling overrides and startup staggering to resolve `HTTP 429` errors from 511.org. Added `quota` metadata (requests/hour) to the `Agency` type for long-term maintenance.
+- **Frontend Real-time Integration**: Integrated `CircleMarker` rendering into the Atlas map for live vehicle positions.
+- **Development Auth Bypass**: Temporarily disabled the Firebase auth gate in `useAuthStore.ts` to allow rapid map validation in disconnected environments.
+- **Spam Protection**: Implemented `express-rate-limit` (60 requests/min/IP) on public-facing analytical APIs to safeguard Postgres CPU.
+- **Phase 4: Professional-Grade Hardening (Completed)**:
+    - **Enterprise Multi-Tenancy**: Implemented `requireTenant` middleware to enforce strict data partitioning. All vehicle and performance APIs are now scoped to the user's assigned agency.
+    - **Pulse Dashboard**: New real-time observability category in the sidebar. Monitors ingestion health, match confidence, and "Service Shock" events across the 18 high-impact agencies.
+    - **AHW Reliability Scoring**: Upgraded the headway engine with a Coefficient of Variation (CV) algorithm to provide a 0-100 reliability score for corridors.
+- **Phase 5: Automated Intelligence Sync (In Progress)**:
+    - **Notion Intelligence Engine**: Engineered a background synchronization service to push "Pulse" health and "AHW" reliability scores to the global Agencies Database in Notion.
+    - **Automated Reporting**: Maps local `agency_id` to Notion rows to provide real-time visibility for stakeholders.
+
+## [0.13.0] - 2026-03-30
+### Added
+- **Intelligence Layer (Phase 2)**: Added full schedule persistence with `stop_times` batch-streaming to the local Discovery Lab.
+- **OTP Matching**: Fixed a critical units mismatch in `matcher.ts` where `arrivalTime` (minutes) was being subtracted from `currentSeconds` (seconds).
+- **Discovery Lab Stress Test**: Successfully polled and ingested the full NYC MTA Bus fleet (~2,700 active vehicles) by overriding the `mtabus` route filter.
+- **Matcher Service**: Correlating real-time GPS pings with static schedules to produce `delay_seconds`. Verified on Manhattan M15 corridor.
+- **Corridor Analysis** (`Strategy` module, `server`): Identifies shared transit corridors — stop-pair links served by 2+ routes — and computes combined headways. Built as a second streaming pass over stop_times.txt so it works within the same memory-constrained import pipeline. Results stored in a new `corridor_results` table on OCI and exposed via `GET /api/corridors` (filters: agency, maxHeadway, minRoutes, windowStart/End, dayType). Frontend: new Corridors tab in the Network Screener showing segment (stop A → stop B), serving routes with badges, combined trip count, avg/peak headway, and reliability bar. Verified on Halifax (Spring Garden/Barrington corridor, 16 routes), NYC Subway (B/D/F/M trunk, 2/3/4/5 at Nevins/Atlantic), and TTC (Scarborough trunk 38/129/131/133, Eglinton West 27/32/35/71).
+- **`corridor_results` table** (OCI `static` DB): Stores per-link corridor data with `analysis_run_id` FK, `route_ids[]` array, combined headways, reliability score. Keyed on `(analysis_run_id, link_id, day_type)`.
+- **`parseStopTimesForCorridors()`** (`server/src/import/parse-gtfs.ts`): Second streaming pass over stop_times.txt that builds a `Map<linkId, CorridorLink>` — emits stop-pair departure times only for active trips (passed in as a `Set<string>`). Memory footprint scales with unique links, not raw stop_time rows.
+- **`fetchCorridors()`** (`src/services/atlasApi.ts`): Typed API client for the corridors endpoint.
+- **Network Screener** (`Strategy` module): New cloud-powered screening mode backed by the OCI static database. Agency picker loads all imported feeds from the server; filters include max headway, service window (start/end time), day type (Weekday/Saturday/Sunday), and directions (at least one / both). Results table shows route short name, long name, mode, tier, avg headway, worst headway, service span, and reliability score. Defaults to Network mode on load.
+- **`GET /api/screen`** (`server`): New endpoint querying `route_frequency_results` with headway, service window, day type, and direction filters. `directions=both` requires both direction_id 0 and 1 to independently satisfy all criteria; `directions=one` returns the best-performing direction per route. Resolves agency slug to current feed version via `is_current = TRUE`.
+- **`src/services/atlasApi.ts`**: Typed API client for all OCI server interactions — `fetchAgencies()`, `screenRoutes()`, `importFeed()`.
+- **Local/Network mode toggle** (`Strategy` module): Mode switcher in the Screener header — Network (cloud) and Local (uploaded file). Switching to Local after uploading a file resumes the local analysis view. Defaults to Network.
+- **Server-side GTFS upload** (`CommitModal`): When a file reference is available, committing a feed also POSTs to `/api/import` in addition to the local catalog. Server upload is best-effort and does not block local commit on failure.
 - **Live Map full-network view**: Map now loads all active vehicles for the selected agency at once (no route required). Optional route field filters/highlights a single route on top of the full picture — other vehicles dim rather than disappear. Vehicle count in status bar shows filtered vs. total when a route is active.
 - **`GET /api/vehicles`** (`server`): New endpoint returning the latest position per active vehicle for an agency (5-minute window, `DISTINCT ON vehicle_id`). Powers the full-network map view.
 - **`idx_vp_agency_vehicle_time` index** (`server`): New Postgres index on `(agency_id, vehicle_id, observed_at DESC)` for the all-vehicles query pattern. Applied to `realtime` DB on OCI.
@@ -14,6 +63,15 @@ All notable changes to this project will be documented in this file.
 - **Import API** (`POST /api/import`): Multipart file upload endpoint — accepts a GTFS ZIP + agency metadata, runs the import pipeline, returns feed version ID and summary stats. Also exposes `GET /api/import/agencies`, `GET /api/import/agencies/:slug/versions`, and `GET /api/import/agencies/:slug/routes`.
 - **Realtime/static DB separation**: Renamed OCI database `ouija` → `realtime` (vehicle positions). Created separate `static` database for GTFS catalog. Clean separation with no cross-database foreign keys.
 - **Streaming stop_times parser**: stop_times.txt is now parsed as a Node.js stream directly from the ZIP (never decompressed to a string). Only the first departure time per trip is retained in memory. Reduces peak heap from ~1.5GB to under 200MB — makes large feeds (TTC 131k trips, NYC MTA) importable on the 1GB OCI server.
+
+### Changed
+- **Documentation**: Alphabetized all agency sections in `AGENCIES.md` to improve registry scannability.
+- **Infrastructure**: Retired local Postgres requirements; transitioned entirely to OCI-hosted `static` and `realtime` databases. (Local `postgresql@16` service stopped).
+
+### Fixed
+- **Spokane Transit (STA)**: Removed stale portal access notes; feed is confirmed active and polling correctly in the live map view.
+- **Edmonton (ETS)**: Added note regarding missing LRT data in the vehicle positions feed to prevent false "ghost train" detections.
+
 
 ## [0.12.0] - 2026-03-27
 ### Added
@@ -277,28 +335,5 @@ All notable changes to this project will be documented in this file.
 - **UI Unification**: Standardized headers across Predict and Screener modules.
 - **Agnostic Logic**: Generalized the Verifier to remove MBTA/Metro-specific hardcoding.
 
-## [0.5.0] - 2026-02-20
-### Added
-- **Predict Module**: Transit intelligence engine for spatial gap analysis.
-- **Spatial Grid Engine**: High-fidelity mapping of demand (pop/emp) vs. supply (headway).
-- **Intelligence Zones**: Automated ranking of transit deserts.
-
-## [0.4.0] - 2026-02-14
-### Added
-- **Atlas Map Module**: City-wide frequency heatmap visualization.
-- **Web Worker Analysis**: Off-thread GTFS processing for high-performance UI.
-- **Persistence**: IndexedDB storage for GTFS data across sessions.
-
-## [0.3.0] - 2026-02-08
-### Added
-- **Leaflet MVP**: Transitioned from static HTML to a dynamic map-centric interface.
-- **GTFS Parser**: Initial implementation of `gtfsUtils.ts` with shape and stop indexing.
-
-## [0.2.0] - 2026-02-01
-### Added
-- **Framework Migration**: Shifted to Vite + React + TypeScript architecture.
-- **Modular Structure**: Initialized `Screener` and `Verifier` modules.
-
-## [0.1.0] - 2026-01-15
-### Added
-- **GTFS-Screener MVP**: Single-file HTML/JS tool for basic headway analysis.
+---
+*For older releases, see [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md).*

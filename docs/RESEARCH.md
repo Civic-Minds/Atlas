@@ -108,19 +108,4 @@ Sources: [McKinsey — Finding a Route to Fiscal Stability for US Transit Agenci
 
 ---
 
-## Summary: What Atlas Addresses
-
-| Pain Point | Atlas Capability |
-|---|---|
-| OTP metrics are broken for frequent routes | Headway-based OTP, segment-level analysis |
-| NTD reporting takes weeks manually | Automated NTD-ready data extraction (future) |
-| Agencies don't trust their own data | Feed health scoring, ghost bus detection |
-| No before/after service change analysis | GTFS static + live data comparison (future) |
-| Equity analysis is manual GIS work | Walkshed + demographic overlay (future) |
-| No board-ready performance dashboards | Public performance reporting layer (future) |
-| Can't hire data analysts | Planner-first UI — no code required (Phase 3 constraint) |
-| Bus bunching is invisible until it's visible | Bunching detection + headway collapse alerts |
-
----
-
 [Back to Roadmap](../ROADMAP.md)
