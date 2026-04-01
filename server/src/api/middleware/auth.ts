@@ -6,7 +6,7 @@ import { getTenantForUser } from '../../storage/db';
 // Without GOOGLE_APPLICATION_CREDENTIALS, the projectId is sufficient for validating JWT signatures.
 if (!admin.apps.length) {
     admin.initializeApp({
-        projectId: 'atlas-78d9f', // Sourced from your VITE_FIREBASE_PROJECT_ID
+        projectId: process.env.FIREBASE_PROJECT_ID ?? 'atlas-78d9f',
     });
 }
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
-const GATEWAY_BASE = 'http://40.233.99.118:3001';
+const GATEWAY_BASE = '/api';
 
 const AGENCIES = [
   { id: 'ttc',         label: 'TTC (Toronto)' },
@@ -54,10 +54,13 @@ interface Vehicle {
   lon:         number;
   speed:       number | null;
   bearing:     number | null;
-  observed_at: string;
+  dist_from_shape?: number;
+  is_detour?:      boolean;
+  observed_at:     string;
 }
 
-function speedColour(speed: number | null, dimmed: boolean): string {
+function speedColour(speed: number | null, dimmed: boolean, isDetour?: boolean): string {
+  if (isDetour) return '#d946ef'; // Magenta for detours
   const alpha = dimmed ? '55' : '';
   if (speed === null || speed === 0) return `#ef4444${alpha}`;
   if (speed < 5)                     return `#f97316${alpha}`;
@@ -136,6 +139,7 @@ export default function MapView() {
               { colour: '#f97316', label: 'Crawling' },
               { colour: '#eab308', label: 'Slow' },
               { colour: '#22c55e', label: 'Moving' },
+              { colour: '#d946ef', label: 'Off-Route' },
             ].map(l => (
               <div key={l.label} className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full" style={{ background: l.colour }} />
@@ -180,19 +184,29 @@ export default function MapView() {
               <CircleMarker
                 key={v.vehicle_id}
                 center={[v.lat, v.lon]}
-                radius={dimmed ? 4 : 7}
+                radius={dimmed ? 4 : 8}
                 pathOptions={{
-                  color:       speedColour(v.speed, dimmed),
+                  color:       v.is_detour ? '#d946ef' : speedColour(v.speed, dimmed),
                   fillColor:   speedColour(v.speed, dimmed),
                   fillOpacity: dimmed ? 0.25 : 0.9,
-                  weight:      dimmed ? 1 : 1.5,
+                  weight:      v.is_detour ? 3 : 1.5,
                 }}
               >
                 {!dimmed && (
                   <Tooltip>
                     <div className="text-xs">
-                      <div><strong>Vehicle {v.vehicle_id}</strong></div>
+                      <div className="flex items-center justify-between gap-4">
+                        <strong>Vehicle {v.vehicle_id}</strong>
+                        {v.is_detour && (
+                          <span className="px-1.5 py-0.5 rounded bg-magenta-500 text-[10px] bg-magenta-900/30 text-magenta-400 font-bold uppercase tracking-tight">Detour</span>
+                        )}
+                      </div>
                       <div>Route {v.route_id}</div>
+                      {v.is_detour && (
+                        <div className="text-magenta-400 font-medium my-0.5">
+                          Off-route: {v.dist_from_shape?.toFixed(0)}m
+                        </div>
+                      )}
                       {v.speed !== null && <div>Speed: {(v.speed * 3.6).toFixed(1)} km/h</div>}
                       {v.bearing !== null && <div>Bearing: {v.bearing}°</div>}
                       <div className="text-gray-400">{new Date(v.observed_at).toLocaleTimeString()}</div>

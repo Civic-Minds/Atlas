@@ -1,0 +1,46 @@
+.intelligence-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.freedom-threshold-indicator {
+    height: 4px;
+    background: var(--border);
+    position: relative;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.freedom-threshold-indicator .fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--accent-primary);
+    transition: width 0.8s ease-out;
+}
+
+.optimize-action-btn {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover\:bg-\[var\(--item-bg\)\]\/50:hover .optimize-action-btn {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media print {
+    .module-container {
+        padding: 0;
+        background: white;
+        color: black;
+    }
+    
+    .precision-panel {
+        border-color: #ddd;
+        box-shadow: none !important;
+    }
+}

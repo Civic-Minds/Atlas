@@ -1,6 +1,6 @@
 import { useAuthStore } from '../hooks/useAuthStore';
 
-const ATLAS_BASE = 'http://40.233.99.118:3001';
+const ATLAS_BASE = '/api';
 
 // ── Agency list ──────────────────────────────────────────────────────────────
 
@@ -45,6 +45,7 @@ export interface ScreenRoute {
   service_span_end: number;
   trip_count: number;
   reliability_score: string | null;
+  circuity_index: number | null;
 }
 
 export interface ScreenResponse {
@@ -180,11 +181,63 @@ export interface PerformanceResponse {
   corridors: CorridorPerformance[];
 }
 
+export interface SegmentBottleneck {
+  route_id:             string;
+  route_name:           string;
+  from_stop_id:         string;
+  from_stop_name:       string;
+  to_stop_id:           string;
+  to_stop_name:         string;
+  obs_count:            number;
+  avg_delay_delta:      number;
+  total_delay_added:    number;
+}
+
+export interface BottleneckResponse {
+  agency: string;
+  ts: string;
+  bottlenecks: SegmentBottleneck[];
+}
+
+export interface StopDwell {
+  stop_id: string;
+  stop_name: string;
+  route_id: string;
+  route_name: string;
+  obs_count: number;
+  avg_dwell_seconds: number;
+  max_dwell_seconds: number;
+}
+
+export interface StopDwellResponse {
+  agency: string;
+  ts: string;
+  dwells: StopDwell[];
+}
+
 export async function fetchCorridorPerformance(agency: string, windowMinutes: number = 60): Promise<PerformanceResponse> {
   const url = new URL(`${ATLAS_BASE}/api/corridors/performance`);
   url.searchParams.set('agency', agency);
   url.searchParams.set('window', String(windowMinutes));
   const res = await fetchWithAuth(url.toString());
   if (!res.ok) throw new Error(`Performance query failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchSegmentBottlenecks(agency: string, limit: number = 10): Promise<BottleneckResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/bottlenecks`);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('limit', String(limit));
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Bottleneck query failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchStopDwells(agency: string, limit: number = 10): Promise<StopDwellResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/dwells`);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('limit', String(limit));
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Dwell query failed: ${res.status}`);
   return res.json();
 }

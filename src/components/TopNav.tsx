@@ -5,11 +5,11 @@ import { useAuthStore } from '../hooks/useAuthStore';
 
 
 const NAV_ITEMS = [
-    { id: 'audit', title: 'Audit', path: '/verifier', status: 'ALPHA' },
     { id: 'strategy', title: 'Strategy', path: '/strategy' },
+    { id: 'intelligence', title: 'Intelligence', path: '/intelligence' },
     { id: 'simulate', title: 'Simulate', path: '/simulator', status: 'BETA' },
     { id: 'predict', title: 'Predict', path: '/predict', status: 'ALPHA' },
-    { id: 'optimize', title: 'Intelligence', path: '/atlas' },
+    { id: 'audit', title: 'Audit', path: '/verifier', status: 'ALPHA' },
     { id: 'map', title: 'Live Map', path: '/map' }
 ];
 

@@ -29,16 +29,7 @@ export async function evaluateThresholds(agencyId: string, currentMetrics: Recor
 
     log.info('Alerts', 'Evaluating thresholds', { agencyId, metrics: currentMetrics });
 
-    // 1. Get all active thresholds for this agencyId (cross-ref with gtfs_agencies to find agency_account_id)
-    const accountLookup = await staticPool.query(
-        `SELECT agency_account_id FROM gtfs_agencies WHERE id = (
-            SELECT id FROM gtfs_agencies WHERE agency_account_id IN (
-                SELECT id FROM agency_accounts WHERE slug = $1 OR display_name = $1
-            ) LIMIT 1
-        )`, [agencyId]
-    );
-
-    // Simplification: Try finding by slug for now since agencyId in RT usually matches slug
+    // Resolve agency_account_id from slug
     const accountRes = await staticPool.query(
         `SELECT id FROM agency_accounts WHERE slug = $1`, [agencyId]
     );

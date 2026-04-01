@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import { importGtfsFeed } from '../import/importer';
 import { getStaticPool } from '../storage/static-db';
+import { requireAuth } from './middleware/auth';
 
 const router = Router();
 
@@ -17,7 +18,7 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 200
 //   label        — e.g. "Fall 2024" (optional)
 //   countryCode  — e.g. "CA" (optional)
 //   region       — e.g. "Ontario" (optional)
-router.post('/', upload.single('file'), async (req: Request, res: Response): Promise<void> => {
+router.post('/', requireAuth, upload.single('file'), async (req: Request, res: Response): Promise<void> => {
   if (!req.file) {
     res.status(400).json({ error: 'No file uploaded' });
     return;

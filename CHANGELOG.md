@@ -3,38 +3,45 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-### Phase 8.3: Platform Hardening & Stability (Completed)
-- **Infrastructure Stabilization**:
-    - Restored frontend-backend connectivity by fixing Vite proxy configuration for `/api` requests.
-    - Updated backend listeners to ensure reliable data flow from the Intelligence matching service.
-- **UX & Navigation Refinement**:
-    - **Logo Connectivity**: Restored the "Atlas by Civic Minds" logo link to correctly route back to the platform homepage.
-    - **Cursor Feedback**: Enforced `cursor: pointer` across all navigation elements to provide standard interactive feedback.
-    - **Terminology Cleanup**: Replaced confusing "AI-generated" jargon with clearer, professional language ("Verification") in the Audit module.
-    - **Strategy Page Optimization**: Removed redundant "Upload GTFS" buttons to favor the centralized, pre-provisioned network catalog.
-- **Enterprise Reporting & Pulse Dashboard**:
-    - **Compact Matrix Layout**: Re-engineered the Pulse Dashboard table to prevent column overlap on standard viewports (1440px).
-    - **Notion Sync Visibility**: Improved the "Enterprise Sync" column feedback to provide cleaner status indicators for Notion integrations.
 
 ### Added
-- **Advanced Spatial Matching**: Haversine-based projection for real-time vehicle positions. Vehicles missing `stop_id` are matched to the nearest scheduled stop with a confidence score system (threshold <300m).
-- **Trip Schedule Cache**: High-performance LRU-style schedule cache in the matcher to store static trip patterns in memory, reducing database IOPS significantly for 8,000+ vehicle polling.
-- **Corridor Monitor UI**: New **Monitoring** dashboard in the Strategy module for real-time corridor health, actual vs. scheduled headway tracking, and bunching detection.
-- **AHW Engine**: Backend service for "Big Fish" (MTA) actual headway aggregation and service reliability scoring.
-- **Reliability & Performance**: Optimized `matching-stats` and `corridors` diagnostic endpoints for high-volume "Big Fish" (MTA) feeds to prevent query timeouts under heavy system load.
-- **Infrastructure Stabilization (Phase 3.2)**: Provisioned local `atlas_static` and `atlas_lab` databases on PostgreSQL 18.3 to resolve PostGIS 3.6.2 compatibility issues. Updated backend `.env` to point to reliable local listeners.
-- **Ingestion Pipeline Fix**: Resolved a critical parameter mismatch in `db.ts` where batch inserts for vehicle positions overlapped placeholders. Corrected to a 14-column alignment including the missing `current_status` field.
-- **Rate Limit & Quota Metadata**: Implemented per-agency polling overrides and startup staggering to resolve `HTTP 429` errors from 511.org. Added `quota` metadata (requests/hour) to the `Agency` type for long-term maintenance.
-- **Frontend Real-time Integration**: Integrated `CircleMarker` rendering into the Atlas map for live vehicle positions.
-- **Development Auth Bypass**: Temporarily disabled the Firebase auth gate in `useAuthStore.ts` to allow rapid map validation in disconnected environments.
-- **Spam Protection**: Implemented `express-rate-limit` (60 requests/min/IP) on public-facing analytical APIs to safeguard Postgres CPU.
-- **Phase 4: Professional-Grade Hardening (Completed)**:
-    - **Enterprise Multi-Tenancy**: Implemented `requireTenant` middleware to enforce strict data partitioning. All vehicle and performance APIs are now scoped to the user's assigned agency.
-    - **Pulse Dashboard**: New real-time observability category in the sidebar. Monitors ingestion health, match confidence, and "Service Shock" events across the 18 high-impact agencies.
-    - **AHW Reliability Scoring**: Upgraded the headway engine with a Coefficient of Variation (CV) algorithm to provide a 0-100 reliability score for corridors.
-- **Phase 5: Automated Intelligence Sync (In Progress)**:
-    - **Notion Intelligence Engine**: Engineered a background synchronization service to push "Pulse" health and "AHW" reliability scores to the global Agencies Database in Notion.
-    - **Automated Reporting**: Maps local `agency_id` to Notion rows to provide real-time visibility for stakeholders.
+- **Detour Awareness Engine**: Implemented PostGIS-powered shape-deviation detection (`ST_Distance` via `geography` cast).
+- **Reroute Persistence**: Automated calculation and storage of `is_detour` and `dist_from_shape` for all real-time positions.
+- **Visual Detour Alerts**: Added Phase 3 markers to Pulse Dashboard; off-route vehicles now trigger Magenta alerts with tooltip distance diagnostics.
+- **Intelligence Hub & Freedom Auditor** (`/intelligence`): A strategic dashboard implementing the Jarrett Walker "Turn Up and Go" frequency standard (15-min threshold) to track network accessibility.
+- **Geometric Audit Engine**: Backend circuity analysis that calculates a `circuity_index` for every route using Haversine-based geodesic vs. polyline length comparisons.
+- **Optimization Proposals**: New UI interface to flag high-circuity "Zig-Zag" routes (>1.4x) as candidates for network straightening.
+- **AHW Reliability Scoring**: Upgraded the headway engine with a Coefficient of Variation (CV) algorithm to provide 0-100 reliability scores for corridors.
+- **Advanced Spatial Matching**: Haversine-based projection for vehicle positions; matches vehicles to the nearest scheduled stop within 300m when `stop_id` is missing.
+- **Pulse Dashboard**: Multi-agency observability suite monitoring ingestion health, match confidence, and "Service Shock" events in real-time.
+- **Notion Intelligence Sync**: Background synchronization service mapping local agency health and reliability scores to the global Agencies Database in Notion.
+- **Enterprise Multi-Tenancy**: Implemented `requireTenant` middleware and database partitioning to ensure API requests are strictly scoped to the user's agency.
+- **Live Map Vehicle Rendering**: Integrated `CircleMarker` rendering for real-time vehicle positions, colored by speed (stopped → moving).
+- **Schedule Cache Bounds** (`matcher.ts`): Introduced a global concurrency-safe cache for static trip patterns with a 500-entry eviction guard to prevent unbounded memory growth during full-fleet (8,000+ vehicle) polling.
+- **Segment-Level Breakdown (MRI)**: Full-stack implementation of Stop A-to-B travel time analysis. The `matcher.ts` engine now detects vehicle transitions, calculates real-time delay deltas per segment, and persists them to a new `segment_metrics` table.
+- **Congestion & Bottleneck Analysis**: New UI panel in the Intelligence Hub that highlights the network's top 5 most delayed segments, providing planners with actionable "MRI" data for infrastructure interventions.
+- **Dwell Time Analysis (Backend)**: Implemented a high-fidelity "Dwell State Engine" in the matcher that tracks exactly how long buses remain at the curb (`AT_STOP` status). Data is persisted to a new `stop_dwell_metrics` table to identify fare-payment and boarding bottlenecks.
+- **Predictive Demand Hub**: Unified the "Predict" module branding (previously "Optimize") to "Predict: Strategic Growth" and implemented a functional gravity-based demand forecasting engine.
+- **Headway N+1 Optimization**: Eliminated per-corridor database round-trips by batch-fetching all arrivals in a single `ANY($1::text[])` query.
+
+### Fixed
+- **Precision OTP Matching**: Corrected `delay_seconds` drift by using the vehicle's `observedAt` timestamp instead of the server's wall clock.
+- **Midnight Crossing Logic**: Ghost detection now correctly handles arrival windows that cross the midnight boundary using `OR` logic.
+- **Postgres Batch Alignment**: Resolved a critical parameter mismatch in storage batch inserts that caused ingestion failure on 14-column records.
+- **511.org Rate Mitigation**: Added 30s of random startup jitter and agency-specific polling intervals to prevent `HTTP 429` errors on shared API keys.
+- **Memory Leak**: Fixed a Blob URL leak in the CSV export utility by properly revoking object URLs after download.
+
+### Changed
+- **CORS Whitelist**: Replaced open CORS with an environment-driven origin whitelist (`FRONTEND_URL`).
+- **Auth Hardening**: Added `requireAuth` middleware to the GTFS import pipeline and enforced `Bearer` token validation on all protected API endpoints via Firebase ID tokens.
+- **Infrastructure Privacy**: Transitioned Firebase project IDs, Notion database IDs, and Static DB credentials to environment variables to remove hardcoded fallback secrets.
+- **Global UX Standard**: Applied `cursor: pointer !important` to all interactive elements to ensure consistent interactive feedback.
+- **Matcher Engine v1.1**: Upgraded to a stateful LRU-based tracking system that persists "Last Seen" vehicle states across polling intervals—enabling transition-based analytics (Segments/Dwells) while maintaining memory safety for full-fleet polling.
+- **Strategic Navigation Priority**: Promoted the Intelligence Hub as the primary strategic entry point in the global navigation, followed by Predict, to align with the Phase 2: Intelligence Layer roadmap.
+- **Navigation Pillar**: Promoted "Intelligence" to the primary navigation bar as the strategic entry point for network audits.
+- **Halifax Validation**: Verified the Intelligence Hub against the Halifax dataset, identifying 5+ high-priority optimization candidates based on geometric debt.
+- **Version Clean-up**: Updated the stale `V0.1.4` branding in the Pulse Dashboard to the current `V0.13.0`.
+- **Dynamic Schedule Windows**: Replaced hardcoded 'Weekday' logic with dynamic day-type detection (Weekday/Sat/Sun) for reliability calculations.
 
 ## [0.13.0] - 2026-03-30
 ### Added

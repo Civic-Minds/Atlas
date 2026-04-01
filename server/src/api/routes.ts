@@ -102,7 +102,7 @@ router.get('/vehicles', requireAuth, requireTenant, async (req: Request, res: Re
 
   const result = await getPool().query(
     `SELECT DISTINCT ON (vehicle_id)
-       vehicle_id, trip_id, route_id, lat, lon, speed, bearing, observed_at
+       vehicle_id, trip_id, route_id, lat, lon, speed, bearing, is_detour, dist_from_shape, observed_at
      FROM vehicle_positions
      WHERE agency_id = $1
        AND observed_at >= NOW() - INTERVAL '5 minutes'
@@ -124,7 +124,7 @@ router.get('/positions', requireAuth, requireTenant, async (req: Request, res: R
   }
 
   const result = await getPool().query(
-    `SELECT vehicle_id, trip_id, lat, lon, speed, bearing, stop_id, stop_sequence, observed_at
+    `SELECT vehicle_id, trip_id, lat, lon, speed, bearing, stop_id, stop_sequence, is_detour, dist_from_shape, observed_at
      FROM vehicle_positions
      WHERE agency_id = $1
        AND route_id  = $2
@@ -400,6 +400,144 @@ router.get('/intelligence/matching-stats', requireAuth, diagnosticsLimiter, asyn
   });
 });
 
+// GET /api/intelligence/bottlenecks?agency=mtabus&limit=10
+// Analyzes segment_metrics to identify the top bottleneck corridors.
+// Returns segments where 'delay_delta_seconds' is highest.
+router.get('/intelligence/bottlenecks', requireAuth, requireTenant, diagnosticsLimiter, async (req: Request, res: Response) => {
+  const { agency, limit } = req.query as Record<string, string>;
+  
+  if (!agency) {
+    res.status(400).json({ error: 'agency is required' });
+    return;
+  }
+
+  const resultLimit = Math.min(parseInt(limit ?? '10', 10), 50);
+
+  try {
+    // 1. Get raw bottleneck data from main DB
+    const metrics = await getPool().query(
+      `SELECT 
+         route_id, 
+         from_stop_id, 
+         to_stop_id, 
+         COUNT(*) as obs_count,
+         AVG(delay_delta_seconds) as avg_delay_delta,
+         SUM(delay_delta_seconds) as total_delay_added
+       FROM segment_metrics
+       WHERE agency_id = $1
+         AND observed_at >= NOW() - INTERVAL '24 hours'
+       GROUP BY route_id, from_stop_id, to_stop_id
+       HAVING COUNT(*) >= 3
+       ORDER BY avg_delay_delta DESC
+       LIMIT $2`,
+      [agency, resultLimit]
+    );
+
+    if (metrics.rows.length === 0) {
+      return res.json({ agency, bottlenecks: [] });
+    }
+
+    // 2. Resolve stop names from static DB
+    const staticPool = getStaticPool();
+    const stopIds = [...new Set(metrics.rows.flatMap(m => [m.from_stop_id, m.to_stop_id]))];
+    const routeIds = [...new Set(metrics.rows.map(m => m.route_id))];
+
+    const stopsRes = await staticPool.query(
+      `SELECT gtfs_stop_id as id, stop_name as name FROM stops WHERE gtfs_stop_id = ANY($1)`,
+      [stopIds]
+    );
+    const routesRes = await staticPool.query(
+      `SELECT gtfs_route_id as id, route_short_name as name FROM routes WHERE gtfs_route_id = ANY($1)`,
+      [routeIds]
+    );
+
+    const stopMap = Object.fromEntries(stopsRes.rows.map(s => [s.id, s.name]));
+    const routeMap = Object.fromEntries(routesRes.rows.map(r => [r.id, r.name]));
+
+    const bottlenecks = metrics.rows.map(m => ({
+      ...m,
+      route_name: routeMap[m.route_id] || m.route_id,
+      from_stop_name: stopMap[m.from_stop_id] || m.from_stop_id,
+      to_stop_name: stopMap[m.to_stop_id] || m.to_stop_id,
+    }));
+
+    res.json({
+      agency,
+      ts: new Date().toISOString(),
+      bottlenecks
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+router.get('/intelligence/dwells', requireAuth, requireTenant, diagnosticsLimiter, async (req: Request, res: Response) => {
+  const { agency, limit } = req.query as Record<string, string>;
+  
+  if (!agency) {
+    res.status(400).json({ error: 'agency is required' });
+    return;
+  }
+
+  const resultLimit = Math.min(parseInt(limit ?? '10', 10), 50);
+
+  try {
+    const db = getPool();
+    const staticPool = getStaticPool();
+    const metrics = await db.query(
+      `SELECT 
+         route_id, 
+         stop_id, 
+         COUNT(*) as obs_count,
+         AVG(dwell_seconds) as avg_dwell_seconds,
+         MAX(dwell_seconds) as max_dwell_seconds
+       FROM stop_dwell_metrics
+       WHERE agency_id = $1
+         AND observed_at >= NOW() - INTERVAL '24 hours'
+       GROUP BY route_id, stop_id
+       HAVING COUNT(*) >= 3
+       ORDER BY avg_dwell_seconds DESC
+       LIMIT $2`,
+      [agency, resultLimit]
+    );
+
+    if (metrics.rows.length === 0) {
+      return res.json({ agency, dwells: [] });
+    }
+
+    const stopIds = [...new Set(metrics.rows.map(m => m.stop_id))];
+    const routeIds = [...new Set(metrics.rows.map(m => m.route_id))];
+
+    const stopsRes = await staticPool.query(
+      `SELECT gtfs_stop_id as id, stop_name as name FROM stops WHERE gtfs_stop_id = ANY($1)`,
+      [stopIds]
+    );
+    const routesRes = await staticPool.query(
+      `SELECT gtfs_route_id as id, route_short_name as name FROM routes WHERE gtfs_route_id = ANY($1)`,
+      [routeIds]
+    );
+
+    const stopMap = Object.fromEntries(stopsRes.rows.map(s => [s.id, s.name]));
+    const routeMap = Object.fromEntries(routesRes.rows.map(r => [r.id, r.name]));
+
+    const dwells = metrics.rows.map(m => ({
+      ...m,
+      route_name: routeMap[m.route_id] || m.route_id,
+      stop_name: stopMap[m.stop_id] || m.stop_id
+    }));
+
+    res.json({
+      agency,
+      ts: new Date().toISOString(),
+      dwells
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 // GET /api/intelligence/ghosts?agency=mtabus&window=60
 // Identifies scheduled trips with no observed vehicle positions.
 router.get('/intelligence/ghosts', requireAuth, requireTenant, diagnosticsLimiter, async (req: Request, res: Response) => {
@@ -424,6 +562,7 @@ router.get('/intelligence/ghosts', requireAuth, requireTenant, diagnosticsLimite
     res.status(500).json({ error: (err as Error).message });
   }
 });
+
 
 // GET /api/alerts/thresholds
 router.get('/alerts/thresholds', requireAuth, requireTenant, async (req: Request, res: Response) => {

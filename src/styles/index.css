@@ -80,6 +80,14 @@ body {
   letter-spacing: -0.011em;
 }
 
+/* Universal Interaction Cursor */
+a, 
+button, 
+[role="button"],
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
 /* Precision Panel - Sharp, structured container */
 @utility precision-panel {
   @apply bg-[var(--panel)] border border-[var(--border)] rounded-lg overflow-hidden transition-all duration-300;

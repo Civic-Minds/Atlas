@@ -40,16 +40,28 @@ export async function detectGhostBuses(agencyId: string, windowMinutes: number =
   const { gtfs_agency_id, feed_version_id } = agencyRow.rows[0];
 
   // 2. Identify which calendar service IDs are active TODAY
-  // This is a simplified version for laboratory demonstration.
-  // Real implementation would handle day-of-week and date exceptions properly.
+  // Handles day-of-week rules plus calendar_dates.txt exceptions:
+  //   exception_type = 1: service added on this date (include even if not in calendar)
+  //   exception_type = 2: service removed on this date (exclude even if in calendar)
   const dayOfWeek = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-  
+
   const activeServices = await staticDb.query(
-    `SELECT service_id FROM calendar_services 
-     WHERE feed_version_id = $1 
-       AND ${dayOfWeek} = TRUE 
-       AND start_date <= CURRENT_DATE 
-       AND end_date >= CURRENT_DATE`,
+    `SELECT service_id FROM calendar_services
+     WHERE feed_version_id = $1
+       AND ${dayOfWeek} = TRUE
+       AND start_date <= CURRENT_DATE
+       AND end_date >= CURRENT_DATE
+       AND service_id NOT IN (
+         SELECT service_id FROM calendar_exceptions
+         WHERE feed_version_id = $1
+           AND exception_date = CURRENT_DATE
+           AND exception_type = 2
+       )
+     UNION
+     SELECT service_id FROM calendar_exceptions
+     WHERE feed_version_id = $1
+       AND exception_date = CURRENT_DATE
+       AND exception_type = 1`,
     [feed_version_id]
   );
   const serviceIds = activeServices.rows.map(r => r.service_id);
@@ -59,23 +71,28 @@ export async function detectGhostBuses(agencyId: string, windowMinutes: number =
   // 3. Find trips that were scheduled to be active in the window
   // We look at trips that HAVE at least one stop_time in the window.
   // We'll group by route to provide route-level granularity.
+  // Build the arrival time window in minutes-from-midnight.
+  // When the window crosses midnight (startMinutes > endMinutes) use an OR
+  // condition to correctly capture trips on either side of the day boundary.
+  const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+  const endMinutes   = now.getHours() * 60 + now.getMinutes();
+  const midnightCrossing = startMinutes > endMinutes;
+
   const scheduledTrips = await staticDb.query(
-    `SELECT 
+    `SELECT
        t.gtfs_route_id as route_id,
        t.gtfs_trip_id as trip_id
      FROM trips t
      JOIN stop_times st ON st.feed_version_id = t.feed_version_id AND st.gtfs_trip_id = t.gtfs_trip_id
      WHERE t.feed_version_id = $1
        AND t.service_id = ANY($2)
-       AND st.arrival_time >= ($3::integer * 60 + $4::integer) -- minutes from midnight
-       AND st.arrival_time <= ($5::integer * 60 + $6::integer)
+       AND (
+         ${midnightCrossing
+           ? 'st.arrival_time >= $3 OR st.arrival_time <= $4'
+           : 'st.arrival_time >= $3 AND st.arrival_time <= $4'}
+       )
      GROUP BY t.gtfs_route_id, t.gtfs_trip_id`,
-    [
-        feed_version_id, 
-        serviceIds, 
-        startTime.getHours(), startTime.getMinutes(),
-        now.getHours(), now.getMinutes()
-    ]
+    [feed_version_id, serviceIds, startMinutes, endMinutes]
   );
 
   // 4. Find trips that actually broadcasted positions in the window
