@@ -3,24 +3,18 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-### Phase 6: Enterprise Hardening (Completed)
-- **Terminology Standardization**: Sanitized internal jargon; replaced "Ouija" with "GTFS-RT Gateway" and "Ouija Base" with "Gateway Base" throughout the frontend and error messaging.
-- **Enterprise Reporting**: 
-    - Implemented **CSV Export** for the Agency Health Matrix in the Pulse Dashboard.
-    - Integrated **Professional PDF Reporting** in the Strategy module (System Report) for board-level service audits.
-- **Historical Performance Trends**:
-    - Added a new **Intelligence Trends API** (`/api/intelligence/trends`) to aggregate high-resolution vehicle availability and ingestion success rates over a 24-hour sliding window.
-    - Integrated **Trend Sparklines** into the Pulse Dashboard for at-a-glance reliability history.
-- **UX & Onboarding Refinement**:
-    - Overhauled the "Global Admin" empty states to reflect a managed provisioning model rather than a self-service upload flow for enterprise tenants.
-    - Added **Alpha/Beta Module Badges** to the navigation to manage user expectations for maturing predictive and simulation features.
-- **Service Performance Diagnostics (P1)**:
-    - **Real-Time Bunching Detection**: Integrated headway analysis to identify vehicles arriving <60s apart (customizable threshold). Surfaced as "Bunching Events" in the Pulse Dashboard to help managers identify reliability gaps.
-    - **Ghost Bus Identification**: Engineered a schedule-comparison service that flags missing trips by comparing real-time telemetry against static stop_times. Visible in Pulse as "Missing Trips" per agency.
-    - **Schedule Adherence Breakdown**: Implemented industry-standard categorization (-60s to +300s) to provide a 3-bucket distribution (Early/On-Time/Late). Surface as a percentage-based reliability indicator in the dashboard.
-    - **Feed Health Scoring**: Engineered a composite reliability engine (0-100 score) that audits Position Plausibility, Trip Assignment Rates, and Snapshot Stability to provide at-a-glance feed quality assessments.
-    - **Enterprise Alerting Architecture**: Implemented a real-time threshold evaluation engine with persistent rule storage ('alert_thresholds') and CRUD API support. Features cooldown logic and historical audit trails ('alert_history').
-    - **Granular Enterprise Sync visibility**: Upgraded the Notion synchronization pipeline to surface specific metrics (Status, Reliability Score, Throttling status) in the Pulse Dashboard, replacing basic success/fail indicators.
+### Phase 8.3: Platform Hardening & Stability (Completed)
+- **Infrastructure Stabilization**:
+    - Restored frontend-backend connectivity by fixing Vite proxy configuration for `/api` requests.
+    - Updated backend listeners to ensure reliable data flow from the Intelligence matching service.
+- **UX & Navigation Refinement**:
+    - **Logo Connectivity**: Restored the "Atlas by Civic Minds" logo link to correctly route back to the platform homepage.
+    - **Cursor Feedback**: Enforced `cursor: pointer` across all navigation elements to provide standard interactive feedback.
+    - **Terminology Cleanup**: Replaced confusing "AI-generated" jargon with clearer, professional language ("Verification") in the Audit module.
+    - **Strategy Page Optimization**: Removed redundant "Upload GTFS" buttons to favor the centralized, pre-provisioned network catalog.
+- **Enterprise Reporting & Pulse Dashboard**:
+    - **Compact Matrix Layout**: Re-engineered the Pulse Dashboard table to prevent column overlap on standard viewports (1440px).
+    - **Notion Sync Visibility**: Improved the "Enterprise Sync" column feedback to provide cleaner status indicators for Notion integrations.
 
 ### Added
 - **Advanced Spatial Matching**: Haversine-based projection for real-time vehicle positions. Vehicles missing `stop_id` are matched to the nearest scheduled stop with a confidence score system (threshold <300m).

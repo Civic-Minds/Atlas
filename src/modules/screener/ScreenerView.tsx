@@ -264,14 +264,7 @@ export default function ScreenerView() {
                 <ModuleHeader
                     title="Strategy"
                     badge={{ label: 'Network' }}
-                    actions={[
-                        {
-                            label: 'Upload Local GTFS',
-                            icon: Upload,
-                            onClick: () => fileInputRef.current?.click(),
-                            variant: 'secondary' as const,
-                        }
-                    ]}
+                    actions={[]}
                 />
                 {/* Mode toggle */}
                 <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-8 border border-[var(--border)]">

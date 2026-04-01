@@ -22,7 +22,17 @@ Informed by [RESEARCH.md](RESEARCH.md) pain points and live platform review (Apr
 - [x] **Ghost Bus Detection** — Scheduled trips with no observed vehicle. Show frequency by route. Already in NextGen Phase 2 — surface it in the UI with a count per agency.
 - [x] **Schedule Adherence Breakdown** — Distribution of early/on-time/late, not just average delay. "40% on-time, 35% late, 25% early" tells a completely different story than a mean of -12 seconds.
 - [x] **Feed Health Scoring** — Per-agency reliability grade based on vehicle count consistency, trip assignment rate, and position plausibility. Composite score (0-100) surfaced in the Pulse Dashboard.
-- [ ] **Enterprise Sync Detail** — The Notion sync column should show *what* was pushed (Status? Score? Both?) and whether it succeeded or was throttled. Currently just says "Synced."
+- [x] **Enterprise Sync Detail** — Detailed metrics in the dashboard (Status/Scores/Throttling) instead of a generic "Synced" label.
+
+---
+
+## 🚀 Strategic Foresight (The Next Frontier)
+Beyond the current roadmap, professional transit intelligence requires addressing the **"Why"** and the **"Context"**:
+
+- **GTFS-RT Service Alerts Integration** — Currently, we detect 'Ghosts' (missing trips), but we don't know *why*. Polling the Alerts feed allows distinguishing between 'Technical Failure' and 'Planned Detour/Cancellation.'
+- **Historical Performance Baselines** — Managers need to know: "Is 88% OTP good for a rainy Tuesday?" We should compare real-time data against "Typical" Tuesday AM averages to identify abnormal degradation.
+- **Corridor Meta-Grouping** — Many agencies manage 'Trunk' lines (e.g., NYC's M15 + M15-SBS). We should support aggregation across multiple routes into a single 'Corridor Performance' score.
+- **Automated Intelligence Briefs** — An AI-summarized weekly brief for board members: "Route 10 reliability improved 5% after the stop consolidation." High-impact retention for busy execs.
 
 ---
 
