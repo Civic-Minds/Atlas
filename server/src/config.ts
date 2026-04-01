@@ -132,27 +132,60 @@ export const AGENCIES: Agency[] = [
   // Frequent Network 8 corridors; route_id matches route number directly
   { id: 'wego', name: 'WeGo Public Transit', vehiclePositionsUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb', tripUpdatesUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb' },
   // RTC Southern Nevada (Las Vegas) — requires Swiftly API key (same program as LA Metro)
-  // Once you have a key, add to .env as SWIFTLY_API_KEY and uncomment:
-  // { id: 'rtcsnv', name: 'RTC Southern Nevada', vehiclePositionsUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-vehicle-positions', tripUpdatesUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-trip-updates', headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' } },
+  { 
+    id: 'rtcsnv', 
+    name: 'RTC Southern Nevada', 
+    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-vehicle-positions', 
+    tripUpdatesUrl:      'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-trip-updates', 
+    headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
+    limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
+  },
   // Foothill Transit (Silver Streak 707) — requires IP whitelist approval
   // Email info@foothilltransit.org with your public IP to get access, then uncomment:
   // { id: 'foothilltransit', name: 'Foothill Transit', vehiclePositionsUrl: 'https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=VehiclePositions', tripUpdatesUrl: 'https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=TripUpdates' },
   // Halifax Transit — open feed, no API key required
   { id: 'halifax', name: 'Halifax Transit', vehiclePositionsUrl: 'https://gtfs.halifax.ca/realtime/Vehicle/VehiclePositions.pb' },
   // Miami-Dade Transit — now served via Swiftly (same platform as Las Vegas RTC and LA Metro)
-  // Request access at: https://docs.google.com/forms/d/e/1FAIpQLScy9Jye91QPSTS3WVEU-13es0A1rT9Ep5JhAmXUZEiop7fmIw/viewform
-  // Once you have a key, add to .env as SWIFTLY_API_KEY and uncomment (shares key with rtcsnv and lametro):
-  // { id: 'mdt', name: 'Miami-Dade Transit', vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions', headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' } },
+  { 
+    id: 'mdt', 
+    name: 'Miami-Dade Transit', 
+    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions', 
+    headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
+    limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
+  },
   // TransLink (Metro Vancouver)
   { id: 'translink', name: 'TransLink', vehiclePositionsUrl: `https://gtfsapi.translink.ca/v3/gtfsposition?apikey=${process.env.TRANSLINK_API_KEY}`, tripUpdatesUrl: `https://gtfsapi.translink.ca/v3/gtfsrealtime?apikey=${process.env.TRANSLINK_API_KEY}` },
   // SF Bay 511 API — one key covers all agencies below (change agency param)
-  { id: 'muni',      name: 'SF Muni',     vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=SF` },
-  { id: 'actransit', name: 'AC Transit',  vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=AC` },
-  { id: 'vta',       name: 'VTA',         vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=SC` },
-  // LA Metro — requires Swiftly API key from https://forms.gle/hXGY6kRGAChDqWwz5
-  // Route IDs: A Line = 801, E Line = 804 (all LRT: 801,802,803,804,806,807)
-  // Once you have a key, add to .env as LA_METRO_API_KEY and uncomment:
-  // { id: 'lametro', name: 'LA Metro Rail', vehiclePositionsUrl: `https://api.goswift.ly/real-time/lametro-rail/gtfs-rt-vehicle-positions`, tripUpdatesUrl: `https://api.goswift.ly/real-time/lametro-rail/gtfs-rt-trip-updates` },
+  { 
+    id: 'muni',      
+    name: 'SF Muni',     
+    vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=SF`, 
+    pollingIntervalMs: 210000,
+    limit: { requestsPerHour: 60, notes: 'Shared key for SF Bay 511.org (Muni, AC Transit, VTA)' }
+  },
+  { 
+    id: 'actransit', 
+    name: 'AC Transit',  
+    vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=AC`, 
+    pollingIntervalMs: 210000,
+    limit: { requestsPerHour: 60, notes: 'Shared key for SF Bay 511.org (Muni, AC Transit, VTA)' }
+  },
+  { 
+    id: 'vta',       
+    name: 'VTA',         
+    vehiclePositionsUrl: `https://api.511.org/transit/vehiclepositions?api_key=${process.env.MUNI_511_API_KEY}&agency=SC`, 
+    pollingIntervalMs: 210000,
+    limit: { requestsPerHour: 60, notes: 'Shared key for SF Bay 511.org (Muni, AC Transit, VTA)' }
+  },
+  // LA Metro — requires Swiftly API key
+  { 
+    id: 'lametro', 
+    name: 'LA Metro Rail', 
+    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/lametro/gtfs-rt-vehicle-positions', 
+    tripUpdatesUrl:      'https://api.goswift.ly/real-time/lametro/gtfs-rt-trip-updates',
+    headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
+    limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
+  },
   // Spokane Transit Authority (STA) — open feed, no API key required
   { id: 'sta', name: 'Spokane Transit Authority', vehiclePositionsUrl: 'https://gtfsbridge.spokanetransit.com/realtime/vehicle/VehiclePositions.pb' },
   // Add more agencies as data collection begins:

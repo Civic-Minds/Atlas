@@ -5,6 +5,11 @@ export interface Agency {
   tripUpdatesUrl?: string;
   headers?: Record<string, string>;
   matchRealtime?: boolean;
+  pollingIntervalMs?: number;
+  limit?: {
+    requestsPerHour: number;
+    notes?: string;
+  };
 }
 
 export interface VehiclePosition {
@@ -30,4 +35,6 @@ export interface GtfsStopTime {
   stopSequence: number;
   arrivalTime: number;   // Minutes from midnight
   departureTime: number;
+  stopLat?: number;
+  stopLon?: number;
 }

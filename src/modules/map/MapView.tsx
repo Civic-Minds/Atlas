@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
-const OUIJA_BASE = 'http://40.233.99.118:3001';
+const GATEWAY_BASE = 'http://40.233.99.118:3001';
 
 const AGENCIES = [
   { id: 'ttc',         label: 'TTC (Toronto)' },
@@ -77,13 +77,13 @@ export default function MapView() {
   function fetchVehicles(ag: string) {
     setLoading(true);
     setError(null);
-    fetch(`${OUIJA_BASE}/api/vehicles?agency=${ag}`)
+    fetch(`${GATEWAY_BASE}/api/vehicles?agency=${ag}`)
       .then(r => r.json())
       .then(data => {
         setVehicles(data.vehicles ?? []);
         setLastUpdated(new Date());
       })
-      .catch(() => setError('Could not reach Ouija server'))
+      .catch(() => setError('Could not reach GTFS-RT Gateway'))
       .finally(() => setLoading(false));
   }
 

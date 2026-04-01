@@ -1,0 +1,98 @@
+import { Worker, Job } from 'bullmq';
+import { Agency, VehiclePosition } from '../types';
+import { insertVehiclePositions, logIngestion } from '../storage/db';
+import { matchPositions } from '../intelligence/matcher';
+import { syncAgencyToNotion } from '../intelligence/notion-sync';
+import { log } from '../logger';
+
+// Throttle Notion syncs to once every 15 minutes per agency to avoid rate limits
+const lastNotionSync: Record<string, number> = {};
+const NOTION_SYNC_THROTTLE_MS = 15 * 60 * 1000;
+
+
+const REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379';
+
+interface PositionJobData {
+    agency: Agency;
+    positions: VehiclePosition[];
+}
+
+/**
+ * Background worker to consume matching and insertion jobs from Redis.
+ * This prevents blocking the main 30-second poller.
+ */
+export function startPositionWorker(): Worker {
+    const worker = new Worker<PositionJobData>(
+        'position-processing',
+        async (job: Job<PositionJobData>) => {
+            const { agency, positions: rawPositions } = job.data;
+            log.info('Queue', 'starting job', { agency: agency.id, jobId: job.id });
+            
+            try {
+                // Perform the heavy spatial math (schedule matching) in the background
+                const matched = await matchPositions(agency, rawPositions);
+                log.info('Queue', 'matching finished', { agency: agency.id, count: matched.length });
+                
+                // Perform the batch write to PostgreSQL
+                await insertVehiclePositions(matched);
+                
+                // Final ingestion logging with Notion sync timestamp if available
+                let syncedAt: Date | undefined;
+
+                // Optional: Push to Notion (Throttled)
+                const now = Date.now();
+                if (!lastNotionSync[agency.id] || now - lastNotionSync[agency.id] > NOTION_SYNC_THROTTLE_MS) {
+                    lastNotionSync[agency.id] = now;
+                    // We'll await this briefly to get the sync time if we're doing it this turn
+                    const syncResult = await syncAgencyToNotion(agency.id, { 
+                        success: true, 
+                        vehicleCount: matched.length 
+                    });
+                    if (syncResult.success) syncedAt = syncResult.syncAt;
+                }
+
+                await logIngestion(agency.id, true, matched.length, undefined, syncedAt);
+                
+                log.info('Queue', 'processed', { 
+                    agency: agency.id, 
+                    vehicles: matched.length,
+                    jobId: job.id,
+                    synced: !!syncedAt
+                });
+            } catch (err) {
+                const msg = (err as Error).message;
+                await logIngestion(agency.id, false, undefined, msg).catch(() => undefined);
+                log.error('Queue', 'failed', { agency: agency.id, err: msg, jobId: job.id });
+
+                // Sync failure status to Notion if throttled
+                const now = Date.now();
+                if (!lastNotionSync[agency.id] || now - lastNotionSync[agency.id] > NOTION_SYNC_THROTTLE_MS) {
+                    lastNotionSync[agency.id] = now;
+                    void syncAgencyToNotion(agency.id, { 
+                        success: false, 
+                        vehicleCount: null,
+                        errorMsg: msg
+                    });
+                }
+
+                throw err; // Re-throw to trigger BullMQ retry logic
+            }
+
+
+        },
+        {
+            connection: {
+                url: REDIS_URL,
+            },
+            concurrency: 4, // Allow up to 4 concurrent matching jobs to saturate the CPU
+        }
+    );
+
+    worker.on('failed', (job, err) => {
+        log.error('Worker', 'Job critical failure', { id: job?.id, err: err.message });
+    });
+
+    log.info('Worker', 'running', { queue: 'position-processing' });
+
+    return worker;
+}

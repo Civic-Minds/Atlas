@@ -7,8 +7,8 @@
  */
 
 import { Agency, VehiclePosition } from '../types';
-import { insertVehiclePositions, logIngestion } from '../storage/db';
-import { matchPositions } from '../intelligence/matcher';
+import { logIngestion } from '../storage/db';
+import { pushToProcessingQueue } from '../queues/position-queue';
 import { ROUTE_FILTER } from '../config';
 import { log } from '../logger';
 
@@ -58,10 +58,11 @@ async function fetchPositions(agency: Agency): Promise<VehiclePosition[]> {
 async function pollAgency(agency: Agency): Promise<void> {
   try {
     const rawPositions = await fetchPositions(agency);
-    const positions = await matchPositions(agency, rawPositions);
-    await insertVehiclePositions(positions);
-    await logIngestion(agency.id, true, positions.length);
-    log.info('Poll', 'ok', { agency: agency.id, vehicles: positions.length });
+    
+    // Asynchronous Hand-off: Just push to Redis queue
+    await pushToProcessingQueue(agency, rawPositions);
+    
+    log.info('Poll', 'queued', { agency: agency.id, vehicles: rawPositions.length });
   } catch (err) {
     const msg = (err as Error).message;
     await logIngestion(agency.id, false, undefined, msg).catch(() => undefined);
@@ -69,15 +70,25 @@ async function pollAgency(agency: Agency): Promise<void> {
   }
 }
 
-export function startPolling(agencies: Agency[], intervalMs: number): void {
+export function startPolling(agencies: Agency[], defaultIntervalMs: number): void {
   log.info('Poller', 'starting', {
     agencies: agencies.map(a => a.id),
-    intervalMs,
+    defaultIntervalMs,
   });
 
-  // Immediate first poll for each agency, then on interval
-  for (const agency of agencies) {
-    void pollAgency(agency);
-    setInterval(() => void pollAgency(agency), intervalMs);
-  }
+  // Start each agency's poller with a staggered delay to prevent bursts
+  agencies.forEach((agency, index) => {
+    const interval = agency.pollingIntervalMs ?? defaultIntervalMs;
+    const staggeredStartDelay = index * 500; // 500ms delay between each agency's first poll
+
+    setTimeout(() => {
+      // First immediate poll
+      void pollAgency(agency);
+
+      // Subsequent recurring polls
+      setInterval(() => void pollAgency(agency), interval);
+      
+      log.info('Poller', 'initialized', { agency: agency.id, intervalMs: interval, delayedStartMs: staggeredStartDelay });
+    }, staggeredStartDelay);
+  });
 }

@@ -5,6 +5,7 @@ import { GtfsData, AnalysisResult } from '../../../types/gtfs';
 import { useCatalogStore } from '../../../types/catalogStore';
 import { extractFeedMeta } from '../../../core/catalog';
 import { detectChanges, buildCatalogRoutes } from '../../../core/catalog';
+import { importFeed } from '../../../services/atlasApi';
 
 interface CommitModalProps {
     isOpen: boolean;
@@ -12,11 +13,12 @@ interface CommitModalProps {
     gtfsData: GtfsData;
     analysisResults: AnalysisResult[];
     fileName: string;
+    file?: File;  // when present, also uploads to server
     onCommitted: (stats: { added: number; updated: number; unchanged: number }) => void;
 }
 
 export const CommitModal: React.FC<CommitModalProps> = ({
-    isOpen, onClose, gtfsData, analysisResults, fileName, onCommitted
+    isOpen, onClose, gtfsData, analysisResults, fileName, file, onCommitted
 }) => {
     const { catalogRoutes, commitFeed } = useCatalogStore();
     const [agencyName, setAgencyName] = useState('');
@@ -57,7 +59,17 @@ export const CommitModal: React.FC<CommitModalProps> = ({
         if (!agencyName.trim()) return;
         setCommitting(true);
         try {
+            // Always commit to local catalog
             const stats = await commitFeed(gtfsData, analysisResults, agencyName.trim(), fileName);
+
+            // Also upload to server if the original file is available
+            if (file) {
+                const slug = agencyName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                await importFeed(file, slug, agencyName.trim()).catch(() => {
+                    // Server upload is best-effort — don't block local commit on failure
+                });
+            }
+
             setCommitted(true);
             onCommitted(stats);
         } catch {

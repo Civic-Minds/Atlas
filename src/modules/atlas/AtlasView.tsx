@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Polyline, ZoomControl, Popup, useMap } from 'react-leaflet';
-import { RotateCcw, Activity, Globe, Info, Layers, Filter } from 'lucide-react';
+import { MapContainer, TileLayer, Polyline, ZoomControl, Popup, useMap, CircleMarker } from 'react-leaflet';
+import { RotateCcw, Activity, Globe, Info, Layers, Filter, Navigation } from 'lucide-react';
 import { useCatalogStore } from '../../types/catalogStore';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
 import { ModuleLanding } from '../../components/ModuleLanding';
 import { useAuthStore } from '../../hooks/useAuthStore';
+import { useVehicleTracking } from '../../hooks/useVehicleTracking';
 import type { LatLngBoundsExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './Atlas.css';
@@ -43,12 +44,22 @@ const FitBounds: React.FC<{ bounds: LatLngBoundsExpression | null }> = ({ bounds
 };
 
 export default function AtlasView() {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, agencyId } = useAuthStore();
     const { currentRoutes, loading, loadCatalog } = useCatalogStore();
     const [activeDay, setActiveDay] = useState('Weekday');
     const [activeTiers, setActiveTiers] = useState<Set<string>>(new Set(['5', '8', '10', '15', '20']));
     const [mapStyle, setMapStyle] = useState<'dark' | 'light'>('dark');
     const [activeAgency, setActiveAgency] = useState<string | null>(null);
+    const [realtimeEnabled, setRealtimeEnabled] = useState(false);
+
+    // Initial tenant check — default to assigned agency if present
+    useEffect(() => {
+        if (agencyId) {
+            setActiveAgency(agencyId);
+        }
+    }, [agencyId]);
+
+    const { vehicles, loading: realtimeLoading, lastUpdate } = useVehicleTracking(activeAgency, realtimeEnabled);
 
     useEffect(() => {
         loadCatalog();
@@ -231,6 +242,51 @@ export default function AtlasView() {
                         </Popup>
                     </Polyline>
                 ))}
+
+                {/* Real-time Vehicle Markers */}
+                {realtimeEnabled && vehicles.map((v, i) => {
+                    const routeColor = currentRoutes.find(r => r.route === v.route_id)?.tier 
+                        ? TIER_COLORS[currentRoutes.find(r => r.route === v.route_id)!.tier] 
+                        : '#ffffff';
+                    
+                    return (
+                        <CircleMarker
+                            key={`${v.vehicle_id}-${i}`}
+                            center={[v.lat, v.lon]}
+                            radius={4}
+                            pathOptions={{
+                                fillColor: routeColor,
+                                fillOpacity: 1,
+                                color: '#000000',
+                                weight: 1,
+                            }}
+                        >
+                            <Popup className="atlas-popup">
+                                <div className="p-3">
+                                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[var(--border)]">
+                                        <div className="w-8 h-8 rounded-lg bg-[var(--item-bg)] flex items-center justify-center border border-[var(--border)]">
+                                            <Navigation className="w-4 h-4 text-emerald-500" style={{ transform: `rotate(${v.bearing}deg)` }} />
+                                        </div>
+                                        <div>
+                                            <span className="text-[10px] font-black text-[var(--fg)]">Vehicle {v.vehicle_id}</span>
+                                            <p className="text-[8px] text-[var(--text-muted)] uppercase font-black uppercase tracking-widest leading-none">Route {v.route_id}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="bg-[var(--item-bg)] p-2 rounded-lg border border-[var(--border)]">
+                                            <div className="text-[7px] atlas-label mb-0.5">Speed</div>
+                                            <div className="text-[10px] font-black atlas-mono">{Math.round(v.speed)} kmh</div>
+                                        </div>
+                                        <div className="bg-[var(--item-bg)] p-2 rounded-lg border border-[var(--border)]">
+                                            <div className="text-[7px] atlas-label mb-0.5">Seen</div>
+                                            <div className="text-[10px] font-black atlas-mono">{new Date(v.observed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Popup>
+                        </CircleMarker>
+                    );
+                })}
             </MapContainer>
 
             {/* Sidebar Controls */}
@@ -253,16 +309,16 @@ export default function AtlasView() {
                         </button>
                     </header>
 
-                    {/* Agency Filter (only if multiple) */}
-                    {agencies.length > 1 && (
+                    {/* Agency Filter — restricted if tenant-mapped */}
+                    {!agencyId && agencies.length > 1 && (
                         <div className="mb-6">
-                            <span className="atlas-label text-[8px] mb-2 block opacity-50">Agency</span>
+                            <span className="atlas-label text-[8px] mb-2 block opacity-50">Agency Overview</span>
                             <div className="space-y-1">
                                 <button
                                     onClick={() => setActiveAgency(null)}
                                     className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-bold transition-all ${!activeAgency ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'text-[var(--text-muted)] hover:text-[var(--fg)]'}`}
                                 >
-                                    All Agencies
+                                    Global View
                                 </button>
                                 {agencies.map(a => (
                                     <button
@@ -276,6 +332,37 @@ export default function AtlasView() {
                             </div>
                         </div>
                     )}
+
+                    {agencyId && (
+                        <div className="mb-6 px-3 py-2 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
+                            <span className="atlas-label text-[8px] mb-1 block opacity-50 uppercase tracking-widest">Active Tenant</span>
+                            <div className="text-[10px] font-bold text-emerald-600 truncate">
+                                {agencies.find(a => a.id === agencyId)?.name || agencyId}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Real-time Toggle */}
+                    <div className="mb-6">
+                        <span className="atlas-label text-[8px] mb-2 block opacity-50">Intelligence Layer</span>
+                        <button
+                            onClick={() => setRealtimeEnabled(!realtimeEnabled)}
+                            className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${realtimeEnabled ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-[var(--border)] bg-[var(--item-bg)]/50'}`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${realtimeEnabled ? 'bg-emerald-500 text-white' : 'bg-[var(--item-bg)] text-[var(--text-muted)] border border-[var(--border)]'}`}>
+                                    <Navigation className={`w-4 h-4 ${realtimeEnabled ? 'animate-pulse' : ''}`} />
+                                </div>
+                                <div className="text-left">
+                                    <p className={`text-[10px] font-black leading-none mb-1 ${realtimeEnabled ? 'text-emerald-500' : 'text-[var(--fg)]'}`}>Live Positions</p>
+                                    <p className="text-[8px] text-[var(--text-muted)] font-black uppercase tracking-widest">{realtimeLoading ? 'Polling...' : realtimeEnabled ? `${vehicles.length} Detected` : 'Disabled'}</p>
+                                </div>
+                            </div>
+                            <div className={`w-10 h-5 rounded-full relative transition-colors ${realtimeEnabled ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                                <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${realtimeEnabled ? 'left-6' : 'left-1'}`} />
+                            </div>
+                        </button>
+                    </div>
 
                     {/* Day Toggle */}
                     <div className="grid grid-cols-3 gap-1 bg-[var(--item-bg)] p-1 rounded-xl mb-6 border border-[var(--border)]">

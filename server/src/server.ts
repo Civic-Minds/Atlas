@@ -6,6 +6,7 @@ import { startPolling } from './ingestion/poller';
 import apiRoutes from './api/routes';
 import importRoutes from './api/import-routes';
 import { log } from './logger';
+import { startPositionWorker } from './queues/position-worker';
 
 const PORT = parseInt(process.env.PORT ?? '3001', 10);
 
@@ -17,5 +18,9 @@ app.use('/api/import', importRoutes);
 
 app.listen(PORT, () => {
   log.info('Server', 'listening', { port: PORT });
+  
+  // Start the background processors
+  startPositionWorker();
+  
   startPolling(AGENCIES, POLL_INTERVAL_MS);
 });

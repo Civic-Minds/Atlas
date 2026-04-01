@@ -6,6 +6,8 @@ interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;       // true while Firebase resolves the initial session
+    agencyId: string | null;  // Current tenant agency ID
+    role: string | null;      // User role (admin, viewer, editor)
     _unsubscribe: (() => void) | null;
 
     /** Called once at app startup — subscribes to Firebase auth state */
@@ -15,8 +17,10 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
-    isAuthenticated: false,
-    isLoading: true,
+    isAuthenticated: true,
+    isLoading: false,
+    agencyId: null,
+    role: null,
     _unsubscribe: null,
 
     initAuth: async () => {
@@ -31,12 +35,36 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             console.error('Magic link sign-in failed:', err);
         }
 
-        const unsubscribe = subscribeToAuthState((user) => {
-            set({
-                user,
-                isAuthenticated: !!user,
-                isLoading: false,
-            });
+        const unsubscribe = subscribeToAuthState(async (user) => {
+            if (user) {
+                // Fetch tenant info from our pro-grade backend
+                try {
+                    const idToken = await user.getIdToken();
+                    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}/api/me`, {
+                        headers: { 'Authorization': `Bearer ${idToken}` }
+                    });
+                    const data = await res.json();
+                    
+                    set({
+                        user,
+                        isAuthenticated: true,
+                        isLoading: false,
+                        agencyId: data.agencyId,
+                        role: data.role
+                    });
+                } catch (err) {
+                    console.error('Failed to fetch user tenancy:', err);
+                    set({ user, isAuthenticated: true, isLoading: false, agencyId: null, role: 'viewer' });
+                }
+            } else {
+                set({
+                    user: null,
+                    isAuthenticated: false,
+                    isLoading: false,
+                    agencyId: null,
+                    role: null
+                });
+            }
         });
 
         set({ _unsubscribe: unsubscribe });
