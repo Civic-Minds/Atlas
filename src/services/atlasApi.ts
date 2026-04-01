@@ -162,23 +162,40 @@ async function fetchWithAuth(url: string | URL, init?: RequestInit): Promise<Res
 }
 
 export interface CorridorPerformance {
-  link_id: string;
-  stop_a_id: string;
-  stop_b_id: string;
-  stop_a_name: string | null;
-  stop_b_name: string | null;
-  route_short_names: string[];
-  scheduled_headway_min: number;
-  actual_headway_min: number | null;
-  reliability_score: number;
-  observed_arrivals: number;
-  is_bunching: boolean;
+  linkId: string;
+  agencyId: string;
+  startObs: string;
+  endObs: string;
+  observedAvgHeadway: number;
+  scheduledAvgHeadway: number;
+  observedTripCount: number;
+  avgDelaySeconds: number;
+  reliabilityScore: number;
+  bunchingCount: number;
+  earlyCount: number;
+  onTimeCount: number;
+  lateCount: number;
 }
 
 export interface PerformanceResponse {
   agency: string;
-  window_minutes: number;
+  windowMinutes: number;
   corridors: CorridorPerformance[];
+}
+
+export interface AuditWindow {
+  start: string;
+  end: string;
+  version: string;
+  results: CorridorPerformance[];
+}
+
+export interface AuditResult {
+  agency: string;
+  pivotDate: string;
+  before: AuditWindow;
+  after: AuditWindow;
+  auditTs: string;
 }
 
 export interface SegmentBottleneck {
@@ -221,6 +238,14 @@ export async function fetchCorridorPerformance(agency: string, windowMinutes: nu
   url.searchParams.set('window', String(windowMinutes));
   const res = await fetchWithAuth(url.toString());
   if (!res.ok) throw new Error(`Performance query failed: ${res.status}`);
+  return res.json();
+}
+
+export async function auditServiceChange(agency: string): Promise<AuditResult> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/audit-service-change`);
+  url.searchParams.set('agency', agency);
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Audit query failed: ${res.status}`);
   return res.json();
 }
 

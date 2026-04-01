@@ -27,33 +27,37 @@ export interface CorridorPerformance {
 
 export async function aggregateCorridorPerformance(
     agencyId: string, 
-    windowMinutes: number = 60,
+    startTime: Date,
+    endTime: Date,
+    overrideFeedVersionId?: string,
     bunchingThresholdSeconds: number = 60
 ): Promise<CorridorPerformance[]> {
   const realtimeDb = getPool();
   const staticDb = getStaticPool();
 
-  const now = new Date();
-  const startTime = new Date(now.getTime() - windowMinutes * 60 * 1000);
+  log.info('Headway', 'Aggregating corridor performance', { agencyId, startTime, endTime, overrideFeedVersionId });
 
-  log.info('Headway', 'Aggregating corridor performance', { agencyId, windowMinutes });
+  // 1. Resolve the feed version for this agency to get corridor definitions (Pivot logic)
+  let feedVersionId = overrideFeedVersionId;
+  
+  if (!feedVersionId) {
+    const agencyRow = await staticDb.query(
+      `SELECT fv.id AS feed_version_id
+       FROM agency_accounts aa
+       JOIN gtfs_agencies ga ON ga.agency_account_id = aa.id
+       JOIN feed_versions  fv ON fv.gtfs_agency_id = ga.id AND fv.is_current = TRUE
+       WHERE aa.slug = $1
+       LIMIT 1`,
+      [agencyId]
+    );
 
-  // 1. Resolve the current feed version for this agency to get corridor definitions
-  const agencyRow = await staticDb.query(
-    `SELECT fv.id AS feed_version_id
-     FROM agency_accounts aa
-     JOIN gtfs_agencies ga ON ga.agency_account_id = aa.id
-     JOIN feed_versions  fv ON fv.gtfs_agency_id = ga.id AND fv.is_current = TRUE
-     WHERE aa.slug = $1
-     LIMIT 1`,
-    [agencyId]
-  );
+    if (agencyRow.rows.length === 0) return [];
+    feedVersionId = agencyRow.rows[0].feed_version_id;
+  }
 
-  if (agencyRow.rows.length === 0) return [];
-  const feedVersionId = agencyRow.rows[0].feed_version_id;
-
-  // Determine day type dynamically from today's day of week
-  const dow = new Date().getDay();
+  // Determine day type dynamically from the midpoint of the window
+  const midPoint = new Date((startTime.getTime() + endTime.getTime()) / 2);
+  const dow = midPoint.getDay();
   const dayType = dow === 0 ? 'Sunday' : dow === 6 ? 'Saturday' : 'Weekday';
 
   // 2. Get active corridors for this agency
@@ -86,7 +90,7 @@ export async function aggregateCorridorPerformance(
        AND match_confidence >= 0.7
      GROUP BY stop_id, trip_id, route_id
      ORDER BY stop_id, arrival_time ASC`,
-    [agencyId, allStopIds, startTime, now]
+    [agencyId, allStopIds, startTime, endTime]
   );
 
   // Index arrivals by stop_id for fast in-memory aggregation
@@ -151,7 +155,7 @@ export async function aggregateCorridorPerformance(
       linkId: link_id,
       agencyId,
       start_obs: startTime,
-      end_obs: now,
+      end_obs: endTime,
       observedAvgHeadway,
       scheduledAvgHeadway: scheduled_headway,
       observedTripCount: stopArrivals.length,

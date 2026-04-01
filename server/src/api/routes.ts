@@ -46,7 +46,10 @@ router.get('/corridors/performance', requireAuth, requireTenant, diagnosticsLimi
   const bunchingThresholdSeconds = parseInt(threshold ?? '60', 10);
   
   try {
-    const results = await aggregateCorridorPerformance(agency, windowMinutes, bunchingThresholdSeconds);
+    const endTime = new Date();
+    const startTime = new Date(endTime.getTime() - windowMinutes * 60 * 1000);
+    
+    const results = await aggregateCorridorPerformance(agency, startTime, endTime, undefined, bunchingThresholdSeconds);
     res.json({
         agency,
         windowMinutes,
@@ -627,6 +630,65 @@ router.delete('/alerts/thresholds/:id', requireAuth, requireTenant, async (req: 
         [id, accountId]
     );
     res.status(204).send();
+});
+
+/**
+ * Phase 3: Automated Service Change Auditor
+ * Finds the pivot point between GTFS uploads and compares reliability delta.
+ */
+router.get('/intelligence/audit-service-change', requireAuth, requireTenant, diagnosticsLimiter, async (req: Request, res: Response) => {
+    try {
+        const { agency } = req.query;
+        if (!agency) return res.status(400).json({ error: 'agency is required' });
+
+        const staticDb = getStaticPool();
+
+        // 1. Find the two most recent versions
+        const versions = await staticDb.query(`
+            SELECT id, effective_from, processed_at, is_current
+            FROM feed_versions
+            WHERE gtfs_agency_id = (SELECT id FROM gtfs_agencies WHERE agency_slug = $1 LIMIT 1)
+            ORDER BY processed_at DESC
+            LIMIT 2
+        `, [agency]);
+
+        if (versions.rows.length < 2) {
+            return res.status(404).json({ error: 'Not enough feed versions for a service change audit.' });
+        }
+
+        const head = versions.rows[0];
+        const base = versions.rows[1];
+
+        // 2. Determine Pivot Date (T-Zero for the service change)
+        const pivotStr = head.effective_from || head.processed_at;
+        const pivot = new Date(pivotStr);
+        
+        // Window A: 30 days before pivot
+        const startA = new Date(pivot.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const endA = pivot;
+        
+        // Window B: 30 days after pivot
+        const startB = pivot;
+        const endB = new Date(Math.min(Date.now(), pivot.getTime() + 30 * 24 * 60 * 60 * 1000));
+
+        console.log(`[AUDIT] Run: ${agency} | Pivot: ${pivot.toISOString().split('T')[0]}`);
+
+        // 3. Run side-by-side reliability analysis
+        const resultsA = await aggregateCorridorPerformance(agency as string, startA, endA, base.id);
+        const resultsB = await aggregateCorridorPerformance(agency as string, startB, endB, head.id);
+
+        res.json({
+            agency,
+            pivotDate: pivot.toISOString(),
+            before: { start: startA, end: endA, version: base.id, results: resultsA },
+            after: { start: startB, end: endB, version: head.id, results: resultsB },
+            auditTs: new Date().toISOString()
+        });
+
+    } catch (error: any) {
+        console.error('Audit failed:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 export default router;
