@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, GitFork, Activity } from 'lucide-react';
 import { fetchAgencies, screenRoutes, fetchCorridors, fetchCorridorPerformance, AgencyMeta, ScreenRoute, Corridor, ScreenParams } from '../../../services/atlasApi';
 import { CorridorMonitor } from './CorridorMonitor';
+import { useAuthStore } from '../../../hooks/useAuthStore';
 
 const TIER_CONFIG = [
   { id: '5',    name: 'Rapid',   color: 'cyan'    },
@@ -53,6 +54,9 @@ function formatSpan(mins: number): string {
 }
 
 export function NetworkScreener() {
+  const { role, agencyId: userAgencyId } = useAuthStore();
+  const isAdmin = role === 'admin';
+
   const [tab, setTab]                         = useState<'routes' | 'corridors' | 'monitoring'>('routes');
   const [agencies, setAgencies]               = useState<AgencyMeta[]>([]);
   const [loadingAgencies, setLoadingAgencies] = useState(true);
@@ -76,11 +80,18 @@ export function NetworkScreener() {
     fetchAgencies()
       .then(data => {
         setAgencies(data);
-        if (data.length > 0) setSelectedAgency(data[0].slug);
+        if (data.length > 0) {
+            if (!isAdmin && userAgencyId) {
+                // Lock non-admins to their specific agency
+                setSelectedAgency(userAgencyId);
+            } else {
+                setSelectedAgency(data[0].slug);
+            }
+        }
       })
       .catch(() => setAgencyError('Could not load agencies from server'))
       .finally(() => setLoadingAgencies(false));
-  }, []);
+  }, [isAdmin, userAgencyId]);
 
   const runScreen = useCallback(async () => {
     if (!selectedAgency) return;
@@ -190,7 +201,7 @@ export function NetworkScreener() {
               <select
                 value={selectedAgency}
                 onChange={e => setSelectedAgency(e.target.value)}
-                disabled={loadingAgencies}
+                disabled={loadingAgencies || !isAdmin}
                 className="w-full px-3 py-2.5 bg-[var(--item-bg)] border border-[var(--border)] rounded-xl text-sm font-bold focus:outline-none focus:border-indigo-500/50 disabled:opacity-50"
               >
                 {loadingAgencies

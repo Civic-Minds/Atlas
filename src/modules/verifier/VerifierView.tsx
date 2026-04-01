@@ -29,7 +29,8 @@ export default function VerifierView() {
         setResults,
         setRawData,
         loadPersistedData,
-        clearData
+        clearData,
+        loading: storeLoading
     } = useTransitStore();
 
     const { addToast } = useNotificationStore();
@@ -172,7 +173,7 @@ export default function VerifierView() {
         );
     }
 
-    if (!gtfsData) {
+    if (!gtfsData && !storeLoading) {
         return (
             <div className="module-container">
                 <EmptyStateHero

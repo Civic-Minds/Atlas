@@ -89,7 +89,7 @@ button,
 }
 
 /* Precision Panel - Sharp, structured container */
-@utility precision-panel {
+.precision-panel {
   @apply bg-[var(--panel)] border border-[var(--border)] rounded-lg overflow-hidden transition-all duration-300;
   box-shadow: var(--shadow-flat);
 }
@@ -99,7 +99,7 @@ button,
 }
 
 /* Precision Card - Elevated interactive element */
-@utility precision-card {
+.precision-card {
   @apply bg-[var(--card)] border border-[var(--border)] rounded-xl transition-all duration-300;
   box-shadow: var(--shadow-tactile);
 }
@@ -111,23 +111,23 @@ button,
 }
 
 /* Typography Utilities */
-@utility atlas-h1 {
+.atlas-h1 {
   @apply text-4xl md:text-7xl font-bold tracking-tighter text-[var(--text-primary)] leading-[0.9];
 }
 
-@utility atlas-h2 {
+.atlas-h2 {
   @apply text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)];
 }
 
-@utility atlas-h3 {
+.atlas-h3 {
   @apply text-lg font-bold tracking-tight text-[var(--text-primary)];
 }
 
-@utility atlas-label {
+.atlas-label {
   @apply text-[10px] font-bold text-[var(--text-muted)] font-sans uppercase tracking-[0.15em];
 }
 
-@utility atlas-mono {
+.atlas-mono {
   @apply font-mono font-medium;
   font-variant-numeric: tabular-nums;
 }
@@ -138,25 +138,29 @@ button,
 }
 
 /* Module Container */
-@utility module-container {
-  @apply flex flex-col px-8 py-6 h-[calc(100vh-80px)] overflow-y-auto custom-scrollbar w-full;
+.module-container {
+  @apply flex flex-col items-center px-8 py-6 h-[calc(100vh-80px)] overflow-y-auto custom-scrollbar w-full;
+}
+
+.module-container > * {
+  @apply w-full max-w-7xl;
 }
 
 /* Buttons - Solid, tactile feel */
-@utility btn-primary {
+.btn-primary {
   @apply flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--accent-primary)] text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 border border-transparent shadow-sm hover:shadow-md active:scale-[0.98];
 }
 
-@utility btn-secondary {
+.btn-secondary {
   @apply flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--item-bg)] border border-[var(--border)] text-[var(--text-primary)] font-bold text-xs uppercase tracking-wider transition-all duration-200 hover:bg-[var(--item-hover)] hover:border-[var(--border-strong)] active:scale-[0.98];
 }
 
-@utility btn-ghost {
+.btn-ghost {
   @apply p-2.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--item-bg)] transition-all duration-200;
 }
 
 /* Indicators */
-@utility status-indicator {
+.status-indicator {
   @apply w-1.5 h-1.5 rounded-full inline-block mr-2;
 }
 
@@ -192,13 +196,13 @@ button,
 }
 
 /* Glass Panel - Frosted overlay effect */
-@utility glass-panel {
+.glass-panel {
   @apply bg-[var(--panel)]/80 backdrop-blur-xl border border-[var(--border)] rounded-2xl;
   box-shadow: var(--shadow-glass);
 }
 
 /* Status Bullet Indicators (coloured dots) */
-@utility status-bullet {
+.status-bullet {
   @apply w-2 h-2 rounded-full inline-block;
 }
 
