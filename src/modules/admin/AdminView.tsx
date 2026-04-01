@@ -148,7 +148,7 @@ export default function AdminView() {
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-center py-3 border-b border-[var(--border)]">
                                         <span className="atlas-label">Target Env</span>
-                                        <span className="text-sm font-bold text-emerald-500">PRODUCTION</span>
+                                        <span className="text-sm font-bold text-emerald-500">{import.meta.env.VITE_ENV_LABEL ?? 'LOCAL'}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-3 border-b border-[var(--border)]">
                                         <span className="atlas-label">Storage Engine</span>

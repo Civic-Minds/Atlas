@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { VehiclePosition } from '../types';
+import { VehiclePosition, SegmentMetric, StopDwellMetric } from '../types';
 import { log } from '../logger';
 
 export interface UserTenantInfo {
@@ -31,20 +31,21 @@ export async function insertVehiclePositions(positions: VehiclePosition[]): Prom
     // Build a multi-row INSERT for this batch
     const values: unknown[] = [];
     const placeholders = batch.map((p, j) => {
-      const base = j * 14;
+      const base = j * 16;
       values.push(
         p.agencyId, p.vehicleId, p.tripId, p.routeId,
         p.lat, p.lon, p.speed, p.bearing,
         p.stopId, p.stopSequence, p.currentStatus,
         p.delaySeconds ?? null, p.matchConfidence ?? null,
+        p.isDetour ?? false, p.distFromShape ?? null,
         p.observedAt
       );
-      return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6},$${base+7},$${base+8},$${base+9},$${base+10},$${base+11},$${base+12},$${base+13},$${base+14})`;
+      return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6},$${base+7},$${base+8},$${base+9},$${base+10},$${base+11},$${base+12},$${base+13},$${base+14},$${base+15},$${base+16})`;
     });
 
     await db.query(
       `INSERT INTO vehicle_positions
-         (agency_id, vehicle_id, trip_id, route_id, lat, lon, speed, bearing, stop_id, stop_sequence, current_status, delay_seconds, match_confidence, observed_at)
+         (agency_id, vehicle_id, trip_id, route_id, lat, lon, speed, bearing, stop_id, stop_sequence, current_status, delay_seconds, match_confidence, is_detour, dist_from_shape, observed_at)
        VALUES ${placeholders.join(',')}`,
       values,
     );
@@ -65,6 +66,59 @@ export async function logIngestion(
      VALUES ($1, $2, $3, $4, $5, $6)`,
     [agencyId, success, vehicleCount ?? null, errorMsg ?? null, notionSyncAt ?? null, notionSyncStatus ?? null],
   );
+}
+
+export async function insertSegmentMetrics(metrics: SegmentMetric[]): Promise<void> {
+  if (metrics.length === 0) return;
+  const db = getPool();
+
+  const BATCH_SIZE = 500;
+  for (let i = 0; i < metrics.length; i += BATCH_SIZE) {
+    const batch = metrics.slice(i, i + BATCH_SIZE);
+    
+    // Build a multi-row INSERT for this batch
+    const values: unknown[] = [];
+    const placeholders = batch.map((m, j) => {
+      const base = j * 9;
+      values.push(
+        m.agencyId, m.tripId, m.routeId,
+        m.fromStopId, m.toStopId, 
+        m.observedSeconds, m.scheduledSeconds, m.delayDeltaSeconds,
+        m.observedAt
+      );
+      return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6},$${base+7},$${base+8},$${base+9})`;
+    });
+
+    await db.query(
+      `INSERT INTO segment_metrics
+         (agency_id, trip_id, route_id, from_stop_id, to_stop_id, observed_seconds, scheduled_seconds, delay_delta_seconds, observed_at)
+       VALUES ${placeholders.join(',')}`,
+      values,
+    );
+  }
+}
+
+
+export async function insertStopDwellMetrics(metrics: StopDwellMetric[]): Promise<void> {
+  if (metrics.length === 0) return;
+  const db = getPool();
+
+  const BATCH_SIZE = 500;
+  for (let i = 0; i < metrics.length; i += BATCH_SIZE) {
+    const batch = metrics.slice(i, i + BATCH_SIZE);
+    const values: unknown[] = [];
+    const placeholders = batch.map((m, j) => {
+      const base = j * 6;
+      values.push(m.agencyId, m.tripId, m.routeId, m.stopId, m.dwellSeconds, m.observedAt);
+      return `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},$${base+6})`;
+    });
+
+    await db.query(
+      `INSERT INTO stop_dwell_metrics (agency_id, trip_id, route_id, stop_id, dwell_seconds, observed_at)
+       VALUES ${placeholders.join(',')}`,
+      values,
+    );
+  }
 }
 
 

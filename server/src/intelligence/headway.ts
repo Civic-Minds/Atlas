@@ -52,40 +52,61 @@ export async function aggregateCorridorPerformance(
   if (agencyRow.rows.length === 0) return [];
   const feedVersionId = agencyRow.rows[0].feed_version_id;
 
+  // Determine day type dynamically from today's day of week
+  const dow = new Date().getDay();
+  const dayType = dow === 0 ? 'Sunday' : dow === 6 ? 'Saturday' : 'Weekday';
+
   // 2. Get active corridors for this agency
   const corridors = await staticDb.query(
     `SELECT link_id, stop_a_id, route_ids, avg_headway as scheduled_headway
      FROM corridor_results
-     WHERE feed_version_id = $1 AND day_type = 'Weekday' -- Default to weekday for lab validation
+     WHERE feed_version_id = $1 AND day_type = $2
      LIMIT 20`,
-    [feedVersionId]
+    [feedVersionId, dayType]
   );
+
+  if (corridors.rows.length === 0) return [];
+
+  // 3. Collect all unique stop IDs from all corridors, then fetch ALL arrivals
+  // in a single query to avoid N+1 per-corridor round trips.
+  const allStopIds: string[] = [...new Set(corridors.rows.map((c: any) => c.stop_a_id as string))];
+
+  const allArrivalsRes = await realtimeDb.query(
+    `SELECT
+       stop_id,
+       trip_id,
+       route_id,
+       MIN(observed_at) as arrival_time,
+       AVG(delay_seconds) as avg_delay
+     FROM vehicle_positions
+     WHERE agency_id = $1
+       AND stop_id = ANY($2::text[])
+       AND observed_at >= $3
+       AND observed_at < $4
+       AND match_confidence >= 0.7
+     GROUP BY stop_id, trip_id, route_id
+     ORDER BY stop_id, arrival_time ASC`,
+    [agencyId, allStopIds, startTime, now]
+  );
+
+  // Index arrivals by stop_id for fast in-memory aggregation
+  const arrivalsByStop = new Map<string, Array<{ trip_id: string; route_id: string; arrival_time: string; avg_delay: number | null }>>();
+  for (const row of allArrivalsRes.rows) {
+    if (!arrivalsByStop.has(row.stop_id)) arrivalsByStop.set(row.stop_id, []);
+    arrivalsByStop.get(row.stop_id)!.push(row);
+  }
 
   const results: CorridorPerformance[] = [];
 
   for (const corridor of corridors.rows) {
     const { link_id, stop_a_id, route_ids, scheduled_headway } = corridor;
 
-    // 3. Find unique arrivals at Stop A for the routes in this corridor
-    // We take the MIN(observed_at) per trip to catch the actual arrival moment
-    const arrivals = await realtimeDb.query(
-      `SELECT 
-         trip_id,
-         MIN(observed_at) as arrival_time,
-         AVG(delay_seconds) as avg_delay
-       FROM vehicle_positions
-       WHERE agency_id = $1
-         AND stop_id = $2
-         AND route_id = ANY($3)
-         AND observed_at >= $4
-         AND observed_at < $5
-         AND match_confidence >= 0.7 -- Only trust high-quality matches
-       GROUP BY trip_id
-       ORDER BY arrival_time ASC`,
-      [agencyId, stop_a_id, route_ids, startTime, now]
-    );
+    // Filter arrivals for this corridor's stop and route set
+    const stopArrivals = (arrivalsByStop.get(stop_a_id) ?? [])
+      .filter(r => (route_ids as string[]).includes(r.route_id))
+      .sort((a, b) => new Date(a.arrival_time).getTime() - new Date(b.arrival_time).getTime());
 
-    if (arrivals.rows.length < 2) continue; // Need at least two buses to calculate a headway
+    if (stopArrivals.length < 2) continue; // Need at least two buses to calculate a headway
 
     const intervals: number[] = [];
     let totalDelay = 0;
@@ -93,20 +114,19 @@ export async function aggregateCorridorPerformance(
     let earlyCount = 0;
     let onTimeCount = 0;
     let lateCount = 0;
-    
-    for (let i = 1; i < arrivals.rows.length; i++) {
-        const current = new Date(arrivals.rows[i].arrival_time).getTime();
-        const previous = new Date(arrivals.rows[i-1].arrival_time).getTime();
+
+    for (let i = 1; i < stopArrivals.length; i++) {
+        const current = new Date(stopArrivals[i].arrival_time).getTime();
+        const previous = new Date(stopArrivals[i-1].arrival_time).getTime();
         const interval = (current - previous) / 1000; // seconds
         intervals.push(interval);
-        totalDelay += arrivals.rows[i].avg_delay ?? 0;
+        totalDelay += stopArrivals[i].avg_delay ?? 0;
 
         if (interval < bunchingThresholdSeconds) {
             bunchingCount++;
         }
 
-        // Categorize adherence based on avg_delay (seconds)
-        const delay = arrivals.rows[i].avg_delay ?? 0;
+        const delay = stopArrivals[i].avg_delay ?? 0;
         if (delay < -60) {
             earlyCount++;
         } else if (delay > 300) {
@@ -120,13 +140,12 @@ export async function aggregateCorridorPerformance(
     const variance = intervals.reduce((a, b) => a + Math.pow(b - meanSeconds, 2), 0) / intervals.length;
     const stdDev = Math.sqrt(variance);
     const cv = stdDev / meanSeconds; // Coefficient of Variation
-    
+
     // Reliability score: 100 * (1 - CV), capped at 0-100
-    // CV = 1 is random service, CV = 0 is perfect spacing.
     const reliabilityScore = Math.max(0, Math.min(100, Math.round(100 * (1 - cv))));
 
-    const observedAvgHeadway = (meanSeconds / 60);
-    const avgDelay = totalDelay / arrivals.rows.length;
+    const observedAvgHeadway = meanSeconds / 60;
+    const avgDelay = totalDelay / stopArrivals.length;
 
     results.push({
       linkId: link_id,
@@ -135,7 +154,7 @@ export async function aggregateCorridorPerformance(
       end_obs: now,
       observedAvgHeadway,
       scheduledAvgHeadway: scheduled_headway,
-      observedTripCount: arrivals.rows.length,
+      observedTripCount: stopArrivals.length,
       avgDelaySeconds: avgDelay,
       reliabilityScore,
       bunchingCount,

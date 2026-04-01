@@ -2,7 +2,7 @@ import { Client } from '@notionhq/client';
 import { log } from '../logger';
 import { aggregateCorridorPerformance } from './headway';
 
-const NOTION_DATABASE_ID = '3339563c9a49804e92fde353d1470eb4';
+const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID ?? '3339563c9a49804e92fde353d1470eb4';
 
 // Use the MCP environment's internal token via tool or assume the user will provide one in .env
 const notion = new Client({

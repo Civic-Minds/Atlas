@@ -17,8 +17,8 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
-    isAuthenticated: true,
-    isLoading: false,
+    isAuthenticated: import.meta.env.DEV === true ? true : false,
+    isLoading: import.meta.env.DEV === true ? false : true,
     agencyId: null,
     role: null,
     _unsubscribe: null,

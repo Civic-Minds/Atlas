@@ -11,7 +11,10 @@ import { startPositionWorker } from './queues/position-worker';
 const PORT = parseInt(process.env.PORT ?? '3001', 10);
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
 app.use('/api', apiRoutes);
 app.use('/api/import', importRoutes);

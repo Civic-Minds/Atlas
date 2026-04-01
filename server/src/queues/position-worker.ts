@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import { Agency, VehiclePosition } from '../types';
-import { insertVehiclePositions, logIngestion } from '../storage/db';
+import { insertVehiclePositions, insertSegmentMetrics, insertStopDwellMetrics, logIngestion } from '../storage/db';
 import { matchPositions } from '../intelligence/matcher';
 import { syncAgencyToNotion } from '../intelligence/notion-sync';
 import { log } from '../logger';
@@ -30,11 +30,18 @@ export function startPositionWorker(): Worker {
             
             try {
                 // Perform the heavy spatial math (schedule matching) in the background
-                const matched = await matchPositions(agency, rawPositions);
-                log.info('Queue', 'matching finished', { agency: agency.id, count: matched.length });
+                const { matchedPositions, segmentMetrics, stopDwellMetrics } = await matchPositions(agency, rawPositions);
+                log.info('Queue', 'matching finished', { 
+                    agency: agency.id, 
+                    count: matchedPositions.length, 
+                    segments: segmentMetrics.length,
+                    dwells: stopDwellMetrics.length 
+                });
                 
                 // Perform the batch write to PostgreSQL
-                await insertVehiclePositions(matched);
+                await insertVehiclePositions(matchedPositions);
+                await insertSegmentMetrics(segmentMetrics);
+                await insertStopDwellMetrics(stopDwellMetrics);
                 
                 // Final ingestion logging with Notion sync timestamp if available
                 let syncedAt: Date | undefined;
@@ -43,7 +50,7 @@ export function startPositionWorker(): Worker {
                 const now = Date.now();
                 if (!lastNotionSync[agency.id] || now - lastNotionSync[agency.id] > NOTION_SYNC_THROTTLE_MS) {
                     lastNotionSync[agency.id] = now;
-                    const syncRes = await syncAgencyToNotion(agency.id, { success: true, vehicleCount: matched.length });
+                    const syncRes = await syncAgencyToNotion(agency.id, { success: true, vehicleCount: matchedPositions.length });
                     if (syncRes.success) {
                         syncedAt = syncRes.syncAt;
                         syncStatus = syncRes.syncStatus;
@@ -52,11 +59,13 @@ export function startPositionWorker(): Worker {
                     syncStatus = 'Throttled (15m Cooldown)';
                 }
 
-                await logIngestion(agency.id, true, matched.length, undefined, syncedAt, syncStatus);
+                await logIngestion(agency.id, true, matchedPositions.length, undefined, syncedAt, syncStatus);
                 
                 log.info('Queue', 'processed', { 
                     agency: agency.id, 
-                    vehicles: matched.length,
+                    vehicles: matchedPositions.length,
+                    segments: segmentMetrics.length,
+                    dwells: stopDwellMetrics.length,
                     jobId: job.id,
                     synced: !!syncedAt
                 });

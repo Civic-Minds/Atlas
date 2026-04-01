@@ -293,6 +293,7 @@ interface AnalysisResult {
   tripCount: number;
   reliabilityScore: number;
   consistencyScore: number;
+  circuityIndex: number; // Added
   bunchingFactor: number;
   bunchingPenalty: number;
   outlierPenalty: number;
@@ -307,6 +308,22 @@ function median(nums: number[]): number {
   const s = [...nums].sort((a, b) => a - b);
   const mid = Math.floor(s.length / 2);
   return s.length % 2 === 0 ? (s[mid - 1] + s[mid]) / 2 : s[mid];
+}
+
+function haversine(p1: [number, number], p2: [number, number]): number {
+  const [lon1, lat1] = p1, [lon2, lat2] = p2;
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function polylineLength(pts: Array<[number, number]>): number {
+  let len = 0;
+  for (let i = 1; i < pts.length; i++) len += haversine(pts[i - 1], pts[i]);
+  return len;
 }
 
 function computeStats(times: number[]) {
@@ -368,7 +385,7 @@ function determineTier(gaps: number[], tripCount: number, spanMins: number): str
   return 'span';
 }
 
-function applyAnalysis(rawData: RawDepartures[]): AnalysisResult[] {
+function applyAnalysis(rawData: RawDepartures[], circuityMap: Map<string, number>): AnalysisResult[] {
   // Per-day results
   const perDay = new Map<string, { dayType: DayType; day: DayName; result: {
     gtfsRouteId: string; dirId: string; dayType: DayType; day: DayName;
@@ -433,6 +450,7 @@ function applyAnalysis(rawData: RawDepartures[]): AnalysisResult[] {
       tripCount: avgTrips,
       reliabilityScore: Math.round(stats.reliability),
       consistencyScore: Math.round(stats.consistencyScore),
+      circuityIndex: circuityMap.get(`${rep.gtfsRouteId}::${rep.dirId}`) ?? 1.0,
       bunchingFactor: Math.round(stats.bunchingFactor * 100) / 100,
       bunchingPenalty: Math.round(stats.bunchingPenalty),
       outlierPenalty: Math.round(stats.outlierPenalty),
@@ -919,8 +937,14 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
 
     // 7. Build and write route shapes
     const shapes = buildRouteShapes(gtfs);
+    const circuityMap = new Map<string, number>();
     for (const shape of shapes) {
       if (shape.coords.length < 2) continue;
+      const actualLen = polylineLength(shape.coords);
+      const straightLen = haversine(shape.coords[0], shape.coords[shape.coords.length - 1]);
+      const circuity = straightLen > 0.1 ? actualLen / straightLen : 1.0;
+      circuityMap.set(`${shape.gtfsRouteId}::${shape.dirId}`, Math.round(circuity * 100) / 100);
+
       const geojsonCoords = shape.coords.map(([lon, lat]) => `[${lon},${lat}]`).join(',');
       await client.query(
         `INSERT INTO route_shapes (feed_version_id, agency_account_id, gtfs_route_id, direction_id,
@@ -939,7 +963,7 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
     const refDate = detectReferenceDate(gtfs.calendar, gtfs.calendarDates, gtfs.trips);
     log.info('Import', 'reference date', { refDate });
     const rawDeps = computeRawDepartures(gtfs, refDate);
-    const analysisResults = applyAnalysis(rawDeps);
+    const analysisResults = applyAnalysis(rawDeps, circuityMap);
     log.info('Import', 'analysis complete', { results: analysisResults.length });
 
     // Create analysis run
@@ -967,10 +991,10 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
             direction_id, day_type, days_included, tier,
             avg_headway, median_headway, peak_headway, base_headway, headway_variance,
             service_span_start, service_span_end, trip_count,
-            reliability_score, consistency_score, bunching_factor, bunching_penalty, outlier_penalty,
+            reliability_score, consistency_score, circuity_index, bunching_factor, bunching_penalty, outlier_penalty,
             peak_window_start, peak_window_end,
             contributing_service_ids, warnings)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
          ON CONFLICT (analysis_run_id, gtfs_route_id, direction_id, day_type) DO NOTHING`,
         [
           analysisRunId, feedVersionId, accountId,
@@ -979,7 +1003,7 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
           parseInt(r.dirId) || 0, r.dayType, r.daysIncluded, r.tier,
           r.avgHeadway, r.medianHeadway, r.peakHeadway, r.baseHeadway, r.headwayVariance,
           r.serviceSpanStart, r.serviceSpanEnd, r.tripCount,
-          r.reliabilityScore, r.consistencyScore, r.bunchingFactor, r.bunchingPenalty, r.outlierPenalty,
+          r.reliabilityScore, r.consistencyScore, r.circuityIndex, r.bunchingFactor, r.bunchingPenalty, r.outlierPenalty,
           r.peakWindowStart, r.peakWindowEnd,
           r.contributingServiceIds, r.warnings,
         ]

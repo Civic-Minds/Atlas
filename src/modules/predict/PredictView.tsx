@@ -52,12 +52,12 @@ const PredictViewContent: React.FC = () => {
     if (!isAuthenticated) {
         return (
             <ModuleLanding
-                title="Optimize"
-                description="Long-term network growth planning and gap detection through gravity-based accessibility modeling."
-                icon={Zap}
+                title="Predict"
+                description="Forecasting latent demand and service gaps attraverso gravitational accessibility modeling."
+                icon={TrendingUp}
                 features={[
                     {
-                        title: "Demand Mapping",
+                        title: "Demand Forecast",
                         description: "Identify high-density residential and employment centers using demographic data nodes.",
                         icon: <Users className="w-5 h-5 text-indigo-500" />
                     },
@@ -92,9 +92,9 @@ const PredictViewContent: React.FC = () => {
                     onChange={handleFileUpload}
                 />
                 <EmptyStateHero
-                    icon={Zap}
-                    title="Atlas Intelligence"
-                    description="Detect transit deserts and service gaps using gravity-based accessibility models."
+                    icon={TrendingUp}
+                    title="Predict: Strategic Growth"
+                    description="Detect transit deserts and forecast service gaps using gravity-based accessibility models."
                     primaryAction={{
                         label: "Upload GTFS File",
                         icon: Upload,

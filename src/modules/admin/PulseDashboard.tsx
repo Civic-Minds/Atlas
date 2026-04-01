@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, ShieldCheck, AlertCircle, CheckCircle2, Clock, Globe, Navigation, Search, Share } from 'lucide-react';
+import { useAuthStore } from '../../hooks/useAuthStore';
 
 
 interface IngestionLog {
@@ -83,13 +84,19 @@ export default function PulseDashboard() {
     const [corridorPerformance, setCorridorPerformance] = useState<Record<string, CorridorPerformance[]>>({});
     const [loading, setLoading] = useState(true);
     const [lastRefresh, setLastRefresh] = useState(new Date());
+    const user = useAuthStore(state => state.user);
 
     const fetchData = async () => {
         try {
+            const authHeaders: Record<string, string> = {};
+            if (user) {
+                const idToken = await user.getIdToken();
+                authHeaders['Authorization'] = `Bearer ${idToken}`;
+            }
             const [ingRes, matchRes, trendRes] = await Promise.all([
-                fetch('/api/ingestion?limit=50'),
-                fetch('/api/intelligence/matching-stats'),
-                fetch('/api/intelligence/trends')
+                fetch('/api/ingestion?limit=50', { headers: authHeaders }),
+                fetch('/api/intelligence/matching-stats', { headers: authHeaders }),
+                fetch('/api/intelligence/trends', { headers: authHeaders })
             ]);
             const ingData = await ingRes.json();
             const matchData = await matchRes.json();
@@ -104,8 +111,8 @@ export default function PulseDashboard() {
             for (const agency of agencies) {
                 try {
                     const [ghostRes, perfRes] = await Promise.all([
-                        fetch(`/api/intelligence/ghosts?agency=${agency}`),
-                        fetch(`/api/corridors/performance?agency=${agency}`)
+                        fetch(`/api/intelligence/ghosts?agency=${agency}`, { headers: authHeaders }),
+                        fetch(`/api/corridors/performance?agency=${agency}`, { headers: authHeaders })
                     ]);
                     const ghostData = await ghostRes.json();
                     const perfData = await perfRes.json();
@@ -154,6 +161,7 @@ export default function PulseDashboard() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 100);
     };
 
     return (
@@ -384,7 +392,7 @@ export default function PulseDashboard() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/20">
                                                 <ShieldCheck className="w-3 h-3 text-indigo-500" />
-                                                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter italic">V0.1.4</span>
+                                                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter italic">V0.13.0</span>
                                             </div>
                                         </td>
                                     </tr>

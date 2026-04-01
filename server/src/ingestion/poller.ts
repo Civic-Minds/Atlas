@@ -16,8 +16,15 @@ import { log } from '../logger';
 const GtfsRealtimeBindings = require('gtfs-realtime-bindings');
 
 async function fetchPositions(agency: Agency): Promise<VehiclePosition[]> {
-  const res = await fetch(agency.vehiclePositionsUrl, { headers: agency.headers ?? {} });
-  if (!res.ok) throw new Error(`HTTP ${res.status} from ${agency.vehiclePositionsUrl}`);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  let res: Response;
+  try {
+    res = await fetch(agency.vehiclePositionsUrl, { headers: agency.headers ?? {}, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+  if (!res!.ok) throw new Error(`HTTP ${res!.status} from ${agency.vehiclePositionsUrl}`);
 
   const buf  = await res.arrayBuffer();
   const RT   = (GtfsRealtimeBindings as { transit_realtime: any }).transit_realtime;
@@ -76,10 +83,14 @@ export function startPolling(agencies: Agency[], defaultIntervalMs: number): voi
     defaultIntervalMs,
   });
 
-  // Start each agency's poller with a staggered delay to prevent bursts
+  // Start each agency's poller with a staggered delay to prevent bursts.
+  // 511.org agencies (muni, actransit, vta) share one rate-limited API key,
+  // so add up to 30s of random jitter to spread their startup polls.
   agencies.forEach((agency, index) => {
     const interval = agency.pollingIntervalMs ?? defaultIntervalMs;
-    const staggeredStartDelay = index * 500; // 500ms delay between each agency's first poll
+    const is511Agency = agency.vehiclePositionsUrl.includes('api.511.org');
+    const jitterMs = is511Agency ? Math.floor(Math.random() * 30000) : 0;
+    const staggeredStartDelay = index * 500 + jitterMs; // 500ms base stagger + optional jitter
 
     setTimeout(() => {
       // First immediate poll
@@ -87,7 +98,7 @@ export function startPolling(agencies: Agency[], defaultIntervalMs: number): voi
 
       // Subsequent recurring polls
       setInterval(() => void pollAgency(agency), interval);
-      
+
       log.info('Poller', 'initialized', { agency: agency.id, intervalMs: interval, delayedStartMs: staggeredStartDelay });
     }, staggeredStartDelay);
   });

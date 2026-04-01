@@ -9,7 +9,7 @@ Informed by [RESEARCH.md](RESEARCH.md) pain points and live platform review (Apr
 
 - [x] **Exportable Reports** — PDF + CSV export for corridor performance, OTP, and reliability data. Board members don't log in. They need attachments they can forward.
 - [x] **Historical Trend Lines** — OTP and AHW reliability over weeks/months, per route and per corridor. "Show me that Route 15 improved after the March schedule change." Without this, every metric is a snapshot with no story.
-- [x] **Hide Unfinished Modules** — Simulate, Predict, Optimize are empty shells. Either label them "Coming Soon" with a brief description or hide them entirely. Empty tabs undermine confidence in a demo.
+- [x] **Functional Analysis Engines** — Predict and Simulator are now fully-featured engines (Gravity-based demand forecasting, stop consolidation impact). Successfully transitioned from "empty shells" to strategic research modules.
 - [x] **Onboarding Flow** — The "No feeds stored" empty state is a dead end. Guide new users: "Upload your GTFS zip or connect a GTFS-RT feed URL." First 30 seconds determine whether someone keeps using the tool.
 - [x] **Professional Terminology** — Replace internal jargon ("Ouija server", "Big Fish Experiment", "Establishing Pulse") with standard transit/engineering language ("GTFS-RT Gateway", "Full Fleet Experiment", "Connecting..."). Consider a glossary page.
 
@@ -38,8 +38,8 @@ Beyond the current roadmap, professional transit intelligence requires addressin
 
 ## 🟢 P2 — Depth & Analysis
 
-- [ ] **Segment-Level Breakdown** — Where on a route does lateness originate? Which stops cause dwell blowouts? Requires trip-matching to be mature. This is the "MRI" that planners actually need.
-- [ ] **Dwell Time Analysis** — How long buses sit at each stop. Identify bottleneck stops (fare payment issues, wheelchair ramp, heavy boarding). Directly actionable: move a stop, add a fare reader, adjust padding.
+- [x] **Segment-Level Breakdown** — Where on a route does lateness originate? Full implementation of segment travel time analysis (A->B). Surfaced in the Intelligence Hub "MRI" dashboard for bottleneck detection.
+- [x] **Dwell Time Analysis** — How long buses sit at each stop. Stateful transition detection for tracking AT_STOP duration. Identifies fare-payment and boarding friction in the Intelligence Hub.
 - [ ] **Detour/Reroute Awareness** — Flag when vehicles deviate from their GTFS shape. Construction detours wreck OTP metrics unfairly. Let managers annotate "detour in effect" to exclude from scoring.
 - [ ] **Before/After Service Change** — Compare actual performance across a schedule change date. "Did the March frequency increase actually improve reliability?" Already in Product Roadmap — needs implementation path.
 - [ ] **Passenger Load Context** — Even estimated ridership data from APC or fare systems. A gap on a route carrying 200 riders/trip is worse than a gap carrying 20. Changes how you prioritize.
