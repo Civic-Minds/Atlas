@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Zap, GitFork, ArrowRight, AlertTriangle, CheckCircle2, TrendingUp, BarChart3, Globe, Clock, ShieldCheck, PauseCircle } from 'lucide-react';
 import { ModuleHeader } from '../../components/ModuleHeader';
-import { fetchAgencies, screenRoutes, fetchSegmentBottlenecks, fetchStopDwells, AgencyMeta, ScreenRoute, SegmentBottleneck, StopDwell } from '../../services/atlasApi';
+import { fetchAgencies, screenRoutes, fetchSegmentBottlenecks, fetchStopDwells, auditServiceChange, AgencyMeta, ScreenRoute, SegmentBottleneck, StopDwell, AuditResult } from '../../services/atlasApi';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import './Intelligence.css';
 
@@ -18,6 +18,8 @@ export default function IntelligenceView() {
     const [routes, setRoutes] = useState<ScreenRoute[]>([]);
     const [bottlenecks, setBottlenecks] = useState<SegmentBottleneck[]>([]);
     const [dwells, setDwells] = useState<StopDwell[]>([]);
+    const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
+    const [auditing, setAuditing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +38,7 @@ export default function IntelligenceView() {
     useEffect(() => {
         if (!selectedAgency) return;
         setLoading(true);
+        setAuditResult(null); // Clear previous audit when agency changes
         screenRoutes({
             agency: selectedAgency,
             maxHeadway: 60,
@@ -57,6 +60,19 @@ export default function IntelligenceView() {
             .finally(() => setLoading(false));
     }, [selectedAgency]);
 
+    const handleAudit = async () => {
+        if (!selectedAgency) return;
+        setAuditing(true);
+        try {
+            const res = await auditServiceChange(selectedAgency);
+            setAuditResult(res);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setAuditing(false);
+        }
+    };
+
     const stats = useMemo(() => {
         if (routes.length === 0) return null;
         
@@ -75,6 +91,19 @@ export default function IntelligenceView() {
         };
     }, [routes]);
 
+    const auditSummary = useMemo(() => {
+        if (!auditResult) return null;
+        const avgA = auditResult.before.results.reduce((acc, c) => acc + c.reliabilityScore, 0) / auditResult.before.results.length || 0;
+        const avgB = auditResult.after.results.reduce((acc, c) => acc + c.reliabilityScore, 0) / auditResult.after.results.length || 0;
+        const delta = avgB - avgA;
+        return {
+            beforeScore: Math.round(avgA),
+            afterScore: Math.round(avgB),
+            delta: Math.round(delta * 10) / 10,
+            pivotDate: new Date(auditResult.pivotDate).toLocaleDateString()
+        };
+    }, [auditResult]);
+
     if (loading && agencies.length > 0) {
         return (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
@@ -91,6 +120,12 @@ export default function IntelligenceView() {
                 badge={{ label: 'Strategic Audit' }}
                 actions={[
                     {
+                        label: auditing ? "Auditing..." : "Before/After Audit",
+                        icon: Clock,
+                        onClick: handleAudit,
+                        variant: auditing ? 'secondary' : 'primary'
+                    },
+                    {
                         label: "Download Report",
                         icon: ShieldCheck,
                         onClick: () => window.print(),
@@ -98,6 +133,36 @@ export default function IntelligenceView() {
                     }
                 ]}
             />
+
+            {/* Service Change Audit Result */}
+            {auditResult && auditSummary && (
+                <div className="precision-panel mb-8 border-l-4 border-indigo-500 bg-indigo-500/5 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-1">Service Change Performance Audit</h3>
+                                <div className="text-[10px] text-[var(--text-muted)] font-medium">Pivot Date: {auditSummary.pivotDate} (30-day window comparison)</div>
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-[10px] font-black border ${auditSummary.delta >= 0 ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-600 border-red-500/20'}`}>
+                                {auditSummary.delta >= 0 ? '+' : ''}{auditSummary.delta} Reliability Delta
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-[var(--item-bg)]/50 p-4 rounded-xl border border-[var(--border)]">
+                                <div className="text-[10px] atlas-label opacity-50 mb-2">Before Change (Old Feed)</div>
+                                <div className="text-2xl font-black atlas-mono">{auditSummary.beforeScore}%</div>
+                                <div className="text-[9px] text-[var(--text-muted)]">{auditResult.before.results.length} corridors analyzed</div>
+                            </div>
+                            <div className="bg-[var(--item-bg)]/50 p-4 rounded-xl border border-[var(--border)]">
+                                <div className="text-[10px] atlas-label opacity-50 mb-2">After Change (New Feed)</div>
+                                <div className="text-2xl font-black atlas-mono">{auditSummary.afterScore}%</div>
+                                <div className="text-[9px] text-[var(--text-muted)]">{auditResult.after.results.length} corridors analyzed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Horizontal Agency Filter Bar */}
             <div className="flex items-center gap-4 mb-8 bg-[var(--item-bg)] p-2 rounded-2xl border border-[var(--border)] overflow-x-auto no-scrollbar">
