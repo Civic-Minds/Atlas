@@ -32,7 +32,7 @@ export const TopNav: React.FC = () => {
         <header className="sticky top-0 z-50 w-full bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors duration-200">
             <div className="max-w-7xl mx-auto w-full px-8 h-20 flex items-center justify-between">
                 <div className="flex items-center">
-                    <Link to="/" className="flex items-center gap-1.5 group text-decoration-none">
+                    <Link to="/" className="flex items-center gap-1.5 group no-underline cursor-pointer">
                         <span className="text-[20px] font-bold tracking-tight text-[var(--text-primary)]">
                             Atlas
                         </span>
@@ -50,7 +50,7 @@ export const TopNav: React.FC = () => {
                                 <NavLink
                                     key={item.id}
                                     to={item.path}
-                                    className={`text-[12px] font-bold tracking-tight transition-all duration-200 flex items-center gap-2 group ${isActive
+                                    className={`text-[12px] font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer group ${isActive
                                         ? 'text-indigo-400'
                                         : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                                         }`}

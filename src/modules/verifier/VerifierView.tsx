@@ -177,8 +177,8 @@ export default function VerifierView() {
             <div className="module-container">
                 <EmptyStateHero
                     icon={Shield}
-                    title="Audit"
-                    description="Audit AI-generated frequency claims against real-world agency schedules."
+                    title="Verification"
+                    description="Verify system frequency profiles against official agency schedules."
                     primaryAction={{
                         label: "Start Validation Task",
                         icon: Upload,

@@ -224,12 +224,12 @@ export default function PulseDashboard() {
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-indigo-400">Feed Health</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Vehicles</th>
                                 <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Trend (24h)</th>
-                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Match Quality</th>
-                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#f59e0b]">Bunching</th>
-                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#10b981]">Adherence</th>
-                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#ef4444]">Ghosts</th>
-                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Enterprise Sync</th>
-                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-right">Engine</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Match</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#f59e0b]">Bunch</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#10b981]">OTP</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-[#ef4444]">Ghost</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest">Notion</th>
+                                <th className="px-6 py-4 atlas-label text-[10px] opacity-50 uppercase tracking-widest text-right">Ver</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--border)]">
