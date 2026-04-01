@@ -17,11 +17,11 @@ Informed by [RESEARCH.md](RESEARCH.md) pain points and live platform review (Apr
 
 ## 🟡 P1 — Core Intelligence
 
-- [ ] **Alert Thresholds** — Configurable per-route/corridor notifications. "Notify me when M15 SBS drops below 70% reliability for 3 consecutive cycles." Push to email, Slack, or Notion.
+- [x] **Alert Thresholds** — Configurable per-route/corridor notifications via CRUD API. "Notify me when reliability drops below 70%." Tracks history and supports cooldowns. Ready for Notion/Slack integration.
 - [x] **Bunching Detection (Real-Time)** — Flag when 2+ vehicles on the same route are < 60 seconds apart. The #1 rider complaint and #1 question from elected officials. Already in NextGen Phase 2 checklist — needs to be prioritized.
 - [x] **Ghost Bus Detection** — Scheduled trips with no observed vehicle. Show frequency by route. Already in NextGen Phase 2 — surface it in the UI with a count per agency.
-- [ ] **Schedule Adherence Breakdown** — Distribution of early/on-time/late, not just average delay. "40% on-time, 35% late, 25% early" tells a completely different story than a mean of -12 seconds.
-- [ ] **Feed Health Scoring** — Per-agency reliability grade based on vehicle count consistency, trip assignment rate, and position plausibility. Currently just success/fail logs — needs a composite score.
+- [x] **Schedule Adherence Breakdown** — Distribution of early/on-time/late, not just average delay. "40% on-time, 35% late, 25% early" tells a completely different story than a mean of -12 seconds.
+- [x] **Feed Health Scoring** — Per-agency reliability grade based on vehicle count consistency, trip assignment rate, and position plausibility. Composite score (0-100) surfaced in the Pulse Dashboard.
 - [ ] **Enterprise Sync Detail** — The Notion sync column should show *what* was pushed (Status? Score? Both?) and whether it succeeded or was throttled. Currently just says "Synced."
 
 ---

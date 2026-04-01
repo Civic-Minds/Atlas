@@ -14,6 +14,7 @@ interface SyncResult {
   success: boolean;
   score?: number;
   syncAt?: Date;
+  syncStatus?: string;
   error?: string;
 }
 
@@ -86,8 +87,9 @@ export async function syncAgencyToNotion(agencyId: string, health: { success: bo
       }
     });
 
-    log.info('NotionSync', `Successfully pushed intelligence for ${agencyId} to Notion. Score: ${avgScore}`);
-    return { agencyId, success: true, score: avgScore ?? undefined, syncAt: new Date() };
+    const syncStatus = `Status: ${statusName}, Performance: ${avgScore !== null ? (Math.round(avgScore * 10) / 10).toString() : 'N/A'}`;
+    log.info('NotionSync', `Successfully pushed intelligence for ${agencyId} to Notion. ${syncStatus}`);
+    return { agencyId, success: true, score: avgScore ?? undefined, syncAt: new Date(), syncStatus };
 
 
   } catch (err) {

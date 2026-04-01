@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 - **Service Performance Diagnostics (P1)**:
     - **Real-Time Bunching Detection**: Integrated headway analysis to identify vehicles arriving <60s apart (customizable threshold). Surfaced as "Bunching Events" in the Pulse Dashboard to help managers identify reliability gaps.
     - **Ghost Bus Identification**: Engineered a schedule-comparison service that flags missing trips by comparing real-time telemetry against static stop_times. Visible in Pulse as "Missing Trips" per agency.
+    - **Schedule Adherence Breakdown**: Implemented industry-standard categorization (-60s to +300s) to provide a 3-bucket distribution (Early/On-Time/Late). Surface as a percentage-based reliability indicator in the dashboard.
+    - **Feed Health Scoring**: Engineered a composite reliability engine (0-100 score) that audits Position Plausibility, Trip Assignment Rates, and Snapshot Stability to provide at-a-glance feed quality assessments.
+    - **Enterprise Alerting Architecture**: Implemented a real-time threshold evaluation engine with persistent rule storage ('alert_thresholds') and CRUD API support. Features cooldown logic and historical audit trails ('alert_history').
+    - **Granular Enterprise Sync visibility**: Upgraded the Notion synchronization pipeline to surface specific metrics (Status, Reliability Score, Throttling status) in the Pulse Dashboard, replacing basic success/fail indicators.
 
 ### Added
 - **Advanced Spatial Matching**: Haversine-based projection for real-time vehicle positions. Vehicles missing `stop_id` are matched to the nearest scheduled stop with a confidence score system (threshold <300m).

@@ -57,12 +57,13 @@ export async function logIngestion(
   vehicleCount?: number,
   errorMsg?: string,
   notionSyncAt?: Date,
+  notionSyncStatus?: string,
 ): Promise<void> {
   const db = getPool();
   await db.query(
-    `INSERT INTO ingestion_log (agency_id, success, vehicle_count, error_msg, notion_sync_at)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [agencyId, success, vehicleCount ?? null, errorMsg ?? null, notionSyncAt ?? null],
+    `INSERT INTO ingestion_log (agency_id, success, vehicle_count, error_msg, notion_sync_at, notion_sync_status)
+     VALUES ($1, $2, $3, $4, $5, $6)`,
+    [agencyId, success, vehicleCount ?? null, errorMsg ?? null, notionSyncAt ?? null, notionSyncStatus ?? null],
   );
 }
 

@@ -1,5 +1,8 @@
 import { aggregateCorridorPerformance } from '../intelligence/headway';
 import { detectGhostBuses } from '../intelligence/ghosts';
+import { calculateAgencyHealth } from '../intelligence/health';
+import { evaluateThresholds } from '../intelligence/alerts';
+import { log } from '../logger';
 import { Router, Request, Response } from 'express';
 import { getPool, getTenantForUser } from '../storage/db';
 import { getStaticPool } from '../storage/static-db';
@@ -370,9 +373,30 @@ router.get('/intelligence/matching-stats', requireAuth, diagnosticsLimiter, asyn
     agency ? [agency] : []
   );
 
+  const stats = [];
+  for (const row of result.rows) {
+      try {
+          const health = await calculateAgencyHealth(row.agency_id);
+          const metrics = {
+              health_score: health.compositeScore,
+              reliability_score: parseFloat(row.avg_confidence) * 100, // Matching confidence as proxy
+              bunching_count: 0, // Placeholder
+              ghost_rate: 0 // Placeholder
+          };
+
+          // Evaluate alerts as side-effect
+          await evaluateThresholds(row.agency_id, metrics);
+
+          stats.push({ ...row, healthScore: health.compositeScore });
+      } catch (e) {
+          log.error('Health', 'Failed to calculate health or alerts for agency', { agencyId: row.agency_id, error: e });
+          stats.push({ ...row, healthScore: 0 });
+      }
+  }
+
   res.json({
     ts: new Date().toISOString(),
-    stats: result.rows
+    stats
   });
 });
 
@@ -399,6 +423,71 @@ router.get('/intelligence/ghosts', requireAuth, requireTenant, diagnosticsLimite
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
+});
+
+// GET /api/alerts/thresholds
+router.get('/alerts/thresholds', requireAuth, requireTenant, async (req: Request, res: Response) => {
+    const user = (req as any).user;
+    const tenant = await getTenantForUser(user.uid);
+    if (!tenant) return res.status(403).json({ error: 'Access denied' });
+
+    const accountRes = await getStaticPool().query(
+        'SELECT id FROM agency_accounts WHERE slug = $1', [tenant.agencyId]
+    );
+    if (accountRes.rows.length === 0) return res.status(404).json({ error: 'Account not found' });
+    const accountId = accountRes.rows[0].id;
+
+    const result = await getStaticPool().query(
+        'SELECT * FROM alert_thresholds WHERE agency_account_id = $1 ORDER BY created_at DESC',
+        [accountId]
+    );
+    res.json(result.rows);
+});
+
+// POST /api/alerts/thresholds
+router.post('/alerts/thresholds', requireAuth, requireTenant, async (req: Request, res: Response) => {
+    const { target_type, target_id, metric, comparison, value, cooldown_minutes, notion_enabled } = req.body;
+    const user = (req as any).user;
+    const tenant = await getTenantForUser(user.uid);
+    if (!tenant) return res.status(403).json({ error: 'Access denied' });
+
+    const accountRes = await getStaticPool().query(
+        'SELECT id FROM agency_accounts WHERE slug = $1', [tenant.agencyId]
+    );
+    if (accountRes.rows.length === 0) return res.status(404).json({ error: 'Account not found' });
+    const accountId = accountRes.rows[0].id;
+
+    try {
+        const result = await getStaticPool().query(
+            `INSERT INTO alert_thresholds 
+             (agency_account_id, target_type, target_id, metric, comparison, value, cooldown_minutes, notion_enabled)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+            [accountId, target_type, target_id, metric, comparison, value, cooldown_minutes || 60, !!notion_enabled]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: (err as Error).message });
+    }
+});
+
+// DELETE /api/alerts/thresholds/:id
+router.delete('/alerts/thresholds/:id', requireAuth, requireTenant, async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = (req as any).user;
+    const tenant = await getTenantForUser(user.uid);
+    if (!tenant) return res.status(403).json({ error: 'Access denied' });
+
+    const accountRes = await getStaticPool().query(
+        'SELECT id FROM agency_accounts WHERE slug = $1', [tenant.agencyId]
+    );
+    if (accountRes.rows.length === 0) return res.status(404).json({ error: 'Account not found' });
+    const accountId = accountRes.rows[0].id;
+
+    await getStaticPool().query(
+        'DELETE FROM alert_thresholds WHERE id = $1 AND agency_account_id = $2',
+        [id, accountId]
+    );
+    res.status(204).send();
 });
 
 export default router;

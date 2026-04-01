@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS ingestion_log (
   polled_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   success      BOOLEAN     NOT NULL,
   vehicle_count INTEGER,
-  error_msg    TEXT
+  error_msg    TEXT,
+  notion_sync_at TIMESTAMPTZ,
+  notion_sync_status TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_ingestion_agency_time

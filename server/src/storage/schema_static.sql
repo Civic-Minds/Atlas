@@ -498,6 +498,46 @@ CREATE INDEX idx_audit_entity  ON audit_log (entity_type, entity_id);
 -- =============================================================================
 -- SECTION 8: SEED DATA
 -- =============================================================================
+-- SECTION 14: ENTERPRISE ALERTING & THRESHOLDS
+-- =============================================================================
+
+CREATE TABLE alert_thresholds (
+  id                    UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  agency_account_id     UUID          NOT NULL REFERENCES agency_accounts (id) ON DELETE CASCADE,
+  target_type           TEXT          NOT NULL CHECK (target_type IN ('agency', 'route', 'corridor')),
+  target_id             TEXT,         -- agency_id, route_id, or link_id
+  metric                TEXT          NOT NULL CHECK (metric IN ('reliability_score', 'bunching_count', 'ghost_rate', 'health_score')),
+  comparison            TEXT          NOT NULL CHECK (comparison IN ('>', '<', '>=', '<=')),
+  value                 NUMERIC       NOT NULL,
+  cooldown_minutes      INTEGER       NOT NULL DEFAULT 60,
+  is_active             BOOLEAN       NOT NULL DEFAULT TRUE,
+  notion_enabled        BOOLEAN       NOT NULL DEFAULT FALSE,
+  slack_enabled         BOOLEAN       NOT NULL DEFAULT FALSE,
+  email_enabled         BOOLEAN       NOT NULL DEFAULT FALSE,
+  last_triggered_at     TIMESTAMPTZ,
+  created_at            TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  updated_at            TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_alert_thresholds_account ON alert_thresholds (agency_account_id);
+CREATE INDEX idx_alert_thresholds_active  ON alert_thresholds (is_active);
+
+CREATE TABLE alert_history (
+  id                    UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  agency_account_id     UUID          NOT NULL REFERENCES agency_accounts (id) ON DELETE CASCADE,
+  threshold_id          UUID          NOT NULL REFERENCES alert_thresholds (id) ON DELETE CASCADE,
+  triggered_at          TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  observed_value        NUMERIC       NOT NULL,
+  message               TEXT          NOT NULL,
+  resolved_at           TIMESTAMPTZ
+);
+
+CREATE INDEX idx_alert_history_account ON alert_history (agency_account_id);
+CREATE INDEX idx_alert_history_threshold ON alert_history (threshold_id);
+CREATE INDEX idx_alert_history_time ON alert_history (triggered_at DESC);
+
+
+-- =============================================================================
 
 INSERT INTO analysis_criteria (
   id, agency_account_id, slug, display_name, is_default, is_system, config
