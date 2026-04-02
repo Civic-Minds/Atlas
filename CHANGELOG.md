@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- **Live Map auth**: `MapView` now sends a Firebase Bearer token with vehicle position requests, fixing 401 errors on `/api/vehicles`.
+- **Live Map URL**: Corrected double `/api` prefix in vehicle fetch URL (`/api/api/vehicles` → `/api/vehicles`).
+
 ## [0.15.0] - 2026-04-02
 
 ### Added
