@@ -18,6 +18,7 @@ import { RouteDetailModal } from './components/RouteDetailModal';
 import { CommitModal } from './components/CommitModal';
 import { NetworkScreener } from './components/NetworkScreener';
 import { useCatalogStore } from '../../types/catalogStore';
+import AtlasView from '../atlas/AtlasView';
 
 
 const TIER_CONFIG = [
@@ -93,6 +94,7 @@ export default function ScreenerView() {
     const [lastFileName, setLastFileName] = useState('feed.zip');
     const [pendingFile, setPendingFile] = useState<File | null>(null);
     const [mode, setMode] = useState<'local' | 'network'>('network');
+    const [activeView, setActiveView] = useState<'data' | 'map'>('data');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { loading, status, error, runAnalysis } = useGtfsWorker();
@@ -177,7 +179,7 @@ export default function ScreenerView() {
     if (!isAuthenticated) {
         return (
             <ModuleLanding
-                title="Strategy"
+                title="Analyze"
                 description="Upload a GTFS feed to see how every route in your network performs. Routes are automatically grouped by headway into frequency tiers."
                 icon={ShieldCheck}
                 features={[
@@ -234,7 +236,7 @@ export default function ScreenerView() {
                 </div>
                 <EmptyStateHero
                     icon={ShieldCheck}
-                    title="Strategy"
+                    title="Analyze"
                     description="Upload a GTFS feed in the Admin panel to get started."
                     primaryAction={{
                         label: "Open Admin Panel",
@@ -263,7 +265,7 @@ export default function ScreenerView() {
                     onChange={handleFileUpload}
                 />
                 <ModuleHeader
-                    title="Strategy"
+                    title="Analyze"
                     badge={{ label: 'Network' }}
                     actions={[]}
                 />
@@ -291,7 +293,7 @@ export default function ScreenerView() {
     return (
         <div className="module-container">
             <ModuleHeader
-                badge={{ label: `${gtfsData.routes.length} routes` }}
+                badge={{ label: `${gtfsData!.routes.length} routes` }}
                 actions={[
                     ...(isAdmin ? [{
                         label: "Commit to Catalog",
@@ -302,7 +304,7 @@ export default function ScreenerView() {
                     {
                         label: "Board Report",
                         icon: FileText,
-                        onClick: () => navigate('/strategy/report'),
+                        onClick: () => navigate("/analyze/report"),
                         variant: 'primary' as const
                     },
                     {
@@ -368,6 +370,26 @@ export default function ScreenerView() {
                     }] : [])
                 ]}
             />
+
+            {/* View toggle: Data / Map */}
+            <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-6 border border-[var(--border)]">
+                {(['data', 'map'] as const).map(v => (
+                    <button
+                        key={v}
+                        onClick={() => setActiveView(v)}
+                        className={`px-5 py-2 rounded-lg text-[10px] font-bold capitalize transition-all ${activeView === v
+                            ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
+                            : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
+                        }`}
+                    >
+                        {v}
+                    </button>
+                ))}
+            </div>
+
+            {activeView === 'map' && <AtlasView />}
+
+            {activeView === 'data' && <>
 
             {/* Mode toggle */}
             <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-4 border border-[var(--border)]">
@@ -538,6 +560,7 @@ export default function ScreenerView() {
                     }}
                 />
             )}
+            </>}
         </div>
     );
 }

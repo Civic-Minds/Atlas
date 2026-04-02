@@ -37,19 +37,19 @@ export const CommandPalette: React.FC = () => {
 
     const COMMANDS: CommandItem[] = [
         {
-            id: 'strategy',
-            title: 'Open Strategy',
-            description: 'Analyze GTFS frequency tiers and route performance',
+            id: 'analyze',
+            title: 'Open Analyze',
+            description: 'Frequency tiers, headways, and route performance',
             icon: Target,
-            action: () => navigate('/strategy'),
+            action: () => navigate('/analyze'),
             category: 'Navigation'
         },
         {
-            id: 'optimize',
-            title: 'Open Optimize',
-            description: 'Network map colored by service frequency',
-            icon: Zap,
-            action: () => navigate('/optimize'),
+            id: 'monitor',
+            title: 'Open Monitor',
+            description: 'Live performance metrics, bunching, and schedule adherence',
+            icon: Activity,
+            action: () => navigate('/monitor'),
             category: 'Navigation'
         },
         {

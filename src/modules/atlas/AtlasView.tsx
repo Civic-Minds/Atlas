@@ -168,11 +168,11 @@ export default function AtlasView() {
                 <EmptyStateHero
                     icon={Globe}
                     title="Atlas"
-                    description="No routes in the catalog yet. Go to Strategy, upload a GTFS feed, and commit routes to see them here."
+                    description="No routes in the catalog yet. Go to Analyze, upload a GTFS feed, and commit routes to see them here."
                     primaryAction={{
-                        label: "Go to Strategy",
+                        label: "Go to Analyze",
                         icon: Activity,
-                        href: "/strategy"
+                        href: "/analyze"
                     }}
                 />
             </div>

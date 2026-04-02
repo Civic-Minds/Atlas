@@ -119,9 +119,9 @@ export default function StrategyView() {
             <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center">
                 <FileText className="w-16 h-16 text-[var(--text-muted)] mb-4 opacity-20" />
                 <h1 className="text-2xl font-bold text-[var(--fg)] mb-2">No Analysis Data Found</h1>
-                <p className="text-[var(--text-muted)] mb-8">Please upload and analyze a GTFS feed in the Strategy first.</p>
-                <Link to="/strategy" className="atlas-button-primary">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Strategy
+                <p className="text-[var(--text-muted)] mb-8">Please upload and analyze a GTFS feed in Analyze first.</p>
+                <Link to="/analyze" className="atlas-button-primary">
+                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Analyze
                 </Link>
             </div>
         );
@@ -133,7 +133,7 @@ export default function StrategyView() {
         <div className="report-page bg-[var(--bg)] min-h-screen text-[var(--fg)] pb-20">
             {/* Control Bar (Hidden on Print) */}
             <div className="print:hidden sticky top-0 z-50 bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)] px-6 py-4 flex items-center justify-between">
-                <Link to="/strategy" className="flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-indigo-500 transition-colors">
+                <Link to="/analyze" className="flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-indigo-500 transition-colors">
                     <ArrowLeft className="w-4 h-4" /> Back to Analysis
                 </Link>
                 <div className="flex items-center gap-3">

@@ -12,7 +12,6 @@ const HomePage = React.lazy(() => import('./modules/home/HomePage'));
 const SimulatorView = React.lazy(() => import('./modules/simulator/SimulatorView'));
 const ScreenerView = React.lazy(() => import('./modules/screener/ScreenerView'));
 const VerifierView = React.lazy(() => import('./modules/verifier/VerifierView'));
-const AtlasView = React.lazy(() => import('./modules/atlas/AtlasView'));
 const ReportCardsView = React.lazy(() => import('./modules/report-cards/ReportCardsView'));
 const AdminView = React.lazy(() => import('./modules/admin/AdminView'));
 const PredictView = React.lazy(() => import('./modules/predict/PredictView'));
@@ -64,10 +63,9 @@ const App: React.FC = () => {
                         <Suspense fallback={<LazyFallback />}>
                             <Routes location={location}>
                                 <Route path="/" element={<HomePage />} />
-                                <Route path="/optimize" element={<AtlasView />} />
-                                <Route path="/intelligence" element={<IntelligenceView />} />
-                                <Route path="/strategy" element={<ScreenerView />} />
-                                <Route path="/strategy/report" element={<SystemReportView />} />
+                                <Route path="/monitor" element={<IntelligenceView />} />
+                                <Route path="/analyze" element={<ScreenerView />} />
+                                <Route path="/analyze/report" element={<SystemReportView />} />
 
                                 <Route path="/simulate" element={<SimulatorView />} />
                                 <Route path="/predict" element={<PredictView />} />
