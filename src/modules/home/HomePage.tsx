@@ -16,32 +16,32 @@ const FEATURES = [
     {
         id: 'analyze',
         title: 'Analyze',
-        cta: 'Explore Network',
+        cta: 'Screen Network',
         description: 'Frequency tiers, headways, and route performance across your entire GTFS network.',
         icon: <Target className="w-5 h-5" />,
         color: 'emerald',
         path: '/analyze',
-        meta: 'Frequency'
+        meta: 'Network'
     },
     {
         id: 'monitor',
         title: 'Monitor',
-        cta: 'Check Live Performance',
+        cta: 'Check Performance',
         description: 'Real-time metrics: schedule adherence, bunching detection, and ghost bus alerts.',
         icon: <Brain className="w-5 h-5" />,
         color: 'amber',
         path: '/monitor',
-        meta: 'Real-time'
+        meta: 'Live Ops'
     },
     {
         id: 'predict',
         title: 'Predict',
-        cta: 'Find Service Gaps',
+        cta: 'Model Gaps',
         description: 'Identify transit deserts by comparing population density against service coverage.',
         icon: <TrendingUp className="w-5 h-5" />,
         color: 'purple',
         path: '/predict',
-        meta: 'Demand'
+        meta: 'Forecasting'
     },
     {
         id: 'simulate',
@@ -51,12 +51,12 @@ const FEATURES = [
         icon: <Activity className="w-5 h-5" />,
         color: 'indigo',
         path: '/simulate',
-        meta: 'Scenarios'
+        meta: 'Sim Lab'
     },
     {
         id: 'audit',
         title: 'Audit',
-        cta: 'Verify Schedules',
+        cta: 'Verify Claims',
         description: 'Compare published frequency claims against actual GTFS data to catch inaccuracies.',
         icon: <FileCheck className="w-5 h-5" />,
         color: 'blue',
@@ -65,14 +65,6 @@ const FEATURES = [
     }
 ];
 
-const COLOR_MAP: Record<string, string> = {
-    emerald: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 group-hover:border-emerald-500',
-    amber: 'bg-amber-500/10 text-amber-600 border-amber-500/20 group-hover:border-amber-500',
-    indigo: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20 group-hover:border-indigo-500',
-    purple: 'bg-purple-500/10 text-purple-600 border-purple-500/20 group-hover:border-purple-500',
-    rose: 'bg-rose-500/10 text-rose-600 border-rose-500/20 group-hover:border-rose-500',
-    blue: 'bg-blue-500/10 text-blue-600 border-blue-500/20 group-hover:border-blue-500'
-};
 
 const LINE_COLOR_MAP: Record<string, string> = {
     emerald: 'bg-emerald-500',
@@ -134,7 +126,7 @@ const HomePage: React.FC = () => {
                         >
                             <div className="flex flex-col gap-6 mb-8">
                                 <div className="flex items-center justify-between">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border ${COLOR_MAP[feature.color] || 'bg-[var(--item-bg)] text-[var(--text-primary)] border-[var(--border)]'}`}>
+                                    <div className="w-10 h-10 rounded-lg bg-[var(--item-bg)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] group-hover:text-indigo-500 group-hover:border-indigo-500/30 transition-all">
                                         {feature.icon}
                                     </div>
                                     <span className="atlas-mono text-[10px] text-[var(--text-muted)] opacity-60">
@@ -159,8 +151,8 @@ const HomePage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-between items-center mt-auto">
-                                <span className="atlas-label text-[9px] group-hover:text-[var(--accent-primary)] transition-colors">
+                            <div className="flex justify-end items-center gap-1.5 mt-auto">
+                                <span className="text-[12px] text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] transition-colors">
                                     {feature.cta}
                                 </span>
                                 <ArrowRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] group-hover:translate-x-1 transition-all" />
