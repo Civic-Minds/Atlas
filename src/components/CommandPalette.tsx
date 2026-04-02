@@ -37,43 +37,43 @@ export const CommandPalette: React.FC = () => {
 
     const COMMANDS: CommandItem[] = [
         {
-            id: 'audit',
-            title: 'Open Audit',
-            description: 'Execute technical GTFS validation and spec auditing',
-            icon: ShieldCheck,
-            action: () => navigate('/verifier'),
-            category: 'Navigation'
-        },
-        {
             id: 'strategy',
             title: 'Open Strategy',
-            description: 'Monitor real-time frequencies and system performance',
+            description: 'Analyze GTFS frequency tiers and route performance',
             icon: Target,
             action: () => navigate('/strategy'),
             category: 'Navigation'
         },
         {
-            id: 'simulate',
-            title: 'Open Simulate',
-            description: 'Tactical stop-consolidation modeling and dwell-time sensitivity analysis',
-            icon: TrendingUp,
-            action: () => navigate('/simulator'),
+            id: 'optimize',
+            title: 'Open Optimize',
+            description: 'Network map colored by service frequency',
+            icon: Zap,
+            action: () => navigate('/optimize'),
             category: 'Navigation'
         },
         {
             id: 'predict',
             title: 'Open Predict',
-            description: 'Model future service changes and scenario impacts',
+            description: 'Find transit deserts and service gaps',
             icon: Activity,
             action: () => navigate('/predict'),
             category: 'Navigation'
         },
         {
-            id: 'atlas',
-            title: 'Open Atlas',
-            description: 'Long-term network growth planning and gap detection',
-            icon: Zap,
-            action: () => navigate('/atlas'),
+            id: 'simulate',
+            title: 'Open Simulate',
+            description: 'Model stop consolidation and travel time impact',
+            icon: TrendingUp,
+            action: () => navigate('/simulate'),
+            category: 'Navigation'
+        },
+        {
+            id: 'audit',
+            title: 'Open Audit',
+            description: 'Verify frequency results against agency schedules',
+            icon: ShieldCheck,
+            action: () => navigate('/audit'),
             category: 'Navigation'
         },
         {

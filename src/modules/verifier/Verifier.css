@@ -58,14 +58,14 @@
 
 .claim-route {
     @apply font-mono font-bold;
-    font-size: 3rem;
-    letter-spacing: -0.05em;
+    font-size: 1.5rem;
+    letter-spacing: -0.03em;
     color: var(--fg);
 }
 
 .claim-tier {
     @apply font-mono font-bold;
-    font-size: 4rem;
+    font-size: 2rem;
     line-height: 1;
     color: var(--fg);
 }

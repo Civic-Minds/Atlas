@@ -123,27 +123,27 @@ export default function AtlasView() {
         return (
             <ModuleLanding
                 title="Atlas"
-                description="The unified intelligence platform for global network visibility and system-wide transit integrity."
+                description="See your entire transit network on a map, with routes colored by service frequency. Filter by tier, day of week, and agency."
                 icon={Globe}
                 features={[
                     {
-                        title: "Global Visibility",
-                        description: "Visualize your entire transit network on a high-precision, interactive global map.",
+                        title: "Frequency map",
+                        description: "Every route is drawn on the map and colored by its headway tier — see your whole network at a glance.",
                         icon: <Globe className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Network Integrity",
-                        description: "Monitor system-wide health and detect anomalies at scale across all routes and modes.",
+                        title: "Multi-agency",
+                        description: "Combine routes from multiple agencies into one view to see how networks overlap and connect.",
                         icon: <Activity className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Intelligent Layers",
-                        description: "Switch between demand heatmaps, supply overlays, and real-time performance diagnostics.",
+                        title: "Day filtering",
+                        description: "Switch between weekday, Saturday, and Sunday to see how service levels change.",
                         icon: <Layers className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Unified Dashboard",
-                        description: "The central nervous system for transit planners, combining data from all Atlas modules.",
+                        title: "Tier filtering",
+                        description: "Toggle frequency tiers on and off to focus on rapid, frequent, or infrequent service.",
                         icon: <Filter className="w-5 h-5 text-indigo-500" />
                     }
                 ]}
@@ -157,7 +157,7 @@ export default function AtlasView() {
                 <EmptyStateHero
                     icon={Globe}
                     title="Atlas"
-                    description="No routes in the catalog yet. Upload a GTFS feed in the Strategy module, then commit routes to the catalog."
+                    description="No routes in the catalog yet. Go to Strategy, upload a GTFS feed, and commit routes to see them here."
                     primaryAction={{
                         label: "Go to Strategy",
                         icon: Activity,
@@ -169,7 +169,7 @@ export default function AtlasView() {
     }
 
     return (
-        <div className="relative w-full h-full bg-[#111]">
+        <div className="relative w-full h-full bg-[var(--bg)]">
             <MapContainer
                 center={[34.05, -118.25]}
                 zoom={10}
@@ -242,9 +242,8 @@ export default function AtlasView() {
                                 <Globe className="w-5 h-5 text-emerald-500" />
                             </div>
                             <div>
-                                <h1 className="text-lg font-black tracking-tight leading-none text-[var(--fg)]">Atlas</h1>
-                                <p className="text-[9px] atlas-label !text-emerald-600 mt-1 uppercase font-black tracking-wider">
-                                    {agencies.length} {agencies.length === 1 ? 'Agency' : 'Agencies'}
+                                <p className="text-xs font-semibold text-[var(--fg)]">
+                                    {agencies.length} {agencies.length === 1 ? 'agency' : 'agencies'}
                                 </p>
                             </div>
                         </div>

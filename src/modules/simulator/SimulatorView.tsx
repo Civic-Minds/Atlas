@@ -57,28 +57,27 @@ function SimulatorViewContent() {
         return (
             <ModuleLanding
                 title="Simulate"
-                description="High-precision transit impact modeling and micro-engineering scenario testing."
-
+                description="Pick a route and toggle stops on or off to see how it changes travel time. Use this to evaluate stop consolidation proposals."
                 icon={Activity}
                 features={[
                     {
-                        title: "Scenario Lab",
-                        description: "Model complex stop consolidation scenarios and see travel time impact instantly.",
+                        title: "Stop consolidation",
+                        description: "Remove stops and instantly see the travel time savings and coverage tradeoffs.",
                         icon: <Activity className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Micro-Engineering",
-                        description: "Adjust dwell times, signal priority, and stop positioning at the individual level.",
+                        title: "Dwell time controls",
+                        description: "Adjust dwell time and acceleration parameters to model different vehicle types.",
                         icon: <Zap className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Network Mapping",
-                        description: "Visualize the spatial impact of service changes on real-world transit topography.",
+                        title: "Walking gap analysis",
+                        description: "See maximum walking distance between remaining stops to avoid coverage gaps.",
                         icon: <MapIcon className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Metric-Driven Growth",
-                        description: "Export simulation results to justify capital projects and network realignments.",
+                        title: "Export scenarios",
+                        description: "Save simulation results as JSON to document proposals and share with your team.",
                         icon: <Database className="w-5 h-5 text-indigo-500" />
                     }
                 ]}
@@ -92,7 +91,7 @@ function SimulatorViewContent() {
                 <EmptyStateHero
                     icon={Activity}
                     title="Simulate"
-                    description="Model stop consolidation scenarios with real-time performance metrics. Upload a GTFS feed to begin."
+                    description="Upload a GTFS feed in the Admin panel to start modeling stop changes."
                     primaryAction={{
                         label: "Open Admin Panel",
                         icon: Database,
@@ -112,7 +111,7 @@ function SimulatorViewContent() {
             <div className="flex flex-col items-center justify-center h-full space-y-4">
                 <div className="w-12 h-12 border-4 border-[var(--border)] border-t-indigo-500 rounded-full animate-spin" />
                 <p className="atlas-label">
-                    Initialising Engine...
+                    Loading...
                 </p>
             </div>
         );
@@ -244,7 +243,7 @@ function SimulatorViewContent() {
                         <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                             <Activity className="w-4 h-4 text-indigo-500" />
                         </div>
-                        <h2 className="text-sm font-black uppercase tracking-widest text-[var(--fg)]">Simulator Engine</h2>
+                        <h2 className="text-sm font-bold text-[var(--fg)]">Controls</h2>
                     </div>
 
                     <div className="flex items-center gap-1">
