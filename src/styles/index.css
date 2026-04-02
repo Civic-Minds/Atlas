@@ -111,8 +111,8 @@ button,
 }
 
 /* Typography Utilities */
-.atlas-h1 {
-  @apply text-4xl md:text-7xl font-bold tracking-tighter text-[var(--text-primary)] leading-[0.9];
+@utility atlas-h1 {
+  @apply text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)];
 }
 
 .atlas-h2 {

@@ -7,12 +7,14 @@ import { useAuthStore } from '../hooks/useAuthStore';
 
 const NAV_ITEMS = [
     { id: 'strategy', title: 'Strategy', path: '/strategy' },
-    { id: 'intelligence', title: 'Intelligence', path: '/intelligence' },
-    { id: 'simulate', title: 'Simulate', path: '/simulator', status: 'BETA' },
-    { id: 'predict', title: 'Predict', path: '/predict', status: 'ALPHA' },
-    { id: 'optimize', title: 'Optimize', path: '/atlas', status: 'ALPHA' },
-    { id: 'audit', title: 'Audit', path: '/verifier', status: 'ALPHA' },
-    { id: 'map', title: 'Live Map', path: '/map' }
+    { id: 'optimize', title: 'Optimize', path: '/optimize' },
+    { id: 'predict', title: 'Predict', path: '/predict' },
+    { id: 'simulate', title: 'Simulate', path: '/simulate' },
+    { id: 'audit', title: 'Audit', path: '/audit' },
+];
+
+const SECONDARY_NAV = [
+    { id: 'map', title: 'Map', path: '/map' },
 ];
 
 
@@ -71,21 +73,36 @@ export const TopNav: React.FC = () => {
                                 </NavLink>
                             );
                         })}
+                        <div className="w-px h-4 bg-[var(--border)]" />
+                        {SECONDARY_NAV.map((item) => {
+                            const isActive = location.pathname.startsWith(item.path);
+                            return (
+                                <NavLink
+                                    key={item.id}
+                                    to={item.path}
+                                    className={`text-[13px] font-semibold transition-colors ${isActive
+                                        ? 'text-[var(--text-primary)]'
+                                        : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                                        }`}
+                                >
+                                    {item.title}
+                                </NavLink>
+                            );
+                        })}
                     </nav>
 
                     <div className="hidden lg:block w-px h-6 bg-[var(--border)]" />
 
-                    {/* User avatar + logout */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <div
                             title={displayName}
-                            className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center text-[11px] font-black text-indigo-500 select-none"
+                            className="w-6 h-6 rounded-full bg-[var(--item-bg)] border border-[var(--border)] flex items-center justify-center text-[10px] font-bold text-[var(--text-muted)] select-none"
                         >
                             {avatarLabel}
                         </div>
                         <button
                             onClick={logout}
-                            className="hidden lg:block text-[13px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                            className="text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                         >
                             Log out
                         </button>

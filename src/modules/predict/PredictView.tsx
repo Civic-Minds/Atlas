@@ -1,12 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Layers, Activity, Zap, TrendingUp, Users, MapPin, Search, Filter, Play, Upload, Database, ShieldCheck, Clock, Map as MapIcon } from 'lucide-react';
+import { Layers, Activity, Zap, TrendingUp, Users, MapPin, Search, Filter, Play, Database, ShieldCheck, Clock, Map as MapIcon } from 'lucide-react';
 import { PredictProvider, usePredict } from './PredictContext';
 import PredictMap from './components/PredictMap';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
 import { ModuleLanding } from '../../components/ModuleLanding';
-import { useGtfsWorker } from '../../hooks/useGtfsWorker';
 import { useAuthStore } from '../../hooks/useAuthStore';
-import { useTransitStore } from '../../types/store';
 
 const PredictViewContent: React.FC = () => {
     const { isAuthenticated } = useAuthStore();
@@ -21,59 +19,32 @@ const PredictViewContent: React.FC = () => {
         refreshData
     } = usePredict();
     const [viewMode, setViewMode] = useState<'demand' | 'supply' | 'opportunity'>('demand');
-    const { loading: uploading, status: uploadStatus, runAnalysis: runGtfsUpload } = useGtfsWorker();
-    const { setRawData, loading: globalLoading } = useTransitStore();
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        runGtfsUpload(file, async (data) => {
-            await setRawData(data);
-            await refreshData();
-        });
-    };
-
-    if (uploading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[400px]">
-                <div className="flex flex-col items-center space-y-4">
-                    <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-                    <div className="text-center">
-                        <p className="text-[10px] text-[var(--text-muted)] font-bold mb-1">Analyzing GTFS engine</p>
-                        <p className="text-xs font-mono text-indigo-400 font-bold">{uploadStatus}</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     if (!isAuthenticated) {
         return (
             <ModuleLanding
                 title="Predict"
-                description="Forecasting latent demand and service gaps attraverso gravitational accessibility modeling."
-                icon={TrendingUp}
+                description="Find where your network has gaps. Compares population and employment density against actual transit service to identify underserved areas."
+                icon={Zap}
                 features={[
                     {
-                        title: "Demand Forecast",
-                        description: "Identify high-density residential and employment centers using demographic data nodes.",
+                        title: "Demand mapping",
+                        description: "See where people live and work, mapped as density nodes across your service area.",
                         icon: <Users className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Supply Analysis",
-                        description: "Measure walking-distance access to frequent transit across the entire metropolitan area.",
+                        title: "Supply coverage",
+                        description: "Measure how much of the area is within walking distance of frequent transit service.",
                         icon: <Activity className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Gap Detection",
-                        description: "Automatically detect transit deserts—areas with high demand but insufficient service supply.",
+                        title: "Gap detection",
+                        description: "Automatically find areas with high demand but little or no transit coverage.",
                         icon: <Zap className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Mobility Mapping",
-                        description: "Visualize future mobility scenarios with high-resolution resolution-adjustable heatmaps.",
+                        title: "Adjustable resolution",
+                        description: "Control the grid resolution to zoom in on specific neighborhoods or see the big picture.",
                         icon: <MapIcon className="w-5 h-5 text-indigo-500" />
                     }
                 ]}
@@ -81,24 +52,17 @@ const PredictViewContent: React.FC = () => {
         );
     }
 
-    if (!gtfsData && !globalLoading) {
+    if (!gtfsData) {
         return (
             <div className="module-container">
-                <input
-                    type="file"
-                    accept=".zip"
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                />
                 <EmptyStateHero
-                    icon={TrendingUp}
-                    title="Predict: Strategic Growth"
-                    description="Detect transit deserts and forecast service gaps using gravity-based accessibility models."
+                    icon={Zap}
+                    title="Predict"
+                    description="Waiting for data. Upload a GTFS feed in the Admin panel to begin gap analysis."
                     primaryAction={{
-                        label: "Upload GTFS File",
-                        icon: Upload,
-                        onClick: () => fileInputRef.current?.click()
+                        label: "Open Admin Panel",
+                        icon: Database,
+                        href: "/admin"
                     }}
                     features={[
                         { icon: <Users />, title: 'Demand Mapping', desc: 'Identify residential and employment density centers.' },
@@ -113,18 +77,7 @@ const PredictViewContent: React.FC = () => {
     return (
         <div className="module-container">
             <div className="flex flex-col gap-6 w-full">
-                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 py-4 border-b border-[var(--border)]">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-[var(--item-bg)] flex items-center justify-center border border-[var(--border)] text-[var(--accent-primary)] shadow-sm">
-                            <Zap className="w-5 h-5" />
-                        </div>
-                        <div className="flex flex-col">
-                            <h1 className="atlas-h2">Predict</h1>
-                            <p className="text-[10px] atlas-label !text-[var(--text-muted)] mt-1 tracking-wider uppercase">Strategic Growth Engine v1.5</p>
-
-                        </div>
-                    </div>
-
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--border)]">
                     <div className="flex items-center gap-1 bg-[var(--item-bg)] p-1 rounded-lg border border-[var(--border)]">
                         {[
                             { id: 'demand', label: 'Demand' },
@@ -134,8 +87,8 @@ const PredictViewContent: React.FC = () => {
                             <button
                                 key={mode.id}
                                 onClick={() => setViewMode(mode.id as any)}
-                                className={`px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all duration-200 ${viewMode === mode.id
-                                    ? 'bg-[var(--accent-primary)] text-white shadow-md'
+                                className={`px-4 py-1.5 rounded-md text-[11px] font-semibold transition-colors duration-150 ${viewMode === mode.id
+                                    ? 'bg-[var(--accent-primary)] text-white'
                                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--panel)]'}`}
                             >
                                 {mode.label}

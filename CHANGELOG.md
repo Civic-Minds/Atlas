@@ -92,7 +92,18 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - **Spokane Transit (STA)**: Removed stale portal access notes; feed is confirmed active and polling correctly in the live map view.
 - **Edmonton (ETS)**: Added note regarding missing LRT data in the vehicle positions feed to prevent false "ghost train" detections.
-
+- **ModuleHeader freezing the app**: `transition-all` combined with `backdrop-blur-xl` on a sticky header caused paint thrashing and multi-second freezes on scroll. Replaced with a slim `border-b` action bar using `transition-colors duration-150`. Title made optional since the nav already shows location.
+- **Redundant titles on every page**: Module name appeared in the nav bar, the ModuleHeader hero, and often a third time as an inline heading. Removed duplicate titles — nav is the primary indicator.
+- **Nav item URLs didn't match names**: Changed routes to match their nav labels (`/atlas` → `/optimize`, `/verifier` → `/audit`, `/simulator` → `/simulate`).
+- **Predict page showing raw "Upload GTFS File" prompt**: End users should never see a file upload prompt. Replaced with an Admin panel redirect, matching the pattern used by other modules.
+- **Verifier empty state showed file upload**: Same issue as Predict — replaced with Admin panel redirect.
+- **Marketing-speak throughout the UI**: Removed "ADMINISTRATIVE CONSOLE", "Initialising Engine", "Public Transparency Layer", "Intelligence Hub", "NETWORK DIAGNOSTIC", "GEOMETRIC PROPOSALS", "Strategic Growth Engine v1.5", and similar jargon. All user-facing copy rewritten in plain language describing what each module actually does.
+- **Oversized text across the app**: `text-7xl`/`text-9xl` hero titles, `text-6xl` empty state headings, `3rem`/`4rem` claim cards in Verifier — all reduced to proportionate sizes for an industry tool.
+- **Homepage was a marketing landing page**: Replaced the full-screen hero with gradient animations, 400px decorative cards, and marketing footer with a simple app dashboard — heading + 3-column grid of module cards with plain descriptions.
+- **Hardcoded dark-mode colors**: `bg-[#050505]`, `bg-[#111]`, `text-white/*` replaced with CSS variable equivalents (`var(--bg)`, `var(--fg)`, `var(--text-muted)`, etc.) in AuthSplash, App.tsx, and AtlasView.
+- **Nav order didn't reflect workflow**: Reordered to Strategy → Optimize → Predict → Simulate → Audit, with Map separated into a secondary group behind a visual divider.
+- **CommandPalette out of sync with nav**: Commands reordered and descriptions rewritten to match the updated nav structure and plain-language style.
+- **Dead code cleanup**: Removed empty `Screener.css`, unused `CityHero.tsx`/`CityHero.css` (marketing homepage hero), and unreferenced `SimulatorTeaser.tsx`.
 
 ## [0.12.0] - 2026-03-27
 ### Added
