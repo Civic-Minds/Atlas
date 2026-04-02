@@ -29,8 +29,8 @@ const LazyFallback = () => (
 
 // Shown while Firebase resolves the persisted session on first load
 const AuthLoadingScreen = () => (
-    <div className="fixed inset-0 bg-[#050505] flex items-center justify-center z-[9999]">
-        <div className="w-6 h-6 border-2 border-white/10 border-t-white/40 rounded-full animate-spin" />
+    <div className="fixed inset-0 bg-[var(--bg)] flex items-center justify-center z-[9999]">
+        <div className="w-6 h-6 border-2 border-[var(--border)] border-t-indigo-500 rounded-full animate-spin" />
     </div>
 );
 
@@ -64,14 +64,14 @@ const App: React.FC = () => {
                         <Suspense fallback={<LazyFallback />}>
                             <Routes location={location}>
                                 <Route path="/" element={<HomePage />} />
-                                <Route path="/atlas" element={<AtlasView />} />
+                                <Route path="/optimize" element={<AtlasView />} />
                                 <Route path="/intelligence" element={<IntelligenceView />} />
                                 <Route path="/strategy" element={<ScreenerView />} />
                                 <Route path="/strategy/report" element={<SystemReportView />} />
 
-                                <Route path="/simulator" element={<SimulatorView />} />
+                                <Route path="/simulate" element={<SimulatorView />} />
                                 <Route path="/predict" element={<PredictView />} />
-                                <Route path="/verifier" element={<VerifierView />} />
+                                <Route path="/audit" element={<VerifierView />} />
                                 <Route path="/reports" element={<ReportCardsView />} />
                                 <Route path="/map" element={<MapView />} />
                                 <Route path="/admin" element={<AdminView />} />

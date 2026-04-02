@@ -77,14 +77,11 @@ const ReportCardsView: React.FC = () => {
         <div className="report-cards-container overflow-y-auto">
             <header className="report-cards-header">
                 <div className="max-w-7xl mx-auto">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4 border border-emerald-500/20">
-                        Public Transparency Layer
-                    </div>
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-[var(--fg)] mb-4">
-                        Transit <span className="text-indigo-600 dark:text-indigo-400">Report Cards</span>
+                    <h1 className="text-lg font-bold text-[var(--fg)] mb-1">
+                        Report Cards
                     </h1>
-                    <p className="text-lg text-[var(--text-muted)] max-w-2xl font-medium opacity-70">
-                        Granular, verifiable data on North American transit agencies. Sourced from procurement records, board minutes, and budget documents.
+                    <p className="text-sm text-[var(--text-muted)]">
+                        Agency data sourced from procurement records, board minutes, and budget documents.
                     </p>
                 </div>
             </header>
