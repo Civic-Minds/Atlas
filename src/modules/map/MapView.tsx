@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-
-const GATEWAY_BASE = '/api';
+import { useAuthStore } from '../../hooks/useAuthStore';
 
 const AGENCIES = [
   { id: 'ttc',         label: 'TTC (Toronto)' },
@@ -77,20 +76,25 @@ export default function MapView() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  function fetchVehicles(ag: string) {
+  async function fetchVehicles(ag: string) {
     setLoading(true);
     setError(null);
-    fetch(`${GATEWAY_BASE}/api/vehicles?agency=${ag}`)
-      .then(r => r.json())
-      .then(data => {
-        setVehicles(data.vehicles ?? []);
-        setLastUpdated(new Date());
-      })
-      .catch(() => {
-        setError('Real-time feed unavailable');
-        if (intervalRef.current) clearInterval(intervalRef.current);
-      })
-      .finally(() => setLoading(false));
+    try {
+      const user = useAuthStore.getState().user;
+      const token = user ? await user.getIdToken() : null;
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const r = await fetch(`/api/vehicles?agency=${ag}`, { headers });
+      if (!r.ok) throw new Error(`${r.status}`);
+      const data = await r.json();
+      setVehicles(data.vehicles ?? []);
+      setLastUpdated(new Date());
+    } catch {
+      setError('Real-time feed unavailable');
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
