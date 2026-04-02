@@ -5,7 +5,7 @@ Atlas is a transit intelligence platform. This document stores project context s
 ## Project Roadmap
 We are currently in **Phase 2: Intelligence Layer**, focused on real-time On-Time Performance (OTP) tracking.
 
-- Version: `0.13.0`
+- Version: `0.14.0`
 - Current Goal: Validate matching services across 18 high-impact transit corridors.
 - **Big Fish Experiment**: Full Fleet polling (8,000+ vehicles) moved to **Discovery Lab (Local)**; Cloud remains on **SBS-only** routes for `mtabus`. Local focus: **Manhattan**.
 

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.14.0] - 2026-04-01
 
 ### Added
 - **Mobile Navigation**: Implemented a responsive slide-down hamburger menu for the global top navigation, ensuring accessibility on viewports smaller than 768px.
