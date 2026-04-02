@@ -42,12 +42,8 @@ export default function AdminView() {
         <div className="atlas-page max-w-4xl mx-auto py-12 px-6">
             <header className="mb-12 border-b border-[var(--border)] pb-8 flex items-center justify-between">
                 <div>
-                    <div className="flex items-center gap-2 text-indigo-500 mb-2">
-                        <ShieldCheck className="w-5 h-5" />
-                        <span className="atlas-label font-black tracking-widest text-[10px]">ADMINISTRATIVE CONSOLE</span>
-                    </div>
-                    <h1 className="atlas-h1 mb-2">Data Ingest</h1>
-                    <p className="text-[var(--text-muted)] text-lg">Manage Headway Central Database and GTFS assets.</p>
+                    <h1 className="text-lg font-bold text-[var(--text-primary)] mb-1">Admin</h1>
+                    <p className="text-sm text-[var(--text-muted)]">Upload GTFS feeds and manage stored data.</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <button onClick={handleReset} className="btn-secondary text-red-500 hover:bg-red-500/10">
@@ -61,7 +57,7 @@ export default function AdminView() {
                 <div className="precision-panel p-8 bg-indigo-500/5 border-indigo-500/20">
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
                         <Upload className="w-5 h-5 text-indigo-500" />
-                        Asset Ingestion
+                        Upload GTFS
                     </h2>
 
                     <input
@@ -111,21 +107,17 @@ export default function AdminView() {
 
                     <div className="space-y-6">
                         <div className="flex justify-between items-center py-3 border-b border-[var(--border)]">
-                            <span className="atlas-label">Target Environment</span>
-                            <span className="text-sm font-bold text-emerald-500">PRODUCTION</span>
+                            <span className="atlas-label">Storage</span>
+                            <span className="text-sm font-bold text-[var(--fg)]">IndexedDB (local)</span>
                         </div>
                         <div className="flex justify-between items-center py-3 border-b border-[var(--border)]">
-                            <span className="atlas-label">Storage Engine</span>
-                            <span className="text-sm font-bold text-[var(--fg)]">IndexedDB // STORES.GTFS</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-[var(--border)]">
-                            <span className="atlas-label">Persistence Mode</span>
-                            <span className="text-sm font-bold text-indigo-500 font-mono">PERSISTENT_RECOVERY</span>
+                            <span className="atlas-label">Persistence</span>
+                            <span className="text-sm font-bold text-[var(--fg)]">Across sessions</span>
                         </div>
                     </div>
 
                     <div className="mt-8 p-6 bg-[var(--item-bg)] rounded-2xl border border-[var(--border)] text-xs text-[var(--text-muted)] leading-relaxed italic">
-                        All data ingestion is handled locally in the browser worker thread. Ingested GTFS assets are stored in the local HeadwayDB for persistence across sessions.
+                        All data is processed locally in your browser. Nothing is uploaded to a server.
                     </div>
                 </div>
             </div>

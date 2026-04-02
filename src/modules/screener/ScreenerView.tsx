@@ -17,7 +17,7 @@ import { ValidationReportModal } from './components/ValidationReportModal';
 import { RouteDetailModal } from './components/RouteDetailModal';
 import { CommitModal } from './components/CommitModal';
 import { useCatalogStore } from '../../types/catalogStore';
-import './Screener.css';
+
 
 const TIER_CONFIG = [
     { id: '5', label: 'Rapid', name: 'Rapid', color: 'cyan' },
@@ -160,7 +160,7 @@ export default function ScreenerView() {
                 <div className="flex flex-col items-center space-y-4">
                     <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
                     <div className="text-center">
-                        <p className="text-[10px] text-[var(--text-muted)] font-bold mb-1">Analyzing GTFS engine</p>
+                        <p className="text-[10px] text-[var(--text-muted)] font-bold mb-1">Analyzing feed</p>
                         <p className="text-xs font-mono text-indigo-400 font-bold">{status}</p>
                     </div>
                 </div>
@@ -172,27 +172,27 @@ export default function ScreenerView() {
         return (
             <ModuleLanding
                 title="Strategy"
-                description="Real-time frequency monitoring and route performance tiering for modern urban mobility."
+                description="Upload a GTFS feed to see how every route in your network performs. Routes are automatically grouped by headway into frequency tiers."
                 icon={ShieldCheck}
                 features={[
                     {
-                        title: "Frequency Tiers",
-                        description: "Automatically categorize every route in your network by realized headway performance.",
+                        title: "Frequency tiers",
+                        description: "Every route is categorized by its realized headway — from rapid (5 min) to infrequent (60 min).",
                         icon: <Clock className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "System-Wide Integrity",
-                        description: "Identify coverage gaps and service anomalies across the entire transit network.",
+                        title: "Corridor analysis",
+                        description: "See combined frequency along shared corridors to find where multiple routes overlap.",
                         icon: <MapIcon className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Corridor Performance",
-                        description: "Analyze combined frequency along shared corridors to detect high-capacity opportunities.",
+                        title: "Reliability scoring",
+                        description: "Each route gets a reliability score based on headway consistency throughout the day.",
                         icon: <Activity className="w-5 h-5 text-indigo-500" />
                     },
                     {
-                        title: "Administrative Ingest",
-                        description: "Seamlessly ingest GTFS data and technical specs for instant platform analysis.",
+                        title: "Export and commit",
+                        description: "Export results as CSV or commit routes to the Atlas catalog for network-wide visualization.",
                         icon: <Database className="w-5 h-5 text-indigo-500" />
                     }
                 ]}
@@ -213,7 +213,7 @@ export default function ScreenerView() {
                 <EmptyStateHero
                     icon={ShieldCheck}
                     title="Strategy"
-                    description="Analysis-ready frequency reporting. Waiting for data ingest from the administrative console."
+                    description="Upload a GTFS feed in the Admin panel to get started."
                     primaryAction={{
                         label: "Open Admin Panel",
                         icon: Database,
@@ -232,8 +232,7 @@ export default function ScreenerView() {
     return (
         <div className="module-container">
             <ModuleHeader
-                title="Strategy"
-                badge={{ label: `${gtfsData.routes.length} routes detected` }}
+                badge={{ label: `${gtfsData.routes.length} routes` }}
                 actions={[
                     {
                         label: "Commit to Catalog",
