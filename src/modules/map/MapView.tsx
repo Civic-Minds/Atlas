@@ -86,7 +86,10 @@ export default function MapView() {
         setVehicles(data.vehicles ?? []);
         setLastUpdated(new Date());
       })
-      .catch(() => setError('Could not reach GTFS-RT Gateway'))
+      .catch(() => {
+        setError('Real-time feed unavailable');
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      })
       .finally(() => setLoading(false));
   }
 
@@ -152,9 +155,14 @@ export default function MapView() {
       {/* Map */}
       <div className="flex-1 relative">
         {error && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-2 rounded-xl backdrop-blur-md font-bold text-sm shadow-xl flex items-center gap-2">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                {error} - Retrying connection...
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-[var(--bg)]/90 border border-[var(--border)] text-[var(--text-muted)] px-4 py-2 rounded-xl backdrop-blur-md text-[12px] shadow-xl flex items-center gap-3">
+                {error}
+                <button
+                    onClick={() => { setError(null); fetchVehicles(agency); }}
+                    className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors"
+                >
+                    Retry
+                </button>
             </div>
         )}
         

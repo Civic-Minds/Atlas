@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **View as Agency**: Admins can now select any agency from the OCI static database via a nav dropdown. Selecting an agency loads their full route catalog (Weekday/Saturday/Sunday) from the `/api/screen` endpoint and populates all modules — no GTFS re-upload needed. A pill indicator shows the active agency with a one-click exit.
+
+### Changed
+- **Module renames**: Strategy → Analyze, Intelligence → Monitor. Routes updated accordingly (`/analyze`, `/monitor`).
+- **Optimize removed**: The frequency network map is now a Map tab inside Analyze, eliminating a redundant standalone module.
+- **Nav cleanup**: Removed circle avatar; replaced with display name + Log out. Nav items moved back to right-justified position.
+- **Homepage**: Restored original design (city hero, animated heading, 400px feature cards). Module cards updated to reflect new names and 5-module structure.
+- **Map error handling**: Real-time feed errors now stop the retry loop and show a quiet inline banner with a manual Retry button instead of a pulsing red alert.
+
 ## [0.14.0] - 2026-04-01
 
 ### Added
