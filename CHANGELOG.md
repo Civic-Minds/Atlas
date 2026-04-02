@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.15.0] - 2026-04-02
 
 ### Added
 - **View as Agency**: Admins can now select any agency from the OCI static database via a nav dropdown. Selecting an agency loads their full route catalog (Weekday/Saturday/Sunday) from the `/api/screen` endpoint and populates all modules — no GTFS re-upload needed. A pill indicator shows the active agency with a one-click exit.
