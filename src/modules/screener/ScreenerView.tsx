@@ -162,6 +162,24 @@ export default function ScreenerView() {
         });
     };
 
+    const handleLoadSample = async () => {
+        try {
+            const response = await fetch('/data/samples/gtfs-sample.zip');
+            if (!response.ok) throw new Error('Sample not found');
+            const blob = await response.blob();
+            const file = new File([blob], 'gtfs-sample.zip', { type: 'application/zip' });
+            setLastFileName(file.name);
+            setPendingFile(file);
+            setMode('local');
+            runAnalysis(file, async (data) => {
+                await setRawData(data);
+                addToast('Sample feed loaded — explore the results!', 'success');
+            });
+        } catch {
+            addToast('Could not load sample feed', 'error');
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -236,12 +254,17 @@ export default function ScreenerView() {
                 </div>
                 <EmptyStateHero
                     icon={ShieldCheck}
-                    title="Analyze"
-                    description="Upload a GTFS feed in the Admin panel to get started."
+                    title="Analyze a local feed"
+                    description="Upload any GTFS zip to analyze frequency tiers, headways, and corridor coverage — or try the built-in sample to explore the interface."
                     primaryAction={{
-                        label: "Open Admin Panel",
+                        label: "Upload GTFS zip",
+                        icon: Upload,
+                        onClick: () => fileInputRef.current?.click()
+                    }}
+                    secondaryAction={{
+                        label: "Try sample feed",
                         icon: Database,
-                        href: "/admin"
+                        onClick: handleLoadSample
                     }}
                     features={[
                         { icon: <Clock />, title: 'Frequency Tiers', desc: 'Auto-categorize routes by headway performance.' },

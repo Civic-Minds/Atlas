@@ -150,8 +150,23 @@ export function NetworkScreener() {
       )
     : null;
 
+  // Human-readable criteria summary shown when results are loaded
+  const criteriaSummary = results !== null || corridors !== null
+    ? `≤${maxHeadway}min · ${dayType} · ${formatSpan(timeToMins(windowStart))}–${formatSpan(timeToMins(windowEnd))}`
+    : null;
+
   return (
     <div className="space-y-6">
+      {/* Active criteria summary badge */}
+      {criteriaSummary && (
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Criteria</span>
+          <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/5 border border-indigo-500/20 px-2.5 py-1 rounded-full font-mono">
+            {criteriaSummary}
+          </span>
+        </div>
+      )}
+
       {/* Tab bar */}
       <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl border border-[var(--border)] w-fit">
         <button

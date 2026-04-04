@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Command } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuthStore } from '../hooks/useAuthStore';
 import { useViewAs } from '../hooks/useViewAs';
 import { useTransitStore } from '../types/store';
 import { fetchAgencies } from '../services/atlasApi';
 import type { AgencyMeta } from '../services/atlasApi';
+import { AnalysisResult } from '../types/gtfs';
 
 const NAV_ITEMS = [
     { id: 'analyze', title: 'Analyze', path: '/analyze' },
@@ -25,15 +26,37 @@ export const TopNav: React.FC = () => {
     const location = useLocation();
     const { logout, role, user } = useAuthStore();
     const { viewAsAgency, setViewAsAgency } = useViewAs();
-    const { clearData } = useTransitStore();
+    const { clearData, analysisResults } = useTransitStore();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showViewAsMenu, setShowViewAsMenu] = useState(false);
     const isAdmin = role === 'admin';
     const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
+    const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isAdmin) fetchAgencies().then(setAgencies).catch(() => {});
     }, [isAdmin]);
+
+    // Probe backend health endpoint to show connection status
+    useEffect(() => {
+        let cancelled = false;
+        const check = async () => {
+            try {
+                const res = await fetch('/api/health', { signal: AbortSignal.timeout(4000) });
+                if (!cancelled) setBackendOnline(res.ok);
+            } catch {
+                if (!cancelled) setBackendOnline(false);
+            }
+        };
+        check();
+        const interval = setInterval(check, 30_000);
+        return () => { cancelled = true; clearInterval(interval); };
+    }, []);
+
+    // Count audit queue items that haven't been reviewed yet
+    const unreviewedCount = analysisResults.filter(
+        (r: AnalysisResult) => !(r as any).verificationStatus
+    ).length;
     const displayName = user?.displayName || user?.email?.split('@')[0] || 'Admin';
 
     const handleSelectAgency = (slug: string) => {
@@ -61,16 +84,22 @@ export const TopNav: React.FC = () => {
                     <nav className="hidden lg:flex items-center gap-5">
                         {NAV_ITEMS.map((item) => {
                             const isActive = location.pathname.startsWith(item.path);
+                            const showBadge = item.id === 'audit' && unreviewedCount > 0;
                             return (
                                 <NavLink
                                     key={item.id}
                                     to={item.path}
-                                    className={`text-[12px] font-bold tracking-tight transition-colors ${isActive
+                                    className={`relative text-[12px] font-bold tracking-tight transition-colors ${isActive
                                         ? 'text-indigo-400'
                                         : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                                     }`}
                                 >
                                     {item.title}
+                                    {showBadge && (
+                                        <span className="absolute -top-1.5 -right-3 min-w-[16px] h-[16px] flex items-center justify-center rounded-full bg-amber-500 text-[9px] font-black text-white px-1 leading-none">
+                                            {unreviewedCount > 99 ? '99+' : unreviewedCount}
+                                        </span>
+                                    )}
                                 </NavLink>
                             );
                         })}
@@ -136,6 +165,31 @@ export const TopNav: React.FC = () => {
                             )}
                         </div>
                     )}
+
+                    <div className="hidden lg:block w-px h-5 bg-[var(--border)]" />
+
+                    {/* Backend status dot */}
+                    {backendOnline !== null && (
+                        <div
+                            className="hidden lg:flex items-center gap-1.5"
+                            title={backendOnline ? 'Backend connected' : 'Backend offline — live data unavailable'}
+                        >
+                            <span className={`w-1.5 h-1.5 rounded-full ${backendOnline ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                            <span className="text-[10px] font-bold text-[var(--text-muted)]">
+                                {backendOnline ? 'Live' : 'Offline'}
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Cmd+K hint */}
+                    <button
+                        onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}
+                        className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-md bg-[var(--item-bg)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-colors"
+                        title="Open command palette"
+                    >
+                        <Command className="w-3 h-3" />
+                        <span className="text-[10px] font-black">K</span>
+                    </button>
 
                     <div className="hidden lg:block w-px h-5 bg-[var(--border)]" />
 

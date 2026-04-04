@@ -1,4 +1,37 @@
 import { useState, useCallback } from 'react';
+
+/**
+ * Map raw worker errors to user-facing messages.
+ * The worker runs inside a separate thread — errors come back as strings.
+ */
+function classifyWorkerError(raw: string | undefined): string {
+    if (!raw) return 'Worker failed — unknown error';
+    const msg = raw.toLowerCase();
+
+    // Node / V8 string length limits hit when decompressing very large feeds
+    if (msg.includes('invalid string length') || msg.includes('string too long') || msg.includes('maximum call stack')) {
+        return 'Feed too large to parse in the browser. This feed likely has 5M+ stop-time records (e.g. NYC, Paris, Netherlands). Try a smaller regional feed for now.';
+    }
+
+    // JSZip / ZIP corruption signals
+    if (
+        msg.includes('end of central directory') ||
+        msg.includes('corrupt') ||
+        msg.includes('bad zip') ||
+        msg.includes('not a zip file') ||
+        msg.includes('invalid zip') ||
+        msg.includes('cannot decompress')
+    ) {
+        return 'This ZIP file appears to be corrupt or is not a valid GTFS feed. Try re-downloading the feed from the agency\'s website.';
+    }
+
+    // Missing required files
+    if (msg.includes('required file') || msg.includes('missing') && msg.includes('.txt')) {
+        return `GTFS feed is missing a required file: ${raw}`;
+    }
+
+    return raw;
+}
 import { GtfsData, SpacingResult, RawRouteDepartures } from '../types/gtfs';
 import { ValidationReport } from '../core/validation';
 
@@ -50,7 +83,7 @@ export function useGtfsWorker() {
                     setState({ loading: false, status: '', error: null });
                     worker.terminate();
                 } else if (type === 'ERROR') {
-                    setState({ loading: false, status: '', error: error || 'Worker failed' });
+                    setState({ loading: false, status: '', error: classifyWorkerError(error) });
                     worker.terminate();
                 }
             };

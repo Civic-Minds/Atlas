@@ -252,7 +252,7 @@ export default function VerifierView() {
                         }
                     },
                     {
-                        label: "Export",
+                        label: "Export JSON",
                         icon: Download,
                         variant: 'primary',
                         onClick: () => {
