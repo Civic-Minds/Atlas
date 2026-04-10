@@ -18,8 +18,6 @@ const AGENCIES = [
   { id: 'gcrta', label: 'GCRTA' },
   { id: 'sta', label: 'STA' },
   { id: 'drt', label: 'DRT' },
-  { id: 'kcm', label: 'KCM' },
-  { id: 'soundtransit', label: 'Sound Transit' },
   { id: 'sdmts', label: 'SD MTS' },
 ];
 
