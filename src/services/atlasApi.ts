@@ -263,3 +263,117 @@ export async function fetchStopDwells(agency: string, limit: number = 10): Promi
   if (!res.ok) throw new Error(`Dwell query failed: ${res.status}`);
   return res.json();
 }
+
+// ─── Live Service ─────────────────────────────────────────────────────────────
+
+export async function fetchLiveRoutes(agency: string): Promise<string[]> {
+  const url = new URL(`${ATLAS_BASE}/api/live/routes`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Live routes failed: ${res.status}`);
+  const data = await res.json();
+  return data.routes;
+}
+
+export async function fetchLiveStops(agency: string, route: string): Promise<string[]> {
+  const url = new URL(`${ATLAS_BASE}/api/live/stops`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('route', route);
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Live stops failed: ${res.status}`);
+  const data = await res.json();
+  return data.stops;
+}
+
+export interface StopArrival {
+  vehicleId: string;
+  arrivedAt: string;
+  gapMins: number | null;
+}
+
+export interface StopArrivalStats {
+  count: number;
+  avgGapMins: number | null;
+  maxGapMins: number | null;
+  bunchingCount: number;
+}
+
+export interface StopArrivalResponse {
+  agency: string;
+  route: string;
+  stop: string;
+  windowMins: number;
+  arrivals: StopArrival[];
+  stats: StopArrivalStats;
+  yesterday: { count: number; avgGapMins: number | null };
+}
+
+export interface RouteHealthHour {
+  day: string;
+  hour: number;
+  vehicles: number;
+  estHeadwayMins: number | null;
+}
+
+export interface RouteHealthResponse {
+  agency: string;
+  route: string;
+  currentVehicles: number;
+  hourly: RouteHealthHour[];
+  summary: {
+    worstHour: number | null;
+    worstAvgGap: number | null;
+    bestHour: number | null;
+    bestAvgGap: number | null;
+  };
+}
+
+export async function fetchRouteHealth(agency: string, route: string): Promise<RouteHealthResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/live/route-health`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('route', route);
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Route health failed: ${res.status}`);
+  return res.json();
+}
+
+export interface NetworkPulseRoute {
+  routeId: string;
+  currentVehicles: number;
+  worstGap: number | null;
+  bestGap: number | null;
+  avgGap: number | null;
+  worstHour: number | null;
+  bestHour: number | null;
+}
+
+export interface NetworkPulseResponse {
+  agency: string;
+  ts: string;
+  count: number;
+  routes: NetworkPulseRoute[];
+}
+
+export async function fetchNetworkPulse(agency: string): Promise<NetworkPulseResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/live/network-pulse`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Network pulse failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchStopArrivals(
+  agency: string,
+  route: string,
+  stop: string,
+  minutes = 60
+): Promise<StopArrivalResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/live/arrivals`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('route', route);
+  url.searchParams.set('stop', stop);
+  url.searchParams.set('minutes', String(minutes));
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Stop arrivals failed: ${res.status}`);
+  return res.json();
+}
