@@ -115,10 +115,11 @@ export const AGENCIES: Agency[] = [
   },
   // San Diego MTS — OBA key received 2026-04-10, stored as MTS_OBA_API_KEY
   { id: 'sdmts', name: 'San Diego MTS', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/vehicle-positions-for-agency/MTS.pb?key=${process.env.MTS_OBA_API_KEY}`, tripUpdatesUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/trip-updates-for-agency/MTS.pb?key=${process.env.MTS_OBA_API_KEY}` },
-  // King County Metro + Sound Transit — OBA key received 2026-04-10, stored as OBA_API_KEY
-  // NOTE: route_ids in the feed include the agency prefix (e.g. 1_100512 for KCM, 40_512 for ST)
-  { id: 'kcm', name: 'King County Metro', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/1.pb?key=${process.env.OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/1.pb?key=${process.env.OBA_API_KEY}` },
-  { id: 'soundtransit', name: 'Sound Transit', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/40.pb?key=${process.env.OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/40.pb?key=${process.env.OBA_API_KEY}` },
+  // King County Metro + Sound Transit — OBA key in hand (OBA_API_KEY), but NOT activated yet.
+  // Route IDs need verification before enabling — feed returning 0 vehicles even at peak hours,
+  // likely a route_id prefix mismatch. Activate only after confirming route IDs against live feed.
+  // { id: 'kcm', name: 'King County Metro', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/1.pb?key=${process.env.OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/1.pb?key=${process.env.OBA_API_KEY}` },
+  // { id: 'soundtransit', name: 'Sound Transit', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/40.pb?key=${process.env.OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/40.pb?key=${process.env.OBA_API_KEY}` },
   // Milwaukee MCTS — no API key required, GTFS-RT is open
   { id: 'mcts', name: 'Milwaukee County Transit System', timezone: 'America/Chicago', vehiclePositionsUrl: 'https://realtime.ridemcts.com/gtfsrt/vehicles', tripUpdatesUrl: 'https://realtime.ridemcts.com/gtfsrt/trips' },
   // Madison Metro — requires free API key, register at https://metromap.cityofmadison.com/dev-account
