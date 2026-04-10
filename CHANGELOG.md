@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Gap Distribution panel in Pulse Route Detail**: Shows inter-arrival gap histogram across all stops on a route over 7 days. Buckets gaps from "bunching" (<2 min) through "30m+", with median/p75/p90 stats. Includes a plain-language diagnosis distinguishing bunching (bimodal distribution — spacing interventions needed) from capacity shortage (unimodal high gaps — more vehicles needed). Backed by `/api/live/gap-distribution`.
 - **Network Overview tab in Pulse**: New "Network Overview" tab ranks all active routes for an agency by worst observed headway in a single table. Sortable by worst gap, avg gap, current vehicles, or route ID. Each row links through to the route's heatmap. Backed by a single aggregated query (`/api/live/network-pulse`) — no per-route round-trips.
 - **Route Health Heatmap**: New `/pulse` module showing a 7-day hours × days heatmap of observed service frequency per route. Cells are color-coded by estimated headway; worst-period callout identifies the single most degraded hour with a vehicle prescription.
 - **Pulse nav link**: Added Pulse to the secondary navigation bar (alongside Map).
