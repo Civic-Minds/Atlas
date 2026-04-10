@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - **TTC GTFS imported**: Spring 2025 feed imported to static DB via `scripts/import-gtfs.js` — 230 routes, 9,393 stops, 135,534 trips, ~3M stop_times. Enables delay_seconds and segment metrics for TTC streetcars.
 
 ### Fixed
+- **Timezone bug in Pulse endpoints**: `route-health` and `network-pulse` were hardcoding `America/Toronto` for hourly bucketing, causing West Coast and Central agencies (KCM, Sound Transit, SD MTS, TriMet, Metro Transit, WeGo, MCTS) to show hours shifted by 1–3h. Added `timezone` field to `Agency` type and `agencyTimezone()` helper; all non-Eastern agencies now have correct IANA timezone strings.
 - **OCI DB migration**: Added missing `segment_metrics` and `stop_dwell_metrics` tables to the live OCI realtime database. Server-side INSERT statements were referencing these tables since v0.14.0 but they had never been created on the cloud instance.
 - **Live Map auth**: `MapView` now sends a Firebase Bearer token with vehicle position requests, fixing 401 errors on `/api/vehicles`.
 - **Live Map URL**: Corrected double `/api` prefix in vehicle fetch URL (`/api/api/vehicles` → `/api/vehicles`).
