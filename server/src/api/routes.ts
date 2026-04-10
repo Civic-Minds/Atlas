@@ -900,6 +900,140 @@ router.get('/live/arrivals', async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/live/gap-distribution?agency=ttc&route=504
+// Returns the distribution of inter-arrival gaps across all stops on a route over 7 days.
+// Distinguishes bunching (bimodal: many short gaps + many long gaps) from capacity shortage
+// (unimodal: consistently long gaps). Powers the Gap Distribution panel in Pulse Route Detail.
+router.get('/live/gap-distribution', async (req: Request, res: Response) => {
+  const { agency, route } = req.query as Record<string, string>;
+  if (!agency || !route) { res.status(400).json({ error: 'agency and route are required' }); return; }
+
+  try {
+    const db = getPool();
+    const tz = agencyTimezone(agency);
+
+    // Compute inter-arrival gaps at each stop: first arrival per (stop, vehicle, hour-block)
+    // then LAG() to get the gap to the previous vehicle at that stop.
+    const result = await db.query(
+      `WITH arrivals AS (
+         SELECT
+           stop_id,
+           vehicle_id,
+           MIN(observed_at) AS arrived_at
+         FROM vehicle_positions
+         WHERE agency_id = $1
+           AND route_id  = $2
+           AND current_status = 1
+           AND stop_id IS NOT NULL
+           AND observed_at > NOW() - INTERVAL '7 days'
+         GROUP BY stop_id, vehicle_id,
+           DATE_TRUNC('hour', observed_at)
+       ),
+       gaps AS (
+         SELECT
+           stop_id,
+           arrived_at,
+           EXTRACT(HOUR FROM arrived_at AT TIME ZONE $3)::int AS hour,
+           EXTRACT(EPOCH FROM (
+             arrived_at - LAG(arrived_at) OVER (PARTITION BY stop_id ORDER BY arrived_at)
+           )) / 60.0 AS gap_mins
+         FROM arrivals
+       ),
+       valid_gaps AS (
+         SELECT hour, gap_mins
+         FROM gaps
+         WHERE gap_mins IS NOT NULL
+           AND gap_mins > 0
+           AND gap_mins < 90   -- exclude gaps > 90 min (likely service gaps / end of day)
+       ),
+       bucketed AS (
+         SELECT
+           CASE
+             WHEN gap_mins <  2  THEN 'bunching'
+             WHEN gap_mins <  5  THEN '2–5m'
+             WHEN gap_mins <  8  THEN '5–8m'
+             WHEN gap_mins < 12  THEN '8–12m'
+             WHEN gap_mins < 20  THEN '12–20m'
+             WHEN gap_mins < 30  THEN '20–30m'
+             ELSE '30m+'
+           END AS bucket,
+           gap_mins
+         FROM valid_gaps
+       )
+       SELECT
+         bucket,
+         COUNT(*)                                                       AS count,
+         ROUND(MIN(gap_mins)::numeric, 1)                              AS bucket_min,
+         ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1) AS median,
+         ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1) AS p75,
+         ROUND(PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1) AS p90
+       FROM bucketed
+       GROUP BY bucket
+       ORDER BY bucket_min`,
+      [agency, route, tz]
+    );
+
+    // Overall percentiles across all gaps
+    const totals = await db.query(
+      `WITH arrivals AS (
+         SELECT stop_id, vehicle_id, MIN(observed_at) AS arrived_at
+         FROM vehicle_positions
+         WHERE agency_id = $1 AND route_id = $2
+           AND current_status = 1 AND stop_id IS NOT NULL
+           AND observed_at > NOW() - INTERVAL '7 days'
+         GROUP BY stop_id, vehicle_id, DATE_TRUNC('hour', observed_at)
+       ),
+       gaps AS (
+         SELECT
+           EXTRACT(EPOCH FROM (
+             arrived_at - LAG(arrived_at) OVER (PARTITION BY stop_id ORDER BY arrived_at)
+           )) / 60.0 AS gap_mins
+         FROM arrivals
+       ),
+       valid AS (SELECT gap_mins FROM gaps WHERE gap_mins > 0 AND gap_mins < 90)
+       SELECT
+         COUNT(*)                                                              AS total_gaps,
+         ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1) AS median,
+         ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1) AS p75,
+         ROUND(PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1) AS p90,
+         COUNT(CASE WHEN gap_mins < 2  THEN 1 END) AS bunching_count,
+         COUNT(CASE WHEN gap_mins > 20 THEN 1 END) AS desert_count
+       FROM valid`,
+      [agency, route]
+    );
+
+    const t = totals.rows[0];
+    const totalGaps  = parseInt(t?.total_gaps ?? '0', 10);
+    const bunchingPct = totalGaps > 0 ? Math.round((parseInt(t.bunching_count, 10) / totalGaps) * 100) : 0;
+    const desertPct   = totalGaps > 0 ? Math.round((parseInt(t.desert_count,   10) / totalGaps) * 100) : 0;
+
+    // Diagnose: bunching if >15% of gaps are under 2 min AND >20% are over 12 min (bimodal signature)
+    const shortPct = bunchingPct;
+    const longPct  = desertPct + (result.rows.find(r => r.bucket === '12–20m') ? parseInt(result.rows.find(r => r.bucket === '12–20m')!.count, 10) : 0);
+    const isBunching = shortPct >= 15 && longPct >= 20;
+
+    res.json({
+      agency,
+      route,
+      totalGaps,
+      median:      t?.median     ? parseFloat(t.median)  : null,
+      p75:         t?.p75        ? parseFloat(t.p75)     : null,
+      p90:         t?.p90        ? parseFloat(t.p90)     : null,
+      bunchingPct,
+      desertPct,
+      diagnosis:   totalGaps < 20 ? 'insufficient_data'
+                 : isBunching     ? 'bunching'
+                 :                  'capacity',
+      buckets: result.rows.map(r => ({
+        bucket: r.bucket,
+        count:  parseInt(r.count, 10),
+      })),
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 // GET /api/live/network-pulse?agency=ttc
 // Returns all active routes for an agency ranked by worst observed headway over 7 days.
 // One query — no per-route round-trips. Used by the Network Overview tab in Pulse.

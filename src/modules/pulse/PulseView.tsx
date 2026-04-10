@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Clock, Plus, TrendingDown, LayoutGrid, Route } from 'lucide-react';
 import { ModuleHeader } from '../../components/ModuleHeader';
-import { fetchLiveRoutes, fetchRouteHealth, fetchNetworkPulse, RouteHealthResponse, RouteHealthHour, NetworkPulseRoute } from '../../services/atlasApi';
+import { fetchLiveRoutes, fetchRouteHealth, fetchNetworkPulse, fetchGapDistribution, RouteHealthResponse, RouteHealthHour, NetworkPulseRoute, GapDistributionResponse } from '../../services/atlasApi';
 
 const AGENCIES = [
   { id: 'ttc', label: 'TTC' },
@@ -50,6 +50,84 @@ function headwayTextColor(mins: number | null): string {
 function dayLabel(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00');
   return d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+// ── Gap Distribution Panel ────────────────────────────────────────────────────
+
+const BUCKET_ORDER = ['bunching', '2–5m', '5–8m', '8–12m', '12–20m', '20–30m', '30m+'];
+
+function bucketColor(bucket: string): string {
+  switch (bucket) {
+    case 'bunching': return 'bg-fuchsia-500';
+    case '2–5m':    return 'bg-emerald-500';
+    case '5–8m':    return 'bg-emerald-400';
+    case '8–12m':   return 'bg-yellow-400';
+    case '12–20m':  return 'bg-orange-400';
+    case '20–30m':  return 'bg-red-500';
+    case '30m+':    return 'bg-red-700';
+    default:        return 'bg-[var(--border)]';
+  }
+}
+
+function GapDistributionPanel({ d }: { d: GapDistributionResponse }) {
+  const maxCount = Math.max(...d.buckets.map(b => b.count), 1);
+  const ordered = BUCKET_ORDER.map(label => d.buckets.find(b => b.bucket === label) ?? { bucket: label, count: 0 });
+
+  const diagnosisColor = d.diagnosis === 'bunching' ? 'border-fuchsia-500 bg-fuchsia-500/5'
+                       : d.diagnosis === 'capacity' ? 'border-red-500 bg-red-500/5'
+                       : 'border-[var(--border)]';
+  const diagnosisIcon  = d.diagnosis === 'bunching' ? '⚡' : d.diagnosis === 'capacity' ? '🔴' : '—';
+  const diagnosisText  = d.diagnosis === 'bunching'
+    ? `Bunching detected (${d.bunchingPct}% of gaps < 2 min). Vehicles are platooning. Adding buses may not help — spacing interventions (holding points, headway control) are likely more effective.`
+    : d.diagnosis === 'capacity'
+    ? `Consistent long gaps (${d.desertPct}% of gaps > 20 min). Pattern suggests genuine capacity shortage at this hour — more vehicles or shorter turns would reduce wait times.`
+    : 'Insufficient gap data to diagnose. Check back after more service hours are collected.';
+
+  return (
+    <div className="precision-panel overflow-hidden mb-8">
+      <div className="bg-[var(--item-bg)] px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
+        <span className="atlas-label">Gap Distribution — 7-Day · All Stops</span>
+        <div className="flex items-center gap-4 text-[9px] text-[var(--text-muted)]">
+          <span>median <span className="font-black text-[var(--fg)]">{d.median !== null ? `${d.median}m` : '—'}</span></span>
+          <span>p75 <span className="font-black text-[var(--fg)]">{d.p75 !== null ? `${d.p75}m` : '—'}</span></span>
+          <span>p90 <span className="font-black text-[var(--fg)]">{d.p90 !== null ? `${d.p90}m` : '—'}</span></span>
+          <span className="text-[var(--text-muted)]">{d.totalGaps.toLocaleString()} gaps</span>
+        </div>
+      </div>
+
+      <div className="p-6">
+        {/* Bar chart */}
+        <div className="space-y-2 mb-6">
+          {ordered.map(({ bucket, count }) => {
+            const pct = count > 0 ? (count / maxCount) * 100 : 0;
+            const sharePct = d.totalGaps > 0 ? Math.round((count / d.totalGaps) * 100) : 0;
+            return (
+              <div key={bucket} className="flex items-center gap-3">
+                <div className="w-16 text-[9px] atlas-label text-right text-[var(--text-muted)] shrink-0">{bucket}</div>
+                <div className="flex-1 h-5 bg-[var(--item-bg)] rounded overflow-hidden">
+                  <div
+                    className={`h-full ${bucketColor(bucket)} transition-all`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <div className="w-20 text-[9px] font-bold text-[var(--text-muted)] shrink-0">
+                  {count > 0 ? `${count.toLocaleString()} (${sharePct}%)` : '—'}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Diagnosis */}
+        <div className={`border-l-4 rounded-r-xl p-4 ${diagnosisColor}`}>
+          <div className="text-[10px] atlas-label mb-1 text-[var(--text-muted)]">Diagnosis</div>
+          <p className="text-sm font-bold text-[var(--fg)] leading-relaxed">
+            {diagnosisIcon} {diagnosisText}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 type TabId = 'network' | 'route';
@@ -112,6 +190,10 @@ export default function PulseView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Gap distribution state
+  const [gapData, setGapData] = useState<GapDistributionResponse | null>(null);
+  const [gapLoading, setGapLoading] = useState(false);
+
   // Load network overview when agency changes or tab switches to network
   useEffect(() => {
     if (tab !== 'network') return;
@@ -141,6 +223,16 @@ export default function PulseView() {
       .then(d => setData(d))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
+  }, [agency, selectedRoute]);
+
+  useEffect(() => {
+    if (!selectedRoute) return;
+    setGapData(null);
+    setGapLoading(true);
+    fetchGapDistribution(agency, selectedRoute)
+      .then(d => setGapData(d))
+      .catch(() => {/* non-fatal — panel just stays hidden */})
+      .finally(() => setGapLoading(false));
   }, [agency, selectedRoute]);
 
   // Build a map: day → hour → data
@@ -464,6 +556,17 @@ export default function PulseView() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Gap distribution */}
+          {gapLoading && (
+            <div className="precision-panel p-6 mb-8 flex items-center gap-3 text-[var(--text-muted)]">
+              <div className="w-4 h-4 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin shrink-0" />
+              <span className="text-xs">Analysing gap distribution…</span>
+            </div>
+          )}
+          {gapData && !gapLoading && gapData.totalGaps >= 20 && (
+            <GapDistributionPanel d={gapData} />
           )}
 
           {/* Heatmap */}
