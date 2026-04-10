@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Network Overview tab in Pulse**: New "Network Overview" tab ranks all active routes for an agency by worst observed headway in a single table. Sortable by worst gap, avg gap, current vehicles, or route ID. Each row links through to the route's heatmap. Backed by a single aggregated query (`/api/live/network-pulse`) — no per-route round-trips.
+- **Route Health Heatmap**: New `/pulse` module showing a 7-day hours × days heatmap of observed service frequency per route. Cells are color-coded by estimated headway; worst-period callout identifies the single most degraded hour with a vehicle prescription.
+- **Pulse nav link**: Added Pulse to the secondary navigation bar (alongside Map).
+- **Live Stop Performance**: New panel in the Monitor module showing actual arrival times at any stop over the last 60 minutes, with gap annotations, bunching detection, and yesterday comparison.
+- **Live API endpoints**: Three new server endpoints — `/api/live/routes`, `/api/live/stops`, `/api/live/arrivals`, `/api/live/route-health` — querying the realtime DB directly. Foundation for the agency-facing ops layer.
+- **`scripts/import-gtfs.js`**: Admin script to import any GTFS feed directly into the static DB without HTTP/auth. Usage: `node scripts/import-gtfs.js <zip> <slug> <name> [label]`
+- **Three new agencies activated**: King County Metro (`kcm`, RapidRide A–H), Sound Transit (`soundtransit`, ST Express 512/545), San Diego MTS (`sdmts`, SuperLoop + Rapid). Keys stored as `OBA_API_KEY` and `MTS_OBA_API_KEY`. Live on OCI as of 2026-04-10 — 21 agencies total.
+- **New server deployed to OCI**: `server/` (v0.15.0, BullMQ + intelligence layer) replaced `ouija-server-src` on OCI. Redis installed and running. DB schema migrated: added `delay_seconds`, `match_confidence`, `is_detour`, `dist_from_shape` to `vehicle_positions`; `notion_sync_at` / `notion_sync_status` to `ingestion_log`; `stop_times` table created in static DB.
+- **TTC GTFS imported**: Spring 2025 feed imported to static DB via `scripts/import-gtfs.js` — 230 routes, 9,393 stops, 135,534 trips, ~3M stop_times. Enables delay_seconds and segment metrics for TTC streetcars.
+
 ### Fixed
+- **OCI DB migration**: Added missing `segment_metrics` and `stop_dwell_metrics` tables to the live OCI realtime database. Server-side INSERT statements were referencing these tables since v0.14.0 but they had never been created on the cloud instance.
 - **Live Map auth**: `MapView` now sends a Firebase Bearer token with vehicle position requests, fixing 401 errors on `/api/vehicles`.
 - **Live Map URL**: Corrected double `/api` prefix in vehicle fetch URL (`/api/api/vehicles` → `/api/vehicles`).
 

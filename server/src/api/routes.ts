@@ -691,4 +691,301 @@ router.get('/intelligence/audit-service-change', requireAuth, requireTenant, dia
     }
 });
 
+// GET /api/live/route-health?agency=ttc&route=504
+// Returns hourly vehicle counts and estimated headway for the last 7 days.
+// Used by the Route Health heatmap in the Pulse module.
+router.get('/live/route-health', async (req: Request, res: Response) => {
+  const { agency, route } = req.query as Record<string, string>;
+  if (!agency || !route) { res.status(400).json({ error: 'agency and route are required' }); return; }
+  try {
+    const db = getPool();
+
+    // Hourly vehicle counts for the last 7 days
+    const hourly = await db.query(
+      `SELECT
+         DATE(observed_at AT TIME ZONE 'America/Toronto') AS day,
+         EXTRACT(HOUR FROM observed_at AT TIME ZONE 'America/Toronto')::int AS hour,
+         COUNT(DISTINCT vehicle_id) AS vehicles
+       FROM vehicle_positions
+       WHERE agency_id = $1
+         AND route_id = $2
+         AND observed_at > NOW() - INTERVAL '7 days'
+       GROUP BY day, hour
+       ORDER BY day, hour`,
+      [agency, route]
+    );
+
+    // Current active vehicle count (last 5 min)
+    const current = await db.query(
+      `SELECT COUNT(DISTINCT vehicle_id) AS vehicles
+       FROM vehicle_positions
+       WHERE agency_id = $1 AND route_id = $2
+         AND observed_at > NOW() - INTERVAL '5 minutes'`,
+      [agency, route]
+    );
+
+    // Find worst and best hour (minimum 3 samples across days)
+    const hourlySummary: Record<number, number[]> = {};
+    for (const row of hourly.rows) {
+      const h = row.hour;
+      const est = row.vehicles > 0 ? Math.round(60 / row.vehicles * 10) / 10 : null;
+      if (est === null) continue;
+      if (!hourlySummary[h]) hourlySummary[h] = [];
+      hourlySummary[h].push(est);
+    }
+
+    let worstHour: number | null = null;
+    let worstGap = 0;
+    let bestHour: number | null = null;
+    let bestGap = Infinity;
+
+    for (const [h, gaps] of Object.entries(hourlySummary)) {
+      if (gaps.length < 2) continue;
+      const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+      if (avg > worstGap) { worstGap = avg; worstHour = parseInt(h); }
+      if (avg < bestGap) { bestGap = avg; bestHour = parseInt(h); }
+    }
+
+    res.json({
+      agency,
+      route,
+      currentVehicles: parseInt(current.rows[0]?.vehicles ?? '0', 10),
+      hourly: hourly.rows.map(r => ({
+        day: r.day,
+        hour: r.hour,
+        vehicles: parseInt(r.vehicles, 10),
+        estHeadwayMins: r.vehicles > 0 ? Math.round(60 / r.vehicles * 10) / 10 : null,
+      })),
+      summary: {
+        worstHour,
+        worstAvgGap: worstHour !== null ? Math.round(worstGap * 10) / 10 : null,
+        bestHour,
+        bestAvgGap: bestHour !== null ? Math.round(bestGap * 10) / 10 : null,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// ─── Live Service Endpoints ───────────────────────────────────────────────────
+// These query the realtime DB directly — no static DB or auth required.
+// Designed for the "Live Stop Performance" panel in the frontend.
+
+// GET /api/live/routes?agency=ttc
+// Returns route IDs with at least one vehicle observed in the last hour.
+router.get('/live/routes', async (req: Request, res: Response) => {
+  const { agency } = req.query as Record<string, string>;
+  if (!agency) { res.status(400).json({ error: 'agency is required' }); return; }
+  try {
+    const db = getPool();
+    const result = await db.query(
+      `SELECT DISTINCT route_id
+       FROM vehicle_positions
+       WHERE agency_id = $1 AND observed_at > NOW() - INTERVAL '1 hour'
+       ORDER BY route_id`,
+      [agency]
+    );
+    res.json({ agency, routes: result.rows.map(r => r.route_id) });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// GET /api/live/stops?agency=ttc&route=510
+// Returns stop IDs observed on a route in the last hour, sorted by activity.
+router.get('/live/stops', async (req: Request, res: Response) => {
+  const { agency, route } = req.query as Record<string, string>;
+  if (!agency || !route) { res.status(400).json({ error: 'agency and route are required' }); return; }
+  try {
+    const db = getPool();
+    const result = await db.query(
+      `SELECT stop_id, COUNT(*) AS visits
+       FROM vehicle_positions
+       WHERE agency_id = $1
+         AND route_id = $2
+         AND current_status = 1
+         AND stop_id IS NOT NULL
+         AND observed_at > NOW() - INTERVAL '1 hour'
+       GROUP BY stop_id
+       ORDER BY visits DESC
+       LIMIT 50`,
+      [agency, route]
+    );
+    res.json({ agency, route, stops: result.rows.map(r => r.stop_id) });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// GET /api/live/arrivals?agency=ttc&route=510&stop=3895&minutes=60
+// Returns per-vehicle arrival times at a stop, plus stats and yesterday comparison.
+router.get('/live/arrivals', async (req: Request, res: Response) => {
+  const { agency, route, stop, minutes } = req.query as Record<string, string>;
+  if (!agency || !route || !stop) {
+    res.status(400).json({ error: 'agency, route, and stop are required' });
+    return;
+  }
+  const windowMins = Math.min(parseInt(minutes ?? '60', 10), 180);
+
+  const arrivalQuery = `
+    WITH arrivals AS (
+      SELECT vehicle_id, MIN(observed_at) AS arrived_at
+      FROM vehicle_positions
+      WHERE agency_id = $1 AND route_id = $2 AND stop_id = $3
+        AND current_status = 1
+        AND observed_at > NOW() - ($4 || ' minutes')::INTERVAL
+      GROUP BY vehicle_id
+    )
+    SELECT
+      vehicle_id,
+      arrived_at,
+      ROUND(
+        EXTRACT(EPOCH FROM (arrived_at - LAG(arrived_at) OVER (ORDER BY arrived_at))) / 60,
+        1
+      ) AS gap_mins
+    FROM arrivals
+    ORDER BY arrived_at`;
+
+  const yesterdayQuery = `
+    WITH arrivals AS (
+      SELECT vehicle_id, MIN(observed_at) AS arrived_at
+      FROM vehicle_positions
+      WHERE agency_id = $1 AND route_id = $2 AND stop_id = $3
+        AND current_status = 1
+        AND observed_at > NOW() - INTERVAL '1 day' - ($4 || ' minutes')::INTERVAL
+        AND observed_at < NOW() - INTERVAL '1 day'
+      GROUP BY vehicle_id
+    )
+    SELECT COUNT(*) AS count,
+      ROUND(AVG(EXTRACT(EPOCH FROM (arrived_at - LAG(arrived_at) OVER (ORDER BY arrived_at))) / 60)::numeric, 1) AS avg_gap_mins
+    FROM arrivals`;
+
+  try {
+    const db = getPool();
+    const [today, yesterday] = await Promise.all([
+      db.query(arrivalQuery, [agency, route, stop, windowMins]),
+      db.query(yesterdayQuery, [agency, route, stop, windowMins]),
+    ]);
+
+    const arrivals = today.rows;
+    const gaps = arrivals.map(r => r.gap_mins).filter((g): g is number => g !== null);
+    const avgGap = gaps.length ? Math.round((gaps.reduce((a, b) => a + b, 0) / gaps.length) * 10) / 10 : null;
+    const maxGap = gaps.length ? Math.round(Math.max(...gaps) * 10) / 10 : null;
+    const bunchingCount = gaps.filter(g => g < 2).length;
+
+    res.json({
+      agency, route, stop, windowMins,
+      arrivals: arrivals.map(r => ({
+        vehicleId: r.vehicle_id,
+        arrivedAt: r.arrived_at,
+        gapMins: r.gap_mins !== null ? parseFloat(r.gap_mins) : null,
+      })),
+      stats: {
+        count: arrivals.length,
+        avgGapMins: avgGap,
+        maxGapMins: maxGap,
+        bunchingCount,
+      },
+      yesterday: {
+        count: parseInt(yesterday.rows[0]?.count ?? '0', 10),
+        avgGapMins: yesterday.rows[0]?.avg_gap_mins ? parseFloat(yesterday.rows[0].avg_gap_mins) : null,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// GET /api/live/network-pulse?agency=ttc
+// Returns all active routes for an agency ranked by worst observed headway over 7 days.
+// One query — no per-route round-trips. Used by the Network Overview tab in Pulse.
+router.get('/live/network-pulse', async (req: Request, res: Response) => {
+  const { agency } = req.query as Record<string, string>;
+  if (!agency) { res.status(400).json({ error: 'agency is required' }); return; }
+
+  try {
+    const db = getPool();
+
+    const result = await db.query(
+      `WITH hourly AS (
+         SELECT
+           route_id,
+           DATE(observed_at AT TIME ZONE 'America/Toronto')  AS day,
+           EXTRACT(HOUR FROM observed_at AT TIME ZONE 'America/Toronto')::int AS hour,
+           COUNT(DISTINCT vehicle_id) AS vehicles
+         FROM vehicle_positions
+         WHERE agency_id = $1
+           AND observed_at > NOW() - INTERVAL '7 days'
+         GROUP BY route_id, day, hour
+       ),
+       hour_avgs AS (
+         SELECT
+           route_id,
+           hour,
+           ROUND(AVG(CASE WHEN vehicles > 0 THEN 60.0 / vehicles ELSE NULL END)::numeric, 1) AS avg_gap,
+           COUNT(*) AS day_count
+         FROM hourly
+         GROUP BY route_id, hour
+         HAVING COUNT(*) >= 2
+       ),
+       route_summary AS (
+         SELECT
+           route_id,
+           ROUND(MAX(avg_gap)::numeric, 1)  AS worst_gap,
+           ROUND(MIN(avg_gap)::numeric, 1)  AS best_gap,
+           ROUND(AVG(avg_gap)::numeric, 1)  AS avg_gap,
+           (
+             SELECT hour FROM hour_avgs ha2
+             WHERE ha2.route_id = ha.route_id
+             ORDER BY avg_gap DESC LIMIT 1
+           ) AS worst_hour,
+           (
+             SELECT hour FROM hour_avgs ha3
+             WHERE ha3.route_id = ha.route_id
+             ORDER BY avg_gap ASC LIMIT 1
+           ) AS best_hour
+         FROM hour_avgs ha
+         GROUP BY route_id
+       ),
+       current_vehicles AS (
+         SELECT route_id, COUNT(DISTINCT vehicle_id) AS vehicles
+         FROM vehicle_positions
+         WHERE agency_id = $1
+           AND observed_at > NOW() - INTERVAL '5 minutes'
+         GROUP BY route_id
+       )
+       SELECT
+         rs.route_id,
+         COALESCE(cv.vehicles, 0)::int  AS current_vehicles,
+         rs.worst_gap,
+         rs.best_gap,
+         rs.avg_gap,
+         rs.worst_hour,
+         rs.best_hour
+       FROM route_summary rs
+       LEFT JOIN current_vehicles cv ON cv.route_id = rs.route_id
+       ORDER BY rs.worst_gap DESC NULLS LAST`,
+      [agency]
+    );
+
+    res.json({
+      agency,
+      ts: new Date().toISOString(),
+      count: result.rows.length,
+      routes: result.rows.map(r => ({
+        routeId: r.route_id,
+        currentVehicles: r.current_vehicles,
+        worstGap: r.worst_gap !== null ? parseFloat(r.worst_gap) : null,
+        bestGap: r.best_gap !== null ? parseFloat(r.best_gap) : null,
+        avgGap: r.avg_gap !== null ? parseFloat(r.avg_gap) : null,
+        worstHour: r.worst_hour,
+        bestHour: r.best_hour,
+      })),
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 export default router;
