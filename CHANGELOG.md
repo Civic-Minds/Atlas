@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **GTFS stop_times import performance**: Rewrote the stop_times write phase to run *after* the main transaction `COMMIT` instead of inside it. Batches now auto-commit independently (progress visible in real-time) and use `unnest` array bindings (9 params per batch instead of 45,000) for 5–10× faster throughput. Previous design held a 3M-row INSERT inside a single long transaction, making `COUNT(*)` return 0 for hours and preventing any recovery on failure. Batch size increased from 5,000 to 10,000 rows.
+- **TTC import killed and relaunched**: Previous 90-minute import run was stuck inside the old single-transaction design. Killed, patched, and relaunched with the fixed importer.
+- **KCM + Sound Transit deactivated**: Both agencies were prematurely activated despite having unverified route IDs. Commented out of `config.ts` and removed from Pulse agency list. Feed was returning 0 vehicles at Seattle peak hours — likely a route_id prefix mismatch (OBA uses `1_` prefix). Moved to "Key In Hand — Not Yet Activated" in `AGENCIES.md`.
+
 ### Added
 - **Gap Distribution panel in Pulse Route Detail**: Shows inter-arrival gap histogram across all stops on a route over 7 days. Buckets gaps from "bunching" (<2 min) through "30m+", with median/p75/p90 stats. Includes a plain-language diagnosis distinguishing bunching (bimodal distribution — spacing interventions needed) from capacity shortage (unimodal high gaps — more vehicles needed). Backed by `/api/live/gap-distribution`.
 - **Network Overview tab in Pulse**: New "Network Overview" tab ranks all active routes for an agency by worst observed headway in a single table. Sortable by worst gap, avg gap, current vehicles, or route ID. Each row links through to the route's heatmap. Backed by a single aggregated query (`/api/live/network-pulse`) — no per-route round-trips.

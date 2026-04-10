@@ -828,91 +828,7 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
     }
     log.info('Import', 'trips written', { count: gtfs.trips.length });
 
-    // 5.5 Write stop_times (Streaming Batch)
-    // Using a separate pass for stop_times to keep memory low.
-    log.info('Import', 'writing stop_times...');
-    const zipStopTimes = await JSZip.loadAsync(zipBuffer);
-    let stPath = '';
-    if (!zipStopTimes.file('stop_times.txt')) {
-      const entry = Object.keys(zipStopTimes.files).find(f => f.endsWith('/stop_times.txt'));
-      if (entry) stPath = entry;
-    } else {
-      stPath = 'stop_times.txt';
-    }
-
-    if (stPath) {
-      const stFile = zipStopTimes.file(stPath);
-      if (stFile) {
-        const stream = stFile.nodeStream();
-        let batch: any[] = [];
-        const BATCH_SIZE = 5000;
-        let totalWritten = 0;
-        const LOG_EVERY = 100_000;
-        let nextLog = LOG_EVERY;
-
-        await new Promise<void>((resolve, reject) => {
-          Papa.parse(stream as any, {
-            header: true,
-            skipEmptyLines: true,
-            transform: (v: string) => v.trim(),
-            step: async (row: { data: any }, parser: any) => {
-              const st = row.data;
-              const parseTime = (raw: string) => {
-                const p = raw?.split(':');
-                if (!p || p.length < 2) return null;
-                return parseInt(p[0]) * 60 + parseInt(p[1]);
-              };
-              batch.push([
-                feedVersionId, accountId, st.trip_id, st.stop_id,
-                parseInt(st.stop_sequence), parseTime(st.arrival_time), parseTime(st.departure_time),
-                parseInt(st.pickup_type) || 0, parseInt(st.drop_off_type) || 0
-              ]);
-
-              if (batch.length >= BATCH_SIZE) {
-                const currentBatch = [...batch];
-                batch = [];
-                parser.pause();
-                try {
-                  await client.query(`
-                    INSERT INTO stop_times (feed_version_id, agency_account_id, gtfs_trip_id, gtfs_stop_id,
-                      stop_sequence, arrival_time, departure_time, pickup_type, drop_off_type)
-                    VALUES ${currentBatch.map((_, i) =>
-                      `($${i*9+1},$${i*9+2},$${i*9+3},$${i*9+4},$${i*9+5},$${i*9+6},$${i*9+7},$${i*9+8},$${i*9+9})`
-                    ).join(',')}
-                    ON CONFLICT (feed_version_id, gtfs_trip_id, stop_sequence) DO NOTHING`,
-                    currentBatch.flat()
-                  );
-                  totalWritten += currentBatch.length;
-                  if (totalWritten >= nextLog) {
-                    log.info('Import', `stop_times progress: ${totalWritten.toLocaleString()} rows written`);
-                    nextLog += LOG_EVERY;
-                  }
-                } finally {
-                  parser.resume();
-                }
-              }
-            },
-            complete: async () => {
-              if (batch.length > 0) {
-                await client.query(`
-                  INSERT INTO stop_times (feed_version_id, agency_account_id, gtfs_trip_id, gtfs_stop_id,
-                    stop_sequence, arrival_time, departure_time, pickup_type, drop_off_type)
-                  VALUES ${batch.map((_, i) =>
-                    `($${i*9+1},$${i*9+2},$${i*9+3},$${i*9+4},$${i*9+5},$${i*9+6},$${i*9+7},$${i*9+8},$${i*9+9})`
-                  ).join(',')}
-                  ON CONFLICT (feed_version_id, gtfs_trip_id, stop_sequence) DO NOTHING`,
-                  batch.flat()
-                );
-                totalWritten += batch.length;
-              }
-              resolve();
-            },
-            error: (err: any) => reject(err)
-          });
-        });
-      }
-    }
-    log.info('Import', 'stop_times written');
+    // 5.5 stop_times written after COMMIT (see below)
 
     // 6. Write calendar
     for (const c of gtfs.calendar) {
@@ -1056,7 +972,94 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
     );
 
     await client.query('COMMIT');
-    log.info('Import', 'complete', { feedVersionId });
+    log.info('Import', 'main data committed — routes, stops, trips, analysis now visible', { feedVersionId });
+
+    // 5.5 Write stop_times AFTER main transaction commit.
+    // Uses unnest arrays (9 params regardless of batch size) instead of per-row placeholders.
+    // Each batch auto-commits so progress is visible incrementally.
+    {
+      const parseTime = (raw: string) => {
+        const p = raw?.split(':');
+        if (!p || p.length < 2) return null;
+        return parseInt(p[0]) * 60 + parseInt(p[1]);
+      };
+
+      log.info('Import', 'writing stop_times...');
+      const zipStopTimes = await JSZip.loadAsync(zipBuffer);
+      let stPath = '';
+      if (!zipStopTimes.file('stop_times.txt')) {
+        const entry = Object.keys(zipStopTimes.files).find(f => f.endsWith('/stop_times.txt'));
+        if (entry) stPath = entry;
+      } else {
+        stPath = 'stop_times.txt';
+      }
+
+      if (stPath) {
+        let totalWritten = 0;
+        const stFile = zipStopTimes.file(stPath);
+        if (stFile) {
+          const stream = stFile.nodeStream();
+          const BATCH_SIZE = 10_000;
+
+          let bTripIds:    string[]         = [];
+          let bStopIds:    string[]         = [];
+          let bSeqs:       (number|null)[]  = [];
+          let bArrivals:   (number|null)[]  = [];
+          let bDepartures: (number|null)[]  = [];
+          let bPickup:     number[]         = [];
+          let bDropOff:    number[]         = [];
+
+          const flush = async () => {
+            if (bTripIds.length === 0) return;
+            await client.query(
+              `INSERT INTO stop_times
+                 (feed_version_id, agency_account_id, gtfs_trip_id, gtfs_stop_id,
+                  stop_sequence, arrival_time, departure_time, pickup_type, drop_off_type)
+               SELECT $1, $2,
+                 unnest($3::text[]), unnest($4::text[]),
+                 unnest($5::int[]),  unnest($6::int[]),  unnest($7::int[]),
+                 unnest($8::int[]),  unnest($9::int[])
+               ON CONFLICT (feed_version_id, gtfs_trip_id, stop_sequence) DO NOTHING`,
+              [feedVersionId, accountId,
+               bTripIds, bStopIds, bSeqs, bArrivals, bDepartures, bPickup, bDropOff]
+            );
+            totalWritten += bTripIds.length;
+            log.info('Import', `stop_times progress: ${totalWritten.toLocaleString()} rows written`);
+            bTripIds = []; bStopIds = []; bSeqs = []; bArrivals = [];
+            bDepartures = []; bPickup = []; bDropOff = [];
+          };
+
+          await new Promise<void>((resolve, reject) => {
+            Papa.parse(stream as any, {
+              header: true,
+              skipEmptyLines: true,
+              transform: (v: string) => v.trim(),
+              step: async (row: { data: any }, parser: any) => {
+                const st = row.data;
+                bTripIds.push(st.trip_id);
+                bStopIds.push(st.stop_id);
+                bSeqs.push(parseInt(st.stop_sequence) || null);
+                bArrivals.push(parseTime(st.arrival_time));
+                bDepartures.push(parseTime(st.departure_time));
+                bPickup.push(parseInt(st.pickup_type) || 0);
+                bDropOff.push(parseInt(st.drop_off_type) || 0);
+
+                if (bTripIds.length >= BATCH_SIZE) {
+                  parser.pause();
+                  try { await flush(); } catch (e) { reject(e); return; }
+                  parser.resume();
+                }
+              },
+              complete: async () => {
+                try { await flush(); resolve(); } catch (e) { reject(e); }
+              },
+              error: (err: any) => reject(err),
+            });
+          });
+        }
+        log.info('Import', 'stop_times written', { total: totalWritten });
+      }
+    }
 
     return {
       feedVersionId,
