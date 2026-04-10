@@ -337,6 +337,33 @@ export async function fetchRouteHealth(agency: string, route: string): Promise<R
   return res.json();
 }
 
+export interface GapBucket {
+  bucket: string;
+  count: number;
+}
+
+export interface GapDistributionResponse {
+  agency: string;
+  route: string;
+  totalGaps: number;
+  median: number | null;
+  p75: number | null;
+  p90: number | null;
+  bunchingPct: number;
+  desertPct: number;
+  diagnosis: 'bunching' | 'capacity' | 'insufficient_data';
+  buckets: GapBucket[];
+}
+
+export async function fetchGapDistribution(agency: string, route: string): Promise<GapDistributionResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/live/gap-distribution`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('route', route);
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Gap distribution failed: ${res.status}`);
+  return res.json();
+}
+
 export interface NetworkPulseRoute {
   routeId: string;
   currentVehicles: number;
