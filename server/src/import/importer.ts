@@ -846,6 +846,9 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
         const stream = stFile.nodeStream();
         let batch: any[] = [];
         const BATCH_SIZE = 5000;
+        let totalWritten = 0;
+        const LOG_EVERY = 100_000;
+        let nextLog = LOG_EVERY;
 
         await new Promise<void>((resolve, reject) => {
           Papa.parse(stream as any, {
@@ -879,6 +882,11 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
                     ON CONFLICT (feed_version_id, gtfs_trip_id, stop_sequence) DO NOTHING`,
                     currentBatch.flat()
                   );
+                  totalWritten += currentBatch.length;
+                  if (totalWritten >= nextLog) {
+                    log.info('Import', `stop_times progress: ${totalWritten.toLocaleString()} rows written`);
+                    nextLog += LOG_EVERY;
+                  }
                 } finally {
                   parser.resume();
                 }
@@ -895,6 +903,7 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
                   ON CONFLICT (feed_version_id, gtfs_trip_id, stop_sequence) DO NOTHING`,
                   batch.flat()
                 );
+                totalWritten += batch.length;
               }
               resolve();
             },
