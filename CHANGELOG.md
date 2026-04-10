@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Silent Routes tab in Pulse**: New third tab surfaces routes that had active vehicles in the last 24h but have gone dark for 15+ minutes. Shows each route's last-seen timestamp with severity colour-coding (amber → orange → red). Backed by `/api/live/silent-routes` and auto-refreshes every 60s. Drill-through to the route's 7-day heatmap.
+- **`route_last_seen` summary table**: New table in the realtime DB maintained by the position-worker on every poll cycle (upsert per route). Makes the silent-routes query sub-millisecond vs. the 3m 44s full-table scan that a naive DISTINCT ON over 60M rows requires.
+- **Network Overview auto-refresh**: Network Overview tab now re-fetches every 30s without clearing the table.
+- **`circuity_index` column migration**: Added missing column to `route_frequency_results` in the static DB — was referenced by importer but never migrated, causing all imports to fail at the analysis-write step.
+- **TTC GTFS re-import (run 3)**: Two prior attempts failed (SSH disconnection rolling back the whole transaction; missing `circuity_index` column). Third attempt running with nohup; main data committed (230 routes, 9,393 stops, 135,534 trips, 1,091 analysis results), stop_times write in progress.
+
+### Fixed
+- **Boot-time orphan server**: An old `node dist/server.js` process (PID 921) started at boot was squatting on port 3001, preventing the pm2-managed instance from binding. HTTP was silently dead while the BullMQ worker continued running normally. Killed orphan; pm2 instance now owns the port.
+
 ### Fixed
 - **GTFS stop_times import performance**: Rewrote the stop_times write phase to run *after* the main transaction `COMMIT` instead of inside it. Batches now auto-commit independently (progress visible in real-time) and use `unnest` array bindings (9 params per batch instead of 45,000) for 5–10× faster throughput. Previous design held a 3M-row INSERT inside a single long transaction, making `COUNT(*)` return 0 for hours and preventing any recovery on failure. Batch size increased from 5,000 to 10,000 rows.
 - **TTC import killed and relaunched**: Previous 90-minute import run was stuck inside the old single-transaction design. Killed, patched, and relaunched with the fixed importer.

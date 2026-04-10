@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import { Agency, VehiclePosition } from '../types';
-import { insertVehiclePositions, insertSegmentMetrics, insertStopDwellMetrics, logIngestion } from '../storage/db';
+import { insertVehiclePositions, insertSegmentMetrics, insertStopDwellMetrics, logIngestion, upsertRouteLastSeen } from '../storage/db';
 import { matchPositions } from '../intelligence/matcher';
 import { syncAgencyToNotion } from '../intelligence/notion-sync';
 import { log } from '../logger';
@@ -42,6 +42,7 @@ export function startPositionWorker(): Worker {
                 await insertVehiclePositions(matchedPositions);
                 await insertSegmentMetrics(segmentMetrics);
                 await insertStopDwellMetrics(stopDwellMetrics);
+                await upsertRouteLastSeen(agency.id, matchedPositions);
                 
                 // Final ingestion logging with Notion sync timestamp if available
                 let syncedAt: Date | undefined;

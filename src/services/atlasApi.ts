@@ -389,6 +389,26 @@ export async function fetchNetworkPulse(agency: string): Promise<NetworkPulseRes
   return res.json();
 }
 
+export interface SilentRoute {
+  routeId: string;
+  lastSeen: string | null;
+}
+
+export interface SilentRoutesResponse {
+  agency: string;
+  ts: string;
+  count: number;
+  routes: SilentRoute[];
+}
+
+export async function fetchSilentRoutes(agency: string): Promise<SilentRoutesResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/live/silent-routes`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Silent routes failed: ${res.status}`);
+  return res.json();
+}
+
 export async function fetchStopArrivals(
   agency: string,
   route: string,

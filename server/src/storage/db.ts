@@ -134,3 +134,29 @@ export async function getTenantForUser(uid: string): Promise<UserTenantInfo | nu
   if (result.rows.length === 0) return null;
   return result.rows[0];
 }
+
+// Maintains a low-cardinality summary table for instant silent-route detection.
+// Called after every position batch so route_last_seen stays current without
+// scanning the 60M+ row vehicle_positions table.
+export async function upsertRouteLastSeen(agencyId: string, positions: VehiclePosition[]): Promise<void> {
+  if (positions.length === 0) return;
+  const db = getPool();
+
+  // Deduplicate to the max observed_at per route in this batch
+  const routeMap = new Map<string, Date>();
+  for (const p of positions) {
+    const cur = routeMap.get(p.routeId);
+    if (!cur || p.observedAt > cur) routeMap.set(p.routeId, p.observedAt);
+  }
+
+  const routeIds   = [...routeMap.keys()];
+  const lastSeens  = [...routeMap.values()];
+
+  await db.query(
+    `INSERT INTO route_last_seen (agency_id, route_id, last_seen)
+     SELECT $1, UNNEST($2::text[]), UNNEST($3::timestamptz[])
+     ON CONFLICT (agency_id, route_id)
+       DO UPDATE SET last_seen = GREATEST(EXCLUDED.last_seen, route_last_seen.last_seen)`,
+    [agencyId, routeIds, lastSeens],
+  );
+}

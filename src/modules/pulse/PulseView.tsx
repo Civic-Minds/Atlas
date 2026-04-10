@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Activity, AlertTriangle, CheckCircle2, Clock, Plus, TrendingDown, LayoutGrid, Route } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle2, Clock, Plus, TrendingDown, LayoutGrid, Route, WifiOff } from 'lucide-react';
 import { ModuleHeader } from '../../components/ModuleHeader';
-import { fetchLiveRoutes, fetchRouteHealth, fetchNetworkPulse, fetchGapDistribution, RouteHealthResponse, RouteHealthHour, NetworkPulseRoute, GapDistributionResponse } from '../../services/atlasApi';
+import { fetchLiveRoutes, fetchRouteHealth, fetchNetworkPulse, fetchGapDistribution, fetchSilentRoutes, RouteHealthResponse, RouteHealthHour, NetworkPulseRoute, GapDistributionResponse, SilentRoute } from '../../services/atlasApi';
 
 const AGENCIES = [
   { id: 'ttc', label: 'TTC' },
@@ -128,7 +128,7 @@ function GapDistributionPanel({ d }: { d: GapDistributionResponse }) {
   );
 }
 
-type TabId = 'network' | 'route';
+type TabId = 'network' | 'route' | 'silent';
 
 // ── Network Overview helpers ──────────────────────────────────────────────────
 
@@ -192,16 +192,40 @@ export default function PulseView() {
   const [gapData, setGapData] = useState<GapDistributionResponse | null>(null);
   const [gapLoading, setGapLoading] = useState(false);
 
-  // Load network overview when agency changes or tab switches to network
+  // Silent routes state
+  const [silentData, setSilentData] = useState<SilentRoute[] | null>(null);
+  const [silentLoading, setSilentLoading] = useState(false);
+  const [silentError, setSilentError] = useState<string | null>(null);
+  const [silentTs, setSilentTs] = useState<string | null>(null);
+
+  // Load network overview when agency changes or tab switches to network — auto-refresh every 30s
   useEffect(() => {
     if (tab !== 'network') return;
-    setNetworkData(null);
-    setNetworkError(null);
-    setNetworkLoading(true);
-    fetchNetworkPulse(agency)
-      .then(d => { setNetworkData(d.routes); setNetworkTs(d.ts); })
-      .catch(e => setNetworkError(e.message))
-      .finally(() => setNetworkLoading(false));
+    const load = (initial: boolean) => {
+      if (initial) { setNetworkData(null); setNetworkError(null); setNetworkLoading(true); }
+      fetchNetworkPulse(agency)
+        .then(d => { setNetworkData(d.routes); setNetworkTs(d.ts); })
+        .catch(e => setNetworkError(e.message))
+        .finally(() => setNetworkLoading(false));
+    };
+    load(true);
+    const id = setInterval(() => load(false), 30_000);
+    return () => clearInterval(id);
+  }, [agency, tab]);
+
+  // Load silent routes when agency changes or tab switches to silent — auto-refresh every 60s
+  useEffect(() => {
+    if (tab !== 'silent') return;
+    const load = (initial: boolean) => {
+      if (initial) { setSilentData(null); setSilentError(null); setSilentLoading(true); }
+      fetchSilentRoutes(agency)
+        .then(d => { setSilentData(d.routes); setSilentTs(d.ts); })
+        .catch(e => setSilentError(e.message))
+        .finally(() => setSilentLoading(false));
+    };
+    load(true);
+    const id = setInterval(() => load(false), 60_000);
+    return () => clearInterval(id);
   }, [agency, tab]);
 
   useEffect(() => {
@@ -323,7 +347,7 @@ export default function PulseView() {
 
         {/* Tab switcher */}
         <div className="flex items-center gap-1 p-1 bg-[var(--item-bg)] border border-[var(--border)] rounded-xl w-fit">
-          {([['network', 'Network Overview', LayoutGrid], ['route', 'Route Detail', Route]] as const).map(([id, label, Icon]) => (
+          {([['network', 'Network Overview', LayoutGrid], ['route', 'Route Detail', Route], ['silent', 'Silent Routes', WifiOff]] as const).map(([id, label, Icon]) => (
             <button
               key={id}
               onClick={() => setTab(id)}
@@ -436,6 +460,100 @@ export default function PulseView() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ── Silent Routes Tab ───────────────────────────────────────────────── */}
+      {tab === 'silent' && (
+        <>
+          {silentLoading && (
+            <div className="flex items-center justify-center py-20">
+              <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+            </div>
+          )}
+          {silentError && (
+            <div className="flex items-center gap-2 text-red-500 text-sm py-8">
+              <AlertTriangle className="w-4 h-4" /> {silentError}
+            </div>
+          )}
+          {silentData !== null && !silentLoading && (
+            <div className="precision-panel overflow-hidden">
+              <div className="bg-[var(--item-bg)] px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <WifiOff className="w-4 h-4 text-amber-400" />
+                  <div>
+                    <span className="atlas-label">
+                      {silentData.length === 0
+                        ? 'All clear — no silent routes detected'
+                        : `${silentData.length} route${silentData.length !== 1 ? 's' : ''} went dark since yesterday`}
+                    </span>
+                    {silentTs && (
+                      <span className="text-[9px] text-[var(--text-muted)] ml-3">
+                        as of {new Date(silentTs).toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <span className="text-[9px] text-[var(--text-muted)]">Compares same clock hour · yesterday vs. now</span>
+              </div>
+
+              {silentData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 gap-3 text-[var(--text-muted)]">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                  <p className="text-sm font-bold">All routes reporting normally</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="border-b border-[var(--border)]">
+                        <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Route</th>
+                        <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Last Seen</th>
+                        <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Detail</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {silentData.map((r, i) => {
+                        const minutesAgo = r.lastSeen
+                          ? Math.round((Date.now() - new Date(r.lastSeen).getTime()) / 60_000)
+                          : null;
+                        const severity = minutesAgo === null ? 'text-[var(--text-muted)]'
+                          : minutesAgo < 30 ? 'text-amber-400'
+                          : minutesAgo < 90 ? 'text-orange-400'
+                          : 'text-red-400';
+                        return (
+                          <tr
+                            key={r.routeId}
+                            className={`border-b border-[var(--border)]/50 hover:bg-[var(--item-bg)] transition-colors ${i % 2 === 0 ? '' : 'bg-[var(--item-bg)]/40'}`}
+                          >
+                            <td className="px-4 py-2.5">
+                              <div className="flex items-center gap-2">
+                                <WifiOff className="w-3 h-3 text-amber-400 shrink-0" />
+                                <span className="atlas-mono text-xs font-black">{r.routeId}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-2.5">
+                              <span className={`text-[10px] font-bold ${severity}`}>
+                                {minutesAgo !== null ? `${minutesAgo}m ago` : 'No data today'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2.5">
+                              <button
+                                onClick={() => { setSelectedRoute(r.routeId); setTab('route'); }}
+                                className="text-[9px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                              >
+                                Heatmap →
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </>
