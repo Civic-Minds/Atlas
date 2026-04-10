@@ -84,11 +84,13 @@ export const AGENCIES: Agency[] = [
   {
     id: 'trimet',
     name: 'TriMet',
+    timezone: 'America/Los_Angeles',
     vehiclePositionsUrl: `http://developer.trimet.org/ws/V1/VehiclePositions?appID=${process.env.TRIMET_APP_ID}`,
   },
   {
     id: 'metrotransit',
     name: 'Metro Transit',
+    timezone: 'America/Chicago',
     vehiclePositionsUrl: 'https://svc.metrotransit.org/mtgtfs/vehiclepositions.pb',
   },
   {
@@ -111,18 +113,14 @@ export const AGENCIES: Agency[] = [
     vehiclePositionsUrl: 'http://gtfs.edmonton.ca/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb',
     tripUpdatesUrl:      'http://gtfs.edmonton.ca/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb',
   },
-  // San Diego MTS — requires API key from sdmts.com/business-center/app-developers/real-time-data
-  // API key requested 2026-03-27 — once received, add to .env as MTS_API_KEY and uncomment:
-  // { id: 'sdmts', name: 'San Diego MTS', vehiclePositionsUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/vehicle-positions-for-agency/MTS.pb?key=${process.env.MTS_API_KEY}`, tripUpdatesUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/trip-updates-for-agency/MTS.pb?key=${process.env.MTS_API_KEY}` },
-  // King County Metro + Sound Transit — same OBA key (email oba_api_key@soundtransit.org)
-  // NOTE: do NOT use removeAgencyIds=true — route_ids in the feed include the agency prefix (e.g. 40_100479)
-  // and ROUTE_FILTER must match the prefixed values exactly.
-  // KCM RapidRide A–H: 1_100512, 1_102548, 1_102576, 1_102581, 1_102615, 1_102619, 1_102745, 1_102736
-  // Once you have a key, add to .env as KCM_OBA_API_KEY and uncomment both:
-  // { id: 'kcm', name: 'King County Metro', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/1.pb?key=${process.env.KCM_OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/1.pb?key=${process.env.KCM_OBA_API_KEY}` },
-  // { id: 'soundtransit', name: 'Sound Transit', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/40.pb?key=${process.env.KCM_OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/40.pb?key=${process.env.KCM_OBA_API_KEY}` },
+  // San Diego MTS — OBA key received 2026-04-10, stored as MTS_OBA_API_KEY
+  { id: 'sdmts', name: 'San Diego MTS', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/vehicle-positions-for-agency/MTS.pb?key=${process.env.MTS_OBA_API_KEY}`, tripUpdatesUrl: `https://realtime.sdmts.com/api/api/gtfs_realtime/trip-updates-for-agency/MTS.pb?key=${process.env.MTS_OBA_API_KEY}` },
+  // King County Metro + Sound Transit — OBA key received 2026-04-10, stored as OBA_API_KEY
+  // NOTE: route_ids in the feed include the agency prefix (e.g. 1_100512 for KCM, 40_512 for ST)
+  { id: 'kcm', name: 'King County Metro', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/1.pb?key=${process.env.OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/1.pb?key=${process.env.OBA_API_KEY}` },
+  { id: 'soundtransit', name: 'Sound Transit', timezone: 'America/Los_Angeles', vehiclePositionsUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/vehicle-positions-for-agency/40.pb?key=${process.env.OBA_API_KEY}`, tripUpdatesUrl: `https://api.pugetsound.onebusaway.org/api/gtfs_realtime/trip-updates-for-agency/40.pb?key=${process.env.OBA_API_KEY}` },
   // Milwaukee MCTS — no API key required, GTFS-RT is open
-  { id: 'mcts', name: 'Milwaukee County Transit System', vehiclePositionsUrl: 'https://realtime.ridemcts.com/gtfsrt/vehicles', tripUpdatesUrl: 'https://realtime.ridemcts.com/gtfsrt/trips' },
+  { id: 'mcts', name: 'Milwaukee County Transit System', timezone: 'America/Chicago', vehiclePositionsUrl: 'https://realtime.ridemcts.com/gtfsrt/vehicles', tripUpdatesUrl: 'https://realtime.ridemcts.com/gtfsrt/trips' },
   // Madison Metro — requires free API key, register at https://metromap.cityofmadison.com/dev-account
   // Once you have a key, add to .env as MADISON_API_KEY and uncomment:
   // { id: 'madison', name: 'Madison Metro Transit', vehiclePositionsUrl: `https://metromap.cityofmadison.com/gtfsrt/vehicles?key=${process.env.MADISON_API_KEY}`, tripUpdatesUrl: `https://metromap.cityofmadison.com/gtfsrt/trips?key=${process.env.MADISON_API_KEY}` },
@@ -130,13 +128,14 @@ export const AGENCIES: Agency[] = [
   // Would need a custom adapter — not a drop-in add. Contact IT@rtaforward.org if pursuing.
   // WeGo Public Transit (Nashville) — open feed, no API key required
   // Frequent Network 8 corridors; route_id matches route number directly
-  { id: 'wego', name: 'WeGo Public Transit', vehiclePositionsUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb', tripUpdatesUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb' },
+  { id: 'wego', name: 'WeGo Public Transit', timezone: 'America/Chicago', vehiclePositionsUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb', tripUpdatesUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb' },
   // RTC Southern Nevada (Las Vegas) — requires Swiftly API key (same program as LA Metro)
-  { 
-    id: 'rtcsnv', 
-    name: 'RTC Southern Nevada', 
-    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-vehicle-positions', 
-    tripUpdatesUrl:      'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-trip-updates', 
+  {
+    id: 'rtcsnv',
+    name: 'RTC Southern Nevada',
+    timezone: 'America/Los_Angeles',
+    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-vehicle-positions',
+    tripUpdatesUrl:      'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-trip-updates',
     headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
     limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
   },
@@ -146,10 +145,11 @@ export const AGENCIES: Agency[] = [
   // Halifax Transit — open feed, no API key required
   { id: 'halifax', name: 'Halifax Transit', vehiclePositionsUrl: 'https://gtfs.halifax.ca/realtime/Vehicle/VehiclePositions.pb' },
   // Miami-Dade Transit — now served via Swiftly (same platform as Las Vegas RTC and LA Metro)
-  { 
-    id: 'mdt', 
-    name: 'Miami-Dade Transit', 
-    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions', 
+  {
+    id: 'mdt',
+    name: 'Miami-Dade Transit',
+    timezone: 'America/New_York',
+    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions',
     headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
     limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
   },
@@ -196,3 +196,9 @@ export const AGENCIES: Agency[] = [
 ];
 
 export const POLL_INTERVAL_MS = parseInt(process.env.POLL_INTERVAL_MS ?? '30000', 10);
+
+/** Lookup an agency's IANA timezone string. Falls back to America/Toronto. */
+export function agencyTimezone(agencyId: string): string {
+  const agency = AGENCIES.find(a => a.id === agencyId);
+  return agency?.timezone ?? 'America/Toronto';
+}
