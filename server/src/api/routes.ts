@@ -1127,4 +1127,40 @@ router.get('/live/network-pulse', async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/live/silent-routes?agency=ttc
+// Returns routes that ran during this same clock hour yesterday but have zero vehicles right now.
+// Surfaces genuine service gaps without needing schedule data.
+router.get('/live/silent-routes', async (req: Request, res: Response) => {
+  const { agency } = req.query as Record<string, string>;
+  if (!agency) { res.status(400).json({ error: 'agency is required' }); return; }
+
+  try {
+    const db = getPool();
+
+    // Queries the route_last_seen summary table — maintained by the position-worker
+    // on every poll cycle so this is always sub-millisecond.
+    const result = await db.query(
+      `SELECT route_id, last_seen
+       FROM route_last_seen
+       WHERE agency_id = $1
+         AND last_seen < NOW() - INTERVAL '15 minutes'
+       ORDER BY last_seen ASC
+       LIMIT 30`,
+      [agency]
+    );
+
+    res.json({
+      agency,
+      ts: new Date().toISOString(),
+      count: result.rows.length,
+      routes: result.rows.map(r => ({
+        routeId: r.route_id,
+        lastSeen: r.last_seen ?? null,
+      })),
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 export default router;
