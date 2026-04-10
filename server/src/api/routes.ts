@@ -2,6 +2,7 @@ import { aggregateCorridorPerformance } from '../intelligence/headway';
 import { detectGhostBuses } from '../intelligence/ghosts';
 import { calculateAgencyHealth } from '../intelligence/health';
 import { evaluateThresholds } from '../intelligence/alerts';
+import { agencyTimezone } from '../config';
 import { log } from '../logger';
 import { Router, Request, Response } from 'express';
 import { getPool, getTenantForUser } from '../storage/db';
@@ -700,11 +701,13 @@ router.get('/live/route-health', async (req: Request, res: Response) => {
   try {
     const db = getPool();
 
+    const tz = agencyTimezone(agency);
+
     // Hourly vehicle counts for the last 7 days
     const hourly = await db.query(
       `SELECT
-         DATE(observed_at AT TIME ZONE 'America/Toronto') AS day,
-         EXTRACT(HOUR FROM observed_at AT TIME ZONE 'America/Toronto')::int AS hour,
+         DATE(observed_at AT TIME ZONE $3) AS day,
+         EXTRACT(HOUR FROM observed_at AT TIME ZONE $3)::int AS hour,
          COUNT(DISTINCT vehicle_id) AS vehicles
        FROM vehicle_positions
        WHERE agency_id = $1
@@ -712,7 +715,7 @@ router.get('/live/route-health', async (req: Request, res: Response) => {
          AND observed_at > NOW() - INTERVAL '7 days'
        GROUP BY day, hour
        ORDER BY day, hour`,
-      [agency, route]
+      [agency, route, tz]
     );
 
     // Current active vehicle count (last 5 min)
@@ -907,12 +910,14 @@ router.get('/live/network-pulse', async (req: Request, res: Response) => {
   try {
     const db = getPool();
 
+    const tz = agencyTimezone(agency);
+
     const result = await db.query(
       `WITH hourly AS (
          SELECT
            route_id,
-           DATE(observed_at AT TIME ZONE 'America/Toronto')  AS day,
-           EXTRACT(HOUR FROM observed_at AT TIME ZONE 'America/Toronto')::int AS hour,
+           DATE(observed_at AT TIME ZONE $2)  AS day,
+           EXTRACT(HOUR FROM observed_at AT TIME ZONE $2)::int AS hour,
            COUNT(DISTINCT vehicle_id) AS vehicles
          FROM vehicle_positions
          WHERE agency_id = $1
@@ -966,7 +971,7 @@ router.get('/live/network-pulse', async (req: Request, res: Response) => {
        FROM route_summary rs
        LEFT JOIN current_vehicles cv ON cv.route_id = rs.route_id
        ORDER BY rs.worst_gap DESC NULLS LAST`,
-      [agency]
+      [agency, tz]
     );
 
     res.json({

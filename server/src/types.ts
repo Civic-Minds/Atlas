@@ -6,6 +6,7 @@ export interface Agency {
   headers?: Record<string, string>;
   matchRealtime?: boolean;
   pollingIntervalMs?: number;
+  timezone?: string;  // IANA timezone, e.g. 'America/Toronto'. Defaults to 'America/Toronto'.
   limit?: {
     requestsPerHour: number;
     notes?: string;
