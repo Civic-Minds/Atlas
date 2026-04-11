@@ -1,5 +1,27 @@
 import { Agency, VehiclePosition, GtfsStopTime, SegmentMetric, StopDwellMetric } from '../types';
-import { getStaticPool, getAgencyFeedVersion } from '../storage/static-db';
+import { getStaticPool, getAgencyFeedVersion, getRouteScheduleAroundTime } from '../storage/static-db';
+import { agencyTimezone } from '../config';
+
+/**
+ * Returns seconds elapsed since local midnight for a given Date and IANA timezone.
+ * GTFS arrival_time is always in the agency's local timezone, so delay calculations
+ * must compare local time (not UTC) against scheduled times.
+ */
+function localSecondsFromMidnight(date: Date, timezone: string): number {
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+  });
+  const parts = fmt.formatToParts(date);
+  const hour   = parseInt(parts.find(p => p.type === 'hour')?.value   ?? '0', 10);
+  const minute = parseInt(parts.find(p => p.type === 'minute')?.value ?? '0', 10);
+  const second = parseInt(parts.find(p => p.type === 'second')?.value ?? '0', 10);
+  // Intl may return 24 for midnight; normalise to 0–86399
+  return (hour % 24) * 3600 + minute * 60 + second;
+}
 
 /**
  * Calculates the Haversine distance between two points in meters.
@@ -137,6 +159,65 @@ export async function matchPositions(
       list.sort((a, b) => a.stopSequence - b.stopSequence);
       saveToCache(id, list);
     }
+
+    // TIME-BASED FALLBACK: for vehicles whose GTFS-RT trip_id still has no
+    // schedule (e.g. TTC Clever Devices IDs don't match Toronto Open Data IDs),
+    // match by route + spatial proximity to any active trip on the same route.
+    const stillUnmatched = missingTripIds.filter(id => !scheduleCache.has(id));
+    if (stillUnmatched.length > 0) {
+      const now = new Date();
+      // Use the agency's local timezone — GTFS arrival_time is in local time.
+      const obsSeconds = localSecondsFromMidnight(now, agencyTimezone(agency.id));
+
+      // Group unmatched positions by routeId for one query per route
+      const byRoute = new Map<string, VehiclePosition[]>();
+      for (const p of positions) {
+        if (p.tripId && stillUnmatched.includes(p.tripId) && p.routeId) {
+          if (!byRoute.has(p.routeId)) byRoute.set(p.routeId, []);
+          byRoute.get(p.routeId)!.push(p);
+        }
+      }
+
+      for (const [routeId, vehicles] of byRoute) {
+        const fallbackStart = Date.now();
+        const routeSchedule = await getRouteScheduleAroundTime(versionId, routeId, obsSeconds);
+        console.log(`[Matcher] Fallback: route ${routeId} → ${routeSchedule.size} candidate trips in ${Date.now() - fallbackStart}ms`);
+        if (routeSchedule.size === 0) continue;
+
+        const candidateTrips = [...routeSchedule.values()];
+
+        const obsMinutes = obsSeconds / 60;
+        const TIME_WINDOW_MINUTES = 90; // reject stops more than 90 min from now
+
+        for (const p of vehicles) {
+          let bestStops: GtfsStopTime[] | null = null;
+          let bestScore = Infinity; // combined spatial + temporal score
+
+          for (const tripStops of candidateTrips) {
+            let minScore = Infinity;
+            for (const stop of tripStops) {
+              if (stop.stopLat == null || stop.stopLon == null) continue;
+              if (stop.arrivalTime == null) continue;
+              const timeDiff = Math.abs(stop.arrivalTime - obsMinutes);
+              if (timeDiff > TIME_WINDOW_MINUTES) continue; // too far in time
+              const dist = getDistance(p.lat, p.lon, stop.stopLat, stop.stopLon);
+              // Normalise: 300m spatial + 90min temporal each contribute equally
+              const score = dist / 300 + timeDiff / TIME_WINDOW_MINUTES;
+              if (score < minScore) minScore = score;
+            }
+            if (minScore < bestScore) {
+              bestScore = minScore;
+              bestStops = tripStops;
+            }
+          }
+
+          // Accept if score is reasonable (vehicle near a temporally-valid stop)
+          if (bestStops && bestScore < 2.0) {
+            saveToCache(p.tripId, bestStops);
+          }
+        }
+      }
+    }
   }
 
   const segmentMetrics: SegmentMetric[] = [];
@@ -239,8 +320,10 @@ export async function matchPositions(
     if (target && target.arrivalTime !== null) {
       // Delay calculation: use the vehicle's observed timestamp (not wall clock)
       // to avoid drift when positions are processed after the fact.
-      const obs = new Date(p.observedAt);
-      const observedSeconds = obs.getHours() * 3600 + obs.getMinutes() * 60 + obs.getSeconds();
+      // Coerce to Date — BullMQ serialises Dates to ISO strings through Redis.
+      const obs = p.observedAt instanceof Date ? p.observedAt : new Date(p.observedAt as unknown as string);
+      // GTFS arrival_time is in the agency's local timezone; use that for seconds-from-midnight.
+      const observedSeconds = localSecondsFromMidnight(obs, agencyTimezone(agency.id));
       p.delaySeconds = observedSeconds - (target.arrivalTime * 60);
       p.matchConfidence = confidence;
 
@@ -248,9 +331,10 @@ export async function matchPositions(
       // SEGMENT TRANSITION DETECTION
       // -----------------------------------------------------------------------
       const lastState = lastSeenCache.get(p.vehicleId);
-      
+
       if (lastState && lastState.stopId !== target.stopId) {
-        const actualDuration = Math.round((p.observedAt.getTime() - lastState.observedAt.getTime()) / 1000);
+        const lastObsAt = lastState.observedAt instanceof Date ? lastState.observedAt : new Date(lastState.observedAt as unknown as string);
+        const actualDuration = Math.round((obs.getTime() - lastObsAt.getTime()) / 1000);
         const scheduledDuration = (target.arrivalTime - lastState.arrivalTime) * 60;
         
         // We only log valid forward transitions (scheduledDuration > 0)
@@ -271,20 +355,21 @@ export async function matchPositions(
       }
 
       // Update state for next poll
-      updateVehicleState(p.vehicleId, { 
-        stopId: target.stopId, 
-        observedAt: p.observedAt, 
+      updateVehicleState(p.vehicleId, {
+        stopId: target.stopId,
+        observedAt: obs,
         arrivalTime: target.arrivalTime,
         // Dwell Logic: If CURRENTLY at stop, and we weren't before, mark dwell start.
         // If we WERE at stop and still are, keep the original start.
-        dwellStart: p.currentStatus === 1 
-          ? (lastState?.stopId === target.stopId ? lastState.dwellStart || p.observedAt : p.observedAt)
+        dwellStart: p.currentStatus === 1
+          ? (lastState?.stopId === target.stopId ? lastState.dwellStart || obs : obs)
           : undefined
       });
 
       // If we just DEPARTED (were at stop, now in transit), seal the dwell
       if (lastState && lastState.stopId === target.stopId && lastState.dwellStart && p.currentStatus !== 1) {
-        const dwellTime = Math.round((p.observedAt.getTime() - lastState.dwellStart.getTime()) / 1000);
+        const dwellStart = lastState.dwellStart instanceof Date ? lastState.dwellStart : new Date(lastState.dwellStart as unknown as string);
+        const dwellTime = Math.round((obs.getTime() - dwellStart.getTime()) / 1000);
         if (dwellTime > 0 && dwellTime < 1800) { // Filter obvious outliers > 30m
            stopDwellMetrics.push({
              agencyId: agency.id,

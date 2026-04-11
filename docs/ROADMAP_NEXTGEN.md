@@ -17,11 +17,13 @@ The backend's primary goal is to close the gap between the schedule and reality.
 | Static GTFS frequency analysis | Atlas (Strategy) | Working |
 | GTHA coverage pipeline | Research/gtha-frequent-transit | Working |
 | Multi-agency GTFS ingestion | Research/gtha-frequent-transit | Working |
-| Persistent backend (Node/Express/Postgres) | Atlas NextGen `server/` | **Live** |
-| Historical vehicle position store | Atlas NextGen `server/` | **Live** |
-| Multi-agency ingestion (15 agencies) | Atlas NextGen `server/` | **Live** |
-| Trip-matching logic | — | Not started |
-| OTP analysis layer | — | Not started |
+| Persistent backend (Node/Express/Postgres) | Atlas NextGen `server/` | **Live on OCI** |
+| Historical vehicle position store | Atlas NextGen `server/` | **Live on OCI** |
+| Multi-agency ingestion (21 agencies) | Atlas NextGen `server/` | **Live on OCI** |
+| Live Stop Performance API + UI | Atlas frontend `/monitor` | **Shipped** |
+| Route Health heatmap (7-day) | Atlas frontend `/pulse` | **Shipped** |
+| Trip-matching logic | server/intelligence/matcher.ts | In progress — needs static feed import |
+| OTP analysis layer | — | Blocked on trip matching |
 
 ---
 
@@ -30,33 +32,36 @@ The backend's primary goal is to close the gap between the schedule and reality.
 - [x] Design Postgres schema for vehicle position snapshots
 - [x] Build ingestion layer: continuous GTFS-RT polling every 30s, writing to DB
 - [x] Structured ingestion health log (success/failure per agency per poll)
-- [x] Multi-agency support: 13 agencies live across US and Canada
+- [x] Multi-agency support: 18 agencies live across US and Canada
+- [x] REST API layer: `/api/live/*` endpoints for positions, routes, stops, arrivals
 - [ ] Trip-matching logic: observed position → scheduled trip → on-time delta
-- [ ] REST API layer: endpoints for the frontend to query positions, OTP, and headway history
 - [ ] Data retention policy: define pruning/archival window for raw position snapshots
 
 ---
 
 ## Phase 2 — Intelligence Layer
 
-- [ ] OTP aggregation: per-route, per-stop, per-time-of-day breakdowns
-- [ ] Schedule adherence scoring: route-level reliability score agencies can act on
-- [ ] Actual headway calculation from vehicle position history
+- [x] Actual headway estimation from vehicle position history (vehicle-count method)
+- [x] Bunching detection: pairs arriving < 2 min apart flagged in UI
+- [x] Stop-level arrival log: per-vehicle arrival times with gap annotation
+- [x] Route Health heatmap: 7-day hours × days reliability grid
+- [ ] Schedule adherence scoring: compare observed gaps to GTFS scheduled headway (needs trip matching)
+- [ ] OTP aggregation: per-route, per-stop, per-time-of-day on-time breakdowns
 - [ ] Runtime analysis: identify scheduled segments that are consistently over/under
-- [ ] Bunching detection: collapse events where headway doubles or triples
 - [ ] Ghost bus detection: scheduled trips with no observed vehicle in the feed
-- [ ] Feed health scoring: systematic reliability rating per agency (not just raw logs)
-- [ ] Coverage analysis integration from Research pipeline
+- [ ] Feed health scoring: systematic reliability rating per agency
 
 ---
 
 ## Phase 3 — Atlas Frontend Integration
 
+- [x] Live Stop Performance panel in Monitor module
+- [x] Route Health heatmap — `/pulse` module
 - [ ] Replace static GTFS-only views with live + historical data
 - [ ] OTP map layer: routes coloured by actual performance
-- [ ] Headway reliability view: actual vs. scheduled per corridor
+- [ ] Headway reliability view: actual vs. scheduled per corridor — needs trip matching
 - [ ] Coverage view: walkshed + population overlay
-- [ ] Agency benchmarking dashboard
+- [ ] Agency benchmarking dashboard: compare TTC vs. TriMet vs. MBTA on reliability
 
 ---
 

@@ -14,6 +14,8 @@ Atlas is a transit intelligence platform. It ingests GTFS feeds, runs them throu
 
 **AtlasLog** — Notion database that tracks Atlas development history, testing sessions, and notable findings. Update it alongside `gtfs-test-log.md` when significant testing or bug fixes happen.
 
+[AtlasLog Notion DB](https://www.notion.so/3289563c9a498064a562f3c71fe3879f?v=3289563c9a4981d7a368000c0911b32d)
+
 ## Accuracy Snapshot Workflow
 
 Before making any changes to `src/`, capture a baseline:
