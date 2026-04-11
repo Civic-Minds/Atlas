@@ -34,6 +34,12 @@
 
 - `f212d30` — Fix TTC schedule matching: time-based fallback for GTFS-RT/static trip ID mismatch
 
+## AtlasLog Entry (pending Notion sync)
+
+- **Title**: TTC schedule matching + boot orphan fix
+- **Date**: 2026-04-11
+- **Summary**: Time-based fallback matcher for agencies with GTFS-RT/static trip ID mismatch (TTC Clever Devices IDs → Toronto Open Data IDs). Fixed timezone bug in delay calc (UTC vs local agency time), Date coercion crash from BullMQ/Redis JSON serialization, and created missing `segment_metrics`/`stop_dwell_metrics` tables. Disabled `ouija.service` systemd unit permanently. TTC now producing accurate `delay_seconds` (±~40s range), 25 segment metrics and 4 dwell metrics per 30s poll cycle.
+
 ## Pending / Next Steps
 
 - **Import more agencies** — After TTC, next candidates: MBTA, SEPTA, OC Transpo (all currently polling but no static GTFS, so delay_seconds always null). Command from `/home/ubuntu/atlas-server/`:
