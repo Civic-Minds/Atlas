@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Zap, GitFork, ArrowRight, AlertTriangle, CheckCircle2, TrendingUp, BarChart3, Globe, Clock, ShieldCheck, PauseCircle } from 'lucide-react';
 import { ModuleHeader } from '../../components/ModuleHeader';
 import { fetchAgencies, screenRoutes, fetchSegmentBottlenecks, fetchStopDwells, auditServiceChange, AgencyMeta, ScreenRoute, SegmentBottleneck, StopDwell, AuditResult } from '../../services/atlasApi';
+import StopArrivalTimeline from './StopArrivalTimeline';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import './Intelligence.css';
 
@@ -293,6 +294,13 @@ export default function IntelligenceView() {
                             </div>
                         ))}
                     </div>
+                </div>
+            )}
+
+            {/* Live Stop Performance */}
+            {selectedAgency && (
+                <div className="mb-8">
+                    <StopArrivalTimeline agency={selectedAgency} />
                 </div>
             )}
 

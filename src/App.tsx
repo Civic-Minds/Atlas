@@ -18,6 +18,7 @@ const PredictView = React.lazy(() => import('./modules/predict/PredictView'));
 const MapView = React.lazy(() => import('./modules/map/MapView'));
 const IntelligenceView = React.lazy(() => import('./modules/intelligence/IntelligenceView'));
 const SystemReportView = React.lazy(() => import('./modules/screener/components/SystemReportView'));
+const PulseView = React.lazy(() => import('./modules/pulse/PulseView'));
 
 
 const LazyFallback = () => (
@@ -71,6 +72,7 @@ const App: React.FC = () => {
                                 <Route path="/predict" element={<PredictView />} />
                                 <Route path="/audit" element={<VerifierView />} />
                                 <Route path="/reports" element={<ReportCardsView />} />
+                                <Route path="/pulse" element={<PulseView />} />
                                 <Route path="/map" element={<MapView />} />
                                 <Route path="/admin" element={<AdminView />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />

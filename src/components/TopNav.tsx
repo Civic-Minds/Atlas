@@ -17,6 +17,7 @@ const NAV_ITEMS = [
 ];
 
 const SECONDARY_NAV = [
+    { id: 'pulse', title: 'Pulse', path: '/pulse' },
     { id: 'map', title: 'Map', path: '/map' },
 ];
 
