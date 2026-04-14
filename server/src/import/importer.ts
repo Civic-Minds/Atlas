@@ -368,22 +368,25 @@ function computeStats(times: number[]) {
 const TIERS = [10, 15, 20, 30, 60];
 const GRACE = 5;
 const MAX_GRACE = 2;
-const TIME_WINDOW = { start: 420, end: 1320 }; // 7am–10pm
+const TIME_WINDOW = { start: 420, end: 1140 }; // 7am–7pm
+
 
 function determineTier(gaps: number[], tripCount: number, spanMins: number): string {
+  if (gaps.length === 0) return 'span';
+
   for (const T of TIERS) {
     const minTrips = Math.ceil(spanMins / T);
     if (tripCount < minTrips) continue;
-    let graceCount = 0, fail = false;
-    for (const h of gaps) {
-      if (h <= T) continue;
-      if (h <= T + GRACE) { if (++graceCount > MAX_GRACE) { fail = true; break; } }
-      else { fail = true; break; }
-    }
-    if (!fail) return String(T);
+
+    const sorted = [...gaps].sort((a,b) => a - b);
+    const p90Idx = Math.max(0, Math.floor(sorted.length * 0.9) - 1);
+    const p90Gap = sorted[p90Idx];
+
+    if (p90Gap <= T + GRACE) return String(T);
   }
   return 'span';
 }
+
 
 function applyAnalysis(rawData: RawDepartures[], circuityMap: Map<string, number>): AnalysisResult[] {
   // Per-day results

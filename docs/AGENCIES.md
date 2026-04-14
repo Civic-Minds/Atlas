@@ -23,7 +23,7 @@ Live registry of agencies being polled by Atlas NextGen. Route filters are defin
 | San Diego MTS | `sdmts` | San Diego, CA | BRT + Rapid | SuperLoop + Rapid + Rapid Express (201/202/204/215/225/227/235/237/280/290) |
 | SEPTA | `septa` | Philadelphia, PA | Surface LRT + Bus | T1–T5, G1 (trolleys) + Route 23 |
 | SF Muni | `muni` | San Francisco, CA | LRT + BRT + Rapid | Muni Metro (J/K/L/M/N/T) + Van Ness BRT (49) + Rapid routes (38R, 14R, 5R, 9R) |
-| Spokane Transit Authority | `sta` | Spokane, WA | BRT + Bus | City Line BRT (90), Routes 6, 9, 25, 66 |
+| Spokane Transit Authority | `sta` | Spokane, WA | BRT + Bus | City Line BRT (90), Routes 6, 9, 25, 66 (**Audit 2026-04-11: 2.48% Freedom Score**) |
 | Toronto Transit Commission | `ttc` | Ontario, CA | Streetcar/LRT | 501, 504–512 (streetcars) + Line 6 Finch West LRT |
 | TransLink | `translink` | Metro Vancouver, CA | RapidBus | R1–R5 (37808/38311/37809/37810/37807) + 99 B-Line (6641) |
 | TriMet | `trimet` | Portland, OR | BRT + LRT + Streetcar | FX2-Division (2), Route 72, MAX (90/100/190/200/290), Streetcar (193/194/195) |

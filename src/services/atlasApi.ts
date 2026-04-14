@@ -409,6 +409,80 @@ export async function fetchSilentRoutes(agency: string): Promise<SilentRoutesRes
   return res.json();
 }
 
+// ─── Ghost Buses ──────────────────────────────────────────────────────────────
+
+export interface GhostRoute {
+  routeId: string;
+  scheduledTrips: number;
+  observedTrips: number;
+  ghostCount: number;
+  ghostRate: number;
+}
+
+export interface GhostResponse {
+  agency: string;
+  windowMinutes: number;
+  ts: string;
+  routes: GhostRoute[];
+}
+
+export async function fetchGhostBuses(agency: string, windowMinutes: number = 60): Promise<GhostResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/ghosts`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('window', String(windowMinutes));
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Ghost bus query failed: ${res.status}`);
+  return res.json();
+}
+
+// ─── Matching Stats ───────────────────────────────────────────────────────────
+
+export interface MatchingStat {
+  agency_id: string;
+  total_obs: number;
+  matched_obs: number;
+  avg_confidence: number;
+  direct_matches: number;
+  spatial_matches: number;
+  unmatched: number;
+  healthScore: number;
+}
+
+export interface MatchingStatsResponse {
+  ts: string;
+  stats: MatchingStat[];
+}
+
+export async function fetchMatchingStats(agency?: string): Promise<MatchingStatsResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/matching-stats`, window.location.origin);
+  if (agency) url.searchParams.set('agency', agency);
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Matching stats query failed: ${res.status}`);
+  return res.json();
+}
+
+// ─── Intelligence Trends ──────────────────────────────────────────────────────
+
+export interface TrendPoint {
+  hour: string;
+  agency_id: string;
+  avg_vehicles: number;
+  success_rate: number;
+}
+
+export interface TrendsResponse {
+  ts: string;
+  trends: TrendPoint[];
+}
+
+export async function fetchTrends(agency?: string): Promise<TrendsResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/trends`, window.location.origin);
+  if (agency) url.searchParams.set('agency', agency);
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Trends query failed: ${res.status}`);
+  return res.json();
+}
+
 export async function fetchStopArrivals(
   agency: string,
   route: string,

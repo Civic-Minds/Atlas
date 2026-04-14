@@ -19,6 +19,7 @@ const MapView = React.lazy(() => import('./modules/map/MapView'));
 const IntelligenceView = React.lazy(() => import('./modules/intelligence/IntelligenceView'));
 const SystemReportView = React.lazy(() => import('./modules/screener/components/SystemReportView'));
 const PulseView = React.lazy(() => import('./modules/pulse/PulseView'));
+const PerformanceView = React.lazy(() => import('./modules/performance/PerformanceView'));
 
 
 const LazyFallback = () => (
@@ -52,13 +53,13 @@ const App: React.FC = () => {
             <TopNav />
             <CommandPalette />
             <main className="flex-1 flex flex-col overflow-hidden relative">
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                     <motion.div
                         key={location.pathname}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15, ease: 'linear' }}
                         className="flex-1 flex flex-col overflow-hidden"
                     >
                         <Suspense fallback={<LazyFallback />}>
@@ -73,6 +74,7 @@ const App: React.FC = () => {
                                 <Route path="/audit" element={<VerifierView />} />
                                 <Route path="/reports" element={<ReportCardsView />} />
                                 <Route path="/pulse" element={<PulseView />} />
+                                <Route path="/performance" element={<PerformanceView />} />
                                 <Route path="/map" element={<MapView />} />
                                 <Route path="/admin" element={<AdminView />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />

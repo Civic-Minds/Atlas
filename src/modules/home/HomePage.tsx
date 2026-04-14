@@ -7,6 +7,7 @@ import {
     TrendingUp,
     Brain,
     FileCheck,
+    Gauge,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,14 +25,14 @@ const FEATURES = [
         meta: 'Network'
     },
     {
-        id: 'monitor',
-        title: 'Monitor',
-        cta: 'Check Performance',
-        description: 'Real-time metrics: schedule adherence, bunching detection, and ghost bus alerts.',
-        icon: <Brain className="w-5 h-5" />,
+        id: 'performance',
+        title: 'Performance',
+        cta: 'View OTP',
+        description: 'Live on-time performance, bottleneck segments, ghost bus detection, and dwell analysis.',
+        icon: <Gauge className="w-5 h-5" />,
         color: 'amber',
-        path: '/monitor',
-        meta: 'Live Ops'
+        path: '/performance',
+        meta: 'Live OTP'
     },
     {
         id: 'predict',

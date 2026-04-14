@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Zap, GitFork, ArrowRight, AlertTriangle, CheckCircle2, TrendingUp, BarChart3, Globe, Clock, ShieldCheck, PauseCircle } from 'lucide-react';
+import { Zap, GitFork, ArrowRight, AlertTriangle, CheckCircle2, TrendingUp, BarChart3, Globe, Clock, ShieldCheck, PauseCircle, Map as MapIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { ModuleHeader } from '../../components/ModuleHeader';
 import { fetchAgencies, screenRoutes, fetchSegmentBottlenecks, fetchStopDwells, auditServiceChange, AgencyMeta, ScreenRoute, SegmentBottleneck, StopDwell, AuditResult } from '../../services/atlasApi';
 import StopArrivalTimeline from './StopArrivalTimeline';
@@ -12,10 +13,20 @@ const TIER_THRESHOLDS = {
     coverage: 30
 };
 
+const SERVICE_PERIODS = [
+    { id: 'all-day', label: 'All Day', start: 300, end: 1440, icon: Globe },
+    { id: 'am-peak', label: 'AM Peak', start: 360, end: 540, icon: TrendingUp },
+    { id: 'mid-day', label: 'Mid-Day', start: 540, end: 900, icon: Clock },
+    { id: 'pm-peak', label: 'PM Peak', start: 900, end: 1080, icon: Zap },
+    { id: 'evening', label: 'Evening', start: 1080, end: 1320, icon: Clock },
+];
+
 export default function IntelligenceView() {
+    const navigate = useNavigate();
     const { agencyId } = useAuthStore();
     const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
     const [selectedAgency, setSelectedAgency] = useState<string | null>(null);
+    const [selectedPeriod, setSelectedPeriod] = useState(SERVICE_PERIODS[2]); // Default to Mid-Day
     const [routes, setRoutes] = useState<ScreenRoute[]>([]);
     const [bottlenecks, setBottlenecks] = useState<SegmentBottleneck[]>([]);
     const [dwells, setDwells] = useState<StopDwell[]>([]);
@@ -43,8 +54,8 @@ export default function IntelligenceView() {
         screenRoutes({
             agency: selectedAgency,
             maxHeadway: 60,
-            windowStart: 420,  // 7am
-            windowEnd: 1140,   // 7pm
+            windowStart: selectedPeriod.start,
+            windowEnd: selectedPeriod.end,
             dayType: 'Weekday',
             directions: 'one'
         }).then(res => {
@@ -59,7 +70,7 @@ export default function IntelligenceView() {
             .then(res => setDwells(res.dwells))
             .catch(err => console.warn('Dwells unavailable', err))
             .finally(() => setLoading(false));
-    }, [selectedAgency]);
+    }, [selectedAgency, selectedPeriod]);
 
     const handleAudit = async () => {
         if (!selectedAgency) return;
@@ -175,7 +186,25 @@ export default function IntelligenceView() {
                             }`}
                         >
                             <span className="text-[10px] font-bold">{a.display_name}</span>
-                            <span className="text-[8px] opacity-40 font-mono italic">{a.slug}</span>
+                        </button>
+                    ))}
+                </div>
+                
+                <div className="w-px h-6 bg-[var(--border)] mx-2 shrink-0" />
+
+                <div className="flex items-center gap-2 pr-4">
+                    {SERVICE_PERIODS.map(p => (
+                        <button
+                            key={p.id}
+                            onClick={() => setSelectedPeriod(p)}
+                            className={`px-4 py-2 rounded-xl border transition-all text-nowrap flex items-center gap-2 ${
+                                selectedPeriod.id === p.id 
+                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold' 
+                                    : 'bg-[var(--bg)] border-transparent text-[var(--text-muted)] hover:border-[var(--border)]'
+                            }`}
+                        >
+                            <p.icon className="w-3 h-3 opacity-60" />
+                            <span className="text-[10px] font-bold">{p.label}</span>
                         </button>
                     ))}
                 </div>
@@ -193,26 +222,26 @@ export default function IntelligenceView() {
                 <div className="precision-panel p-6 border-l-4 border-indigo-500">
                     <div className="flex items-center gap-3 mb-4">
                         <Zap className="w-5 h-5 text-indigo-500" />
-                        <span className="atlas-label">Freedom Score</span>
+                        <span className="atlas-label">Frequent Service Density</span>
                     </div>
                     <div className="flex items-end gap-2 mb-2">
                         <span className="text-4xl font-black atlas-mono">{stats?.freedomPercent}%</span>
                     </div>
                     <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
-                        {stats?.freedomCount} of {stats?.totalRoutes} routes meet the "Turn Up and Go" frequency standard (&lt;15m).
+                        {stats?.freedomCount} of {stats?.totalRoutes} routes meet the "High-Frequency" service standard (&lt;15m).
                     </p>
                 </div>
 
                 <div className="precision-panel p-6 border-l-4 border-emerald-500">
                     <div className="flex items-center gap-3 mb-4">
                         <BarChart3 className="w-5 h-5 text-emerald-500" />
-                        <span className="atlas-label">Network Debt</span>
+                        <span className="atlas-label">Geometric Circuity</span>
                     </div>
                     <div className="flex items-end gap-2 mb-2">
                         <span className="text-4xl font-black atlas-mono">{stats?.avgCircuity}x</span>
                     </div>
                     <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
-                        System-wide circuity average. {stats?.zigZagCount} routes are flagged as "Zig-Zags" (&gt;1.4x).
+                        Geometric inefficiency average. {stats?.zigZagCount} routes are flagged as "Zig-Zags" (&gt;1.4x).
                     </p>
                 </div>
 
@@ -340,8 +369,11 @@ export default function IntelligenceView() {
                                                     Design Proposal: Convert indirect loops to linear trunk line.
                                                 </div>
                                             </div>
-                                            <button className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500 text-white rounded text-[9px] font-bold hover:bg-indigo-600 transition-all">
-                                                Optimize <ArrowRight className="w-3 h-3" />
+                                            <button 
+                                                onClick={() => navigate(`/map?agency=${selectedAgency}&route=${r.gtfs_route_id}`)}
+                                                className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500 text-white rounded text-[9px] font-bold hover:bg-indigo-600 transition-all"
+                                            >
+                                                Inspect <MapIcon className="w-3 h-3" />
                                             </button>
                                         </div>
                                     </div>
@@ -350,12 +382,12 @@ export default function IntelligenceView() {
                         </div>
                 </div>
 
-                {/* Freedom Grid Auditor */}
+                {/* High-Frequency Network Auditor */}
                 <div className="precision-panel overflow-hidden">
                     <div className="bg-[var(--item-bg)] px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Zap className="w-4 h-4 text-emerald-500" />
-                            <span className="atlas-label">Freedom Grid Integrity</span>
+                            <span className="atlas-label">High-Frequency Corridors</span>
                         </div>
                         <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded text-[9px] font-black border border-emerald-500/20">System Backbone</span>
                     </div>
@@ -377,13 +409,28 @@ export default function IntelligenceView() {
                                             <div className="text-[10px] text-[var(--text-muted)] font-medium">
                                                 Active from {Math.floor(r.service_span_start/60)}am - {Math.floor(r.service_span_end/60)}pm
                                             </div>
+                                            <div className="mt-2 flex items-center gap-2">
+                                                <div className="w-24 h-1 bg-[var(--border)] rounded-full overflow-hidden">
+                                                    <div 
+                                                        className={`h-full ${parseFloat(r.reliability_score || '0') > 80 ? 'bg-emerald-500' : 'bg-amber-500'}`} 
+                                                        style={{ width: `${r.reliability_score || 0}%` }}
+                                                    ></div>
+                                                </div>
+                                                <span className="text-[8px] font-bold atlas-mono text-[var(--text-muted)]">{Math.round(parseFloat(r.reliability_score || '0'))}% Reliability</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-end">
+                                    <div className="flex flex-col items-end gap-2">
                                         <span className={`text-[9px] font-black px-2 py-0.5 rounded border ${parseFloat(r.avg_headway) <= 15 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' : 'bg-amber-500/10 border-amber-500/20 text-amber-600'}`}>
-                                            {parseFloat(r.avg_headway) <= 15 ? 'FREEDOM' : 'SUB-STANDARD'}
+                                            {parseFloat(r.avg_headway) <= 15 ? 'FREQUENT' : 'COVERAGE'}
                                         </span>
-                                        <div className="mt-1 text-[8px] atlas-mono opacity-50">{r.trip_count} trips daily</div>
+                                        <button 
+                                            onClick={() => navigate(`/map?agency=${selectedAgency}&route=${r.gtfs_route_id}`)}
+                                            className="p-1.5 rounded-lg bg-[var(--item-bg)] border border-[var(--border)] text-[var(--text-muted)] hover:text-indigo-500 hover:border-indigo-500/30 transition-all"
+                                        >
+                                            <MapIcon className="w-3.5 h-3.5" />
+                                        </button>
+                                        <div className="text-[8px] atlas-mono opacity-50">{r.trip_count} trips daily</div>
                                     </div>
                                 </div>
                             ))

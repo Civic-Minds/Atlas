@@ -139,11 +139,12 @@ button,
 
 /* Module Container */
 .module-container {
-  @apply flex flex-col items-center px-8 py-6 h-[calc(100vh-80px)] overflow-y-auto custom-scrollbar w-full;
+  @apply flex flex-col items-center py-6 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar w-full;
+  scrollbar-gutter: stable;
 }
 
 .module-container > * {
-  @apply w-full max-w-7xl;
+  @apply w-full max-w-7xl px-4 md:px-8;
 }
 
 /* Buttons - Solid, tactile feel */
