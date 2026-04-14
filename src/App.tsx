@@ -20,6 +20,7 @@ const IntelligenceView = React.lazy(() => import('./modules/intelligence/Intelli
 const SystemReportView = React.lazy(() => import('./modules/screener/components/SystemReportView'));
 const PulseView = React.lazy(() => import('./modules/pulse/PulseView'));
 const PerformanceView = React.lazy(() => import('./modules/performance/PerformanceView'));
+const AlertsView = React.lazy(() => import('./modules/alerts/AlertsView').then(m => ({ default: m.AlertsView })));
 
 
 const LazyFallback = () => (
@@ -75,6 +76,7 @@ const App: React.FC = () => {
                                 <Route path="/reports" element={<ReportCardsView />} />
                                 <Route path="/pulse" element={<PulseView />} />
                                 <Route path="/performance" element={<PerformanceView />} />
+                                <Route path="/alerts" element={<AlertsView />} />
                                 <Route path="/map" element={<MapView />} />
                                 <Route path="/admin" element={<AdminView />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />

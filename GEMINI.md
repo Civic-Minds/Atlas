@@ -3,11 +3,12 @@
 Atlas is a transit intelligence platform. This document stores project context specifically for Gemini-based agents (Antigravity).
 
 ## Project Roadmap
-We are currently in **Phase 2: Intelligence Layer**, focused on real-time On-Time Performance (OTP) tracking.
+We are currently wrapping up **Phase 2: Intelligence Layer**, bridging the gap between raw backend GTFS/GTFS-RT data and agency-facing performance visibility.
 
 - Version: `0.14.0`
-- Current Goal: Validate matching services across 18 high-impact transit corridors.
+- Current Goal: Build out the user-facing **Performance Module** to expose internal intelligence endpoints (network pulse, bottlenecks, stop dwells, ghost buses, service audits).
 - **Big Fish Experiment**: Full Fleet polling (8,000+ vehicles) moved to **Discovery Lab (Local)**; Cloud remains on **SBS-only** routes for `mtabus`. Local focus: **Manhattan**.
+- **Next Up (Phase 3 Prep)**: Alerting UI (threshold management) and Board Report Export.
 
 ## External Tracking (Notion)
 
