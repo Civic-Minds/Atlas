@@ -417,6 +417,7 @@ function BottlenecksTab({ agency }: { agency: string }) {
                   <span className="truncate max-w-[150px]">{b.from_stop_name}</span>
                   <ArrowRight className="w-3 h-3 shrink-0" />
                   <span className="truncate max-w-[150px]">{b.to_stop_name}</span>
+                  {b.distance_meters > 0 && <span className="opacity-50">· {Math.round(b.distance_meters)}m</span>}
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -431,9 +432,15 @@ function BottlenecksTab({ agency }: { agency: string }) {
                 </span>
               </div>
             </div>
-            <div className="text-right shrink-0">
+            <div className="text-right shrink-0 w-24">
               <div className="text-sm font-black atlas-mono text-[var(--fg)]">{formatDelay(b.total_delay_added)}</div>
-              <div className="text-[9px] text-[var(--text-muted)]">total delay · {b.obs_count} obs</div>
+              <div className="text-[9px] text-[var(--text-muted)] mt-0.5">delay · {b.obs_count} obs</div>
+            </div>
+            <div className="text-right shrink-0 w-20 border-l border-[var(--border)] pl-4">
+              <div className="text-sm font-black atlas-mono text-emerald-400">
+                {b.avg_speed_kmh > 0 ? b.avg_speed_kmh.toFixed(1) : '—'}
+              </div>
+              <div className="text-[9px] text-[var(--text-muted)] mt-0.5">km/h avg</div>
             </div>
           </div>
         ))}

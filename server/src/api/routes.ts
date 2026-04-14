@@ -426,7 +426,8 @@ router.get('/intelligence/bottlenecks', requireAuth, requireTenant, diagnosticsL
          to_stop_id, 
          COUNT(*) as obs_count,
          AVG(delay_delta_seconds) as avg_delay_delta,
-         SUM(delay_delta_seconds) as total_delay_added
+         SUM(delay_delta_seconds) as total_delay_added,
+         AVG(observed_seconds) as avg_observed_seconds
        FROM segment_metrics
        WHERE agency_id = $1
          AND observed_at >= NOW() - INTERVAL '24 hours'
@@ -447,7 +448,7 @@ router.get('/intelligence/bottlenecks', requireAuth, requireTenant, diagnosticsL
     const routeIds = [...new Set(metrics.rows.map(m => m.route_id))];
 
     const stopsRes = await staticPool.query(
-      `SELECT gtfs_stop_id as id, stop_name as name FROM stops WHERE gtfs_stop_id = ANY($1)`,
+      `SELECT gtfs_stop_id as id, stop_name as name, stop_lat as lat, stop_lon as lon FROM stops WHERE gtfs_stop_id = ANY($1)`,
       [stopIds]
     );
     const routesRes = await staticPool.query(
@@ -455,15 +456,40 @@ router.get('/intelligence/bottlenecks', requireAuth, requireTenant, diagnosticsL
       [routeIds]
     );
 
-    const stopMap = Object.fromEntries(stopsRes.rows.map(s => [s.id, s.name]));
+    const stopMap = Object.fromEntries(stopsRes.rows.map(s => [s.id, { name: s.name, lat: s.lat, lon: s.lon }]));
     const routeMap = Object.fromEntries(routesRes.rows.map(r => [r.id, r.name]));
 
-    const bottlenecks = metrics.rows.map(m => ({
-      ...m,
-      route_name: routeMap[m.route_id] || m.route_id,
-      from_stop_name: stopMap[m.from_stop_id] || m.from_stop_id,
-      to_stop_name: stopMap[m.to_stop_id] || m.to_stop_id,
-    }));
+    const haversine = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+      const R = 6371e3;
+      const rad = Math.PI / 180;
+      const dLat = (lat2 - lat1) * rad;
+      const dLon = (lon2 - lon1) * rad;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    };
+
+    const bottlenecks = metrics.rows.map(m => {
+      const fromStop = stopMap[m.from_stop_id];
+      const toStop = stopMap[m.to_stop_id];
+      let distanceMeters = 0;
+      let avg_speed_kmh = 0;
+      
+      if (fromStop?.lat && fromStop?.lon && toStop?.lat && toStop?.lon) {
+        distanceMeters = haversine(fromStop.lat, fromStop.lon, toStop.lat, toStop.lon);
+        if (m.avg_observed_seconds > 0) {
+          avg_speed_kmh = (distanceMeters / m.avg_observed_seconds) * 3.6;
+        }
+      }
+
+      return {
+        ...m,
+        route_name: routeMap[m.route_id] || m.route_id,
+        from_stop_name: fromStop?.name || m.from_stop_id,
+        to_stop_name: toStop?.name || m.to_stop_id,
+        distance_meters: distanceMeters,
+        avg_speed_kmh
+      };
+    });
 
     res.json({
       agency,
