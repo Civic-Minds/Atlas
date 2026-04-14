@@ -500,3 +500,42 @@ export async function fetchStopArrivals(
   if (!res.ok) throw new Error(`Stop arrivals failed: ${res.status}`);
   return res.json();
 }
+
+// ─── Alerts ───────────────────────────────────────────────────────────────────
+
+export interface AlertThreshold {
+  id: string;
+  agency_account_id: string;
+  target_type: 'network' | 'route' | 'stop';
+  target_id: string | null;
+  metric: 'bunching_pct' | 'delay_seconds' | 'match_rate' | 'ghost_pct';
+  comparison: '>' | '<' | '==';
+  value: number;
+  cooldown_minutes: number;
+  notion_enabled: boolean;
+  created_at: string;
+}
+
+export async function fetchAlertThresholds(): Promise<AlertThreshold[]> {
+  const url = new URL(`${ATLAS_BASE}/api/alerts/thresholds`, window.location.origin);
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Failed to fetch alert thresholds: ${res.status}`);
+  return res.json();
+}
+
+export async function createAlertThreshold(data: Partial<AlertThreshold>): Promise<AlertThreshold> {
+  const url = new URL(`${ATLAS_BASE}/api/alerts/thresholds`, window.location.origin);
+  const res = await fetchWithAuth(url.toString(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Failed to create alert threshold: ${res.status}`);
+  return res.json();
+}
+
+export async function deleteAlertThreshold(id: string): Promise<void> {
+  const url = new URL(`${ATLAS_BASE}/api/alerts/thresholds/${id}`, window.location.origin);
+  const res = await fetchWithAuth(url.toString(), { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Failed to delete alert threshold: ${res.status}`);
+}
