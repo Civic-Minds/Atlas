@@ -45,10 +45,11 @@ The backend's primary goal is to close the gap between the schedule and reality.
 - [x] Bunching detection: pairs arriving < 2 min apart flagged in UI
 - [x] Stop-level arrival log: per-vehicle arrival times with gap annotation
 - [x] Route Health heatmap: 7-day hours × days reliability grid
-- [ ] Schedule adherence scoring: compare observed gaps to GTFS scheduled headway (needs trip matching)
+- [x] Schedule adherence scoring: compare observed gaps to GTFS scheduled headway (needs trip matching)
+- [x] Runtime analysis: identify scheduled segments that are consistently over/under
+- [x] Ghost bus detection: scheduled trips with no observed vehicle in the feed
+- [x] Segment speed calculation: overcome 30s vehicle ping gaps to derive actual segment km/h
 - [ ] OTP aggregation: per-route, per-stop, per-time-of-day on-time breakdowns
-- [ ] Runtime analysis: identify scheduled segments that are consistently over/under
-- [ ] Ghost bus detection: scheduled trips with no observed vehicle in the feed
 - [ ] Feed health scoring: systematic reliability rating per agency
 
 ---
@@ -57,9 +58,9 @@ The backend's primary goal is to close the gap between the schedule and reality.
 
 - [x] Live Stop Performance panel in Monitor module
 - [x] Route Health heatmap — `/pulse` module
-- [ ] Replace static GTFS-only views with live + historical data
+- [x] Replace static GTFS-only views with live + historical data (Performance module live)
+- [x] Headway reliability view: actual vs. scheduled per corridor (Frequency Promise shipped)
 - [ ] OTP map layer: routes coloured by actual performance
-- [ ] Headway reliability view: actual vs. scheduled per corridor — needs trip matching
 - [ ] Coverage view: walkshed + population overlay
 - [ ] Agency benchmarking dashboard: compare TTC vs. TriMet vs. MBTA on reliability
 

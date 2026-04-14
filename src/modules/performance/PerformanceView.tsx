@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Activity, AlertTriangle, Ghost, Clock, TrendingDown, TrendingUp,
   MapPin, ArrowRight, Timer, Gauge, ChevronDown, Scale, GitCompareArrows,
-  BarChart3, Zap, Target, Eye, CheckCircle, XCircle, ArrowUpRight, ArrowDownRight
+  BarChart3, Zap, Target, Eye, CheckCircle, XCircle, ArrowUpRight, ArrowDownRight, Download
 } from 'lucide-react';
 import { ModuleHeader } from '../../components/ModuleHeader';
 import {
@@ -1253,30 +1253,42 @@ export default function PerformanceView() {
 
   return (
     <div className="module-container">
-      <ModuleHeader
-        title="Performance"
-        badge={{ label: 'Live · 24h' }}
-      />
+      <div className="print:hidden">
+        <ModuleHeader
+          title="Performance"
+          badge={{ label: 'Live · 24h' }}
+        />
+      </div>
 
-      {/* Agency picker */}
-      <div className="flex flex-col gap-4 mb-8">
-        <div className="flex flex-col gap-1">
-          <span className="text-[9px] atlas-label opacity-50">Agency</span>
-          <div className="flex items-center gap-2 flex-wrap">
-            {AGENCIES.map(a => (
-              <button
-                key={a.id}
-                onClick={() => setAgency(a.id)}
-                className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
-                  agency === a.id
-                    ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
-                    : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
-                }`}
-              >
-                {a.label}
-              </button>
-            ))}
+      {/* Controls */}
+      <div className="flex flex-col gap-4 mb-8 print:hidden">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div className="flex flex-col gap-1">
+            <span className="text-[9px] atlas-label opacity-50">Agency</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              {AGENCIES.map(a => (
+                <button
+                  key={a.id}
+                  onClick={() => setAgency(a.id)}
+                  className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
+                    agency === a.id
+                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
+                      : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
+                  }`}
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
           </div>
+          
+          <button 
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-bold hover:bg-indigo-500/20 transition-colors h-fit"
+          >
+            <Download className="w-4 h-4" />
+            Export Board Report (PDF)
+          </button>
         </div>
 
         {/* Tab switcher */}
@@ -1298,14 +1310,16 @@ export default function PerformanceView() {
         </div>
       </div>
 
-      {/* Tab content */}
-      {tab === 'overview' && <OverviewTab agency={agency} />}
-      {tab === 'promise' && <FrequencyPromiseTab agency={agency} />}
-      {tab === 'bottlenecks' && <BottlenecksTab agency={agency} />}
-      {tab === 'ghosts' && <GhostsTab agency={agency} />}
-      {tab === 'dwells' && <DwellsTab agency={agency} />}
-      {tab === 'corridors' && <CorridorsTab agency={agency} />}
-      {tab === 'audit' && <ServiceAuditTab agency={agency} />}
+      {/* Tab content - ensure grid expands on print */}
+      <div className="print:block">
+        {tab === 'overview' && <OverviewTab agency={agency} />}
+        {tab === 'promise' && <FrequencyPromiseTab agency={agency} />}
+        {tab === 'bottlenecks' && <BottlenecksTab agency={agency} />}
+        {tab === 'ghosts' && <GhostsTab agency={agency} />}
+        {tab === 'dwells' && <DwellsTab agency={agency} />}
+        {tab === 'corridors' && <CorridorsTab agency={agency} />}
+        {tab === 'audit' && <ServiceAuditTab agency={agency} />}
+      </div>
     </div>
   );
 }
