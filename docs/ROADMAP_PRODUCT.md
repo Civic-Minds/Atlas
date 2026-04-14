@@ -42,16 +42,18 @@ What we need to operate the platform and trust the data we're collecting.
 What a transit agency pays to see. Designed for planners — no code, no SQL, no data science background required. See [Agency Pain Points Research](RESEARCH.md) for the problems this addresses.
 
 ### Reliability View
-- [ ] **Live network map**: routes coloured by current headway deviation — green (on schedule), yellow (minor gap), red (bunching or large gap)
-- [ ] **On-time performance by route**: headway-based OTP, not timepoint adherence — the metric that actually reflects passenger experience
-- [ ] **Segment-level breakdown**: where on a route does lateness originate, which stops cause dwell blowouts (requires trip-matching)
-- [ ] **Bunching alerts**: real-time flag when headway collapses to 2× or more on a corridor
+- [x] **Live network map**: routes coloured by current headway deviation — green (on schedule), yellow (minor gap), red (bunching or large gap)
+- [x] **On-time performance by route**: headway-based OTP, not timepoint adherence — the metric that actually reflects passenger experience
+- [x] **Segment-level breakdown**: where on a route does lateness originate, which stops cause dwell blowouts (requires trip-matching)
+- [x] **Segment Speed Measurement**: hard empirical km/h speeds across intersections to defeat 30s polling artifact noise
+- [x] **Bunching alerts**: real-time flag when headway collapses to 2× or more on a corridor
 
 ### Historical Analysis
 - [ ] **OTP trends**: route reliability over time — by day of week, time of day, season
 - [ ] **Worst performers**: automatically surface the routes and time windows with the worst headway consistency
-- [ ] **Before/after service change**: compare actual performance before and after a schedule change
-- [ ] **Ghost bus log**: scheduled trips with no observed vehicle — frequency by route
+- [x] **Before/after service change**: compare actual performance before and after a schedule change
+- [x] **Ghost bus log**: scheduled trips with no observed vehicle — frequency by route
+- [ ] **TSP Effectiveness Measurement**: comparative analysis of intersections equipped with transit signal priority vs those without
 
 ### Coverage & Equity
 - [ ] **Frequent transit coverage map**: what % of the municipality lives within 10-min walk of frequent service
