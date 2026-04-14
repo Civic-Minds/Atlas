@@ -205,6 +205,8 @@ export interface SegmentBottleneck {
   obs_count:            number;
   avg_delay_delta:      number;
   total_delay_added:    number;
+  distance_meters:      number;         // Straight-line distance between stops
+  avg_speed_kmh:        number;         // Actual observed speed traversing segment
 }
 
 export interface BottleneckResponse {
