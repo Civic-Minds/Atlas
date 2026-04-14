@@ -10,8 +10,11 @@ import {
     Gauge,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../hooks/useAuthStore';
+import { useViewAs } from '../../hooks/useViewAs';
 
 import { CityHero } from './components/CityHero';
+import { AgencyDashboard } from './components/AgencyDashboard';
 
 const FEATURES = [
     {
@@ -81,6 +84,15 @@ const WORDS = ['Intelligence', 'Precision', 'Efficiency', 'Visibility'];
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
     const [wordIndex] = React.useState(() => Math.floor(Math.random() * WORDS.length));
+    const { agencyId } = useAuthStore();
+    const { viewAsAgency } = useViewAs();
+
+    // If user has a tenant agency or admin is viewing-as, show the data dashboard
+    const activeAgencyId = viewAsAgency?.slug ?? agencyId;
+    const activeAgencyName = viewAsAgency?.display_name ?? agencyId ?? 'Your Network';
+    if (activeAgencyId) {
+        return <AgencyDashboard agencyId={activeAgencyId} agencyName={activeAgencyName} />;
+    }
 
     return (
         <div className="flex-1 flex flex-col relative w-full overflow-x-hidden">
