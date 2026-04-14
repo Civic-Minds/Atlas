@@ -101,10 +101,15 @@ File sizes and calendar ranges included as version identifiers (feeds don't have
 - Re-run after session fixes (arrival_time fallback, ::key split, detectReferenceDate rolling-schedule fix): **1047 OK, 3 skipped, 2 errors** — 12 errors resolved. Remaining errors: Paris IDFM + Netherlands OVapi (known large-feed parse limit only).
 - Hullo Ferries, GO Transit Metrolinx, UP Express: parsed OK, 0 routes — expired feeds (service ended before today)
 - ACT Regional, Hobart Metro Tasmania, Denver — not found in GTFS folder
-Discovery Lab Log (March 30 2026)
 --------------------------------
 | Experiment: Manhattan Full Fleet |
 | DB: Local (atlas_lab) |
 | Positions: 78 | Matches: 78 | Confidence: 1.0 |
 | Success: RELIABLE LOCAL INTELLIGENCE |
 --------------------------------
+
+## Intelligence Audits
+
+| Agency | Audit Date | Standard | Freedom Score | Findings |
+|---|---|---|---|---|
+| Spokane Transit (STA) | 2026-04-11 | Jarret Walker "Freedom Grid" (15m/7am-7pm) | **20.59%** | 7/34 routes meet standard (15m). **City Line (1)** is flagship at 9.00m. **Route 11** at exactly 15m. Other 27 routes in Coverage Drain. |

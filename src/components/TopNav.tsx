@@ -17,6 +17,7 @@ const NAV_ITEMS = [
 ];
 
 const SECONDARY_NAV = [
+    { id: 'performance', title: 'Performance', path: '/performance' },
     { id: 'pulse', title: 'Pulse', path: '/pulse' },
     { id: 'map', title: 'Map', path: '/map' },
 ];
@@ -48,13 +49,21 @@ export const TopNav: React.FC = () => {
         clearData();
     };
 
+    const currentNav = [...NAV_ITEMS, ...SECONDARY_NAV].find(item => location.pathname.startsWith(item.path));
+    const moduleName = currentNav ? currentNav.title : '';
+
     return (
         <header className="sticky top-0 z-50 w-full bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors duration-200">
-            <div className="max-w-7xl mx-auto w-full px-8 h-16 flex items-center justify-between">
-                <div className="flex items-center">
-                    <Link to="/" className="flex items-center gap-1.5 no-underline cursor-pointer">
+            <div className="max-w-7xl mx-auto w-full px-4 md:px-8 h-16 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                    <Link to="/" className="flex items-center gap-1.5 no-underline cursor-pointer group">
                         <span className="text-[18px] font-bold tracking-tight text-[var(--text-primary)]">Atlas</span>
-                        <span className="text-[18px] font-medium tracking-normal text-[var(--text-muted)]">by Civic Minds</span>
+                        {moduleName && (
+                            <>
+                                <span className="text-[var(--text-muted)] text-sm font-light">/</span>
+                                <span className="text-[16px] font-semibold tracking-tight text-indigo-500/80">{moduleName}</span>
+                            </>
+                        )}
                     </Link>
                 </div>
 

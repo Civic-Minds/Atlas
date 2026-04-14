@@ -109,9 +109,10 @@ export default function MapView() {
   const center = AGENCY_CENTERS[agency] ?? [43.6532, -79.3832];
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Controls */}
-      <div className="flex items-center gap-4 px-8 py-4 border-b border-[var(--border)] bg-[var(--bg)]">
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Controls Container */}
+      <div className="flex justify-center border-b border-[var(--border)] bg-[var(--bg)]">
+        <div className="max-w-7xl w-full flex items-center gap-4 px-4 md:px-8 py-4">
         <div className="flex flex-col gap-1">
           <label className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">Agency</label>
           <select
