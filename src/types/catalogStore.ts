@@ -8,9 +8,13 @@ interface CatalogState {
     feeds: FeedMeta[];
     catalogRoutes: CatalogRoute[];       // all versions (full history)
     currentRoutes: CatalogRoute[];       // derived: latest per routeKey
+    filterDate: number | null;           // null means "latest"
+    activeAgency: string | null;         // for researchers to focus one agency
     loading: boolean;
 
     loadCatalog: () => Promise<void>;
+    setFilterDate: (date: number | null) => void;
+    setActiveAgency: (agencyId: string | null) => void;
     commitFeed: (
         gtfsData: GtfsData,
         analysisResults: AnalysisResult[],
@@ -26,6 +30,9 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
     feeds: [],
     catalogRoutes: [],
     currentRoutes: [],
+    filteredRoutes: [],
+    filterDate: null,
+    activeAgency: null,
     loading: false,
 
     loadCatalog: async () => {
@@ -35,11 +42,21 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
                 storage.getAllItems<FeedMeta>(STORES.FEEDS),
                 storage.getAllItems<CatalogRoute>(STORES.CATALOG),
             ]);
-            const currentRoutes = deriveCurrentRoutes(catalogRoutes);
+            const currentRoutes = deriveCurrentRoutes(catalogRoutes, get().filterDate || undefined);
             set({ feeds, catalogRoutes, currentRoutes, loading: false });
         } catch {
             set({ loading: false });
         }
+    },
+
+    setFilterDate: (date) => {
+        const { catalogRoutes } = get();
+        const currentRoutes = deriveCurrentRoutes(catalogRoutes, date || undefined);
+        set({ filterDate: date, currentRoutes });
+    },
+
+    setActiveAgency: (agencyId) => {
+        set({ activeAgency: agencyId });
     },
 
     commitFeed: async (gtfsData, analysisResults, agencyName, fileName) => {

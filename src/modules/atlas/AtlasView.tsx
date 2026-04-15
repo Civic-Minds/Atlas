@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, Polyline, ZoomControl, Popup, useMap, CircleMarker } from 'react-leaflet';
-import { RotateCcw, Activity, Globe, Info, Layers, Filter, Navigation } from 'lucide-react';
+import { RotateCcw, Activity, Globe, Info, Layers, Filter, Navigation, Clock, Users, Shield, Eye } from 'lucide-react';
 import { useCatalogStore } from '../../types/catalogStore';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
 import { ModuleLanding } from '../../components/ModuleLanding';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import { useVehicleTracking } from '../../hooks/useVehicleTracking';
+import { usePopulationStore } from '../../hooks/usePopulationStore';
 import type { LatLngBoundsExpression } from 'leaflet';
+import { RouteDetailModal } from '../screener/components/RouteDetailModal';
+import { AnalysisResult } from '../../types/gtfs';
 import 'leaflet/dist/leaflet.css';
 import './Atlas.css';
 
@@ -41,16 +44,33 @@ const FitBounds: React.FC<{ bounds: LatLngBoundsExpression | null }> = ({ bounds
         }
     }, [map, bounds]);
     return null;
-};
-
 export default function AtlasView() {
-    const { isAuthenticated, agencyId } = useAuthStore();
-    const { currentRoutes, loading, loadCatalog } = useCatalogStore();
+    const { isAuthenticated, agencyId, globalMode, toggleGlobalMode, role } = useAuthStore();
+    const { currentRoutes, catalogRoutes, loading, loadCatalog, filterDate, setFilterDate, activeAgency, setActiveAgency } = useCatalogStore();
+    const { points, coverage, loadPopulation, computeCoverage } = usePopulationStore();
+
     const [activeDay, setActiveDay] = useState('Weekday');
     const [activeTiers, setActiveTiers] = useState<Set<string>>(new Set(['5', '8', '10', '15', '20']));
     const [mapStyle, setMapStyle] = useState<'dark' | 'light'>('dark');
-    const [activeAgency, setActiveAgency] = useState<string | null>(null);
     const [realtimeEnabled, setRealtimeEnabled] = useState(false);
+    const [popEnabled, setPopEnabled] = useState(false);
+    const [selectedResult, setSelectedResult] = useState<AnalysisResult | null>(null);
+
+    // Get unique commit dates for the timeline
+// ...
+    useEffect(() => {
+        loadCatalog();
+        loadPopulation();
+    }, [loadCatalog, loadPopulation]);
+        for (const r of catalogRoutes) {
+            const d = new Date(r.committedAt);
+            d.setMinutes(0, 0, 0);
+            dates.add(d.getTime());
+        }
+        return Array.from(dates).sort((a, b) => a - b);
+    }, [catalogRoutes]);
+
+    const displayDate = filterDate || (timelineDates.length > 0 ? timelineDates[timelineDates.length - 1] : Date.now());
 
     // Initial tenant check — default to assigned agency if present
     useEffect(() => {
@@ -74,20 +94,38 @@ export default function AtlasView() {
         return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
     }, [currentRoutes]);
 
+    // Derived visibility based on tenancy and global toggle
+    const visibleRoutes = useMemo(() => {
+        // If not global mode and have an agencyId, strictly filter to that agency
+        if (!globalMode && agencyId) {
+            return currentRoutes.filter(r => r.agencyId === agencyId);
+        }
+        // If an agency is explicitly selected by researcher, filter to that
+        if (activeAgency) {
+            return currentRoutes.filter(r => r.agencyId === activeAgency);
+        }
+        return currentRoutes;
+    }, [currentRoutes, globalMode, agencyId, activeAgency]);
+
     const filteredMapData = useMemo(() => {
-        return currentRoutes
+        return visibleRoutes
             .filter(r => r.dayType === activeDay)
             .filter(r => activeTiers.size === 0 || activeTiers.has(r.tier))
-            .filter(r => !activeAgency || r.agencyId === activeAgency)
             .filter(r => r.shape && r.shape.length > 0)
             .map(r => ({
                 ...r,
                 color: TIER_COLORS[r.tier] || '#64748b',
             }));
-    }, [currentRoutes, activeDay, activeTiers, activeAgency]);
+    }, [visibleRoutes, activeDay, activeTiers]);
 
-    // Compute bounds from ALL routes for the current day — independent of tier/agency filters
-    // so toggling filters doesn't re-fit the map and fight the user's pan/zoom
+    // Re-calculate coverage whenever filtered map data changes
+    useEffect(() => {
+        if (popEnabled && filteredMapData.length > 0) {
+            computeCoverage(filteredMapData);
+        }
+    }, [filteredMapData, popEnabled, computeCoverage]);
+
+    // Compute bounds from ALL routes for the current day
     const bounds = useMemo((): LatLngBoundsExpression | null => {
         const dayRoutes = currentRoutes.filter(r => r.dayType === activeDay && r.shape && r.shape.length > 0);
         if (dayRoutes.length === 0) return null;
@@ -134,41 +172,20 @@ export default function AtlasView() {
         return (
             <ModuleLanding
                 title="Atlas"
-                description="See your entire transit network on a map, with routes colored by service frequency. Filter by tier, day of week, and agency."
+                description="See your entire transit network on a map, with routes colored by service frequency."
                 icon={Globe}
-                features={[
-                    {
-                        title: "Frequency map",
-                        description: "Every route is drawn on the map and colored by its headway tier — see your whole network at a glance.",
-                        icon: <Globe className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Multi-agency",
-                        description: "Combine routes from multiple agencies into one view to see how networks overlap and connect.",
-                        icon: <Activity className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Day filtering",
-                        description: "Switch between weekday, Saturday, and Sunday to see how service levels change.",
-                        icon: <Layers className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Tier filtering",
-                        description: "Toggle frequency tiers on and off to focus on rapid, frequent, or infrequent service.",
-                        icon: <Filter className="w-5 h-5 text-indigo-500" />
-                    }
-                ]}
+                features={[]}
             />
         );
     }
 
-    if (currentRoutes.length === 0) {
+    if (currentRoutes.length === 0 && !filterDate) {
         return (
             <div className="module-container">
                 <EmptyStateHero
                     icon={Globe}
                     title="Atlas"
-                    description="No routes in the catalog yet. Go to Analyze, upload a GTFS feed, and commit routes to see them here."
+                    description="No routes in the catalog yet."
                     primaryAction={{
                         label: "Go to Analyze",
                         icon: Activity,
@@ -238,55 +255,79 @@ export default function AtlasView() {
                                         </div>
                                     </div>
                                 </div>
+                                <div className="mt-3 pt-2 border-t border-[var(--border)] text-[8px] text-[var(--text-muted)] atlas-mono">
+                                    Snapshot: {new Date(route.committedAt).toLocaleString()}
+                                </div>
+                                <button 
+                                    onClick={() => setSelectedResult({
+                                        route: route.route,
+                                        dir: route.dir,
+                                        day: route.dayType as any,
+                                        tier: route.tier,
+                                        avgHeadway: route.avgHeadway,
+                                        medianHeadway: route.medianHeadway,
+                                        tripCount: route.tripCount,
+                                        reliabilityScore: route.reliabilityScore,
+                                        consistencyScore: route.consistencyScore || route.reliabilityScore,
+                                        bunchingPenalty: route.bunchingPenalty || 0,
+                                        outlierPenalty: route.outlierPenalty || 0,
+                                        headwayVariance: route.headwayVariance || 0,
+                                        bunchingFactor: route.bunchingFactor || 0,
+                                        peakHeadway: route.peakHeadway || 0,
+                                        baseHeadway: route.baseHeadway || 0,
+                                        serviceSpan: route.serviceSpan,
+                                        modeName: route.modeName,
+                                        routeLongName: route.routeLongName,
+                                        times: [],
+                                        gaps: [],
+                                        serviceIds: [],
+                                        warnings: []
+                                    })}
+                                    className="w-full mt-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-[10px] font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Activity className="w-3 h-3" /> View Route Audit
+                                </button>
                             </div>
                         </Popup>
                     </Polyline>
                 ))}
 
                 {/* Real-time Vehicle Markers */}
-                {realtimeEnabled && vehicles.map((v, i) => {
-                    const routeColor = currentRoutes.find(r => r.route === v.route_id)?.tier 
-                        ? TIER_COLORS[currentRoutes.find(r => r.route === v.route_id)!.tier] 
-                        : '#ffffff';
-                    
-                    return (
-                        <CircleMarker
-                            key={`${v.vehicle_id}-${i}`}
-                            center={[v.lat, v.lon]}
-                            radius={4}
-                            pathOptions={{
-                                fillColor: routeColor,
-                                fillOpacity: 1,
-                                color: '#000000',
-                                weight: 1,
-                            }}
-                        >
-                            <Popup className="atlas-popup">
-                                <div className="p-3">
-                                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[var(--border)]">
-                                        <div className="w-8 h-8 rounded-lg bg-[var(--item-bg)] flex items-center justify-center border border-[var(--border)]">
-                                            <Navigation className="w-4 h-4 text-emerald-500" style={{ transform: `rotate(${v.bearing}deg)` }} />
-                                        </div>
-                                        <div>
-                                            <span className="text-[10px] font-black text-[var(--fg)]">Vehicle {v.vehicle_id}</span>
-                                            <p className="text-[8px] text-[var(--text-muted)] uppercase font-black uppercase tracking-widest leading-none">Route {v.route_id}</p>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="bg-[var(--item-bg)] p-2 rounded-lg border border-[var(--border)]">
-                                            <div className="text-[7px] atlas-label mb-0.5">Speed</div>
-                                            <div className="text-[10px] font-black atlas-mono">{Math.round(v.speed)} kmh</div>
-                                        </div>
-                                        <div className="bg-[var(--item-bg)] p-2 rounded-lg border border-[var(--border)]">
-                                            <div className="text-[7px] atlas-label mb-0.5">Seen</div>
-                                            <div className="text-[10px] font-black atlas-mono">{new Date(v.observed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                                        </div>
+                {realtimeEnabled && vehicles.map((v, i) => (
+                    <CircleMarker
+                        key={`${v.vehicle_id}-${i}`}
+                        center={[v.lat, v.lon]}
+                        radius={4}
+                        pathOptions={{
+                            fillColor: '#ffffff',
+                            fillOpacity: 1,
+                            color: '#000000',
+                            weight: 1,
+                        }}
+                    >
+                        <Popup className="atlas-popup">
+                            <div className="p-3">
+                                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[var(--border)]">
+                                    <Navigation className="w-4 h-4 text-emerald-500" style={{ transform: `rotate(${v.bearing}deg)` }} />
+                                    <div>
+                                        <span className="text-[10px] font-black text-[var(--fg)]">Vehicle {v.vehicle_id}</span>
+                                        <p className="text-[8px] text-[var(--text-muted)] font-black tracking-widest leading-none uppercase">Route {v.route_id}</p>
                                     </div>
                                 </div>
-                            </Popup>
-                        </CircleMarker>
-                    );
-                })}
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="bg-[var(--item-bg)] p-2 rounded-lg border border-[var(--border)]">
+                                        <div className="text-[7px] atlas-label mb-0.5">Speed</div>
+                                        <div className="text-[10px] font-black atlas-mono">{Math.round(v.speed)} kmh</div>
+                                    </div>
+                                    <div className="bg-[var(--item-bg)] p-2 rounded-lg border border-[var(--border)]">
+                                        <div className="text-[7px] atlas-label mb-0.5">Seen</div>
+                                        <div className="text-[10px] font-black atlas-mono">{new Date(v.observed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Popup>
+                    </CircleMarker>
+                ))}
             </MapContainer>
 
             {/* Sidebar Controls */}
@@ -303,27 +344,67 @@ export default function AtlasView() {
                                 </p>
                             </div>
                         </div>
-                        <button onClick={() => setActiveTiers(new Set(Object.keys(TIER_LABELS)))}>
-                            <RotateCcw className="w-4 h-4 text-[var(--text-muted)] hover:text-emerald-500 transition-colors" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {(role === 'admin' || role === 'researcher') && (
+                                <button
+                                    onClick={toggleGlobalMode}
+                                    title={globalMode ? 'Switch to Tenant View' : 'Switch to Global View'}
+                                    className={`p-2 rounded-lg transition-colors ${globalMode ? 'bg-indigo-500/10 text-indigo-500' : 'text-[var(--text-muted)] hover:bg-[var(--item-bg)]'}`}
+                                >
+                                    {globalMode ? <Shield className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
+                            )}
+                            <button onClick={() => {
+                                setActiveTiers(new Set(Object.keys(TIER_LABELS)));
+                                setFilterDate(null);
+                                if (typeof setActiveAgency === 'function') setActiveAgency(null);
+                            }}>
+                                <RotateCcw className="w-4 h-4 text-[var(--text-muted)] hover:text-emerald-500 transition-colors" />
+                            </button>
+                        </div>
                     </header>
 
-                    {/* Agency Filter — restricted if tenant-mapped */}
-                    {!agencyId && agencies.length > 1 && (
+                    {/* Timeline Slider */}
+                    {timelineDates.length > 1 && (
                         <div className="mb-6">
-                            <span className="atlas-label text-[8px] mb-2 block opacity-50">Agency Overview</span>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="atlas-label text-[8px] opacity-50 uppercase tracking-widest">Network Timeline</span>
+                                <span className="text-[9px] font-black text-emerald-500 atlas-mono">
+                                    {new Date(displayDate).toLocaleDateString()}
+                                </span>
+                            </div>
+                            <input
+                                type="range"
+                                min={timelineDates[0]}
+                                max={timelineDates[timelineDates.length - 1]}
+                                step={3600000}
+                                value={displayDate}
+                                onChange={(e) => setFilterDate(parseInt(e.target.value))}
+                                className="w-full h-1.5 bg-[var(--item-bg)] rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                            />
+                            <div className="flex justify-between mt-1">
+                                <span className="text-[7px] text-[var(--text-muted)] font-bold">{new Date(timelineDates[0]).toLocaleDateString()}</span>
+                                <span className="text-[7px] text-[var(--text-muted)] font-bold">Latest</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Agency Filter — restricted if tenant-mapped and not in global mode */}
+                    {(globalMode || !agencyId) && agencies.length > 1 && (
+                        <div className="mb-6">
+                            <span className="atlas-label text-[8px] mb-2 block opacity-50 uppercase tracking-widest">Agency Context</span>
                             <div className="space-y-1">
                                 <button
                                     onClick={() => setActiveAgency(null)}
-                                    className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-bold transition-all ${!activeAgency ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'text-[var(--text-muted)] hover:text-[var(--fg)]'}`}
+                                    className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-bold transition-all ${!activeAgency ? 'bg-indigo-500/10 text-indigo-600 border border-indigo-500/30' : 'text-[var(--text-muted)] hover:text-[var(--fg)]'}`}
                                 >
-                                    Global View
+                                    Regional View
                                 </button>
                                 {agencies.map(a => (
                                     <button
                                         key={a.id}
                                         onClick={() => setActiveAgency(a.id === activeAgency ? null : a.id)}
-                                        className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-bold transition-all ${activeAgency === a.id ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'text-[var(--text-muted)] hover:text-[var(--fg)]'}`}
+                                        className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-bold transition-all ${activeAgency === a.id ? 'bg-indigo-500/10 text-indigo-600 border border-indigo-500/30' : 'text-[var(--text-muted)] hover:text-[var(--fg)]'}`}
                                     >
                                         {a.name}
                                     </button>
@@ -332,12 +413,40 @@ export default function AtlasView() {
                         </div>
                     )}
 
-                    {agencyId && (
-                        <div className="mb-6 px-3 py-2 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
-                            <span className="atlas-label text-[8px] mb-1 block opacity-50 uppercase tracking-widest">Active Tenant</span>
-                            <div className="text-[10px] font-bold text-emerald-600 truncate">
+                    {!globalMode && agencyId && (
+                        <div className="mb-6 px-3 py-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg">
+                            <span className="atlas-label text-[8px] mb-1 block opacity-50 uppercase tracking-widest flex items-center gap-1">
+                                <Shield className="w-2.5 h-3" /> Active Tenant
+                            </span>
+                            <div className="text-[10px] font-bold text-indigo-600 truncate">
                                 {agencies.find(a => a.id === agencyId)?.name || agencyId}
                             </div>
+                        </div>
+                    )}
+
+                    {/* Population Overlay Toggle */}
+                    {points.length > 0 && (
+                        <div className="mb-6">
+                            <span className="atlas-label text-[8px] mb-2 block opacity-50 uppercase tracking-widest">Equity Layer</span>
+                            <button
+                                onClick={() => setPopEnabled(!popEnabled)}
+                                className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${popEnabled ? 'border-indigo-500/30 bg-indigo-500/10' : 'border-[var(--border)] bg-[var(--item-bg)]/50'}`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${popEnabled ? 'bg-indigo-500 text-white' : 'bg-[var(--item-bg)] text-[var(--text-muted)] border border-[var(--border)]'}`}>
+                                        <Users className="w-4 h-4" />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className={`text-[10px] font-black leading-none mb-1 ${popEnabled ? 'text-indigo-500' : 'text-[var(--fg)]'}`}>Pop. Coverage</p>
+                                        <p className="text-[8px] text-[var(--text-muted)] font-black uppercase tracking-widest">
+                                            {popEnabled && coverage ? `${coverage.percentCovered.toFixed(1)}% Access` : 'Disabled'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className={`w-10 h-5 rounded-full relative transition-colors ${popEnabled ? 'bg-indigo-500' : 'bg-white/10'}`}>
+                                    <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${popEnabled ? 'left-6' : 'left-1'}`} />
+                                </div>
+                            </button>
                         </div>
                     )}
 
@@ -407,17 +516,6 @@ export default function AtlasView() {
                         ))}
                     </div>
                 </div>
-
-                <div className="glass-panel p-4 pointer-events-auto border border-white/5 shadow-xl flex items-center gap-4">
-                    <div className="flex-1">
-                        <div className="atlas-label text-[10px] text-emerald-500 flex items-center gap-2 mb-1">
-                            <Info className="w-3 h-3" /> Catalog
-                        </div>
-                        <p className="text-[10px] text-[var(--text-muted)] leading-snug font-medium">
-                            Showing {filteredMapData.length} routes from {agencies.length} {agencies.length === 1 ? 'agency' : 'agencies'}.
-                        </p>
-                    </div>
-                </div>
             </div>
 
             {/* Map Style Toggle */}
@@ -435,6 +533,12 @@ export default function AtlasView() {
                     Light
                 </button>
             </div>
+
+            <RouteDetailModal 
+                isOpen={!!selectedResult}
+                onClose={() => setSelectedResult(null)}
+                result={selectedResult}
+            />
         </div>
     );
 }

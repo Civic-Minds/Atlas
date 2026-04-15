@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     FileText,
@@ -11,10 +11,12 @@ import {
     BarChart3,
     Activity,
     Map,
-    Bus
+    Bus,
+    Globe
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTransitStore } from '../../../types/store';
+import { useCatalogStore } from '../../../types/catalogStore';
 import { AnalysisResult } from '../../../types/gtfs';
 import './SystemReport.css';
 
@@ -37,37 +39,52 @@ const StatCard = ({ title, value, subtext, icon: Icon, color }: { title: string;
 
 export default function SystemReportView() {
     const { analysisResults, gtfsData, validationReport } = useTransitStore();
+    const { currentRoutes } = useCatalogStore();
+    const [reportScope, setReportScope] = useState<'local' | 'regional'>('local');
 
     const stats = useMemo(() => {
-        if (!analysisResults.length) return null;
+        // Decide data source based on scope
+        let dataToAnalyze: any[] = [];
+        
+        if (reportScope === 'local') {
+            dataToAnalyze = analysisResults.filter((r: AnalysisResult) => r.day === 'Weekday');
+        } else {
+            dataToAnalyze = currentRoutes.filter(r => r.dayType === 'Weekday');
+        }
 
-        const weekdayResults = analysisResults.filter((r: AnalysisResult) => r.day === 'Weekday');
-        const highFreq = weekdayResults.filter((r: AnalysisResult) => ['5', '8', '10', '15'].includes(r.tier));
-        const avgReliability = weekdayResults.reduce((acc: number, r: AnalysisResult) => acc + r.reliabilityScore, 0) / weekdayResults.length;
-        const totalTrips = weekdayResults.reduce((acc: number, r: AnalysisResult) => acc + r.tripCount, 0);
+        if (!dataToAnalyze.length) return null;
+
+        const highFreq = dataToAnalyze.filter(r => ['5', '8', '10', '15'].includes(r.tier));
+        const avgReliability = dataToAnalyze.reduce((acc, r) => acc + (r.reliabilityScore || 0), 0) / dataToAnalyze.length;
+        const totalTrips = dataToAnalyze.reduce((acc, r) => acc + (r.tripCount || 0), 0);
 
         // Mode breakdown
         const modes: Record<string, { count: number, highFreq: number }> = {};
-        weekdayResults.forEach((r: AnalysisResult) => {
+        dataToAnalyze.forEach(r => {
             const mode = r.modeName || 'Transit';
             if (!modes[mode]) modes[mode] = { count: 0, highFreq: 0 };
             modes[mode].count++;
             if (['5', '8', '10', '15'].includes(r.tier)) modes[mode].highFreq++;
         });
 
+        // Agencies included (useful for regional)
+        const uniqueAgencies = new Set(reportScope === 'regional' ? dataToAnalyze.map(r => r.agencyName) : [gtfsData?.feedInfo?.[0]?.feed_publisher_name || 'Local Agency']);
+
         return {
-            totalRoutes: weekdayResults.length,
+            totalRoutes: dataToAnalyze.length,
             highFreqCount: highFreq.length,
-            highFreqPct: (highFreq.length / weekdayResults.length) * 100,
+            highFreqPct: (highFreq.length / dataToAnalyze.length) * 100,
             avgReliability,
             totalTrips,
+            agencyCount: uniqueAgencies.size,
+            dataToAnalyze,
             modes: Object.entries(modes).map(([name, data]) => ({
                 name,
                 ...data,
-                pct: (data.highFreq / data.count) * 100
+                pct: data.count > 0 ? (data.highFreq / data.count) * 100 : 0
             }))
         };
-    }, [analysisResults]);
+    }, [analysisResults, currentRoutes, reportScope, gtfsData]);
 
     const benchmarks = {
         nationalAvg: { freq: 12.5, reliability: 78 },
@@ -79,18 +96,30 @@ export default function SystemReportView() {
         ]
     };
 
-    if (!stats || !gtfsData) {
+    if (!stats && reportScope === 'local' && (!analysisResults.length || !gtfsData)) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center">
                 <FileText className="w-16 h-16 text-[var(--text-muted)] mb-4 opacity-20" />
                 <h1 className="text-2xl font-bold text-[var(--fg)] mb-2">No Analysis Data Found</h1>
                 <p className="text-[var(--text-muted)] mb-8">Please upload and analyze a GTFS feed in the Screener first.</p>
-                <Link to="/screener" className="atlas-button-primary">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Screener
-                </Link>
+                <div className="flex gap-4">
+                    <Link to="/screener" className="atlas-button-primary">
+                        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Screener
+                    </Link>
+                    {currentRoutes.length > 0 && (
+                        <button 
+                            onClick={() => setReportScope('regional')}
+                            className="bg-[var(--item-bg)] border border-[var(--border)] px-4 py-2 rounded-xl text-sm font-bold hover:border-indigo-500 transition-colors"
+                        >
+                            View Regional Report Instead
+                        </button>
+                    )}
+                </div>
             </div>
         );
     }
+    
+    if (!stats) return null;
 
     const printReport = () => window.print();
 
@@ -101,6 +130,24 @@ export default function SystemReportView() {
                 <Link to="/screener" className="flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-indigo-500 transition-colors">
                     <ArrowLeft className="w-4 h-4" /> Back to Analysis
                 </Link>
+                
+                <div className="flex bg-[var(--item-bg)] border border-[var(--border)] rounded-lg p-1">
+                    <button 
+                        onClick={() => setReportScope('local')}
+                        disabled={!analysisResults.length}
+                        className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${reportScope === 'local' ? 'bg-indigo-500 text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--fg)] disabled:opacity-30'}`}
+                    >
+                        Local Feed
+                    </button>
+                    <button 
+                        onClick={() => setReportScope('regional')}
+                        disabled={!currentRoutes.length}
+                        className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors ${reportScope === 'regional' ? 'bg-indigo-500 text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--fg)] disabled:opacity-30'}`}
+                    >
+                        Regional Catalog
+                    </button>
+                </div>
+
                 <div className="flex items-center gap-3">
                     <button
                         onClick={printReport}
@@ -118,23 +165,41 @@ export default function SystemReportView() {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
-                                    <FileText className="w-6 h-6 text-white" />
+                                    {reportScope === 'regional' ? <Globe className="w-6 h-6 text-white" /> : <FileText className="w-6 h-6 text-white" />}
                                 </div>
                                 <div>
                                     <div className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600">Transit Intelligence Official Report</div>
-                                    <h1 className="text-4xl font-black tracking-tighter">System Reliability & Frequency Audit</h1>
+                                    <h1 className="text-4xl font-black tracking-tighter">
+                                        {reportScope === 'regional' ? 'Regional Network Audit' : 'System Reliability & Frequency Audit'}
+                                    </h1>
                                 </div>
                             </div>
                             <p className="text-[var(--text-muted)] font-medium max-w-xl">
-                                Detailed analysis of system-wide headway performance, tiered by mode-specific thresholds. Generated on {new Date().toLocaleDateString()} for board-level review.
+                                {reportScope === 'regional' 
+                                    ? `Aggregated analysis of ${stats.agencyCount} agencies in the catalog, tiered by mode-specific thresholds. Generated on ${new Date().toLocaleDateString()} for regional review.`
+                                    : `Detailed analysis of system-wide headway performance, tiered by mode-specific thresholds. Generated on ${new Date().toLocaleDateString()} for board-level review.`
+                                }
                             </p>
                         </div>
                         <div className="text-right print:hidden">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-1">Validation Health</div>
-                            <div className={`flex items-center gap-1.5 justify-end font-bold text-sm ${validationReport?.errors === 0 ? 'text-emerald-500' : 'text-amber-500'}`}>
-                                {validationReport?.errors === 0 ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                                {validationReport?.errors === 0 ? 'Spec Compliant' : `${validationReport?.errors} Errors Detected`}
-                            </div>
+                            {reportScope === 'local' && (
+                                <>
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-1">Validation Health</div>
+                                    <div className={`flex items-center gap-1.5 justify-end font-bold text-sm ${validationReport?.errors === 0 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                                        {validationReport?.errors === 0 ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                                        {validationReport?.errors === 0 ? 'Spec Compliant' : `${validationReport?.errors} Errors Detected`}
+                                    </div>
+                                </>
+                            )}
+                            {reportScope === 'regional' && (
+                                <>
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-1">Catalog Status</div>
+                                    <div className="flex items-center gap-1.5 justify-end font-bold text-sm text-indigo-500">
+                                        <Database className="w-4 h-4" />
+                                        {stats.agencyCount} Agencies Indexed
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </header>
@@ -217,7 +282,7 @@ export default function SystemReportView() {
                                 <div className="space-y-6">
                                     <div className="relative">
                                         <div className="flex justify-between text-xs font-bold mb-2">
-                                            <span className="text-indigo-600">This Agency</span>
+                                            <span className="text-indigo-600">{reportScope === 'regional' ? 'This Region' : 'This Agency'}</span>
                                             <span>{stats.highFreqPct.toFixed(1)}%</span>
                                         </div>
                                         <div className="h-3 bg-indigo-500/10 rounded-full overflow-hidden">
@@ -247,7 +312,7 @@ export default function SystemReportView() {
                                 <div className="space-y-6">
                                     <div className="relative">
                                         <div className="flex justify-between text-xs font-bold mb-2">
-                                            <span className="text-emerald-500">This Agency</span>
+                                            <span className="text-emerald-500">{reportScope === 'regional' ? 'This Region' : 'This Agency'}</span>
                                             <span>{stats.avgReliability.toFixed(0)}%</span>
                                         </div>
                                         <div className="h-3 bg-emerald-500/10 rounded-full overflow-hidden">
@@ -283,7 +348,7 @@ export default function SystemReportView() {
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {['5', '8', '10', '15', '20', '30', '60', 'span'].map((tierId: string) => {
-                            const count = analysisResults.filter((r: AnalysisResult) => r.day === 'Weekday' && r.tier === tierId).length;
+                            const count = stats.dataToAnalyze.filter((r: any) => r.tier === tierId).length;
                             const tierName = {
                                 '5': 'Rapid (5m)',
                                 '8': 'Freq++ (8m)',
@@ -293,7 +358,7 @@ export default function SystemReportView() {
                                 '30': 'Basic (30m)',
                                 '60': 'Infreq (60m)',
                                 'span': 'Span Only'
-                            }[tierId];
+                            }[tierId] || tierId;
 
                             if (count === 0) return null;
 

@@ -5,72 +5,87 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Performance Module** (`/performance`): New agency-facing operational dashboard with 7 tabs — **Overview** (health score, match rate, active routes, alert counts, top 5 bottlenecks, route performance table), **Frequency Promise** (scheduled-vs-observed headway comparison — bridges static GTFS tiers with live network pulse data, classifies routes as Exceeding/Meeting/Underperforming/Failing with ±% deviation), **Bottlenecks** (segment-level delay analysis from `segment_metrics`, ranked by avg delay delta, with actionable intelligence callouts, plus actual observed average speed in km/h based on straight line distance between stops), **Ghost Buses** (scheduled-vs-observed trip comparison from the ghost detection engine, per-route ghost rate and coverage bars), **Dwell Analysis** (stop-level dwell time ranking from `stop_dwell_metrics`, with boarding bottleneck diagnosis), **Live Corridors** (real-time corridor headway comparison with bunching detection), and **Service Audit** (30-day before/after service change comparison using the existing `/api/intelligence/audit-service-change` endpoint — shows pivot date, reliability delta, bunching count change, and per-corridor detail). All seven tabs call existing backend APIs that previously had no frontend. Added to secondary navigation alongside Pulse and Map.
-- **Agency Dashboard** (Home): When a user has a tenant agency (from auth) or an admin selects "View as agency", the homepage now shows a live KPI dashboard instead of the marketing splash. 6-metric KPI strip (Health Score, Vehicles Now, Routes Active, Frequent, Wide Gaps, Ghost Trips), top 3 bottlenecks, worst 5 routes by gap, and quick-action cards to Performance/Pulse/Map/Analyze. Greeting text adapts to time of day. Falls back to the existing marketing page for admin users without an active view-as selection.
-- **API Client: Ghost Buses, Matching Stats, Trends, Alerts**: Added `fetchGhostBuses()`, `fetchMatchingStats()`, `fetchTrends()`, and the Alerting CRUD operations (`fetchAlertThresholds`, `createAlertThreshold`, `deleteAlertThreshold`) to `atlasApi.ts`.
-- **Alerting UI** (`/alerts`): Built a brand-new frontend configuration panel to manage automated threshold alerts. Tenant users can now create and delete system-wide or route/stop-specific alerts for metrics like `bunching_pct`, `delay_seconds`, `match_rate`, and `ghost_pct`. Added to the secondary navigation top bar.
-- **Board Report Export**: Added native PDF export capabilities to the Performance Module. Planners can now use the 'Export Board Report' button to generate white-background, high-contrast, print-formatted PDF summaries of the active dashboard tab for stakeholder circulation.
-- **Silent Routes tab in Pulse**: New third tab surfaces routes that had active vehicles in the last 24h but have gone dark for 15+ minutes. Shows each route's last-seen timestamp with severity colour-coding (amber → orange → red). Backed by `/api/live/silent-routes` and auto-refreshes every 60s. Drill-through to the route's 7-day heatmap.
-- **`route_last_seen` summary table**: New table in the realtime DB maintained by the position-worker on every poll cycle (upsert per route). Makes the silent-routes query sub-millisecond vs. the 3m 44s full-table scan that a naive DISTINCT ON over 60M rows requires.
-- **Network Overview auto-refresh**: Network Overview tab now re-fetches every 30s without clearing the table.
-- **`circuity_index` column migration**: Added missing column to `route_frequency_results` in the static DB — was referenced by importer but never migrated, causing all imports to fail at the analysis-write step.
-- **TTC GTFS import completed**: 4.3M stop_times written (230 routes, 9,393 stops, 135,534 trips, effective 2026-03-15 → 2026-05-02).
-- **Time-based fallback matcher**: When a GTFS-RT trip_id doesn't resolve in the static schedule (e.g. TTC uses Clever Devices internal IDs that never match Toronto Open Data trip IDs), the matcher now falls back to querying all trips active on the same route within ±1 hour and picks the best match via a combined spatial+temporal score (distance/300m + time_diff/90min). TTC now produces `delay_seconds` and segment/dwell metrics on every poll cycle.
-- **Frequency Tiering Refinement**: Upgraded the frequency audit engine to use a 90th percentile (p90) gap threshold. This ensures high-frequency routes aren't prematurely demoted due to minor scheduled anomalies (e.g. shift changes), while maintaining flexibility for various agency service windows.
-- **Dynamic Service Period Selector**: Implemented a core time-of-day selector in the Intelligence Hub (AM Peak, PM Peak, Mid-Day, Evening, All Day). Replaces hardcoded analysis windows with interactive, planner-controlled service periods.
-- **Contextual Map Deep-Linking**: Integrated "Inspect" deep-link bridges between the Intelligence proposals and the Live Map, allowing planners to jump directly from a diagnostic metric to a visual corridor inspection.
-- **Route Reliability Indicators**: Added visual 0-100% reliability scoring bars to the High-Frequency Auditor list, surfacing headway variance and "Confidence" levels next to raw frequency data.
-- **Dynamic Breadcrumb Navigation**: Replaced static branding in the TopNav with a module-aware breadcrumb system (e.g. Atlas / Monitor) for improved spatial context.
-
-### Added
-- **`/api/benchmark` endpoint**: Cross-agency reliability benchmark using real inter-arrival gaps at AT_STOP positions. Computes median gap, p90 gap, bunching %, desert %, and a 0–100 reliability score per agency over a 24-hour window. No static GTFS needed.
-- **Background benchmark pre-compute**: Because the query is expensive (573K AT_STOP rows, LAG window function), `computeBenchmark()` runs in a background `setInterval` every 15 minutes starting 30s after server start. The endpoint returns the cached result instantly; first response is available ~1 min post-boot.
-- **`idx_vp_atstop` index**: Partial index on `vehicle_positions (agency_id, route_id, stop_id, vehicle_id, observed_at)` filtered to `current_status = 1 AND stop_id IS NOT NULL`. Covers the benchmark CTE columns.
-- **`idx_vp_atstop_time` index**: Partial index on `vehicle_positions (observed_at DESC)` filtered to `current_status = 1 AND stop_id IS NOT NULL`. Allows Postgres to efficiently range-scan AT_STOP rows by time without a full table scan.
+- **Configurable Analysis Criteria**: Added a UI panel (`CriteriaPanel.tsx`) in the Screener module allowing users to adjust the time window (e.g., 7am-7pm) and strictness (grace minutes, max violations) for local GTFS analysis without modifying source code.
+- **Batch GTFS Ingestion**: Upgraded the `AdminView` upload flow to accept multiple `.zip` files simultaneously. Includes a batch progress indicator and automatically commits each processed feed directly to the regional catalog.
+- **Network Timeline Slider**: Added a date-based slider to the Atlas Map View sidebar. Allows users to scrub through historical catalog snapshots (e.g., comparing the network now vs. 2 years ago) by filtering `currentRoutes` based on their `committedAt` timestamp.
+- **Catalog Explorer**: Introduced a dedicated "Catalog" tab within the Screener module (`CatalogExplorer.tsx`), providing a master table view of all committed routes across all agencies in the region, complete with search and CSV export.
+- **Regional System Report**: Updated the System Report (`SystemReportView.tsx`) to support a "Regional" mode. It now aggregates 15-minute coverage and reliability metrics across all agencies present in the persistent catalog, rather than just the latest analyzed feed.
+- **Persona Switching Core**: Implemented a multi-tier identity model (Admin, Researcher, Planner) with a Global/Tenant toggle in the UI. Automatically scopes data visibility to the user's agency while allowing researchers to view the unified regional network.
+- **Static Population Coverage (Equity-Lite)**: Added the capability to ingest Census population CSVs and overlay them on the transit map. Dynamically calculates the percentage of the population served by the active frequent network filter.
 
 ### Changed
-- **Disabled rtcsnv and mdt** — Las Vegas RTC and Miami-Dade were sending requests with the lametro-only Swiftly key, causing 403s. Both commented out pending their own keys. LA Metro confirmed working with the correct key.
-- **Rate limit visible in startup log** — Poller `initialized` log line now includes `rateLimit` field for any agency with a configured limit, making it easy to audit key/rate assignments at a glance.
+- **Technical Roadmap**: Added "Snap-to-Road Geometry Interpolation" to `ROADMAP_TECHNICAL.md` to track future integration of RDP/Mapbox/OSRM for smoothing routes from agencies missing `shapes.txt`.
 
-### Fixed
-- **Shape column error in detour matcher**: `JOIN route_shapes rs ON rs.shape_id = t.shape_id` referenced a non-existent column — `route_shapes` has no `shape_id` column and joins to trips via `gtfs_route_id + direction_id`. Fixed join condition; detour detection and `dist_from_shape` now populate correctly.
-- **Server down since April 1 crash**: `dist/` at time of crash used 13 columns per row in `insertVehiclePositions` but the schema had 16; concurrent BullMQ workers caused an unnamed prepared statement mismatch in Postgres. Resolved by rebuilding `dist/` against current source (16 columns, matching schema).
-- **TypeScript build blocked by scratch file**: `src/scratch/migrate_schema.ts` had a broken import that prevented `tsc` from completing. Excluded `src/scratch/` from `tsconfig.json`.
-- **Boot-time orphan server permanently disabled**: Identified `ouija.service` systemd unit as the source of the legacy `node dist/server.js` process that squatted on port 3001 at every reboot. Stopped and disabled the unit — will no longer conflict with pm2 after reboot.
-- **Timezone bug in delay calculation**: `delay_seconds` was computed using UTC hours from `Date.getHours()` but GTFS `arrival_time` is stored in the agency's local timezone. Replaced with `Intl.DateTimeFormat` to get local seconds-from-midnight for both delay calculation and the fallback time window query. Values are now accurate.
-- **Date coercion in segment tracking**: BullMQ serialises `Date` objects to ISO strings through Redis; calling `.getTime()` on a deserialized string threw `"p.observedAt.getTime is not a function"` at runtime. Added `instanceof Date` guard to coerce strings before use.
-- **MapView unclosed div**: Fixed a structural JSX error in `src/modules/map/MapView.tsx` that was taking down the view. Added missing `</div>` to properly terminate the Controls Container.
-- **Missing tenantAgencyId property**: Patched TypeScript error in `AlertsView` by correctly extracting `agencyId` directly from `useAuthStore` rather than referencing `user.tenantAgencyId`.
-- **Import resolutions**: Fixed broken path lookup for `atlasApi.ts` within `AgencyDashboard`.
-- **Missing `segment_metrics` and `stop_dwell_metrics` tables**: Tables were referenced by the position-worker but never created on OCI. Server INSERT statements were silently failing. Created both tables with appropriate indexes.
-
-### Fixed
-- **GTFS stop_times import performance**: Rewrote the stop_times write phase to run *after* the main transaction `COMMIT` instead of inside it. Batches now auto-commit independently (progress visible in real-time) and use `unnest` array bindings (9 params per batch instead of 45,000) for 5–10× faster throughput. Previous design held a 3M-row INSERT inside a single long transaction, making `COUNT(*)` return 0 for hours and preventing any recovery on failure. Batch size increased from 5,000 to 10,000 rows.
-- **TTC import killed and relaunched**: Previous 90-minute import run was stuck inside the old single-transaction design. Killed, patched, and relaunched with the fixed importer.
-- **KCM + Sound Transit deactivated**: Both agencies were prematurely activated despite having unverified route IDs. Commented out of `config.ts` and removed from Pulse agency list. Feed was returning 0 vehicles at Seattle peak hours — likely a route_id prefix mismatch (OBA uses `1_` prefix). Moved to "Key In Hand — Not Yet Activated" in `AGENCIES.md`.
-- **Navigation Performance Tuning**: Optimized `AnimatePresence` in `App.tsx` by removing `mode="wait"` and reducing transition duration to 0.15s. Effectively eliminates the 300ms inter-page latency for snappier module switching.
-- **Standardized Content Alignment**: Enforced strict horizontal grid alignment across all modules (Analyze, Monitor, Map) using responsive `max-w-7xl` containers and stable scrollbar gutters to prevent layout shifting.
-- **Terminology Refinement**: Replaced product-centric language ("Freedom Score", "Network Debt") with industry-standard transit planning terms (**"Frequent Service Density"**, **"Geometric Circuity"**) across the Intelligence and Monitor modules.
+## [0.16.0] - 2026-04-15
 
 ### Added
-- **Gap Distribution panel in Pulse Route Detail**: Shows inter-arrival gap histogram across all stops on a route over 7 days. Buckets gaps from "bunching" (<2 min) through "30m+", with median/p75/p90 stats. Includes a plain-language diagnosis distinguishing bunching (bimodal distribution — spacing interventions needed) from capacity shortage (unimodal high gaps — more vehicles needed). Backed by `/api/live/gap-distribution`.
-- **Network Overview tab in Pulse**: New "Network Overview" tab ranks all active routes for an agency by worst observed headway in a single table. Sortable by worst gap, avg gap, current vehicles, or route ID. Each row links through to the route's heatmap. Backed by a single aggregated query (`/api/live/network-pulse`) — no per-route round-trips.
-- **Route Health Heatmap**: New `/pulse` module showing a 7-day hours × days heatmap of observed service frequency per route. Cells are color-coded by estimated headway; worst-period callout identifies the single most degraded hour with a vehicle prescription.
-- **Pulse nav link**: Added Pulse to the secondary navigation bar (alongside Map).
-- **Live Stop Performance**: New panel in the Monitor module showing actual arrival times at any stop over the last 60 minutes, with gap annotations, bunching detection, and yesterday comparison.
-- **Live API endpoints**: Three new server endpoints — `/api/live/routes`, `/api/live/stops`, `/api/live/arrivals`, `/api/live/route-health` — querying the realtime DB directly. Foundation for the agency-facing ops layer.
-- **`scripts/import-gtfs.js`**: Admin script to import any GTFS feed directly into the static DB without HTTP/auth. Usage: `node scripts/import-gtfs.js <zip> <slug> <name> [label]`
-- **Three new agencies activated**: King County Metro (`kcm`, RapidRide A–H), Sound Transit (`soundtransit`, ST Express 512/545), San Diego MTS (`sdmts`, SuperLoop + Rapid). Keys stored as `OBA_API_KEY` and `MTS_OBA_API_KEY`. Live on OCI as of 2026-04-10 — 21 agencies total.
-- **New server deployed to OCI**: `server/` (v0.15.0, BullMQ + intelligence layer) replaced `ouija-server-src` on OCI. Redis installed and running. DB schema migrated: added `delay_seconds`, `match_confidence`, `is_detour`, `dist_from_shape` to `vehicle_positions`; `notion_sync_at` / `notion_sync_status` to `ingestion_log`; `stop_times` table created in static DB.
-- **TTC GTFS imported**: Spring 2025 feed imported to static DB via `scripts/import-gtfs.js` — 230 routes, 9,393 stops, 135,534 trips, ~3M stop_times. Enables delay_seconds and segment metrics for TTC streetcars.
+- **Performance Module** (`/performance`): New agency-facing operational dashboard with 7 tabs — **Overview**, **Frequency Promise**, **Bottlenecks**, **Ghost Buses**, **Dwell Analysis**, **Live Corridors**, and **Service Audit**.
+- **Agency Dashboard** (Home): When a user has a tenant agency (from auth) or an admin selects "View as agency", the homepage now shows a live KPI dashboard instead of the marketing splash. 6-metric KPI strip (Health Score, Vehicles Now, Routes Active, Frequent, Wide Gaps, Ghost Trips), top 3 bottlenecks, worst 5 routes by gap.
+- **Alerting UI** (`/alerts`): Built a brand-new frontend configuration panel to manage automated threshold alerts for bunching, delay, match rate, and ghost percentage.
+- **Board Report Export**: Added native PDF export capabilities to the Performance Module via the 'Export Board Report' button.
+- **Gap Distribution panel in Pulse Route Detail**: Shows inter-arrival gap histogram across all stops on a route over 7 days.
+- **Network Overview tab in Pulse**: Ranks all active routes for an agency by worst observed headway in a single table. Sortable by worst gap, avg gap, or vehicles.
+- **Route Health Heatmap**: New `/pulse` module showing a 7-day hours × days heatmap of observed service frequency per route.
+- **`/api/benchmark` endpoint**: Cross-agency reliability benchmark using real inter-arrival gaps at AT_STOP positions.
+- **Live Stop Performance**: New panel in the Monitor module showing actual arrival times at any stop over the last 60 minutes.
+- **Live API endpoints**: foundation for agency ops layer: `/api/live/routes`, `/api/live/stops`, `/api/live/arrivals`, `/api/live/route-health`.
+- **`scripts/import-gtfs.js`**: Admin script to import any GTFS feed directly into the static DB without HTTP/auth.
+- **New agencies activated**: King County Metro (kcm), Sound Transit, San Diego MTS. 21 agencies total.
+
+### Changed
+- **Silent Routes tab in Pulse**: surfaces routes that have gone dark for 15+ minutes.
+- **`route_last_seen` summary table**: New realtime DB table maintained by the position-worker to accelerate silent-route queries.
+- **TTC GTFS import completed**: 4.3M stop_times written for Spring 2025 feed.
+- **Time-based fallback matcher**: Improved GTFS-RT trip resolution when trip_id doesn't match static schedule (crucial for TTC/Clever Devices).
+- **Frequency Tiering Refinement**: Upgraded audit engine to use p90 gap threshold to ignore minor schedule anomalies.
+- **Dynamic Service Period Selector**: Interactive time-of-day selector (AM/PM Peak, etc) in Intelligence Hub.
+- **Terminology Refinement**: Replaced product jargon with industry terms like "Frequent Service Density" and "Geometric Circuity".
 
 ### Fixed
-- **Timezone bug in Pulse endpoints**: `route-health` and `network-pulse` were hardcoding `America/Toronto` for hourly bucketing, causing West Coast and Central agencies (KCM, Sound Transit, SD MTS, TriMet, Metro Transit, WeGo, MCTS) to show hours shifted by 1–3h. Added `timezone` field to `Agency` type and `agencyTimezone()` helper; all non-Eastern agencies now have correct IANA timezone strings.
-- **OCI DB migration**: Added missing `segment_metrics` and `stop_dwell_metrics` tables to the live OCI realtime database. Server-side INSERT statements were referencing these tables since v0.14.0 but they had never been created on the cloud instance.
-- **Live Map auth**: `MapView` now sends a Firebase Bearer token with vehicle position requests, fixing 401 errors on `/api/vehicles`.
-- **Live Map URL**: Corrected double `/api` prefix in vehicle fetch URL (`/api/api/vehicles` → `/api/vehicles`).
+- **GTFS import performance**: Optimized batch inserts using `unnest` array bindings (5–10× speedup).
+- **Timezone bug in Pulse endpoints**: Added agency-specific timezone handling for hourly bucketing.
+- **Live Map auth**: Added Firebase Bearer tokens to vehicle position requests.
+- **MapView unclosed div**: Fixed structural JSX error in map controls.
+- **Shape column error in detour matcher**: Fixed join condition between `route_shapes` and trips.
+- **Server recovery**: Resolved prepared statement mismatch after April 1 crash.
 
 ## [0.15.0] - 2026-04-02
+
+### Added
+- **View as Agency**: Admins can now select any agency from the static database via a nav dropdown. Loads full route catalog without re-upload.
+- **Homepage Restoration**: Restored original design with city hero and 400px feature cards.
+
+### Changed
+- **Module Renames**: Strategy → Analyze, Intelligence → Monitor. Standalone Optimize module merged into Analyze as a Map tab.
+- **Navigation Cleanup**: Nav items right-justified; avatar replaced with display name + Logout.
+
+## [0.14.0] - 2026-04-01
+
+### Added
+- **Service Change Auditor**: Automated benchmarking suite comparing 30-day reliability windows around schedule pivot points.
+- **Detour Awareness Engine**: PostGIS-powered shape-deviation detection (ST_Distance).
+- **Advanced Spatial Matching**: Matches vehicles to nearest stop within 300m when stop_id is missing.
+- **Segment-Level Breakdown (MRI)**: Transition detection and real-time delay delta calculation per segment.
+- **Dwell Time Analysis**: Backend engine tracking bus time-at-curb (AT_STOP).
+
+### Changed
+- **Enterprise Multi-Tenancy**: Implemented `requireTenant` middleware and database partitioning for strict agency scoping.
+- **Notion Intelligence Sync**: Background synchronization of health and reliability scores to Notion.
+- **Matcher Engine v1.1**: Stateful LRU-based tracking system for transition analytics.
+
+## [0.13.0] - 2026-03-30
+
+### Added
+- **Corridor Analysis**: Identifies shared transit corridors and computes combined headways.
+- **Network Screener (Cloud)**: Screening mode backed by OCI static database instead of local ZIP.
+- **Live Map full-network view**: Renders all active vehicles for an agency with optional route highlighting.
+- **Streaming GTFS Parser**: Reduces peak heap from 1.5GB to <200MB, allowing massive feeds on 1GB OCI server.
+
+### Changed
+- **Infrastructure**: Retired local Postgres requirement; transitioned entirely to OCI-hosted `static` and `realtime` databases.
+- **Module Nomenclature**: RenamedStrategy → Analyze, Intelligence → Monitor. Standalone Optimize module merged into Analyze as a Map tab. (Corrected in 0.15.0)
+
+## [0.10.0] - 2026-03-09
 
 ### Added
 - **View as Agency**: Admins can now select any agency from the OCI static database via a nav dropdown. Selecting an agency loads their full route catalog (Weekday/Saturday/Sunday) from the `/api/screen` endpoint and populates all modules — no GTFS re-upload needed. A pill indicator shows the active agency with a one-click exit.

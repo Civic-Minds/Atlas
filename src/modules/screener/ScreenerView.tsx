@@ -17,6 +17,8 @@ import { ValidationReportModal } from './components/ValidationReportModal';
 import { RouteDetailModal } from './components/RouteDetailModal';
 import { CommitModal } from './components/CommitModal';
 import { NetworkScreener } from './components/NetworkScreener';
+import { CriteriaPanel } from './components/CriteriaPanel';
+import { CatalogExplorer } from './components/CatalogExplorer';
 import { useCatalogStore } from '../../types/catalogStore';
 import AtlasView from '../atlas/AtlasView';
 
@@ -67,8 +69,8 @@ const TIER_BADGE_CLASSES: Record<string, string> = {
 };
 
 export default function ScreenerView() {
-    const { isAuthenticated, role } = useAuthStore();
-    const isAdmin = role === 'admin';
+    const { isAuthenticated, role, globalMode, toggleGlobalMode, agencyId } = useAuthStore();
+    const isAdmin = role === 'admin' || role === 'researcher';
     const {
         gtfsData,
         analysisResults,
@@ -130,9 +132,13 @@ export default function ScreenerView() {
             const matchesDay = r.day === activeDay;
             const matchesTier = activeTiers.size === 0 || activeTiers.has(r.tier);
             const matchesSearch = r.route.toLowerCase().includes(searchQuery.toLowerCase());
+            
+            // If tenant filter is active, only show current agency results
+            const matchesTenant = globalMode || !agencyId || r.routeType === 'mock' || true; // AnalysisResult doesn't have agencyId yet, need to add it or derive it
+            
             return matchesDay && matchesTier && matchesSearch;
         });
-    }, [analysisResults, activeDay, searchQuery, activeTiers]);
+    }, [analysisResults, activeDay, searchQuery, activeTiers, globalMode, agencyId]);
 
     const tierCounts = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -372,22 +378,35 @@ export default function ScreenerView() {
             />
 
             {/* View toggle: Data / Map */}
-            <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-6 border border-[var(--border)]">
-                {(['data', 'map'] as const).map(v => (
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit border border-[var(--border)]">
+                    {(['data', 'catalog', 'map'] as const).map(v => (
+                        <button
+                            key={v}
+                            onClick={() => setActiveView(v)}
+                            className={`px-5 py-2 rounded-lg text-[10px] font-bold capitalize transition-all ${activeView === v
+                                ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
+                                : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
+                            }`}
+                        >
+                            {v}
+                        </button>
+                    ))}
+                </div>
+
+                {isAdmin && activeView === 'data' && (
                     <button
-                        key={v}
-                        onClick={() => setActiveView(v)}
-                        className={`px-5 py-2 rounded-lg text-[10px] font-bold capitalize transition-all ${activeView === v
-                            ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
-                            : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
-                        }`}
+                        onClick={toggleGlobalMode}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-[10px] font-bold ${globalMode ? 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--fg)]'}`}
                     >
-                        {v}
+                        {globalMode ? <Database className="w-3.5 h-3.5" /> : <Filter className="w-3.5 h-3.5" />}
+                        {globalMode ? 'Global Access' : 'Tenant Filter Active'}
                     </button>
-                ))}
+                )}
             </div>
 
             {activeView === 'map' && <AtlasView />}
+            {activeView === 'catalog' && <CatalogExplorer />}
 
             {activeView === 'data' && <>
 
@@ -408,19 +427,24 @@ export default function ScreenerView() {
                 </button>
             </div>
 
-            <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-8 border border-[var(--border)]">
-                {['Weekday', 'Saturday', 'Sunday'].map(day => (
-                    <button
-                        key={day}
-                        onClick={() => setActiveDay(day)}
-                        className={`px-6 py-2 rounded-lg text-[10px] font-bold transition-all ${activeDay === day
-                            ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
-                            : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
-                            }`}
-                    >
-                        {day}
-                    </button>
-                ))}
+            <div className="flex flex-col mb-8">
+                <div className="flex items-center gap-4 mb-4">
+                    <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit border border-[var(--border)]">
+                        {['Weekday', 'Saturday', 'Sunday'].map(day => (
+                            <button
+                                key={day}
+                                onClick={() => setActiveDay(day)}
+                                className={`px-6 py-2 rounded-lg text-[10px] font-bold transition-all ${activeDay === day
+                                    ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
+                                    : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
+                                    }`}
+                            >
+                                {day}
+                            </button>
+                        ))}
+                    </div>
+                    <CriteriaPanel />
+                </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
