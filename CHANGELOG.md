@@ -39,6 +39,9 @@ All notable changes to this project will be documented in this file.
 - **Boot-time orphan server permanently disabled**: Identified `ouija.service` systemd unit as the source of the legacy `node dist/server.js` process that squatted on port 3001 at every reboot. Stopped and disabled the unit — will no longer conflict with pm2 after reboot.
 - **Timezone bug in delay calculation**: `delay_seconds` was computed using UTC hours from `Date.getHours()` but GTFS `arrival_time` is stored in the agency's local timezone. Replaced with `Intl.DateTimeFormat` to get local seconds-from-midnight for both delay calculation and the fallback time window query. Values are now accurate.
 - **Date coercion in segment tracking**: BullMQ serialises `Date` objects to ISO strings through Redis; calling `.getTime()` on a deserialized string threw `"p.observedAt.getTime is not a function"` at runtime. Added `instanceof Date` guard to coerce strings before use.
+- **MapView unclosed div**: Fixed a structural JSX error in `src/modules/map/MapView.tsx` that was taking down the view. Added missing `</div>` to properly terminate the Controls Container.
+- **Missing tenantAgencyId property**: Patched TypeScript error in `AlertsView` by correctly extracting `agencyId` directly from `useAuthStore` rather than referencing `user.tenantAgencyId`.
+- **Import resolutions**: Fixed broken path lookup for `atlasApi.ts` within `AgencyDashboard`.
 - **Missing `segment_metrics` and `stop_dwell_metrics` tables**: Tables were referenced by the position-worker but never created on OCI. Server INSERT statements were silently failing. Created both tables with appropriate indexes.
 
 ### Fixed
