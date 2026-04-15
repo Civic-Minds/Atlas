@@ -1,6 +1,6 @@
 {
   "name": "atlas-nextgen",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Atlas NextGen — live transit intelligence backend. Persistent GTFS-RT ingestion and OTP analysis.",
   "main": "dist/server.js",
   "scripts": {
