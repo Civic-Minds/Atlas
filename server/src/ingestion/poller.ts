@@ -99,7 +99,7 @@ export function startPolling(agencies: Agency[], defaultIntervalMs: number): voi
       // Subsequent recurring polls
       setInterval(() => void pollAgency(agency), interval);
 
-      log.info('Poller', 'initialized', { agency: agency.id, intervalMs: interval, delayedStartMs: staggeredStartDelay });
+      log.info('Poller', 'initialized', { agency: agency.id, intervalMs: interval, delayedStartMs: staggeredStartDelay, ...(agency.limit ? { rateLimit: agency.limit.notes } : {}) });
     }, staggeredStartDelay);
   });
 }

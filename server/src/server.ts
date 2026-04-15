@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { AGENCIES, POLL_INTERVAL_MS } from './config';
 import { startPolling } from './ingestion/poller';
-import apiRoutes from './api/routes';
+import apiRoutes, { scheduleBenchmarkRefresh } from './api/routes';
 import importRoutes from './api/import-routes';
 import { log } from './logger';
 import { startPositionWorker } from './queues/position-worker';
@@ -24,6 +24,6 @@ app.listen(PORT, () => {
   
   // Start the background processors
   startPositionWorker();
-  
   startPolling(AGENCIES, POLL_INTERVAL_MS);
+  scheduleBenchmarkRefresh();
 });

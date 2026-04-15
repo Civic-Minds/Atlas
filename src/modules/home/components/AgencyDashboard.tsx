@@ -8,7 +8,7 @@ import {
 import {
   fetchNetworkPulse, fetchSegmentBottlenecks, fetchGhostBuses, fetchMatchingStats,
   type NetworkPulseRoute, type SegmentBottleneck, type GhostRoute, type MatchingStat,
-} from '../../services/atlasApi';
+} from '../../../services/atlasApi';
 
 interface DashboardProps {
   agencyId: string;

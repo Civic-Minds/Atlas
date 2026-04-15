@@ -22,7 +22,20 @@ All notable changes to this project will be documented in this file.
 - **Route Reliability Indicators**: Added visual 0-100% reliability scoring bars to the High-Frequency Auditor list, surfacing headway variance and "Confidence" levels next to raw frequency data.
 - **Dynamic Breadcrumb Navigation**: Replaced static branding in the TopNav with a module-aware breadcrumb system (e.g. Atlas / Monitor) for improved spatial context.
 
+### Added
+- **`/api/benchmark` endpoint**: Cross-agency reliability benchmark using real inter-arrival gaps at AT_STOP positions. Computes median gap, p90 gap, bunching %, desert %, and a 0–100 reliability score per agency over a 24-hour window. No static GTFS needed.
+- **Background benchmark pre-compute**: Because the query is expensive (573K AT_STOP rows, LAG window function), `computeBenchmark()` runs in a background `setInterval` every 15 minutes starting 30s after server start. The endpoint returns the cached result instantly; first response is available ~1 min post-boot.
+- **`idx_vp_atstop` index**: Partial index on `vehicle_positions (agency_id, route_id, stop_id, vehicle_id, observed_at)` filtered to `current_status = 1 AND stop_id IS NOT NULL`. Covers the benchmark CTE columns.
+- **`idx_vp_atstop_time` index**: Partial index on `vehicle_positions (observed_at DESC)` filtered to `current_status = 1 AND stop_id IS NOT NULL`. Allows Postgres to efficiently range-scan AT_STOP rows by time without a full table scan.
+
+### Changed
+- **Disabled rtcsnv and mdt** — Las Vegas RTC and Miami-Dade were sending requests with the lametro-only Swiftly key, causing 403s. Both commented out pending their own keys. LA Metro confirmed working with the correct key.
+- **Rate limit visible in startup log** — Poller `initialized` log line now includes `rateLimit` field for any agency with a configured limit, making it easy to audit key/rate assignments at a glance.
+
 ### Fixed
+- **Shape column error in detour matcher**: `JOIN route_shapes rs ON rs.shape_id = t.shape_id` referenced a non-existent column — `route_shapes` has no `shape_id` column and joins to trips via `gtfs_route_id + direction_id`. Fixed join condition; detour detection and `dist_from_shape` now populate correctly.
+- **Server down since April 1 crash**: `dist/` at time of crash used 13 columns per row in `insertVehiclePositions` but the schema had 16; concurrent BullMQ workers caused an unnamed prepared statement mismatch in Postgres. Resolved by rebuilding `dist/` against current source (16 columns, matching schema).
+- **TypeScript build blocked by scratch file**: `src/scratch/migrate_schema.ts` had a broken import that prevented `tsc` from completing. Excluded `src/scratch/` from `tsconfig.json`.
 - **Boot-time orphan server permanently disabled**: Identified `ouija.service` systemd unit as the source of the legacy `node dist/server.js` process that squatted on port 3001 at every reboot. Stopped and disabled the unit — will no longer conflict with pm2 after reboot.
 - **Timezone bug in delay calculation**: `delay_seconds` was computed using UTC hours from `Date.getHours()` but GTFS `arrival_time` is stored in the agency's local timezone. Replaced with `Intl.DateTimeFormat` to get local seconds-from-midnight for both delay calculation and the fallback time window query. Values are now accurate.
 - **Date coercion in segment tracking**: BullMQ serialises `Date` objects to ISO strings through Redis; calling `.getTime()` on a deserialized string threw `"p.observedAt.getTime is not a function"` at runtime. Added `instanceof Date` guard to coerce strings before use.

@@ -154,6 +154,7 @@ export default function MapView() {
             )}
             {!loading && !error && vehicles.length === 0 && 'No active vehicles found on this feed'}
           </div>
+          </div>
         </div>
       </div>
 

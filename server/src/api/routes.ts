@@ -1189,4 +1189,128 @@ router.get('/live/silent-routes', async (req: Request, res: Response) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// GET /api/benchmark
+// Cross-agency reliability benchmark using actual inter-arrival gaps.
+// No static GTFS required — works for all 19 agencies.
+// Uses current_status=1 (AT_STOP) positions to compute true arrival gaps.
+//
+// The query is expensive (LAG window over 24h of position data). Instead of
+// computing on-demand, it is pre-computed every 15 minutes via
+// scheduleBenchmarkRefresh() which is called from server.ts on startup.
+// The endpoint just serves the cached result instantly.
+// ---------------------------------------------------------------------------
+
+interface BenchmarkCache {
+  generatedAt: Date;
+  data: object;
+}
+export let benchmarkCache: BenchmarkCache | null = null;
+
+export async function computeBenchmark(): Promise<void> {
+  const db = getPool();
+  const client = await db.connect();
+  try {
+    await client.query(`SET statement_timeout = '300s'`);
+
+    const result = await client.query(`
+      WITH arrivals AS (
+        SELECT
+          agency_id,
+          route_id,
+          stop_id,
+          vehicle_id,
+          MIN(observed_at) AS arrived_at
+        FROM vehicle_positions
+        WHERE current_status = 1
+          AND stop_id IS NOT NULL
+          AND observed_at > NOW() - INTERVAL '24 hours'
+        GROUP BY agency_id, route_id, stop_id, vehicle_id,
+          DATE_TRUNC('hour', observed_at)
+      ),
+      gaps AS (
+        SELECT
+          agency_id,
+          route_id,
+          EXTRACT(EPOCH FROM (
+            arrived_at - LAG(arrived_at) OVER (
+              PARTITION BY agency_id, route_id, stop_id
+              ORDER BY arrived_at
+            )
+          )) / 60.0 AS gap_mins
+        FROM arrivals
+      ),
+      valid_gaps AS (
+        SELECT agency_id, route_id, gap_mins
+        FROM gaps
+        WHERE gap_mins > 0 AND gap_mins < 90
+      )
+      SELECT
+        agency_id,
+        COUNT(DISTINCT route_id)::int                                                   AS route_count,
+        COUNT(*)::int                                                                   AS total_gaps,
+        ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1)      AS median_gap,
+        ROUND(PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY gap_mins)::numeric, 1)      AS p90_gap,
+        ROUND(100.0 * COUNT(*) FILTER (WHERE gap_mins < 2)  / NULLIF(COUNT(*), 0), 1) AS bunching_pct,
+        ROUND(100.0 * COUNT(*) FILTER (WHERE gap_mins > 20) / NULLIF(COUNT(*), 0), 1) AS desert_pct
+      FROM valid_gaps
+      GROUP BY agency_id
+      ORDER BY median_gap ASC NULLS LAST
+    `);
+
+    const agencies = result.rows.map(r => {
+      const medianGap   = parseFloat(r.median_gap);
+      const bunchingPct = parseFloat(r.bunching_pct);
+      const desertPct   = parseFloat(r.desert_pct);
+
+      const score = Math.max(0, Math.min(100, Math.round(
+        100 - (bunchingPct * 0.5) - (desertPct * 0.35) - Math.max(0, medianGap - 8) * 1.5
+      )));
+
+      return {
+        agencyId: r.agency_id,
+        routeCount: r.route_count,
+        totalGaps: r.total_gaps,
+        medianGap,
+        p90Gap: parseFloat(r.p90_gap),
+        bunchingPct,
+        desertPct,
+        reliabilityScore: score,
+      };
+    });
+
+    benchmarkCache = {
+      generatedAt: new Date(),
+      data: {
+        generatedAt: new Date().toISOString(),
+        windowHours: 24,
+        agencyCount: agencies.length,
+        agencies,
+      },
+    };
+
+    log.info('Benchmark', 'refreshed', { agencyCount: agencies.length });
+  } catch (err) {
+    log.error('Benchmark', 'refresh failed', { err: (err as Error).message });
+  } finally {
+    client.release();
+  }
+}
+
+export function scheduleBenchmarkRefresh(): void {
+  // Initial compute 30s after server start (let pollers warm up first)
+  setTimeout(() => {
+    computeBenchmark();
+    setInterval(computeBenchmark, 15 * 60 * 1000);
+  }, 30_000);
+}
+
+router.get('/benchmark', (_req: Request, res: Response) => {
+  if (!benchmarkCache) {
+    res.status(503).json({ error: 'Benchmark not ready yet — computing, check back in ~60s' });
+    return;
+  }
+  res.json(benchmarkCache.data);
+});
+
 export default router;
