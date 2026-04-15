@@ -254,7 +254,7 @@ export async function matchPositions(
            ) as distance
          FROM vps
          JOIN trips t ON t.gtfs_trip_id = vps.trip_id AND t.feed_version_id = $1
-         JOIN route_shapes rs ON rs.feed_version_id = t.feed_version_id AND rs.shape_id = t.shape_id
+         JOIN route_shapes rs ON rs.feed_version_id = t.feed_version_id AND rs.gtfs_route_id = t.gtfs_route_id AND rs.direction_id = COALESCE(t.direction_id, 0)
          ORDER BY vps.idx`,
         [versionId, tripIds, lons, lats]
       );

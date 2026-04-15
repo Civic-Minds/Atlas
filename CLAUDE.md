@@ -2,6 +2,23 @@
 
 Atlas is a transit intelligence platform. It ingests GTFS feeds, runs them through a multi-phase analysis pipeline, and produces frequency tier ratings and corridor maps for transit routes.
 
+## OCI Production Server
+
+The real Atlas server runs on OCI — always check there first:
+
+```bash
+ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118 "pm2 status"
+```
+
+Deploy fixes by compiling locally then rsyncing (TypeScript not installed on OCI):
+
+```bash
+rsync -av -e "ssh -i ~/.ssh/oracle_key" server/dist/ ubuntu@40.233.99.118:/home/ubuntu/atlas-server/dist/
+ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118 "pm2 restart atlas-server"
+```
+
+The local `atlas_lab` database and local server are a dev copy only. A `.env` comment saying "remote is unresponsive" does not mean OCI is actually down — verify via SSH.
+
 ## Key Paths
 
 - `src/core/` — pipeline logic (phase1 = raw departures, phase2 = tier analysis, calendar, corridors, spacing)

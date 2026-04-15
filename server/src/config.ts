@@ -130,30 +130,15 @@ export const AGENCIES: Agency[] = [
   // WeGo Public Transit (Nashville) — open feed, no API key required
   // Frequent Network 8 corridors; route_id matches route number directly
   { id: 'wego', name: 'WeGo Public Transit', timezone: 'America/Chicago', vehiclePositionsUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb', tripUpdatesUrl: 'http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/tripupdate/tripupdates.pb' },
-  // RTC Southern Nevada (Las Vegas) — requires Swiftly API key (same program as LA Metro)
-  {
-    id: 'rtcsnv',
-    name: 'RTC Southern Nevada',
-    timezone: 'America/Los_Angeles',
-    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-vehicle-positions',
-    tripUpdatesUrl:      'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-trip-updates',
-    headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
-    limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
-  },
+  // RTC Southern Nevada (Las Vegas) — needs its own Swiftly key (lametro key not valid here)
+  // { id: 'rtcsnv', name: 'RTC Southern Nevada', timezone: 'America/Los_Angeles', vehiclePositionsUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-vehicle-positions', tripUpdatesUrl: 'https://api.goswift.ly/real-time/las-vegas-rtc/gtfs-rt-trip-updates', headers: { Authorization: process.env.RTCSNV_SWIFTLY_KEY ?? '' }, limit: { requestsPerHour: 720, notes: '180 req / 15 min' } },
   // Foothill Transit (Silver Streak 707) — requires IP whitelist approval
   // Email info@foothilltransit.org with your public IP to get access, then uncomment:
   // { id: 'foothilltransit', name: 'Foothill Transit', vehiclePositionsUrl: 'https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=VehiclePositions', tripUpdatesUrl: 'https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=TripUpdates' },
   // Halifax Transit — open feed, no API key required
   { id: 'halifax', name: 'Halifax Transit', vehiclePositionsUrl: 'https://gtfs.halifax.ca/realtime/Vehicle/VehiclePositions.pb' },
-  // Miami-Dade Transit — now served via Swiftly (same platform as Las Vegas RTC and LA Metro)
-  {
-    id: 'mdt',
-    name: 'Miami-Dade Transit',
-    timezone: 'America/New_York',
-    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions',
-    headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
-    limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
-  },
+  // Miami-Dade Transit — needs its own Swiftly key (lametro key not valid here)
+  // { id: 'mdt', name: 'Miami-Dade Transit', timezone: 'America/New_York', vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions', headers: { Authorization: process.env.MDT_SWIFTLY_KEY ?? '' }, limit: { requestsPerHour: 720, notes: '180 req / 15 min' } },
   // TransLink (Metro Vancouver)
   { id: 'translink', name: 'TransLink', vehiclePositionsUrl: `https://gtfsapi.translink.ca/v3/gtfsposition?apikey=${process.env.TRANSLINK_API_KEY}`, tripUpdatesUrl: `https://gtfsapi.translink.ca/v3/gtfsrealtime?apikey=${process.env.TRANSLINK_API_KEY}` },
   // SF Bay 511 API — one key covers all agencies below (change agency param)
@@ -185,7 +170,7 @@ export const AGENCIES: Agency[] = [
     vehiclePositionsUrl: 'https://api.goswift.ly/real-time/lametro/gtfs-rt-vehicle-positions', 
     tripUpdatesUrl:      'https://api.goswift.ly/real-time/lametro/gtfs-rt-trip-updates',
     headers: { Authorization: process.env.SWIFTLY_API_KEY ?? '' },
-    limit: { requestsPerHour: 720, notes: 'Shared Swiftly key (180 req / 15 min)' }
+    limit: { requestsPerHour: 720, notes: '180 req / 15 min — key is lametro-only' }
   },
   // Spokane Transit Authority (STA) — open feed, no API key required
   { id: 'sta', name: 'Spokane Transit Authority', vehiclePositionsUrl: 'https://gtfsbridge.spokanetransit.com/realtime/vehicle/VehiclePositions.pb' },

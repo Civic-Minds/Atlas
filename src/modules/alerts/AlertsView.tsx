@@ -6,9 +6,9 @@ import { fetchAlertThresholds, createAlertThreshold, deleteAlertThreshold, Alert
 import { Navigate } from 'react-router-dom';
 
 export function AlertsView() {
-  const { user } = useAuthStore();
+  const { agencyId } = useAuthStore();
   const { viewAsAgency } = useViewAs();
-  const tenantAgencyId = user?.tenantAgencyId || viewAsAgency?.slug;
+  const tenantAgencyId = agencyId || viewAsAgency?.slug;
 
   const [thresholds, setThresholds] = useState<AlertThreshold[]>([]);
   const [loading, setLoading] = useState(true);
