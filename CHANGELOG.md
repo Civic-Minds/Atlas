@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+## [0.17.0] - 2026-04-15
+
+### Added
 - **Configurable Analysis Criteria**: Added a UI panel (`CriteriaPanel.tsx`) in the Screener module allowing users to adjust the time window (e.g., 7am-7pm) and strictness (grace minutes, max violations) for local GTFS analysis without modifying source code.
 - **Batch GTFS Ingestion**: Upgraded the `AdminView` upload flow to accept multiple `.zip` files simultaneously. Includes a batch progress indicator and automatically commits each processed feed directly to the regional catalog.
 - **Network Timeline Slider**: Added a date-based slider to the Atlas Map View sidebar. Allows users to scrub through historical catalog snapshots (e.g., comparing the network now vs. 2 years ago) by filtering `currentRoutes` based on their `committedAt` timestamp.
