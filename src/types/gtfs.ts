@@ -242,3 +242,18 @@ export interface SpacingResult {
         distance: number;
     }>;
 }
+
+export interface PopulationPoint {
+    id: string;
+    lat: number;
+    lon: number;
+    count: number;
+    tags?: Record<string, string>; // e.g. { 'income': 'low' }
+}
+
+export interface CoverageResult {
+    totalPopulation: number;
+    coveredPopulation: number;
+    percentCovered: number;
+    breakdown?: Record<string, { total: number; covered: number }>; // For low-income, etc.
+}

@@ -1,7 +1,7 @@
 import { GtfsData, AnalysisResult } from '../types/gtfs';
 
 const DB_NAME = 'HeadwayDB';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 export const STORES = {
     GTFS: 'gtfs_data',
@@ -12,6 +12,7 @@ export const STORES = {
     CRITERIA: 'analysis_criteria',
     CATALOG: 'route_catalog',
     FEEDS: 'feed_meta',
+    POPULATION: 'population_data',
 };
 
 class StorageService {
@@ -54,6 +55,9 @@ class StorageService {
                 }
                 if (!db.objectStoreNames.contains(STORES.FEEDS)) {
                     db.createObjectStore(STORES.FEEDS);
+                }
+                if (!db.objectStoreNames.contains(STORES.POPULATION)) {
+                    db.createObjectStore(STORES.POPULATION);
                 }
             };
         });

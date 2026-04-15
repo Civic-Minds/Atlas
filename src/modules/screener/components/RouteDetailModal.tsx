@@ -575,7 +575,8 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
     const rawDepartures = useTransitStore(s => s.rawDepartures);
     const activeCriteria = useTransitStore(s => s.activeCriteria);
     const currentRoutes = useCatalogStore(s => s.currentRoutes);
-    const [activeTab, setActiveTab] = useState<'summary' | 'audit'>('summary');
+    const getRouteHistory = useCatalogStore(s => s.getRouteHistory);
+    const [activeTab, setActiveTab] = useState<'summary' | 'audit' | 'history'>('summary');
     const [selectedDay, setSelectedDay] = useState<DayName | null>(null);
 
     // Find this route in the catalog (if committed)
@@ -585,6 +586,11 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
             r => r.route === result.route && r.dir === result.dir && r.dayType === result.day
         ) || null;
     }, [currentRoutes, result]);
+
+    const history = useMemo(() => {
+        if (!catalogRoute) return [];
+        return getRouteHistory(catalogRoute.routeKey);
+    }, [catalogRoute, getRouteHistory]);
 
     // Get the raw departures for this route/direction
     const matchingRaw = useMemo(() => {
@@ -699,6 +705,17 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                 >
                                     <List className="w-3 h-3" /> Departure Audit
                                 </button>
+                                {catalogRoute && (
+                                    <button
+                                        onClick={() => setActiveTab('history')}
+                                        className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'history'
+                                            ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
+                                            : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
+                                            }`}
+                                    >
+                                        <Clock className="w-3 h-3" /> History
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -859,6 +876,92 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                         </div>
                                     </div>
                                 </>
+                            ) : activeTab === 'history' ? (
+                                /* ====== HISTORY TAB ====== */
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div>
+                                            <h3 className="text-lg font-bold flex items-center gap-2">
+                                                <Clock className="w-5 h-5 text-indigo-500" />
+                                                Route Version History
+                                            </h3>
+                                            <p className="text-sm text-[var(--text-muted)]">Comparative analysis across committed snapshots.</p>
+                                        </div>
+                                        <div className="atlas-label">
+                                            Snapshots: <span className="text-indigo-500 atlas-mono font-black">{history.length}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="precision-panel overflow-hidden">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr className="bg-[var(--item-bg)] border-b border-[var(--border)]">
+                                                    <th className="px-6 py-4 atlas-label">Committed At</th>
+                                                    <th className="px-6 py-4 atlas-label">Tier</th>
+                                                    <th className="px-6 py-4 atlas-label text-right">Avg Headway</th>
+                                                    <th className="px-6 py-4 atlas-label text-right">Trips</th>
+                                                    <th className="px-6 py-4 atlas-label text-right">Reliability</th>
+                                                    <th className="px-6 py-4 atlas-label">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-[var(--border)]">
+                                                {history.map((snapshot, idx) => {
+                                                    const isLatest = idx === history.length - 1;
+                                                    const prev = history[idx - 1];
+                                                    const headwayDiff = prev ? snapshot.avgHeadway - prev.avgHeadway : 0;
+                                                    const tripsDiff = prev ? snapshot.tripCount - prev.tripCount : 0;
+
+                                                    return (
+                                                        <tr key={snapshot.id} className={`${isLatest ? 'bg-indigo-500/5' : ''} hover:bg-[var(--item-bg)] transition-colors`}>
+                                                            <td className="px-6 py-4">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-sm font-bold text-[var(--fg)]">{new Date(snapshot.committedAt).toLocaleDateString()}</span>
+                                                                    <span className="text-[10px] text-[var(--text-muted)] atlas-mono">{new Date(snapshot.committedAt).toLocaleTimeString()}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4">
+                                                                <span className="text-[10px] font-black px-2 py-0.5 bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 rounded">
+                                                                    {snapshot.tier}m
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-right">
+                                                                <div className="flex flex-col items-end">
+                                                                    <span className="text-sm font-black atlas-mono">{Math.round(snapshot.avgHeadway)}m</span>
+                                                                    {prev && headwayDiff !== 0 && (
+                                                                        <span className={`text-[9px] font-bold ${headwayDiff < 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                                            {headwayDiff > 0 ? '+' : ''}{Math.round(headwayDiff)}m
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-right">
+                                                                <div className="flex flex-col items-end">
+                                                                    <span className="text-sm font-black atlas-mono">{snapshot.tripCount}</span>
+                                                                    {prev && tripsDiff !== 0 && (
+                                                                        <span className={`text-[9px] font-bold ${tripsDiff > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                                                            {tripsDiff > 0 ? '+' : ''}{tripsDiff}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-right">
+                                                                <span className="text-sm font-black atlas-mono">{snapshot.reliabilityScore}%</span>
+                                                            </td>
+                                                            <td className="px-6 py-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    {isLatest && <span className="text-[8px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-widest">Current</span>}
+                                                                    <span className={`text-[10px] font-bold capitalize ${snapshot.verificationStatus === 'verified' ? 'text-emerald-500' : snapshot.verificationStatus === 'flagged' ? 'text-red-500' : 'text-[var(--text-muted)]'}`}>
+                                                                        {snapshot.verificationStatus}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                }).reverse()}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             ) : (
                                 /* ====== AUDIT TAB ====== */
                                 <>

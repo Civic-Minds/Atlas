@@ -7,12 +7,14 @@ interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;       // true while Firebase resolves the initial session
     agencyId: string | null;  // Current tenant agency ID
-    role: string | null;      // User role (admin, viewer, editor)
+    role: 'admin' | 'researcher' | 'planner' | 'viewer' | null;
+    globalMode: boolean;      // If true, shows all agencies (for admins/researchers)
     _unsubscribe: (() => void) | null;
 
     /** Called once at app startup — subscribes to Firebase auth state */
     initAuth: () => void;
     logout: () => Promise<void>;
+    toggleGlobalMode: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -20,7 +22,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     isAuthenticated: import.meta.env.DEV === true ? true : false,
     isLoading: import.meta.env.DEV === true ? false : true,
     agencyId: null,
-    role: null,
+    role: import.meta.env.DEV === true ? 'admin' : null,
+    globalMode: true,
     _unsubscribe: null,
 
     initAuth: async () => {
@@ -50,11 +53,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                         isAuthenticated: true,
                         isLoading: false,
                         agencyId: data.agencyId,
-                        role: data.role
+                        role: data.role,
+                        globalMode: data.role === 'admin' || data.role === 'researcher'
                     });
                 } catch (err) {
                     console.error('Failed to fetch user tenancy:', err);
-                    set({ user, isAuthenticated: true, isLoading: false, agencyId: null, role: 'viewer' });
+                    set({ user, isAuthenticated: true, isLoading: false, agencyId: null, role: 'viewer', globalMode: false });
                 }
             } else {
                 set({
@@ -62,7 +66,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                     isAuthenticated: false,
                     isLoading: false,
                     agencyId: null,
-                    role: null
+                    role: null,
+                    globalMode: true
                 });
             }
         });
@@ -73,5 +78,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     logout: async () => {
         await signOut();
         // Firebase's onAuthStateChanged will fire and set user → null
+    },
+
+    toggleGlobalMode: () => {
+        const { role, globalMode } = get();
+        if (role === 'admin' || role === 'researcher') {
+            set({ globalMode: !globalMode });
+        }
     },
 }));

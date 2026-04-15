@@ -3,6 +3,7 @@
 Atlas is a high-fidelity transit intelligence platform that automates network auditing, impact simulation, and strategic optimization. This roadmap outlines our path from a technical validation tool to a comprehensive mobility governance layer.
 
 - **[Vision](docs/VISION.md)**: Product vision statement and long-term "North Star" goals.
+- **[Strategy](docs/STRATEGY_VISION.md)**: Competitive analysis, persona models, and the blueprint for moving from diagnostic to decision support.
 - **[Product](docs/ROADMAP_PRODUCT.md)**: Feed management, verification workflows, interactive analysis, and agency-facing dashboard features.
 - **[Technical](docs/ROADMAP_TECHNICAL.md)**: Analysis engine refinement, GTFS-RT integration, and infrastructure scaling.
 - **[Platform](docs/ROADMAP_PLATFORM.md)**: Long-term equity modeling, generative network synthesis, and ecosystem initiatives.

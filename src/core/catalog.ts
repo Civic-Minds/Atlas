@@ -269,11 +269,12 @@ export function detectChanges(
 
 /**
  * Derive the "current" routes from a full catalog (all historical snapshots).
- * Returns the latest snapshot per routeKey.
+ * Returns the latest snapshot per routeKey, optionally filtered to a specific point in time.
  */
-export function deriveCurrentRoutes(allRoutes: CatalogRoute[]): CatalogRoute[] {
+export function deriveCurrentRoutes(allRoutes: CatalogRoute[], asOf?: number): CatalogRoute[] {
     const latestByKey = new Map<string, CatalogRoute>();
     for (const route of allRoutes) {
+        if (asOf && route.committedAt > asOf) continue;
         const existing = latestByKey.get(route.routeKey);
         if (!existing || route.committedAt > existing.committedAt) {
             latestByKey.set(route.routeKey, route);

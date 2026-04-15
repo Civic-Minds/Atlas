@@ -13,8 +13,13 @@ This roadmap focuses on the user experience, feed management, and the workflow o
 - [ ] **Notes & Provenance**: Rich text notes for verification decisions with service_id level provenance tracking.
 
 ## Interactive Analysis
-- [ ] **Live Criteria Tuner**: Real-time browser settings for adjusting time windows, frequency buckets, and grace/violation policies.
-- [ ] **Route History Timeline**: Visual ledger showing a route's evolution over multiple schedule periods (e.g., "10min → 15min shift detected in June update").
+- [x] **Live Criteria Tuner**: Real-time browser settings for adjusting time windows, frequency buckets, and grace/violation policies.
+- [x] **Route History Timeline**: Visual ledger showing a route's evolution over multiple schedule periods (e.g., "10min → 15min shift detected in June update").
+- [ ] **Scenario Sandbox**: A drafting environment to "fork" the current network, draw new routes, and test "What-If" service changes without affecting the baseline.
+
+## Multi-Persona Experience
+- [ ] **Role-Based Homepages**: Intelligent UI branching that shows "Operational Performance" to Planners and "Benchmarking/Timeline" to Researchers.
+- [ ] **Global vs. Tenant Toggle**: Capability for super-users to switch between an isolated agency view and a regional/global comparison view.
 
 ---
 
@@ -57,13 +62,20 @@ What a transit agency pays to see. Designed for planners — no code, no SQL, no
 
 ### Coverage & Equity
 - [ ] **Frequent transit coverage map**: what % of the municipality lives within 10-min walk of frequent service
-- [ ] **Demographic overlay**: frequency coverage vs. Census income and minority population (Title VI compliance support)
-- [ ] **Peer benchmarking**: how does this agency compare to regional peers on OTP, headway reliability, and coverage
+- [ ] **The "Jane" Layer**: Interactive isochrones (travel-time polygons) showing accessibility to jobs/hospitals from any point on the map.
+- [ ] **Demographic overlay**: frequency coverage vs. Census income and minority population (Title VI compliance support).
+- [ ] **Peer benchmarking**: how does this agency compare to regional peers on OTP, headway reliability, and coverage.
+
+### Resource & Financial Modeling
+- [ ] **PVR Calculator**: Automatic calculation of **Peak Vehicle Requirement** (how many physical buses are needed simultaneously) for any scenario.
+- [ ] **Operating Cost Estimates**: Sidebar budgeting that translates service hours and miles into $ cost based on agency-defined rates.
+- [ ] **EV Feasibility**: Modeling battery range and charging requirements for high-frequency corridors.
 
 ### Reporting
-- [ ] **Board-ready performance summary**: auto-generated monthly report in plain language
-- [ ] **Public performance portal**: embeddable, rider-facing performance dashboard for agency websites
-- [ ] **NTD data export**: auto-formatted Vehicle Revenue Miles and related metrics ready for NTD submission
+- [x] **Regional Network Audit**: Unified reporting mode that aggregates stats across multiple agencies in a single regional view.
+- [ ] **Board-ready performance summary**: auto-generated monthly report in plain language.
+- [ ] **Public performance portal**: embeddable, rider-facing performance dashboard for agency websites.
+- [ ] **NTD data export**: auto-formatted Vehicle Revenue Miles and related metrics ready for NTD submission.
 
 ---
 
