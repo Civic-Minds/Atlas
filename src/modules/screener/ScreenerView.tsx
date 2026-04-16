@@ -261,6 +261,24 @@ export default function ScreenerView() {
 
     // Network mode — show cloud screener
     if (mode === 'network') {
+        const modeToggleButtons = (
+            <>
+                <button
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]"
+                >
+                    <Cloud className="w-3.5 h-3.5" />
+                    Network
+                </button>
+                <button
+                    onClick={() => setMode('local')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all text-[var(--text-muted)] hover:text-[var(--fg)]"
+                >
+                    <HardDrive className="w-3.5 h-3.5" />
+                    {gtfsData ? 'Local (loaded)' : 'Local'}
+                </button>
+            </>
+        );
+
         return (
             <div className="module-container">
                 <input
@@ -270,28 +288,7 @@ export default function ScreenerView() {
                     ref={fileInputRef}
                     onChange={handleFileUpload}
                 />
-                <ModuleHeader
-                    title="Analyze"
-                    badge={{ label: 'Network' }}
-                    actions={[]}
-                />
-                {/* Mode toggle */}
-                <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-8 border border-[var(--border)]">
-                    <button
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]"
-                    >
-                        <Cloud className="w-3.5 h-3.5" />
-                        Network
-                    </button>
-                    <button
-                        onClick={() => setMode('local')}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all text-[var(--text-muted)] hover:text-[var(--fg)]"
-                    >
-                        <HardDrive className="w-3.5 h-3.5" />
-                        {gtfsData ? 'Local (loaded)' : 'Local'}
-                    </button>
-                </div>
-                <NetworkScreener />
+                <NetworkScreener modeToggle={modeToggleButtons} />
             </div>
         );
     }
@@ -410,26 +407,25 @@ export default function ScreenerView() {
 
             {activeView === 'data' && <>
 
-            {/* Mode toggle */}
-            <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mb-4 border border-[var(--border)]">
-                <button
-                    onClick={() => setMode('network')}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all text-[var(--text-muted)] hover:text-[var(--fg)]"
-                >
-                    <Cloud className="w-3.5 h-3.5" />
-                    Network
-                </button>
-                <button
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]"
-                >
-                    <HardDrive className="w-3.5 h-3.5" />
-                    Local
-                </button>
-            </div>
-
             <div className="flex flex-col mb-8">
                 <div className="flex items-center gap-4 mb-4">
-                    <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit border border-[var(--border)]">
+                    <div className="flex flex-wrap items-center gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit border border-[var(--border)]">
+                        <button
+                            onClick={() => setMode('network')}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all text-[var(--text-muted)] hover:text-[var(--fg)]"
+                        >
+                            <Cloud className="w-3.5 h-3.5" />
+                            Network
+                        </button>
+                        <button
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold transition-all bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]"
+                        >
+                            <HardDrive className="w-3.5 h-3.5" />
+                            Local
+                        </button>
+                        
+                        <div className="w-px h-6 bg-[var(--border)] mx-1" />
+
                         {['Weekday', 'Saturday', 'Sunday'].map(day => (
                             <button
                                 key={day}

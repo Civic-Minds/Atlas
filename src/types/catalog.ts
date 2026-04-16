@@ -52,6 +52,11 @@ export interface CatalogRoute {
     baseHeadway?: number;
     serviceSpan?: { start: number; end: number };
 
+    // Resource & Financial
+    pvr?: number;
+    opCostAnnual?: number;
+    totalServiceHours?: number;
+
     // Shape geometry — lat/lon polyline for map rendering
     shape: [number, number][];
 

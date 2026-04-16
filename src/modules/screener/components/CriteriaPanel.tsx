@@ -10,6 +10,8 @@ export const CriteriaPanel: React.FC = () => {
     const [endMin, setEndMin] = useState(1320); // 22:00
     const [graceMinutes, setGraceMinutes] = useState(5);
     const [maxGraceViolations, setMaxGraceViolations] = useState(2);
+    const [hourlyRate, setHourlyRate] = useState(150);
+    const [mileageRate, setMileageRate] = useState(3);
 
     // Sync local state when activeCriteria changes
     useEffect(() => {
@@ -17,6 +19,8 @@ export const CriteriaPanel: React.FC = () => {
         setEndMin(activeCriteria.dayTypes.Weekday?.timeWindow.end || 1320);
         setGraceMinutes(activeCriteria.graceMinutes || 5);
         setMaxGraceViolations(activeCriteria.maxGraceViolations || 2);
+        setHourlyRate(activeCriteria.hourlyRate || 150);
+        setMileageRate(activeCriteria.mileageRate || 3);
     }, [activeCriteria]);
 
     const formatTime = (mins: number) => {
@@ -36,6 +40,8 @@ export const CriteriaPanel: React.FC = () => {
             ...activeCriteria,
             graceMinutes,
             maxGraceViolations,
+            hourlyRate,
+            mileageRate,
             dayTypes: {
                 ...activeCriteria.dayTypes,
                 ...(activeCriteria.dayTypes.Weekday ? {
@@ -89,7 +95,7 @@ export const CriteriaPanel: React.FC = () => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-6">
                 <div>
                     <label className="atlas-label text-[9px] mb-2 block">Window Start</label>
                     <input 
@@ -125,6 +131,27 @@ export const CriteriaPanel: React.FC = () => {
                         min="0"
                         value={maxGraceViolations}
                         onChange={(e) => setMaxGraceViolations(Number(e.target.value))}
+                        className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm font-bold text-[var(--fg)] focus:border-indigo-500 outline-none"
+                    />
+                </div>
+                <div>
+                    <label className="atlas-label text-[9px] mb-2 block">Op Cost ($/hr)</label>
+                    <input 
+                        type="number" 
+                        min="0"
+                        value={hourlyRate}
+                        onChange={(e) => setHourlyRate(Number(e.target.value))}
+                        className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm font-bold text-[var(--fg)] focus:border-indigo-500 outline-none"
+                    />
+                </div>
+                <div>
+                    <label className="atlas-label text-[9px] mb-2 block">Mileage ($/mi)</label>
+                    <input 
+                        type="number" 
+                        min="0"
+                        step="0.1"
+                        value={mileageRate}
+                        onChange={(e) => setMileageRate(Number(e.target.value))}
                         className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm font-bold text-[var(--fg)] focus:border-indigo-500 outline-none"
                     />
                 </div>

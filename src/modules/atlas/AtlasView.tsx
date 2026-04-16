@@ -44,6 +44,8 @@ const FitBounds: React.FC<{ bounds: LatLngBoundsExpression | null }> = ({ bounds
         }
     }, [map, bounds]);
     return null;
+};
+
 export default function AtlasView() {
     const { isAuthenticated, agencyId, globalMode, toggleGlobalMode, role } = useAuthStore();
     const { currentRoutes, catalogRoutes, loading, loadCatalog, filterDate, setFilterDate, activeAgency, setActiveAgency } = useCatalogStore();
@@ -57,11 +59,13 @@ export default function AtlasView() {
     const [selectedResult, setSelectedResult] = useState<AnalysisResult | null>(null);
 
     // Get unique commit dates for the timeline
-// ...
     useEffect(() => {
         loadCatalog();
         loadPopulation();
     }, [loadCatalog, loadPopulation]);
+
+    const timelineDates = useMemo(() => {
+        const dates = new Set<number>();
         for (const r of catalogRoutes) {
             const d = new Date(r.committedAt);
             d.setMinutes(0, 0, 0);

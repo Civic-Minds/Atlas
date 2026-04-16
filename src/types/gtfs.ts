@@ -181,6 +181,10 @@ export interface AnalysisCriteria {
     /** Override tiers for rail vs surface modes */
     modeTierOverrides?: Record<string, number[]>;
     isDefault?: boolean;
+
+    // Financial overrides
+    hourlyRate?: number;   // default: $150/hr
+    mileageRate?: number;  // default: $3/mile
 }
 
 // ---------------------------------------------------------------------------
@@ -209,6 +213,12 @@ export interface AnalysisResult {
     serviceSpan?: { start: number; end: number };
     routeType?: string;
     modeName?: string;
+    
+    // Resource & Financial Modeling
+    pvr?: number;             // Peak Vehicle Requirement
+    opCostAnnual?: number;    // Estimated annual operating cost
+    totalServiceHours?: number; // Total hours of service in the window
+    
     /** Which service_ids contributed to this result */
     serviceIds?: string[];
     /** Warnings from raw data extraction */

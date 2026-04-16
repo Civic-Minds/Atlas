@@ -202,6 +202,12 @@ export function buildCatalogRoutes(
             peakHeadway: result.peakHeadway,
             baseHeadway: result.baseHeadway,
             serviceSpan: result.serviceSpan,
+
+            // Resource & Financial
+            pvr: result.pvr,
+            opCostAnnual: result.opCostAnnual,
+            totalServiceHours: result.totalServiceHours,
+
             shape: shapeCache.get(shapeKey) || [],
             verificationStatus: 'unreviewed' as const,
             committedAt: Date.now(),
