@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **Command Center Homepage** (`CommandCenter.tsx`): Replaced the marketing hero splash page with an operational admin dashboard. Shows system KPI strip (Agencies, Total Routes, RT Observations, Avg Health, Match Rate), scrollable Agency Registry with health scores and click-to-"View As", RT Matching panel with per-agency match rates, and a 6-module quick access grid. Authenticated users without a tenant agency now land on actionable data instead of a pitch deck.
+- **Theme Support**: Implemented a responsive Light/Dark mode system with a manual toggle in the TopNav, utilizing a technical HSL-based palette for clinical clarity.
 
 ### Fixed
 - **AtlasView syntax error**: Fixed two syntax issues in `AtlasView.tsx` — the `FitBounds` component was missing its closing `};`, and the `timelineDates` `useMemo` had its declaration removed leaving an orphaned loop body. Both caused Vite to refuse compilation.
