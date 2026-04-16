@@ -31,7 +31,7 @@ export const ROUTE_FILTER: Record<string, string[] | null> = {
   gcrta:         ['6', '66', '67', '68'], // HealthLine BRT (6) + Red Line (66) + Blue Line (67) + Green Line (68)
   edmonton:      ['004', '008', '009'], // Routes 4/8/9 (40,000 combined weekday trips, system's busiest buses; zero-padded in feed). LRT route IDs not found in vehicle positions feed — may be on a separate feed.
   halifax:       ['1'], // Route 1 Spring Garden/Robie — most frequent in the system
-  sta:           ['90', '25', '9', '6', '66'], // City Line BRT (90) + Routes 25, 9, 6, 66
+  sta:           null, // All routes — full system polling
   wego:          ['3', '7', '22', '23', '50', '52', '55', '56'], // WeGo Frequent Network 8 corridors (West End, Hillsboro, Bordeaux, Dickerson Pike, Charlotte Pike, Nolensville Pike, Murfreesboro Pike, Gallatin Pike)
   rtcsnv:        ['4740', '4736', '4737', '4738', '4739'], // Deuce (4740, 24hr Strip service — heavy tourist ridership), BHX, SX, CX, DVX — disabled until Swiftly key added
   foothilltransit: ['20707'], // Silver Streak (route 707, Montclair–El Monte–LA) — disabled until IP whitelist approved
