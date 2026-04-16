@@ -5,8 +5,12 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Command Center Homepage** (`CommandCenter.tsx`): Replaced the marketing hero splash page with an operational admin dashboard. Shows system KPI strip (Agencies, Total Routes, RT Observations, Avg Health, Match Rate), scrollable Agency Registry with health scores and click-to-"View As", RT Matching panel with per-agency match rates, and a 6-module quick access grid. Authenticated users without a tenant agency now land on actionable data instead of a pitch deck.
 
-### Changed
+### Fixed
+- **AtlasView syntax error**: Fixed two syntax issues in `AtlasView.tsx` — the `FitBounds` component was missing its closing `};`, and the `timelineDates` `useMemo` had its declaration removed leaving an orphaned loop body. Both caused Vite to refuse compilation.
+- **Duplicate "Analyze" heading**: Removed redundant `ModuleHeader` from ScreenerView network mode — it duplicated the module name already shown in the TopNav breadcrumb and displayed a "NETWORK" badge already conveyed by the mode toggle below it.
+- **Screener Navigation Bar**: Consolidated the Network/Local mode toggle and the Route/Corridors/Monitoring tabs into a single unified navigation bar to save vertical space and reduce visual clutter.
 
 ## [0.17.0] - 2026-04-15
 

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, Zap, Activity, BarChart3, ChevronRight, TrendingUp, AlertTriangle, List, Calendar, Info, CheckCircle2, Flag, SkipForward, MessageSquare } from 'lucide-react';
+import { X, Clock, Zap, Activity, BarChart3, ChevronRight, TrendingUp, AlertTriangle, List, Calendar, Info, CheckCircle2, Flag, SkipForward, MessageSquare, Gauge } from 'lucide-react';
 import { AnalysisResult, RawRouteDepartures, DayName, ALL_DAYS, WEEKDAYS, DAY_TO_TYPE } from '../../../types/gtfs';
 import { useTransitStore } from '../../../types/store';
 import { useCatalogStore } from '../../../types/catalogStore';
@@ -576,7 +576,7 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
     const activeCriteria = useTransitStore(s => s.activeCriteria);
     const currentRoutes = useCatalogStore(s => s.currentRoutes);
     const getRouteHistory = useCatalogStore(s => s.getRouteHistory);
-    const [activeTab, setActiveTab] = useState<'summary' | 'audit' | 'history'>('summary');
+    const [activeTab, setActiveTab] = useState<'summary' | 'audit' | 'history' | 'resources'>('summary');
     const [selectedDay, setSelectedDay] = useState<DayName | null>(null);
 
     // Find this route in the catalog (if committed)
@@ -716,6 +716,15 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                         <Clock className="w-3 h-3" /> History
                                     </button>
                                 )}
+                                <button
+                                    onClick={() => setActiveTab('resources')}
+                                    className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'resources'
+                                        ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
+                                        : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
+                                        }`}
+                                >
+                                    <Gauge className="w-3 h-3" /> Resources
+                                </button>
                             </div>
                         </div>
 
@@ -960,6 +969,87 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                                 }).reverse()}
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                            ) : activeTab === 'resources' ? (
+                                /* ====== RESOURCES TAB ====== */
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div>
+                                            <h3 className="text-lg font-bold flex items-center gap-2">
+                                                <Gauge className="w-5 h-5 text-indigo-500" />
+                                                Resource & Financial Impact
+                                            </h3>
+                                            <p className="text-sm text-[var(--text-muted)]">Estimated requirements to maintain {Math.round(result.avgHeadway)}m service.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="precision-panel p-6 flex flex-col items-center text-center bg-indigo-500/5 border-indigo-500/20">
+                                            <div className="p-3 bg-indigo-500/10 rounded-2xl mb-4">
+                                                <Bus className="w-6 h-6 text-indigo-500" />
+                                            </div>
+                                            <span className="atlas-label mb-1">Peak Vehicles (PVR)</span>
+                                            <div className="text-4xl font-black atlas-mono text-indigo-600">
+                                                {result.pvr || 0}
+                                            </div>
+                                            <p className="mt-2 text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest">Concurrent Vehicles</p>
+                                        </div>
+
+                                        <div className="precision-panel p-6 flex flex-col items-center text-center bg-emerald-500/5 border-emerald-500/20">
+                                            <div className="p-3 bg-emerald-500/10 rounded-2xl mb-4">
+                                                <Zap className="w-6 h-6 text-emerald-500" />
+                                            </div>
+                                            <span className="atlas-label mb-1">Annual Op Cost</span>
+                                            <div className="text-3xl font-black atlas-mono text-emerald-600">
+                                                ${((result.opCostAnnual || 0) / 1000000).toFixed(2)}M
+                                            </div>
+                                            <p className="mt-2 text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest">
+                                                @ ${activeCriteria.hourlyRate || 150}/hr
+                                            </p>
+                                        </div>
+
+                                        <div className="precision-panel p-6 flex flex-col items-center text-center bg-blue-500/5 border-blue-500/20">
+                                            <div className="p-3 bg-blue-500/10 rounded-2xl mb-4">
+                                                <Clock className="w-6 h-6 text-blue-500" />
+                                            </div>
+                                            <span className="atlas-label mb-1">Daily Service Hours</span>
+                                            <div className="text-3xl font-black atlas-mono text-blue-600">
+                                                {result.totalServiceHours || 0}
+                                            </div>
+                                            <p className="mt-2 text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest">Vehicle Revenue Hours</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="precision-panel p-8">
+                                        <h4 className="font-bold flex items-center gap-2 mb-4">
+                                            <Info className="w-4 h-4 text-indigo-500" />
+                                            Heuristic Breakdown
+                                        </h4>
+                                        <div className="space-y-4 text-sm text-[var(--text-muted)] leading-relaxed">
+                                            <p>
+                                                The <strong>Peak Vehicle Requirement (PVR)</strong> is estimated by calculating the Round Trip Time (RTT) divided by the average headway. 
+                                                Since specific trip durations vary, we use the service span ({result.serviceSpan ? Math.round((result.serviceSpan.end - result.serviceSpan.start) / Math.max(1, result.tripCount)) : 0}m average trip) 
+                                                doubled to estimate RTT.
+                                            </p>
+                                            <div className="p-4 bg-[var(--item-bg)] rounded-xl border border-[var(--border)] font-mono text-[11px] space-y-1">
+                                                <div className="flex justify-between">
+                                                    <span>Estimated Round Trip Time:</span>
+                                                    <span className="text-[var(--fg)] font-bold">{result.serviceSpan ? Math.round((result.serviceSpan.end - result.serviceSpan.start) / Math.max(1, result.tripCount)) * 2 : 0} mins</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span>Target Headway:</span>
+                                                    <span className="text-[var(--fg)] font-bold">{Math.round(result.avgHeadway)} mins</span>
+                                                </div>
+                                                <div className="border-t border-[var(--border)] my-2 pt-1 flex justify-between font-black text-indigo-500">
+                                                    <span>Required Fleet:</span>
+                                                    <span>{result.pvr} Vehicles</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] italic">
+                                                * This is a strategic estimate for planning purposes. Actual requirements may vary based on exact terminal layovers, deadhead times, and block-chaining efficiency.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (

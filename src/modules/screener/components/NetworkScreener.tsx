@@ -53,7 +53,7 @@ function formatSpan(mins: number): string {
   return m === 0 ? `${displayH}${suffix}` : `${displayH}:${m.toString().padStart(2, '0')}${suffix}`;
 }
 
-export function NetworkScreener() {
+export function NetworkScreener({ modeToggle }: { modeToggle?: React.ReactNode }) {
   const { role, agencyId: userAgencyId } = useAuthStore();
   const isAdmin = role === 'admin';
 
@@ -153,7 +153,13 @@ export function NetworkScreener() {
   return (
     <div className="space-y-6">
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl border border-[var(--border)] w-fit">
+      <div className="flex flex-wrap items-center gap-1 bg-[var(--item-bg)] p-1 rounded-xl border border-[var(--border)] w-fit">
+        {modeToggle && (
+          <>
+            {modeToggle}
+            <div className="w-px h-6 bg-[var(--border)] mx-1" />
+          </>
+        )}
         <button
           onClick={() => setTab('routes')}
           className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2 ${

@@ -103,6 +103,43 @@ export function computeHeadwayStats(times: number[]) {
 }
 
 /**
+ * Estimating resources required for a route snapshot.
+ */
+export function computeResourceStats(
+    avgHeadway: number,
+    serviceSpan: { start: number; end: number },
+    tripCount: number,
+    criteria: AnalysisCriteria
+) {
+    if (avgHeadway <= 0) return { pvr: 0, opCostAnnual: 0, totalServiceHours: 0 };
+
+    // PVR = ceil(Round Trip Time / Headway)
+    // We don't have RTT directly in the analyzed result, but we can estimate it.
+    // In a future phase, we should use actual trip durations.
+    // For now, let's assume a heuristic: RTT is roughly 2x the average trip duration.
+    // And average trip duration is roughly Span / TripCount.
+    const spanMins = serviceSpan.end - serviceSpan.start;
+    const estimatedTripDuration = spanMins / Math.max(1, tripCount);
+    const estimatedRTT = estimatedTripDuration * 2;
+    
+    const pvr = Math.ceil(estimatedRTT / avgHeadway);
+    
+    // Annual Operating Cost
+    // Total Hours per day = span * (60 / headway) / 60? No, simpler: tripCount * duration.
+    const dailyServiceHours = (tripCount * estimatedTripDuration) / 60;
+    const hourlyRate = criteria.hourlyRate || 150;
+    const daysPerYear = 255; // Heuristic for weekdays
+    
+    const opCostAnnual = dailyServiceHours * hourlyRate * daysPerYear;
+
+    return {
+        pvr,
+        opCostAnnual: Math.round(opCostAnnual),
+        totalServiceHours: Math.round(dailyServiceHours * 10) / 10
+    };
+}
+
+/**
  * Phase 2: Apply analysis criteria to raw departure data.
  *
  * Filters departures to each day type's time window, classifies into tiers,
@@ -129,15 +166,17 @@ export function applyAnalysisCriteria(
             windowedGaps.push(windowedTimes[i] - windowedTimes[i - 1]);
         }
 
-        // Use the actual service span (first → last departure within window), not
-        // the window width. A route running 08:00–18:00 at 10-min headway has 60
-        // trips and a 600-min span — it should qualify for T=10 (minTrips=60).
-        // Using the full 900-min window would require 90 trips and silently
-        // downgrade it to T=15.
         const spanMins = windowedTimes[windowedTimes.length - 1] - windowedTimes[0];
         const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, criteria.modeTierOverrides);
         const tier = determineTier(windowedGaps, windowedTimes.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
         const stats = computeHeadwayStats(windowedTimes);
+        
+        const resourceStats = computeResourceStats(
+            stats.avg, 
+            { start: windowedTimes[0], end: windowedTimes[windowedTimes.length - 1] }, 
+            windowedTimes.length, 
+            criteria
+        );
 
         const result: AnalysisResult = {
             route: raw.route,
@@ -158,12 +197,13 @@ export function applyAnalysisCriteria(
             outlierPenalty: stats.outlierPenalty,
             headwayVariance: stats.variance,
             bunchingFactor: stats.bunchingFactor,
-            serviceSpan: raw.serviceSpan,
+            serviceSpan: { start: windowedTimes[0], end: windowedTimes[windowedTimes.length - 1] },
             routeType: raw.routeType,
             modeName: raw.modeName,
             serviceIds: raw.serviceIds,
             warnings: raw.warnings,
             daysIncluded: [raw.day],
+            ...resourceStats
         };
         perDayResults.set(`${raw.route}::${raw.dir}::${raw.day}`, { dayType, day: raw.day, result });
     }
@@ -186,11 +226,6 @@ export function applyAnalysisCriteria(
         const worstTierValue = Math.max(...tierValues);
         const worstTier = worstTierValue === Infinity ? 'span' : String(worstTierValue);
 
-        // Build a merged schedule: deduplicate and sort departure times across all
-        // days in the group, then derive all stats from that single merged series.
-        // This keeps gaps, times, avgHeadway, and all other stats self-consistent —
-        // previously gaps was a flatMap of per-day gaps while times was a Set-deduped
-        // union, causing gaps ≠ diff(times) and avgHeadway ≠ avg(gaps).
         const allTimes = entries.flatMap(e => e.result.times);
         const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
         const stats = computeHeadwayStats(mergedTimes);
@@ -207,6 +242,9 @@ export function applyAnalysisCriteria(
             allWarnings.push(`Only runs ${daysIncluded.length}/5 weekdays (missing: ${missing.join(', ')})`);
         }
 
+        const span = { start: Math.min(...allStarts), end: Math.max(...allEnds) };
+        const resourceStats = computeResourceStats(stats.avg, span, avgTrips, criteria);
+
         results.push({
             route: rep.route,
             day: dayType,
@@ -216,7 +254,7 @@ export function applyAnalysisCriteria(
             peakHeadway: stats.peakHeadway,
             baseHeadway: Math.round(stats.baseHeadway * 10) / 10,
             peakWindow: stats.peakWindow,
-            serviceSpan: { start: Math.min(...allStarts), end: Math.max(...allEnds) },
+            serviceSpan: span,
             tier: worstTier,
             tripCount: avgTrips,
             gaps: stats.gaps,
@@ -232,6 +270,7 @@ export function applyAnalysisCriteria(
             serviceIds: allServiceIds,
             warnings: allWarnings.length > 0 ? allWarnings : undefined,
             daysIncluded,
+            ...resourceStats
         });
     }
 

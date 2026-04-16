@@ -12,7 +12,9 @@ import {
     Activity,
     Map,
     Bus,
-    Globe
+    Globe,
+    Gauge,
+    DollarSign
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTransitStore } from '../../../types/store';
@@ -38,7 +40,7 @@ const StatCard = ({ title, value, subtext, icon: Icon, color }: { title: string;
 );
 
 export default function SystemReportView() {
-    const { analysisResults, gtfsData, validationReport } = useTransitStore();
+    const { analysisResults, gtfsData, validationReport, activeCriteria } = useTransitStore();
     const { currentRoutes } = useCatalogStore();
     const [reportScope, setReportScope] = useState<'local' | 'regional'>('local');
 
@@ -57,6 +59,11 @@ export default function SystemReportView() {
         const highFreq = dataToAnalyze.filter(r => ['5', '8', '10', '15'].includes(r.tier));
         const avgReliability = dataToAnalyze.reduce((acc, r) => acc + (r.reliabilityScore || 0), 0) / dataToAnalyze.length;
         const totalTrips = dataToAnalyze.reduce((acc, r) => acc + (r.tripCount || 0), 0);
+        
+        // Resource Aggregation
+        const totalPVR = dataToAnalyze.reduce((acc, r) => acc + (r.pvr || 0), 0);
+        const totalOpCost = dataToAnalyze.reduce((acc, r) => acc + (r.opCostAnnual || 0), 0);
+        const totalServiceHours = dataToAnalyze.reduce((acc, r) => acc + (r.totalServiceHours || 0), 0);
 
         // Mode breakdown
         const modes: Record<string, { count: number, highFreq: number }> = {};
@@ -76,6 +83,9 @@ export default function SystemReportView() {
             highFreqPct: (highFreq.length / dataToAnalyze.length) * 100,
             avgReliability,
             totalTrips,
+            totalPVR,
+            totalOpCost,
+            totalServiceHours,
             agencyCount: uniqueAgencies.size,
             dataToAnalyze,
             modes: Object.entries(modes).map(([name, data]) => ({
@@ -235,6 +245,40 @@ export default function SystemReportView() {
                         color="amber"
                     />
                 </div>
+
+                {/* Economic Impact Section */}
+                <section className="mb-12">
+                    <h2 className="text-xl font-black mb-6 flex items-center gap-2 px-2">
+                        <DollarSign className="w-5 h-5 text-indigo-500" />
+                        Economic Impact & Resources
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <StatCard
+                            title="Total Peak Vehicles"
+                            value={stats.totalPVR}
+                            subtext="Combined concurrent fleet required to run this network."
+                            icon={Gauge}
+                            color="indigo"
+                        />
+                        <StatCard
+                            title="Annual Op Cost"
+                            value={`$${(stats.totalOpCost / 1000000).toFixed(1)}M`}
+                            subtext={`Estimated system-wide expense at $${activeCriteria.hourlyRate || 150}/hr.`}
+                            icon={Zap}
+                            color="emerald"
+                        />
+                        <StatCard
+                            title="Daily Service Hours"
+                            value={Math.round(stats.totalServiceHours).toLocaleString()}
+                            subtext="Total Vehicle Revenue Hours (VRH) per weekday."
+                            icon={Clock}
+                            color="blue"
+                        />
+                    </div>
+                    <div className="mt-4 px-6 py-3 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl text-[10px] text-[var(--text-muted)] italic">
+                        * Resource estimates are derived from service spans and average headways. This model provides a strategic baseline for fleet procurement and budgetary planning.
+                    </div>
+                </section>
 
                 {/* Mode Breakdown */}
                 <section className="mb-12 bg-[var(--item-bg)] border border-[var(--border)] rounded-3xl overflow-hidden p-8">
