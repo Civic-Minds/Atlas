@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuthStore } from '../hooks/useAuthStore';
 import { useViewAs } from '../hooks/useViewAs';
@@ -29,6 +29,7 @@ export const TopNav: React.FC = () => {
     const { logout, role, user } = useAuthStore();
     const { viewAsAgency, setViewAsAgency } = useViewAs();
     const { clearData } = useTransitStore();
+    const { theme, toggleTheme } = useTheme();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showViewAsMenu, setShowViewAsMenu] = useState(false);
     const isAdmin = role === 'admin';
@@ -147,6 +148,15 @@ export const TopNav: React.FC = () => {
                             )}
                         </div>
                     )}
+
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--item-bg)] transition-all duration-200"
+                        title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                    >
+                        {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                    </button>
 
                     <div className="hidden lg:block w-px h-5 bg-[var(--border)]" />
 
