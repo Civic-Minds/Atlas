@@ -6,12 +6,18 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **Command Center Homepage** (`CommandCenter.tsx`): Replaced the marketing hero splash page with an operational admin dashboard. Shows system KPI strip (Agencies, Total Routes, RT Observations, Avg Health, Match Rate), scrollable Agency Registry with health scores and click-to-"View As", RT Matching panel with per-agency match rates, and a 6-module quick access grid. Authenticated users without a tenant agency now land on actionable data instead of a pitch deck.
+- **Backend Stability**: Restored real-time data ingestion and API availability by re-starting the backend server and verifying local database connectivity.
 - **Theme Support**: Implemented a responsive Light/Dark mode system with a manual toggle in the TopNav, utilizing a technical HSL-based palette for clinical clarity.
 
 ### Fixed
 - **AtlasView syntax error**: Fixed two syntax issues in `AtlasView.tsx` — the `FitBounds` component was missing its closing `};`, and the `timelineDates` `useMemo` had its declaration removed leaving an orphaned loop body. Both caused Vite to refuse compilation.
 - **Duplicate "Analyze" heading**: Removed redundant `ModuleHeader` from ScreenerView network mode — it duplicated the module name already shown in the TopNav breadcrumb and displayed a "NETWORK" badge already conveyed by the mode toggle below it.
 - **Screener Navigation Bar**: Consolidated the Network/Local mode toggle and the Route/Corridors/Monitoring tabs into a single unified navigation bar to save vertical space and reduce visual clutter.
+
+### Changed
+- **STA full system polling**: Removed route filter for Spokane Transit Authority — now polling all routes (previously limited to routes 90, 25, 9, 6, 66). 100% of STA positions include `stop_id`.
+- **Nomenclature Consolidation**: Standardized module titling to match the TopNav navigation labels. Removed meaningless "Intelligence Hub" and "Route Health" jargon in favor of the single source of truth in the sticky breadcrumb. 
+- **UI Redundancy Elimination**: Stripped redundant page titles from `ModuleHeader` across `Performance`, `Pulse`, and `Monitor` views. This eliminates the "double titling" issue and reclaims vertical screen real estate for data visualization.
 
 ## [0.17.0] - 2026-04-15
 
