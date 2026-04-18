@@ -86,7 +86,7 @@ const lastSeenCache = new Map<string, {
   arrivalTime: number,
   dwellStart?: Date // Tracks when we first arrived at 'AT_STOP' status
 }>();
-const MAX_VEHICLE_CACHE = 2000;
+const MAX_VEHICLE_CACHE = 10000;
 
 function updateVehicleState(vehicleId: string, state: { 
   stopId: string, 

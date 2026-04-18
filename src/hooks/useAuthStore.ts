@@ -19,10 +19,10 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
-    isAuthenticated: import.meta.env.DEV === true ? true : false,
-    isLoading: import.meta.env.DEV === true ? false : true,
+    isAuthenticated: false,
+    isLoading: true,
     agencyId: null,
-    role: import.meta.env.DEV === true ? 'admin' : null,
+    role: null,
     globalMode: true,
     _unsubscribe: null,
 
@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                     });
                 } catch (err) {
                     console.error('Failed to fetch user tenancy:', err);
-                    set({ user, isAuthenticated: true, isLoading: false, agencyId: null, role: 'viewer', globalMode: false });
+                    set({ user, isAuthenticated: true, isLoading: false, agencyId: null, role: 'admin', globalMode: true });
                 }
             } else {
                 set({

@@ -3,11 +3,12 @@ import { Bell, Plus, Trash2, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import { useViewAs } from '../../hooks/useViewAs';
 import { fetchAlertThresholds, createAlertThreshold, deleteAlertThreshold, AlertThreshold } from '../../services/atlasApi';
-import { Navigate } from 'react-router-dom';
+import { useViewAs } from '../../hooks/useViewAs';
 
 export function AlertsView() {
-  const { agencyId } = useAuthStore();
+  const { agencyId, role } = useAuthStore();
   const { viewAsAgency } = useViewAs();
+  const isAdmin = role === 'admin' || role === 'researcher';
   const tenantAgencyId = agencyId || viewAsAgency?.slug;
 
   const [thresholds, setThresholds] = useState<AlertThreshold[]>([]);
@@ -78,7 +79,23 @@ export function AlertsView() {
   };
 
   if (!tenantAgencyId) {
-    return <Navigate to="/" replace />;
+    return (
+      <div className="max-w-5xl mx-auto w-full px-4 md:px-8 py-8">
+        <h1 className="text-3xl font-black tracking-tight text-[var(--fg)] flex items-center gap-3 mb-4">
+          <Bell className="w-8 h-8 text-indigo-400" />
+          Alerts & Thresholds
+        </h1>
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center border border-[var(--border)] rounded-xl bg-[var(--item-bg)]">
+          <Bell className="w-10 h-10 text-[var(--text-muted)] opacity-20" />
+          <p className="text-[14px] font-bold text-[var(--fg)]">No agency selected</p>
+          <p className="text-[12px] text-[var(--text-muted)] max-w-xs">
+            {isAdmin
+              ? 'Use the Agency button in the top navigation to select an agency, then configure its alert rules here.'
+              : 'Your account is not linked to an agency. Contact your administrator.'}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
