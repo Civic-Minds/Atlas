@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  Activity, ArrowRight, BarChart3, Brain, Building2, CheckCircle2,
-  Clock, Database, FileCheck, Gauge, Ghost, Globe, MapPin, Radio,
-  Satellite, Scale, Search, Server, Target, TrendingUp, Zap
+  Activity, ArrowRight, BarChart3, Building2, CheckCircle2,
+  Database, Gauge, Globe,
+  Satellite, Server, Target
 } from 'lucide-react';
 import { useAuthStore } from '../../../hooks/useAuthStore';
 import { useViewAs } from '../../../hooks/useViewAs';
@@ -39,26 +39,26 @@ const MODULES = [
     accent: 'emerald',
   },
   {
-    id: 'predict',
-    title: 'Predict',
-    description: 'Population density vs. service coverage',
-    icon: TrendingUp,
-    path: '/predict',
-    accent: 'purple',
+    id: 'monitor',
+    title: 'Monitor',
+    description: 'Strategic audit — circuity, frequency gaps, corridor coverage',
+    icon: BarChart3,
+    path: '/monitor',
+    accent: 'blue',
   },
   {
-    id: 'simulate',
-    title: 'Simulate',
-    description: 'Stop consolidation and service change modeling',
-    icon: Brain,
-    path: '/simulate',
-    accent: 'blue',
+    id: 'predict',
+    title: 'Predict',
+    description: 'Population density vs. service coverage gaps',
+    icon: Database,
+    path: '/predict',
+    accent: 'purple',
   },
   {
     id: 'audit',
     title: 'Audit',
     description: 'Published frequency vs. actual GTFS verification',
-    icon: FileCheck,
+    icon: CheckCircle2,
     path: '/audit',
     accent: 'rose',
   },
@@ -102,17 +102,19 @@ export const CommandCenter: React.FC = () => {
   const totalAgencies = agencies.length;
   const agenciesWithData = agencies.filter(a => a.feed_version_id).length;
   const totalRoutes = agencies.reduce((s, a) => s + (a.route_count ?? 0), 0);
-  const totalObs = matchStats.reduce((s, m) => s + m.total_obs, 0);
-  const avgHealth = matchStats.length > 0
-    ? Math.round(matchStats.reduce((s, m) => s + m.healthScore, 0) / matchStats.length)
+  const registeredSlugs = new Set(agencies.map(a => a.slug));
+  const filteredMatchStats = matchStats.filter(m => registeredSlugs.has(m.agency_id));
+  const totalObs = Math.round(filteredMatchStats.reduce((s, m) => s + m.total_obs, 0));
+  const avgHealth = filteredMatchStats.length > 0
+    ? Math.round(filteredMatchStats.reduce((s, m) => s + m.healthScore, 0) / filteredMatchStats.length)
     : null;
-  const avgMatchRate = matchStats.length > 0
-    ? Math.round(matchStats.reduce((s, m) => s + (m.matched_obs / Math.max(1, m.total_obs)) * 100, 0) / matchStats.length)
+  const avgMatchRate = filteredMatchStats.length > 0
+    ? Math.round(filteredMatchStats.reduce((s, m) => s + (m.matched_obs / Math.max(1, m.total_obs)) * 100, 0) / filteredMatchStats.length)
     : null;
 
   const handleViewAsAgency = (agency: AgencyMeta) => {
     setViewAsAgency(agency);
-    navigate('/');
+    navigate('/performance');
   };
 
   if (loading) {
@@ -155,7 +157,7 @@ export const CommandCenter: React.FC = () => {
             icon={Building2}
             label="Agencies"
             value={String(totalAgencies)}
-            sub={`${agenciesWithData} with GTFS data`}
+            sub={`${filteredMatchStats.length} with live RT`}
             color="indigo"
           />
           <SystemKpi
@@ -169,29 +171,29 @@ export const CommandCenter: React.FC = () => {
             icon={Satellite}
             label="Observations"
             value={totalObs > 0 ? totalObs > 1000 ? `${(totalObs / 1000).toFixed(1)}k` : String(totalObs) : '—'}
-            sub="RT data points"
+            sub="last 5 min"
             color="purple"
           />
           <SystemKpi
             icon={Gauge}
             label="Avg Health"
-            value={avgHealth !== null ? String(avgHealth) : '—'}
-            sub={avgHealth !== null ? (avgHealth >= 80 ? 'Excellent' : avgHealth >= 60 ? 'Moderate' : 'Degraded') : 'No data'}
-            color={avgHealth !== null ? (avgHealth >= 80 ? 'emerald' : avgHealth >= 60 ? 'amber' : 'red') : 'muted'}
+            value={avgHealth !== null && avgHealth > 0 ? String(avgHealth) : '—'}
+            sub={avgHealth !== null && avgHealth > 0 ? (avgHealth >= 80 ? 'Excellent' : avgHealth >= 60 ? 'Moderate' : 'Needs attention') : 'No RT data'}
+            color={avgHealth !== null && avgHealth > 0 ? (avgHealth >= 80 ? 'emerald' : avgHealth >= 60 ? 'amber' : 'red') : 'muted'}
           />
           <SystemKpi
             icon={CheckCircle2}
             label="Match Rate"
             value={avgMatchRate !== null ? `${avgMatchRate}%` : '—'}
-            sub="schedule matching"
+            sub="trip matching · 5 min"
             color={avgMatchRate !== null ? (avgMatchRate >= 80 ? 'emerald' : avgMatchRate >= 50 ? 'amber' : 'red') : 'muted'}
           />
           <SystemKpi
-            icon={Clock}
-            label="Last Refresh"
-            value={new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            sub={new Date().toLocaleDateString([], { month: 'short', day: 'numeric' })}
-            color="muted"
+            icon={Activity}
+            label="RT Agencies"
+            value={filteredMatchStats.length > 0 ? String(filteredMatchStats.length) : '—'}
+            sub={`of ${totalAgencies} reporting now`}
+            color={filteredMatchStats.length > 0 ? 'emerald' : 'muted'}
           />
         </motion.div>
 
@@ -296,7 +298,7 @@ export const CommandCenter: React.FC = () => {
                 <span className="atlas-label">RT Matching</span>
               </div>
               <span className="text-[9px] atlas-mono text-[var(--text-muted)]">
-                {matchStats.length} active
+                {filteredMatchStats.length} active
               </span>
             </div>
             {matchStats.length === 0 ? (
@@ -305,13 +307,14 @@ export const CommandCenter: React.FC = () => {
               </div>
             ) : (
               <div className="divide-y divide-[var(--border)]/50 max-h-[380px] overflow-y-auto custom-scrollbar">
-                {matchStats.map((stat) => {
+                {filteredMatchStats.map((stat) => {
                   const matchRate = Math.round((stat.matched_obs / Math.max(1, stat.total_obs)) * 100);
+                  const agencyName = agencies.find(a => a.slug === stat.agency_id)?.display_name ?? stat.agency_id;
                   return (
                     <div key={stat.agency_id} className="px-5 py-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-bold atlas-mono text-indigo-400">
-                          {stat.agency_id}
+                        <span className="text-[12px] font-bold text-[var(--fg)]">
+                          {agencyName}
                         </span>
                         <span className={`text-[10px] font-bold atlas-mono ${
                           stat.healthScore >= 80 ? 'text-emerald-400' :
@@ -377,35 +380,6 @@ export const CommandCenter: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Secondary Quick Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 flex items-center gap-3"
-        >
-          <button
-            onClick={() => navigate('/map')}
-            className="flex items-center gap-2 px-4 py-2.5 precision-panel hover:border-indigo-500/30 transition-all"
-          >
-            <MapPin className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-            <span className="text-[11px] font-bold text-[var(--text-secondary)]">Live Map</span>
-          </button>
-          <button
-            onClick={() => navigate('/alerts')}
-            className="flex items-center gap-2 px-4 py-2.5 precision-panel hover:border-indigo-500/30 transition-all"
-          >
-            <Zap className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-            <span className="text-[11px] font-bold text-[var(--text-secondary)]">Alerts</span>
-          </button>
-          <button
-            onClick={() => navigate('/monitor')}
-            className="flex items-center gap-2 px-4 py-2.5 precision-panel hover:border-indigo-500/30 transition-all"
-          >
-            <Radio className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-            <span className="text-[11px] font-bold text-[var(--text-secondary)]">Monitor</span>
-          </button>
-        </motion.div>
       </div>
     </div>
   );

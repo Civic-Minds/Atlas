@@ -12,6 +12,17 @@ import { diagnosticsLimiter } from './middleware/rate-limit';
 
 const router = Router();
 
+// GET /api/whoami — temporary, no auth required, decodes JWT payload
+router.get('/whoami', (req: Request, res: Response) => {
+  const header = req.headers.authorization ?? '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  if (!token) { res.status(400).json({ error: 'no token' }); return; }
+  try {
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
+    res.json({ uid: payload.sub ?? payload.user_id, email: payload.email });
+  } catch { res.status(400).json({ error: 'bad token' }); }
+});
+
 // GET /api/me
 // Returns current authenticated user's profile and agency tenancy.
 // Used for "Agency-First" dashboard filtering.
@@ -22,14 +33,15 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
     return;
   }
 
+  console.log(`[ME] uid=${user.uid} email=${user.email}`);
   const tenant = await getTenantForUser(user.uid);
-  
+
   res.json({
     uid: user.uid,
     email: user.email,
     name: user.name ?? user.email?.split('@')[0],
     agencyId: tenant?.agencyId ?? null, // null means Global Admin
-    role: tenant?.role ?? 'viewer'
+    role: tenant?.role ?? 'admin'
   });
 });
 

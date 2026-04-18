@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, GitFork, Activity } from 'lucide-react';
 import { fetchAgencies, screenRoutes, fetchCorridors, fetchCorridorPerformance, AgencyMeta, ScreenRoute, Corridor, ScreenParams } from '../../../services/atlasApi';
 import { CorridorMonitor } from './CorridorMonitor';
+import { RouteDetailModal } from './RouteDetailModal';
 import { useAuthStore } from '../../../hooks/useAuthStore';
+import type { AnalysisResult } from '../../../types/gtfs';
 
 const TIER_CONFIG = [
   { id: '5',    name: 'Rapid',   color: 'cyan'    },
@@ -53,7 +55,7 @@ function formatSpan(mins: number): string {
   return m === 0 ? `${displayH}${suffix}` : `${displayH}:${m.toString().padStart(2, '0')}${suffix}`;
 }
 
-export function NetworkScreener({ modeToggle }: { modeToggle?: React.ReactNode }) {
+export function NetworkScreener() {
   const { role, agencyId: userAgencyId } = useAuthStore();
   const isAdmin = role === 'admin';
 
@@ -75,31 +77,36 @@ export function NetworkScreener({ modeToggle }: { modeToggle?: React.ReactNode }
   const [corridorLoading, setCorridorLoading] = useState(false);
   const [corridorError, setCorridorError]     = useState<string | null>(null);
   const [corridorSearch, setCorridorSearch]   = useState('');
+  const [selectedRoute, setSelectedRoute]     = useState<AnalysisResult | null>(null);
 
   useEffect(() => {
     fetchAgencies()
       .then(data => {
         setAgencies(data);
         if (data.length > 0) {
-            if (!isAdmin && userAgencyId) {
-                // Lock non-admins to their specific agency
-                setSelectedAgency(userAgencyId);
-            } else {
-                setSelectedAgency(data[0].slug);
-            }
+          let defaultSlug: string;
+          if (!isAdmin && userAgencyId) {
+            defaultSlug = userAgencyId;
+          } else {
+            // Prefer STA if available, otherwise first agency
+            defaultSlug = data.find(a => a.slug === 'sta')?.slug ?? data[0].slug;
+          }
+          setSelectedAgency(defaultSlug);
+          // Auto-run the screen so results are visible immediately
+          runScreenFor(defaultSlug);
         }
       })
       .catch(() => setAgencyError('Could not load agencies from server'))
       .finally(() => setLoadingAgencies(false));
   }, [isAdmin, userAgencyId]);
 
-  const runScreen = useCallback(async () => {
-    if (!selectedAgency) return;
+  const runScreenFor = useCallback(async (agency: string) => {
+    if (!agency) return;
     setLoading(true);
     setScreenError(null);
     try {
       const data = await screenRoutes({
-        agency:      selectedAgency,
+        agency,
         maxHeadway,
         windowStart: timeToMins(windowStart),
         windowEnd:   timeToMins(windowEnd),
@@ -112,7 +119,9 @@ export function NetworkScreener({ modeToggle }: { modeToggle?: React.ReactNode }
     } finally {
       setLoading(false);
     }
-  }, [selectedAgency, maxHeadway, windowStart, windowEnd, dayType, directions]);
+  }, [maxHeadway, windowStart, windowEnd, dayType, directions]);
+
+  const runScreen = useCallback(() => runScreenFor(selectedAgency), [runScreenFor, selectedAgency]);
 
   const runCorridors = useCallback(async () => {
     if (!selectedAgency) return;
@@ -150,76 +159,59 @@ export function NetworkScreener({ modeToggle }: { modeToggle?: React.ReactNode }
       )
     : null;
 
+  function toAnalysisResult(r: ScreenRoute): AnalysisResult {
+    return {
+      route:            r.route_short_name,
+      dir:              '0',
+      day:              dayType,
+      tier:             r.tier ?? deriveTier(parseFloat(r.base_headway)),
+      avgHeadway:       parseFloat(r.avg_headway) || 0,
+      medianHeadway:    parseFloat(r.avg_headway) || 0,
+      tripCount:        r.trip_count,
+      reliabilityScore: parseFloat(r.reliability_score ?? '0'),
+      consistencyScore: parseFloat(r.reliability_score ?? '0'),
+      bunchingPenalty:  0,
+      outlierPenalty:   0,
+      headwayVariance:  0,
+      bunchingFactor:   0,
+      peakHeadway:      parseFloat(r.peak_headway ?? '0'),
+      baseHeadway:      parseFloat(r.base_headway) || 0,
+      serviceSpan:      { start: r.service_span_start, end: r.service_span_end },
+      modeName:         r.mode_category ?? undefined,
+      times:            [],
+      gaps:             [],
+      serviceIds:       [],
+      warnings:         [],
+    };
+  }
+
   return (
     <div className="space-y-6">
       {/* Tab bar */}
-      <div className="flex flex-wrap items-center gap-1 bg-[var(--item-bg)] p-1 rounded-xl border border-[var(--border)] w-fit">
-        {modeToggle && (
-          <>
-            {modeToggle}
-            <div className="w-px h-6 bg-[var(--border)] mx-1" />
-          </>
-        )}
-        <button
-          onClick={() => setTab('routes')}
-          className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2 ${
-            tab === 'routes'
-              ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
-              : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
-          }`}
-        >
-          <Filter className="w-3 h-3" />
-          Route Screener
-        </button>
-        <button
-          onClick={() => setTab('corridors')}
-          className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2 ${
-            tab === 'corridors'
-              ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
-              : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
-          }`}
-        >
-          <GitFork className="w-3 h-3" />
-          Corridors
-        </button>
-        <button
-          onClick={() => setTab('monitoring')}
-          className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2 ${
-            tab === 'monitoring'
-              ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
-              : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
-          }`}
-        >
-          <Activity className="w-3 h-3" />
-          Monitoring
-        </button>
+      <div className="flex items-center border-b border-[var(--border)]">
+        {([
+          { id: 'routes',     label: 'Routes',     icon: Filter   },
+          { id: 'corridors',  label: 'Corridors',  icon: GitFork  },
+          { id: 'monitoring', label: 'Monitoring', icon: Activity },
+        ] as const).map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-[11px] font-bold border-b-2 -mb-px transition-colors ${
+              tab === id
+                ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--fg)] hover:border-[var(--border)]'
+            }`}
+          >
+            <Icon className="w-3 h-3" />
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* Filter panel */}
       <div className="precision-panel p-6 space-y-5">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {/* Agency */}
-          <div className="col-span-2">
-            <label className="atlas-label text-[9px] mb-1 block">Agency</label>
-            {agencyError ? (
-              <p className="text-xs text-red-500">{agencyError}</p>
-            ) : (
-              <select
-                value={selectedAgency}
-                onChange={e => setSelectedAgency(e.target.value)}
-                disabled={loadingAgencies || !isAdmin}
-                className="w-full px-3 py-2.5 bg-[var(--item-bg)] border border-[var(--border)] rounded-xl text-sm font-bold focus:outline-none focus:border-indigo-500/50 disabled:opacity-50"
-              >
-                {loadingAgencies
-                  ? <option>Loading…</option>
-                  : agencies.map(a => (
-                      <option key={a.slug} value={a.slug}>{a.display_name}</option>
-                    ))
-                }
-              </select>
-            )}
-          </div>
-
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {/* Max Headway */}
           <div>
             <label className="atlas-label text-[9px] mb-1 block">Max Headway (min)</label>
@@ -456,7 +448,11 @@ export function NetworkScreener({ modeToggle }: { modeToggle?: React.ReactNode }
                     const config = TIER_CONFIG.find(c => c.id === tier);
                     const score  = r.reliability_score != null ? Math.round(parseFloat(r.reliability_score)) : null;
                     return (
-                      <tr key={r.gtfs_route_id} className="hover:bg-[var(--item-bg)] transition-colors">
+                      <tr
+                        key={r.gtfs_route_id}
+                        onClick={() => setSelectedRoute(toAnalysisResult(r))}
+                        className="hover:bg-[var(--item-bg)] transition-colors cursor-pointer"
+                      >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
                             <span className="bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 atlas-mono font-bold text-xs px-2 py-1 rounded border border-indigo-500/20">
@@ -522,6 +518,12 @@ export function NetworkScreener({ modeToggle }: { modeToggle?: React.ReactNode }
       {tab === 'monitoring' && (
         <CorridorMonitor agency={selectedAgency} />
       )}
+
+      <RouteDetailModal
+        isOpen={!!selectedRoute}
+        onClose={() => setSelectedRoute(null)}
+        result={selectedRoute}
+      />
     </div>
   );
 }

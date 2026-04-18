@@ -5,6 +5,8 @@ import {
   BarChart3, Zap, Target, Eye, CheckCircle, XCircle, ArrowUpRight, ArrowDownRight, Download
 } from 'lucide-react';
 import { ModuleHeader } from '../../components/ModuleHeader';
+import { useAuthStore } from '../../hooks/useAuthStore';
+import { useViewAs } from '../../hooks/useViewAs';
 import {
   fetchSegmentBottlenecks, fetchStopDwells, fetchGhostBuses, fetchMatchingStats,
   fetchCorridorPerformance, fetchNetworkPulse, screenRoutes, auditServiceChange,
@@ -1238,8 +1240,16 @@ function ServiceAuditTab({ agency }: { agency: string }) {
 // ── Main View ────────────────────────────────────────────────────────────────
 
 export default function PerformanceView() {
+  const { role, agencyId: userAgencyId } = useAuthStore();
+  const { viewAsAgency } = useViewAs();
+  const isAdmin = role === 'admin' || role === 'researcher';
+  const defaultAgency = isAdmin ? (viewAsAgency?.slug ?? '') : (userAgencyId ?? '');
   const [tab, setTab] = useState<TabId>('overview');
-  const [agency, setAgency] = useState('ttc');
+  const [agency, setAgency] = useState(defaultAgency);
+
+  useEffect(() => {
+    if (isAdmin && viewAsAgency) setAgency(viewAsAgency.slug);
+  }, [viewAsAgency, isAdmin]);
 
   const TABS: { id: TabId; label: string; icon: React.ComponentType<any> }[] = [
     { id: 'overview', label: 'Overview', icon: Gauge },
@@ -1255,7 +1265,6 @@ export default function PerformanceView() {
     <div className="module-container">
       <div className="print:hidden">
         <ModuleHeader
-          title="Performance"
           badge={{ label: 'Live · 24h' }}
         />
       </div>
@@ -1263,24 +1272,26 @@ export default function PerformanceView() {
       {/* Controls */}
       <div className="flex flex-col gap-4 mb-8 print:hidden">
         <div className="flex items-end justify-between gap-4 flex-wrap">
-          <div className="flex flex-col gap-1">
-            <span className="text-[9px] atlas-label opacity-50">Agency</span>
-            <div className="flex items-center gap-2 flex-wrap">
-              {AGENCIES.map(a => (
-                <button
-                  key={a.id}
-                  onClick={() => setAgency(a.id)}
-                  className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
-                    agency === a.id
-                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
-                      : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
-                  }`}
-                >
-                  {a.label}
-                </button>
-              ))}
+          {isAdmin && (
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] atlas-label opacity-50">Agency</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                {AGENCIES.map(a => (
+                  <button
+                    key={a.id}
+                    onClick={() => setAgency(a.id)}
+                    className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
+                      agency === a.id
+                        ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
+                        : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
+                    }`}
+                  >
+                    {a.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           
           <button 
             onClick={() => window.print()}
@@ -1310,16 +1321,22 @@ export default function PerformanceView() {
         </div>
       </div>
 
-      {/* Tab content - ensure grid expands on print */}
-      <div className="print:block">
-        {tab === 'overview' && <OverviewTab agency={agency} />}
-        {tab === 'promise' && <FrequencyPromiseTab agency={agency} />}
-        {tab === 'bottlenecks' && <BottlenecksTab agency={agency} />}
-        {tab === 'ghosts' && <GhostsTab agency={agency} />}
-        {tab === 'dwells' && <DwellsTab agency={agency} />}
-        {tab === 'corridors' && <CorridorsTab agency={agency} />}
-        {tab === 'audit' && <ServiceAuditTab agency={agency} />}
-      </div>
+      {/* Tab content */}
+      {!agency ? (
+        <div className="flex items-center justify-center py-24 text-[var(--text-muted)] text-sm">
+          Select an agency above to load performance data.
+        </div>
+      ) : (
+        <div className="print:block">
+          {tab === 'overview' && <OverviewTab agency={agency} />}
+          {tab === 'promise' && <FrequencyPromiseTab agency={agency} />}
+          {tab === 'bottlenecks' && <BottlenecksTab agency={agency} />}
+          {tab === 'ghosts' && <GhostsTab agency={agency} />}
+          {tab === 'dwells' && <DwellsTab agency={agency} />}
+          {tab === 'corridors' && <CorridorsTab agency={agency} />}
+          {tab === 'audit' && <ServiceAuditTab agency={agency} />}
+        </div>
+      )}
     </div>
   );
 }
