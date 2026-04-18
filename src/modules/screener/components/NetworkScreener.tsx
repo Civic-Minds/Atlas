@@ -4,6 +4,7 @@ import { fetchAgencies, screenRoutes, fetchCorridors, fetchCorridorPerformance, 
 import { CorridorMonitor } from './CorridorMonitor';
 import { RouteDetailModal } from './RouteDetailModal';
 import { useAuthStore } from '../../../hooks/useAuthStore';
+import { useViewAs } from '../../../hooks/useViewAs';
 import type { AnalysisResult } from '../../../types/gtfs';
 
 const TIER_CONFIG = [
@@ -57,7 +58,8 @@ function formatSpan(mins: number): string {
 
 export function NetworkScreener() {
   const { role, agencyId: userAgencyId } = useAuthStore();
-  const isAdmin = role === 'admin';
+  const { viewAsAgency } = useViewAs();
+  const isAdmin = role === 'admin' || role === 'researcher';
 
   const [tab, setTab]                         = useState<'routes' | 'corridors' | 'monitoring'>('routes');
   const [agencies, setAgencies]               = useState<AgencyMeta[]>([]);
@@ -79,26 +81,30 @@ export function NetworkScreener() {
   const [corridorSearch, setCorridorSearch]   = useState('');
   const [selectedRoute, setSelectedRoute]     = useState<AnalysisResult | null>(null);
 
+  // Load agency list once
   useEffect(() => {
     fetchAgencies()
       .then(data => {
         setAgencies(data);
-        if (data.length > 0) {
-          let defaultSlug: string;
-          if (!isAdmin && userAgencyId) {
-            defaultSlug = userAgencyId;
-          } else {
-            // Prefer STA if available, otherwise first agency
-            defaultSlug = data.find(a => a.slug === 'sta')?.slug ?? data[0].slug;
-          }
-          setSelectedAgency(defaultSlug);
-          // Auto-run the screen so results are visible immediately
-          runScreenFor(defaultSlug);
+        if (!isAdmin && userAgencyId) {
+          // Tenant user: auto-select and auto-screen their agency
+          setSelectedAgency(userAgencyId);
+          runScreenFor(userAgencyId);
         }
       })
       .catch(() => setAgencyError('Could not load agencies from server'))
       .finally(() => setLoadingAgencies(false));
-  }, [isAdmin, userAgencyId]);
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Admin: sync selected agency from nav switcher and auto-run
+  useEffect(() => {
+    if (!isAdmin) return;
+    const slug = viewAsAgency?.slug ?? '';
+    setSelectedAgency(slug);
+    setResults(null);
+    setCorridors(null);
+    if (slug) runScreenFor(slug);
+  }, [viewAsAgency, isAdmin]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const runScreenFor = useCallback(async (agency: string) => {
     if (!agency) return;
@@ -185,6 +191,25 @@ export function NetworkScreener() {
     };
   }
 
+  // Admin with no agency selected — show a prompt instead of a blank filter panel
+  if (isAdmin && !selectedAgency && !loadingAgencies) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+        <Filter className="w-10 h-10 text-[var(--text-muted)] opacity-30" />
+        <p className="text-[15px] font-bold text-[var(--fg)]">Select an agency to begin</p>
+        <p className="text-[13px] text-[var(--text-muted)] max-w-xs">
+          Use the <span className="font-bold text-[var(--fg)]">Agency</span> button in the top navigation to pick an agency, then Analyze will screen its routes automatically.
+        </p>
+      </div>
+    );
+  }
+
+  const TAB_DESCRIPTIONS: Record<string, string> = {
+    routes:     'Routes that meet your headway and service window criteria, ranked by frequency tier.',
+    corridors:  'Stop pairs where multiple routes overlap — find where combined frequency is highest.',
+    monitoring: 'Real-time corridor health — live headways vs. scheduled, bunching, and gap detection.',
+  };
+
   return (
     <div className="space-y-6">
       {/* Tab bar */}
@@ -208,6 +233,7 @@ export function NetworkScreener() {
           </button>
         ))}
       </div>
+      <p className="text-[12px] text-[var(--text-muted)] -mt-2">{TAB_DESCRIPTIONS[tab]}</p>
 
       {/* Filter panel */}
       <div className="precision-panel p-6 space-y-5">
@@ -306,6 +332,30 @@ export function NetworkScreener() {
       )}
       {corridorError && tab === 'corridors' && (
         <p className="text-xs text-red-500 font-medium px-1">{corridorError}</p>
+      )}
+
+      {/* Loading state */}
+      {(tab === 'routes' ? loading : corridorLoading) && (
+        <div className="flex items-center justify-center py-16 gap-3">
+          <div className="w-5 h-5 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+          <span className="text-[12px] text-[var(--text-muted)]">Screening routes…</span>
+        </div>
+      )}
+
+      {/* Routes tab: no results yet */}
+      {tab === 'routes' && results === null && !loading && !screenError && (
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+          <Filter className="w-8 h-8 text-[var(--text-muted)] opacity-20" />
+          <p className="text-[12px] text-[var(--text-muted)]">Adjust the filters above and click <span className="font-bold text-[var(--fg)]">Screen</span> to see results.</p>
+        </div>
+      )}
+
+      {/* Corridors tab: no results yet */}
+      {tab === 'corridors' && corridors === null && !corridorLoading && !corridorError && (
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+          <GitFork className="w-8 h-8 text-[var(--text-muted)] opacity-20" />
+          <p className="text-[12px] text-[var(--text-muted)]">Click <span className="font-bold text-[var(--fg)]">Find Corridors</span> to identify stop pairs with overlapping routes.</p>
+        </div>
       )}
 
       {/* Corridors results */}

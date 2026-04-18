@@ -75,7 +75,7 @@ const ACCENT_MAP: Record<string, { bg: string; text: string; border: string; dot
 
 export const CommandCenter: React.FC = () => {
   const navigate = useNavigate();
-  const { role } = useAuthStore();
+  const { role, user } = useAuthStore();
   const { setViewAsAgency } = useViewAs();
   const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
   const [matchStats, setMatchStats] = useState<MatchingStat[]>([]);
@@ -83,6 +83,8 @@ export const CommandCenter: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Wait until Firebase has resolved — user is null until then in DEV mode
+    if (!user) return;
     setLoading(true);
     Promise.all([
       fetchAgencies().catch(() => []),
@@ -93,7 +95,7 @@ export const CommandCenter: React.FC = () => {
       setMatchStats((ms as any).stats ?? []);
       setTrends((tr as any).trends ?? []);
     }).finally(() => setLoading(false));
-  }, []);
+  }, [user]);
 
   const now = new Date();
   const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening';
