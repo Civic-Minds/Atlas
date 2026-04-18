@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Clock, Plus, TrendingDown, LayoutGrid, Route, WifiOff } from 'lucide-react';
 import { ModuleHeader } from '../../components/ModuleHeader';
+import { useAuthStore } from '../../hooks/useAuthStore';
+import { useViewAs } from '../../hooks/useViewAs';
 import { fetchLiveRoutes, fetchRouteHealth, fetchNetworkPulse, fetchGapDistribution, fetchSilentRoutes, RouteHealthResponse, RouteHealthHour, NetworkPulseRoute, GapDistributionResponse, SilentRoute } from '../../services/atlasApi';
 
 const AGENCIES = [
@@ -170,8 +172,16 @@ function GapBar({ value, max }: { value: number | null; max: number }) {
 }
 
 export default function PulseView() {
+  const { role, agencyId: userAgencyId } = useAuthStore();
+  const { viewAsAgency } = useViewAs();
+  const isAdmin = role === 'admin' || role === 'researcher';
+  const defaultAgency = isAdmin ? (viewAsAgency?.slug ?? '') : (userAgencyId ?? '');
   const [tab, setTab] = useState<TabId>('network');
-  const [agency, setAgency] = useState('ttc');
+  const [agency, setAgency] = useState(defaultAgency);
+
+  useEffect(() => {
+    if (isAdmin && viewAsAgency) setAgency(viewAsAgency.slug);
+  }, [viewAsAgency, isAdmin]);
 
   // Network tab state
   const [networkData, setNetworkData] = useState<NetworkPulseRoute[] | null>(null);
@@ -320,30 +330,31 @@ export default function PulseView() {
   return (
     <div className="module-container">
       <ModuleHeader
-        title="Route Health"
         badge={{ label: 'Live · 7-Day' }}
       />
 
       {/* Agency picker + tab switcher */}
       <div className="flex flex-col gap-4 mb-8">
-        <div className="flex flex-col gap-1">
-          <span className="text-[9px] atlas-label opacity-50">Agency</span>
-          <div className="flex items-center gap-2 flex-wrap">
-            {AGENCIES.map(a => (
-              <button
-                key={a.id}
-                onClick={() => setAgency(a.id)}
-                className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
-                  agency === a.id
-                    ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
-                    : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
-                }`}
-              >
-                {a.label}
-              </button>
-            ))}
+        {isAdmin && (
+          <div className="flex flex-col gap-1">
+            <span className="text-[9px] atlas-label opacity-50">Agency</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              {AGENCIES.map(a => (
+                <button
+                  key={a.id}
+                  onClick={() => setAgency(a.id)}
+                  className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
+                    agency === a.id
+                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
+                      : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
+                  }`}
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tab switcher */}
         <div className="flex items-center gap-1 p-1 bg-[var(--item-bg)] border border-[var(--border)] rounded-xl w-fit">

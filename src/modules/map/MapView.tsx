@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useAuthStore } from '../../hooks/useAuthStore';
+import { useViewAs } from '../../hooks/useViewAs';
 
 const AGENCIES = [
   { id: 'ttc',         label: 'TTC (Toronto)' },
@@ -68,7 +69,14 @@ function speedColour(speed: number | null, dimmed: boolean, isDetour?: boolean):
 }
 
 export default function MapView() {
-  const [agency, setAgency]           = useState('ttc');
+  const { role, agencyId: userAgencyId } = useAuthStore();
+  const { viewAsAgency } = useViewAs();
+  const isAdmin = role === 'admin' || role === 'researcher';
+  const [agency, setAgency]           = useState(isAdmin ? (viewAsAgency?.slug ?? 'sta') : (userAgencyId ?? 'sta'));
+
+  useEffect(() => {
+    if (isAdmin && viewAsAgency) setAgency(viewAsAgency.slug);
+  }, [viewAsAgency, isAdmin]);
   const [highlight, setHighlight]     = useState('');
   const [vehicles, setVehicles]       = useState<Vehicle[]>([]);
   const [loading, setLoading]         = useState(false);
@@ -113,18 +121,20 @@ export default function MapView() {
       {/* Controls Container */}
       <div className="flex justify-center border-b border-[var(--border)] bg-[var(--bg)]">
         <div className="max-w-7xl w-full flex items-center gap-4 px-4 md:px-8 py-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">Agency</label>
-          <select
-            value={agency}
-            onChange={e => { setAgency(e.target.value); setHighlight(''); }}
-            className="text-[13px] bg-[var(--surface)] border border-[var(--border)] rounded px-3 py-1.5 text-[var(--text-primary)] focus:outline-none"
-          >
-            {AGENCIES.map(a => (
-              <option key={a.id} value={a.id}>{a.label}</option>
-            ))}
-          </select>
-        </div>
+        {isAdmin && (
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">Agency</label>
+            <select
+              value={agency}
+              onChange={e => { setAgency(e.target.value); setHighlight(''); }}
+              className="text-[13px] bg-[var(--surface)] border border-[var(--border)] rounded px-3 py-1.5 text-[var(--text-primary)] focus:outline-none"
+            >
+              {AGENCIES.map(a => (
+                <option key={a.id} value={a.id}>{a.label}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="flex flex-col gap-1">
           <label className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
@@ -159,7 +169,7 @@ export default function MapView() {
       </div>
 
       {/* Map */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative min-h-0">
         {error && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-[var(--bg)]/90 border border-[var(--border)] text-[var(--text-muted)] px-4 py-2 rounded-xl backdrop-blur-md text-[12px] shadow-xl flex items-center gap-3">
                 {error}
@@ -193,8 +203,8 @@ export default function MapView() {
           key={agency}
           center={center}
           zoom={12}
-          className="w-full h-full"
-          style={{ background: '#0a0a0a' }}
+          className="w-full"
+          style={{ background: '#0a0a0a', height: '100%' }}
         >
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"

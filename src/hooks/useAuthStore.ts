@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 // Fetch tenant info from our pro-grade backend
                 try {
                     const idToken = await user.getIdToken();
-                    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}/api/me`, {
+                    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL ?? ''}/api/me`, {
                         headers: { 'Authorization': `Bearer ${idToken}` }
                     });
                     const data = await res.json();

@@ -5,6 +5,7 @@ import { ModuleHeader } from '../../components/ModuleHeader';
 import { fetchAgencies, screenRoutes, fetchSegmentBottlenecks, fetchStopDwells, auditServiceChange, AgencyMeta, ScreenRoute, SegmentBottleneck, StopDwell, AuditResult } from '../../services/atlasApi';
 import StopArrivalTimeline from './StopArrivalTimeline';
 import { useAuthStore } from '../../hooks/useAuthStore';
+import { useNotificationStore } from '../../hooks/useNotification';
 import './Intelligence.css';
 
 const TIER_THRESHOLDS = {
@@ -24,6 +25,7 @@ const SERVICE_PERIODS = [
 export default function IntelligenceView() {
     const navigate = useNavigate();
     const { agencyId } = useAuthStore();
+    const { addToast } = useNotificationStore();
     const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
     const [selectedAgency, setSelectedAgency] = useState<string | null>(null);
     const [selectedPeriod, setSelectedPeriod] = useState(SERVICE_PERIODS[2]); // Default to Mid-Day
@@ -79,7 +81,12 @@ export default function IntelligenceView() {
             const res = await auditServiceChange(selectedAgency);
             setAuditResult(res);
         } catch (err: any) {
-            setError(err.message);
+            const msg = err.message ?? '';
+            if (msg.includes('404') || msg.toLowerCase().includes('feed versions')) {
+                addToast('Before/After Audit requires at least 2 imported feed versions for this agency.', 'warning');
+            } else {
+                addToast(`Audit failed: ${msg}`, 'error');
+            }
         } finally {
             setAuditing(false);
         }
@@ -120,7 +127,6 @@ export default function IntelligenceView() {
     return (
         <div className="module-container">
             <ModuleHeader 
-                title="Intelligence Hub" 
                 badge={{ label: 'Strategic Audit' }}
                 actions={[
                     {
@@ -341,7 +347,9 @@ export default function IntelligenceView() {
                                 <TrendingUp className="w-4 h-4 text-indigo-500" />
                                 <span className="atlas-label">Geometric Optimization Proposals</span>
                             </div>
-                            <span className="px-2 py-0.5 bg-amber-500/10 text-amber-600 rounded text-[9px] font-black border border-amber-500/20">Action Required</span>
+                            {routes.filter(r => (r.circuity_index || 1) > 1.4).length > 0 && (
+                              <span className="px-2 py-0.5 bg-amber-500/10 text-amber-600 rounded text-[9px] font-black border border-amber-500/20">Action Required</span>
+                            )}
                         </div>
                         <div className="divide-y divide-[var(--border)] max-h-[500px] overflow-y-auto">
                             {routes

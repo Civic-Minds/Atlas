@@ -32,11 +32,11 @@ export const TopNav: React.FC = () => {
     const { theme, toggleTheme } = useTheme();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showViewAsMenu, setShowViewAsMenu] = useState(false);
-    const isAdmin = role === 'admin';
+    const isAdmin = role === 'admin' || role === 'researcher';
     const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
 
     React.useEffect(() => {
-        if (isAdmin) fetchAgencies().then(setAgencies).catch(() => {});
+        if (isAdmin) fetchAgencies().then(setAgencies).catch(console.warn);
     }, [isAdmin]);
     const displayName = user?.displayName || user?.email?.split('@')[0] || 'Admin';
 
@@ -58,13 +58,10 @@ export const TopNav: React.FC = () => {
         <header className="sticky top-0 z-50 w-full bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors duration-200">
             <div className="max-w-7xl mx-auto w-full px-4 md:px-8 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                    <Link to="/" className="flex items-center gap-1.5 no-underline cursor-pointer group">
-                        <span className="text-[18px] font-bold tracking-tight text-[var(--text-primary)]">Atlas</span>
+                    <Link to="/" className="flex items-center gap-2 no-underline cursor-pointer group">
+                        <span className={`text-[18px] font-bold tracking-tight transition-colors ${moduleName ? 'text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>Atlas</span>
                         {moduleName && (
-                            <>
-                                <span className="text-[var(--text-muted)] text-sm font-light">/</span>
-                                <span className="text-[16px] font-semibold tracking-tight text-indigo-500/80">{moduleName}</span>
-                            </>
+                            <span className="text-[16px] font-bold tracking-tight text-[var(--text-primary)]">{moduleName}</span>
                         )}
                     </Link>
                 </div>
@@ -105,44 +102,46 @@ export const TopNav: React.FC = () => {
                     </nav>
 
                     <div className="hidden lg:block w-px h-5 bg-[var(--border)]" />
-                    {/* View As — admin only */}
+                    {/* Agency switcher — admin only */}
                     {isAdmin && (
-                        <div className="hidden lg:flex items-center gap-2">
-                            {viewAsAgency ? (
-                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                                    <span className="text-[11px] font-bold text-indigo-400">Viewing as {viewAsAgency.display_name}</span>
-                                    <button
-                                        onClick={handleExitViewAs}
-                                        className="text-indigo-400 hover:text-indigo-300 transition-colors"
-                                    >
-                                        <X className="w-3.5 h-3.5" />
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setShowViewAsMenu(v => !v)}
-                                        className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                                    >
-                                        View as agency
-                                        <ChevronDown className="w-3 h-3" />
-                                    </button>
-                                    {showViewAsMenu && (
-                                        <div className="absolute right-0 top-full mt-2 w-52 bg-[var(--bg)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden z-50">
-                                            {agencies.length === 0 ? (
-                                                <div className="px-4 py-3 text-[11px] text-[var(--text-muted)] italic">No agencies found</div>
-                                            ) : (
-                                                agencies.map(agency => (
-                                                    <button
-                                                        key={agency.slug}
-                                                        onClick={() => handleSelectAgency(agency.slug)}
-                                                        className="w-full text-left px-4 py-2.5 text-[12px] font-medium text-[var(--text-primary)] hover:bg-[var(--item-bg)] transition-colors"
-                                                    >
-                                                        {agency.display_name}
-                                                    </button>
-                                                ))
-                                            )}
-                                        </div>
+                        <div className="hidden lg:flex items-center gap-2 relative">
+                            <button
+                                onClick={() => setShowViewAsMenu(v => !v)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-bold transition-colors ${
+                                    viewAsAgency
+                                        ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
+                                        : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                                }`}
+                            >
+                                {viewAsAgency ? viewAsAgency.display_name : 'Agency'}
+                                <ChevronDown className="w-3 h-3" />
+                            </button>
+                            {showViewAsMenu && (
+                                <div className="absolute right-0 top-full mt-2 w-56 bg-[var(--bg)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden z-50">
+                                    {viewAsAgency && (
+                                        <button
+                                            onClick={handleExitViewAs}
+                                            className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[var(--text-muted)] hover:bg-[var(--item-bg)] transition-colors border-b border-[var(--border)]"
+                                        >
+                                            Clear selection
+                                        </button>
+                                    )}
+                                    {agencies.length === 0 ? (
+                                        <div className="px-4 py-3 text-[11px] text-[var(--text-muted)] italic">No agencies found</div>
+                                    ) : (
+                                        agencies.map(a => (
+                                            <button
+                                                key={a.slug}
+                                                onClick={() => handleSelectAgency(a.slug)}
+                                                className={`w-full text-left px-4 py-2.5 text-[12px] font-medium hover:bg-[var(--item-bg)] transition-colors ${
+                                                    viewAsAgency?.slug === a.slug
+                                                        ? 'text-indigo-400 font-bold'
+                                                        : 'text-[var(--text-primary)]'
+                                                }`}
+                                            >
+                                                {a.display_name}
+                                            </button>
+                                        ))
                                     )}
                                 </div>
                             )}

@@ -449,14 +449,7 @@ const VerificationPanel: React.FC<{
     const [notesText, setNotesText] = useState(existingNotes || '');
     const [saving, setSaving] = useState(false);
 
-    if (!routeId) {
-        return (
-            <div className="precision-panel p-4 flex items-center gap-3 text-xs text-[var(--text-muted)]">
-                <Info className="w-4 h-4 shrink-0" />
-                <span>Commit this feed to the catalog to enable route verification.</span>
-            </div>
-        );
-    }
+    if (!routeId) return null;
 
     const handleVerify = async (status: VerificationStatus) => {
         setSaving(true);
@@ -644,52 +637,40 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                 >
                     <div className="absolute inset-0" onClick={onClose} />
                     <motion.div
-                        className="relative w-full max-w-5xl max-h-[90vh] bg-[var(--bg)] border border-[var(--border)] rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+                        className="relative w-full max-w-4xl max-h-[90vh] bg-[var(--bg)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                     >
                         {/* Header */}
-                        <div className="p-8 border-b border-[var(--border)] relative overflow-hidden shrink-0">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-                            <div className="flex items-start justify-between relative z-10">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-20 h-20 rounded-2xl bg-indigo-500/10 flex flex-col items-center justify-center border border-indigo-500/20">
-                                        <span className="text-[10px] font-bold atlas-label text-indigo-500 uppercase tracking-widest">Route</span>
-                                        <span className="text-3xl font-black atlas-mono text-indigo-600 dark:text-indigo-400">{result.route}</span>
+                        <div className="px-5 py-4 border-b border-[var(--border)] shrink-0">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex flex-col items-center justify-center border border-indigo-500/20 shrink-0">
+                                        <span className="text-sm font-black atlas-mono text-indigo-600 dark:text-indigo-400 leading-none">{result.route}</span>
                                     </div>
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <span className="atlas-label px-2.5 py-1 bg-[var(--item-bg)] border border-[var(--border)] rounded-full text-xs">
-                                                {result.modeName || 'Bus'}
-                                            </span>
-                                            <span className="atlas-label px-2.5 py-1 bg-[var(--item-bg)] border border-[var(--border)] rounded-full text-xs">
-                                                Direction {result.dir}
-                                            </span>
-                                            <span className="atlas-label px-2.5 py-1 bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 rounded-full text-xs font-bold">
-                                                {result.day}
-                                            </span>
-                                            {result.daysIncluded && result.daysIncluded.length > 0 && (
-                                                <span className="text-[9px] text-[var(--text-muted)]">
-                                                    ({result.daysIncluded.join(', ')})
-                                                </span>
-                                            )}
-                                        </div>
-                                        <h2 className="text-3xl font-black tracking-tight">
-                                            Route Audit
-                                        </h2>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="atlas-label px-2 py-0.5 bg-[var(--item-bg)] border border-[var(--border)] rounded text-[10px]">
+                                            {result.modeName || 'Bus'}
+                                        </span>
+                                        <span className="atlas-label px-2 py-0.5 bg-[var(--item-bg)] border border-[var(--border)] rounded text-[10px]">
+                                            Dir {result.dir}
+                                        </span>
+                                        <span className="atlas-label px-2 py-0.5 bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 rounded text-[10px] font-bold">
+                                            {result.day}
+                                        </span>
                                     </div>
                                 </div>
-                                <button onClick={onClose} className="p-3 hover:bg-[var(--item-bg)] rounded-2xl transition-all border border-transparent hover:border-[var(--border)]">
-                                    <X className="w-6 h-6" />
+                                <button onClick={onClose} className="p-1.5 hover:bg-[var(--item-bg)] rounded-lg transition-all">
+                                    <X className="w-4 h-4" />
                                 </button>
                             </div>
 
                             {/* Tab switch */}
-                            <div className="flex gap-1 bg-[var(--item-bg)] p-1 rounded-xl w-fit mt-6 border border-[var(--border)]">
+                            <div className="flex gap-1 bg-[var(--item-bg)] p-0.5 rounded-lg w-fit border border-[var(--border)]">
                                 <button
                                     onClick={() => setActiveTab('summary')}
-                                    className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'summary'
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'summary'
                                         ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
                                         : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
                                         }`}
@@ -698,7 +679,7 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('audit')}
-                                    className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'audit'
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'audit'
                                         ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
                                         : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
                                         }`}
@@ -708,7 +689,7 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                 {catalogRoute && (
                                     <button
                                         onClick={() => setActiveTab('history')}
-                                        className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'history'
+                                        className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'history'
                                             ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
                                             : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
                                             }`}
@@ -718,7 +699,7 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                 )}
                                 <button
                                     onClick={() => setActiveTab('resources')}
-                                    className={`px-5 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'resources'
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5 ${activeTab === 'resources'
                                         ? 'bg-[var(--bg)] text-indigo-600 dark:text-indigo-400 shadow-sm border border-[var(--border)]'
                                         : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
                                         }`}
@@ -729,7 +710,7 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-8 bg-[var(--bg)] custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-5 bg-[var(--bg)] custom-scrollbar">
                             {/* Verification Controls */}
                             <div className="mb-6">
                                 <VerificationPanel
@@ -743,20 +724,20 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                             {activeTab === 'summary' ? (
                                 /* ====== SUMMARY TAB ====== */
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                                        <div className="precision-panel p-6 flex flex-col items-center text-center">
-                                            <div className="p-3 bg-emerald-500/10 rounded-2xl mb-4">
-                                                <Clock className="w-6 h-6 text-emerald-500" />
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+                                        <div className="precision-panel p-4 flex flex-col items-center text-center">
+                                            <div className="p-2 bg-emerald-500/10 rounded-xl mb-2">
+                                                <Clock className="w-4 h-4 text-emerald-500" />
                                             </div>
-                                            <span className="atlas-label mb-1">Avg Headway</span>
-                                            <div className="text-3xl font-black atlas-mono">{result.avgHeadway} <span className="text-sm font-normal text-[var(--text-muted)]">min</span></div>
-                                            <div className="mt-2 text-xs text-[var(--text-muted)] flex items-center gap-1">
+                                            <span className="atlas-label mb-0.5">Avg Headway</span>
+                                            <div className="text-2xl font-black atlas-mono">{result.avgHeadway} <span className="text-xs font-normal text-[var(--text-muted)]">min</span></div>
+                                            <div className="mt-1 text-[10px] text-[var(--text-muted)] flex items-center gap-1">
                                                 <TrendingUp className="w-3 h-3" />
                                                 Median: {result.medianHeadway}m
                                             </div>
                                         </div>
 
-                                        <div className="precision-panel p-6 flex flex-col items-center">
+                                        <div className="precision-panel p-4 flex flex-col items-center">
                                             <div className="flex items-center gap-3 w-full mb-4">
                                                 <div className="p-3 bg-indigo-500/10 rounded-2xl">
                                                     <Zap className={`w-6 h-6 ${reliabilityColor}`} />
