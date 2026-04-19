@@ -201,6 +201,7 @@ export interface AnalysisResult {
     tripCount: number;
     gaps: number[];
     times: number[];
+    routeLongName?: string;
     reliabilityScore: number;
     consistencyScore: number;
     bunchingPenalty: number;

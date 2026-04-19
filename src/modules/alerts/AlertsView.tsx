@@ -3,7 +3,6 @@ import { Bell, Plus, Trash2, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import { useViewAs } from '../../hooks/useViewAs';
 import { fetchAlertThresholds, createAlertThreshold, deleteAlertThreshold, AlertThreshold } from '../../services/atlasApi';
-import { useViewAs } from '../../hooks/useViewAs';
 
 export function AlertsView() {
   const { agencyId, role } = useAuthStore();
