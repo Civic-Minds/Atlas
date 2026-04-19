@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-04-19
+
 ### Fixed
 - **Systemic blank pages (DEV auth race)**: All modules were mounting before Firebase resolved, causing `fetchWithAuth` to send no token and receive 401s everywhere. Fixed by keeping DEV mode bypass (`isAuthenticated: true, isLoading: false`) but starting `role: null` so `isAdmin` is false until Firebase confirms the role — admin UI only appears after auth resolves, and API calls gate on `user` being set.
 - **Agency switcher appearing then vanishing**: `useAuthStore` catch block was setting `role: 'viewer'` on any `/api/me` network failure, stripping admin status. Changed fallback to `role: 'admin'` to match server default for unregistered users.
