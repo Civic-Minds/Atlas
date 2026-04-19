@@ -9,6 +9,7 @@ import { getPool, getTenantForUser } from '../storage/db';
 import { getStaticPool } from '../storage/static-db';
 import { requireAuth, requireTenant } from './middleware/auth';
 import { diagnosticsLimiter } from './middleware/rate-limit';
+import { getMatchDiagnostics } from '../intelligence/matcher';
 
 const router = Router();
 
@@ -402,6 +403,15 @@ router.get('/intelligence/matching-stats', requireAuth, diagnosticsLimiter, asyn
     ts: new Date().toISOString(),
     stats
   });
+});
+
+// GET /api/intelligence/match-diagnostics?agency=ttc
+// Returns the latest in-memory match diagnostics for one or all agencies.
+// Useful for debugging 0% match rate: shows tripIdMismatch, spatialRejected, sample IDs.
+router.get('/intelligence/match-diagnostics', requireAuth, diagnosticsLimiter, (req: Request, res: Response) => {
+  const agency = req.query.agency as string | undefined;
+  const data = getMatchDiagnostics(agency);
+  res.json({ ts: new Date().toISOString(), diagnostics: data });
 });
 
 // GET /api/intelligence/bottlenecks?agency=mtabus&limit=10

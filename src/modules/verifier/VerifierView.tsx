@@ -179,17 +179,7 @@ export default function VerifierView() {
                 <EmptyStateHero
                     icon={Shield}
                     title="Audit"
-                    description="Upload a GTFS feed in the Admin panel to start reviewing frequency results."
-                    primaryAction={{
-                        label: "Open Admin Panel",
-                        icon: Database,
-                        href: "/admin"
-                    }}
-                    secondaryAction={{
-                        label: "Load Portland Sample",
-                        icon: Database,
-                        onClick: handleLoadSample
-                    }}
+                    description="Published frequency vs. actual GTFS verification is being connected to the cloud backend. Once wired, this will compare scheduled headways against imported GTFS for any registered agency."
                 />
             </div>
         );

@@ -30,12 +30,15 @@ export function startPositionWorker(): Worker {
             
             try {
                 // Perform the heavy spatial math (schedule matching) in the background
-                const { matchedPositions, segmentMetrics, stopDwellMetrics } = await matchPositions(agency, rawPositions);
-                log.info('Queue', 'matching finished', { 
-                    agency: agency.id, 
-                    count: matchedPositions.length, 
+                const { matchedPositions, segmentMetrics, stopDwellMetrics, diagnostics } = await matchPositions(agency, rawPositions);
+                log.info('Queue', 'matching finished', {
+                    agency: agency.id,
+                    count: matchedPositions.length,
                     segments: segmentMetrics.length,
-                    dwells: stopDwellMetrics.length 
+                    dwells: stopDwellMetrics.length,
+                    matched: diagnostics.fullyMatched,
+                    mismatch: diagnostics.tripIdMismatch,
+                    spatialRejected: diagnostics.spatialRejected,
                 });
                 
                 // Perform the batch write to PostgreSQL

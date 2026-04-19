@@ -62,3 +62,16 @@ export interface StopDwellMetric {
   dwellSeconds:         number;
   observedAt:           Date;
 }
+
+export interface MatchDiagnostics {
+  agencyId:                 string;
+  totalVehicles:            number;
+  noTripId:                 number;   // GTFS-RT vehicle had no trip_id field
+  tripIdInStaticGtfs:       number;   // trip_id resolved directly from static DB
+  fallbackResolved:         number;   // resolved via route+time+spatial fallback
+  tripIdMismatch:           number;   // trip_id in RT but not in static GTFS (even after fallback)
+  spatialRejected:          number;   // schedule found but no stop within 500m
+  fullyMatched:             number;   // got delay_seconds assigned
+  sampleUnmatchedTripIds:   string[]; // up to 5 RT trip_ids that failed all resolution
+  computedAt:               string;
+}

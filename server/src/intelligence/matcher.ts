@@ -1,4 +1,4 @@
-import { Agency, VehiclePosition, GtfsStopTime, SegmentMetric, StopDwellMetric } from '../types';
+import { Agency, VehiclePosition, GtfsStopTime, SegmentMetric, StopDwellMetric, MatchDiagnostics } from '../types';
 import { getStaticPool, getAgencyFeedVersion, getRouteScheduleAroundTime } from '../storage/static-db';
 import { agencyTimezone } from '../config';
 
@@ -101,6 +101,19 @@ function updateVehicleState(vehicleId: string, state: {
   lastSeenCache.set(vehicleId, state);
 }
 
+// -----------------------------------------------------------------------------
+// DIAGNOSTICS STORE
+// -----------------------------------------------------------------------------
+const latestDiagnostics = new Map<string, MatchDiagnostics>();
+
+export function getMatchDiagnostics(agencyId?: string): MatchDiagnostics[] {
+  if (agencyId) {
+    const d = latestDiagnostics.get(agencyId);
+    return d ? [d] : [];
+  }
+  return [...latestDiagnostics.values()];
+}
+
 /**
  * Matcher Service (Phase 2)
  *
@@ -108,15 +121,32 @@ function updateVehicleState(vehicleId: string, state: {
  * On-Time Performance (OTP) deltas (delay_seconds).
  */
 export async function matchPositions(
-  agency: Agency, 
+  agency: Agency,
   positions: VehiclePosition[]
-): Promise<{ 
-  matchedPositions: VehiclePosition[], 
+): Promise<{
+  matchedPositions: VehiclePosition[],
   segmentMetrics: SegmentMetric[],
-  stopDwellMetrics: StopDwellMetric[]
+  stopDwellMetrics: StopDwellMetric[],
+  diagnostics: MatchDiagnostics
 }> {
+  const diag: MatchDiagnostics = {
+    agencyId: agency.id,
+    totalVehicles: positions.length,
+    noTripId: 0,
+    tripIdInStaticGtfs: 0,
+    fallbackResolved: 0,
+    tripIdMismatch: 0,
+    spatialRejected: 0,
+    fullyMatched: 0,
+    sampleUnmatchedTripIds: [],
+    computedAt: new Date().toISOString(),
+  };
+
   const versionId = await getAgencyFeedVersion(agency.id);
-  if (!versionId) return { matchedPositions: positions, segmentMetrics: [], stopDwellMetrics: [] };
+  if (!versionId) {
+    latestDiagnostics.set(agency.id, diag);
+    return { matchedPositions: positions, segmentMetrics: [], stopDwellMetrics: [], diagnostics: diag };
+  }
 
   // Invalidate cache if the feed version has changed (Feed Swap)
   if (versionId !== lastFeedVersion) {
@@ -127,7 +157,11 @@ export async function matchPositions(
   const db = getStaticPool();
   // Identify trips not present in the LRU cache
   const uniqueTripIds = [...new Set(positions.map(p => p.tripId).filter(Boolean))];
+  diag.noTripId = positions.filter(p => !p.tripId).length;
+
   const missingTripIds = uniqueTripIds.filter(id => !scheduleCache.has(id));
+  const preExistingCachedIds = new Set(uniqueTripIds.filter(id => scheduleCache.has(id)));
+  const dbResolvedIds = new Set<string>(); // trip IDs resolved via static DB lookup
 
   if (missingTripIds.length > 0) {
     const startDb = Date.now();
@@ -158,6 +192,7 @@ export async function matchPositions(
     for (const [id, list] of resultsMap) {
       list.sort((a, b) => a.stopSequence - b.stopSequence);
       saveToCache(id, list);
+      dbResolvedIds.add(id);
     }
 
     // TIME-BASED FALLBACK: for vehicles whose GTFS-RT trip_id still has no
@@ -217,6 +252,19 @@ export async function matchPositions(
           }
         }
       }
+    }
+
+  }
+
+  // Tally diagnostics by unique trip ID
+  for (const id of uniqueTripIds) {
+    if (preExistingCachedIds.has(id) || dbResolvedIds.has(id)) {
+      diag.tripIdInStaticGtfs++;
+    } else if (scheduleCache.has(id)) {
+      diag.fallbackResolved++;
+    } else {
+      diag.tripIdMismatch++;
+      if (diag.sampleUnmatchedTripIds.length < 5) diag.sampleUnmatchedTripIds.push(id);
     }
   }
 
@@ -308,16 +356,18 @@ export async function matchPositions(
         }
       }
 
-      // Threshold: only accept spatial match if within 300 meters
-      if (bestDist > 300) {
+      // Threshold: only accept spatial match if within 500 meters
+      if (bestDist > 500) {
         target = null;
+        diag.spatialRejected++;
       } else {
-        // Confidence drops with distance (1.0 at 0m, 0.5 at 300m)
-        confidence = Math.max(0.5, 1.0 - (bestDist / 300) * 0.5);
+        // Confidence drops with distance (1.0 at 0m, 0.5 at 500m)
+        confidence = Math.max(0.5, 1.0 - (bestDist / 500) * 0.5);
       }
     }
 
     if (target && target.arrivalTime !== null) {
+      diag.fullyMatched++;
       // Delay calculation: use the vehicle's observed timestamp (not wall clock)
       // to avoid drift when positions are processed after the fact.
       // Coerce to Date — BullMQ serialises Dates to ISO strings through Redis.
@@ -384,5 +434,6 @@ export async function matchPositions(
     }
   }
 
-  return { matchedPositions: positions, segmentMetrics, stopDwellMetrics };
+  latestDiagnostics.set(agency.id, diag);
+  return { matchedPositions: positions, segmentMetrics, stopDwellMetrics, diagnostics: diag };
 }
