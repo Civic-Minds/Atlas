@@ -80,10 +80,9 @@ export const CommandCenter: React.FC = () => {
   const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
   const [matchStats, setMatchStats] = useState<MatchingStat[]>([]);
   const [trends, setTrends] = useState<TrendPoint[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Wait until Firebase has resolved — user is null until then in DEV mode
     if (!user) return;
     setLoading(true);
     Promise.all([
