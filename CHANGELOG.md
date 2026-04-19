@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-04-19
+
+### Fixed
+- **CI build errors**: Resolved 7 TypeScript errors that were failing the Pages deploy — duplicate `useViewAs` import in `AlertsView`, `CatalogRoute` imported from wrong module in `population.ts` and `usePopulationStore`, missing `routeLongName` on `AnalysisResult`, missing scoring fields on `CatalogRoute`, and missing `Bus`, `Database`, `Zap` lucide imports in `RouteDetailModal` and `SystemReportView`.
+
 ## [0.19.0] - 2026-04-19
 
 ### Changed
