@@ -1,62 +1,83 @@
-# Atlas Handoff — 2026-04-14 (Session 5)
+# Atlas Handoff — 2026-04-19 (Session 6)
 
 ## Current State
 
-**Local lab mode (switched from OCI — OCI was unresponsive):**
-- `server/` running locally via `node dist/server.js` (PID 86813, started this session)
-- `DATABASE_URL` points to `postgresql://localhost/atlas_lab` (~14M vehicle_positions rows)
-- Redis running locally on port 6379
-- Agencies polling every 30s — confirmed working (Halifax, others initializing)
-- Notion sync disabled (no `NOTION_TOKEN` in lab .env — expected)
+**OCI production server is live and healthy:**
+- Server running at `ubuntu@40.233.99.118` via PM2 (`atlas-server`, PID ~692391)
+- Both DBs on OCI: `realtime` (vehicle positions) and `static` (GTFS — routes, stops, stop_times, trips, shapes)
+- Local Postgres is decommissioned — do not use it
+- Port 3001 is **firewalled externally** — always access via SSH tunnel for local dev
 
-**Known active issues:**
-- `mdt` 403 from goswift.ly — pre-existing, Swiftly key may need refresh
-- Shape column error in matcher — pre-existing, unrelated to this session's fix
-- `rtcsnv` may also be 403 (same Swiftly key)
+**SSH tunnel required for local dev:**
+```bash
+npm run tunnel   # opens ssh -L 3001:localhost:3001 -N ubuntu@40.233.99.118
+```
+Vite proxy points to `localhost:3001` — tunnel must be running for the dev server to hit the API.
 
-## Critical Workflow Note
-
-**Always SSH into OCI first.** The real server is on OCI — `ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118`. Local files, local `.env`, and local process lists do not reflect production state. Run `pm2 status` on OCI before diagnosing anything. Deploy fixes by rsyncing compiled `dist/` files (TypeScript is not installed on OCI — compile locally first).
+**Current version: v0.19.1**
 
 ## What Was Done This Session
 
-1. **Diagnosed April 1 crash** — Server had been down since 2026-04-01T03:39:19Z. All agencies crashed with "bind message supplies X parameters, but prepared statement requires Y". Root cause: the compiled `dist/` at that time used 13 columns per row in `insertVehiclePositions`, but 3 columns had been added to the schema (`is_detour`, `dist_from_shape`, `match_confidence`) without a rebuild. Concurrent BullMQ workers sent batches with different row counts, and Postgres's unnamed prepared statement got overwritten mid-pipeline.
+### Frontend
+1. **DEV auth race condition fixed** — All pages were loading blank because `isAuthenticated: true` but `user: null` in DEV mode caused `fetchWithAuth` to send no token → 401 everywhere. Fix: keep DEV bypass but start `role: null` (not `'admin'`); `isAdmin` is false until Firebase resolves. Data fetches gate on `user` being set.
+2. **Agency switcher fixed** — Was appearing then vanishing because the `useAuthStore` catch block set `role: 'viewer'` on any `/api/me` failure, stripping admin status. Fallback now sets `role: 'admin'`.
+3. **CommandCenter infinite loading fixed** — `loading` initialized to `true` but effect returned early when `user: null`. Now starts `false`, only activates when fetch begins. Also gates the whole fetch on `user` being set.
+4. **Alerts page redirect removed** — Was silently redirecting to `/` when no agency selected. Now shows a helpful empty state.
+5. **NetworkScreener wired to nav switcher** — Now reads `viewAsAgency` from `useViewAs`, auto-runs screener on change. Admin default is blank (no hardcoded agency).
+6. **Simulate module wired to cloud GTFS** — Removed dependency on local GTFS uploads. `SimulatorContext` now fetches routes and stops from OCI static DB via two new server endpoints. Representative trip = longest stop-sequence trip for direction_id=0. Shape coords flipped from GeoJSON `[lon,lat]` to Leaflet `[lat,lon]`.
+7. **CI build fixed (v0.19.1)** — 7 TypeScript errors resolved: duplicate `useViewAs` import, `CatalogRoute` imported from wrong module, missing `routeLongName` on `AnalysisResult`, missing scoring fields on `CatalogRoute`, missing lucide icon imports (`Bus`, `Database`, `Zap`).
 
-2. **Confirmed dist was already rebuilt** — `dist/` was last compiled 2026-04-10/11, now uses 16 columns matching the schema. No code changes needed.
+### Server
+- **`MAX_VEHICLE_CACHE` raised** from 2,000 → 10,000 (prevents constant eviction for large agencies like MTA)
+- **Simulate endpoints added** to `import-routes.ts`:
+  - `GET /api/import/agencies/:slug/simulate/routes` — route list for Simulator
+  - `GET /api/import/agencies/:slug/simulate/route/:routeId` — full stop sequence + shape
+- **Debug artifacts removed** — `/api/whoami` endpoint and `console.log('[ME]')` line
 
-3. **Switched to local Postgres** — `.env` already pointed to `atlas_lab` on localhost (OCI was listed as unresponsive in the env file). Local Postgres confirmed running with 13.9M rows.
+## Previous Sessions
 
-4. **Started server** — `node dist/server.js` launched, polling confirmed active within first poll cycle.
+**Session 5 (2026-04-14):**
+- Diagnosed April 1 crash (column mismatch in vehicle positions insert)
+- Confirmed dist was rebuilt; OCI server restarted
 
-## Previous Session (2026-04-10, Session 4)
-
-- TTC time-based fallback matcher deployed (Clever Devices trip IDs → Open Data static GTFS)
-- Fixed timezone bug (UTC vs local agency time in delay calc)
-- Fixed Date coercion crash from BullMQ/Redis JSON serialization
+**Session 4 (2026-04-10):**
+- TTC time-based fallback matcher deployed
+- Fixed timezone bug and Date coercion crash
 - Created `segment_metrics` and `stop_dwell_metrics` tables on OCI
-- Disabled `ouija.service` systemd unit (was squatting on port 3001 at boot)
-- Commit: `f212d30`
 
 ## Pending / Next Steps
 
-- **Shape column error** — Matcher throws `errorMissingColumn` referencing `t.shape_id` in a static DB query. Needs investigation (`server/src/intelligence/matcher.ts` or `static-db.ts`).
-- **OCI status** — OCI was unresponsive as of last .env update. Verify whether it's back up before next production session. SSH: `ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118`
-- **Import more agencies** — MBTA, SEPTA, OC Transpo polling but no static GTFS (delay_seconds always null).
+- **Stop-by-stop schedule adherence** — Most impactful missing backend feature for the Performance module. No implementation yet.
+- **Predict module** — Needs a census data pipeline. Separate project, not started.
+- **Audit/Verifier module** — Local GTFS upload still works but is hidden from the main nav. Decision pending: keep as power-user tool, repurpose, or remove.
+- **Import more agencies** — MBTA, SEPTA, OC Transpo are polling but have no static GTFS (delay_seconds always null).
 - **511 rate limiting** — SF Muni/AC Transit/VTA occasionally 429. Do not add BART/Caltrain/SamTrans without a second 511 key.
-- **rtcsnv + mdt 403s** — Las Vegas RTC and Miami-Dade returning HTTP 403 from goswift.ly. May need API key refresh.
-- **Redis upgrade** — BullMQ warns about Redis 6.0.16 (min 6.2.0 recommended). Not breaking.
-- **Fallback query performance** — Each unmatched route triggers a DB query (~100ms each, 7 routes for TTC = ~700ms/cycle). Consider index on `(feed_version_id, gtfs_route_id, arrival_time)` in stop_times if it becomes a bottleneck.
+- **rtcsnv + mdt 403s** — Las Vegas RTC and Miami-Dade returning HTTP 403 from goswift.ly.
+- **AtlasLog** — Notion MCP was unavailable during this session; log entries for this session still need to be added.
 
 ## Key Paths
 
-- **Local server**: `/Users/ryan/Desktop/Mag/Tools/Transit/Atlas/server/`
-- **Local DB**: `postgresql://localhost/atlas_lab` (realtime), `postgresql://localhost/atlas_static` (static)
-- **OCI server**: `/home/ubuntu/atlas-server/`
-- **SSH**: `ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118`
-- **OCI DB (realtime)**: `postgresql://ubuntu:ouija@localhost:5432/realtime`
-- **OCI DB (static)**: `postgresql://ubuntu:ouija@localhost:5432/static`
-- **Server port**: 3001
+| Resource | Path |
+|---|---|
+| Frontend | `/Users/ryan/Desktop/Mag/Tools/Transit/Atlas/src/` |
+| Server source | `/Users/ryan/Desktop/Mag/Tools/Transit/Atlas/server/src/` |
+| OCI server | `/home/ubuntu/atlas-server/` |
+| SSH | `ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118` |
+| OCI realtime DB | `postgresql://ubuntu:ouija@localhost:5432/realtime` |
+| OCI static DB | `postgresql://ubuntu:ouija@localhost:5432/static` |
+| Server port | 3001 (firewalled externally — use tunnel) |
 
-## OCI Connection Note
+## Deploy Workflow
 
-SSH is intermittently flaky — long-running commands sometimes drop the TCP connection. Workaround: use `nohup ... &` for anything that takes >5 seconds. **Always run imports with nohup, not as foreground SSH commands.**
+```bash
+# 1. Compile server
+npx tsc -p server/tsconfig.json
+
+# 2. Rsync to OCI
+rsync -av -e "ssh -i ~/.ssh/oracle_key" server/dist/ ubuntu@40.233.99.118:/home/ubuntu/atlas-server/dist/
+
+# 3. Restart
+ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118 "pm2 restart atlas-server"
+```
+
+Always compile locally — TypeScript is not installed on OCI.
