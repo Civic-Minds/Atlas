@@ -58,12 +58,7 @@ const PredictViewContent: React.FC = () => {
                 <EmptyStateHero
                     icon={Zap}
                     title="Predict"
-                    description="Waiting for data. Upload a GTFS feed in the Admin panel to begin gap analysis."
-                    primaryAction={{
-                        label: "Open Admin Panel",
-                        icon: Database,
-                        href: "/admin"
-                    }}
+                    description="This module requires Census population data loaded into the server. Import a population grid for your agency's region to enable demand mapping and gap detection."
                     features={[
                         { icon: <Users />, title: 'Demand Mapping', desc: 'Identify residential and employment density centers.' },
                         { icon: <Activity />, title: 'Supply Analysis', desc: 'Measure walking-distance access to frequent transit.' },

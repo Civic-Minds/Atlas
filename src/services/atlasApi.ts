@@ -485,6 +485,34 @@ export async function fetchTrends(agency?: string): Promise<TrendsResponse> {
   return res.json();
 }
 
+// ─── Match Diagnostics ────────────────────────────────────────────────────────
+
+export interface MatchDiagnosticEntry {
+  agencyId: string;
+  totalVehicles: number;
+  noTripId: number;
+  tripIdInStaticGtfs: number;
+  fallbackResolved: number;
+  tripIdMismatch: number;
+  spatialRejected: number;
+  fullyMatched: number;
+  sampleUnmatchedTripIds: string[];
+  computedAt: string;
+}
+
+export interface MatchDiagnosticsResponse {
+  ts: string;
+  diagnostics: MatchDiagnosticEntry[];
+}
+
+export async function fetchMatchDiagnostics(agency?: string): Promise<MatchDiagnosticsResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/match-diagnostics`, window.location.origin);
+  if (agency) url.searchParams.set('agency', agency);
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Match diagnostics query failed: ${res.status}`);
+  return res.json();
+}
+
 export async function fetchStopArrivals(
   agency: string,
   route: string,

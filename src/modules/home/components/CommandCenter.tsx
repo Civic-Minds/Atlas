@@ -9,8 +9,8 @@ import {
 import { useAuthStore } from '../../../hooks/useAuthStore';
 import { useViewAs } from '../../../hooks/useViewAs';
 import {
-  fetchAgencies, fetchMatchingStats, fetchTrends,
-  type AgencyMeta, type MatchingStat, type TrendPoint,
+  fetchAgencies, fetchMatchingStats, fetchTrends, fetchMatchDiagnostics,
+  type AgencyMeta, type MatchingStat, type TrendPoint, type MatchDiagnosticEntry,
 } from '../../../services/atlasApi';
 
 const MODULES = [
@@ -80,6 +80,8 @@ export const CommandCenter: React.FC = () => {
   const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
   const [matchStats, setMatchStats] = useState<MatchingStat[]>([]);
   const [trends, setTrends] = useState<TrendPoint[]>([]);
+  const [matchDiagnostics, setMatchDiagnostics] = useState<MatchDiagnosticEntry[]>([]);
+  const [expandedDiagAgency, setExpandedDiagAgency] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -89,10 +91,12 @@ export const CommandCenter: React.FC = () => {
       fetchAgencies().catch(() => []),
       fetchMatchingStats().catch(() => ({ stats: [] })),
       fetchTrends().catch(() => ({ trends: [] })),
-    ]).then(([ag, ms, tr]) => {
+      fetchMatchDiagnostics().catch(() => ({ diagnostics: [] })),
+    ]).then(([ag, ms, tr, md]) => {
       setAgencies(ag as AgencyMeta[]);
       setMatchStats((ms as any).stats ?? []);
       setTrends((tr as any).trends ?? []);
+      setMatchDiagnostics((md as any).diagnostics ?? []);
     }).finally(() => setLoading(false));
   }, [user]);
 
@@ -311,18 +315,30 @@ export const CommandCenter: React.FC = () => {
                 {filteredMatchStats.map((stat) => {
                   const matchRate = Math.round((stat.matched_obs / Math.max(1, stat.total_obs)) * 100);
                   const agencyName = agencies.find(a => a.slug === stat.agency_id)?.display_name ?? stat.agency_id;
+                  const diag = matchDiagnostics.find(d => d.agencyId === stat.agency_id);
+                  const isExpanded = expandedDiagAgency === stat.agency_id;
                   return (
                     <div key={stat.agency_id} className="px-5 py-3">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[12px] font-bold text-[var(--fg)]">
                           {agencyName}
                         </span>
-                        <span className={`text-[10px] font-bold atlas-mono ${
-                          stat.healthScore >= 80 ? 'text-emerald-400' :
-                          stat.healthScore >= 60 ? 'text-amber-400' : 'text-red-400'
-                        }`}>
-                          {stat.healthScore}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-bold atlas-mono ${
+                            stat.healthScore >= 80 ? 'text-emerald-400' :
+                            stat.healthScore >= 60 ? 'text-amber-400' : 'text-red-400'
+                          }`}>
+                            {stat.healthScore}
+                          </span>
+                          {diag && (
+                            <button
+                              onClick={() => setExpandedDiagAgency(isExpanded ? null : stat.agency_id)}
+                              className="text-[9px] atlas-mono text-[var(--text-muted)] hover:text-[var(--fg)] transition-colors px-1.5 py-0.5 rounded border border-[var(--border)] hover:border-[var(--text-muted)]"
+                            >
+                              {isExpanded ? 'hide' : 'diagnose'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <div className="flex items-center gap-2 mb-1.5">
                         <div className="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
@@ -343,6 +359,40 @@ export const CommandCenter: React.FC = () => {
                         <span>{stat.direct_matches} direct</span>
                         <span>{stat.spatial_matches} spatial</span>
                       </div>
+                      {isExpanded && diag && (
+                        <div className="mt-2 p-2.5 rounded bg-[var(--bg)] border border-[var(--border)] space-y-1.5">
+                          <div className="text-[9px] font-bold atlas-mono text-[var(--text-muted)] uppercase tracking-wider mb-1">
+                            Matcher Diagnostics
+                          </div>
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
+                            <span className="text-[var(--text-muted)]">Vehicles polled</span>
+                            <span className="atlas-mono text-[var(--fg)]">{diag.totalVehicles}</span>
+                            <span className="text-[var(--text-muted)]">No trip_id in RT feed</span>
+                            <span className={`atlas-mono ${diag.noTripId > 0 ? 'text-amber-400' : 'text-[var(--fg)]'}`}>{diag.noTripId}</span>
+                            <span className="text-[var(--text-muted)]">Matched via static GTFS</span>
+                            <span className="atlas-mono text-emerald-400">{diag.tripIdInStaticGtfs}</span>
+                            <span className="text-[var(--text-muted)]">Matched via fallback</span>
+                            <span className="atlas-mono text-blue-400">{diag.fallbackResolved}</span>
+                            <span className="text-[var(--text-muted)]">Trip ID not in GTFS</span>
+                            <span className={`atlas-mono ${diag.tripIdMismatch > 0 ? 'text-red-400' : 'text-[var(--fg)]'}`}>{diag.tripIdMismatch}</span>
+                            <span className="text-[var(--text-muted)]">Spatial rejected (&gt;500m)</span>
+                            <span className={`atlas-mono ${diag.spatialRejected > 0 ? 'text-amber-400' : 'text-[var(--fg)]'}`}>{diag.spatialRejected}</span>
+                            <span className="text-[var(--text-muted)]">Fully matched</span>
+                            <span className="atlas-mono text-emerald-400">{diag.fullyMatched}</span>
+                          </div>
+                          {diag.sampleUnmatchedTripIds.length > 0 && (
+                            <div className="mt-1.5 pt-1.5 border-t border-[var(--border)]">
+                              <div className="text-[9px] text-[var(--text-muted)] mb-1">Sample unmatched trip IDs:</div>
+                              {diag.sampleUnmatchedTripIds.map(id => (
+                                <div key={id} className="text-[9px] atlas-mono text-red-400/80 truncate">{id}</div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="text-[8px] text-[var(--text-muted)] pt-1">
+                            as of {new Date(diag.computedAt).toLocaleTimeString()}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
