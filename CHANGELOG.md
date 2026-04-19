@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-04-19
+
+### Fixed
+- **CI failures (ScreenerView)**: Pre-existing TypeScript errors at lines 291/383/406 (invalid `modeToggle` prop, `"catalog"` not in `"map" | "data"` union) were blocking CI since v0.19.1. Fixed by replacing the dead local-mode branch with the simplified server-only version already in use.
+
+### Changed
+- **Spatial match buffer 300m → 500m**: Vehicles mid-segment between stops were being rejected by the 300m threshold, causing the 0% match rate observed in live testing. Raised to 500m; confidence formula updated to use the new ceiling. Fallback score normalisation comment updated to match.
+
+### Added
+- **Per-agency match diagnostics**: `matcher.ts` now tracks `noTripId`, `tripIdInStaticGtfs`, `fallbackResolved`, `tripIdMismatch`, `spatialRejected`, `fullyMatched`, and up to 5 sample unmatched RT trip IDs per agency per poll cycle. Latest diagnostics are stored in a module-level Map.
+- **`GET /api/intelligence/match-diagnostics`**: New endpoint exposes the in-memory diagnostics as JSON for one or all agencies. No DB query — returns the most recent matcher run result immediately.
+- **Diagnostics panel in CommandCenter**: Each row in the RT Matching panel now has a "diagnose" toggle. Expanding it shows the full failure breakdown (vehicles polled, trip ID resolution path, spatial rejections, fully matched count) and sample unmatched RT trip IDs — making 0% match rate debuggable without reading server logs.
+
 ## [0.19.1] - 2026-04-19
 
 ### Fixed
