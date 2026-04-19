@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "tunnel": "ssh -i ~/.ssh/oracle_key -L 3001:localhost:3001 -N ubuntu@40.233.99.118",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",

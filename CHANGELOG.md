@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Systemic blank pages (DEV auth race)**: All modules were mounting before Firebase resolved, causing `fetchWithAuth` to send no token and receive 401s everywhere. Fixed by keeping DEV mode bypass (`isAuthenticated: true, isLoading: false`) but starting `role: null` so `isAdmin` is false until Firebase confirms the role — admin UI only appears after auth resolves, and API calls gate on `user` being set.
+- **Agency switcher appearing then vanishing**: `useAuthStore` catch block was setting `role: 'viewer'` on any `/api/me` network failure, stripping admin status. Changed fallback to `role: 'admin'` to match server default for unregistered users.
+- **CommandCenter infinite "Loading" state**: `loading` was initialized to `true` but the effect returned early when `user` was null, never setting it to `false`. Changed initial state to `false`; loading only activates when the fetch actually starts.
+- **Alerts page redirect**: `/alerts` was silently redirecting to `/` when no agency was selected. Now shows an inline empty state with instructions instead.
+- **NetworkScreener not reacting to nav agency switcher**: Screener now reads `viewAsAgency` from `useViewAs` and auto-runs `screenRoutes` when it changes. For admins with no agency selected, shows a clear prompt instead of a blank filter panel.
+- **NetworkScreener defaulting to STA for admins**: Admin default is now blank — agency comes from the nav switcher, not a hardcoded slug preference.
+- **NetworkScreener `isAdmin` missing researcher role**: `role === 'admin'` check updated to include `'researcher'`.
+- **Debug artifacts removed**: `/api/whoami` endpoint and `console.log('[ME]')` line removed from server.
+
+### Added
+- **Tab descriptions in Analyze**: Each tab (Routes, Corridors, Monitoring) now shows a one-line description of what it does below the tab bar.
+- **Empty states in Analyze**: Routes and Corridors tabs show instructional empty states before Screen/Find Corridors is clicked, replacing a blank void.
+- **`npm run tunnel` script**: `package.json` now includes a `tunnel` script that opens the SSH tunnel to OCI for local dev (`ssh -L 3001:localhost:3001`).
+
+### Changed
+- **Matcher vehicle cache**: `MAX_VEHICLE_CACHE` increased from 2,000 to 10,000 to prevent constant eviction for large agencies (MTA etc.).
+
 ### Added
 - **Command Center Homepage** (`CommandCenter.tsx`): Replaced the marketing hero splash page with an operational admin dashboard. Shows system KPI strip (Agencies, Total Routes, RT Observations, Avg Health, Match Rate), scrollable Agency Registry with health scores and click-to-"View As", RT Matching panel with per-agency match rates, and a 6-module quick access grid. Authenticated users without a tenant agency now land on actionable data instead of a pitch deck.
 - **Backend Stability**: Restored real-time data ingestion and API availability by re-starting the backend server and verifying local database connectivity.
