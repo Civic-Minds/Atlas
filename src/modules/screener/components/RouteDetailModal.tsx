@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, Zap, Activity, BarChart3, ChevronRight, TrendingUp, AlertTriangle, List, Calendar, Info, CheckCircle2, Flag, SkipForward, MessageSquare, Gauge } from 'lucide-react';
+import { X, Clock, Zap, Activity, BarChart3, ChevronRight, TrendingUp, AlertTriangle, List, Calendar, Info, CheckCircle2, Flag, SkipForward, MessageSquare, Gauge, Bus } from 'lucide-react';
 import { AnalysisResult, RawRouteDepartures, DayName, ALL_DAYS, WEEKDAYS, DAY_TO_TYPE } from '../../../types/gtfs';
 import { useTransitStore } from '../../../types/store';
 import { useCatalogStore } from '../../../types/catalogStore';

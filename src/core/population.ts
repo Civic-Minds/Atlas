@@ -1,4 +1,5 @@
-import { PopulationPoint, CoverageResult, CatalogRoute } from '../types/gtfs';
+import { PopulationPoint, CoverageResult } from '../types/gtfs';
+import { CatalogRoute } from '../types/catalog';
 import { haversineDistance } from './utils';
 
 /**

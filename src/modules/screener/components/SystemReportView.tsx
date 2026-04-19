@@ -14,7 +14,9 @@ import {
     Bus,
     Globe,
     Gauge,
-    DollarSign
+    DollarSign,
+    Database,
+    Zap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTransitStore } from '../../../types/store';

@@ -48,6 +48,11 @@ export interface CatalogRoute {
     medianHeadway: number;
     tripCount: number;
     reliabilityScore: number;
+    consistencyScore?: number;
+    bunchingPenalty?: number;
+    outlierPenalty?: number;
+    headwayVariance?: number;
+    bunchingFactor?: number;
     peakHeadway?: number;
     baseHeadway?: number;
     serviceSpan?: { start: number; end: number };
