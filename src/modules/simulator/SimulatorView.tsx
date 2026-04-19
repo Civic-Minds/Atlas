@@ -4,16 +4,15 @@ import RouteSelector from './components/RouteSelector';
 import SimulatorMap from './components/SimulatorMap';
 import MetricsPanel from './components/MetricsPanel';
 import ControlPanel from './components/ControlPanel';
-import { EmptyStateHero } from '../../components/EmptyStateHero';
-import { Activity, Database, PanelRightOpen, Download, Map as MapIcon, Zap } from 'lucide-react';
+import { Activity, PanelRightOpen, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ModuleLanding } from '../../components/ModuleLanding';
+import { useViewAs } from '../../hooks/useViewAs';
 import { useAuthStore } from '../../hooks/useAuthStore';
-import { useTransitStore } from '../../types/store';
 
 function SimulatorViewContent() {
-    const { isAuthenticated } = useAuthStore();
-    const { loading: globalLoading } = useTransitStore();
+    const { role } = useAuthStore();
+    const { viewAsAgency } = useViewAs();
+    const isAdmin = role === 'admin' || role === 'researcher';
     const {
         selectedRouteId,
         setSelectedRouteId,
@@ -55,55 +54,18 @@ function SimulatorViewContent() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleKeyDown]);
 
-    if (!isAuthenticated) {
+    if (!hasGtfsData && !loading) {
         return (
-            <ModuleLanding
-                title="Simulate"
-                description="Pick a route and toggle stops on or off to see how it changes travel time. Use this to evaluate stop consolidation proposals."
-                icon={Activity}
-                features={[
-                    {
-                        title: "Stop consolidation",
-                        description: "Remove stops and instantly see the travel time savings and coverage tradeoffs.",
-                        icon: <Activity className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Dwell time controls",
-                        description: "Adjust dwell time and acceleration parameters to model different vehicle types.",
-                        icon: <Zap className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Walking gap analysis",
-                        description: "See maximum walking distance between remaining stops to avoid coverage gaps.",
-                        icon: <MapIcon className="w-5 h-5 text-indigo-500" />
-                    },
-                    {
-                        title: "Export scenarios",
-                        description: "Save simulation results as JSON to document proposals and share with your team.",
-                        icon: <Database className="w-5 h-5 text-indigo-500" />
-                    }
-                ]}
-            />
-        );
-    }
-
-    if (!hasGtfsData) {
-        return (
-            <div className="module-container">
-                <EmptyStateHero
-                    icon={Activity}
-                    title="Simulate"
-                    description="Upload a GTFS feed in the Admin panel to start modeling stop changes."
-                    primaryAction={{
-                        label: "Open Admin Panel",
-                        icon: Database,
-                        href: "/admin"
-                    }}
-                    features={[
-                        { icon: <Activity />, title: 'Stop Consolidation', desc: 'Toggle stops and see travel time impact instantly.' },
-                        { icon: <Database />, title: 'GTFS-Powered', desc: 'Uses your uploaded GTFS data — any agency, any city.' },
-                    ]}
-                />
+            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+                <Activity className="w-10 h-10 text-[var(--text-muted)] opacity-30" />
+                <p className="text-[15px] font-bold text-[var(--fg)]">
+                    {isAdmin && !viewAsAgency ? 'Select an agency to begin' : 'No routes available'}
+                </p>
+                <p className="text-[13px] text-[var(--text-muted)] max-w-xs">
+                    {isAdmin && !viewAsAgency
+                        ? 'Use the Agency button in the top navigation to pick an agency, then Simulate will load its routes.'
+                        : 'No GTFS routes are available for this agency yet.'}
+                </p>
             </div>
         );
     }

@@ -16,7 +16,7 @@ export interface AgencyMeta {
 }
 
 export async function fetchAgencies(): Promise<AgencyMeta[]> {
-  const res = await fetch(`${ATLAS_BASE}/api/import/agencies`);
+  const res = await fetchWithAuth(`${ATLAS_BASE}/api/import/agencies`);
   if (!res.ok) throw new Error(`Failed to fetch agencies: ${res.status}`);
   return res.json();
 }
@@ -538,4 +538,44 @@ export async function deleteAlertThreshold(id: string): Promise<void> {
   const url = new URL(`${ATLAS_BASE}/api/alerts/thresholds/${id}`, window.location.origin);
   const res = await fetchWithAuth(url.toString(), { method: 'DELETE' });
   if (!res.ok) throw new Error(`Failed to delete alert threshold: ${res.status}`);
+}
+
+// ── Simulate ─────────────────────────────────────────────────────────────────
+
+export interface SimulateRoute {
+  id: string;
+  name: string;
+  type: string;
+  color: string;
+}
+
+export interface SimulateStop {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  isTerminal?: boolean;
+}
+
+export interface SimulateRouteDetail {
+  id: string;
+  name: string;
+  color: string;
+  stops: SimulateStop[];
+  shape: [number, number][];
+}
+
+export async function fetchSimulateRoutes(agency: string): Promise<SimulateRoute[]> {
+  const res = await fetchWithAuth(`${ATLAS_BASE}/api/import/agencies/${encodeURIComponent(agency)}/simulate/routes`);
+  if (!res.ok) throw new Error(`Failed to fetch simulate routes: ${res.status}`);
+  const data = await res.json();
+  return data.routes ?? [];
+}
+
+export async function fetchSimulateRoute(agency: string, routeId: string): Promise<SimulateRouteDetail> {
+  const res = await fetchWithAuth(
+    `${ATLAS_BASE}/api/import/agencies/${encodeURIComponent(agency)}/simulate/route/${encodeURIComponent(routeId)}`
+  );
+  if (!res.ok) throw new Error(`Failed to fetch simulate route: ${res.status}`);
+  return res.json();
 }

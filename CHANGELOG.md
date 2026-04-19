@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Simulate module wired to cloud GTFS**: Simulator no longer requires local GTFS file uploads. `SimulatorContext` now fetches routes and stop sequences from the static DB via two new server endpoints (`GET /simulate/routes`, `GET /simulate/route/:routeId`). Representative trip is the longest stop-sequence trip for direction_id=0; shape is pulled from `route_shapes` and coordinate order flipped from GeoJSON `[lon,lat]` to Leaflet `[lat,lon]`. Admin empty state prompts to select an agency via the nav switcher.
+
 ## [0.18.0] - 2026-04-19
 
 ### Fixed
