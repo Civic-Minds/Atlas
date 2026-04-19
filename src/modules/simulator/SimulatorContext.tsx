@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
-import { RouteConfig, AvailableRoute, getAvailableRoutes, buildRouteConfig } from './data/routeData';
+import { RouteConfig, AvailableRoute } from './data/routeData';
 import { SimulationParams, SimulationResult, DEFAULT_PARAMS, runSimulation, StopOverride } from './engine/simulationEngine';
 import { fetchLiveAlerts, Alert, AgencyConfig } from '../../services/alertService';
-import { useTransitStore } from '../../types/store';
+import { fetchSimulateRoutes, fetchSimulateRoute } from '../../services/atlasApi';
+import { useAuthStore } from '../../hooks/useAuthStore';
+import { useViewAs } from '../../hooks/useViewAs';
 
 interface SimulatorContextType {
     selectedRouteId: string;
@@ -31,71 +33,74 @@ interface SimulatorContextType {
 const SimulatorContext = createContext<SimulatorContextType | undefined>(undefined);
 
 export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { gtfsData, loadPersistedData } = useTransitStore();
+    const { role, agencyId: userAgencyId } = useAuthStore();
+    const { viewAsAgency } = useViewAs();
+    const isAdmin = role === 'admin' || role === 'researcher';
+    const agencySlug = isAdmin ? (viewAsAgency?.slug ?? '') : (userAgencyId ?? '');
 
     const [selectedRouteId, setSelectedRouteId] = useState('');
+    const [availableRoutes, setAvailableRoutes] = useState<AvailableRoute[]>([]);
     const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
     const [routeData, setRouteData] = useState<RouteConfig | null>(null);
     const [enabledStopIds, setEnabledStopIds] = useState<Set<string>>(new Set());
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [routesLoading, setRoutesLoading] = useState(false);
     const [liveAlerts, setLiveAlerts] = useState<Alert[]>([]);
     const [alertsLoading, setAlertsLoading] = useState(false);
     const [stopOverrides, setStopOverrides] = useState<Record<string, StopOverride>>({});
 
-    // Agency config for alerts — can be extended to store in IndexedDB later
     const [agencyConfig] = useState<AgencyConfig | null>(null);
 
-    // Load persisted GTFS data on mount
+    // Fetch route list when agency changes
     useEffect(() => {
-        if (!gtfsData) {
-            loadPersistedData();
-        }
-    }, [loadPersistedData, gtfsData]);
-
-    // Derive available routes from GTFS data
-    const availableRoutes = useMemo(() => {
-        if (!gtfsData) return [];
-        return getAvailableRoutes(gtfsData);
-    }, [gtfsData]);
-
-    // Auto-select first route when GTFS data loads
-    useEffect(() => {
-        if (availableRoutes.length > 0 && !selectedRouteId) {
-            setSelectedRouteId(availableRoutes[0].id);
-        }
-    }, [availableRoutes, selectedRouteId]);
-
-    // Build route config from GTFS when route selection changes
-    useEffect(() => {
-        if (!gtfsData || !selectedRouteId) {
-            setLoading(false);
+        if (!agencySlug) {
+            setAvailableRoutes([]);
+            setSelectedRouteId('');
+            setRouteData(null);
             return;
         }
+        setRoutesLoading(true);
+        fetchSimulateRoutes(agencySlug)
+            .then(routes => {
+                setAvailableRoutes(routes);
+                if (routes.length > 0) setSelectedRouteId(routes[0].id);
+            })
+            .catch(console.error)
+            .finally(() => setRoutesLoading(false));
+    }, [agencySlug]);
 
-        setLoading(true);
-        try {
-            const routeIndex = availableRoutes.findIndex(r => r.id === selectedRouteId);
-            const config = buildRouteConfig(gtfsData, selectedRouteId, '0', routeIndex);
-            setRouteData(config);
-            if (config) {
-                setEnabledStopIds(new Set(config.stops.map(s => s.id)));
-            }
-        } catch {
+    // Fetch route detail when selected route changes
+    useEffect(() => {
+        if (!agencySlug || !selectedRouteId) {
             setRouteData(null);
-        } finally {
-            setLoading(false);
+            return;
         }
-    }, [gtfsData, selectedRouteId, availableRoutes]);
+        setLoading(true);
+        fetchSimulateRoute(agencySlug, selectedRouteId)
+            .then(detail => {
+                const config: RouteConfig = {
+                    id: detail.id,
+                    name: detail.name,
+                    color: detail.color,
+                    stops: detail.stops,
+                    shape: detail.shape,
+                };
+                setRouteData(config);
+                setEnabledStopIds(new Set(config.stops.map(s => s.id)));
+                setStopOverrides({});
+            })
+            .catch(() => setRouteData(null))
+            .finally(() => setLoading(false));
+    }, [agencySlug, selectedRouteId]);
 
-    // Load live alerts (only if agency config provides an endpoint)
+    // Live alerts
     useEffect(() => {
         if (!selectedRouteId || !agencyConfig?.alertsUrl) {
             setLiveAlerts([]);
             setAlertsLoading(false);
             return;
         }
-
         async function getAlerts() {
             setAlertsLoading(true);
             const alerts = await fetchLiveAlerts(selectedRouteId, agencyConfig);
@@ -149,10 +154,7 @@ export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const clearNonTerminalStops = useCallback(() => {
         if (!routeData) return;
-        const terminalIds = routeData.stops
-            .filter(s => s.isTerminal)
-            .map(s => s.id);
-        setEnabledStopIds(new Set(terminalIds));
+        setEnabledStopIds(new Set(routeData.stops.filter(s => s.isTerminal).map(s => s.id)));
     }, [routeData]);
 
     const simulationResult = useMemo(() => {
@@ -162,9 +164,7 @@ export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const baselineResult = useMemo(() => {
         if (!routeData) return null;
-        const allIds = new Set<string>(routeData.stops.map(s => s.id));
-        // Baseline must represent the unmodified system — no per-stop overrides
-        return runSimulation(routeData.stops, allIds, params, {});
+        return runSimulation(routeData.stops, new Set(routeData.stops.map(s => s.id)), params, {});
     }, [routeData, params]);
 
     const value = {
@@ -183,8 +183,8 @@ export const SimulatorProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         baselineResult,
         liveAlerts,
         alertsLoading,
-        loading,
-        hasGtfsData: !!gtfsData,
+        loading: loading || routesLoading,
+        hasGtfsData: availableRoutes.length > 0,
         sidebarOpen,
         setSidebarOpen,
         stopOverrides,
