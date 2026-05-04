@@ -2,11 +2,12 @@
   "name": "atlas-platform",
   "private": true,
   "description": "A transit intelligence platform for mobility precision in North American metros.",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "tunnel": "ssh -i ~/.ssh/oracle_key -L 3001:localhost:3001 -N ubuntu@40.233.99.118",
+    "deploy": "bash scripts/deploy.sh",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
