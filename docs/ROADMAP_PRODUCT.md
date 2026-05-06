@@ -67,8 +67,8 @@ What a transit agency pays to see. Designed for planners — no code, no SQL, no
 - [ ] **Peer benchmarking**: how does this agency compare to regional peers on OTP, headway reliability, and coverage.
 
 ### Resource & Financial Modeling
-- [ ] **PVR Calculator**: Automatic calculation of **Peak Vehicle Requirement** (how many physical buses are needed simultaneously) for any scenario.
-- [ ] **Operating Cost Estimates**: Sidebar budgeting that translates service hours and miles into $ cost based on agency-defined rates.
+- [x] **PVR Calculator**: Automatic calculation of **Peak Vehicle Requirement** (how many physical buses are needed simultaneously) for any scenario.
+- [x] **Operating Cost Estimates**: Sidebar budgeting that translates service hours and miles into $ cost based on agency-defined rates.
 - [ ] **EV Feasibility**: Modeling battery range and charging requirements for high-frequency corridors.
 
 ### Reporting

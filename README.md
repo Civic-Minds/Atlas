@@ -17,6 +17,10 @@ The modern transit planning process is fragmented. Agencies juggle siloed GTFS f
 
 **Catalog** (shared): Persistent multi-agency route database. Commit screened routes with inline shape geometry. Supports route history tracking, schedule change detection, and verification status inheritance across feed uploads.
 
+## Production Runtime
+
+Production realtime vehicle ingestion runs on OCI via the `server/` backend process. Live vehicle data on the site is not powered by a local development machine.
+
 ## Stack
 - **Frontend**: React 19, Vite 7, TypeScript 5.9, Tailwind CSS, Framer Motion
 - **Architecture**: Zustand (Global State Management), Web Workers (Off-thread GTFS Parsing)

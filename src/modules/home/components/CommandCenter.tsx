@@ -87,17 +87,14 @@ export const CommandCenter: React.FC = () => {
   useEffect(() => {
     if (!user) return;
     setLoading(true);
-    Promise.all([
-      fetchAgencies().catch(() => []),
-      fetchMatchingStats().catch(() => ({ stats: [] })),
-      fetchTrends().catch(() => ({ trends: [] })),
-      fetchMatchDiagnostics().catch(() => ({ diagnostics: [] })),
-    ]).then(([ag, ms, tr, md]) => {
+    // Load agencies first so the page renders immediately, then fill in stats
+    fetchAgencies().catch(() => [] as AgencyMeta[]).then(ag => {
       setAgencies(ag as AgencyMeta[]);
-      setMatchStats((ms as any).stats ?? []);
-      setTrends((tr as any).trends ?? []);
-      setMatchDiagnostics((md as any).diagnostics ?? []);
-    }).finally(() => setLoading(false));
+      setLoading(false);
+    });
+    fetchMatchingStats().catch(() => ({ stats: [] })).then(ms => setMatchStats((ms as any).stats ?? []));
+    fetchTrends().catch(() => ({ trends: [] })).then(tr => setTrends((tr as any).trends ?? []));
+    fetchMatchDiagnostics().catch(() => ({ diagnostics: [] })).then(md => setMatchDiagnostics((md as any).diagnostics ?? []));
   }, [user]);
 
   const now = new Date();

@@ -1,25 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
-import { useTheme } from '../hooks/useTheme';
+import { Menu, X, ChevronDown, Search } from 'lucide-react';
 import { useAuthStore } from '../hooks/useAuthStore';
 import { useViewAs } from '../hooks/useViewAs';
 import { useTransitStore } from '../types/store';
 import { fetchAgencies } from '../services/atlasApi';
 import type { AgencyMeta } from '../services/atlasApi';
 
-const NAV_ITEMS = [
+const MODULE_NAV = [
     { id: 'analyze', title: 'Analyze', path: '/analyze' },
-    { id: 'monitor', title: 'Monitor', path: '/monitor' },
-    { id: 'predict', title: 'Predict', path: '/predict' },
-    { id: 'simulate', title: 'Simulate', path: '/simulate' },
-    { id: 'audit', title: 'Audit', path: '/audit' },
-];
-
-const SECONDARY_NAV = [
     { id: 'performance', title: 'Performance', path: '/performance' },
     { id: 'pulse', title: 'Pulse', path: '/pulse' },
     { id: 'alerts', title: 'Alerts', path: '/alerts' },
+    { id: 'simulate', title: 'Simulate', path: '/simulate' },
     { id: 'map', title: 'Map', path: '/map' },
 ];
 
@@ -29,21 +22,43 @@ export const TopNav: React.FC = () => {
     const { logout, role, user } = useAuthStore();
     const { viewAsAgency, setViewAsAgency } = useViewAs();
     const { clearData } = useTransitStore();
-    const { theme, toggleTheme } = useTheme();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showViewAsMenu, setShowViewAsMenu] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const isAdmin = role === 'admin' || role === 'researcher';
     const [agencies, setAgencies] = useState<AgencyMeta[]>([]);
+    const viewAsMenuRef = useRef<HTMLDivElement | null>(null);
+    const currentNav = MODULE_NAV.find(item => location.pathname.startsWith(item.path));
+    const moduleName = currentNav ? currentNav.title : '';
 
     React.useEffect(() => {
         if (isAdmin) fetchAgencies().then(setAgencies).catch(console.warn);
     }, [isAdmin]);
+
+    useEffect(() => {
+        setShowViewAsMenu(false);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        if (!showViewAsMenu) return;
+
+        const handlePointerDown = (event: MouseEvent) => {
+            if (!viewAsMenuRef.current?.contains(event.target as Node)) {
+                setShowViewAsMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handlePointerDown);
+        return () => document.removeEventListener('mousedown', handlePointerDown);
+    }, [showViewAsMenu]);
+
     const displayName = user?.displayName || user?.email?.split('@')[0] || 'Admin';
 
     const handleSelectAgency = (slug: string) => {
         const agency = agencies.find(a => a.slug === slug) ?? null;
         setViewAsAgency(agency);
         setShowViewAsMenu(false);
+        setSearchQuery('');
     };
 
     const handleExitViewAs = () => {
@@ -51,8 +66,10 @@ export const TopNav: React.FC = () => {
         clearData();
     };
 
-    const currentNav = [...NAV_ITEMS, ...SECONDARY_NAV].find(item => location.pathname.startsWith(item.path));
-    const moduleName = currentNav ? currentNav.title : '';
+    const filteredAgencies = agencies.filter(a => 
+        a.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.slug.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <header className="sticky top-0 z-50 w-full bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors duration-200">
@@ -67,30 +84,14 @@ export const TopNav: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <nav className="hidden lg:flex items-center gap-5">
-                        {NAV_ITEMS.map((item) => {
+                    <nav className="hidden lg:flex items-center gap-6">
+                        {MODULE_NAV.map((item) => {
                             const isActive = location.pathname.startsWith(item.path);
                             return (
                                 <NavLink
                                     key={item.id}
                                     to={item.path}
                                     className={`text-[12px] font-bold tracking-tight transition-colors ${isActive
-                                        ? 'text-indigo-400'
-                                        : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                                    }`}
-                                >
-                                    {item.title}
-                                </NavLink>
-                            );
-                        })}
-                        <div className="w-px h-4 bg-[var(--border)]" />
-                        {SECONDARY_NAV.map((item) => {
-                            const isActive = location.pathname.startsWith(item.path);
-                            return (
-                                <NavLink
-                                    key={item.id}
-                                    to={item.path}
-                                    className={`text-[12px] font-medium transition-colors ${isActive
                                         ? 'text-[var(--text-primary)]'
                                         : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                                     }`}
@@ -104,7 +105,7 @@ export const TopNav: React.FC = () => {
                     <div className="hidden lg:block w-px h-5 bg-[var(--border)]" />
                     {/* Agency switcher — admin only */}
                     {isAdmin && (
-                        <div className="hidden lg:flex items-center gap-2 relative">
+                        <div ref={viewAsMenuRef} className="hidden lg:flex items-center gap-2 relative">
                             <button
                                 onClick={() => setShowViewAsMenu(v => !v)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-bold transition-colors ${
@@ -118,44 +119,53 @@ export const TopNav: React.FC = () => {
                             </button>
                             {showViewAsMenu && (
                                 <div className="absolute right-0 top-full mt-2 w-56 bg-[var(--bg)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden z-50">
-                                    {viewAsAgency && (
-                                        <button
-                                            onClick={handleExitViewAs}
-                                            className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[var(--text-muted)] hover:bg-[var(--item-bg)] transition-colors border-b border-[var(--border)]"
-                                        >
-                                            Clear selection
-                                        </button>
-                                    )}
-                                    {agencies.length === 0 ? (
-                                        <div className="px-4 py-3 text-[11px] text-[var(--text-muted)] italic">No agencies found</div>
-                                    ) : (
-                                        agencies.map(a => (
+                                    <div className="p-2 border-b border-[var(--border)] bg-[var(--item-bg)]/30">
+                                        <div className="relative">
+                                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-muted)]" />
+                                            <input
+                                                type="text"
+                                                placeholder="Filter cities..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-md pl-8 pr-3 py-1.5 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+                                                autoFocus
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                                        {viewAsAgency && !searchQuery && (
                                             <button
-                                                key={a.slug}
-                                                onClick={() => handleSelectAgency(a.slug)}
-                                                className={`w-full text-left px-4 py-2.5 text-[12px] font-medium hover:bg-[var(--item-bg)] transition-colors ${
-                                                    viewAsAgency?.slug === a.slug
-                                                        ? 'text-indigo-400 font-bold'
-                                                        : 'text-[var(--text-primary)]'
-                                                }`}
+                                                onClick={handleExitViewAs}
+                                                className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-red-400 hover:bg-red-500/5 transition-colors border-b border-[var(--border)]"
                                             >
-                                                {a.display_name}
+                                                Clear selection
                                             </button>
-                                        ))
-                                    )}
+                                        )}
+                                        {filteredAgencies.length === 0 ? (
+                                            <div className="px-4 py-8 text-center">
+                                                <Search className="w-6 h-6 text-[var(--text-muted)] mx-auto mb-2 opacity-20" />
+                                                <div className="text-[11px] text-[var(--text-muted)] italic">No cities match "{searchQuery}"</div>
+                                            </div>
+                                        ) : (
+                                            filteredAgencies.map(a => (
+                                                <button
+                                                    key={a.slug}
+                                                    onClick={() => handleSelectAgency(a.slug)}
+                                                    className={`w-full text-left px-4 py-2.5 text-[12px] font-medium hover:bg-[var(--item-bg)] transition-colors ${
+                                                        viewAsAgency?.slug === a.slug
+                                                            ? 'text-indigo-400 font-bold bg-indigo-500/5'
+                                                            : 'text-[var(--text-primary)]'
+                                                    }`}
+                                                >
+                                                    {a.display_name}
+                                                </button>
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>
                     )}
-
-                    {/* Theme Toggle */}
-                    <button
-                        onClick={toggleTheme}
-                        className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--item-bg)] transition-all duration-200"
-                        title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-                    >
-                        {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-                    </button>
 
                     <div className="hidden lg:block w-px h-5 bg-[var(--border)]" />
 
@@ -182,7 +192,7 @@ export const TopNav: React.FC = () => {
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden absolute top-16 left-0 w-full bg-[var(--bg)] border-b border-[var(--border)] p-4 flex flex-col gap-4 shadow-lg">
-                    {NAV_ITEMS.map((item) => {
+                    {MODULE_NAV.map((item) => {
                         const isActive = location.pathname.startsWith(item.path);
                         return (
                             <NavLink
@@ -191,7 +201,7 @@ export const TopNav: React.FC = () => {
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className={`text-[13px] font-bold tracking-tight transition-all p-3 rounded-lg ${
                                     isActive
-                                        ? 'bg-indigo-500/10 text-indigo-400'
+                                        ? 'bg-[var(--item-bg)] text-[var(--text-primary)]'
                                         : 'text-[var(--text-muted)] hover:bg-[var(--item-bg)] hover:text-[var(--text-primary)]'
                                 }`}
                             >

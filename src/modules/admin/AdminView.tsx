@@ -6,6 +6,7 @@ import { useTransitStore } from '../../types/store';
 import { useNotificationStore } from '../../hooks/useNotification';
 import { useCatalogStore } from '../../types/catalogStore';
 import { usePopulationStore } from '../../hooks/usePopulationStore';
+import { ModuleIntro } from '../../components/ModuleIntro';
 
 export default function AdminView() {
     const { loading, status, runAnalysis } = useGtfsWorker();
@@ -96,20 +97,22 @@ export default function AdminView() {
     };
 
     return (
-        <div className="atlas-page max-w-4xl mx-auto py-12 px-6">
-            <header className="mb-12 border-b border-[var(--border)] pb-8 flex items-center justify-between">
-                <div>
-                    <h1 className="text-lg font-bold text-[var(--text-primary)] mb-1">Admin</h1>
-                    <p className="text-sm text-[var(--text-muted)]">Upload GTFS feeds and manage stored data.</p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <button onClick={handleReset} className="btn-secondary text-red-500 hover:bg-red-500/10">
-                        <RotateCcw className="w-4 h-4" /> Reset DB
-                    </button>
-                </div>
-            </header>
+        <div className="module-container p-6">
+            <ModuleIntro
+                subtitle="Manage GTFS ingestion, population overlays, and platform data state."
+                actions={
+                    <div className="flex items-center gap-2">
+                        <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-indigo-600">
+                            Root
+                        </span>
+                        <button onClick={handleReset} className="btn-secondary text-red-500 hover:bg-red-500/10">
+                            <RotateCcw className="w-4 h-4" /> Reset Database
+                        </button>
+                    </div>
+                }
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Upload Section */}
                 <div className="precision-panel p-8 bg-indigo-500/5 border-indigo-500/20">
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-3">

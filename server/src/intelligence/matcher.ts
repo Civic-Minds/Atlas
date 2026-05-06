@@ -1,6 +1,7 @@
 import { Agency, VehiclePosition, GtfsStopTime, SegmentMetric, StopDwellMetric, MatchDiagnostics } from '../types';
 import { getStaticPool, getAgencyFeedVersion, getRouteScheduleAroundTime } from '../storage/static-db';
 import { agencyTimezone } from '../config';
+import { log } from '../logger';
 
 /**
  * Returns seconds elapsed since local midnight for a given Date and IANA timezone.
@@ -47,18 +48,25 @@ function getDistance(lat1: number, lon1: number, lat2: number, lon2: number): nu
 // We cache the stop_times for active trips to reduce OCI DB round-trips.
 // Uses a Least Recently Used (LRU) policy via Map insertion ordering.
 // -----------------------------------------------------------------------------
-const MAX_CACHE_SIZE = 500;
-let lastFeedVersion: string | null = null;
+const MAX_CACHE_SIZE = 3000;
+// Keyed by `${versionId}:${tripId}` — agencies with different feed versions coexist
+// without clearing each other's entries. Version upgrades are handled naturally: new
+// version → cache miss → LRU fill → old entries age out via eviction.
 const scheduleCache = new Map<string, GtfsStopTime[]>();
+
+function cacheKey(versionId: string, tripId: string): string {
+  return `${versionId}:${tripId}`;
+}
 
 /**
  * Accesses the cache and moves the key to the 'most recent' end of the Map.
  */
-function getFromCache(tripId: string): GtfsStopTime[] | undefined {
-  const data = scheduleCache.get(tripId);
+function getFromCache(versionId: string, tripId: string): GtfsStopTime[] | undefined {
+  const key = cacheKey(versionId, tripId);
+  const data = scheduleCache.get(key);
   if (data) {
-    scheduleCache.delete(tripId);
-    scheduleCache.set(tripId, data);
+    scheduleCache.delete(key);
+    scheduleCache.set(key, data);
   }
   return data;
 }
@@ -66,13 +74,14 @@ function getFromCache(tripId: string): GtfsStopTime[] | undefined {
 /**
  * Inserts into cache and evicts oldest entries if exceeding MAX_CACHE_SIZE.
  */
-function saveToCache(tripId: string, data: GtfsStopTime[]) {
+function saveToCache(versionId: string, tripId: string, data: GtfsStopTime[]) {
+  const key = cacheKey(versionId, tripId);
   if (scheduleCache.size >= MAX_CACHE_SIZE) {
     // Evict the oldest entry (the first key in the Map iterator)
     const oldestKey = scheduleCache.keys().next().value;
     if (oldestKey) scheduleCache.delete(oldestKey);
   }
-  scheduleCache.set(tripId, data);
+  scheduleCache.set(key, data);
 }
 
 // -----------------------------------------------------------------------------
@@ -148,39 +157,49 @@ export async function matchPositions(
     return { matchedPositions: positions, segmentMetrics: [], stopDwellMetrics: [], diagnostics: diag };
   }
 
-  // Invalidate cache if the feed version has changed (Feed Swap)
-  if (versionId !== lastFeedVersion) {
-    scheduleCache.clear();
-    lastFeedVersion = versionId;
-  }
-
   const db = getStaticPool();
   // Identify trips not present in the LRU cache
   const uniqueTripIds = [...new Set(positions.map(p => p.tripId).filter(Boolean))];
   diag.noTripId = positions.filter(p => !p.tripId).length;
 
-  const missingTripIds = uniqueTripIds.filter(id => !scheduleCache.has(id));
-  const preExistingCachedIds = new Set(uniqueTripIds.filter(id => scheduleCache.has(id)));
+  const missingTripIds = uniqueTripIds.filter(id => !scheduleCache.has(cacheKey(versionId, id)));
+  const preExistingCachedIds = new Set(uniqueTripIds.filter(id => scheduleCache.has(cacheKey(versionId, id))));
   const dbResolvedIds = new Set<string>(); // trip IDs resolved via static DB lookup
 
   if (missingTripIds.length > 0) {
     const startDb = Date.now();
-    const res = await db.query<GtfsStopTime>(
-      `SELECT 
-         st.gtfs_trip_id as "tripId", 
-         st.gtfs_stop_id as "stopId",
-         st.stop_sequence as "stopSequence", 
-         st.arrival_time as "arrivalTime", 
-         st.departure_time as "departureTime",
-         s.stop_lat as "stopLat",
-         s.stop_lon as "stopLon"
-       FROM stop_times st
-       JOIN stops s ON s.feed_version_id = st.feed_version_id AND s.gtfs_stop_id = st.gtfs_stop_id
-       WHERE st.feed_version_id = $1 AND st.gtfs_trip_id = ANY($2)`,
-      [versionId, missingTripIds]
-    );
+    // Use a dedicated client with statement_timeout so Postgres actually cancels the
+    // query and releases the connection after the deadline. Promise.race doesn't release
+    // the pool connection — the background query holds it for 82s, starving other callers.
+    const LRU_FILL_TIMEOUT_MS = 20000;
+    let res: import('pg').QueryResult<GtfsStopTime> | null = null;
+    const client = await db.connect();
+    try {
+      await client.query(`SET statement_timeout = ${LRU_FILL_TIMEOUT_MS}`);
+      res = await client.query<GtfsStopTime>(
+        `SELECT
+           st.gtfs_trip_id as "tripId",
+           st.gtfs_stop_id as "stopId",
+           st.stop_sequence as "stopSequence",
+           st.arrival_time as "arrivalTime",
+           st.departure_time as "departureTime",
+           s.stop_lat as "stopLat",
+           s.stop_lon as "stopLon"
+         FROM stop_times st
+         JOIN stops s ON s.feed_version_id = st.feed_version_id AND s.gtfs_stop_id = st.gtfs_stop_id
+         WHERE st.feed_version_id = $1 AND st.gtfs_trip_id = ANY($2)`,
+        [versionId, missingTripIds]
+      );
+    } catch (err) {
+      client.release();
+      const endDb = Date.now();
+      log.warn('Matcher', 'lru fill timeout', { trips: missingTripIds.length, ms: endDb - startDb, err: (err as Error).message });
+      latestDiagnostics.set(agency.id, diag);
+      return { matchedPositions: positions, segmentMetrics: [], stopDwellMetrics: [], diagnostics: diag };
+    }
+    client.release();
     const endDb = Date.now();
-    console.log(`[Matcher] LRU Fill: Query for ${missingTripIds.length} trips took ${endDb - startDb}ms (rows: ${res.rows.length})`);
+    log.info('Matcher', 'lru fill', { trips: missingTripIds.length, rows: res.rows.length, ms: endDb - startDb });
 
     // Group and save to LRU cache.
     const resultsMap = new Map<string, GtfsStopTime[]>();
@@ -191,20 +210,25 @@ export async function matchPositions(
 
     for (const [id, list] of resultsMap) {
       list.sort((a, b) => a.stopSequence - b.stopSequence);
-      saveToCache(id, list);
+      saveToCache(versionId, id, list);
       dbResolvedIds.add(id);
     }
 
     // TIME-BASED FALLBACK: for vehicles whose GTFS-RT trip_id still has no
     // schedule (e.g. TTC Clever Devices IDs don't match Toronto Open Data IDs),
     // match by route + spatial proximity to any active trip on the same route.
-    const stillUnmatched = missingTripIds.filter(id => !scheduleCache.has(id));
+    const stillUnmatched = missingTripIds.filter(id => !scheduleCache.has(cacheKey(versionId, id)));
     if (stillUnmatched.length > 0) {
       const now = new Date();
       // Use the agency's local timezone — GTFS arrival_time is in local time.
       const obsSeconds = localSecondsFromMidnight(now, agencyTimezone(agency.id));
 
-      // Group unmatched positions by routeId for one query per route
+      // Group unmatched positions by routeId for one query per route.
+      // Hard budget of 25s total — large agencies like TTC have 100+ routes and each
+      // fallback query takes ~10s on the 1GB machine. Exceeding the budget drops
+      // remaining routes for this cycle rather than blocking a match slot indefinitely.
+      const FALLBACK_BUDGET_MS = 25000;
+      const fallbackDeadline = Date.now() + FALLBACK_BUDGET_MS;
       const byRoute = new Map<string, VehiclePosition[]>();
       for (const p of positions) {
         if (p.tripId && stillUnmatched.includes(p.tripId) && p.routeId) {
@@ -214,9 +238,13 @@ export async function matchPositions(
       }
 
       for (const [routeId, vehicles] of byRoute) {
+        if (Date.now() >= fallbackDeadline) {
+          log.warn('Matcher', 'fallback budget exhausted', { agency: agency.id, remainingRoutes: byRoute.size });
+          break;
+        }
         const fallbackStart = Date.now();
         const routeSchedule = await getRouteScheduleAroundTime(versionId, routeId, obsSeconds);
-        console.log(`[Matcher] Fallback: route ${routeId} → ${routeSchedule.size} candidate trips in ${Date.now() - fallbackStart}ms`);
+        log.info('Matcher', 'fallback', { route: routeId, candidates: routeSchedule.size, ms: Date.now() - fallbackStart });
         if (routeSchedule.size === 0) continue;
 
         const candidateTrips = [...routeSchedule.values()];
@@ -248,7 +276,7 @@ export async function matchPositions(
 
           // Accept if score is reasonable (vehicle near a temporally-valid stop)
           if (bestStops && bestScore < 2.0) {
-            saveToCache(p.tripId, bestStops);
+            saveToCache(versionId, p.tripId, bestStops);
           }
         }
       }
@@ -260,7 +288,7 @@ export async function matchPositions(
   for (const id of uniqueTripIds) {
     if (preExistingCachedIds.has(id) || dbResolvedIds.has(id)) {
       diag.tripIdInStaticGtfs++;
-    } else if (scheduleCache.has(id)) {
+    } else if (scheduleCache.has(cacheKey(versionId, id))) {
       diag.fallbackResolved++;
     } else {
       diag.tripIdMismatch++;
@@ -332,7 +360,7 @@ export async function matchPositions(
     if (!p.tripId) continue;
 
     // Retrieve from cache (updates LRU order)
-    const sched = getFromCache(p.tripId);
+    const sched = getFromCache(versionId, p.tripId);
     if (!sched) continue;
 
     let target: GtfsStopTime | null = null;
@@ -370,11 +398,15 @@ export async function matchPositions(
       diag.fullyMatched++;
       // Delay calculation: use the vehicle's observed timestamp (not wall clock)
       // to avoid drift when positions are processed after the fact.
-      // Coerce to Date — BullMQ serialises Dates to ISO strings through Redis.
       const obs = p.observedAt instanceof Date ? p.observedAt : new Date(p.observedAt as unknown as string);
       // GTFS arrival_time is in the agency's local timezone; use that for seconds-from-midnight.
-      const observedSeconds = localSecondsFromMidnight(obs, agencyTimezone(agency.id));
-      p.delaySeconds = observedSeconds - (target.arrivalTime * 60);
+      let observedSeconds = localSecondsFromMidnight(obs, agencyTimezone(agency.id));
+      const scheduledSeconds = target.arrivalTime * 60;
+      // GTFS extended times (>= 24:00) represent trips that run past midnight on the
+      // previous service day. If the raw delay is implausibly large negative (> 12 hours),
+      // the observation crossed a calendar midnight — add one day to align with the schedule.
+      if (observedSeconds - scheduledSeconds < -43200) observedSeconds += 86400;
+      p.delaySeconds = observedSeconds - scheduledSeconds;
       p.matchConfidence = confidence;
 
       // -----------------------------------------------------------------------

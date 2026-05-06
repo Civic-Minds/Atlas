@@ -148,9 +148,8 @@ export async function importFeed(
 }
 // ── Real-time Intelligence ──────────────────────────────────────────────────
 
-async function fetchWithAuth(url: string | URL, init?: RequestInit): Promise<Response> {
+async function fetchWithAuth(url: string | URL, init?: RequestInit, timeoutMs = 10000): Promise<Response> {
   const user = useAuthStore.getState().user;
-  // Use getIdToken to get a fresh string JWT
   const token = user ? await user.getIdToken() : null;
 
   const headers = new Headers(init?.headers);
@@ -158,7 +157,13 @@ async function fetchWithAuth(url: string | URL, init?: RequestInit): Promise<Res
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  return fetch(url, { ...init, headers });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, headers, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export interface CorridorPerformance {
@@ -231,6 +236,29 @@ export interface StopDwellResponse {
   dwells: StopDwell[];
 }
 
+export interface StopAdherenceRecord {
+  stopId: string;
+  stopSequence: number | null;
+  stopName: string | null;
+  stopLat: number | null;
+  stopLon: number | null;
+  sampleCount: number;
+  avgDelaySeconds: number;
+  medianDelaySeconds: number;
+  onTimeCount: number;
+  earlyCount: number;
+  lateCount: number;
+  onTimePct: number;
+}
+
+export interface StopAdherenceResponse {
+  agency: string;
+  route: string;
+  hours: number;
+  ts: string;
+  stops: StopAdherenceRecord[];
+}
+
 export async function fetchCorridorPerformance(agency: string, windowMinutes: number = 60): Promise<PerformanceResponse> {
   const url = new URL(`${ATLAS_BASE}/api/corridors/performance`, window.location.origin);
   url.searchParams.set('agency', agency);
@@ -263,6 +291,16 @@ export async function fetchStopDwells(agency: string, limit: number = 10): Promi
   url.searchParams.set('limit', String(limit));
   const res = await fetchWithAuth(url.toString());
   if (!res.ok) throw new Error(`Dwell query failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchStopAdherence(agency: string, route: string, hours: number = 24): Promise<StopAdherenceResponse> {
+  const url = new URL(`${ATLAS_BASE}/api/intelligence/stop-adherence`, window.location.origin);
+  url.searchParams.set('agency', agency);
+  url.searchParams.set('route', route);
+  url.searchParams.set('hours', String(hours));
+  const res = await fetchWithAuth(url.toString());
+  if (!res.ok) throw new Error(`Stop adherence query failed: ${res.status}`);
   return res.json();
 }
 

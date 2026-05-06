@@ -20,8 +20,8 @@ interface SyncResult {
 
 
 /**
- * Synchronizes local transit intelligence (Pulse & AHW) to the global Notion repository.
- * This bridges the "Discovery Lab" data with the "Enterprise Visibility" layer.
+ * Synchronizes production transit intelligence (Pulse & AHW) to the global Notion repository.
+ * Runs from the OCI-backed server process, not a local development poller.
  */
 export async function syncAgencyToNotion(agencyId: string, health: { success: boolean; vehicleCount: number | null; errorMsg?: string | null }): Promise<SyncResult> {
   if (!process.env.NOTION_TOKEN) {
@@ -99,4 +99,3 @@ export async function syncAgencyToNotion(agencyId: string, health: { success: bo
     return { agencyId, success: false, error: (err as Error).message };
   }
 }
-

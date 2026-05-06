@@ -1,27 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Clock, Plus, TrendingDown, LayoutGrid, Route, WifiOff } from 'lucide-react';
-import { ModuleHeader } from '../../components/ModuleHeader';
+import { ModuleSubNav } from '../../components/ModuleSubNav';
+import { ModuleIntro } from '../../components/ModuleIntro';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import { useViewAs } from '../../hooks/useViewAs';
 import { fetchLiveRoutes, fetchRouteHealth, fetchNetworkPulse, fetchGapDistribution, fetchSilentRoutes, RouteHealthResponse, RouteHealthHour, NetworkPulseRoute, GapDistributionResponse, SilentRoute } from '../../services/atlasApi';
 
-const AGENCIES = [
-  { id: 'ttc', label: 'TTC' },
-  { id: 'mbta', label: 'MBTA' },
-  { id: 'trimet', label: 'TriMet' },
-  { id: 'metrotransit', label: 'Metro Transit' },
-  { id: 'translink', label: 'TransLink' },
-  { id: 'octranspo', label: 'OC Transpo' },
-  { id: 'septa', label: 'SEPTA' },
-  { id: 'mtabus', label: 'MTA Bus' },
-  { id: 'wego', label: 'WeGo' },
-  { id: 'edmonton', label: 'Edmonton' },
-  { id: 'mcts', label: 'MCTS' },
-  { id: 'gcrta', label: 'GCRTA' },
-  { id: 'sta', label: 'STA' },
-  { id: 'drt', label: 'DRT' },
-  { id: 'sdmts', label: 'SD MTS' },
-];
 
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 5); // 5am–10pm
 
@@ -180,7 +164,7 @@ export default function PulseView() {
   const [agency, setAgency] = useState(defaultAgency);
 
   useEffect(() => {
-    if (isAdmin && viewAsAgency) setAgency(viewAsAgency.slug);
+    if (isAdmin) setAgency(viewAsAgency?.slug ?? '');
   }, [viewAsAgency, isAdmin]);
 
   // Network tab state
@@ -329,50 +313,24 @@ export default function PulseView() {
 
   return (
     <div className="module-container">
-      <ModuleHeader
-        badge={{ label: 'Live · 7-Day' }}
+      <ModuleIntro
+        subtitle="Monitor route gaps, drill into route-level health, and surface silent service patterns."
       />
 
-      {/* Agency picker + tab switcher */}
-      <div className="flex flex-col gap-4 mb-8">
-        {isAdmin && (
-          <div className="flex flex-col gap-1">
-            <span className="text-[9px] atlas-label opacity-50">Agency</span>
-            <div className="flex items-center gap-2 flex-wrap">
-              {AGENCIES.map(a => (
-                <button
-                  key={a.id}
-                  onClick={() => setAgency(a.id)}
-                  className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
-                    agency === a.id
-                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
-                      : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
-                  }`}
-                >
-                  {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+      <ModuleSubNav<TabId>
+        tabs={[
+          { id: 'network', label: 'Overview', icon: LayoutGrid },
+          { id: 'route', label: 'Route Detail', icon: Route },
+          { id: 'silent', label: 'Silent Routes', icon: WifiOff }
+        ]}
+        activeTab={tab}
+        onTabChange={setTab}
+      />
 
-        {/* Tab switcher */}
-        <div className="flex items-center gap-1 p-1 bg-[var(--item-bg)] border border-[var(--border)] rounded-xl w-fit">
-          {([['network', 'Network Overview', LayoutGrid], ['route', 'Route Detail', Route], ['silent', 'Silent Routes', WifiOff]] as const).map(([id, label, Icon]) => (
-            <button
-              key={id}
-              onClick={() => setTab(id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                tab === id
-                  ? 'bg-indigo-500 text-white shadow-sm'
-                  : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
-            </button>
-          ))}
-        </div>
+      <div className="mb-4 text-[12px] text-[var(--text-muted)]">
+        {tab === 'network' && 'Rank routes by worst observed gap and identify the corridors degrading right now.'}
+        {tab === 'route' && 'Open one route at a time to inspect heatmaps, distributions, and route-specific diagnostics.'}
+        {tab === 'silent' && 'See routes that should be active but currently have no vehicles reporting.'}
       </div>
 
       {/* ── Network Overview Tab ─────────────────────────────────────────────── */}

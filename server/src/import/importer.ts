@@ -1061,6 +1061,21 @@ export async function importGtfsFeed(opts: ImportOptions): Promise<ImportResult>
           });
         }
         log.info('Import', 'stop_times written', { total: totalWritten });
+
+        // Verify stop_times actually landed — a zero count means the streaming
+        // write silently failed (e.g. this import ran against a schema that
+        // predated stop_times support, or a DB error was swallowed mid-batch).
+        const stCheck = await client.query<{ count: string }>(
+          `SELECT COUNT(*)::text FROM stop_times WHERE feed_version_id = $1`,
+          [feedVersionId]
+        );
+        const stCount = parseInt(stCheck.rows[0]?.count ?? '0', 10);
+        if (stCount === 0) {
+          throw new Error(
+            `stop_times write produced 0 rows for feed ${feedVersionId} — import aborted to prevent a broken feed version being marked current`
+          );
+        }
+        log.info('Import', 'stop_times verified', { count: stCount });
       }
     }
 

@@ -7,17 +7,23 @@ We are currently wrapping up **Phase 2: Intelligence Layer**, bridging the gap b
 
 - Version: `0.14.0`
 - Current Goal: Build out the user-facing **Performance Module** to expose internal intelligence endpoints (network pulse, bottlenecks, stop dwells, ghost buses, service audits).
-- **Big Fish Experiment**: Full Fleet polling (8,000+ vehicles) moved to **Discovery Lab (Local)**; Cloud remains on **SBS-only** routes for `mtabus`. Local focus: **Manhattan**.
+- **Production Runtime**: Realtime GTFS-RT ingestion runs on OCI. Do not assume live vehicle data depends on a local machine.
+- **Historical Note**: Older local "Discovery Lab" / Manhattan full-fleet experiments are not the current production runtime path.
 - **Next Up (Phase 3 Prep)**: Alerting UI (threshold management) and Board Report Export.
+
+## OCI Production Server
+
+See [`docs/SERVER.md`](./docs/SERVER.md) for SSH access, DB URLs, deploy workflow, and PM2 command.
 
 ## External Tracking (Notion)
 
-The following Notion databases are used for project management and health monitoring:
+The following primary Notion databases are used for project management and health monitoring. See [NOTION_REGISTRY.md](docs/NOTION_REGISTRY.md) for full schema details and mapping logic.
 
 | Database Name | Notion ID | Purpose |
 | :--- | :--- | :--- |
 | **Agencies Database Atlas** | `3339563c9a49804e92fde353d1470eb4` | Live registry of all 40+ agencies. Track IDs, Status (Testing/Live), and Route Filters. |
-| **AtlasLog** | (See `CLAUDE.md`) | Core development history and testing logs. |
+| **AtlasLog** | `3589563c9a49804ab8b6e78f455abb8c` | Portfolio tracker — resume-worthy technical work only. See [`ATLASLOG.md`](./ATLASLOG.md) for rules. |
+
 
 ## Key Concepts & Patterns
 

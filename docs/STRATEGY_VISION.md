@@ -7,6 +7,18 @@ This document serves as the master blueprint for evolving Atlas from a **Transit
 ## 1. Competitive Critical Analysis
 *Comparison against industry leaders: Remix (Via), Swiftly, and Optibus.*
 
+### Feature Benchmarking
+| Feature | **Atlas** (v0.17) | **Remix** | **Swiftly** | **Optibus** |
+| :--- | :---: | :---: | :---: | :---: |
+| **Frequency Mapping** | ✅ (Automatic) | ✅ (Manual/Auto) | ❌ (Static) | ❌ |
+| **Real-time Headway** | ✅ (Pulse) | ❌ | ✅ (Live) | ✅ (Live) |
+| **Historical Snapshots** | ✅ (Catalog) | ❌ | ❌ | ❌ |
+| **Travel-Time (Jane)** | ❌ (Roadmap) | ✅ (Industry Std) | ❌ | ❌ |
+| **Title VI / Equity** | ❌ (Roadmap) | ✅ (Best-in-class) | ❌ | ❌ |
+| **Costing / PVR** | ✅ (Heuristic) | ✅ (Integrated) | ❌ | ✅ (Optimization) |
+| **Scenario Sandbox** | ❌ (Roadmap) | ✅ (Core) | ❌ | ✅ (Core) |
+| **EV Modeling** | ❌ | ❌ | ❌ | ✅ (Market Leader) |
+
 ### The Five "Mega-Gaps"
 To move from a "Map Viewer" to a "Planner's Essential," Atlas must close these gaps:
 
@@ -17,7 +29,8 @@ To move from a "Map Viewer" to a "Planner's Essential," Atlas must close these g
     *   **Need:** Hard-coded US Census (ACS) and international demographic overlays.
     *   **Outcome:** Automated "Service Equity Reports" for civil rights compliance during service changes.
 3.  **Financial Modeling & PVR:**
-    *   **Need:** Resource calculator that translates frequency into **Peak Vehicle Requirement (PVR)** and operating costs ($/mile, $/hour).
+    *   **Status:** Active Foundation (v0.17.x).
+    *   **Logic:** Heuristic resource calculator translating frequency into **Peak Vehicle Requirement (PVR)** and operating costs ($/hr).
     *   **Outcome:** Ensuring a plan is physically and financially possible to drive.
 4.  **Scenario Branching (The Sandbox):**
     *   **Need:** A "Draft" environment where users can draw new routes or edit headways without affecting the baseline catalog.

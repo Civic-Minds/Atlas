@@ -1,10 +1,9 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText, Activity, Cloud, HardDrive } from 'lucide-react';
+import { Search, ChevronRight, Filter, Clock, Map as MapIcon, RotateCcw, Download, ShieldCheck, Upload, Database, FileCheck, FileText, Activity, Cloud, HardDrive, GitFork, LayoutGrid } from 'lucide-react';
 import { AnalysisResult, GtfsData, SpacingResult, CorridorResult } from '../../utils/gtfsUtils';
 import { downloadCsv, downloadJson } from '../../utils/exportUtils';
 import { storage, STORES } from '../../core/storage';
-import { ModuleHeader } from '../../components/ModuleHeader';
 import { EmptyStateHero } from '../../components/EmptyStateHero';
 import { ModuleLanding } from '../../components/ModuleLanding';
 import { useGtfsWorker } from '../../hooks/useGtfsWorker';
@@ -20,7 +19,11 @@ import { NetworkScreener } from './components/NetworkScreener';
 import { CriteriaPanel } from './components/CriteriaPanel';
 import { CatalogExplorer } from './components/CatalogExplorer';
 import { useCatalogStore } from '../../types/catalogStore';
+import { ModuleSubNav } from '../../components/ModuleSubNav';
+import { StrategicAudit } from './components/StrategicAudit';
 import AtlasView from '../atlas/AtlasView';
+import { useViewAs } from '../../hooks/useViewAs';
+import { ModuleIntro } from '../../components/ModuleIntro';
 
 
 const TIER_CONFIG = [
@@ -93,14 +96,22 @@ export default function ScreenerView() {
     const [activeTiers, setActiveTiers] = useState<Set<string>>(new Set());
     const [resetPending, setResetPending] = useState(false);
     const [showCommit, setShowCommit] = useState(false);
+    const [tab, setTab] = useState<'routes' | 'corridors' | 'audit' | 'monitor'>('routes');
     const [lastFileName, setLastFileName] = useState('feed.zip');
     const [pendingFile, setPendingFile] = useState<File | null>(null);
-    const mode = 'network';
-    const [activeView, setActiveView] = useState<'data' | 'map'>('data');
+    const [selectedAgency, setSelectedAgency] = useState<string | null>(agencyId || null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { loading, status, error, runAnalysis } = useGtfsWorker();
     const { loadCatalog } = useCatalogStore();
+    const { viewAsAgency } = useViewAs();
+
+    // Sync agency from viewAs
+    useEffect(() => {
+        if (viewAsAgency?.slug) {
+            setSelectedAgency(viewAsAgency.slug);
+        }
+    }, [viewAsAgency]);
 
     // Load persisted data on mount
     useEffect(() => {
@@ -212,14 +223,45 @@ export default function ScreenerView() {
         );
     }
 
-    // Network mode — show cloud screener
-    if (mode === 'network') {
-        return (
-            <div className="module-container">
-                <NetworkScreener />
+    return (
+        <div className="module-container">
+            <ModuleIntro
+                subtitle="Screen routes, inspect corridors, and diagnose service problems for the selected agency."
+            />
+
+            <ModuleSubNav<typeof tab>
+                tabs={[
+                    { id: 'routes', label: 'Routes', icon: LayoutGrid },
+                    { id: 'corridors', label: 'Corridors', icon: GitFork },
+                    { id: 'audit', label: 'Audit', icon: Activity },
+                    { id: 'monitor', label: 'Operations', icon: Cloud }
+                ]}
+                activeTab={tab}
+                onTabChange={setTab}
+            />
+
+            <div className="mb-4 text-[12px] text-[var(--text-muted)]">
+                {tab === 'routes' && 'Screen the network by headway, span, and reliability.'}
+                {tab === 'corridors' && 'Review shared trunk segments where multiple routes combine into stronger service.'}
+                {tab === 'audit' && 'Inspect network structure, bottlenecks, and before/after service change impact.'}
+                {tab === 'monitor' && 'Open the live operational workspace for real-time route conditions.'}
             </div>
-        );
-    }
+
+            <div className="mt-2">
+                {tab === 'routes' && <NetworkScreener forcedTab="routes" />}
+                {tab === 'corridors' && <NetworkScreener forcedTab="corridors" />}
+                {tab === 'monitor' && <NetworkScreener forcedTab="monitoring" />}
+                {tab === 'audit' && selectedAgency && <StrategicAudit agency={selectedAgency} />}
+                
+                {tab === 'audit' && !selectedAgency && (
+                    <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
+                        <Activity className="w-12 h-12 opacity-20 mb-4" />
+                        <p className="text-sm font-bold">Select an agency to view Strategic Audit</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }
 
 // Dead local-mode code removed — Analyze is server-only now.

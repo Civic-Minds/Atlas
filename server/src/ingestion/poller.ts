@@ -7,13 +7,17 @@
  */
 
 import { Agency, VehiclePosition } from '../types';
-import { logIngestion } from '../storage/db';
-import { pushToProcessingQueue } from '../queues/position-queue';
+import { insertVehiclePositions, insertSegmentMetrics, insertStopDwellMetrics, upsertRouteLastSeen, logIngestion } from '../storage/db';
+import { matchPositions } from '../intelligence/matcher';
 import { ROUTE_FILTER } from '../config';
 import { log } from '../logger';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const GtfsRealtimeBindings = require('gtfs-realtime-bindings');
+
+// Limit concurrent match+persist operations to prevent DB connection saturation.
+let activeMatchOps = 0;
+const MAX_CONCURRENT_MATCH = 2;
 
 async function fetchPositions(agency: Agency): Promise<VehiclePosition[]> {
   const controller = new AbortController();
@@ -62,17 +66,39 @@ async function fetchPositions(agency: Agency): Promise<VehiclePosition[]> {
   return positions;
 }
 
-async function pollAgency(agency: Agency): Promise<void> {
+async function matchAndPersist(agency: Agency, rawPositions: VehiclePosition[]): Promise<void> {
+  activeMatchOps++;
   try {
-    const rawPositions = await fetchPositions(agency);
-    
-    // Asynchronous Hand-off: Just push to Redis queue
-    await pushToProcessingQueue(agency, rawPositions);
-    
-    log.info('Poll', 'queued', { agency: agency.id, vehicles: rawPositions.length });
+    const { matchedPositions, segmentMetrics, stopDwellMetrics } = await matchPositions(agency, rawPositions);
+    await insertVehiclePositions(matchedPositions);
+    await insertSegmentMetrics(segmentMetrics);
+    await insertStopDwellMetrics(stopDwellMetrics);
+    await upsertRouteLastSeen(agency.id, matchedPositions);
+    await logIngestion(agency.id, true, matchedPositions.length).catch(() => undefined);
+    log.info('Poll', 'persisted', { agency: agency.id, vehicles: matchedPositions.length, segments: segmentMetrics.length });
   } catch (err) {
     const msg = (err as Error).message;
     await logIngestion(agency.id, false, undefined, msg).catch(() => undefined);
+    log.error('Poll', 'persist failed', { agency: agency.id, err: msg });
+  } finally {
+    activeMatchOps--;
+  }
+}
+
+async function pollAgency(agency: Agency): Promise<void> {
+  try {
+    const rawPositions = await fetchPositions(agency);
+    if (rawPositions.length === 0) return;
+
+    if (activeMatchOps >= MAX_CONCURRENT_MATCH) {
+      log.warn('Poll', 'match backpressure — dropping cycle', { agency: agency.id, active: activeMatchOps });
+      return;
+    }
+
+    void matchAndPersist(agency, rawPositions);
+    log.info('Poll', 'fetched', { agency: agency.id, vehicles: rawPositions.length });
+  } catch (err) {
+    const msg = (err as Error).message;
     log.error('Poll', 'failed', { agency: agency.id, err: msg });
   }
 }
