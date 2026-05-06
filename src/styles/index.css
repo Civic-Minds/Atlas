@@ -139,12 +139,20 @@ button,
 
 /* Module Container */
 .module-container {
-  @apply flex flex-col items-center py-6 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar w-full;
+  @apply flex flex-col items-center py-5 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar w-full;
   scrollbar-gutter: stable;
 }
 
 .module-container > * {
   @apply w-full max-w-7xl px-4 md:px-8;
+}
+
+.module-kicker {
+  @apply text-[18px] font-bold tracking-tight text-[var(--text-primary)];
+}
+
+.module-subtitle {
+  @apply mt-1 text-[13px] text-[var(--text-muted)];
 }
 
 /* Buttons - Solid, tactile feel */

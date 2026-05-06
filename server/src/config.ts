@@ -30,7 +30,7 @@ export const ROUTE_FILTER: Record<string, string[] | null> = {
   calgarytransit: null,
   gcrta:         ['6', '66', '67', '68'], // HealthLine BRT (6) + Red Line (66) + Blue Line (67) + Green Line (68)
   edmonton:      ['004', '008', '009'], // Routes 4/8/9 (40,000 combined weekday trips, system's busiest buses; zero-padded in feed). LRT route IDs not found in vehicle positions feed — may be on a separate feed.
-  halifax:       ['1'], // Route 1 Spring Garden/Robie — most frequent in the system
+  halifax:       null, // Full fleet visibility for Phase 2 validation
   sta:           null, // All routes — full system polling
   wego:          ['3', '7', '22', '23', '50', '52', '55', '56'], // WeGo Frequent Network 8 corridors (West End, Hillsboro, Bordeaux, Dickerson Pike, Charlotte Pike, Nolensville Pike, Murfreesboro Pike, Gallatin Pike)
   rtcsnv:        ['4740', '4736', '4737', '4738', '4739'], // Deuce (4740, 24hr Strip service — heavy tourist ridership), BHX, SX, CX, DVX — disabled until Swiftly key added
@@ -136,7 +136,7 @@ export const AGENCIES: Agency[] = [
   // Email info@foothilltransit.org with your public IP to get access, then uncomment:
   // { id: 'foothilltransit', name: 'Foothill Transit', vehiclePositionsUrl: 'https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=VehiclePositions', tripUpdatesUrl: 'https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=TripUpdates' },
   // Halifax Transit — open feed, no API key required
-  { id: 'halifax', name: 'Halifax Transit', vehiclePositionsUrl: 'https://gtfs.halifax.ca/realtime/Vehicle/VehiclePositions.pb' },
+  { id: 'halifax', name: 'Halifax Transit', timezone: 'America/Halifax', vehiclePositionsUrl: 'https://gtfs.halifax.ca/realtime/Vehicle/VehiclePositions.pb' },
   // Miami-Dade Transit — needs its own Swiftly key (lametro key not valid here)
   // { id: 'mdt', name: 'Miami-Dade Transit', timezone: 'America/New_York', vehiclePositionsUrl: 'https://api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions', headers: { Authorization: process.env.MDT_SWIFTLY_KEY ?? '' }, limit: { requestsPerHour: 720, notes: '180 req / 15 min' } },
   // TransLink (Metro Vancouver)

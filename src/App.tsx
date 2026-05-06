@@ -11,12 +11,8 @@ import { useAuthStore } from './hooks/useAuthStore';
 const HomePage = React.lazy(() => import('./modules/home/HomePage'));
 const SimulatorView = React.lazy(() => import('./modules/simulator/SimulatorView'));
 const ScreenerView = React.lazy(() => import('./modules/screener/ScreenerView'));
-const VerifierView = React.lazy(() => import('./modules/verifier/VerifierView'));
-const ReportCardsView = React.lazy(() => import('./modules/report-cards/ReportCardsView'));
 const AdminView = React.lazy(() => import('./modules/admin/AdminView'));
-const PredictView = React.lazy(() => import('./modules/predict/PredictView'));
 const MapView = React.lazy(() => import('./modules/map/MapView'));
-const IntelligenceView = React.lazy(() => import('./modules/intelligence/IntelligenceView'));
 const SystemReportView = React.lazy(() => import('./modules/screener/components/SystemReportView'));
 const PulseView = React.lazy(() => import('./modules/pulse/PulseView'));
 const PerformanceView = React.lazy(() => import('./modules/performance/PerformanceView'));
@@ -66,19 +62,21 @@ const App: React.FC = () => {
                         <Suspense fallback={<LazyFallback />}>
                             <Routes location={location}>
                                 <Route path="/" element={<HomePage />} />
-                                <Route path="/monitor" element={<IntelligenceView />} />
                                 <Route path="/analyze" element={<ScreenerView />} />
                                 <Route path="/analyze/report" element={<SystemReportView />} />
-
-                                <Route path="/simulate" element={<SimulatorView />} />
-                                <Route path="/predict" element={<PredictView />} />
-                                <Route path="/audit" element={<VerifierView />} />
-                                <Route path="/reports" element={<ReportCardsView />} />
-                                <Route path="/pulse" element={<PulseView />} />
                                 <Route path="/performance" element={<PerformanceView />} />
+                                <Route path="/pulse" element={<PulseView />} />
                                 <Route path="/alerts" element={<AlertsView />} />
+                                <Route path="/simulate" element={<SimulatorView />} />
                                 <Route path="/map" element={<MapView />} />
                                 <Route path="/admin" element={<AdminView />} />
+
+                                {/* Redirect legacy paths to their consolidated Core 5 equivalents */}
+                                <Route path="/monitor" element={<Navigate to="/analyze" replace />} />
+                                <Route path="/audit" element={<Navigate to="/analyze" replace />} />
+                                <Route path="/predict" element={<Navigate to="/simulate" replace />} />
+                                <Route path="/reports" element={<Navigate to="/performance" replace />} />
+
                                 <Route path="*" element={<Navigate to="/" replace />} />
                             </Routes>
                         </Suspense>

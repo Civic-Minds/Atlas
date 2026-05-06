@@ -378,26 +378,22 @@ router.get('/intelligence/matching-stats', requireAuth, diagnosticsLimiter, asyn
     agency ? [agency] : []
   );
 
-  const stats = [];
-  for (const row of result.rows) {
-      try {
-          const health = await calculateAgencyHealth(row.agency_id);
-          const metrics = {
-              health_score: health.compositeScore,
-              reliability_score: parseFloat(row.avg_confidence) * 100, // Matching confidence as proxy
-              bunching_count: 0, // Placeholder
-              ghost_rate: 0 // Placeholder
-          };
-
-          // Evaluate alerts as side-effect
-          await evaluateThresholds(row.agency_id, metrics);
-
-          stats.push({ ...row, healthScore: health.compositeScore });
-      } catch (e) {
-          log.error('Health', 'Failed to calculate health or alerts for agency', { agencyId: row.agency_id, error: e });
-          stats.push({ ...row, healthScore: 0 });
-      }
-  }
+  const stats = await Promise.all(result.rows.map(async (row) => {
+    try {
+      const health = await calculateAgencyHealth(row.agency_id);
+      const metrics = {
+        health_score: health.compositeScore,
+        reliability_score: parseFloat(row.avg_confidence) * 100,
+        bunching_count: 0,
+        ghost_rate: 0,
+      };
+      await evaluateThresholds(row.agency_id, metrics);
+      return { ...row, healthScore: health.compositeScore };
+    } catch (e) {
+      log.error('Health', 'Failed to calculate health or alerts for agency', { agencyId: row.agency_id, error: e });
+      return { ...row, healthScore: 0 };
+    }
+  }));
 
   res.json({
     ts: new Date().toISOString(),
@@ -572,6 +568,110 @@ router.get('/intelligence/dwells', requireAuth, requireTenant, diagnosticsLimite
       ts: new Date().toISOString(),
       dwells
     });
+
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// GET /api/intelligence/stop-adherence?agency=ttc&route=505&hours=24
+// Per-stop schedule adherence: aggregates delay_seconds from vehicle_positions grouped
+// by stop, returning avg/median delay, on-time %, and early/late counts per stop.
+router.get('/intelligence/stop-adherence', requireAuth, requireTenant, diagnosticsLimiter, async (req: Request, res: Response) => {
+  const { agency, route, hours } = req.query as Record<string, string>;
+
+  if (!agency || !route) {
+    res.status(400).json({ error: 'agency and route are required' });
+    return;
+  }
+
+  const hoursNum = Math.min(Math.max(parseInt(hours ?? '24', 10), 1), 72);
+  const cutoff = new Date(Date.now() - hoursNum * 3600 * 1000);
+
+  try {
+    const db = getPool();
+    const staticPool = getStaticPool();
+
+    const adherenceRes = await db.query<{
+      stop_id: string;
+      stop_sequence: number | null;
+      sample_count: string;
+      avg_delay_seconds: string;
+      median_delay_seconds: string;
+      on_time_count: string;
+      early_count: string;
+      late_count: string;
+    }>(
+      `SELECT
+         stop_id,
+         stop_sequence,
+         COUNT(*)                                                              AS sample_count,
+         AVG(delay_seconds)                                                    AS avg_delay_seconds,
+         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY delay_seconds)           AS median_delay_seconds,
+         COUNT(*) FILTER (WHERE ABS(delay_seconds) <= 60)                     AS on_time_count,
+         COUNT(*) FILTER (WHERE delay_seconds < -60)                          AS early_count,
+         COUNT(*) FILTER (WHERE delay_seconds > 60)                           AS late_count
+       FROM vehicle_positions
+       WHERE agency_id   = $1
+         AND route_id    = $2
+         AND observed_at > $3
+         AND match_confidence >= 0.7
+         AND delay_seconds IS NOT NULL
+         AND ABS(delay_seconds) < 3600
+         AND stop_id IS NOT NULL
+       GROUP BY stop_id, stop_sequence
+       HAVING COUNT(*) >= 2
+       ORDER BY stop_sequence NULLS LAST, stop_id`,
+      [agency, route, cutoff]
+    );
+
+    if (adherenceRes.rows.length === 0) {
+      return res.json({ agency, route, hours: hoursNum, stops: [] });
+    }
+
+    // Look up stop names/coords from static DB scoped to this agency's current feed.
+    const stopIds = adherenceRes.rows.map(r => r.stop_id);
+    const stopsRes = await staticPool.query<{
+      gtfs_stop_id: string;
+      stop_name: string;
+      stop_lat: number;
+      stop_lon: number;
+    }>(
+      `SELECT DISTINCT ON (s.gtfs_stop_id)
+         s.gtfs_stop_id, s.stop_name, s.stop_lat, s.stop_lon
+       FROM stops s
+       JOIN feed_versions fv ON fv.id = s.feed_version_id
+       JOIN gtfs_agencies a  ON a.id  = fv.gtfs_agency_id
+       WHERE a.agency_slug = $1
+         AND fv.is_current = TRUE
+         AND s.gtfs_stop_id = ANY($2)
+       ORDER BY s.gtfs_stop_id`,
+      [agency, stopIds]
+    ).catch(() => ({ rows: [] as { gtfs_stop_id: string; stop_name: string; stop_lat: number; stop_lon: number }[] }));
+
+    const stopMeta = new Map(stopsRes.rows.map(s => [s.gtfs_stop_id, s]));
+
+    const stops = adherenceRes.rows.map(r => {
+      const meta = stopMeta.get(r.stop_id);
+      const sampleCount = parseInt(r.sample_count, 10);
+      const onTimeCount = parseInt(r.on_time_count, 10);
+      return {
+        stopId: r.stop_id,
+        stopSequence: r.stop_sequence,
+        stopName: meta?.stop_name ?? null,
+        stopLat: meta?.stop_lat ?? null,
+        stopLon: meta?.stop_lon ?? null,
+        sampleCount,
+        avgDelaySeconds: Math.round(parseFloat(r.avg_delay_seconds)),
+        medianDelaySeconds: Math.round(parseFloat(r.median_delay_seconds)),
+        onTimeCount,
+        earlyCount: parseInt(r.early_count, 10),
+        lateCount: parseInt(r.late_count, 10),
+        onTimePct: sampleCount > 0 ? Math.round((onTimeCount / sampleCount) * 100) : 0,
+      };
+    });
+
+    res.json({ agency, route, hours: hoursNum, ts: new Date().toISOString(), stops });
 
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -1234,7 +1334,7 @@ export async function computeBenchmark(): Promise<void> {
         FROM vehicle_positions
         WHERE current_status = 1
           AND stop_id IS NOT NULL
-          AND observed_at > NOW() - INTERVAL '24 hours'
+          AND observed_at > NOW() - INTERVAL '6 hours'
         GROUP BY agency_id, route_id, stop_id, vehicle_id,
           DATE_TRUNC('hour', observed_at)
       ),
@@ -1311,7 +1411,7 @@ export function scheduleBenchmarkRefresh(): void {
   // Initial compute 30s after server start (let pollers warm up first)
   setTimeout(() => {
     computeBenchmark();
-    setInterval(computeBenchmark, 15 * 60 * 1000);
+    setInterval(computeBenchmark, 30 * 60 * 1000);
   }, 30_000);
 }
 

@@ -643,8 +643,8 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                     >
                         {/* Header */}
-                        <div className="px-5 py-4 border-b border-[var(--border)] shrink-0">
-                            <div className="flex items-center justify-between mb-3">
+                        <div className="px-5 py-3 border-b border-[var(--border)] shrink-0">
+                            <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex flex-col items-center justify-center border border-indigo-500/20 shrink-0">
                                         <span className="text-sm font-black atlas-mono text-indigo-600 dark:text-indigo-400 leading-none">{result.route}</span>
@@ -710,9 +710,9 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-5 bg-[var(--bg)] custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-4 bg-[var(--bg)] custom-scrollbar">
                             {/* Verification Controls */}
-                            <div className="mb-6">
+                            <div className="mb-4">
                                 <VerificationPanel
                                     routeId={catalogRoute?.id || null}
                                     currentStatus={catalogRoute?.verificationStatus || null}
@@ -724,33 +724,33 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                             {activeTab === 'summary' ? (
                                 /* ====== SUMMARY TAB ====== */
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                                         <div className="precision-panel p-4 flex flex-col items-center text-center">
-                                            <div className="p-2 bg-emerald-500/10 rounded-xl mb-2">
+                                            <div className="p-2 bg-emerald-500/10 rounded-xl mb-1.5">
                                                 <Clock className="w-4 h-4 text-emerald-500" />
                                             </div>
                                             <span className="atlas-label mb-0.5">Avg Headway</span>
                                             <div className="text-2xl font-black atlas-mono">{result.avgHeadway} <span className="text-xs font-normal text-[var(--text-muted)]">min</span></div>
-                                            <div className="mt-1 text-[10px] text-[var(--text-muted)] flex items-center gap-1">
+                                            <div className="mt-0.5 text-[10px] text-[var(--text-muted)] flex items-center gap-1">
                                                 <TrendingUp className="w-3 h-3" />
                                                 Median: {result.medianHeadway}m
                                             </div>
                                         </div>
 
                                         <div className="precision-panel p-4 flex flex-col items-center">
-                                            <div className="flex items-center gap-3 w-full mb-4">
-                                                <div className="p-3 bg-indigo-500/10 rounded-2xl">
-                                                    <Zap className={`w-6 h-6 ${reliabilityColor}`} />
+                                            <div className="flex items-center gap-3 w-full mb-3">
+                                                <div className="p-2.5 bg-indigo-500/10 rounded-2xl">
+                                                    <Zap className={`w-5 h-5 ${reliabilityColor}`} />
                                                 </div>
                                                 <div className="text-left">
                                                     <span className="atlas-label block">Reliability</span>
-                                                    <div className={`text-3xl font-black atlas-mono leading-none ${reliabilityColor}`}>
+                                                    <div className={`text-2xl font-black atlas-mono leading-none ${reliabilityColor}`}>
                                                         {Math.round(result.reliabilityScore)}%
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="w-full space-y-2 mt-2 pt-4 border-t border-[var(--border)]">
+                                            <div className="w-full space-y-1.5 mt-1 pt-3 border-t border-[var(--border)]">
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-[var(--text-muted)]">Base Consistency</span>
                                                     <span className="font-bold text-emerald-500 atlas-mono">{Math.round(result.consistencyScore)}</span>
@@ -763,35 +763,35 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                                     <span className="text-[var(--text-muted)]">Outlier Penalty</span>
                                                     <span className="font-bold text-red-500 atlas-mono">-{Math.round(result.outlierPenalty)}</span>
                                                 </div>
-                                                <div className="text-[9px] text-[var(--text-muted)] text-right pt-2 border-t border-[var(--border)]/50 mt-2">
+                                                <div className="text-[9px] text-[var(--text-muted)] text-right pt-1.5 border-t border-[var(--border)]/50 mt-1.5">
                                                     CV: {(result.headwayVariance / (result.avgHeadway || 1)).toFixed(2)}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="precision-panel p-6 flex flex-col items-center text-center">
-                                            <div className="p-3 bg-blue-500/10 rounded-2xl mb-4">
-                                                <Activity className="w-6 h-6 text-blue-500" />
+                                        <div className="precision-panel p-4 flex flex-col items-center text-center">
+                                            <div className="p-2.5 bg-blue-500/10 rounded-2xl mb-3">
+                                                <Activity className="w-5 h-5 text-blue-500" />
                                             </div>
                                             <span className="atlas-label mb-1">Trip Count</span>
-                                            <div className="text-3xl font-black atlas-mono">{result.tripCount}</div>
-                                            <div className="mt-2 text-xs text-[var(--text-muted)] uppercase tracking-wider">
+                                            <div className="text-2xl font-black atlas-mono">{result.tripCount}</div>
+                                            <div className="mt-1 text-xs text-[var(--text-muted)] uppercase tracking-wider">
                                                 Tier: {result.tier}m
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Headway Timeline */}
-                                    <div className="precision-panel p-8 mb-8">
-                                        <div className="flex items-center justify-between mb-6">
+                                    <div className="precision-panel p-5 mb-5">
+                                        <div className="flex items-center justify-between mb-3">
                                             <div>
-                                                <h3 className="text-lg font-bold flex items-center gap-2">
-                                                    <BarChart3 className="w-5 h-5 text-indigo-500" />
+                                                <h3 className="text-base font-bold flex items-center gap-2">
+                                                    <BarChart3 className="w-4 h-4 text-indigo-500" />
                                                     Headway Timeline
                                                 </h3>
-                                                <p className="text-sm text-[var(--text-muted)]">Gap between consecutive departures. Dashed red line = tier threshold.</p>
+                                                <p className="text-xs text-[var(--text-muted)]">Gap between consecutive departures. Dashed red line = tier threshold.</p>
                                             </div>
-                                            <div className="flex gap-4">
+                                            <div className="flex gap-3">
                                                 <div className="flex items-center gap-2 text-[10px] atlas-label">
                                                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span> &le;15m
                                                 </div>
@@ -809,14 +809,14 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                         <HeadwayTimeline times={result.times} gaps={result.gaps} tierThreshold={tierThreshold} />
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {/* Service Character */}
-                                        <div className="precision-panel p-6">
-                                            <h4 className="atlas-label mb-4 flex items-center gap-2">
+                                        <div className="precision-panel p-5">
+                                            <h4 className="atlas-label mb-3 flex items-center gap-2">
                                                 <Clock className="w-4 h-4 text-indigo-500" />
                                                 Service Character
                                             </h4>
-                                            <div className="space-y-4">
+                                            <div className="space-y-3">
                                                 <div className="flex justify-between items-center text-sm">
                                                     <span className="text-[var(--text-muted)]">Peak Frequency</span>
                                                     <span className="font-black atlas-mono">{result.peakHeadway || 'N/A'} min</span>
@@ -841,8 +841,8 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                                         </div>
 
                                         {/* Service IDs & Warnings */}
-                                        <div className="precision-panel p-6">
-                                            <h4 className="atlas-label mb-4 flex items-center gap-2">
+                                        <div className="precision-panel p-5">
+                                            <h4 className="atlas-label mb-3 flex items-center gap-2">
                                                 <Info className="w-4 h-4 text-indigo-500" />
                                                 Data Provenance
                                             </h4>
@@ -1098,7 +1098,7 @@ export const RouteDetailModal: React.FC<RouteDetailModalProps> = ({ isOpen, onCl
                         </div>
 
                         {/* Footer */}
-                        <div className="px-8 py-4 bg-[var(--item-bg)] border-t border-[var(--border)] flex justify-between items-center shrink-0">
+                        <div className="px-6 py-3 bg-[var(--item-bg)] border-t border-[var(--border)] flex justify-between items-center shrink-0">
                             <div className="flex items-center gap-2 text-[10px] atlas-label text-[var(--text-muted)]">
                                 <AlertTriangle className="w-3 h-3" />
                                 Based on uploaded GTFS feed • Verify against published schedules

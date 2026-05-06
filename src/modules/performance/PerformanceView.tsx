@@ -2,39 +2,39 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Activity, AlertTriangle, Ghost, Clock, TrendingDown, TrendingUp,
   MapPin, ArrowRight, Timer, Gauge, ChevronDown, Scale, GitCompareArrows,
-  BarChart3, Zap, Target, Eye, CheckCircle, XCircle, ArrowUpRight, ArrowDownRight, Download
+  Zap, Target, Eye, CheckCircle, XCircle, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
-import { ModuleHeader } from '../../components/ModuleHeader';
+import { ModuleIntro } from '../../components/ModuleIntro';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import { useViewAs } from '../../hooks/useViewAs';
 import {
   fetchSegmentBottlenecks, fetchStopDwells, fetchGhostBuses, fetchMatchingStats,
   fetchCorridorPerformance, fetchNetworkPulse, screenRoutes, auditServiceChange,
+  fetchStopAdherence, fetchLiveRoutes,
   type SegmentBottleneck, type StopDwell, type GhostRoute,
   type MatchingStat, type CorridorPerformance, type NetworkPulseRoute,
-  type ScreenRoute, type AuditResult
+  type ScreenRoute, type AuditResult,
+  type NetworkPulseResponse, type GhostResponse, type MatchingStatsResponse,
+  type StopAdherenceRecord,
 } from '../../services/atlasApi';
 
-// ── Agency list — same as Pulse, will be unified later ──────────────────────
-const AGENCIES = [
-  { id: 'ttc', label: 'TTC' },
-  { id: 'mbta', label: 'MBTA' },
-  { id: 'trimet', label: 'TriMet' },
-  { id: 'metrotransit', label: 'Metro Transit' },
-  { id: 'translink', label: 'TransLink' },
-  { id: 'octranspo', label: 'OC Transpo' },
-  { id: 'septa', label: 'SEPTA' },
-  { id: 'mtabus', label: 'MTA Bus' },
-  { id: 'wego', label: 'WeGo' },
-  { id: 'edmonton', label: 'Edmonton' },
-  { id: 'mcts', label: 'MCTS' },
-  { id: 'gcrta', label: 'GCRTA' },
-  { id: 'sta', label: 'STA' },
-  { id: 'drt', label: 'DRT' },
-  { id: 'sdmts', label: 'SD MTS' },
-];
+// ── Shared tab states ────────────────────────────────────────────────────────
 
-type TabId = 'overview' | 'bottlenecks' | 'ghosts' | 'dwells' | 'corridors' | 'promise' | 'audit';
+function TabLoading() {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+    </div>
+  );
+}
+
+function TabError({ message }: { message: string }) {
+  return (
+    <div className="flex items-center gap-2 text-red-500 text-sm py-8">
+      <AlertTriangle className="w-4 h-4" /> {message}
+    </div>
+  );
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -82,12 +82,23 @@ function ghostRateColor(rate: number): string {
   return 'text-red-400';
 }
 
-function reliabilityLabel(score: number): string {
-  if (score >= 90) return 'Excellent';
-  if (score >= 75) return 'Good';
-  if (score >= 50) return 'Fair';
-  if (score >= 25) return 'Poor';
-  return 'Critical';
+function feedQualitySummary(score: number): string {
+  if (score >= 90) return 'Trips and positions are matching cleanly.';
+  if (score >= 75) return 'Feed is usable, with some drift in assignment or stability.';
+  if (score >= 50) return 'Feed quality is mixed. Expect noticeable matching gaps.';
+  if (score >= 25) return 'Realtime feed is unreliable right now.';
+  return 'Realtime feed quality is near-zero right now.';
+}
+
+function feedQualityHeadline(score: number | null, matchRate: number | null): string {
+  if (score === null) return 'Waiting for realtime feed diagnostics.';
+  if (score < 25 && matchRate !== null && matchRate >= 90) {
+    return 'Trip matching is landing, but the feed itself looks unstable.';
+  }
+  if (score < 25) return 'Realtime feed quality is breaking down right now.';
+  if (score < 50) return 'Realtime feed quality is weak and likely affecting downstream metrics.';
+  if (score < 75) return 'Realtime feed is usable, but not especially trustworthy.';
+  return 'Realtime feed looks healthy enough to trust for active monitoring.';
 }
 
 function headwayColor(mins: number | null): string {
@@ -98,12 +109,33 @@ function headwayColor(mins: number | null): string {
   return 'text-red-400';
 }
 
+function SectionShell({
+  id,
+  title,
+  description,
+  children,
+}: {
+  id: string;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className="scroll-mt-24 space-y-3">
+      <div className="space-y-1">
+        <h2 className="text-[13px] font-bold tracking-tight text-[var(--text-primary)]">{title}</h2>
+        <p className="text-[12px] text-[var(--text-muted)]">{description}</p>
+      </div>
+      {children}
+    </section>
+  );
+}
+
 // ── Overview Tab ─────────────────────────────────────────────────────────────
 
 function OverviewTab({ agency }: { agency: string }) {
   const [matchStats, setMatchStats] = useState<MatchingStat | null>(null);
   const [networkRoutes, setNetworkRoutes] = useState<NetworkPulseRoute[]>([]);
-  const [bottlenecks, setBottlenecks] = useState<SegmentBottleneck[]>([]);
   const [ghosts, setGhosts] = useState<GhostRoute[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -112,253 +144,159 @@ function OverviewTab({ agency }: { agency: string }) {
     setLoading(true);
     setError(null);
     Promise.all([
-      fetchMatchingStats(agency).catch(() => ({ ts: '', stats: [] })),
-      fetchNetworkPulse(agency).catch(() => ({ routes: [] })),
-      fetchSegmentBottlenecks(agency, 5).catch(() => ({ bottlenecks: [] })),
-      fetchGhostBuses(agency, 60).catch(() => ({ routes: [] })),
-    ]).then(([ms, np, bn, gh]) => {
-      setMatchStats((ms as any).stats?.[0] ?? null);
-      setNetworkRoutes((np as any).routes ?? []);
-      setBottlenecks((bn as any).bottlenecks ?? []);
-      setGhosts((gh as any).routes ?? []);
+      fetchMatchingStats(agency).catch((): MatchingStatsResponse => ({ ts: '', stats: [] })),
+      fetchNetworkPulse(agency).catch((): NetworkPulseResponse => ({ agency, ts: '', count: 0, routes: [] })),
+      fetchGhostBuses(agency, 60).catch((): GhostResponse => ({ agency, windowMinutes: 60, ts: '', routes: [] })),
+    ]).then(([ms, np, gh]) => {
+      setMatchStats(ms.stats?.[0] ?? null);
+      setNetworkRoutes(np.routes ?? []);
+      setGhosts(gh.routes ?? []);
     }).catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [agency]);
 
   // Derived KPIs
-  const totalRoutes = networkRoutes.length;
-  const activeNow = networkRoutes.filter(r => r.currentVehicles > 0).length;
-  const frequentRoutes = networkRoutes.filter(r => r.avgGap !== null && r.avgGap <= 10).length;
+  const routesReportingNow = networkRoutes.filter(r => r.currentVehicles > 0).length;
+  const liveVehiclesNow = networkRoutes.reduce((sum, route) => sum + route.currentVehicles, 0);
   const wideGapRoutes = networkRoutes.filter(r => r.worstGap !== null && r.worstGap > 20).length;
   const matchRate = matchStats ? Math.round((matchStats.matched_obs / Math.max(matchStats.total_obs, 1)) * 100) : null;
   const healthScore = matchStats?.healthScore ?? null;
   const totalGhosts = ghosts.reduce((sum, g) => sum + g.ghostCount, 0);
+  const directMatches = matchStats?.direct_matches ?? 0;
+  const spatialMatches = matchStats?.spatial_matches ?? 0;
+  const unmatchedObs = matchStats?.unmatched ?? 0;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center gap-2 text-red-500 text-sm py-8">
-        <AlertTriangle className="w-4 h-4" /> {error}
-      </div>
-    );
-  }
+  if (loading) return <TabLoading />;
+  if (error) return <TabError message={error} />;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
+      <div className="precision-panel p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="atlas-label mb-2">What Matters Now</div>
+            <p className="text-base font-bold text-[var(--fg)] leading-snug">
+              {feedQualityHeadline(healthScore, matchRate)}
+            </p>
+            <p className="mt-1 text-[12px] text-[var(--text-muted)]">
+              {wideGapRoutes > 0 || totalGhosts > 0
+                ? `${wideGapRoutes} route${wideGapRoutes === 1 ? '' : 's'} have severe observed gaps and ${totalGhosts} ghost trip${totalGhosts === 1 ? '' : 's'} were flagged in the last hour.`
+                : 'No severe gap or ghost-trip alerts are firing right now.'}
+            </p>
+          </div>
+          <div className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold ${
+            healthScore !== null && healthScore < 50
+              ? 'bg-red-500/10 text-red-400'
+              : 'bg-emerald-500/10 text-emerald-400'
+          }`}>
+            {healthScore !== null ? `${healthScore}% feed quality` : 'Awaiting feed data'}
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--item-bg)]/40 px-4 py-3">
+            <div className="text-[10px] atlas-label text-[var(--text-muted)]">Match Path</div>
+            <div className="mt-1 text-sm font-bold text-[var(--fg)]">
+              {matchStats ? `${directMatches} direct, ${spatialMatches} spatial` : 'No match diagnostics yet'}
+            </div>
+            <div className="mt-1 text-[11px] text-[var(--text-muted)]">
+              {matchStats ? `${unmatchedObs} unmatched observations in the last 5 minutes` : 'Waiting for live observations'}
+            </div>
+          </div>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--item-bg)]/40 px-4 py-3">
+            <div className="text-[10px] atlas-label text-[var(--text-muted)]">Live Presence</div>
+            <div className="mt-1 text-sm font-bold text-[var(--fg)]">
+              {liveVehiclesNow} vehicles across {routesReportingNow} routes
+            </div>
+            <div className="mt-1 text-[11px] text-[var(--text-muted)]">
+              Current 5-minute reporting window, not the full scheduled network
+            </div>
+          </div>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--item-bg)]/40 px-4 py-3">
+            <div className="text-[10px] atlas-label text-[var(--text-muted)]">Immediate Attention</div>
+            <div className="mt-1 text-sm font-bold text-[var(--fg)]">
+              {wideGapRoutes} wide-gap route{wideGapRoutes === 1 ? '' : 's'}
+              {totalGhosts > 0 ? `, ${totalGhosts} ghost trip${totalGhosts === 1 ? '' : 's'}` : ''}
+            </div>
+            <div className="mt-1 text-[11px] text-[var(--text-muted)]">
+              Worst delay build-up is listed directly below
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ── KPI Cards ──────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Health Score */}
-        <div className="precision-panel p-5 border-l-4 border-emerald-500">
-          <div className="flex items-center gap-2 mb-3">
+        {/* Feed quality */}
+        <div className="precision-panel p-4 border-l-4 border-emerald-500">
+          <div className="flex items-center gap-2 mb-2">
             <Gauge className="w-4 h-4 text-emerald-500" />
-            <span className="atlas-label">Health Score</span>
+            <span className="atlas-label">Feed Quality</span>
           </div>
           <div className={`text-3xl font-black atlas-mono ${healthScore !== null ? healthColor(healthScore) : ''}`}>
-            {healthScore !== null ? healthScore : '—'}
+            {healthScore !== null ? `${healthScore}%` : '—'}
           </div>
-          <div className="text-[10px] text-[var(--text-muted)] mt-1">
-            {healthScore !== null ? reliabilityLabel(healthScore) : 'Awaiting data'}
+          <div className="text-[11px] text-[var(--text-muted)] mt-1">
+            {healthScore !== null ? feedQualitySummary(healthScore) : 'Awaiting live data'}
           </div>
         </div>
 
         {/* Match Rate */}
-        <div className="precision-panel p-5 border-l-4 border-indigo-500">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="precision-panel p-4 border-l-4 border-indigo-500">
+          <div className="flex items-center gap-2 mb-2">
             <Target className="w-4 h-4 text-indigo-500" />
-            <span className="atlas-label">Match Rate</span>
+            <span className="atlas-label">Realtime Match Rate</span>
           </div>
           <div className="text-3xl font-black atlas-mono">
             {matchRate !== null ? `${matchRate}%` : '—'}
           </div>
-          <div className="text-[10px] text-[var(--text-muted)] mt-1">
-            {matchStats ? `${matchStats.matched_obs.toLocaleString()} of ${matchStats.total_obs.toLocaleString()} obs` : 'No observations'}
+          <div className="text-[11px] text-[var(--text-muted)] mt-1">
+            {matchStats ? `${matchStats.matched_obs.toLocaleString()} of ${matchStats.total_obs.toLocaleString()} observations matched` : 'No observations'}
           </div>
         </div>
 
-        {/* Active Routes */}
-        <div className="precision-panel p-5 border-l-4 border-amber-500">
-          <div className="flex items-center gap-2 mb-3">
+        {/* Live vehicles */}
+        <div className="precision-panel p-4 border-l-4 border-amber-500">
+          <div className="flex items-center gap-2 mb-2">
             <Activity className="w-4 h-4 text-amber-500" />
-            <span className="atlas-label">Routes Active</span>
+            <span className="atlas-label">Live Vehicles Now</span>
           </div>
-          <div className="text-3xl font-black atlas-mono">
-            {activeNow}<span className="text-lg text-[var(--text-muted)] font-medium"> / {totalRoutes}</span>
-          </div>
-          <div className="text-[10px] text-[var(--text-muted)] mt-1">
-            {frequentRoutes} at ≤10m headway
+          <div className="text-3xl font-black atlas-mono">{liveVehiclesNow}</div>
+          <div className="text-[11px] text-[var(--text-muted)] mt-1">
+            {routesReportingNow > 0
+              ? `${routesReportingNow} route${routesReportingNow === 1 ? '' : 's'} are reporting right now`
+              : 'No routes are reporting in the current 5-minute window'}
           </div>
         </div>
 
         {/* Alerts */}
-        <div className={`precision-panel p-5 border-l-4 ${wideGapRoutes > 0 || totalGhosts > 0 ? 'border-red-500' : 'border-emerald-500'}`}>
-          <div className="flex items-center gap-2 mb-3">
+        <div className={`precision-panel p-4 border-l-4 ${wideGapRoutes > 0 || totalGhosts > 0 ? 'border-red-500' : 'border-emerald-500'}`}>
+          <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className={`w-4 h-4 ${wideGapRoutes > 0 || totalGhosts > 0 ? 'text-red-500' : 'text-emerald-500'}`} />
-            <span className="atlas-label">Alerts</span>
+            <span className="atlas-label">Current Issues</span>
           </div>
           <div className="flex items-baseline gap-3">
             {wideGapRoutes > 0 && (
               <div>
                 <span className="text-2xl font-black atlas-mono text-red-400">{wideGapRoutes}</span>
-                <span className="text-[10px] text-[var(--text-muted)] ml-1">gap &gt;20m</span>
+                <span className="text-[10px] text-[var(--text-muted)] ml-1">wide gaps</span>
               </div>
             )}
             {totalGhosts > 0 && (
               <div>
                 <span className="text-2xl font-black atlas-mono text-orange-400">{totalGhosts}</span>
-                <span className="text-[10px] text-[var(--text-muted)] ml-1">ghosts</span>
+                <span className="text-[10px] text-[var(--text-muted)] ml-1">ghost trips</span>
               </div>
             )}
             {wideGapRoutes === 0 && totalGhosts === 0 && (
               <div className="text-3xl font-black atlas-mono text-emerald-400">0</div>
             )}
           </div>
-          <div className="text-[10px] text-[var(--text-muted)] mt-1">last 60 minutes</div>
+          <div className="text-[11px] text-[var(--text-muted)] mt-1">
+            Derived from ghost-trip checks and routes with observed worst gaps above 20 minutes
+          </div>
         </div>
       </div>
 
-      {/* ── Top 5 Bottlenecks ──────────────────────────────────────────────── */}
-      {bottlenecks.length > 0 && (
-        <div className="precision-panel overflow-hidden">
-          <div className="bg-[var(--item-bg)] px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-red-400" />
-              <span className="atlas-label">Top Bottlenecks — Last 24h</span>
-            </div>
-            <span className="text-[9px] text-[var(--text-muted)]">Where delay originates</span>
-          </div>
-          <div className="divide-y divide-[var(--border)]/50">
-            {bottlenecks.map((b, i) => (
-              <div key={i} className="px-6 py-4 flex items-center gap-4 hover:bg-[var(--item-bg)] transition-colors">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black ${
-                  i === 0 ? 'bg-red-500/15 text-red-400' : 'bg-[var(--item-bg)] text-[var(--text-muted)]'
-                }`}>
-                  #{i + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold atlas-mono text-[var(--fg)]">{b.route_name}</span>
-                    <ArrowRight className="w-3 h-3 text-[var(--text-muted)]" />
-                    <span className="text-[10px] text-[var(--text-muted)] truncate">
-                      {b.from_stop_name} → {b.to_stop_name}
-                    </span>
-                  </div>
-                  {/* Delay bar */}
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden max-w-[200px]">
-                      <div
-                        className="h-full bg-red-500 rounded-full"
-                        style={{ width: `${Math.min(100, (Math.abs(b.avg_delay_delta) / 120) * 100)}%` }}
-                      />
-                    </div>
-                    <span className={`text-[10px] font-bold ${delaySeverity(b.avg_delay_delta)}`}>
-                      +{formatDelay(b.avg_delay_delta)} avg
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-xs font-bold text-[var(--fg)]">{formatDelay(b.total_delay_added)}</div>
-                  <div className="text-[9px] text-[var(--text-muted)]">total · {b.obs_count} obs</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Route Performance Summary ──────────────────────────────────────── */}
-      {networkRoutes.length > 0 && (
-        <div className="precision-panel overflow-hidden">
-          <div className="bg-[var(--item-bg)] px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-indigo-400" />
-              <span className="atlas-label">Route Performance — 7-Day Observed</span>
-            </div>
-            <div className="flex items-center gap-3 text-[9px] text-[var(--text-muted)]">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500 inline-block" /> ≤6m</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-yellow-400 inline-block" /> ≤10m</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-orange-400 inline-block" /> ≤15m</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-red-500 inline-block" /> &gt;15m</span>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-[var(--border)]">
-                  <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Route</th>
-                  <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Now</th>
-                  <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Avg Gap</th>
-                  <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Worst Gap</th>
-                  <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Best Gap</th>
-                  <th className="px-4 py-3 text-[9px] atlas-label opacity-50">Consistency</th>
-                </tr>
-              </thead>
-              <tbody>
-                {networkRoutes.slice(0, 15).map((r, i) => {
-                  const spread = r.worstGap !== null && r.bestGap !== null ? r.worstGap - r.bestGap : null;
-                  const consistency = r.avgGap !== null && r.worstGap !== null && r.avgGap > 0
-                    ? Math.max(0, Math.round((1 - (r.worstGap - r.avgGap) / r.avgGap) * 100))
-                    : null;
-                  return (
-                    <tr
-                      key={r.routeId}
-                      className={`border-b border-[var(--border)]/50 hover:bg-[var(--item-bg)] transition-colors ${i % 2 === 0 ? '' : 'bg-[var(--item-bg)]/40'}`}
-                    >
-                      <td className="px-4 py-2.5">
-                        <span className="atlas-mono text-xs font-black">{r.routeId}</span>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-1.5">
-                          <div className={`w-1.5 h-1.5 rounded-full ${r.currentVehicles > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-[var(--text-muted)]'}`} />
-                          <span className={`text-xs font-bold ${r.currentVehicles > 0 ? 'text-[var(--fg)]' : 'text-[var(--text-muted)]'}`}>
-                            {r.currentVehicles}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <span className={`text-xs font-bold ${headwayColor(r.avgGap)}`}>
-                          {r.avgGap !== null ? `${r.avgGap}m` : '—'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <span className={`text-xs font-bold ${headwayColor(r.worstGap)}`}>
-                          {r.worstGap !== null ? `${r.worstGap}m` : '—'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <span className={`text-xs font-bold ${headwayColor(r.bestGap)}`}>
-                          {r.bestGap !== null ? `${r.bestGap}m` : '—'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        {consistency !== null ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-16 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-                              <div
-                                className={`h-full rounded-full ${consistency >= 70 ? 'bg-emerald-500' : consistency >= 40 ? 'bg-yellow-400' : 'bg-red-500'}`}
-                                style={{ width: `${consistency}%` }}
-                              />
-                            </div>
-                            <span className="text-[10px] font-bold text-[var(--text-muted)]">{consistency}%</span>
-                          </div>
-                        ) : (
-                          <span className="text-[10px] text-[var(--text-muted)]">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -374,15 +312,15 @@ function BottlenecksTab({ agency }: { agency: string }) {
     setLoading(true);
     setError(null);
     fetchSegmentBottlenecks(agency, 20)
-      .then(d => setData(d.bottlenecks))
+      .then(d => setData(d?.bottlenecks ?? []))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [agency]);
 
   const maxDelay = useMemo(() => Math.max(...data.map(b => Math.abs(b.avg_delay_delta)), 30), [data]);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" /></div>;
-  if (error) return <div className="flex items-center gap-2 text-red-500 text-sm py-8"><AlertTriangle className="w-4 h-4" /> {error}</div>;
+  if (loading) return <TabLoading />;
+  if (error) return <TabError message={error} />;
 
   if (data.length === 0) {
     return (
@@ -479,13 +417,13 @@ function GhostsTab({ agency }: { agency: string }) {
     setLoading(true);
     setError(null);
     fetchGhostBuses(agency, 120)
-      .then(d => setData(d.routes))
+      .then(d => setData(d?.routes ?? []))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [agency]);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" /></div>;
-  if (error) return <div className="flex items-center gap-2 text-red-500 text-sm py-8"><AlertTriangle className="w-4 h-4" /> {error}</div>;
+  if (loading) return <TabLoading />;
+  if (error) return <TabError message={error} />;
 
   if (data.length === 0) {
     return (
@@ -603,15 +541,15 @@ function DwellsTab({ agency }: { agency: string }) {
     setLoading(true);
     setError(null);
     fetchStopDwells(agency, 20)
-      .then(d => setData(d.dwells))
+      .then(d => setData(d?.dwells ?? []))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [agency]);
 
   const maxDwell = useMemo(() => Math.max(...data.map(d => d.avg_dwell_seconds), 30), [data]);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" /></div>;
-  if (error) return <div className="flex items-center gap-2 text-red-500 text-sm py-8"><AlertTriangle className="w-4 h-4" /> {error}</div>;
+  if (loading) return <TabLoading />;
+  if (error) return <TabError message={error} />;
 
   if (data.length === 0) {
     return (
@@ -695,13 +633,13 @@ function CorridorsTab({ agency }: { agency: string }) {
     setLoading(true);
     setError(null);
     fetchCorridorPerformance(agency, 60)
-      .then(d => setData(d.corridors))
+      .then(d => setData(d?.corridors ?? []))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [agency]);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" /></div>;
-  if (error) return <div className="flex items-center gap-2 text-red-500 text-sm py-8"><AlertTriangle className="w-4 h-4" /> {error}</div>;
+  if (loading) return <TabLoading />;
+  if (error) return <TabError message={error} />;
 
   if (data.length === 0) {
     return (
@@ -769,7 +707,7 @@ function CorridorsTab({ agency }: { agency: string }) {
                     </td>
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-1 flex-wrap">
-                        {c.route_short_names.map(n => (
+                        {(c.route_short_names ?? []).map(n => (
                           <span key={n} className="text-[9px] font-bold bg-indigo-500/10 text-indigo-400 px-1.5 py-0.5 rounded">{n}</span>
                         ))}
                       </div>
@@ -830,7 +768,7 @@ interface PromiseRow {
   status: 'exceeding' | 'meeting' | 'underperforming' | 'failing' | 'no_data';
 }
 
-function FrequencyPromiseTab({ agency }: { agency: string }) {
+function ReliabilityAuditTab({ agency }: { agency: string }) {
   const [rows, setRows] = useState<PromiseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -850,9 +788,11 @@ function FrequencyPromiseTab({ agency }: { agency: string }) {
       }).catch(() => ({ routes: [] as ScreenRoute[] })),
       fetchNetworkPulse(agency).catch(() => ({ routes: [] as NetworkPulseRoute[] })),
     ]).then(([screenData, pulseData]) => {
-      const observed = new Map(pulseData.routes.map(r => [r.routeId, r]));
+      const sRoutes = screenData?.routes ?? [];
+      const pRoutes = pulseData?.routes ?? [];
+      const observed = new Map(pRoutes.map(r => [r.routeId, r]));
 
-      const merged: PromiseRow[] = screenData.routes.map(sr => {
+      const merged: PromiseRow[] = sRoutes.map(sr => {
         const obs = observed.get(sr.gtfs_route_id);
         const scheduledHw = parseFloat(sr.avg_headway) || 0;
         const observedGap = obs?.avgGap ?? null;
@@ -888,8 +828,8 @@ function FrequencyPromiseTab({ agency }: { agency: string }) {
       .finally(() => setLoading(false));
   }, [agency]);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" /></div>;
-  if (error) return <div className="flex items-center gap-2 text-red-500 text-sm py-8"><AlertTriangle className="w-4 h-4" /> {error}</div>;
+  if (loading) return <TabLoading />;
+  if (error) return <TabError message={error} />;
 
   if (rows.length === 0) {
     return (
@@ -1056,7 +996,7 @@ function ServiceAuditTab({ agency }: { agency: string }) {
       .finally(() => setLoading(false));
   }, [agency]);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" /></div>;
+  if (loading) return <TabLoading />;
   if (error) return (
     <div className="precision-panel p-12 flex flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
       <GitCompareArrows className="w-8 h-8 opacity-30" />
@@ -1067,16 +1007,18 @@ function ServiceAuditTab({ agency }: { agency: string }) {
   if (!data) return null;
 
   const pivot = new Date(data.pivotDate);
-  const beforeCount = data.before.results.length;
-  const afterCount = data.after.results.length;
+  const beforeResults = data.before?.results ?? [];
+  const afterResults = data.after?.results ?? [];
+  const beforeCount = beforeResults.length;
+  const afterCount = afterResults.length;
 
   // Compare average reliability
-  const avgReliabilityBefore = beforeCount > 0 ? Math.round(data.before.results.reduce((s, r) => s + r.reliability_score, 0) / beforeCount) : null;
-  const avgReliabilityAfter = afterCount > 0 ? Math.round(data.after.results.reduce((s, r) => s + r.reliability_score, 0) / afterCount) : null;
+  const avgReliabilityBefore = beforeCount > 0 ? Math.round(beforeResults.reduce((s, r) => s + r.reliability_score, 0) / beforeCount) : null;
+  const avgReliabilityAfter = afterCount > 0 ? Math.round(afterResults.reduce((s, r) => s + r.reliability_score, 0) / afterCount) : null;
   const relDelta = avgReliabilityBefore !== null && avgReliabilityAfter !== null ? avgReliabilityAfter - avgReliabilityBefore : null;
 
-  const bunchingBefore = data.before.results.filter(r => r.is_bunching).length;
-  const bunchingAfter = data.after.results.filter(r => r.is_bunching).length;
+  const bunchingBefore = beforeResults.filter(r => r.is_bunching).length;
+  const bunchingAfter = afterResults.filter(r => r.is_bunching).length;
 
   return (
     <div className="space-y-6">
@@ -1089,8 +1031,8 @@ function ServiceAuditTab({ agency }: { agency: string }) {
         <p className="text-sm text-[var(--fg)]">
           Comparing 30-day windows around the schedule change on{' '}
           <span className="font-black text-indigo-400 atlas-mono">{pivot.toLocaleDateString('en-CA')}</span>.
-          Feed version <span className="atlas-mono text-[10px] text-[var(--text-muted)]">{data.before.version}</span> →{' '}
-          <span className="atlas-mono text-[10px] text-[var(--text-muted)]">{data.after.version}</span>
+          Feed version <span className="atlas-mono text-[10px] text-[var(--text-muted)]">{data.before?.version ?? '—'}</span> →{' '}
+          <span className="atlas-mono text-[10px] text-[var(--text-muted)]">{data.after?.version ?? '—'}</span>
         </p>
       </div>
 
@@ -1189,7 +1131,7 @@ function ServiceAuditTab({ agency }: { agency: string }) {
                 </tr>
               </thead>
               <tbody>
-                {data.after.results.slice(0, 20).map((c, i) => (
+                {afterResults.slice(0, 20).map((c, i) => (
                   <tr
                     key={c.link_id}
                     className={`border-b border-[var(--border)]/50 hover:bg-[var(--item-bg)] transition-colors ${i % 2 === 0 ? '' : 'bg-[var(--item-bg)]/40'}`}
@@ -1199,7 +1141,7 @@ function ServiceAuditTab({ agency }: { agency: string }) {
                     </td>
                     <td className="px-4 py-2.5">
                       <div className="flex gap-1 flex-wrap">
-                        {c.route_short_names.map(n => (
+                        {(c.route_short_names ?? []).map(n => (
                           <span key={n} className="text-[9px] font-bold bg-indigo-500/10 text-indigo-400 px-1.5 py-0.5 rounded">{n}</span>
                         ))}
                       </div>
@@ -1237,6 +1179,209 @@ function ServiceAuditTab({ agency }: { agency: string }) {
   );
 }
 
+// ── Stop Adherence Tab ───────────────────────────────────────────────────────
+
+function StopAdherenceTab({ agency }: { agency: string }) {
+  const [routes, setRoutes] = useState<string[]>([]);
+  const [selectedRoute, setSelectedRoute] = useState('');
+  const [hours, setHours] = useState(24);
+  const [data, setData] = useState<StopAdherenceRecord[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [routesLoading, setRoutesLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRoutesLoading(true);
+    setSelectedRoute('');
+    setData([]);
+    fetchLiveRoutes(agency)
+      .then(r => setRoutes(r.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))))
+      .catch(() => setRoutes([]))
+      .finally(() => setRoutesLoading(false));
+  }, [agency]);
+
+  useEffect(() => {
+    if (!selectedRoute) return;
+    setLoading(true);
+    setError(null);
+    fetchStopAdherence(agency, selectedRoute, hours)
+      .then(d => setData(d.stops ?? []))
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [agency, selectedRoute, hours]);
+
+  const summaryOnTime = data.reduce((s, r) => s + r.onTimeCount, 0);
+  const summaryEarly  = data.reduce((s, r) => s + r.earlyCount, 0);
+  const summaryLate   = data.reduce((s, r) => s + r.lateCount, 0);
+  const summaryTotal  = summaryOnTime + summaryEarly + summaryLate;
+  const overallOnTimePct = summaryTotal > 0 ? Math.round((summaryOnTime / summaryTotal) * 100) : null;
+  const worstStop = data.length > 0
+    ? [...data].sort((a, b) => Math.abs(b.avgDelaySeconds) - Math.abs(a.avgDelaySeconds))[0]
+    : null;
+
+  return (
+    <div className="space-y-4">
+      {/* Controls */}
+      <div className="flex flex-wrap gap-3 items-center">
+        <div className="flex items-center gap-2">
+          <span className="atlas-label text-[10px] whitespace-nowrap">Route</span>
+          <select
+            value={selectedRoute}
+            onChange={e => setSelectedRoute(e.target.value)}
+            disabled={routesLoading}
+            className="bg-[var(--item-bg)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[11px] text-[var(--fg)] focus:outline-none focus:border-indigo-500"
+          >
+            <option value="">{routesLoading ? 'Loading…' : '— select route —'}</option>
+            {routes.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="atlas-label text-[10px] whitespace-nowrap">Window</span>
+          <div className="flex gap-1">
+            {([3, 6, 12, 24] as const).map(h => (
+              <button
+                key={h}
+                onClick={() => setHours(h)}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-colors ${
+                  hours === h
+                    ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300'
+                    : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                {h}h
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Empty-state prompts */}
+      {!selectedRoute && !routesLoading && (
+        <div className="precision-panel p-12 flex flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
+          <Target className="w-8 h-8 opacity-30" />
+          <p className="text-sm font-bold">Select a route to view stop-level adherence</p>
+          <p className="text-[10px]">Requires static GTFS to be imported for this agency.</p>
+        </div>
+      )}
+      {selectedRoute && loading && <TabLoading />}
+      {selectedRoute && !loading && error && <TabError message={error} />}
+      {selectedRoute && !loading && !error && data.length === 0 && (
+        <div className="precision-panel p-12 flex flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
+          <Target className="w-8 h-8 opacity-30" />
+          <p className="text-sm font-bold">No adherence data for route {selectedRoute}</p>
+          <p className="text-[10px]">Try a longer window or verify static GTFS is imported.</p>
+        </div>
+      )}
+
+      {/* Results */}
+      {!loading && !error && data.length > 0 && (
+        <>
+          {/* Summary KPIs */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="precision-panel px-4 py-3">
+              <div className="atlas-label text-[var(--text-muted)] mb-1">On Time</div>
+              <div className={`text-2xl font-black atlas-mono ${
+                overallOnTimePct === null ? 'text-[var(--text-muted)]'
+                : overallOnTimePct >= 80  ? 'text-emerald-400'
+                : overallOnTimePct >= 60  ? 'text-yellow-400'
+                : 'text-red-400'
+              }`}>
+                {overallOnTimePct !== null ? `${overallOnTimePct}%` : '—'}
+              </div>
+              <div className="text-[9px] text-[var(--text-muted)] mt-0.5">{summaryTotal} observations</div>
+            </div>
+            <div className="precision-panel px-4 py-3">
+              <div className="atlas-label text-[var(--text-muted)] mb-1">Early</div>
+              <div className="text-2xl font-black atlas-mono text-indigo-400">
+                {summaryTotal > 0 ? `${Math.round((summaryEarly / summaryTotal) * 100)}%` : '—'}
+              </div>
+              <div className="text-[9px] text-[var(--text-muted)] mt-0.5">{summaryEarly} obs</div>
+            </div>
+            <div className="precision-panel px-4 py-3">
+              <div className="atlas-label text-[var(--text-muted)] mb-1">Late</div>
+              <div className="text-2xl font-black atlas-mono text-orange-400">
+                {summaryTotal > 0 ? `${Math.round((summaryLate / summaryTotal) * 100)}%` : '—'}
+              </div>
+              <div className="text-[9px] text-[var(--text-muted)] mt-0.5">{summaryLate} obs</div>
+            </div>
+            <div className="precision-panel px-4 py-3">
+              <div className="atlas-label text-[var(--text-muted)] mb-1">Worst Stop</div>
+              <div className={`text-2xl font-black atlas-mono ${worstStop ? delaySeverity(worstStop.avgDelaySeconds) : 'text-[var(--text-muted)]'}`}>
+                {worstStop ? formatDelay(worstStop.avgDelaySeconds) : '—'}
+              </div>
+              <div className="text-[9px] text-[var(--text-muted)] mt-0.5 truncate">{worstStop?.stopName ?? '—'}</div>
+            </div>
+          </div>
+
+          {/* Per-stop table */}
+          <div className="precision-panel overflow-hidden">
+            <div className="bg-[var(--item-bg)] px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-indigo-400" />
+                <span className="atlas-label">Stop-by-Stop Adherence — Route {selectedRoute}</span>
+              </div>
+              <span className="text-[9px] text-[var(--text-muted)]">{data.length} stops · last {hours}h</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px]">
+                <thead>
+                  <tr className="border-b border-[var(--border)] text-[var(--text-muted)]">
+                    <th className="px-5 py-3 text-left font-bold atlas-label text-[9px]">#</th>
+                    <th className="px-5 py-3 text-left font-bold atlas-label text-[9px]">Stop</th>
+                    <th className="px-5 py-3 text-right font-bold atlas-label text-[9px]">Avg Delay</th>
+                    <th className="px-5 py-3 text-right font-bold atlas-label text-[9px]">Median</th>
+                    <th className="px-5 py-3 text-right font-bold atlas-label text-[9px]">On Time</th>
+                    <th className="px-5 py-3 text-right font-bold atlas-label text-[9px]">Samples</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border)]/50">
+                  {data.map((stop, i) => (
+                    <tr key={stop.stopId} className="hover:bg-[var(--item-bg)] transition-colors">
+                      <td className="px-5 py-3 text-[var(--text-muted)] font-bold atlas-mono w-10">
+                        {stop.stopSequence ?? i + 1}
+                      </td>
+                      <td className="px-5 py-3">
+                        <div className="font-medium text-[var(--fg)]">{stop.stopName ?? stop.stopId}</div>
+                        <div className="text-[9px] text-[var(--text-muted)] atlas-mono mt-0.5">{stop.stopId}</div>
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        <span className={`font-black atlas-mono ${delaySeverity(stop.avgDelaySeconds)}`}>
+                          {formatDelay(stop.avgDelaySeconds)}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        <span className={`font-bold atlas-mono ${delaySeverity(stop.medianDelaySeconds)}`}>
+                          {formatDelay(stop.medianDelaySeconds)}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-16 h-1.5 rounded-full bg-[var(--border)] overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${stop.onTimePct >= 80 ? 'bg-emerald-500' : stop.onTimePct >= 60 ? 'bg-yellow-400' : 'bg-red-500'}`}
+                              style={{ width: `${stop.onTimePct}%` }}
+                            />
+                          </div>
+                          <span className={`font-bold atlas-mono w-8 text-right ${stop.onTimePct >= 80 ? 'text-emerald-400' : stop.onTimePct >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+                            {Math.round(stop.onTimePct)}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 text-right text-[var(--text-muted)] atlas-mono">
+                        {stop.sampleCount}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ── Main View ────────────────────────────────────────────────────────────────
 
 export default function PerformanceView() {
@@ -1244,99 +1389,118 @@ export default function PerformanceView() {
   const { viewAsAgency } = useViewAs();
   const isAdmin = role === 'admin' || role === 'researcher';
   const defaultAgency = isAdmin ? (viewAsAgency?.slug ?? '') : (userAgencyId ?? '');
-  const [tab, setTab] = useState<TabId>('overview');
   const [agency, setAgency] = useState(defaultAgency);
 
   useEffect(() => {
-    if (isAdmin && viewAsAgency) setAgency(viewAsAgency.slug);
+    if (isAdmin) setAgency(viewAsAgency?.slug ?? '');
   }, [viewAsAgency, isAdmin]);
 
-  const TABS: { id: TabId; label: string; icon: React.ComponentType<any> }[] = [
-    { id: 'overview', label: 'Overview', icon: Gauge },
-    { id: 'promise', label: 'Freq. Promise', icon: Scale },
-    { id: 'bottlenecks', label: 'Bottlenecks', icon: Zap },
-    { id: 'ghosts', label: 'Ghost Buses', icon: Ghost },
-    { id: 'dwells', label: 'Dwell Analysis', icon: Timer },
-    { id: 'corridors', label: 'Live Corridors', icon: Eye },
-    { id: 'audit', label: 'Service Audit', icon: GitCompareArrows },
-  ];
+  const sections = [
+    { id: 'performance-overview', label: 'Overview', icon: Gauge },
+    { id: 'performance-reliability', label: 'Reliability', icon: Scale },
+    { id: 'performance-delay', label: 'Delay', icon: Zap },
+    { id: 'performance-ghosts', label: 'Ghosts', icon: Ghost },
+    { id: 'performance-dwells', label: 'Dwells', icon: Timer },
+    { id: 'performance-corridors', label: 'Corridors', icon: Eye },
+    { id: 'performance-audit', label: 'Audit', icon: GitCompareArrows },
+    { id: 'performance-adherence', label: 'Adherence', icon: Target },
+  ] as const;
 
   return (
     <div className="module-container">
       <div className="print:hidden">
-        <ModuleHeader
-          badge={{ label: 'Live · 24h' }}
+        <ModuleIntro
+          subtitle="Inspect feed quality, delay build-up, ghost trips, dwell friction, and corridor reliability."
         />
       </div>
 
-      {/* Controls */}
-      <div className="flex flex-col gap-4 mb-8 print:hidden">
-        <div className="flex items-end justify-between gap-4 flex-wrap">
-          {isAdmin && (
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] atlas-label opacity-50">Agency</span>
-              <div className="flex items-center gap-2 flex-wrap">
-                {AGENCIES.map(a => (
-                  <button
-                    key={a.id}
-                    onClick={() => setAgency(a.id)}
-                    className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
-                      agency === a.id
-                        ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
-                        : 'bg-[var(--item-bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-indigo-500/30'
-                    }`}
-                  >
-                    {a.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          <button 
-            onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-bold hover:bg-indigo-500/20 transition-colors h-fit"
-          >
-            <Download className="w-4 h-4" />
-            Export Board Report (PDF)
-          </button>
-        </div>
-
-        {/* Tab switcher */}
-        <div className="flex items-center gap-1 p-1 bg-[var(--item-bg)] border border-[var(--border)] rounded-xl w-fit overflow-x-auto">
-          {TABS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setTab(id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-                tab === id
-                  ? 'bg-indigo-500 text-white shadow-sm'
-                  : 'text-[var(--text-muted)] hover:text-[var(--fg)]'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
-            </button>
-          ))}
-        </div>
+    {!agency ? (
+      <div className="flex items-center justify-center py-24 text-[var(--text-muted)] text-sm">
+        Select an agency above to load performance data.
       </div>
+    ) : (
+      <div className="print:block space-y-8">
+        <div className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-3 print:hidden">
+          {sections.map(section => {
+            const Icon = section.icon;
+            return (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--item-bg)] px-3 py-1.5 text-[11px] font-bold text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {section.label}
+              </a>
+            );
+          })}
+        </div>
 
-      {/* Tab content */}
-      {!agency ? (
-        <div className="flex items-center justify-center py-24 text-[var(--text-muted)] text-sm">
-          Select an agency above to load performance data.
-        </div>
-      ) : (
-        <div className="print:block">
-          {tab === 'overview' && <OverviewTab agency={agency} />}
-          {tab === 'promise' && <FrequencyPromiseTab agency={agency} />}
-          {tab === 'bottlenecks' && <BottlenecksTab agency={agency} />}
-          {tab === 'ghosts' && <GhostsTab agency={agency} />}
-          {tab === 'dwells' && <DwellsTab agency={agency} />}
-          {tab === 'corridors' && <CorridorsTab agency={agency} />}
-          {tab === 'audit' && <ServiceAuditTab agency={agency} />}
-        </div>
-      )}
-    </div>
-  );
+        <SectionShell
+          id="performance-overview"
+          title="Overview"
+          description="Start with the operating readout: feed quality, live reporting volume, and immediate issues."
+        >
+          <OverviewTab agency={agency} />
+        </SectionShell>
+
+        <SectionShell
+          id="performance-reliability"
+          title="Reliability Audit"
+          description="Compare scheduled headways with observed service to see where the published promise is holding or breaking."
+        >
+          <ReliabilityAuditTab agency={agency} />
+        </SectionShell>
+
+        <SectionShell
+          id="performance-delay"
+          title="Delay Build-Up"
+          description="Inspect where delay is accumulating and which segments are dragging the network down."
+        >
+          <BottlenecksTab agency={agency} />
+        </SectionShell>
+
+        <SectionShell
+          id="performance-ghosts"
+          title="Ghost Trips"
+          description="Find routes with scheduled service but missing or inconsistent realtime presence."
+        >
+          <GhostsTab agency={agency} />
+        </SectionShell>
+
+        <SectionShell
+          id="performance-dwells"
+          title="Stop Friction"
+          description="Review stop-level dwell behaviour and where boarding friction is slowing service."
+        >
+          <DwellsTab agency={agency} />
+        </SectionShell>
+
+        <SectionShell
+          id="performance-corridors"
+          title="Live Corridors"
+          description="Track shared trunk corridors and see where combined service is holding or collapsing."
+        >
+          <CorridorsTab agency={agency} />
+        </SectionShell>
+
+        <SectionShell
+          id="performance-audit"
+          title="Service Change Audit"
+          description="Run before-and-after analysis against imported feed history to measure the impact of schedule changes."
+        >
+          <ServiceAuditTab agency={agency} />
+        </SectionShell>
+
+        <SectionShell
+          id="performance-adherence"
+          title="Schedule Adherence"
+          description="Pick a route to see stop-by-stop on-time performance, delay trends, and which stops accumulate the most lateness."
+        >
+          <StopAdherenceTab agency={agency} />
+        </SectionShell>
+      </div>
+    )}
+  </div>
+);
 }

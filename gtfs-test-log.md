@@ -12,7 +12,7 @@ File sizes and calendar ranges included as version identifiers (feeds don't have
 ### Cloud
 | Feed | File | Size | Calendar Range | Tested | Status | Notes |
 |---|---|---|---|---|---|---|
-| MTA New York City Bus | Local: Manhattan Full Fleet | — | — | 2026-03-30 | **TESTING** | **Discovery Lab**: Entirely segregated local stress-test. Matching full NYC fleet (8,000+ buses) against Manhattan schedule baseline. |
+| MTA New York City Bus | OCI production feed | — | — | 2026-03-30 | **TESTING** | Production runtime is OCI. Older Manhattan full-fleet local stress-test notes are historical only and should not be used to infer current live-site runtime. |
 | TTC Toronto | `Canada/Ontario/TTC Schedules.zip` | 34.2 MB | 2026-03-15 → 2026-05-02 | 2026-03-19 | BUG→PASS | Extended route type 700 maps correctly. False-positive "Multiple service_ids" warnings removed. 191 weekday routes; Rapid:2, Freq++:5, Freq+:34. |
 | York Region Transit | `Canada/Ontario/York Region Transit.zip` | 4.9 MB | 2026-01-04 → 2026-04-25 | 2026-03-19 | PASS | Clean. Used as regression baseline. |
 | Melbourne PTV | `Australia/Victoria/Melbourne PTV.zip` | 222.5 MB | calendar_dates only | 2026-03-19 | BUG→PASS | Nested zip — `computeRawDepartures` crashed on missing required files. Fixed with early return guard. |

@@ -56,12 +56,12 @@ function formatSpan(mins: number): string {
   return m === 0 ? `${displayH}${suffix}` : `${displayH}:${m.toString().padStart(2, '0')}${suffix}`;
 }
 
-export function NetworkScreener() {
+export function NetworkScreener({ forcedTab }: { forcedTab?: 'routes' | 'corridors' | 'monitoring' }) {
   const { role, agencyId: userAgencyId } = useAuthStore();
   const { viewAsAgency } = useViewAs();
   const isAdmin = role === 'admin' || role === 'researcher';
 
-  const [tab, setTab]                         = useState<'routes' | 'corridors' | 'monitoring'>('routes');
+  const [tab, setTab]                         = useState<'routes' | 'corridors' | 'monitoring'>(forcedTab || 'routes');
   const [agencies, setAgencies]               = useState<AgencyMeta[]>([]);
   const [loadingAgencies, setLoadingAgencies] = useState(true);
   const [agencyError, setAgencyError]         = useState<string | null>(null);
@@ -104,7 +104,12 @@ export function NetworkScreener() {
     setResults(null);
     setCorridors(null);
     if (slug) runScreenFor(slug);
-  }, [viewAsAgency, isAdmin]);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [viewAsAgency, isAdmin]);
+
+  // Sync forcedTab
+  useEffect(() => {
+    if (forcedTab) setTab(forcedTab);
+  }, [forcedTab]);
 
   const runScreenFor = useCallback(async (agency: string) => {
     if (!agency) return;
@@ -212,8 +217,8 @@ export function NetworkScreener() {
 
   return (
     <div className="space-y-6">
-      {/* Tab bar */}
-      <div className="flex items-center border-b border-[var(--border)]">
+      {/* Tab bar hidden - now handled by parent ModuleSubNav */}
+      <div className="hidden">
         {([
           { id: 'routes',     label: 'Routes',     icon: Filter   },
           { id: 'corridors',  label: 'Corridors',  icon: GitFork  },
@@ -233,7 +238,7 @@ export function NetworkScreener() {
           </button>
         ))}
       </div>
-      <p className="text-[12px] text-[var(--text-muted)] -mt-2">{TAB_DESCRIPTIONS[tab]}</p>
+      {/* <p className="text-[12px] text-[var(--text-muted)] -mt-2">{TAB_DESCRIPTIONS[tab]}</p> */}
 
       {/* Filter panel */}
       <div className="precision-panel p-6 space-y-5">

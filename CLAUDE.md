@@ -4,20 +4,9 @@ Atlas is a transit intelligence platform. It ingests GTFS feeds, runs them throu
 
 ## OCI Production Server
 
-The real Atlas server runs on OCI — always check there first:
+See [`docs/SERVER.md`](./docs/SERVER.md) for SSH access, DB URLs, deploy workflow, PM2 command, and zombie query fix.
 
-```bash
-ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118 "pm2 status"
-```
-
-Deploy fixes by compiling locally then rsyncing (TypeScript not installed on OCI):
-
-```bash
-rsync -av -e "ssh -i ~/.ssh/oracle_key" server/dist/ ubuntu@40.233.99.118:/home/ubuntu/atlas-server/dist/
-ssh -i ~/.ssh/oracle_key ubuntu@40.233.99.118 "pm2 restart atlas-server"
-```
-
-The local `atlas_lab` database and local server are a dev copy only. A `.env` comment saying "remote is unresponsive" does not mean OCI is actually down — verify via SSH.
+Atlas production runs on OCI — local Postgres is decommissioned. Turning off a local machine does not affect live data. Older "Discovery Lab" / `atlas_lab` notes are not the authoritative runtime path.
 
 ## Key Paths
 
@@ -29,9 +18,7 @@ The local `atlas_lab` database and local server are a dev copy only. A `.env` co
 
 ## External Tracking
 
-**AtlasLog** — Notion database that tracks Atlas development history, testing sessions, and notable findings. Update it alongside `gtfs-test-log.md` when significant testing or bug fixes happen.
-
-[AtlasLog Notion DB](https://www.notion.so/3289563c9a498064a562f3c71fe3879f?v=3289563c9a4981d7a368000c0911b32d)
+**AtlasLog** — Notion portfolio tracker for resume-worthy technical work. See [`ATLASLOG.md`](./ATLASLOG.md) for what belongs there, entry format, and the AI assistant rule.
 
 ## Accuracy Snapshot Workflow
 
