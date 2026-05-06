@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.3] - 2026-05-06
+
+### Added
+- **Strategic Audit in Analyze**: Added a new strategic audit workflow and supporting shared module UI primitives to tighten the Core 5 consolidation across analysis surfaces.
+- **Server stop-adherence analytics**: Added `GET /api/intelligence/stop-adherence` to return per-stop delay and on-time metrics for a route over a configurable time window.
+- **Server script build track**: Added `server/scripts/backfill-stop-times.ts`, `server/tsconfig.scripts.json`, and committed generated `server/dist-scripts/` artifacts for script execution parity.
+
+### Changed
+- **Core module consolidation**: Folded legacy module paths into the consolidated Core 5 structure, including route redirects in the app shell and navigation updates across the frontend.
+- **Map, Performance, Pulse, Alerts, and Simulator refresh**: Reworked major frontend module surfaces and supporting shared styles/components to align the product around the new Atlas operating model.
+- **Benchmark and matcher operations**: Tightened ingestion and intelligence runtime behavior, including benchmark window/refresh changes and matcher/import/static-db updates on the server.
+
+### Removed
+- **Legacy Intelligence module**: Removed the old standalone Intelligence view and stylesheet in favor of the consolidated Analyze flow.
+- **Deprecated server lab scripts**: Removed `server/scripts/discovery-lab.ts` and `server/scripts/setup-lab.ts`.
+
 ## [0.19.2] - 2026-05-04
 
 ### Fixed
@@ -231,4 +247,3 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - **Infrastructure**: Retired local Postgres requirement; transitioned entirely to OCI-hosted `static` and `realtime` databases.
 - **Module Nomenclature**: RenamedStrategy → Analyze, Intelligence → Monitor. Standalone Optimize module merged into Analyze as a Map tab. (Corrected in 0.15.0)
-
