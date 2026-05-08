@@ -19,6 +19,7 @@ Atlas production runs on OCI — local Postgres is decommissioned. Turning off a
 ## External Tracking
 
 **AtlasLog** — Notion portfolio tracker for resume-worthy technical work. See [`ATLASLOG.md`](./ATLASLOG.md) for what belongs there, entry format, and the AI assistant rule.
+**Notion registries** — See [`docs/NOTION_REGISTRY.md`](./docs/NOTION_REGISTRY.md) for the IDs and usage rules for `AgenciesLog`, `UptimeDatabase`, and the production sync databases.
 
 ## Accuracy Snapshot Workflow
 
