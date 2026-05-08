@@ -31,22 +31,19 @@ The following primary Notion databases are used for project management and healt
 - **Phase 2 (Real-time)**: GTFS-RT polling + Matcher Service (`matcher.ts`) correlate GPS pings with static schedules to produce `delay_seconds`.
 - **Route Filtering**: Only high-frequency or rapid trunk lines are currently being tracked for Phase 2 validation.
 
-## Architectural Standards (NextGen)
+## Architectural Standards (Reboot)
 
-### Backend: Service Layer Pattern
-- **Constraint:** `server/src/api/routes.ts` is a routing layer ONLY.
-- **Mandate:** All raw SQL, external API calls, and business logic MUST be encapsulated in `server/src/services/`.
-- **Naming:** Services should be named after their domain (e.g., `IntelligenceService.ts`, `VehicleService.ts`).
+### Mini-App Pattern
+- **Core Principle:** Build small, focused, high-precision tools rather than a single monolithic dashboard.
+- **Modularity:** Each tool (e.g., Interval, Pulse) should be its own isolated "mini-app" within the `src/` directory.
 
-### Frontend: Modular UI
-- **Constraint:** Avoid "God Components". Use professional judgement to split massive files into specialized sub-components or hooks.
-- **Mandate:** Complex modules (like Performance, Pulse) should be organized into a `components/` sub-directory when modularity improves legibility and testing.
-- **Shared Logic:** Centralize formatting and style-mapping in `*Helpers.tsx` within the module folder.
-
-### Documentation
-- **Roadmap:** Refer to `NextGen-Roadmap.md` in the root for active transformation goals.
-- **Logs:** Update `ATLASLOG.md` for major architectural shifts.
+### Backend: Minimalist Service Layer
+- **Mandate:** The backend should be kept as lean as possible. Only serve what the frontend explicitly needs for its live views.
+- **Persistence:** Real-time data remains on OCI. Use the SSH tunnel for local development.
 
 ## Complementary Files
+- `v0/` — Contains the legacy prototype codebase for reference.
+- `ROADMAP.md` — The central hub for the Reboot trajectory.
+
 - `CLAUDE.md` — Contains core project paths, accuracy snapshot workflows, and general development notes for Claude.
 - `CHANGELOG.md` — All Phase 2 work is being tracked in the `[Unreleased]` section.
