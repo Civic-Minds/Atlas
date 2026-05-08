@@ -5,15 +5,14 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Backend Service Layer**: Extracted raw SQL and business logic from `routes.ts` into a dedicated `/services` directory (`AgencyService`, `VehicleService`, `IntelligenceService`, `LiveService`, `CatalogService`, `AlertService`).
-- **NextGen Roadmap**: Introduced a comprehensive platform roadmap in `ROADMAP.md` and `docs/ROADMAP_*`.
+- **Mini-App Architecture (Reboot)**: Shifted from a monolithic dashboard to a focused, modular "Workspace" model. Each core feature (Frequency, Reliability, Live Map) is now its own isolated mini-app.
+- **Map-First Foundation**: Rebuilt the frontend from scratch centered around a high-performance Leaflet map.
+- **Minimal Core API**: Initialized a stable, pruned backend server designed for speed and 100% uptime.
+- **Prototype Archiving**: Moved the legacy codebase (V0) to the `/v0` directory for historical reference.
 
 ### Changed
-- **Modular Performance View**: Deconstructed the 1,500-line `PerformanceView.tsx` into 8 isolated components in `src/modules/performance/components/` for better maintainability and visual iteration.
-- **High-Speed Pulse Queries**: Optimized real-time network monitoring queries, reducing response times from 45s+ to <1s.
-- **UI Unification**: Standardized sub-navigation across all modules (Analyze, Performance, Pulse, Alerts) using a unified Navigator-style component.
-- **Project Structure**: Aligned documentation and architectural standards with the Navigator "NextGen" pattern, including a new `PLATFORM.md` overview.
-- **GEMINI Mandates**: Updated project-level instructions to favor service-oriented architecture and modular UI development.
+- **Navigation**: Removed complex tabbed routing in favor of a clean, map-overlay HUD.
+- **Stability**: Aggressively reduced backend surface area to eliminate OOM crashes and PM2 restarts.
 
 ## [0.19.3] - 2026-05-06
 
