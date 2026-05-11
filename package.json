@@ -1,9 +1,9 @@
 {
-  \"name\": \"atlas-platform\",
-  \"private\": true,
-  \"description\": \"A transit intelligence platform for mobility precision in North American metros.\",
-  \"version\": \"0.21.0\",
-  \"type\": \"module\",
+  "name": "atlas-platform",
+  "private": true,
+  "description": "A transit intelligence platform for mobility precision in North American metros.",
+  "version": "0.21.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "tunnel": "ssh -i ~/.ssh/oracle_key -L 3001:localhost:3001 -N ubuntu@40.233.99.118",
@@ -34,10 +34,15 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.10",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1",
+    "vite": "^7.3.2",
     "vitest": "^4.0.18"
+  },
+  "overrides": {
+    "protobufjs": ">=7.5.5",
+    "picomatch": ">=4.0.4",
+    "rollup": ">=4.59.0"
   }
 }
