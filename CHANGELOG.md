@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Security
+- **Dependency patches**: Bumped `vite` to 7.3.2 and `postcss` to 8.5.10; added overrides for `protobufjs` ≥7.5.5, `picomatch` ≥4.0.4, `rollup` ≥4.59.0. Backend (v0): overrides for `protobufjs`, `fast-xml-parser` ≥5.7.0, `fast-xml-builder` ≥1.1.7, `ip-address` ≥10.1.1, `lodash` ≥4.18.0, `brace-expansion` ≥2.0.3, `uuid` ≥11.1.1.
+- **Dependabot**: Added `.github/dependabot.yml` for weekly npm and GitHub Actions scanning.
+
 ## [0.21.0] - 2026-05-07
 
 ### Added
