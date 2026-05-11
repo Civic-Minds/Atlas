@@ -37,7 +37,7 @@
     "postcss": "^8.5.10",
     "tailwindcss": "^4.1.18",
     "typescript": "^6.0.3",
-    "vite": "^7.3.2",
+    "vite": "^8.0.12",
     "vitest": "^4.1.6"
   },
   "overrides": {
