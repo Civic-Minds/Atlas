@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-05-12
+
 ### Added
 - **React Router**: Wired up `react-router-dom` with `BrowserRouter`; App becomes the layout shell. Routes: `/interval` (live), `/live` and `/reliability` stubbed as coming-soon nav items.
 - **Zustand store** (`src/store/atlas.ts`): Centralized agency list, selected agency, and map center. Agency switcher in the header now writes to the store; Interval reads from it.
@@ -27,6 +29,7 @@ All notable changes to this project will be documented in this file.
   - **Overrides**: Maintained overrides for `protobufjs` ≥7.5.5, `picomatch` ≥4.0.4, and `rollup` ≥4.59.0.
 - **Rate Limiting**: Implemented `express-rate-limit` across all API endpoints (root server and v0 backend) to resolve 29+ code scanning issues and prevent potential DoS.
 - **Dependabot**: Added `.github/dependabot.yml` for weekly npm and GitHub Actions scanning.
+
 
 
 
