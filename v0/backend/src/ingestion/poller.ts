@@ -121,7 +121,13 @@ export function startPolling(agencies: Agency[], defaultIntervalMs: number): voi
   // so add up to 30s of random jitter to spread their startup polls.
   agencies.forEach((agency, index) => {
     const interval = agency.pollingIntervalMs ?? defaultIntervalMs;
-    const is511Agency = agency.vehiclePositionsUrl.includes('api.511.org');
+    let is511Agency = false;
+    try {
+      const hostname = new URL(agency.vehiclePositionsUrl).hostname;
+      is511Agency = hostname === 'api.511.org' || hostname.endsWith('.api.511.org');
+    } catch {
+      is511Agency = false;
+    }
     const jitterMs = is511Agency ? Math.floor(Math.random() * 30000) : 0;
     const staggeredStartDelay = index * 500 + jitterMs; // 500ms base stagger + optional jitter
 

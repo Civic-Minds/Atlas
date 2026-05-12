@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- **CodeQL Security**: Addressed 4 security vulnerabilities identified by CodeQL and Dependabot:
+  - Fixed incomplete URL substring sanitization in `v0/backend/src/ingestion/poller.ts` by explicitly parsing the URL hostname.
+  - Added rate limiting via `express-rate-limit` to the SPA fallback route in `v0/backend/src/server.ts` to prevent potential DoS.
+  - Set explicit `contents: read` permissions for the `GITHUB_TOKEN` in the `.github/workflows/ci.yml` workflow.
+  - Re-generated `v0/backend/package-lock.json` to properly reflect the patched `@tootallnate/once` `>=3.0.1` dependency override.
+
 ## [0.22.3] - 2026-05-12
 
 ### Fixed
