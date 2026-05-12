@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
+import rateLimit from 'express-rate-limit';
 import { AGENCIES, POLL_INTERVAL_MS } from './config';
 import { startPolling } from './ingestion/poller';
 import apiRoutes, { scheduleBenchmarkRefresh } from './api/routes';
@@ -31,10 +32,17 @@ app.use('/api/import', importRoutes);
 const clientDist = path.resolve(__dirname, '../../dist');
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist));
+
+  const spaRateLimit = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 100,
+    message: 'Too many requests, please try again later.',
+  });
+
   // SPA fallback — any non-API route that doesn't match a static file
   // gets index.html so React Router handles client-side navigation.
   // Express 5 requires named wildcard params instead of bare '*'.
-  app.get('/{*splat}', (_req, res) => {
+  app.get('/{*splat}', spaRateLimit, (_req, res) => {
     res.sendFile(path.join(clientDist, 'index.html'));
   });
   log.info('Server', 'serving frontend', { path: clientDist });
