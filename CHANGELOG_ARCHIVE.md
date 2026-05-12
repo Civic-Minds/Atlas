@@ -102,7 +102,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 
 ### Changed
 - **Infrastructure**: Retired local Postgres requirement; transitioned entirely to OCI-hosted `static` and `realtime` databases.
-- **Module Nomenclature**: RenamedStrategy → Analyze, Intelligence → Monitor. Standalone Optimize module merged into Analyze as a Map tab. (Corrected in 0.15.0)
+- **Module Nomenclature**: Renamed Strategy → Analyze, Intelligence → Monitor. Standalone Optimize module merged into Analyze as a Map tab. (Corrected in 0.15.0)
 
 ---
 *Legacy entries from 0.1.0 to 0.12.0 continue below...*
