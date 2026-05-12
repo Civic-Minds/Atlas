@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requireTenant } from './middleware/auth';
-import { diagnosticsLimiter } from './middleware/rate-limit';
+import { apiLimiter, diagnosticsLimiter } from './middleware/rate-limit';
 import { getMatchDiagnostics } from '../intelligence/matcher';
 import { getPool } from '../storage/db';
 import { log } from '../logger';
@@ -14,6 +14,9 @@ import { LiveService } from '../services/LiveService';
 import { AlertService } from '../services/AlertService';
 
 const router = Router();
+
+// Apply standard rate limiting to all routes in this router
+router.use(apiLimiter);
 
 // ── User / Profile ───────────────────────────────────────────────────────────
 

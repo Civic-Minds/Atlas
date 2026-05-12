@@ -1,13 +1,24 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { Pool } from 'pg';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Rate limiting: 100 requests per 15 minutes per IP
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use(cors());
 app.use(express.json());
+app.use('/api/', apiLimiter);
 
 const staticPool = new Pool({
   connectionString: process.env.STATIC_DATABASE_URL,

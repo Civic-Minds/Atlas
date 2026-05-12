@@ -3,8 +3,12 @@ import multer from 'multer';
 import { importGtfsFeed } from '../import/importer';
 import { getStaticPool } from '../storage/static-db';
 import { requireAuth, requireTenant } from './middleware/auth';
+import { apiLimiter } from './middleware/rate-limit';
 
 const router = Router();
+
+// Apply standard rate limiting to all import routes
+router.use(apiLimiter);
 
 // Store uploads in memory (max 200MB — large feeds like NYC MTA)
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 200 * 1024 * 1024 } });

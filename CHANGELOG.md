@@ -25,7 +25,9 @@ All notable changes to this project will be documented in this file.
   - **Root**: Bumped `vite` to 8.0.12, `postcss` to 8.5.14, `firebase` to 12.13.0, and `react-dom` to 19.2.6.
   - **V0 Backend**: Bumped `firebase-admin` to 13.9.0; fixed `protobufjs-cli` OS command injection vulnerability.
   - **Overrides**: Maintained overrides for `protobufjs` ≥7.5.5, `picomatch` ≥4.0.4, and `rollup` ≥4.59.0.
+- **Rate Limiting**: Implemented `express-rate-limit` across all API endpoints (root server and v0 backend) to resolve 29+ code scanning issues and prevent potential DoS.
 - **Dependabot**: Added `.github/dependabot.yml` for weekly npm and GitHub Actions scanning.
+
 
 
 ## [0.21.0] - 2026-05-07
