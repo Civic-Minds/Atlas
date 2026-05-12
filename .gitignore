@@ -43,3 +43,8 @@ handoff.txt
 ATLASLOG.md
 CLAUDE.md
 GEMINI.md
+.claude/
+.conductor/
+_agents/
+scratch/
+gtfs-test-log.md
