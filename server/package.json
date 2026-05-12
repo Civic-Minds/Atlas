@@ -1,6 +1,6 @@
 {
   "name": "atlas-server",
-  "version": "0.22.3",
+  "version": "0.22.4",
   "type": "module",
   "scripts": {
     "dev": "ts-node --esm src/server.ts",

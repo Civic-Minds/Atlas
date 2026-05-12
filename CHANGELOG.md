@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.22.4] - 2026-05-12
+
 ### Fixed
 - **CodeQL Security**: Addressed 4 security vulnerabilities identified by CodeQL and Dependabot:
   - Fixed incomplete URL substring sanitization in `v0/backend/src/ingestion/poller.ts` by explicitly parsing the URL hostname.
