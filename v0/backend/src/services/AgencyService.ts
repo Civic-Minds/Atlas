@@ -39,4 +39,13 @@ export class AgencyService {
     );
     return result.rows[0];
   }
+
+  static async getAgencyAccountBySlug(slug: string) {
+    const pool = getStaticPool();
+    const result = await pool.query(
+      'SELECT id, display_name FROM agency_accounts WHERE slug = $1 LIMIT 1',
+      [slug]
+    );
+    return result.rows[0];
+  }
 }
