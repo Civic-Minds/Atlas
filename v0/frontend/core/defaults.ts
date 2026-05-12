@@ -35,15 +35,24 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
 
 /**
  * GTFS route_type → mode category for tier override lookup.
- * Handles both base types (0–7) and GTFS extended types (HVT spec).
+ * Handles both base types (0–12) and GTFS extended types (HVT spec).
  */
 export function getModeCategory(routeType: string): string {
-    // Base GTFS types that are rail/tram
-    const baseRailTypes = new Set(['0', '1', '2', '12']); // tram/light rail, subway, commuter rail, monorail
-    if (baseRailTypes.has(routeType)) return 'rail';
-    // Extended HVT types: 100–199 (Commuter Rail), 400–599 (Urban Rail/Metro/Underground)
     const n = parseInt(routeType);
-    if (!Number.isNaN(n) && ((n >= 100 && n < 200) || (n >= 400 && n < 600))) return 'rail';
+    if (Number.isNaN(n)) return 'surface';
+
+    // Base GTFS types (Standard Spec)
+    // 0: Tram/Light Rail, 1: Subway/Metro, 2: Rail, 5: Cable Car, 7: Funicular, 12: Monorail
+    const baseRailTypes = new Set([0, 1, 2, 5, 7, 12]);
+    if (baseRailTypes.has(n)) return 'rail';
+
+    // Extended HVT types (Google/Extended Spec)
+    // 100-199: Railway, 400-499: Urban Railway, 500-599: Metro, 900-999: Tram, 1400-1499: Funicular
+    if ((n >= 100 && n < 200) || (n >= 400 && n < 600) || (n >= 900 && n < 1000) || (n >= 1400 && n < 1500)) {
+        return 'rail';
+    }
+
+    // Default to surface for all other types (Buses, Trolleybuses, Ferries, etc.)
     return 'surface';
 }
 
