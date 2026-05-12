@@ -57,8 +57,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: Request, res: R
 // Tenant users only see their own agency. Admins (no tenant) see all.
 router.get('/agencies', requireAuth, requireTenant, async (req: Request, res: Response): Promise<void> => {
   const tenant = (req as any).tenant as { agencyId: string | null } | null;
-  const params: string[] = [];
-  const where = tenant?.agencyId ? `WHERE aa.slug = $${params.push(tenant.agencyId)}` : '';
+  const agencyId = tenant?.agencyId || null;
 
   const result = await getStaticPool().query(
     `SELECT
@@ -69,9 +68,9 @@ router.get('/agencies', requireAuth, requireTenant, async (req: Request, res: Re
      FROM agency_accounts aa
      JOIN gtfs_agencies ga ON ga.agency_account_id = aa.id
      LEFT JOIN feed_versions fv ON fv.gtfs_agency_id = ga.id AND fv.is_current = TRUE
-     ${where}
+     WHERE ($1::text IS NULL OR aa.slug = $1)
      ORDER BY aa.display_name`,
-    params
+    [agencyId]
   );
   res.json(result.rows);
 });

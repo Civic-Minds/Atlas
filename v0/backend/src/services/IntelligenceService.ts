@@ -52,9 +52,9 @@ export class IntelligenceService {
          COUNT(CASE WHEN delay_seconds IS NULL THEN 1 END) as unmatched
        FROM vehicle_positions
        WHERE observed_at >= NOW() - INTERVAL '5 minutes'
-       ${agency ? 'AND agency_id = $1' : ''}
+         AND ($1::text IS NULL OR agency_id = $1)
        GROUP BY agency_id`,
-      agency ? [agency] : []
+      [agency || null]
     );
 
     return await Promise.all(result.rows.map(async (row) => {

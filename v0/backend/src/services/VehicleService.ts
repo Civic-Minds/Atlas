@@ -5,10 +5,10 @@ export class VehicleService {
     const result = await getPool().query(
       `SELECT agency_id, polled_at, success, vehicle_count, error_msg, notion_sync_at
        FROM ingestion_log
-       ${agency ? 'WHERE agency_id = $1' : ''}
+       WHERE ($1::text IS NULL OR agency_id = $1)
        ORDER BY polled_at DESC
-       LIMIT ${agency ? '$2' : '$1'}`,
-      agency ? [agency, limit] : [limit],
+       LIMIT $2`,
+      [agency || null, limit],
     );
     return result.rows;
   }

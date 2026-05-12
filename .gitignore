@@ -39,5 +39,7 @@ server/.env
 HANDOFF.md
 handoff.txt
 
-# AI logging rules (local config, not for commit)
+# AI Rules and Context
 ATLASLOG.md
+CLAUDE.md
+GEMINI.md
