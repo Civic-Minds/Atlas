@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.22.1] - 2026-05-12
+
+### Fixed
+- **Type safety in Alerts route**: Corrected a crash in `v0/backend/src/api/routes.ts` where the system attempted to access properties on a mismatched object type; added `AgencyService.getAgencyAccountBySlug` to properly resolve agency UUIDs.
+- **CI/CD Lockfile Sync**: Synchronized all `package-lock.json` files across the repository to resolve build failures in GitHub Actions caused by dependency mismatches.
+- **GTFS Route Mappings**: Expanded `getModeCategory` in the frontend to support extended HVT route types (100–1499), resolving a security/quality audit finding.
+- **Archive typo**: Corrected "Renamed Strategy" in `CHANGELOG_ARCHIVE.md`.
+
 ## [0.22.0] - 2026-05-12
 
 ### Added

@@ -312,10 +312,14 @@ router.get('/live/network-pulse', async (req: Request, res: Response) => {
 // ── Alerts ───────────────────────────────────────────────────────────────────
 
 router.get('/alerts/thresholds', requireAuth, requireTenant, async (req: Request, res: Response) => {
-  const user = (req as any).user;
   try {
-    const tenant = await AgencyService.getAgencyBySlug((req as any).tenant?.agencyId); // Use middleware tenant if available
-    const thresholds = await AlertService.getThresholds(tenant.id);
+    const tenantSlug = (req as any).tenant?.agencyId;
+    if (!tenantSlug) return res.status(403).json({ error: 'No agency tenant associated with this user' });
+
+    const agency = await AgencyService.getAgencyAccountBySlug(tenantSlug);
+    if (!agency) return res.status(404).json({ error: 'Agency account not found' });
+
+    const thresholds = await AlertService.getThresholds(agency.id);
     res.json(thresholds);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
