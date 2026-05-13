@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.22.5] - 2026-05-12
+
 ### Added
 - **Stops & Connections API**: Added new backend endpoints to support spatial intelligence:
   - `GET /api/stops/:agency`: Retrieves up to 2,000 stops for a specific agency.
