@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Stops & Connections API**: Added new backend endpoints to support spatial intelligence:
+  - `GET /api/stops/:agency`: Retrieves up to 2,000 stops for a specific agency.
+  - `GET /api/connections/:agency/:stopId`: Identifies all distinct stops connected to a given stop within the same agency.
+
 ### Fixed
 - **Deployment Script Restoration**: Restored the `scripts/deploy.sh` script to the repository root. It was accidentally moved to `v0/scripts/` during the V0 archive, which was causing the `npm run deploy` command to fail with a missing file error.
 

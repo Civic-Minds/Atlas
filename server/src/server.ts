@@ -87,6 +87,50 @@ app.get('/api/shapes/:agency', async (req, res) => {
   }
 });
 
+app.get('/api/stops/:agency', async (req, res) => {
+  const { agency } = req.params;
+  try {
+    const result = await staticPool.query(
+      `
+      SELECT s.gtfs_stop_id, s.stop_name, s.stop_lat, s.stop_lon
+      FROM stops s
+      JOIN feed_versions fv ON fv.id = s.feed_version_id
+      JOIN gtfs_agencies ga ON ga.id = fv.gtfs_agency_id
+      WHERE ga.agency_slug = $1 AND fv.is_current = TRUE
+      LIMIT 2000
+      `,
+      [agency]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/connections/:agency/:stopId', async (req, res) => {
+  const { agency, stopId } = req.params;
+  try {
+    const result = await staticPool.query(
+      `
+      SELECT DISTINCT s2.gtfs_stop_id
+      FROM stop_times st1
+      JOIN feed_versions fv ON fv.id = st1.feed_version_id
+      JOIN gtfs_agencies ga ON ga.id = fv.gtfs_agency_id
+      JOIN stop_times st2 ON st1.gtfs_trip_id = st2.gtfs_trip_id AND st1.feed_version_id = st2.feed_version_id
+      JOIN stops s2 ON st2.gtfs_stop_id = s2.gtfs_stop_id AND st2.feed_version_id = s2.feed_version_id
+      WHERE ga.agency_slug = $1 
+        AND fv.is_current = TRUE
+        AND st1.gtfs_stop_id = $2
+      LIMIT 500
+      `,
+      [agency, stopId]
+    );
+    res.json(result.rows.map(r => r.gtfs_stop_id));
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', version: '0.21.0' });
 });
