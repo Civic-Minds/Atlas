@@ -40,7 +40,7 @@
     "tailwindcss": "^4.1.18",
     "typescript": "^6.0.3",
     "vite": "^8.0.12",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.8"
   },
   "overrides": {
     "protobufjs": ">=7.5.5",
