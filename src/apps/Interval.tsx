@@ -15,6 +15,7 @@ export default function Interval({ agencies, lightMode, setLightMode }: Props) {
   const [maxHeadway, setMaxHeadway] = useState(60);
   const [query, setQuery] = useState('');
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [selectedStop, setSelectedStop] = useState<string | null>(null);
   
   // Advanced Filter State
   const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(new Set());
@@ -27,7 +28,8 @@ export default function Interval({ agencies, lightMode, setLightMode }: Props) {
     maxHeadway,
     agencies: selectedAgencies,
     modes: selectedModes,
-    day
+    day,
+    selectedStop
   });
 
   return (
@@ -38,6 +40,8 @@ export default function Interval({ agencies, lightMode, setLightMode }: Props) {
         q={q}
         selectedRoute={selectedRoute}
         setSelectedRoute={setSelectedRoute}
+        selectedStop={selectedStop}
+        setSelectedStop={setSelectedStop}
         lightMode={lightMode}
         matchesQuery={matchesQuery}
       />
@@ -68,6 +72,9 @@ export default function Interval({ agencies, lightMode, setLightMode }: Props) {
         setSelectedModes={setSelectedModes}
         day={day}
         setDay={setDay}
+        selectedStop={selectedStop}
+        setSelectedStop={setSelectedStop}
+        layers={layers}
       />
     </div>
   );

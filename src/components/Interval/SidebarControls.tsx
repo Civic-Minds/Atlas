@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Filter, Search, Sun, Moon, X, ChevronDown, ChevronUp, Landmark, Bus, Train, Calendar } from 'lucide-react';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import type { Agency } from '../../App';
@@ -19,6 +19,9 @@ interface SidebarControlsProps {
   setSelectedModes: React.Dispatch<React.SetStateAction<Set<number>>>;
   day: 'Weekday' | 'Saturday' | 'Sunday';
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  selectedStop: string | null;
+  setSelectedStop: (s: string | null) => void;
+  layers: Record<string, GeoJSON.FeatureCollection>;
 }
 
 const MODES = [
@@ -44,6 +47,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setSelectedModes,
   day,
   setDay,
+  selectedStop,
+  setSelectedStop,
+  layers,
 }) => {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
@@ -67,7 +73,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     setDay('Weekday');
     setMaxHeadway(60);
     setQuery('');
+    setSelectedStop(null);
   };
+
+  const currentStop = useMemo(() => {
+    if (!selectedStop) return null;
+    const allFeatures = Object.values(layers).flatMap(fc => fc.features);
+    const stop = allFeatures.find(f => (f.properties as any).stopId === selectedStop);
+    return stop ? (stop.properties as any) : null;
+  }, [selectedStop, layers]);
 
   return (
     <div className="absolute top-6 left-6 z-[1000] w-72 max-h-[calc(100vh-48px)] flex flex-col">
@@ -75,7 +89,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         <div className="flex items-start justify-between mb-1">
           <h2 className="text-xl font-black leading-tight italic text-[var(--text-primary)]">Interval</h2>
           <div className="flex gap-2">
-            {(selectedAgencies.size > 0 || selectedModes.size > 0 || query !== '' || maxHeadway !== 60) && (
+            {(selectedAgencies.size > 0 || selectedModes.size > 0 || query !== '' || maxHeadway !== 60 || selectedStop !== null) && (
               <button 
                 onClick={clearAllFilters}
                 className="text-[10px] font-bold text-indigo-400 hover:text-indigo-500 uppercase tracking-tighter mt-1"
@@ -96,30 +110,48 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           Scheduled frequency across the GTHA.
         </p>
 
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search routes — e.g. 504 or King"
-            className="w-full bg-[var(--bg-stat)] border border-[var(--border-primary)] text-[var(--text-primary)] placeholder-[var(--text-dim)] rounded-lg pl-9 pr-8 py-2 text-xs font-bold focus:outline-none focus:border-indigo-500 transition-colors"
-          />
-          {query !== '' && (
-            <button
-              onClick={() => setQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)]"
-              aria-label="Clear search"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-          {searchMatches !== null && (
-            <div className="mt-1.5 text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
-              {searchMatches} route{searchMatches === 1 ? '' : 's'} match
+        {currentStop ? (
+          <div className="mb-5 bg-indigo-600/10 border border-indigo-500/30 rounded-xl p-4 animate-in fade-in slide-in-from-left-2 duration-300">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <Landmark className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Station View</span>
+              </div>
+              <button onClick={() => setSelectedStop(null)} className="text-indigo-400/50 hover:text-indigo-400">
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
-          )}
-        </div>
+            <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight mb-1">{currentStop.stopName}</h3>
+            <p className="text-[10px] text-indigo-400/80 font-bold uppercase">
+              {currentStop.routeIds?.length} routes depart from here
+            </p>
+          </div>
+        ) : (
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search routes — e.g. 504 or King"
+              className="w-full bg-[var(--bg-stat)] border border-[var(--border-primary)] text-[var(--text-primary)] placeholder-[var(--text-dim)] rounded-lg pl-9 pr-8 py-2 text-xs font-bold focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+            {query !== '' && (
+              <button
+                onClick={() => setQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)]"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+            {searchMatches !== null && (
+              <div className="mt-1.5 text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
+                {searchMatches} route{searchMatches === 1 ? '' : 's'} match
+              </div>
+            )}
+          </div>
+        )}
 
         {stats && (
           <div className="grid grid-cols-2 gap-3 mb-5">

@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Clickable Stations**: Users can now click on transit hubs and stations to discover all routes departing from that location.
+  - **Spatial Discovery**: Clicking a station filters the regional map to show only the specific routes serving that hub.
+  - **Station View HUD**: Added a dedicated sidebar panel that displays the station name and route count when a hub is selected.
+  - **Visual Feedback**: Selected stations are highlighted with an indigo pulse and white border for clear spatial focus.
+  - **Integrated Reset**: Station selection is automatically cleared when global filters are reset or the map background is clicked.
 - **Advanced Map Filtering**: Implemented a comprehensive multi-dimensional filtering system.
   - **Agency Filtering**: Toggle visibility for each of the 13 GTHA agencies (TTC, GO Transit, MiWay, etc.).
   - **Mode Filtering**: Filter routes by vehicle type (Subway, Streetcar, Rail, Bus).
