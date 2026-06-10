@@ -8,9 +8,9 @@ import { readdirSync, readFileSync } from 'fs';
 import { join, basename } from 'path';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import { computeRawDepartures, applyAnalysisCriteria } from '../src/core/transit-logic';
+import { computeRawDepartures, applyAnalysisCriteria } from '../pipeline/transit-logic';
 import { GtfsData, GtfsShape, AnalysisCriteria } from '../src/types/gtfs';
-import { DEFAULT_CRITERIA } from '../src/core/defaults';
+import { DEFAULT_CRITERIA } from '../pipeline/defaults';
 
 const parseCsv = <T>(text: string): T[] => {
     const result = Papa.parse(text, { header: true, skipEmptyLines: true, transform: (v: string) => v.trim() });

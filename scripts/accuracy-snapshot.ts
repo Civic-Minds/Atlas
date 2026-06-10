@@ -14,7 +14,7 @@ import { readFileSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import { computeRawDepartures } from '../src/core/transit-logic';
+import { computeRawDepartures } from '../pipeline/transit-logic';
 import { GtfsData, GtfsShape } from '../src/types/gtfs';
 
 const BENCHMARKS = [
