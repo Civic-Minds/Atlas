@@ -49,3 +49,6 @@ _agents/
 scratch/
 gtfs-test-log.md
 .vercel
+.env*
+public/data/*.json
+!public/data/index.json

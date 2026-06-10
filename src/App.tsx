@@ -6,6 +6,7 @@ interface Agency {
   slug: string;
   name: string;
   center: [number, number];
+  url: string;
 }
 
 export default function App() {
@@ -49,7 +50,7 @@ export default function App() {
 
       <main className="flex-1 relative overflow-hidden">
         {agency ? (
-          <Interval slug={agency.slug} center={agency.center} />
+          <Interval url={agency.url} center={agency.center} />
         ) : (
           <div className="flex items-center justify-center h-full text-white/20 text-sm">
             No agency data. Run <code className="mx-1 text-indigo-400">npm run process</code> to add one.
