@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Filter, Search, Sun, Moon, X, ChevronDown, ChevronUp, Landmark, Bus, Train, Calendar } from 'lucide-react';
+import { Filter, Sun, Moon, X, ChevronDown, ChevronUp, Landmark, Bus, Train, Calendar } from 'lucide-react';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import type { Agency } from '../../App';
 
@@ -110,7 +110,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           Scheduled frequency across the GTHA.
         </p>
 
-        {currentStop ? (
+        {currentStop && (
           <div className="mb-5 bg-indigo-600/10 border border-indigo-500/30 rounded-xl p-4 animate-in fade-in slide-in-from-left-2 duration-300">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2 text-indigo-400">
@@ -126,30 +126,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               {currentStop.routeIds?.length} routes depart from here
             </p>
           </div>
-        ) : (
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search routes — e.g. 504 or King"
-              className="w-full bg-[var(--bg-stat)] border border-[var(--border-primary)] text-[var(--text-primary)] placeholder-[var(--text-dim)] rounded-lg pl-9 pr-8 py-2 text-xs font-bold focus:outline-none focus:border-indigo-500 transition-colors"
-            />
-            {query !== '' && (
-              <button
-                onClick={() => setQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)]"
-                aria-label="Clear search"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-            {searchMatches !== null && (
-              <div className="mt-1.5 text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
+        )}
+
+        {query !== '' && searchMatches !== null && (
+          <div className="mb-4 px-3 py-2 bg-indigo-600/5 border border-indigo-500/10 rounded-lg">
+             <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
                 {searchMatches} route{searchMatches === 1 ? '' : 's'} match
               </div>
-            )}
           </div>
         )}
 
