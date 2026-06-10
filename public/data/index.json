@@ -1,20 +1,9 @@
 {
   "agencies": [
     {
-      "slug": "halifax",
-      "name": "Halifax Transit",
-      "center": [
-        44.6488,
-        -63.5752
-      ]
-    },
-    {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
-      "center": [
-        43.2557,
-        -79.8711
-      ]
+      "center": [43.2557, -79.8711]
     }
   ]
 }
