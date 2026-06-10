@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Canvas rendering for the ~1,000 simultaneous polylines.
 
 ### Added
+- **Greater Golden Horseshoe expansion**: Barrie Transit, Grand River Transit, Guelph Transit, and Niagara Region Transit join the map — 13 agencies total. Bradford was evaluated but BWG Transit is on-demand only (no GTFS exists). GRT and Niagara use the Mobility Database stable mirror because their official URLs are dead or unreliable.
 - **Single regional map**: all 9 GTHA networks load in parallel onto one continuous map — pan between cities like Google Maps, no agency switcher. Tooltips show the operating agency.
 - **Route search**: search box filters routes by number or name across the whole region; matches highlight while everything else dims, with a live match count.
 - **GTHA coverage**: 9 agencies live — TTC, Brampton, Burlington, Durham Region, Hamilton, Milton, MiWay, Oakville, YRT.
@@ -21,6 +22,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Brampton and Hamilton were built from expired local GTFS zips; both rebuilt from current published feeds.
 - Cross-platform lockfile drift (`@emnapi/*`) that broke `npm ci` on Linux CI.
+- Tooltip white border: stripped Leaflet's default tooltip background, border, and arrow via `.atlas-tooltip` CSS overrides so only the custom dark popup renders.
+
+### Added
+- **Route selection**: clicking a route highlights it at full color/weight and dims all other routes to dark grey; click the same route or the map background to deselect.
+- **"All" frequency filter**: new button alongside the existing headway thresholds shows every route including infrequent ones (>60m), rendered in the existing Infrequent grey tier.
 
 ## [0.22.5] - 2026-05-12
 
