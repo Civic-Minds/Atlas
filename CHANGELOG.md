@@ -2,12 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2026-06-10
+## [Unreleased]
 
 ### Changed
 - **Full reset to the original premise**: a hosted map of how frequent transit service is. Deleted the OCI server, v0 realtime backend, Express API, router, Zustand, and Firebase. Atlas is now a static Vite + React + Leaflet app with no server and no database.
+- Thinner line weights (frequent routes 3→2, others 1.5→1) for a less cluttered map at regional zoom.
+- Canvas rendering for the ~1,000 simultaneous polylines.
 
 ### Added
+- **Single regional map**: all 9 GTHA networks load in parallel onto one continuous map — pan between cities like Google Maps, no agency switcher. Tooltips show the operating agency.
+- **Route search**: search box filters routes by number or name across the whole region; matches highlight while everything else dims, with a live match count.
 - **GTHA coverage**: 9 agencies live — TTC, Brampton, Burlington, Durham Region, Hamilton, Milton, MiWay, Oakville, YRT.
 - **Pipeline → Blob architecture**: `pipeline/process-core.ts` turns a GTFS zip into GeoJSON (route shapes + weekday headway tiers); data is stored in Vercel Blob, keeping the repo at ~80 KB regardless of agency count.
 - **`npm run refresh`**: re-downloads every agency's verified `feedUrl` and rebuilds its Blob data. All 9 source URLs tested live.
