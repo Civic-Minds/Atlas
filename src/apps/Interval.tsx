@@ -90,7 +90,8 @@ export default function Interval({ agencies }: Props) {
   const allFeatures = Object.values(layers).flatMap(fc => fc.features);
   const visibleFeatures = allFeatures.filter(f => {
     const h = (f.properties as ShapeProperties).headway;
-    return h === null || h <= maxHeadway;
+    if (h === null) return maxHeadway === Infinity;
+    return h <= maxHeadway;
   });
 
   const routeKey = (p: ShapeProperties) => `${p.agencyName}::${p.routeId}`;
@@ -113,9 +114,6 @@ export default function Interval({ agencies }: Props) {
     (feature?: GeoJSON.Feature) => {
       const p = feature?.properties as ShapeProperties;
       const h = p?.headway;
-      if (h !== null && h !== undefined && h > maxHeadway) {
-        return { color: '#000', weight: 0, opacity: 0 };
-      }
       if (selectedRoute !== null) {
         const key = p ? routeKey(p) : null;
         if (key === selectedRoute) {
@@ -179,15 +177,25 @@ export default function Interval({ agencies }: Props) {
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
         <MapClickHandler onClear={() => setSelectedRoute(null)} />
-        {Object.entries(layers).map(([slug, data]) => (
-          <GeoJSON
-            key={`${slug}-${maxHeadway}-${q}`}
-            data={data}
-            style={styleFeature}
-            onEachFeature={onEachFeature}
-            ref={(r) => { geoJsonRefs.current[slug] = r; }}
-          />
-        ))}
+        {Object.entries(layers).map(([slug, data]) => {
+          const filtered: GeoJSON.FeatureCollection = {
+            ...data,
+            features: data.features.filter(f => {
+              const h = (f.properties as ShapeProperties).headway;
+              if (h === null || h === undefined) return maxHeadway === Infinity;
+              return h <= maxHeadway;
+            }),
+          };
+          return (
+            <GeoJSON
+              key={`${slug}-${maxHeadway}-${q}`}
+              data={filtered}
+              style={styleFeature}
+              onEachFeature={onEachFeature}
+              ref={(r) => { geoJsonRefs.current[slug] = r; }}
+            />
+          );
+        })}
       </MapContainer>
 
       {isLoading && (
