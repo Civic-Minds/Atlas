@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "process": "npx tsx pipeline/process-gtfs.ts"
+    "process": "npx tsx pipeline/process-gtfs.ts",
+    "refresh": "npx tsx pipeline/refresh.ts"
   },
   "dependencies": {
     "@vercel/blob": "^2.4.0",
