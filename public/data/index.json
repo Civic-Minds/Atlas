@@ -3,7 +3,11 @@
     {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
-      "center": [43.2557, -79.8711]
+      "center": [
+        43.2557,
+        -79.8711
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/hamilton.json"
     }
   ]
 }

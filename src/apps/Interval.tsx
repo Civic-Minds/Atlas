@@ -44,11 +44,11 @@ function ChangeView({ center }: { center: [number, number] }) {
 }
 
 interface Props {
-  slug: string;
+  url: string;
   center: [number, number];
 }
 
-export default function Interval({ slug, center }: Props) {
+export default function Interval({ url, center }: Props) {
   const [geoJsonData, setGeoJsonData] = useState<GeoJsonData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [maxHeadway, setMaxHeadway] = useState(60);
@@ -56,12 +56,12 @@ export default function Interval({ slug, center }: Props) {
   useEffect(() => {
     setGeoJsonData(null);
     setIsLoading(true);
-    fetch(`/data/${slug}.json`)
+    fetch(url)
       .then(r => r.json())
       .then(data => setGeoJsonData(data))
       .catch(err => console.error('Failed to load shapes', err))
       .finally(() => setIsLoading(false));
-  }, [slug]);
+  }, [url]);
 
   const filtered = geoJsonData
     ? {
@@ -108,7 +108,7 @@ export default function Interval({ slug, center }: Props) {
         />
         {filtered && (
           <GeoJSON
-            key={`${slug}-${maxHeadway}`}
+            key={`${url}-${maxHeadway}`}
             data={filtered as GeoJSON.FeatureCollection}
             style={feature => ({
               color: getTierColor(feature?.properties?.tier),

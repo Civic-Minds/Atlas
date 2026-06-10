@@ -2,13 +2,19 @@
 /**
  * process-gtfs.ts
  * Usage: npm run process -- <path/to/feed.zip> <slug> [Display Name] [lat,lon]
- * Outputs: public/data/<slug>.json (GeoJSON) + public/data/index.json
+ * Uploads GeoJSON to Vercel Blob, updates public/data/index.json with the URL.
+ * Requires BLOB_READ_WRITE_TOKEN in environment (run `vercel env pull` first).
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
+import { put } from '@vercel/blob';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
+
+// Load .env.local for local runs
+import { config } from 'dotenv';
+config({ path: resolve('.env.local') });
 
 const zipPath = process.argv[2];
 const slug = process.argv[3];
@@ -17,6 +23,11 @@ const centerArg = process.argv[5];
 
 if (!zipPath || !slug) {
   console.error('Usage: npm run process -- <gtfs.zip> <slug> [name] [lat,lon]');
+  process.exit(1);
+}
+
+if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  console.error('Missing BLOB_READ_WRITE_TOKEN. Run: vercel env pull .env.local');
   process.exit(1);
 }
 
@@ -33,10 +44,8 @@ async function main() {
   });
   console.log('\n  GTFS parsed');
 
-  // route_id → route metadata
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
-  // (route_id::direction_id) → most common shape_id
   const shapeCounts = new Map<string, Map<string, number>>();
   for (const trip of gtfs.trips ?? []) {
     if (!trip.shape_id) continue;
@@ -51,7 +60,6 @@ async function main() {
     if (best) routeDirToShape.set(key, best[0]);
   }
 
-  // shape_id → points [[lat,lon], ...]
   const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
 
   console.log('  Running phase 1...');
@@ -59,7 +67,6 @@ async function main() {
   console.log('  Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 
-  // Use Weekday results as the primary display tier
   const weekday = results.filter(r => r.day === 'Weekday');
 
   const features: GeoJsonFeature[] = [];
@@ -75,7 +82,11 @@ async function main() {
       type: 'Feature',
       geometry: {
         type: 'LineString',
-        coordinates: points.map(([lat, lon]) => [lon, lat]), // GeoJSON is [lon, lat]
+        // Truncate to 5 decimal places (~1m precision) to reduce file size
+        coordinates: points.map(([lat, lon]) => [
+          Math.round(lon * 100000) / 100000,
+          Math.round(lat * 100000) / 100000,
+        ]),
       },
       properties: {
         routeId: result.route,
@@ -89,7 +100,6 @@ async function main() {
     });
   }
 
-  // Compute center from shapes if not provided
   let center = argCenter;
   if (!center && features.length > 0) {
     const allCoords = features.flatMap(f => f.geometry.coordinates);
@@ -98,33 +108,31 @@ async function main() {
     center = [Math.round(avgLat * 10000) / 10000, Math.round(avgLon * 10000) / 10000];
   }
 
-  const geojson = { type: 'FeatureCollection', features };
+  const geojson = JSON.stringify({ type: 'FeatureCollection', features });
+  const kb = Math.round(Buffer.byteLength(geojson) / 1024);
 
-  const outDir = resolve('public/data');
-  mkdirSync(outDir, { recursive: true });
-
-  const outPath = join(outDir, `${slug}.json`);
-  writeFileSync(outPath, JSON.stringify(geojson));
+  console.log(`  Uploading ${features.length} features (${kb} KB) to Blob...`);
+  const blob = await put(`atlas/${slug}.json`, geojson, {
+    access: 'public',
+    contentType: 'application/json',
+    allowOverwrite: true,
+  });
+  console.log(`  Uploaded → ${blob.url}`);
 
   // Update index.json
-  const indexPath = join(outDir, 'index.json');
+  const indexPath = resolve('public/data/index.json');
   let index: AgencyIndex = { agencies: [] };
   if (existsSync(indexPath)) {
     index = JSON.parse(readFileSync(indexPath, 'utf8'));
   }
-  const entry: AgencyEntry = { slug, name: agencyName, center: center ?? [0, 0] };
+  const entry: AgencyEntry = { slug, name: agencyName, center: center ?? [0, 0], url: blob.url };
   const existing = index.agencies.findIndex(a => a.slug === slug);
   if (existing >= 0) index.agencies[existing] = entry;
   else index.agencies.push(entry);
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
-
-  const kb = Math.round(Buffer.byteLength(JSON.stringify(geojson)) / 1024);
-  console.log(`\n  ${features.length} route shapes → ${slug}.json (${kb} KB)`);
-  console.log(`  Center: ${center}`);
   console.log(`  index.json updated\n`);
 }
 
-// Minimal local types to avoid importing @types/geojson in a script
 interface GeoJsonFeature {
   type: 'Feature';
   geometry: { type: 'LineString'; coordinates: number[][] };
@@ -135,6 +143,7 @@ interface AgencyEntry {
   slug: string;
   name: string;
   center: [number, number];
+  url: string;
 }
 
 interface AgencyIndex {
