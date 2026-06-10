@@ -1,12 +1,84 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-brand: #4f46e5;
+}
+
+:root {
+  --bg-app: #0a0a0a;
+  --bg-header: #0f0f0f;
+  --bg-panel: rgba(15, 15, 15, 0.8);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.4);
+  --text-dim: rgba(255, 255, 255, 0.3);
+  --bg-stat: rgba(255, 255, 255, 0.05);
+  --bg-btn: rgba(255, 255, 255, 0.05);
+  --bg-btn-hover: rgba(255, 255, 255, 0.1);
+  --text-legend: rgba(255, 255, 255, 0.7);
+  --dim-route: #334155;
+}
+
+[data-theme='light'] {
+  --bg-app: #f0f0f0;
+  --bg-header: #ffffff;
+  --bg-panel: rgba(255, 255, 255, 0.9);
+  --border-primary: rgba(0, 0, 0, 0.1);
+  --text-primary: #111827;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+  --bg-stat: rgba(0, 0, 0, 0.05);
+  --bg-btn: rgba(0, 0, 0, 0.05);
+  --bg-btn-hover: rgba(0, 0, 0, 0.1);
+  --text-legend: #4b5563;
+  --dim-route: #cbd5e1;
+}
+
 .atlas-tooltip {
-  background: none;
-  border: none;
-  box-shadow: none;
-  padding: 0;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .atlas-tooltip::before {
-  display: none;
+  display: none !important;
+}
+
+/* Tooltip internal styling using variables */
+.tooltip-content {
+  font-family: ui-monospace, monospace;
+  padding: 8px 12px;
+  background: var(--bg-header);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.tooltip-name {
+  font-size: 10px;
+  font-weight: 900;
+  color: #818cf8;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.tooltip-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.tooltip-info {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.tooltip-agency {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 3px;
 }

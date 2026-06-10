@@ -39,6 +39,8 @@ interface ShapeProperties {
 
 interface Props {
   agencies: Agency[];
+  lightMode: boolean;
+  setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 function MapClickHandler({ onClear }: { onClear: () => void }) {
@@ -46,58 +48,17 @@ function MapClickHandler({ onClear }: { onClear: () => void }) {
   return null;
 }
 
-export default function Interval({ agencies }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode }: Props) {
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [loadedCount, setLoadedCount] = useState(0);
   const [maxHeadway, setMaxHeadway] = useState(60);
   const [query, setQuery] = useState('');
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-  const [lightMode, setLightMode] = useState(false);
   const geoJsonRefs = useRef<Record<string, L.GeoJSON | null>>({});
 
-  const theme = lightMode ? {
-    mapBg: '#f0f0f0',
-    tileUrl: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    panel: 'bg-white/90 backdrop-blur-md border border-black/10',
-    text: 'text-gray-900',
-    textMuted: 'text-gray-400',
-    textDim: 'text-gray-400',
-    textLegend: 'text-gray-600',
-    inputCls: 'bg-black/5 border border-black/10 text-gray-900 placeholder-gray-400 focus:border-indigo-500',
-    statBg: 'bg-black/5 border border-black/5',
-    statLabel: 'text-gray-400',
-    statValue: 'text-gray-900',
-    statValueMuted: 'text-gray-400',
-    divider: 'border-black/10',
-    btnInactive: 'bg-black/5 border-black/5 text-gray-500 hover:bg-black/10 hover:text-gray-700',
-    clearBtn: 'text-gray-400 hover:text-gray-600',
-    loadingBg: 'bg-white/90 backdrop-blur-md border border-black/10',
-    loadingText: 'text-gray-500',
-    dimRoute: '#cbd5e1',
-    searchIcon: 'text-gray-400',
-    filterLabel: 'text-gray-400',
-  } : {
-    mapBg: '#0a0a0a',
-    tileUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    panel: 'bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10',
-    text: 'text-white',
-    textMuted: 'text-white/40',
-    textDim: 'text-white/30',
-    textLegend: 'text-white/70',
-    inputCls: 'bg-white/5 border border-white/10 text-white placeholder-white/25 focus:border-indigo-500',
-    statBg: 'bg-white/5 border border-white/5',
-    statLabel: 'text-white/30',
-    statValue: 'text-white',
-    statValueMuted: 'text-white/40',
-    divider: 'border-white/5',
-    btnInactive: 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:text-white/60',
-    clearBtn: 'text-white/30 hover:text-white/70',
-    loadingBg: 'bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10',
-    loadingText: 'text-white/50',
-    dimRoute: '#334155',
-    searchIcon: 'text-white/30',
-    filterLabel: 'text-white/30',
-  };
+  const tileUrl = lightMode 
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
   useEffect(() => {
     let cancelled = false;
@@ -158,7 +119,6 @@ export default function Interval({ agencies }: Props) {
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
       const p = feature?.properties as ShapeProperties;
-      const h = p?.headway;
       if (selectedRoute !== null) {
         const key = p ? routeKey(p) : null;
         if (key === selectedRoute) {
@@ -168,7 +128,10 @@ export default function Interval({ agencies }: Props) {
       }
       const match = matchesQuery(p);
       if (!match) {
-        return { color: theme.dimRoute, weight: 0.75, opacity: 0.12 };
+        // Use a CSS variable for the dimmed route color if possible, 
+        // but Leaflet style needs a hex/color string. 
+        // We can grab it from computed styles or just use a constant that we swap based on lightMode.
+        return { color: lightMode ? '#cbd5e1' : '#334155', weight: 0.75, opacity: 0.12 };
       }
       return {
         color: getTierColor(p?.tier ?? null),
@@ -192,11 +155,11 @@ export default function Interval({ agencies }: Props) {
     const fullName = routeLongName || `Route ${routeId}`;
     const key = routeKey(feature.properties as ShapeProperties);
     (layer as L.Path).bindTooltip(
-      `<div style="font-family:ui-monospace,monospace;padding:8px 12px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:8px;pointer-events:none">
-        <div style="font-size:10px;font-weight:900;color:#818cf8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">${name}</div>
-        <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px">${fullName}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.5)">${headway != null ? `${headway}m interval` : 'No headway data'}</div>
-        ${agencyName ? `<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:3px">${agencyName}</div>` : ''}
+      `<div class="tooltip-content">
+        <div class="tooltip-name">${name}</div>
+        <div class="tooltip-title">${fullName}</div>
+        <div class="tooltip-info">${headway != null ? `${headway}m interval` : 'No headway data'}</div>
+        ${agencyName ? `<div class="tooltip-agency">${agencyName}</div>` : ''}
       </div>`,
       { sticky: true, className: 'atlas-tooltip', opacity: 1 }
     );
@@ -204,23 +167,23 @@ export default function Interval({ agencies }: Props) {
       L.DomEvent.stopPropagation(e);
       setSelectedRoute(prev => prev === key ? null : key);
     });
-  }, []);
+  }, [lightMode]);
 
   const isLoading = loadedCount < agencies.length;
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full transition-colors duration-200">
       <MapContainer
         center={REGION_CENTER}
         zoom={REGION_ZOOM}
-        style={{ height: '100%', width: '100%', background: theme.mapBg }}
+        style={{ height: '100%', width: '100%', background: 'var(--bg-app)' }}
         zoomControl={false}
         preferCanvas={true}
       >
         <TileLayer
-          key={theme.tileUrl}
+          key={tileUrl}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url={theme.tileUrl}
+          url={tileUrl}
         />
         <MapClickHandler onClear={() => setSelectedRoute(null)} />
         {Object.entries(layers).map(([slug, data]) => {
@@ -245,43 +208,43 @@ export default function Interval({ agencies }: Props) {
       </MapContainer>
 
       {isLoading && (
-        <div className={`absolute top-6 right-6 z-[1000] flex items-center gap-2 ${theme.loadingBg} px-4 py-2 rounded-xl`}>
+        <div className={`absolute top-6 right-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl`}>
           <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <span className={`text-[10px] font-bold ${theme.loadingText} uppercase tracking-widest`}>
+          <span className={`text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest`}>
             {loadedCount}/{agencies.length} networks
           </span>
         </div>
       )}
 
       <div className="absolute top-6 left-6 z-[1000] w-72">
-        <div className={`${theme.panel} p-5 rounded-2xl shadow-2xl`}>
+        <div className={`bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-5 rounded-2xl shadow-2xl transition-colors duration-200`}>
           <div className="flex items-start justify-between mb-1">
-            <h2 className={`text-xl font-black leading-tight italic ${theme.text}`}>Interval</h2>
+            <h2 className={`text-xl font-black leading-tight italic text-[var(--text-primary)]`}>Interval</h2>
             <button
               onClick={() => setLightMode(v => !v)}
-              className={`${theme.clearBtn} transition-colors mt-0.5`}
+              className={`text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors mt-0.5`}
               aria-label="Toggle light mode"
             >
               {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
           </div>
-          <p className={`text-xs ${theme.textMuted} leading-relaxed mb-4`}>
+          <p className={`text-xs text-[var(--text-muted)] leading-relaxed mb-4`}>
             Scheduled frequency across the GTHA.
           </p>
 
           <div className="relative mb-4">
-            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${theme.searchIcon} pointer-events-none`} />
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none`} />
             <input
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search routes — e.g. 504 or King"
-              className={`w-full ${theme.inputCls} rounded-lg pl-9 pr-8 py-2 text-xs font-bold focus:outline-none`}
+              className={`w-full bg-[var(--bg-stat)] border border-[var(--border-primary)] text-[var(--text-primary)] placeholder-[var(--text-dim)] rounded-lg pl-9 pr-8 py-2 text-xs font-bold focus:outline-none focus:border-indigo-500 transition-colors`}
             />
             {query !== '' && (
               <button
                 onClick={() => setQuery('')}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 ${theme.clearBtn}`}
+                className={`absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)]`}
                 aria-label="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
@@ -296,14 +259,14 @@ export default function Interval({ agencies }: Props) {
 
           {stats && (
             <div className="grid grid-cols-2 gap-3 mb-5">
-              <div className={`${theme.statBg} rounded-xl p-3`}>
-                <div className={`text-[9px] font-bold ${theme.statLabel} uppercase tracking-tighter mb-1`}>Matching</div>
-                <div className={`text-xl font-black ${theme.statValue}`}>
-                  {stats.matching} <span className={`text-[10px] ${theme.statValueMuted} font-bold uppercase`}>routes</span>
+              <div className={`bg-[var(--bg-stat)] border border-[var(--border-primary)] rounded-xl p-3`}>
+                <div className={`text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-tighter mb-1`}>Matching</div>
+                <div className={`text-xl font-black text-[var(--text-primary)]`}>
+                  {stats.matching} <span className={`text-[10px] text-[var(--text-muted)] font-bold uppercase`}>routes</span>
                 </div>
               </div>
-              <div className={`${theme.statBg} rounded-xl p-3`}>
-                <div className={`text-[9px] font-bold ${theme.statLabel} uppercase tracking-tighter mb-1`}>Coverage</div>
+              <div className={`bg-[var(--bg-stat)] border border-[var(--border-primary)] rounded-xl p-3`}>
+                <div className={`text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-tighter mb-1`}>Coverage</div>
                 <div className="text-xl font-black text-indigo-400">
                   {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
                 </div>
@@ -312,7 +275,7 @@ export default function Interval({ agencies }: Props) {
           )}
 
           <div className="space-y-3">
-            <div className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider ${theme.filterLabel}`}>
+            <div className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]`}>
               <Filter className="w-3 h-3" />
               <span>Show up to</span>
             </div>
@@ -324,7 +287,7 @@ export default function Interval({ agencies }: Props) {
                   className={`px-3 py-1.5 rounded-lg text-[11px] font-black transition-all border ${
                     maxHeadway === m
                       ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                      : theme.btnInactive
+                      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   {m === Infinity ? 'All' : `${m}m`}
@@ -333,13 +296,13 @@ export default function Interval({ agencies }: Props) {
             </div>
           </div>
 
-          <div className={`mt-5 pt-5 border-t ${theme.divider} space-y-2`}>
-            <div className={`text-[10px] font-bold uppercase tracking-wider ${theme.textDim} mb-3`}>Legend</div>
+          <div className={`mt-5 pt-5 border-t border-[var(--border-primary)] space-y-2`}>
+            <div className={`text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)] mb-3`}>Legend</div>
             <div className="grid grid-cols-2 gap-1.5">
               {HEADWAY_TIERS.map(({ color, label }) => (
                 <div key={label} className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                  <span className={`text-[10px] ${theme.textLegend} font-bold tracking-tight`}>{label}</span>
+                  <span className={`text-[10px] text-[var(--text-legend)] font-bold tracking-tight`}>{label}</span>
                 </div>
               ))}
             </div>

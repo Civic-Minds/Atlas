@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Advanced Map Filtering (Roadmap)**: Defined and documented feature requests for multi-dimensional filtering by Day of Week, Transit Mode, Transit Agency, and Service Frequency.
+- **Clickable Stations (Roadmap)**: Logged feature request for station-level route discovery via spatial mapping.
+
+### Fixed
+- **Theme Architecture Refactor**: Centralized all UI colors into CSS variables with a robust `data-theme` switching mechanism on the document root.
+- **Persistent Light Mode**: Implemented theme persistence via `localStorage` and synchronized it across the header, map tiles, and side panel.
+- **Dynamic Tooltip Colors**: Refactored route overlays to use CSS classes and theme variables, resolving the bug where tooltips remained in dark mode when the app was set to light mode.
+- **Header Theme Consistency**: Fixed the menu bar/header failing to update colors in light mode by linking its background and text to the new theme architecture.
+
 ### Changed
 - **Full reset to the original premise**: a hosted map of how frequent transit service is. Deleted the OCI server, v0 realtime backend, Express API, router, Zustand, and Firebase. Atlas is now a static Vite + React + Leaflet app with no server and no database.
 - Thinner line weights (frequent routes 3→2, others 1.5→1) for a less cluttered map at regional zoom.
