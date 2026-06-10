@@ -99,18 +99,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       />
       <MapClickHandler onClear={() => setSelectedRoute(null)} />
       {Object.entries(layers).map(([slug, data]) => {
-        const filtered: GeoJSON.FeatureCollection = {
-          ...data,
-          features: data.features.filter((f) => {
-            const h = (f.properties as ShapeProperties).headway;
-            if (h === null || h === undefined) return maxHeadway === Infinity;
-            return h <= maxHeadway;
-          }),
-        };
         return (
           <GeoJSON
-            key={`${slug}-${maxHeadway}-${q}`}
-            data={filtered}
+            key={`${slug}-${maxHeadway}-${q}-${data.features.length}`}
+            data={data}
             style={styleFeature}
             onEachFeature={onEachFeature}
           />

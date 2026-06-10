@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Advanced Map Filtering**: Implemented a comprehensive multi-dimensional filtering system.
+  - **Agency Filtering**: Toggle visibility for each of the 13 GTHA agencies (TTC, GO Transit, MiWay, etc.).
+  - **Mode Filtering**: Filter routes by vehicle type (Subway, Streetcar, Rail, Bus).
+  - **Day Selection**: Support for switching between Weekday, Saturday, and Sunday service levels.
+  - **Collapsible UI**: Added an "Advanced Filters" section in the sidebar with active filter indicators and a Reset button.
 - **Unit Testing Suite**: Integrated Vitest, JSDOM, and React Testing Library.
   - Added high-coverage tests for `useIntervalStats` hook and color mapping utilities.
-- **Advanced Map Filtering (Roadmap)**: Defined and documented feature requests for multi-dimensional filtering by Day of Week, Transit Mode, Transit Agency, and Service Frequency.
 - **Clickable Stations (Roadmap)**: Logged feature request for station-level route discovery via spatial mapping.
 
 ### Fixed
