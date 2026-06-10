@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { MapContainer, TileLayer, useMap, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Filter } from 'lucide-react';
+import { Filter, Search, X } from 'lucide-react';
+import type { Agency } from '../App';
 
 const HEADWAY_TIERS = [
   { max: 10, color: '#10b981', label: '≤10m' },
@@ -11,6 +12,10 @@ const HEADWAY_TIERS = [
   { max: 60, color: '#f97316', label: '≤60m' },
   { max: Infinity, color: '#4b5563', label: 'Infrequent' },
 ];
+
+// Centroid of the GTHA network
+const REGION_CENTER: [number, number] = [43.65, -79.45];
+const REGION_ZOOM = 10;
 
 const getTierColor = (tier: string | null): string => {
   if (!tier || tier === 'span') return '#4b5563';
@@ -28,60 +33,97 @@ interface ShapeProperties {
   headway: number | null;
   routeShortName: string | null;
   routeLongName: string | null;
-}
-
-interface GeoJsonData {
-  type: string;
-  features: GeoJSON.Feature[];
-}
-
-function ChangeView({ center }: { center: [number, number] }) {
-  const map = useMap();
-  useEffect(() => {
-    map.setView(center, 12);
-  }, [center[0], center[1]]);
-  return null;
+  agencyName?: string;
 }
 
 interface Props {
-  url: string;
-  center: [number, number];
+  agencies: Agency[];
 }
 
-export default function Interval({ url, center }: Props) {
-  const [geoJsonData, setGeoJsonData] = useState<GeoJsonData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+export default function Interval({ agencies }: Props) {
+  const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+  const [loadedCount, setLoadedCount] = useState(0);
   const [maxHeadway, setMaxHeadway] = useState(60);
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
-    setGeoJsonData(null);
-    setIsLoading(true);
-    fetch(url)
-      .then(r => r.json())
-      .then(data => setGeoJsonData(data))
-      .catch(err => console.error('Failed to load shapes', err))
-      .finally(() => setIsLoading(false));
-  }, [url]);
+    let cancelled = false;
+    setLayers({});
+    setLoadedCount(0);
 
-  const filtered = geoJsonData
+    for (const agency of agencies) {
+      fetch(agency.url)
+        .then(r => r.json())
+        .then((data: GeoJSON.FeatureCollection) => {
+          if (cancelled) return;
+          for (const f of data.features) {
+            (f.properties as ShapeProperties).agencyName = agency.name;
+          }
+          setLayers(prev => ({ ...prev, [agency.slug]: data }));
+          setLoadedCount(n => n + 1);
+        })
+        .catch(err => {
+          console.error(`Failed to load ${agency.slug}`, err);
+          if (!cancelled) setLoadedCount(n => n + 1);
+        });
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [agencies]);
+
+  const q = query.trim().toLowerCase();
+  const matchesQuery = (p: ShapeProperties) =>
+    q === '' ||
+    (p.routeShortName ?? '').toLowerCase().includes(q) ||
+    (p.routeLongName ?? '').toLowerCase().includes(q) ||
+    p.routeId.toLowerCase().includes(q);
+
+  const allFeatures = Object.values(layers).flatMap(fc => fc.features);
+  const visibleFeatures = allFeatures.filter(f => {
+    const h = (f.properties as ShapeProperties).headway;
+    return h === null || h <= maxHeadway;
+  });
+
+  const routeKey = (p: ShapeProperties) => `${p.agencyName}::${p.routeId}`;
+  const stats = allFeatures.length > 0
     ? {
-        ...geoJsonData,
-        features: geoJsonData.features.filter(f => {
-          const h = (f.properties as ShapeProperties).headway;
-          return h === null || h <= maxHeadway;
-        }),
+        total: new Set(allFeatures.map(f => routeKey(f.properties as ShapeProperties))).size,
+        matching: new Set(visibleFeatures.map(f => routeKey(f.properties as ShapeProperties))).size,
       }
     : null;
 
-  const stats = geoJsonData
-    ? {
-        total: new Set(geoJsonData.features.map(f => (f.properties as ShapeProperties).routeId)).size,
-        matching: new Set((filtered?.features ?? []).map(f => (f.properties as ShapeProperties).routeId)).size,
-      }
+  const searchMatches = q !== ''
+    ? new Set(
+        visibleFeatures
+          .filter(f => matchesQuery(f.properties as ShapeProperties))
+          .map(f => routeKey(f.properties as ShapeProperties))
+      ).size
     : null;
+
+  const styleFeature = useCallback(
+    (feature?: GeoJSON.Feature) => {
+      const p = feature?.properties as ShapeProperties;
+      const h = p?.headway;
+      if (h !== null && h !== undefined && h > maxHeadway) {
+        return { color: '#000', weight: 0, opacity: 0 };
+      }
+      const match = matchesQuery(p);
+      if (!match) {
+        return { color: '#334155', weight: 0.75, opacity: 0.12 };
+      }
+      return {
+        color: getTierColor(p?.tier ?? null),
+        weight: q !== '' ? 3 : p?.tier && parseInt(p.tier) <= 15 ? 2 : 1,
+        opacity: p?.tier ? (q !== '' ? 1 : 0.8) : 0.3,
+      };
+    },
+    [maxHeadway, q]
+  );
 
   const onEachFeature = useCallback((feature: GeoJSON.Feature, layer: L.Layer) => {
-    const { routeId, headway, routeShortName, routeLongName } = feature.properties as ShapeProperties;
+    const { routeId, headway, routeShortName, routeLongName, agencyName } =
+      feature.properties as ShapeProperties;
     const name = routeShortName || routeId;
     const fullName = routeLongName || `Route ${routeId}`;
     (layer as L.Path).bindTooltip(
@@ -89,51 +131,77 @@ export default function Interval({ url, center }: Props) {
         <div style="font-size:10px;font-weight:900;color:#818cf8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">${name}</div>
         <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px">${fullName}</div>
         <div style="font-size:11px;color:rgba(255,255,255,0.5)">${headway != null ? `${headway}m interval` : 'No headway data'}</div>
+        ${agencyName ? `<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:3px">${agencyName}</div>` : ''}
       </div>`,
       { sticky: true, className: 'atlas-tooltip', opacity: 1 }
     );
   }, []);
 
+  const isLoading = loadedCount < agencies.length;
+
   return (
     <div className="relative w-full h-full">
       <MapContainer
-        center={center}
-        zoom={12}
+        center={REGION_CENTER}
+        zoom={REGION_ZOOM}
         style={{ height: '100%', width: '100%', background: '#0a0a0a' }}
         zoomControl={false}
+        preferCanvas={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
-        {filtered && (
+        {Object.entries(layers).map(([slug, data]) => (
           <GeoJSON
-            key={`${url}-${maxHeadway}`}
-            data={filtered as GeoJSON.FeatureCollection}
-            style={feature => ({
-              color: getTierColor(feature?.properties?.tier),
-              weight: feature?.properties?.tier && parseInt(feature.properties.tier) <= 15 ? 3 : 1.5,
-              opacity: feature?.properties?.tier ? 0.8 : 0.3,
-            })}
+            key={`${slug}-${maxHeadway}-${q}`}
+            data={data}
+            style={styleFeature}
             onEachFeature={onEachFeature}
           />
-        )}
-        <ChangeView center={center} />
+        ))}
       </MapContainer>
 
       {isLoading && (
-        <div className="absolute inset-0 z-[2000] flex items-center justify-center bg-[#0a0a0a]/70 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-            <span className="text-[11px] font-bold text-white/50 uppercase tracking-widest">Loading</span>
-          </div>
+        <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2 bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl">
+          <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
+            {loadedCount}/{agencies.length} networks
+          </span>
         </div>
       )}
 
       <div className="absolute top-6 left-6 z-[1000] w-72">
         <div className="bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-2xl">
           <h2 className="text-xl font-black mb-1 leading-tight italic">Interval</h2>
-          <p className="text-xs text-white/40 leading-relaxed mb-4">Route shapes colored by scheduled frequency.</p>
+          <p className="text-xs text-white/40 leading-relaxed mb-4">
+            Scheduled frequency across the GTHA.
+          </p>
+
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30 pointer-events-none" />
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Search routes — e.g. 504 or King"
+              className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-8 py-2 text-xs font-bold text-white placeholder-white/25 focus:outline-none focus:border-indigo-500"
+            />
+            {query !== '' && (
+              <button
+                onClick={() => setQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+            {searchMatches !== null && (
+              <div className="mt-1.5 text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
+                {searchMatches} route{searchMatches === 1 ? '' : 's'} match
+              </div>
+            )}
+          </div>
 
           {stats && (
             <div className="grid grid-cols-2 gap-3 mb-5">
