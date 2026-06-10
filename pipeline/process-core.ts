@@ -43,7 +43,7 @@ export async function processGtfsBuffer(
   const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
 
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs);
+  const raw = computeRawDepartures(gtfs, undefined, routeDirToShape);
   onStatus?.('Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 

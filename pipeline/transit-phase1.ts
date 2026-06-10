@@ -49,7 +49,7 @@ function expandFrequencies(frequencies: GtfsFrequency[] | undefined): Map<string
  */
 function buildTripDepartures(
     gtfs: GtfsData
-): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean }> {
+): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null }> {
     const { trips, stopTimes } = gtfs;
 
     const tripFirstDep = new Map<string, number>();
@@ -77,6 +77,7 @@ function buildTripDepartures(
             dirId: trip.direction_id?.trim() || '0',
             serviceId: trip.service_id,
             missingDir: !trip.direction_id?.trim(),
+            shapeId: trip.shape_id ?? null,
         };
 
         const freqDeps = freqExpanded.get(trip.trip_id);
@@ -115,7 +116,7 @@ function deduplicateDepartures(times: number[]): number[] {
  * Produces one RawRouteDepartures per route/direction/day (Mon–Sun).
  * No time window filtering, no tier classification — all gaps preserved.
  */
-export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string): RawRouteDepartures[] {
+export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, string>): RawRouteDepartures[] {
     const { routes, calendar, calendarDates } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
 
@@ -133,6 +134,10 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string): Ra
         for (const [, data] of tripData) {
             if (!activeServiceIds.has(data.serviceId)) continue;
             const key = `${data.routeId}::${data.dirId}`;
+            if (shapeFilter) {
+                const expected = shapeFilter.get(key);
+                if (expected && data.shapeId !== expected) continue;
+            }
             if (!grouped.has(key)) grouped.set(key, { routeId: data.routeId, dirId: data.dirId, times: [], serviceIds: new Set(), missingDir: false });
             const group = grouped.get(key)!;
             group.times.push(data.depTime);
