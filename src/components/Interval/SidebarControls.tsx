@@ -1,6 +1,6 @@
 import React from 'react';
 import { Filter, Search, Sun, Moon, X } from 'lucide-react';
-import { HEADWAY_TIERS } from '../../hooks/useIntervalStats';
+import { HEADWAY_TIERS } from '../../utils/colors';
 
 interface SidebarControlsProps {
   lightMode: boolean;

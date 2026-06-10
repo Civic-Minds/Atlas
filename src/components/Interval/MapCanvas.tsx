@@ -2,7 +2,8 @@ import React, { useCallback } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMapEvents } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
+import { getTierColor } from '../../utils/colors';
+import { routeKey } from '../../hooks/useIntervalStats';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useAgencyData';
 
 interface MapCanvasProps {
