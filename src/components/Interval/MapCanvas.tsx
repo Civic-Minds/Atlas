@@ -2,9 +2,8 @@ import React, { useCallback } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMapEvents } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { getTierColor } from '../../utils/colors';
-import { routeKey } from '../../hooks/useIntervalStats';
-import type { AgencyLayers, ShapeProperties } from '../../hooks/useAgencyData';
+import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
+import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 
 interface MapCanvasProps {
   layers: AgencyLayers;
@@ -12,6 +11,8 @@ interface MapCanvasProps {
   q: string;
   selectedRoute: string | null;
   setSelectedRoute: (route: string | null) => void;
+  selectedStop: string | null;
+  setSelectedStop: (stop: string | null) => void;
   lightMode: boolean;
   matchesQuery: (p: ShapeProperties) => boolean;
 }
@@ -30,6 +31,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   q,
   selectedRoute,
   setSelectedRoute,
+  selectedStop,
+  setSelectedStop,
   lightMode,
   matchesQuery,
 }) => {
@@ -39,7 +42,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
-      const p = feature?.properties as ShapeProperties;
+      const p = feature?.properties as unknown as ShapeProperties;
+      
+      // If it's a stop (Point), don't return a line style
+      if (feature?.geometry.type === 'Point') return {};
+
       if (selectedRoute !== null) {
         const key = p ? routeKey(p) : null;
         if (key === selectedRoute) {
@@ -62,11 +69,29 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   const onEachFeature = useCallback(
     (feature: GeoJSON.Feature, layer: L.Layer) => {
-      const { routeId, headway, routeShortName, routeLongName, agencyName } =
-        feature.properties as ShapeProperties;
+      const props = feature.properties as unknown as ShapeProperties;
+
+      if (feature.geometry.type === 'Point') {
+        const { stopName, stopId, routeIds } = props;
+        (layer as L.Marker).bindTooltip(
+          `<div class="tooltip-content">
+            <div class="tooltip-name">Station</div>
+            <div class="tooltip-title">${stopName}</div>
+            <div class="tooltip-info">${routeIds?.length} routes serve this hub</div>
+          </div>`,
+          { sticky: true, className: 'atlas-tooltip', opacity: 1 }
+        );
+        layer.on('click', (e: L.LeafletMouseEvent) => {
+          L.DomEvent.stopPropagation(e);
+          setSelectedStop(selectedStop === stopId ? null : stopId || null);
+        });
+        return;
+      }
+
+      const { routeId, headway, routeShortName, routeLongName, agencyName } = props;
       const name = routeShortName || routeId;
       const fullName = routeLongName || `Route ${routeId}`;
-      const key = routeKey(feature.properties as ShapeProperties);
+      const key = routeKey(props);
       (layer as L.Path).bindTooltip(
         `<div class="tooltip-content">
           <div class="tooltip-name">${name}</div>
@@ -81,7 +106,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         setSelectedRoute(selectedRoute === key ? null : key);
       });
     },
-    [selectedRoute, setSelectedRoute]
+    [selectedRoute, setSelectedRoute, selectedStop, setSelectedStop]
   );
 
   return (
@@ -97,14 +122,27 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url={tileUrl}
       />
-      <MapClickHandler onClear={() => setSelectedRoute(null)} />
+      <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
       {Object.entries(layers).map(([slug, data]) => {
+        const fc = data as GeoJSON.FeatureCollection;
         return (
           <GeoJSON
-            key={`${slug}-${maxHeadway}-${q}-${data.features.length}`}
-            data={data}
+            key={`${slug}-${maxHeadway}-${q}-${fc.features.length}-${selectedStop}`}
+            data={fc}
             style={styleFeature}
             onEachFeature={onEachFeature}
+            pointToLayer={(feature, latlng) => {
+              const props = feature.properties as unknown as ShapeProperties;
+              const isSelected = selectedStop === props.stopId;
+              return L.circleMarker(latlng, {
+                radius: isSelected ? 6 : 3,
+                fillColor: isSelected ? '#6366f1' : 'var(--text-dim)',
+                color: isSelected ? '#fff' : 'var(--border-primary)',
+                weight: 1,
+                opacity: isSelected ? 1 : 0.5,
+                fillOpacity: isSelected ? 1 : 0.3,
+              });
+            }}
           />
         );
       })}

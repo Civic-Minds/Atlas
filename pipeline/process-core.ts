@@ -47,10 +47,8 @@ export async function processGtfsBuffer(
   onStatus?.('Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 
-  const weekday = results.filter(r => r.day === 'Weekday');
-
   const features: GeoJsonFeature[] = [];
-  for (const result of weekday) {
+  for (const result of results) {
     const key = `${result.route}::${result.dir}`;
     const shapeId = routeDirToShape.get(key);
     if (!shapeId) continue;
@@ -76,21 +74,61 @@ export async function processGtfsBuffer(
         routeShortName: route?.route_short_name ?? null,
         routeLongName: route?.route_long_name ?? null,
         routeColor: route?.route_color ?? null,
+        routeType: parseInt(result.routeType || '3'),
+        day: result.day,
       },
     });
   }
 
+  // Extract stops for clickable stations
+  const stopFeatures: GeoJsonFeature[] = [];
+  const stopsByRoute = new Map<string, Set<string>>();
+  
+  // Find which stops are served by which routes
+  for (const st of gtfs.stopTimes ?? []) {
+    const trip = (gtfs.trips ?? []).find(t => t.trip_id === st.trip_id);
+    if (!trip) continue;
+    if (!stopsByRoute.has(trip.route_id)) stopsByRoute.set(trip.route_id, new Set());
+    stopsByRoute.get(trip.route_id)!.add(st.stop_id);
+  }
+
+  const servedStopIds = new Set((gtfs.stopTimes ?? []).map(st => st.stop_id));
+  for (const stop of gtfs.stops ?? []) {
+    if (!servedStopIds.has(stop.stop_id)) continue;
+    
+    // Find all routes serving this stop
+    const routeIds = Array.from(stopsByRoute.entries())
+      .filter(([, stopIds]) => stopIds.has(stop.stop_id))
+      .map(([routeId]) => routeId);
+
+    stopFeatures.push({
+      type: 'Feature',
+      geometry: {
+        type: 'Point' as any,
+        coordinates: [
+          Math.round(parseFloat(stop.stop_lon) * 100000) / 100000,
+          Math.round(parseFloat(stop.stop_lat) * 100000) / 100000,
+        ],
+      },
+      properties: {
+        stopId: stop.stop_id,
+        stopName: stop.stop_name,
+        routeIds,
+      },
+    } as any);
+  }
+
   let center: [number, number] | null = null;
-  if (features.length > 0) {
-    const allCoords = features.flatMap(f => f.geometry.coordinates);
+  const allCoords = features.flatMap(f => f.geometry.coordinates);
+  if (allCoords.length > 0) {
     const avgLat = allCoords.reduce((s, c) => s + c[1], 0) / allCoords.length;
     const avgLon = allCoords.reduce((s, c) => s + c[0], 0) / allCoords.length;
     center = [Math.round(avgLat * 10000) / 10000, Math.round(avgLon * 10000) / 10000];
   }
 
   return {
-    geojson: JSON.stringify({ type: 'FeatureCollection', features }),
-    featureCount: features.length,
+    geojson: JSON.stringify({ type: 'FeatureCollection', features: [...features, ...stopFeatures] }),
+    featureCount: features.length + stopFeatures.length,
     center,
   };
 }
