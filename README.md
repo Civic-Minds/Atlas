@@ -1,37 +1,39 @@
 # Atlas
 
-A transit intelligence platform for mobility precision in North American metros.
+A hosted frequency map for transit in Ontario's Greater Golden Horseshoe.
 
-## Problem
+**Live: https://atlas-gamma-two.vercel.app**
 
-The modern transit planning process is fragmented. Agencies juggle siloed GTFS feeds, manual audits, and complex simulation tools without a unified strategy. This disconnect between data and design leads to inefficient networks and unreliable service. Atlas bridges this gap by turning raw transit data into a closed-loop system for auditing, modeling, and sharing the network.
+One continuous map of 13 transit networks — pan from Niagara Falls to Barrie like you would in Google Maps. Every route is colored by how often service actually runs (weekday scheduled headway, 7am–10pm), so frequent transit jumps out and infrequent coverage fades back. Search any route number or name across every agency at once.
 
-## Features
+## Agencies
 
-- **Audit**: Technical GTFS validation and spec auditing. Human-in-the-loop verification — Mark Verified / Flag / Skip with notes, persisted per-route.
-- **Strategy**: Automated GTFS-static analysis with two-phase engine — raw departure extraction per individual day, then configurable criteria application with tier classification. Full audit view with departure tables, gap distribution charts, and headway timelines.
-- **Simulate**: High-fidelity stop consolidation and performance modeling.
-- **Predict**: Model future service changes and scenario impacts.
-- **Optimize**: Map visualization of all cataloged routes, filterable by frequency tier and agency. Auto-zoom, dark/light basemaps, route popups with verification status. Long-term network growth planning and gap detection.
-- **NextGen (Real-time)**: Continuous GTFS-RT ingestion engine polling 15+ agencies every 30s. Live vehicle map with speed-based color coding and network-wide position awareness. Persistent historical storage for on-time performance and actual headway analysis.
+TTC · MiWay · Brampton · York Region · Durham Region · Hamilton · Burlington · Oakville · Milton · Grand River · Guelph · Barrie · Niagara Region
 
-**Catalog** (shared): Persistent multi-agency route database. Commit screened routes with inline shape geometry. Supports route history tracking, schedule change detection, and verification status inheritance across feed uploads.
+## How it works
 
-## Production Runtime
+There is no server and no database.
 
-Production realtime vehicle ingestion runs on OCI via the `server/` backend process. Live vehicle data on the site is not powered by a local development machine.
+1. `pipeline/process-core.ts` turns a GTFS zip into GeoJSON: the most-used shape per route/direction, tagged with a frequency tier from a two-phase headway analysis.
+2. Output is stored in Vercel Blob; `public/data/index.json` (the only data file in the repo) maps each agency to its Blob URL and source feed URL.
+3. The React + Leaflet frontend loads all networks in parallel onto one canvas-rendered map.
+4. A GitHub Action re-downloads every feed weekly, so the map tracks current schedules without anyone touching it.
+
+## Commands
+
+```bash
+npm run dev                          # local dev server
+npm run process -- feed.zip slug "Name" "lat,lon"   # add an agency from a local zip
+npm run refresh                      # rebuild every agency from its live feed URL
+npm run refresh -- ttc grt           # rebuild specific agencies
+```
+
+`process` and `refresh` need `BLOB_READ_WRITE_TOKEN` — run `vercel env pull .env.local` once.
 
 ## Stack
-- **Frontend**: React 19, Vite 7, TypeScript 5.9, Tailwind CSS, Framer Motion
-- **Architecture**: Zustand (Global State Management), Web Workers (Off-thread GTFS Parsing)
-- **Data**: IndexedDB (Persistent Route Catalog + Feed History), Papaparse (CSV), JSZip
-- **Mapping**: Leaflet, React Leaflet
-- **Testing**: Vitest (108 tests)
+
+React 19 · Vite · TypeScript · Tailwind · Leaflet · Vercel (static hosting + Blob)
 
 ---
-
-- [Roadmap](./ROADMAP.md)
-- [Changelog](./CHANGELOG.md)
-- [Security](./SECURITY.md)
 
 Created by Civic Minds
