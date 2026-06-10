@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Unit Testing Suite**: Integrated Vitest, JSDOM, and React Testing Library.
+  - Added high-coverage tests for `useIntervalStats` hook and color mapping utilities.
 - **Advanced Map Filtering (Roadmap)**: Defined and documented feature requests for multi-dimensional filtering by Day of Week, Transit Mode, Transit Agency, and Service Frequency.
 - **Clickable Stations (Roadmap)**: Logged feature request for station-level route discovery via spatial mapping.
 
@@ -15,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - **Header Theme Consistency**: Fixed the menu bar/header failing to update colors in light mode by linking its background and text to the new theme architecture.
 
 ### Changed
+- **Color Logic Extraction**: Moved all headway tiering and color mapping logic into a dedicated `src/utils/colors.ts` for better testability and reuse.
 - **Modular 'Clean Architecture' Refactor**: Deconstructed the monolithic `Interval.tsx` into a modern modular structure.
   - Extracted data fetching and processing into `useAgencyData` hook.
   - Extracted search, filtering logic, and statistics into `useIntervalStats` hook.
