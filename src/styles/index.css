@@ -1,1 +1,12 @@
 @import 'tailwindcss';
+
+.atlas-tooltip {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.atlas-tooltip::before {
+  display: none;
+}

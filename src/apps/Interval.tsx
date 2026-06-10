@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { MapContainer, TileLayer, GeoJSON, useMapEvents } from 'react-leaflet';
+import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Filter, Search, X } from 'lucide-react';
 import type { Agency } from '../App';
@@ -40,11 +41,18 @@ interface Props {
   agencies: Agency[];
 }
 
+function MapClickHandler({ onClear }: { onClear: () => void }) {
+  useMapEvents({ click: onClear });
+  return null;
+}
+
 export default function Interval({ agencies }: Props) {
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [loadedCount, setLoadedCount] = useState(0);
   const [maxHeadway, setMaxHeadway] = useState(60);
   const [query, setQuery] = useState('');
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const geoJsonRefs = useRef<Record<string, L.GeoJSON | null>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -108,6 +116,13 @@ export default function Interval({ agencies }: Props) {
       if (h !== null && h !== undefined && h > maxHeadway) {
         return { color: '#000', weight: 0, opacity: 0 };
       }
+      if (selectedRoute !== null) {
+        const key = p ? routeKey(p) : null;
+        if (key === selectedRoute) {
+          return { color: getTierColor(p?.tier ?? null), weight: 4, opacity: 1 };
+        }
+        return { color: '#1e293b', weight: 0.5, opacity: 0.2 };
+      }
       const match = matchesQuery(p);
       if (!match) {
         return { color: '#334155', weight: 0.75, opacity: 0.12 };
@@ -118,14 +133,21 @@ export default function Interval({ agencies }: Props) {
         opacity: p?.tier ? (q !== '' ? 1 : 0.8) : 0.3,
       };
     },
-    [maxHeadway, q]
+    [maxHeadway, q, selectedRoute]
   );
+
+  useEffect(() => {
+    for (const ref of Object.values(geoJsonRefs.current)) {
+      ref?.setStyle(styleFeature as (feature?: GeoJSON.Feature) => L.PathOptions);
+    }
+  }, [styleFeature]);
 
   const onEachFeature = useCallback((feature: GeoJSON.Feature, layer: L.Layer) => {
     const { routeId, headway, routeShortName, routeLongName, agencyName } =
       feature.properties as ShapeProperties;
     const name = routeShortName || routeId;
     const fullName = routeLongName || `Route ${routeId}`;
+    const key = routeKey(feature.properties as ShapeProperties);
     (layer as L.Path).bindTooltip(
       `<div style="font-family:ui-monospace,monospace;padding:8px 12px;background:#0f0f0f;border:1px solid rgba(255,255,255,0.1);border-radius:8px;pointer-events:none">
         <div style="font-size:10px;font-weight:900;color:#818cf8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">${name}</div>
@@ -135,6 +157,10 @@ export default function Interval({ agencies }: Props) {
       </div>`,
       { sticky: true, className: 'atlas-tooltip', opacity: 1 }
     );
+    (layer as L.Path).on('click', (e: L.LeafletMouseEvent) => {
+      L.DomEvent.stopPropagation(e);
+      setSelectedRoute(prev => prev === key ? null : key);
+    });
   }, []);
 
   const isLoading = loadedCount < agencies.length;
@@ -152,12 +178,14 @@ export default function Interval({ agencies }: Props) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
+        <MapClickHandler onClear={() => setSelectedRoute(null)} />
         {Object.entries(layers).map(([slug, data]) => (
           <GeoJSON
             key={`${slug}-${maxHeadway}-${q}`}
             data={data}
             style={styleFeature}
             onEachFeature={onEachFeature}
+            ref={(r) => { geoJsonRefs.current[slug] = r; }}
           />
         ))}
       </MapContainer>
@@ -226,7 +254,7 @@ export default function Interval({ agencies }: Props) {
               <span>Show up to</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {[10, 15, 20, 30, 60].map(m => (
+              {[10, 15, 20, 30, 60, Infinity].map(m => (
                 <button
                   key={m}
                   onClick={() => setMaxHeadway(m)}
@@ -236,7 +264,7 @@ export default function Interval({ agencies }: Props) {
                       : 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:text-white/60'
                   }`}
                 >
-                  {m}m
+                  {m === Infinity ? 'All' : `${m}m`}
                 </button>
               ))}
             </div>
