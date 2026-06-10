@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2026-06-10
+
+### Changed
+- **Full reset to the original premise**: a hosted map of how frequent transit service is. Deleted the OCI server, v0 realtime backend, Express API, router, Zustand, and Firebase. Atlas is now a static Vite + React + Leaflet app with no server and no database.
+
+### Added
+- **GTHA coverage**: 9 agencies live — TTC, Brampton, Burlington, Durham Region, Hamilton, Milton, MiWay, Oakville, YRT.
+- **Pipeline → Blob architecture**: `pipeline/process-core.ts` turns a GTFS zip into GeoJSON (route shapes + weekday headway tiers); data is stored in Vercel Blob, keeping the repo at ~80 KB regardless of agency count.
+- **`npm run refresh`**: re-downloads every agency's verified `feedUrl` and rebuilds its Blob data. All 9 source URLs tested live.
+- **Weekly automation**: GitHub Action refreshes all feeds every Monday and commits index changes.
+- **Production deploy**: https://atlas-gamma-two.vercel.app
+
+### Fixed
+- Brampton and Hamilton were built from expired local GTFS zips; both rebuilt from current published feeds.
+- Cross-platform lockfile drift (`@emnapi/*`) that broke `npm ci` on Linux CI.
+
 ## [0.22.5] - 2026-05-12
 
 ### Added
