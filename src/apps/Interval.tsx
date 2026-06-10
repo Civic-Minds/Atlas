@@ -9,11 +9,12 @@ interface Props {
   agencies: Agency[];
   lightMode: boolean;
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
+  query: string;
+  setQuery: (q: string) => void;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery }: Props) {
   const [maxHeadway, setMaxHeadway] = useState(60);
-  const [query, setQuery] = useState('');
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
   
