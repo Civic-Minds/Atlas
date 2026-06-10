@@ -15,14 +15,25 @@ export default function Interval({ agencies, lightMode, setLightMode }: Props) {
   const [maxHeadway, setMaxHeadway] = useState(60);
   const [query, setQuery] = useState('');
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  
+  // Advanced Filter State
+  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(new Set());
+  const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
+  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
 
   const { layers, loadedCount, isLoading } = useAgencyData(agencies);
-  const { stats, searchMatches, matchesQuery, q } = useIntervalStats(layers, query, maxHeadway);
+  const { stats, searchMatches, matchesQuery, q, filteredLayers } = useIntervalStats(layers, {
+    query,
+    maxHeadway,
+    agencies: selectedAgencies,
+    modes: selectedModes,
+    day
+  });
 
   return (
     <div className="relative w-full h-full transition-colors duration-200">
       <MapCanvas
-        layers={layers}
+        layers={filteredLayers}
         maxHeadway={maxHeadway}
         q={q}
         selectedRoute={selectedRoute}
@@ -49,6 +60,14 @@ export default function Interval({ agencies, lightMode, setLightMode }: Props) {
         maxHeadway={maxHeadway}
         setMaxHeadway={setMaxHeadway}
         stats={stats}
+        // New Props
+        agencies={agencies}
+        selectedAgencies={selectedAgencies}
+        setSelectedAgencies={setSelectedAgencies}
+        selectedModes={selectedModes}
+        setSelectedModes={setSelectedModes}
+        day={day}
+        setDay={setDay}
       />
     </div>
   );
