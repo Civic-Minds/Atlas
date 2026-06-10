@@ -14,11 +14,11 @@
 
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, basename } from 'path';
-import { parseGtfsZip } from '../src/core/parseGtfs.js';
-import { validateGtfs } from '../src/core/validation.js';
-import { computeRawDepartures } from '../src/core/transit-phase1.js';
-import { applyAnalysisCriteria } from '../src/core/transit-phase2.js';
-import { DEFAULT_CRITERIA } from '../src/core/defaults.js';
+import { parseGtfsZip } from '../pipeline/parseGtfs.js';
+import { validateGtfs } from '../pipeline/validation.js';
+import { computeRawDepartures } from '../pipeline/transit-phase1.js';
+import { applyAnalysisCriteria } from '../pipeline/transit-phase2.js';
+import { DEFAULT_CRITERIA } from '../pipeline/defaults.js';
 
 const GTFS_ROOT = '/Users/ryan/Desktop/Data/GTFS';
 const CRITICAL_ERROR_CODES = new Set(['E001', 'E002', 'E003', 'E004', 'E005']);

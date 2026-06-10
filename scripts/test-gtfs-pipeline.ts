@@ -3,8 +3,8 @@
  * Usage: npx tsx scripts/test-gtfs-pipeline.ts /path/to/feed.zip
  */
 import { readFileSync } from 'fs';
-import { parseGtfsZip } from '../src/core/parseGtfs';
-import { computeRawDepartures } from '../src/core/transit-logic';
+import { parseGtfsZip } from '../pipeline/parseGtfs';
+import { computeRawDepartures } from '../pipeline/transit-logic';
 
 async function main() {
     const zipPath = process.argv[2] || '/tmp/gtfs_test.zip';
