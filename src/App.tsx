@@ -39,9 +39,6 @@ export default function App() {
           </div>
           <h1 className="text-lg font-black tracking-tighter uppercase">Atlas</h1>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
-          Greater Toronto &amp; Hamilton Area
-        </span>
       </header>
 
       <main className="flex-1 relative overflow-hidden">
