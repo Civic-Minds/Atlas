@@ -1,13 +1,94 @@
 {
   "agencies": [
     {
+      "slug": "ttc",
+      "name": "Toronto Transit Commission",
+      "center": [
+        43.6532,
+        -79.3832
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/ttc.json",
+      "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip"
+    },
+    {
+      "slug": "brampton",
+      "name": "Brampton Transit",
+      "center": [
+        43.7315,
+        -79.7624
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/brampton.json",
+      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data"
+    },
+    {
+      "slug": "burlington",
+      "name": "Burlington Transit",
+      "center": [
+        43.3255,
+        -79.799
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/burlington.json",
+      "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip"
+    },
+    {
+      "slug": "drt",
+      "name": "Durham Region Transit",
+      "center": [
+        43.8971,
+        -78.8658
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/drt.json",
+      "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip"
+    },
+    {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
       "center": [
         43.2557,
         -79.8711
       ],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/hamilton.json"
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/hamilton.json",
+      "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip"
+    },
+    {
+      "slug": "milton",
+      "name": "Milton Transit",
+      "center": [
+        43.5183,
+        -79.8774
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/milton.json",
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip"
+    },
+    {
+      "slug": "miway",
+      "name": "MiWay (Mississauga)",
+      "center": [
+        43.589,
+        -79.6441
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/miway.json",
+      "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip"
+    },
+    {
+      "slug": "oakville",
+      "name": "Oakville Transit",
+      "center": [
+        43.4675,
+        -79.6877
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/oakville.json",
+      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data"
+    },
+    {
+      "slug": "yrt",
+      "name": "York Region Transit",
+      "center": [
+        43.8828,
+        -79.4403
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/yrt.json",
+      "feedUrl": "https://www.yrt.ca/google/google_transit.zip"
     }
   ]
 }
