@@ -15,6 +15,11 @@ All notable changes to this project will be documented in this file.
 - **Header Theme Consistency**: Fixed the menu bar/header failing to update colors in light mode by linking its background and text to the new theme architecture.
 
 ### Changed
+- **Modular 'Clean Architecture' Refactor**: Deconstructed the monolithic `Interval.tsx` into a modern modular structure.
+  - Extracted data fetching and processing into `useAgencyData` hook.
+  - Extracted search, filtering logic, and statistics into `useIntervalStats` hook.
+  - Split UI into `MapCanvas` (Leaflet logic) and `SidebarControls` (HUD/filtering) components.
+  - Reduced primary application logic from 14KB to <50 lines, significantly improving maintainability for future filtering features.
 - **Full reset to the original premise**: a hosted map of how frequent transit service is. Deleted the OCI server, v0 realtime backend, Express API, router, Zustand, and Firebase. Atlas is now a static Vite + React + Leaflet app with no server and no database.
 - Thinner line weights (frequent routes 3→2, others 1.5→1) for a less cluttered map at regional zoom.
 - Canvas rendering for the ~1,000 simultaneous polylines.
