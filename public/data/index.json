@@ -89,6 +89,46 @@
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/yrt.json",
       "feedUrl": "https://www.yrt.ca/google/google_transit.zip"
+    },
+    {
+      "slug": "barrie",
+      "name": "Barrie Transit",
+      "center": [
+        44.3894,
+        -79.6903
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/barrie.json",
+      "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip"
+    },
+    {
+      "slug": "grt",
+      "name": "Grand River Transit",
+      "center": [
+        43.4516,
+        -80.4925
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/grt.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media"
+    },
+    {
+      "slug": "guelph",
+      "name": "Guelph Transit",
+      "center": [
+        43.5448,
+        -80.2482
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/guelph.json",
+      "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip"
+    },
+    {
+      "slug": "niagara",
+      "name": "Niagara Region Transit",
+      "center": [
+        43.1594,
+        -79.2469
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/niagara.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-niagara-region-transit-gtfs-722.zip?alt=media"
     }
   ]
 }
