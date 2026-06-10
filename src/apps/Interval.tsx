@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMapEvents } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Filter, Search, X } from 'lucide-react';
+import { Filter, Search, Sun, Moon, X } from 'lucide-react';
 import type { Agency } from '../App';
 
 const HEADWAY_TIERS = [
@@ -52,7 +52,52 @@ export default function Interval({ agencies }: Props) {
   const [maxHeadway, setMaxHeadway] = useState(60);
   const [query, setQuery] = useState('');
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [lightMode, setLightMode] = useState(false);
   const geoJsonRefs = useRef<Record<string, L.GeoJSON | null>>({});
+
+  const theme = lightMode ? {
+    mapBg: '#f0f0f0',
+    tileUrl: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    panel: 'bg-white/90 backdrop-blur-md border border-black/10',
+    text: 'text-gray-900',
+    textMuted: 'text-gray-400',
+    textDim: 'text-gray-400',
+    textLegend: 'text-gray-600',
+    inputCls: 'bg-black/5 border border-black/10 text-gray-900 placeholder-gray-400 focus:border-indigo-500',
+    statBg: 'bg-black/5 border border-black/5',
+    statLabel: 'text-gray-400',
+    statValue: 'text-gray-900',
+    statValueMuted: 'text-gray-400',
+    divider: 'border-black/10',
+    btnInactive: 'bg-black/5 border-black/5 text-gray-500 hover:bg-black/10 hover:text-gray-700',
+    clearBtn: 'text-gray-400 hover:text-gray-600',
+    loadingBg: 'bg-white/90 backdrop-blur-md border border-black/10',
+    loadingText: 'text-gray-500',
+    dimRoute: '#cbd5e1',
+    searchIcon: 'text-gray-400',
+    filterLabel: 'text-gray-400',
+  } : {
+    mapBg: '#0a0a0a',
+    tileUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    panel: 'bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10',
+    text: 'text-white',
+    textMuted: 'text-white/40',
+    textDim: 'text-white/30',
+    textLegend: 'text-white/70',
+    inputCls: 'bg-white/5 border border-white/10 text-white placeholder-white/25 focus:border-indigo-500',
+    statBg: 'bg-white/5 border border-white/5',
+    statLabel: 'text-white/30',
+    statValue: 'text-white',
+    statValueMuted: 'text-white/40',
+    divider: 'border-white/5',
+    btnInactive: 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:text-white/60',
+    clearBtn: 'text-white/30 hover:text-white/70',
+    loadingBg: 'bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10',
+    loadingText: 'text-white/50',
+    dimRoute: '#334155',
+    searchIcon: 'text-white/30',
+    filterLabel: 'text-white/30',
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -123,7 +168,7 @@ export default function Interval({ agencies }: Props) {
       }
       const match = matchesQuery(p);
       if (!match) {
-        return { color: '#334155', weight: 0.75, opacity: 0.12 };
+        return { color: theme.dimRoute, weight: 0.75, opacity: 0.12 };
       }
       return {
         color: getTierColor(p?.tier ?? null),
@@ -131,7 +176,7 @@ export default function Interval({ agencies }: Props) {
         opacity: p?.tier ? (q !== '' ? 1 : 0.8) : 0.3,
       };
     },
-    [maxHeadway, q, selectedRoute]
+    [maxHeadway, q, selectedRoute, lightMode]
   );
 
   useEffect(() => {
@@ -168,13 +213,14 @@ export default function Interval({ agencies }: Props) {
       <MapContainer
         center={REGION_CENTER}
         zoom={REGION_ZOOM}
-        style={{ height: '100%', width: '100%', background: '#0a0a0a' }}
+        style={{ height: '100%', width: '100%', background: theme.mapBg }}
         zoomControl={false}
         preferCanvas={true}
       >
         <TileLayer
+          key={theme.tileUrl}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url={theme.tileUrl}
         />
         <MapClickHandler onClear={() => setSelectedRoute(null)} />
         {Object.entries(layers).map(([slug, data]) => {
@@ -199,34 +245,43 @@ export default function Interval({ agencies }: Props) {
       </MapContainer>
 
       {isLoading && (
-        <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2 bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl">
+        <div className={`absolute top-6 right-6 z-[1000] flex items-center gap-2 ${theme.loadingBg} px-4 py-2 rounded-xl`}>
           <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
+          <span className={`text-[10px] font-bold ${theme.loadingText} uppercase tracking-widest`}>
             {loadedCount}/{agencies.length} networks
           </span>
         </div>
       )}
 
       <div className="absolute top-6 left-6 z-[1000] w-72">
-        <div className="bg-[#0f0f0f]/80 backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-2xl">
-          <h2 className="text-xl font-black mb-1 leading-tight italic">Interval</h2>
-          <p className="text-xs text-white/40 leading-relaxed mb-4">
+        <div className={`${theme.panel} p-5 rounded-2xl shadow-2xl`}>
+          <div className="flex items-start justify-between mb-1">
+            <h2 className={`text-xl font-black leading-tight italic ${theme.text}`}>Interval</h2>
+            <button
+              onClick={() => setLightMode(v => !v)}
+              className={`${theme.clearBtn} transition-colors mt-0.5`}
+              aria-label="Toggle light mode"
+            >
+              {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            </button>
+          </div>
+          <p className={`text-xs ${theme.textMuted} leading-relaxed mb-4`}>
             Scheduled frequency across the GTHA.
           </p>
 
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30 pointer-events-none" />
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${theme.searchIcon} pointer-events-none`} />
             <input
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search routes — e.g. 504 or King"
-              className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-8 py-2 text-xs font-bold text-white placeholder-white/25 focus:outline-none focus:border-indigo-500"
+              className={`w-full ${theme.inputCls} rounded-lg pl-9 pr-8 py-2 text-xs font-bold focus:outline-none`}
             />
             {query !== '' && (
               <button
                 onClick={() => setQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70"
+                className={`absolute right-2 top-1/2 -translate-y-1/2 ${theme.clearBtn}`}
                 aria-label="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
@@ -241,14 +296,14 @@ export default function Interval({ agencies }: Props) {
 
           {stats && (
             <div className="grid grid-cols-2 gap-3 mb-5">
-              <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                <div className="text-[9px] font-bold text-white/30 uppercase tracking-tighter mb-1">Matching</div>
-                <div className="text-xl font-black text-white">
-                  {stats.matching} <span className="text-[10px] text-white/40 font-bold uppercase">routes</span>
+              <div className={`${theme.statBg} rounded-xl p-3`}>
+                <div className={`text-[9px] font-bold ${theme.statLabel} uppercase tracking-tighter mb-1`}>Matching</div>
+                <div className={`text-xl font-black ${theme.statValue}`}>
+                  {stats.matching} <span className={`text-[10px] ${theme.statValueMuted} font-bold uppercase`}>routes</span>
                 </div>
               </div>
-              <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                <div className="text-[9px] font-bold text-white/30 uppercase tracking-tighter mb-1">Coverage</div>
+              <div className={`${theme.statBg} rounded-xl p-3`}>
+                <div className={`text-[9px] font-bold ${theme.statLabel} uppercase tracking-tighter mb-1`}>Coverage</div>
                 <div className="text-xl font-black text-indigo-400">
                   {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
                 </div>
@@ -257,7 +312,7 @@ export default function Interval({ agencies }: Props) {
           )}
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-white/30">
+            <div className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider ${theme.filterLabel}`}>
               <Filter className="w-3 h-3" />
               <span>Show up to</span>
             </div>
@@ -269,7 +324,7 @@ export default function Interval({ agencies }: Props) {
                   className={`px-3 py-1.5 rounded-lg text-[11px] font-black transition-all border ${
                     maxHeadway === m
                       ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                      : 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:text-white/60'
+                      : theme.btnInactive
                   }`}
                 >
                   {m === Infinity ? 'All' : `${m}m`}
@@ -278,13 +333,13 @@ export default function Interval({ agencies }: Props) {
             </div>
           </div>
 
-          <div className="mt-5 pt-5 border-t border-white/5 space-y-2">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-white/30 mb-3">Legend</div>
+          <div className={`mt-5 pt-5 border-t ${theme.divider} space-y-2`}>
+            <div className={`text-[10px] font-bold uppercase tracking-wider ${theme.textDim} mb-3`}>Legend</div>
             <div className="grid grid-cols-2 gap-1.5">
               {HEADWAY_TIERS.map(({ color, label }) => (
                 <div key={label} className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                  <span className="text-[10px] text-white/70 font-bold tracking-tight">{label}</span>
+                  <span className={`text-[10px] ${theme.textLegend} font-bold tracking-tight`}>{label}</span>
                 </div>
               ))}
             </div>
