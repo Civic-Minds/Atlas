@@ -5,6 +5,8 @@
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
+import { calculateCorridors } from './transit-logic.js';
+import { DEFAULT_CRITERIA } from './defaults.js';
 
 export interface GeoJsonFeature {
   type: 'Feature';
@@ -25,6 +27,16 @@ export async function processGtfsBuffer(
   const gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus);
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
+
+  // Stop coords for corridor link geometry (stop-pair chords; dense stops approximate paths)
+  const stopCoords = new Map<string, [number, number]>();
+  for (const stop of gtfs.stops ?? []) {
+    const lat = parseFloat(stop.stop_lat);
+    const lon = parseFloat(stop.stop_lon);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      stopCoords.set(stop.stop_id, [lon, lat]);
+    }
+  }
 
   const shapeCounts = new Map<string, Map<string, number>>();
   for (const trip of gtfs.trips ?? []) {
@@ -118,6 +130,45 @@ export async function processGtfsBuffer(
     } as any);
   }
 
+  // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)
+  // get aggregate headway from the *union* of their departures. Emitted as small LineStrings
+  // between stop pairs so they chain into corridor paths. Drawn on top of per-route lines to
+  // visually surface the combined frequency on shared segments.
+  onStatus?.('Calculating combined corridors...');
+  const corridorFeatures: GeoJsonFeature[] = [];
+  const dayTypes: Array<'Weekday' | 'Saturday' | 'Sunday'> = ['Weekday', 'Saturday', 'Sunday'];
+  for (const d of dayTypes) {
+    const dayCfg = DEFAULT_CRITERIA.dayTypes[d];
+    if (!dayCfg) continue;
+    const corrs = calculateCorridors(gtfs, d, dayCfg.timeWindow.start, dayCfg.timeWindow.end);
+    for (const c of corrs) {
+      const a = stopCoords.get(c.stopA);
+      const b = stopCoords.get(c.stopB);
+      if (!a || !b) continue;
+      const h = Math.round(c.avgHeadway);
+      const shortNames = c.routeIds
+        .map((rid: string) => routeById.get(rid)?.route_short_name ?? rid)
+        .filter(Boolean);
+      corridorFeatures.push({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [a, b],
+        },
+        properties: {
+          isCorridor: true,
+          corridorId: c.linkId,
+          headway: h,
+          tier: String(h),
+          routeIds: c.routeIds,
+          corridorShortNames: shortNames,
+          day: d,
+          reliabilityScore: c.reliabilityScore,
+        },
+      });
+    }
+  }
+
   let center: [number, number] | null = null;
   const allCoords = features.flatMap(f => f.geometry.coordinates);
   if (allCoords.length > 0) {
@@ -126,9 +177,10 @@ export async function processGtfsBuffer(
     center = [Math.round(avgLat * 10000) / 10000, Math.round(avgLon * 10000) / 10000];
   }
 
+  const allFeatures = [...features, ...stopFeatures, ...corridorFeatures];
   return {
-    geojson: JSON.stringify({ type: 'FeatureCollection', features: [...features, ...stopFeatures] }),
-    featureCount: features.length + stopFeatures.length,
+    geojson: JSON.stringify({ type: 'FeatureCollection', features: allFeatures }),
+    featureCount: allFeatures.length,
     center,
   };
 }

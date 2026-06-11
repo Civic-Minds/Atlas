@@ -12,7 +12,12 @@ export interface ShapeProperties extends BaseShapeProperties {
   // Stop properties
   stopId?: string;
   stopName?: string;
-  routeIds?: string[]; // Routes serving this stop
+  routeIds?: string[]; // Routes serving this stop (also used by corridors)
+  // Corridor (combined frequency) properties (AI-17)
+  isCorridor?: boolean;
+  corridorId?: string;
+  corridorShortNames?: string[];
+  reliabilityScore?: number;
 }
 
 export const routeKey = (p: ShapeProperties) => `${p.agencyName}::${p.routeId}`;
@@ -84,18 +89,31 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     return stopFeature ? new Set((stopFeature.properties as any).routeIds as string[]) : null;
   }, [allFeatures, selectedStop]);
 
-  const matchesQuery = (p: ShapeProperties) =>
-    q === '' ||
-    (p.routeShortName ?? '').toLowerCase().includes(q) ||
-    (p.routeLongName ?? '').toLowerCase().includes(q) ||
-    (p.routeId ?? '').toLowerCase().includes(q);
+  const matchesQuery = (p: ShapeProperties) => {
+    if (q === '') return true;
+    const nameHit =
+      (p.routeShortName ?? '').toLowerCase().includes(q) ||
+      (p.routeLongName ?? '').toLowerCase().includes(q) ||
+      (p.routeId ?? '').toLowerCase().includes(q);
+    if (nameHit) return true;
+    // Corridors match search if query hits any contributing routeId or short name (AI-17)
+    const cIds = (p as any).routeIds as string[] | undefined;
+    if (cIds && cIds.some((r) => r.toLowerCase().includes(q))) return true;
+    const cNames = (p as any).corridorShortNames as string[] | undefined;
+    if (cNames && cNames.some((n) => n.toLowerCase().includes(q))) return true;
+    return false;
+  };
 
   const visibleFeatures = useMemo(() => 
     allFeatures.filter(f => {
       const p = f.properties as unknown as ShapeProperties;
       
-      // If a stop is selected, only show routes serving that stop
-      if (routesForStop && p.routeId && !routesForStop.has(p.routeId)) return false;
+      // If a stop is selected, only show routes/corridors serving that stop (AI-17 corridors intersect on routeIds)
+      if (routesForStop) {
+        if (p.routeId && !routesForStop.has(p.routeId)) return false;
+        const cRoutes = (p as any).routeIds as string[] | undefined;
+        if ((p as any).isCorridor && cRoutes && !cRoutes.some((rid) => routesForStop.has(rid))) return false;
+      }
 
       // Agency Filter
       if (agencies.size > 0 && !agencies.has(p.agencySlug!)) return false;
@@ -103,17 +121,17 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // Mode Filter
       if (modes.size > 0 && p.routeType !== undefined && !modes.has(p.routeType)) return false;
 
-      // Day Filter
+      // Day Filter (routes + corridors carry day; stops do not)
       if (p.day !== undefined && p.day !== day) return false;
 
-      // Headway Filter (only for lines, not points/stops)
-      if (p.routeId) {
-        const h = p.headway;
-        if (h === null) return maxHeadway === Infinity;
-        return h <= maxHeadway;
+      // Headway Filter: routes and corridors (both carry numeric headway). Legacy null-headway routes only on All.
+      if (p.headway != null) {
+        if (p.headway > maxHeadway) return false;
+      } else if (p.routeId != null) {
+        if (maxHeadway !== Infinity) return false;
       }
 
-      return true; // Keep stops visible for now
+      return true; // Keep stops (and corridors that passed above)
     }),
   [allFeatures, maxHeadway, agencies, modes, day, routesForStop]);
 
@@ -123,8 +141,12 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       const filteredFeatures = fc.features.filter(f => {
         const p = f.properties as unknown as ShapeProperties;
         
-        // If a stop is selected, filter routes
-        if (routesForStop && p.routeId && !routesForStop.has(p.routeId)) return false;
+        // If a stop is selected, filter routes + relevant corridors (AI-17)
+        if (routesForStop) {
+          if (p.routeId && !routesForStop.has(p.routeId)) return false;
+          const cRoutes = (p as any).routeIds as string[] | undefined;
+          if ((p as any).isCorridor && cRoutes && !cRoutes.some((rid) => routesForStop.has(rid))) return false;
+        }
 
         // Agency Filter
         if (agencies.size > 0 && !agencies.has(slug)) return false;
@@ -132,14 +154,14 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         // Mode Filter
         if (modes.size > 0 && p.routeType !== undefined && !modes.has(p.routeType)) return false;
 
-        // Day Filter
+        // Day Filter (routes + corridors)
         if (p.day !== undefined && p.day !== day) return false;
 
-        // Headway Filter
-        if (p.routeId) {
-          const h = p.headway;
-          if (h === null) return maxHeadway === Infinity;
-          return h <= maxHeadway;
+        // Headway Filter: routes and corridors. Legacy null-headway routes only on All.
+        if (p.headway != null) {
+          if (p.headway > maxHeadway) return false;
+        } else if (p.routeId != null) {
+          if (maxHeadway !== Infinity) return false;
         }
 
         return true; // Keep stops
