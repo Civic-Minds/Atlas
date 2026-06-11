@@ -104,16 +104,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const { routeId, headway, routeShortName, routeLongName, agencyName } = props;
+      const { routeId, headway, routeShortName } = props;
       const name = routeShortName || routeId;
-      const fullName = routeLongName || `Route ${routeId}`;
       const key = routeKey(props);
+      // Hover stays minimal — click opens the route panel in the sidebar
       (layer as L.Path).bindTooltip(
         `<div class="tooltip-content">
           <div class="tooltip-name">${name}</div>
-          <div class="tooltip-title">${fullName}</div>
-          <div class="tooltip-info">${headway != null ? `${headway}m interval` : 'No headway data'}</div>
-          ${agencyName ? `<div class="tooltip-agency">${agencyName}</div>` : ''}
+          <div class="tooltip-info">${headway != null ? `every ${headway} min` : 'No headway data'}</div>
         </div>`,
         { sticky: true, className: 'atlas-tooltip', opacity: 1 }
       );

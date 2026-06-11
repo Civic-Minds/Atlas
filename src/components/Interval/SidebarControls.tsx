@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Filter, Sun, Moon, X, ChevronDown, ChevronUp, Landmark, Bus, Train, Calendar } from 'lucide-react';
-import { HEADWAY_TIERS } from '../../utils/colors';
+import { Filter, Sun, Moon, X, ChevronDown, ChevronUp, Landmark, Bus, Train, Calendar, Route } from 'lucide-react';
+import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
+import { routeKey } from '../../hooks/useIntervalStats';
+import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 
 interface SidebarControlsProps {
@@ -21,6 +23,8 @@ interface SidebarControlsProps {
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
   selectedStop: string | null;
   setSelectedStop: (s: string | null) => void;
+  selectedRoute: string | null;
+  setSelectedRoute: (r: string | null) => void;
   layers: Record<string, GeoJSON.FeatureCollection>;
 }
 
@@ -49,6 +53,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setDay,
   selectedStop,
   setSelectedStop,
+  selectedRoute,
+  setSelectedRoute,
   layers,
 }) => {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
@@ -74,7 +80,24 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     setMaxHeadway(60);
     setQuery('');
     setSelectedStop(null);
+    setSelectedRoute(null);
   };
+
+  const currentRoute = useMemo(() => {
+    if (!selectedRoute) return null;
+    const features = Object.values(layers)
+      .flatMap(fc => fc.features)
+      .filter(f => {
+        const p = f.properties as unknown as ShapeProperties;
+        return p.routeId && routeKey(p) === selectedRoute;
+      });
+    if (features.length === 0) return null;
+    const first = features[0].properties as unknown as ShapeProperties;
+    const directions = features
+      .map(f => f.properties as unknown as ShapeProperties)
+      .sort((a, b) => (a.directionId ?? 0) - (b.directionId ?? 0));
+    return { ...first, directions };
+  }, [selectedRoute, layers]);
 
   const currentStop = useMemo(() => {
     if (!selectedStop) return null;
@@ -89,7 +112,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         <div className="flex items-start justify-between mb-1">
           <h2 className="text-xl font-black leading-tight italic text-[var(--text-primary)]">Interval</h2>
           <div className="flex gap-2">
-            {(selectedAgencies.size > 0 || selectedModes.size > 0 || query !== '' || maxHeadway !== 60 || selectedStop !== null) && (
+            {(selectedAgencies.size > 0 || selectedModes.size > 0 || query !== '' || maxHeadway !== 60 || selectedStop !== null || selectedRoute !== null) && (
               <button 
                 onClick={clearAllFilters}
                 className="text-[10px] font-bold text-indigo-400 hover:text-indigo-500 uppercase tracking-tighter mt-1"
@@ -125,6 +148,43 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <p className="text-[10px] text-indigo-400/80 font-bold uppercase">
               {currentStop.routeIds?.length} routes depart from here
             </p>
+          </div>
+        )}
+
+        {currentRoute && (
+          <div className="mb-5 bg-indigo-600/10 border border-indigo-500/30 rounded-xl p-4 animate-in fade-in slide-in-from-left-2 duration-300">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <Route className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Route</span>
+              </div>
+              <button onClick={() => setSelectedRoute(null)} className="text-indigo-400/50 hover:text-indigo-400" aria-label="Close route panel">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
+              {currentRoute.routeShortName || currentRoute.routeId}
+              {currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}
+            </h3>
+            <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider mt-0.5 mb-3">
+              {currentRoute.agencyName}
+            </p>
+            <div className="space-y-1.5">
+              {currentRoute.directions.map((d, i) => (
+                <div key={i} className="flex items-center justify-between text-[11px]">
+                  <span className="font-bold text-[var(--text-muted)]">
+                    Direction {currentRoute.directions.length > 1 ? i + 1 : ''}
+                  </span>
+                  <span className="flex items-center gap-2 font-black text-[var(--text-primary)]">
+                    <span
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ background: getTierColor(d.tier ?? null) }}
+                    />
+                    {d.headway != null ? `every ${d.headway} min` : 'no data'}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
