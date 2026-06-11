@@ -154,25 +154,35 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
 
         <div className="space-y-4">
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]">
               <Filter className="w-3 h-3" />
-              <span>Show up to</span>
+              <span>Frequency — show up to</span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {[10, 15, 20, 30, 60, Infinity].map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setMaxHeadway(m)}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-black transition-all border ${
-                    maxHeadway === m
-                      ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  {m === Infinity ? 'All' : `${m}m`}
-                </button>
-              ))}
+            <div className="grid grid-cols-2 gap-1.5">
+              {HEADWAY_TIERS.map(({ max, color, label }) => {
+                const isSelected = maxHeadway === max;
+                const isVisible = max <= maxHeadway;
+                return (
+                  <button
+                    key={label}
+                    onClick={() => setMaxHeadway(max)}
+                    className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
+                      isSelected
+                        ? 'bg-indigo-600/20 border-indigo-500/50 text-[var(--text-primary)]'
+                        : 'bg-[var(--bg-btn)] border-[var(--border-primary)] hover:text-[var(--text-primary)] ' +
+                          (isVisible ? 'text-[var(--text-legend)]' : 'text-[var(--text-dim)] opacity-50')
+                    }`}
+                    title={max === Infinity ? 'Show all routes' : `Show routes running every ${max} min or better`}
+                  >
+                    <div
+                      className="w-2 h-2 rounded-full shrink-0 transition-opacity"
+                      style={{ background: color, opacity: isVisible ? 1 : 0.3 }}
+                    />
+                    <span className="tracking-tight">{label === 'Infrequent' ? 'All' : label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -268,17 +278,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           )}
         </div>
 
-        <div className="mt-5 pt-5 border-t border-[var(--border-primary)] space-y-2">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)] mb-3">Legend</div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {HEADWAY_TIERS.map(({ color, label }) => (
-              <div key={label} className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                <span className="text-[10px] text-[var(--text-legend)] font-bold tracking-tight">{label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

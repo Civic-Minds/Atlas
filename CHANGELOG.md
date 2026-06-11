@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Clickable legend (AI-20)**: merged the redundant "Show up to" buttons and Legend swatches into one control — each legend tier row is now the frequency filter; tiers above the active threshold dim to show they're hidden. The wordmark also no longer renders all-caps (AI-16).
+
 ### Added
 - **Clickable Stations**: Users can now click on transit hubs and stations to discover all routes departing from that location.
   - **Spatial Discovery**: Clicking a station filters the regional map to show only the specific routes serving that hub.
