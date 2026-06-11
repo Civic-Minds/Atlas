@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { useIntervalStats } from '../hooks/useIntervalStats';
+import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import type { Agency } from '../App';
@@ -22,6 +23,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(new Set());
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
   const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
+  const [bounds, setBounds] = useState<ViewportBounds | null>(null);
+  const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
 
   const { layers, loadedCount, isLoading } = useAgencyData(agencies);
   const { stats, searchMatches, matchesQuery, q, filteredLayers } = useIntervalStats(layers, {
@@ -30,7 +33,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     agencies: selectedAgencies,
     modes: selectedModes,
     day,
-    selectedStop
+    selectedStop,
+    bounds
   });
 
   return (
@@ -45,6 +49,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setSelectedStop={setSelectedStop}
         lightMode={lightMode}
         matchesQuery={matchesQuery}
+        onBoundsChange={onBoundsChange}
       />
 
       {isLoading && (
