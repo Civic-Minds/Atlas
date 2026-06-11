@@ -63,7 +63,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       // If it's a stop (Point), don't return a line style
       if (feature?.geometry.type === 'Point') return {};
 
+      const isCorridor = !!(p as any)?.isCorridor;
+
       if (selectedRoute !== null) {
+        if (isCorridor) {
+          // When a route is selected, keep its overlapping corridors visible at full combined color; dim others
+          const cRoutes: string[] = (p as any)?.routeIds || [];
+          const contrib = cRoutes.some((rid) => routeKey({ agencyName: p?.agencyName, routeId: rid } as any) === selectedRoute);
+          if (contrib) {
+            return { color: getTierColor((p as any)?.tier ?? null), weight: 3, opacity: 0.9 };
+          }
+          return { color: '#1e293b', weight: 0.5, opacity: 0.15 };
+        }
         const key = p ? routeKey(p) : null;
         if (key === selectedRoute) {
           return { color: getTierColor(p?.tier ?? null), weight: 4, opacity: 1 };
@@ -72,7 +83,19 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
       const match = matchesQuery(p);
       if (!match) {
+        if (isCorridor) {
+          // Dim corridors during search (but they may still match via corridorShortNames/routeIds)
+          return { color: lightMode ? '#cbd5e1' : '#334155', weight: 1.25, opacity: 0.2 };
+        }
         return { color: lightMode ? '#cbd5e1' : '#334155', weight: 0.75, opacity: 0.12 };
+      }
+      if (isCorridor) {
+        // Corridors (combined freq) render on top with stronger weight to surface the aggregate frequency
+        return {
+          color: getTierColor((p as any)?.tier ?? null),
+          weight: 2.5,
+          opacity: 0.9,
+        };
       }
       return {
         color: getTierColor(p?.tier ?? null),
@@ -100,6 +123,25 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         layer.on('click', (e: L.LeafletMouseEvent) => {
           L.DomEvent.stopPropagation(e);
           setSelectedStop(selectedStop === stopId ? null : stopId || null);
+        });
+        return;
+      }
+
+      const isCorridor = !!(props as any)?.isCorridor;
+      if (isCorridor) {
+        const h = (props as any).headway;
+        const n = ((props as any).routeIds?.length || 0);
+        (layer as L.Path).bindTooltip(
+          `<div class="tooltip-content">
+            <div class="tooltip-name">Combined corridor</div>
+            <div class="tooltip-info">${h != null ? `every ${h} min` : ''} • ${n} overlapping routes</div>
+          </div>`,
+          { sticky: true, className: 'atlas-tooltip', opacity: 1 }
+        );
+        // Corridors are viz overlays for combined freq; click clears route selection (no single route to select)
+        (layer as L.Path).on('click', (e: L.LeafletMouseEvent) => {
+          L.DomEvent.stopPropagation(e);
+          setSelectedRoute(null);
         });
         return;
       }
