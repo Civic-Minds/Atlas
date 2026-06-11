@@ -80,6 +80,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setDay={setDay}
         selectedStop={selectedStop}
         setSelectedStop={setSelectedStop}
+        selectedRoute={selectedRoute}
+        setSelectedRoute={setSelectedRoute}
         layers={layers}
       />
     </div>
