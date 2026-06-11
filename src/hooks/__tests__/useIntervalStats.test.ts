@@ -158,4 +158,35 @@ describe('useIntervalStats', () => {
     expect(result.current.stats).toBeNull();
     expect(result.current.searchMatches).toBeNull();
   });
+
+  it('should scope stats to the viewport bounds', () => {
+    const layersSpread: AgencyLayers = {
+      'ttc': {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [[-79.4, 43.6], [-79.3, 43.7]] }, // Toronto
+            properties: { routeId: '504', headway: 10, agencyName: 'TTC' }
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [[-80.5, 43.4], [-80.4, 43.5]] }, // Waterloo
+            properties: { routeId: '201', headway: 10, agencyName: 'GRT' }
+          }
+        ]
+      }
+    };
+
+    // Viewport over Toronto only
+    const { result } = renderHook(() => useIntervalStats(layersSpread, {
+      ...defaultFilters,
+      bounds: { s: 43.5, w: -79.6, n: 43.8, e: -79.1 }
+    }));
+    expect(result.current.stats).toEqual({ total: 1, matching: 1 });
+
+    // No bounds → whole region
+    const { result: unscoped } = renderHook(() => useIntervalStats(layersSpread, defaultFilters));
+    expect(unscoped.current.stats).toEqual({ total: 2, matching: 2 });
+  });
 });

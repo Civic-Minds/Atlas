@@ -1,9 +1,10 @@
-import React, { useCallback } from 'react';
-import { MapContainer, TileLayer, GeoJSON, useMapEvents } from 'react-leaflet';
+import React, { useCallback, useEffect } from 'react';
+import { MapContainer, TileLayer, GeoJSON, useMapEvents, useMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
+import type { ViewportBounds } from '../../hooks/useIntervalStats';
 
 interface MapCanvasProps {
   layers: AgencyLayers;
@@ -15,6 +16,7 @@ interface MapCanvasProps {
   setSelectedStop: (stop: string | null) => void;
   lightMode: boolean;
   matchesQuery: (p: ShapeProperties) => boolean;
+  onBoundsChange: (b: ViewportBounds) => void;
 }
 
 const REGION_CENTER: [number, number] = [43.65, -79.45];
@@ -22,6 +24,19 @@ const REGION_ZOOM = 10;
 
 function MapClickHandler({ onClear }: { onClear: () => void }) {
   useMapEvents({ click: onClear });
+  return null;
+}
+
+function BoundsReporter({ onBoundsChange }: { onBoundsChange: (b: ViewportBounds) => void }) {
+  const map = useMap();
+  const report = useCallback(() => {
+    const b = map.getBounds();
+    onBoundsChange({ s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() });
+  }, [map, onBoundsChange]);
+  useMapEvents({ moveend: report, zoomend: report });
+  useEffect(() => {
+    report();
+  }, [report]);
   return null;
 }
 
@@ -35,6 +50,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   setSelectedStop,
   lightMode,
   matchesQuery,
+  onBoundsChange,
 }) => {
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
@@ -123,6 +139,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         url={tileUrl}
       />
       <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
+      <BoundsReporter onBoundsChange={onBoundsChange} />
       {Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         return (

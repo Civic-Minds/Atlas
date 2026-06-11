@@ -139,7 +139,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {stats && (
           <div className="grid grid-cols-2 gap-3 mb-5">
             <div className="bg-[var(--bg-stat)] border border-[var(--border-primary)] rounded-xl p-3">
-              <div className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-tighter mb-1">Matching</div>
+              <div className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-tighter mb-1">On screen</div>
               <div className="text-xl font-black text-[var(--text-primary)]">
                 {stats.matching} <span className="text-[10px] text-[var(--text-muted)] font-bold uppercase">routes</span>
               </div>

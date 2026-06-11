@@ -24,10 +24,45 @@ export interface IntervalFilters {
   modes: Set<number>;    // route_type
   day: 'Weekday' | 'Saturday' | 'Sunday';
   selectedStop: string | null; // stopId
+  bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
+}
+
+export interface ViewportBounds {
+  s: number;
+  w: number;
+  n: number;
+  e: number;
+}
+
+// bbox per feature: [minLon, minLat, maxLon, maxLat]; cached per feature object
+const bboxCache = new WeakMap<GeoJSON.Feature, [number, number, number, number]>();
+
+function featureBbox(f: GeoJSON.Feature): [number, number, number, number] {
+  const cached = bboxCache.get(f);
+  if (cached) return cached;
+  let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
+  const coords =
+    f.geometry.type === 'LineString' ? (f.geometry.coordinates as number[][])
+    : f.geometry.type === 'Point' ? [f.geometry.coordinates as number[]]
+    : [];
+  for (const [lon, lat] of coords) {
+    if (lon < minLon) minLon = lon;
+    if (lat < minLat) minLat = lat;
+    if (lon > maxLon) maxLon = lon;
+    if (lat > maxLat) maxLat = lat;
+  }
+  const bbox: [number, number, number, number] = [minLon, minLat, maxLon, maxLat];
+  bboxCache.set(f, bbox);
+  return bbox;
+}
+
+function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
+  const [minLon, minLat, maxLon, maxLat] = featureBbox(f);
+  return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, selectedStop } = filters;
+  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -122,14 +157,16 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
-    const routesOnly = allFeatures.filter(f => (f.properties as any).routeId);
-    const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId);
+    // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in
+    const onScreen = (f: GeoJSON.Feature) => !bounds || inViewport(f, bounds);
+    const routesOnly = allFeatures.filter(f => (f.properties as any).routeId && onScreen(f));
+    const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId && onScreen(f));
 
     return {
       total: new Set(routesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
       matching: new Set(visibleRoutesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
     };
-  }, [allFeatures, visibleFeatures]);
+  }, [allFeatures, visibleFeatures, bounds]);
 
   const searchMatches = useMemo(() => {
     if (q === '') return null;
