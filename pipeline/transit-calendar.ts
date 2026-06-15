@@ -221,6 +221,7 @@ export function getActiveServiceIds(
         }
     }
 
+    // First pass: add regular and weekly services.
     for (const [serviceId, dates] of candidateDates) {
         const count = dates.length;
         if (count >= MIN_OCCURRENCES) {
@@ -234,14 +235,19 @@ export function getActiveServiceIds(
             const sorted = dates.slice().sort((a, b) => a - b);
             const isWeekly = sorted.every((ts, i) => i === 0 || Math.round((ts - sorted[i - 1]) / 86400000) === 7);
             if (isWeekly) active.add(serviceId);
-            continue;
         }
-        if (count === 1) {
-            // Single-date services: include unconditionally. One occurrence within
-            // the 90-day window has negligible impact on frequency analysis (1 trip
-            // vs. dozens of regular trips) and is required for one-off services to
-            // be visible when the pipeline is analysing a specific reference date.
-            active.add(serviceId);
+    }
+
+    // Second pass: single-occurrence services.
+    // Only include them if no regular service was found yet — this handles WSF-style
+    // feeds where every operating day is its own service_id (all counts are 1).
+    // When a regular weekday service already exists, a count-1 service is almost
+    // always a holiday replacement (e.g. GRT Holiday1 on Family Day / Good Friday)
+    // that runs instead of the normal service, not in addition to it. Merging it in
+    // adds spurious unique departure times and understates the typical headway.
+    if (active.size === 0) {
+        for (const [serviceId, dates] of candidateDates) {
+            if (dates.length === 1) active.add(serviceId);
         }
     }
 

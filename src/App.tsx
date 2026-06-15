@@ -14,9 +14,9 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'light';
+      return localStorage.getItem('theme') !== 'dark';
     }
-    return false;
+    return true;
   });
 
   useEffect(() => {

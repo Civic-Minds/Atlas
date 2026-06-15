@@ -22,7 +22,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   // Advanced Filter State
   const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(new Set());
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
-  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
+  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>(() => {
+    const d = new Date().getDay();
+    if (d === 0) return 'Sunday';
+    if (d === 6) return 'Saturday';
+    return 'Weekday';
+  });
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
 
