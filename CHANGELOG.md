@@ -6,10 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **ION headway wrong (AI-55)**: GRT Route 301 was showing "every 9 min" instead of every 10 min. The `getActiveServiceIds` function was unconditionally including single-occurrence holiday replacement services (Family Day, Good Friday) alongside the regular weekday service, adding 26 spurious departure times that created artificial 5-minute gaps. Fixed by splitting candidateDates processing into two passes — regular/weekly services first, then count=1 services only if no regular service exists (preserves WSF-style feed support).
+- **GO Transit straight-line visuals (AI-56)**: Combined frequency corridor features were being generated for GO Transit's all-rail feed, producing hundreds of 2-point stop-pair chord features that rendered as orange straight lines fanning out from Union Station. Corridors are now skipped for feeds where every route is `route_type=2` (rail), since rail lines run on dedicated single-operator corridors where aggregate stop-pair frequency is not meaningful.
+- **GO Transit duplicate route lines (AI-56)**: GO Transit encodes schedule change dates in route IDs (e.g. `04260626-LW` and `06260926-LW` for the same Lakeshore West line in two periods). Both period's routes were active in the analysis window, producing two overlapping LineString features per line. Pipeline now deduplicates route features by `(routeShortName, directionId, day)`, keeping the lower-headway (busier) service period.
+- **Frequency tier filter bleeding corridors**: Mode filter (Subway/Streetcar/Rail) was not hiding corridor features because corridors don't carry `routeType`. Selecting "Subway" now correctly hides bus-network corridor overlays.
 
 ### Added
 - **Light mode default**: map now defaults to light mode; dark mode still available via the toggle.
 - **Auto day-type**: day selector (Weekday/Saturday/Sunday) now initialises to today's actual day instead of always defaulting to Weekday.
+- **GO Transit rail**: 7 rail lines (Lakeshore East/West, Kitchener, Barrie, Stouffville, Richmond Hill, Milton) added to the map using a rail-only filtered feed. Routes use actual shape geometry (longest shape per direction, not most-frequent short-turn pattern).
+- **Stop dots hidden at regional zoom**: transit stop markers now only appear at zoom ≥ 13; at the regional overview zoom they were covering the entire map in thousands of overlapping circles. Stops mount as a separate Leaflet layer so zooming in/out doesn't remount route lines.
 
 ### Added
 - **Combined frequency corridors (AI-17)**: overlapping routes on shared stop-to-stop links now emit corridor features with *combined* (union) headway. These render as slightly thicker overlays on top of the per-route lines, so corridor segments visually show the effective frequency provided by multiple routes (e.g. two 12 min routes → ~6 min combined corridor in the tighter color tier). Day and headway filters apply to corridors; station selection filters to corridors involving the stop's routes; search matches corridors via participating route IDs/names.

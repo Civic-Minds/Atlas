@@ -46,20 +46,39 @@ export async function processGtfsBuffer(
     const m = shapeCounts.get(key)!;
     m.set(trip.shape_id, (m.get(trip.shape_id) ?? 0) + 1);
   }
+
+  // Build shapeById early so rail shape selection can compare lengths.
+  const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
+
   const routeDirToShape = new Map<string, string>();
   for (const [key, counts] of shapeCounts) {
-    const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
-    if (best) routeDirToShape.set(key, best[0]);
-  }
+    const routeId = key.split('::')[0];
+    const routeType = routeById.get(routeId)?.route_type;
+    const isRail = routeType === '2' || routeType === 2;
 
-  const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
+    if (isRail) {
+      // For rail, pick the longest shape (most points) so short-turn patterns
+      // (e.g. GO Transit Bramalea→Union) don't win over the full end-to-end route.
+      const best = [...counts.keys()]
+        .filter(sid => shapeById.has(sid))
+        .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
+      if (best) routeDirToShape.set(key, best);
+    } else {
+      const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+      if (best) routeDirToShape.set(key, best[0]);
+    }
+  }
 
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, undefined, routeDirToShape);
   onStatus?.('Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 
-  const features: GeoJsonFeature[] = [];
+  // Build route features; deduplicate by (routeShortName, directionId, day) so feeds with
+  // multiple schedule-period route IDs (e.g. GO Transit 04260626-LW / 06260926-LW) don't
+  // emit two overlapping features per line. When duplicates exist, keep the lower headway
+  // (more frequent / more trips active in the analysis window).
+  const dedupedFeatures = new Map<string, GeoJsonFeature>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
     const shapeId = routeDirToShape.get(key);
@@ -68,7 +87,12 @@ export async function processGtfsBuffer(
     if (!points || points.length < 2) continue;
 
     const route = routeById.get(result.route);
-    features.push({
+    const shortName = route?.route_short_name ?? result.route;
+    const dedupeKey = `${shortName}::${result.dir}::${result.day}`;
+    const existing = dedupedFeatures.get(dedupeKey);
+    if (existing && (existing.properties.headway as number) <= Math.round(result.avgHeadway)) continue;
+
+    dedupedFeatures.set(dedupeKey, {
       type: 'Feature',
       geometry: {
         type: 'LineString',
@@ -83,7 +107,7 @@ export async function processGtfsBuffer(
         directionId: parseInt(result.dir),
         tier: result.tier,
         headway: Math.round(result.avgHeadway),
-        routeShortName: route?.route_short_name ?? null,
+        routeShortName: shortName,
         routeLongName: route?.route_long_name ?? null,
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
@@ -91,6 +115,7 @@ export async function processGtfsBuffer(
       },
     });
   }
+  const features = [...dedupedFeatures.values()];
 
   // Extract stops for clickable stations
   const stopFeatures: GeoJsonFeature[] = [];
@@ -134,8 +159,16 @@ export async function processGtfsBuffer(
   // get aggregate headway from the *union* of their departures. Emitted as small LineStrings
   // between stop pairs so they chain into corridor paths. Drawn on top of per-route lines to
   // visually surface the combined frequency on shared segments.
+  //
+  // Corridors are skipped for all-rail feeds (route_type=2): rail lines run on dedicated
+  // single-operator corridors where combined frequency is not meaningful, and the stop-pair
+  // chord geometry creates misleading straight-line visuals over the actual shaped route.
+  const allRailFeed = (gtfs.routes ?? []).length > 0 &&
+    (gtfs.routes ?? []).every(r => r.route_type === '2' || r.route_type === 2);
+
   onStatus?.('Calculating combined corridors...');
   const corridorFeatures: GeoJsonFeature[] = [];
+  if (!allRailFeed) {
   const dayTypes: Array<'Weekday' | 'Saturday' | 'Sunday'> = ['Weekday', 'Saturday', 'Sunday'];
   for (const d of dayTypes) {
     const dayCfg = DEFAULT_CRITERIA.dayTypes[d];
@@ -168,6 +201,7 @@ export async function processGtfsBuffer(
       });
     }
   }
+  } // end !allRailFeed
 
   let center: [number, number] | null = null;
   const allCoords = features.flatMap(f => f.geometry.coordinates);
