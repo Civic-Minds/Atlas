@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMapEvents, useMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -27,12 +27,13 @@ function MapClickHandler({ onClear }: { onClear: () => void }) {
   return null;
 }
 
-function BoundsReporter({ onBoundsChange }: { onBoundsChange: (b: ViewportBounds) => void }) {
+function BoundsReporter({ onBoundsChange, onZoomChange }: { onBoundsChange: (b: ViewportBounds) => void; onZoomChange: (z: number) => void }) {
   const map = useMap();
   const report = useCallback(() => {
     const b = map.getBounds();
     onBoundsChange({ s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() });
-  }, [map, onBoundsChange]);
+    onZoomChange(map.getZoom());
+  }, [map, onBoundsChange, onZoomChange]);
   useMapEvents({ moveend: report, zoomend: report });
   useEffect(() => {
     report();
@@ -52,15 +53,17 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   matchesQuery,
   onBoundsChange,
 }) => {
+  const [zoom, setZoom] = useState(REGION_ZOOM);
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  const showStops = zoom >= 13;
 
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
       const p = feature?.properties as unknown as ShapeProperties;
       
-      // If it's a stop (Point), don't return a line style
+      // Stop points: hide at regional zoom, show when zoomed in
       if (feature?.geometry.type === 'Point') return {};
 
       const isCorridor = !!(p as any)?.isCorridor;
@@ -179,28 +182,44 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         url={tileUrl}
       />
       <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
-      <BoundsReporter onBoundsChange={onBoundsChange} />
+      <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
       {Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
+        // Split route shapes from stop points — stops mount/unmount on zoom without
+        // triggering expensive remounts of the much larger route layer.
+        const lineFeatures = fc.features.filter(f => f.geometry.type !== 'Point');
+        const pointFeatures = fc.features.filter(f => f.geometry.type === 'Point');
+        const lineFc = { ...fc, features: lineFeatures };
+        const pointFc = { ...fc, features: pointFeatures };
         return (
-          <GeoJSON
-            key={`${slug}-${maxHeadway}-${q}-${fc.features.length}-${selectedStop}`}
-            data={fc}
-            style={styleFeature}
-            onEachFeature={onEachFeature}
-            pointToLayer={(feature, latlng) => {
-              const props = feature.properties as unknown as ShapeProperties;
-              const isSelected = selectedStop === props.stopId;
-              return L.circleMarker(latlng, {
-                radius: isSelected ? 6 : 3,
-                fillColor: isSelected ? '#6366f1' : 'var(--text-dim)',
-                color: isSelected ? '#fff' : 'var(--border-primary)',
-                weight: 1,
-                opacity: isSelected ? 1 : 0.5,
-                fillOpacity: isSelected ? 1 : 0.3,
-              });
-            }}
-          />
+          <React.Fragment key={slug}>
+            <GeoJSON
+              key={`${slug}-lines-${maxHeadway}-${q}-${lineFeatures.length}`}
+              data={lineFc}
+              style={styleFeature}
+              onEachFeature={onEachFeature}
+            />
+            {(showStops || selectedStop != null) && pointFeatures.length > 0 && (
+              <GeoJSON
+                key={`${slug}-stops-${selectedStop}`}
+                data={pointFc}
+                style={styleFeature}
+                onEachFeature={onEachFeature}
+                pointToLayer={(feature, latlng) => {
+                  const props = feature.properties as unknown as ShapeProperties;
+                  const isSelected = selectedStop === props.stopId;
+                  return L.circleMarker(latlng, {
+                    radius: isSelected ? 6 : 3,
+                    fillColor: isSelected ? '#6366f1' : 'var(--text-dim)',
+                    color: isSelected ? '#fff' : 'var(--border-primary)',
+                    weight: 1,
+                    opacity: isSelected ? 1 : 0.5,
+                    fillOpacity: isSelected ? 1 : 0.3,
+                  });
+                }}
+              />
+            )}
+          </React.Fragment>
         );
       })}
     </MapContainer>

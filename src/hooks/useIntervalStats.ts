@@ -118,14 +118,22 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // Agency Filter
       if (agencies.size > 0 && !agencies.has(p.agencySlug!)) return false;
 
-      // Mode Filter
+      // Mode Filter: exclude corridors entirely when a mode filter is active (corridors don't
+      // carry routeType, so they'd bleed through and look like bus routes in Subway mode, etc.)
+      if (modes.size > 0 && (p as any).isCorridor) return false;
       if (modes.size > 0 && p.routeType !== undefined && !modes.has(p.routeType)) return false;
 
       // Day Filter (routes + corridors carry day; stops do not)
       if (p.day !== undefined && p.day !== day) return false;
 
-      // Headway Filter: routes and corridors (both carry numeric headway). Legacy null-headway routes only on All.
-      if (p.headway != null) {
+      // Tier filter: use the qualifying tier (sustained peak headway) so colour and
+      // visibility are always consistent. Fall back to numeric headway for legacy
+      // features that pre-date the tier field, and for corridors which carry headway
+      // but not a discrete tier bucket.
+      const tierVal = p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null;
+      if (tierVal != null) {
+        if (tierVal > maxHeadway) return false;
+      } else if (p.headway != null) {
         if (p.headway > maxHeadway) return false;
       } else if (p.routeId != null) {
         if (maxHeadway !== Infinity) return false;
@@ -157,8 +165,11 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         // Day Filter (routes + corridors)
         if (p.day !== undefined && p.day !== day) return false;
 
-        // Headway Filter: routes and corridors. Legacy null-headway routes only on All.
-        if (p.headway != null) {
+        // Tier filter: same logic as visibleFeatures — use qualifying tier for consistency.
+        const tierVal = p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null;
+        if (tierVal != null) {
+          if (tierVal > maxHeadway) return false;
+        } else if (p.headway != null) {
           if (p.headway > maxHeadway) return false;
         } else if (p.routeId != null) {
           if (maxHeadway !== Infinity) return false;
