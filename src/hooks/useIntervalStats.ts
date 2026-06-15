@@ -118,9 +118,11 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // Agency Filter
       if (agencies.size > 0 && !agencies.has(p.agencySlug!)) return false;
 
-      // Mode Filter: exclude corridors entirely when a mode filter is active (corridors don't
-      // carry routeType, so they'd bleed through and look like bus routes in Subway mode, etc.)
-      if (modes.size > 0 && (p as any).isCorridor) return false;
+      // Hide corridor features entirely — corridor stop-pair chords create long diagonal straight
+      // lines on express routes / distant stops, which cross water and don't follow road geometry.
+      // Individual route shapes already convey frequency via color; corridors add visual noise.
+      if ((p as any).isCorridor) return false;
+      // Mode Filter
       if (modes.size > 0 && p.routeType !== undefined && !modes.has(p.routeType)) return false;
 
       // Day Filter (routes + corridors carry day; stops do not)
@@ -159,6 +161,8 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         // Agency Filter
         if (agencies.size > 0 && !agencies.has(slug)) return false;
 
+        // Hide corridor features entirely (same reason as in visibleFeatures above)
+        if ((p as any).isCorridor) return false;
         // Mode Filter
         if (modes.size > 0 && p.routeType !== undefined && !modes.has(p.routeType)) return false;
 
