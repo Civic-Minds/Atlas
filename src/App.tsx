@@ -12,6 +12,7 @@ export interface Agency {
 export default function App() {
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [query, setQuery] = useState('');
+  const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -32,48 +33,57 @@ export default function App() {
   }, [lightMode]);
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
-      <header className="h-16 border-b border-[var(--border-primary)] flex items-center justify-between px-6 shrink-0 bg-[var(--bg-header)] gap-8">
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <MapIcon className="w-5 h-5 text-white" />
-          </div>
-          <h1 className="text-lg font-black tracking-tighter">Atlas</h1>
+    <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
+      <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
+        <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center shrink-0 shadow-2xl">
+          <MapIcon className="w-3.5 h-3.5 text-white" />
         </div>
 
-        <div className="flex-1 max-w-xl relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-dim)] pointer-events-none" />
+        <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search routes by name or number — e.g. 504 King"
-            className="w-full bg-[var(--bg-stat)] border border-[var(--border-primary)] text-[var(--text-primary)] placeholder-[var(--text-dim)] rounded-xl pl-11 pr-10 py-2.5 text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all shadow-sm"
+            placeholder="Search routes"
+            className="w-full bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
           />
           {query !== '' && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-1"
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-0.5"
               aria-label="Clear search"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
-        <div className="w-[120px] shrink-0 flex justify-end">
-          {/* Right spacer for alignment */}
-        </div>
-      </header>
+        {stats && (
+          <>
+            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+              <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
+              <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
+            </div>
+            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+              <span className="text-xs font-black text-[var(--text-primary)]">
+                {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
+              </span>
+              <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
+            </div>
+          </>
+        )}
+      </div>
 
-      <main className="flex-1 relative overflow-hidden">
+      <main className="absolute inset-0 overflow-hidden">
         {agencies.length > 0 ? (
-          <Interval 
-            agencies={agencies} 
-            lightMode={lightMode} 
-            setLightMode={setLightMode} 
+          <Interval
+            agencies={agencies}
+            lightMode={lightMode}
+            setLightMode={setLightMode}
             query={query}
             setQuery={setQuery}
+            onStatsChange={setStats}
           />
         ) : (
           <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">

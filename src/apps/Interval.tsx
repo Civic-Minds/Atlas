@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { useIntervalStats } from '../hooks/useIntervalStats';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { SidebarControls } from '../components/Interval/SidebarControls';
+import { FilterPanel } from '../components/Interval/FilterPanel';
+import { FilterChips } from '../components/Interval/FilterChips';
 import type { Agency } from '../App';
 
 interface Props {
@@ -12,9 +14,10 @@ interface Props {
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
   query: string;
   setQuery: (q: string) => void;
+  onStatsChange?: (stats: { total: number; matching: number } | null) => void;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange }: Props) {
   const [maxHeadway, setMaxHeadway] = useState(60);
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
@@ -29,6 +32,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     return 'Weekday';
   });
   const [hideSpan, setHideSpan] = useState(false);
+  const [livePollingOnly, setLivePollingOnly] = useState(false);
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
 
@@ -41,8 +45,13 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     day,
     selectedStop,
     bounds,
-    hideSpan
+    hideSpan,
+    livePollingOnly
   });
+
+  useEffect(() => {
+    onStatsChange?.(stats);
+  }, [stats, onStatsChange]);
 
   return (
     <div className="relative w-full h-full transition-colors duration-200">
@@ -60,25 +69,43 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       />
 
       {isLoading && (
-        <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
+        <div className="absolute bottom-6 right-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
           <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">
+          <span className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide">
             {loadedCount}/{agencies.length} networks
           </span>
         </div>
       )}
 
+      <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2">
+        <FilterChips
+          maxHeadway={maxHeadway}
+          setMaxHeadway={setMaxHeadway}
+          selectedModes={selectedModes}
+          setSelectedModes={setSelectedModes}
+          day={day}
+          setDay={setDay}
+          agencies={agencies}
+          selectedAgencies={selectedAgencies}
+          setSelectedAgencies={setSelectedAgencies}
+        />
+        <FilterPanel
+          lightMode={lightMode}
+          setLightMode={setLightMode}
+          hideSpan={hideSpan}
+          setHideSpan={setHideSpan}
+          livePollingOnly={livePollingOnly}
+          setLivePollingOnly={setLivePollingOnly}
+        />
+      </div>
+
       <SidebarControls
-        lightMode={lightMode}
-        setLightMode={setLightMode}
         query={query}
         setQuery={setQuery}
         searchMatches={searchMatches}
         searchMatchResults={searchMatchResults}
         maxHeadway={maxHeadway}
         setMaxHeadway={setMaxHeadway}
-        stats={stats}
-        // New Props
         agencies={agencies}
         selectedAgencies={selectedAgencies}
         setSelectedAgencies={setSelectedAgencies}
@@ -94,6 +121,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         currentDay={day}
         hideSpan={hideSpan}
         setHideSpan={setHideSpan}
+        livePollingOnly={livePollingOnly}
+        setLivePollingOnly={setLivePollingOnly}
       />
     </div>
   );
