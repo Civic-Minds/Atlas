@@ -46,6 +46,7 @@ export default async function handler(req: Request) {
   }
 
   const snapshots: any[] = [];
+  const tripDrifts: any[] = [];
 
   for (const [agency, url] of Object.entries(FEEDS)) {
     try {
@@ -53,6 +54,7 @@ export default async function handler(req: Request) {
       if (!feed || !feed.entity) continue;
 
       const stopPredictions: Record<string, any[]> = {};
+      const tripPredictions: Record<string, any[]> = {};
       const routeId = agency === 'burlington' ? BURLINGTON_ROUTE_ID : (agency === 'hamilton' ? HAMILTON_ROUTE_ID : null);
       const targetStops = agency === 'burlington' ? BURLINGTON_TARGET_STOPS : (agency === 'hamilton' ? HAMILTON_TARGET_STOPS : null);
 
@@ -61,10 +63,13 @@ export default async function handler(req: Request) {
         if (!tu || !tu.stopTimeUpdate) continue;
         if (routeId && tu.trip?.routeId !== routeId) continue;
 
+        const tripId = tu.trip?.tripId;
+        const directionId = tu.trip?.directionId;
+
         for (const stu of tu.stopTimeUpdate) {
           const stopId = String(stu.stopId);
           if (targetStops && !targetStops.has(stopId)) continue;
-          
+
           const arrival = stu.arrival || stu.departure;
           if (!arrival || !arrival.time) continue;
 
@@ -74,13 +79,24 @@ export default async function handler(req: Request) {
 
           if (!stopPredictions[stopId]) stopPredictions[stopId] = [];
           stopPredictions[stopId].push({
-            tripId: tu.trip?.tripId,
+            tripId,
             routeId: tu.trip?.routeId,
-            directionId: tu.trip?.directionId,
+            directionId,
             scheduledTime,
             predictedTime,
             delay,
           });
+
+          if (tripId) {
+            if (!tripPredictions[tripId]) tripPredictions[tripId] = [];
+            tripPredictions[tripId].push({
+              stopId,
+              scheduledTime,
+              predictedTime,
+              delayMin: Math.round(delay / 60 * 10) / 10,
+              directionId,
+            });
+          }
         }
       }
 
@@ -108,6 +124,30 @@ export default async function handler(req: Request) {
           lastUpdated: timestamp,
         });
       }
+
+      // Per-trip drift: compare delay at entry vs. exit stop to detect bunching/gap
+      for (const [tripId, stops] of Object.entries(tripPredictions)) {
+        if (stops.length < 2) continue;
+        stops.sort((a, b) => a.scheduledTime - b.scheduledTime);
+        const delays = stops.map(s => s.delayMin);
+        const entryDelayMin = delays[0];
+        const exitDelayMin = delays[delays.length - 1];
+        const avgDelayMin = Math.round(delays.reduce((a, b) => a + b, 0) / delays.length * 10) / 10;
+        // Positive = gaining time along route; negative = losing time
+        const driftMin = Math.round((exitDelayMin - entryDelayMin) * 10) / 10;
+
+        tripDrifts.push({
+          agency,
+          tripId,
+          directionId: stops[0].directionId,
+          stopCount: stops.length,
+          entryDelayMin,
+          exitDelayMin,
+          avgDelayMin,
+          driftMin,
+          lastUpdated: timestamp,
+        });
+      }
     } catch (err) {
       console.error(`Error polling ${agency}:`, err);
     }
@@ -115,21 +155,20 @@ export default async function handler(req: Request) {
 
   if (snapshots.length > 0) {
     const filename = `atlas/realtime/snapshot-${timestamp.replace(/[:.]/g, '-')}.json`;
-    
-    // Save the individual snapshot
-    await put(filename, JSON.stringify({ timestamp, arrivals: snapshots }), {
+    const payload = JSON.stringify({ timestamp, arrivals: snapshots, trips: tripDrifts });
+
+    await put(filename, payload, {
       access: 'public',
       contentType: 'application/json',
     });
 
-    // Update a "latest" file for the frontend to consume easily
-    await put('atlas/realtime/latest.json', JSON.stringify({ timestamp, arrivals: snapshots }), {
+    await put('atlas/realtime/latest.json', payload, {
       access: 'public',
       contentType: 'application/json',
       allowOverwrite: true,
     });
-    
-    return new Response(`Saved snapshot with ${snapshots.length} arrivals`, { status: 200 });
+
+    return new Response(`Saved snapshot with ${snapshots.length} arrivals, ${tripDrifts.length} trip drifts`, { status: 200 });
   }
 
   return new Response('No data to save', { status: 200 });
