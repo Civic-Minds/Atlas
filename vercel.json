@@ -1,0 +1,14 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/poll",
+      "schedule": "* * * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/gtfs-rt",
+      "destination": "/api/gtfs-rt.ts"
+    }
+  ]
+}

@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Real-Time GTFS Proxy**: Added `api/gtfs-rt.ts` to proxy and parse binary GTFS-RT TripUpdates into JSON for easier consumption.
+- **Schedule Adherence Polling**: Implemented `api/cron/poll.ts` to record predicted vs. scheduled arrivals for Burlington Route 1 and Hamilton B-Line every minute.
+- **Vercel Cron Configuration**: Added `vercel.json` to manage the minute-by-minute polling schedule and API rewrites.
+
+### Changed
+- **Google Maps-style floating UI**: replaced the spanning header bar with a floating translucent search pill (top-left) and grouped floating controls (top-right), matching Maps' pattern of no full-width chrome. Dark-mode toggle and filter button are now separate pills instead of one combined control. Stripped remaining all-caps text and decorative icons from the filter UI.
+- **Frequency/Mode/Day filters broken out into chips**: these three filters now live as standalone pill buttons beside the filter button (Maps' category-chip pattern) instead of only inside the filter dropdown. Each chip keeps a static label (e.g. "Frequency") with a small dot indicator when a non-default value is active, and opens its own small dropdown to change the value. Live polling, hide-irregular, and agencies remain in the main filter popover.
+- **On screen / Coverage stats as pills**: condensed from boxy stat cards into small inline pill badges in the sidebar panel.
+
+### Fixed
+- **Filter chip dropdowns clipped off-screen**: dropdowns were anchored `left-0` on their trigger chip, which overflows the viewport since the chip row sits at the right edge of the screen. Anchored to `right-0` instead so they open leftward.
+
 ### Fixed
 - **Sidebar panel couldn't scroll to the bottom**: the scrollable panel was a flex child with no `min-h-0`/`flex-1`, so it grew to fit its content instead of being constrained by the parent's max-height — `overflow-y-auto` never actually kicked in. Agency list (and anything below it) was unreachable when the panel content exceeded the viewport. Fixed by making the scroll container a proper shrinking flex child.
 - **Route lines very hard to click**: thin route lines (1–4px) had a click hit-area equal to their visual width, since Leaflet's Canvas renderer ties click tolerance directly to stroke `weight`. Added an invisible 16px-wide "hit" line under each route purely for click/tap detection, so thin lines stay visually unobtrusive but are much easier to select.
