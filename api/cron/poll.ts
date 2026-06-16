@@ -8,7 +8,6 @@ export const config = {
 const FEEDS = {
   burlington: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb',
   hamilton: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
-  go: 'https://api.metrolinx.com/gtfs/v1/tripupdates',
 };
 
 const BURLINGTON_ROUTE_ID = '311'; // Route 1
@@ -18,14 +17,7 @@ const HAMILTON_ROUTE_ID = '5677'; // Route 1 (King)
 const HAMILTON_TARGET_STOPS = new Set(['1403', '355415', '1790', '1771', '2138']);
 
 async function fetchFeed(agency: string, url: string) {
-  const headers: Record<string, string> = {};
-  if (agency === 'go') {
-    const key = process.env.METROLINX_API_KEY;
-    if (!key) return null;
-    headers['X-API-KEY'] = key;
-  }
-
-  const res = await fetch(url, { headers });
+  const res = await fetch(url);
   if (!res.ok) return null;
   const buffer = await res.arrayBuffer();
   const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(new Uint8Array(buffer));

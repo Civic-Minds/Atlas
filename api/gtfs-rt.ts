@@ -7,7 +7,6 @@ export const config = {
 const FEEDS = {
   burlington: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb',
   hamilton: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
-  go: 'https://api.metrolinx.com/gtfs/v1/tripupdates',
 };
 
 export default async function handler(req: Request) {
@@ -15,7 +14,7 @@ export default async function handler(req: Request) {
   const agency = url.searchParams.get('agency');
 
   if (!agency || !FEEDS[agency as keyof typeof FEEDS]) {
-    return new Response(JSON.stringify({ error: 'Invalid agency. Use burlington, hamilton, or go.' }), {
+    return new Response(JSON.stringify({ error: 'Invalid agency. Use burlington or hamilton.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -23,17 +22,6 @@ export default async function handler(req: Request) {
 
   const feedUrl = FEEDS[agency as keyof typeof FEEDS];
   const headers: Record<string, string> = {};
-
-  if (agency === 'go') {
-    const key = process.env.METROLINX_API_KEY;
-    if (!key) {
-      return new Response(JSON.stringify({ error: 'Missing METROLINX_API_KEY environment variable.' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-    headers['X-API-KEY'] = key;
-  }
 
   try {
     const response = await fetch(feedUrl, { headers });
@@ -53,14 +41,6 @@ export default async function handler(req: Request) {
       enums: String,
       bytes: String,
     });
-
-    // Optional: Filter GO rail routes if specified in AI-50
-    if (agency === 'go' && json.entity) {
-      const railRoutes = new Set(['0', '1', '2', '3', '4', '5', '6', '7']);
-      json.entity = json.entity.filter((e: any) => 
-        e.tripUpdate?.trip?.routeId && railRoutes.has(String(e.tripUpdate.trip.routeId))
-      );
-    }
 
     return new Response(JSON.stringify(json), {
       status: 200,
