@@ -4,7 +4,7 @@ import { getTierColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
-import { useLiveAdherence, agencyHeadwayDelta } from '../../hooks/useLiveAdherence';
+import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute } from '../../utils/livePolling';
 
 interface SidebarControlsProps {
@@ -92,7 +92,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentRoute) return null;
     const agencySlug = agencies.find(a => a.name === currentRoute.agencyName)?.slug ?? null;
     if (!agencySlug || !isLivePollingRoute(agencySlug, currentRoute.routeShortName)) return null;
-    return { agencySlug, delta: agencyHeadwayDelta(liveData, agencySlug) };
+    return {
+      agencySlug,
+      delta: agencyHeadwayDelta(liveData, agencySlug),
+      trips: agencyTripSummary(liveData, agencySlug),
+    };
   }, [currentRoute, agencies, liveData]);
 
   const currentStop = useMemo(() => {
@@ -166,15 +170,29 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               {currentRoute.agencyName}
             </p>
             {liveRouteInfo && (
-              <div className="flex items-center gap-1.5 mb-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
-                <span className="text-[10px] font-black text-green-400">Live</span>
-                {liveRouteInfo.delta != null ? (
-                  <span className="text-[10px] font-bold text-[var(--text-muted)]">
-                    {liveRouteInfo.delta > 0 ? `+${liveRouteInfo.delta}` : liveRouteInfo.delta} min vs schedule
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
+              <div className="mb-3 px-2.5 py-2 rounded-lg bg-green-500/5 border border-green-500/15">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
+                  <span className="text-[10px] font-black text-green-400">Live</span>
+                  {liveRouteInfo.delta != null ? (
+                    <span className="text-[10px] font-bold text-[var(--text-muted)]">
+                      avg headway {liveRouteInfo.delta > 0 ? `+${liveRouteInfo.delta}` : liveRouteInfo.delta} min vs schedule
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
+                  )}
+                </div>
+                {liveRouteInfo.trips && (
+                  <div className="flex gap-2 text-[10px] font-bold">
+                    <span className="text-[var(--text-muted)]">{liveRouteInfo.trips.total} trips</span>
+                    <span className="text-green-400">{liveRouteInfo.trips.onTime} on time</span>
+                    {liveRouteInfo.trips.late > 0 && (
+                      <span className="text-amber-400">{liveRouteInfo.trips.late} late</span>
+                    )}
+                    {liveRouteInfo.trips.early > 0 && (
+                      <span className="text-sky-400">{liveRouteInfo.trips.early} early</span>
+                    )}
+                  </div>
                 )}
               </div>
             )}

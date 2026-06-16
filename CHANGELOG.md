@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - **Real-Time GTFS Proxy**: Added `api/gtfs-rt.ts` to proxy and parse binary GTFS-RT TripUpdates into JSON for easier consumption.
 - **Schedule Adherence Polling**: Implemented `api/cron/poll.ts` to record predicted vs. scheduled arrivals for Burlington Route 1 and Hamilton B-Line every minute. Each snapshot now includes per-stop headway-vs-scheduled diff (`headwayDeltaMin`) and per-trip segment drift (`entryDelayMin`, `exitDelayMin`, `driftMin`) to detect bunching and early running.
 - **Vercel Cron Configuration**: Added `vercel.json` to manage the minute-by-minute polling schedule and API rewrites.
+- **Live adherence display**: Selecting Burlington Route 1 or Hamilton Route 1 in the route panel now shows a pulsing "Live" badge with current avg headway delta vs. schedule and a per-trip on-time/late/early breakdown, via a new `api/live-status.ts` Blob proxy and `useLiveAdherence` hook (60s polling).
 
 ### Changed
 - **Google Maps-style floating UI**: replaced the spanning header bar with independent floating pills — logo, search, on-screen/coverage stats (top-left) and filter chips, settings, dark-mode toggle (top-right) — instead of one combined header bar or combined controls. Stripped remaining all-caps text and decorative icons from the filter UI.
