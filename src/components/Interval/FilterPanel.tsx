@@ -36,17 +36,17 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     <div ref={panelRef} className="relative flex items-center gap-2">
       <button
         onClick={() => setIsOpen((v) => !v)}
-        className="relative w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-indigo-400 text-[var(--text-primary)] transition-colors"
+        className="relative w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
         aria-label="Settings"
       >
         <Settings className="w-4 h-4" />
         {hasActiveFilters && (
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-indigo-500 border border-[var(--bg-panel)]" />
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
         )}
       </button>
       <button
         onClick={() => setLightMode((v) => !v)}
-        className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg text-[var(--text-primary)] hover:text-indigo-400 transition-colors"
+        className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
         aria-label="Toggle light mode"
       >
         {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
@@ -66,7 +66,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             onClick={() => setLivePollingOnly((v) => !v)}
             className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
               livePollingOnly
-                ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-400'
+                ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                 : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
             }`}
             title="Show only routes with live GTFS-RT schedule-adherence polling"
@@ -83,7 +83,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             onClick={() => setHideSpan((v) => !v)}
             className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
               hideSpan
-                ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-400'
+                ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                 : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
             }`}
             title="Hide routes with no sustained frequency tier (peak-only, school runs, shuttles)"

@@ -183,7 +183,10 @@ export async function processGtfsBuffer(
     const shortName = route?.route_short_name ?? result.route;
     const dedupeKey = `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
-    const newHeadway = result.tier === 'span' ? null : Math.round(result.avgHeadway);
+    const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
+    // Rail routes use median headway: avg is pulled down by dense peak clusters
+    // (GO peak every 10 min + midday every 60 min → avg ~11 min, median ~25-30 min)
+    const newHeadway = result.tier === 'span' ? null : Math.round(isRailRoute ? result.medianHeadway : result.avgHeadway);
     if (
       existing &&
       newHeadway != null &&

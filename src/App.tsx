@@ -35,7 +35,7 @@ export default function App() {
   return (
     <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
-        <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center shrink-0 shadow-2xl">
+        <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl">
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </div>
 
