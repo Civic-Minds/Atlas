@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - **On screen / Coverage stats as pills**: condensed from boxy stat cards into small inline pill badges in the sidebar panel.
 
 ### Fixed
+- **GO Milton (MI) showing false all-day frequency**: Milton line is rush-hour-only — each direction runs a short AM or PM peak window covering less than 40% of the weekday analysis window, but was classified as tier 15/60 with headways like "every 15 min." Routes whose active span covers less than 40% of the day window (or ≤90 minutes total) are now classified as `span` with null headway, same as school runs and shuttles.
 - **Redundant TTC headsigns**: stripped redundant "Line X (Name) towards" prefixes and identical-to-line-name headsigns from the display labels, specifically fixing TTC subway directions (e.g., "to Line 4 (Sheppard) towards Don Mills" now shows as "to Don Mills").
 - **Filter chip dropdowns clipped off-screen**: dropdowns were anchored `left-0` on their trigger chip, which overflows the viewport since the chip row sits at the right edge of the screen. Anchored to `right-0` instead so they open leftward.
 
