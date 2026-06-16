@@ -63,12 +63,12 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const chipClass = (active: boolean) =>
     `relative h-8 px-3.5 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border rounded-full shadow-lg text-xs font-bold transition-colors whitespace-nowrap ${
       active
-        ? 'border-indigo-500/50 text-indigo-400'
-        : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-indigo-400'
+        ? 'border-[var(--accent-border)] text-[var(--accent)]'
+        : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
     }`;
 
   const Dot = ({ show }: { show: boolean }) =>
-    show ? <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-indigo-500 border border-[var(--bg-panel)]" /> : null;
+    show ? <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" /> : null;
 
   return (
     <div ref={rowRef} className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                   }}
                   className={`px-3 py-1.5 rounded-md text-[11px] font-bold transition-all border whitespace-nowrap ${
                     isSelected
-                      ? 'bg-indigo-600/20 border-indigo-500/50 text-[var(--text-primary)]'
+                      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--text-primary)]'
                       : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-legend)] hover:text-[var(--text-primary)]'
                   }`}
                   title={max === Infinity ? 'Show all routes' : `Show routes running every ${max} min or better`}
@@ -119,7 +119,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 }}
                 className={`px-3 py-1.5 rounded-md text-[11px] font-bold transition-all border whitespace-nowrap ${
                   day === d
-                    ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-400'
+                    ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                     : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -145,7 +145,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                   onClick={() => toggleMode(m.id)}
                   className={`px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border ${
                     isActive
-                      ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-400'
+                      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                       : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
                   }`}
                 >
@@ -171,7 +171,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                   onClick={() => toggleAgency(a.slug)}
                   className={`flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border ${
                     isActive
-                      ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-400'
+                      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                       : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
                   }`}
                 >

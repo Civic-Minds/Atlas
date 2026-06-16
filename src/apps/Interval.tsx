@@ -31,7 +31,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     if (d === 6) return 'Saturday';
     return 'Weekday';
   });
-  const [hideSpan, setHideSpan] = useState(false);
+  const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
@@ -70,7 +70,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
       {isLoading && (
         <div className="absolute bottom-6 right-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
-          <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
           <span className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide">
             {loadedCount}/{agencies.length} networks
           </span>

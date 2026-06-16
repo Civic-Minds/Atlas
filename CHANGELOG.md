@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Accent CSS variable system**: all accent colours now come from `--accent`, `--accent-bg`, and `--accent-border` CSS variables (light/dark values in `index.css`). Replaced every scattered `indigo-*` Tailwind class across the UI. Changing the two `:root` colour values repaints the entire app.
+- **Zoom-based stop visibility**: stop markers now show at three levels — all stops at zoom ≥ 14, hub stops only (4+ routes) at zoom 13, none below 13. Hub stops render slightly larger (radius 4 vs 3). Stops and route lines are mounted on separate Leaflet layers so zoom changes don't remount the (much larger) route layer.
+- **Smooth map zooming**: `zoomSnap={0.25}`, `zoomDelta={0.5}`, `wheelPxPerZoomLevel={120}` on `MapContainer` for sub-integer zoom steps and slower mouse-wheel panning.
+- **Live polling filter in useIntervalStats**: `livePollingOnly` filter prop hides all routes not covered by Atlas's GTFS-RT adherence polling. Driven by `src/utils/livePolling.ts`, which lists the covered agency/route pairs.
+
+### Changed
+- **Route panel direction rows**: headsign ("to Aldershot GO") moves to the top of each direction row; the tier dot + "every X min" line sits below it. Gives destination context before frequency number.
+- **Route and stop name title-casing**: GTFS long names and stop names are now display-cased at render time (e.g. "KING STREET WEST" → "King Street West"). Applied in the route panel header, station view header, and stop tooltip.
+- **Station View is text-based**: routes at a stop are now listed as text entries (bold route number, indented `→ Headsign` lines) instead of the previous blob-badge layout. Headsigns are cleaned of agency prefix codes (e.g. "LW - Aldershot GO" → "Aldershot GO").
+- **MapCanvas mutual exclusivity**: clicking a stop clears the selected route, and clicking a route clears the selected stop. Both panels can no longer be open simultaneously.
+- **Stop tooltip**: removed the "X routes serve this hub" count (it was derived from raw `routeIds` and didn't match the deduplicated count shown in the panel); tooltip now just shows "Station" + title-cased stop name.
+- **GO Transit rail headway uses median**: `process-core.ts` now uses `medianHeadway` (instead of `avgHeadway`) for `route_type=2` (rail) routes. GO peak trains cluster heavily and drag the mean down to ~11 min even when midday service is every 30 min; median gives the representative off-peak figure.
+- **Hide irregular routes on by default**: `hideSpan` now initialises to `true` so span-only (peak/school/shuttle) routes are hidden on first load.
+
+### Fixed
+- **Stop and route panels showing simultaneously**: clicking a stop didn't clear the selected route (and vice versa), so both panels rendered at once. Fixed with mutual-exclusivity logic in `MapCanvas` click handlers.
+- **Stop tooltip route count didn't match panel**: tooltip said "4 routes" but the panel showed 2 because the panel deduplicates by `routeShortName` while the tooltip used raw `routeIds.length`. Removed the count from the tooltip entirely.
+
+### Added
 - **Real-Time GTFS Proxy**: Added `api/gtfs-rt.ts` to proxy and parse binary GTFS-RT TripUpdates into JSON for easier consumption.
 - **Schedule Adherence Polling**: Implemented `api/cron/poll.ts` to record predicted vs. scheduled arrivals for Burlington Route 1 and Hamilton B-Line every minute. Each snapshot now includes per-stop headway-vs-scheduled diff (`headwayDeltaMin`) and per-trip segment drift (`entryDelayMin`, `exitDelayMin`, `driftMin`) to detect bunching and early running.
 - **Vercel Cron Configuration**: Added `vercel.json` to manage the minute-by-minute polling schedule and API rewrites.

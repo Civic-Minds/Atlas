@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
+import { isLivePollingRoute } from '../utils/livePolling';
 
 export { HEADWAY_TIERS, getTierColor };
 export type AgencyLayers = BaseAgencyLayers;
@@ -31,6 +32,7 @@ export interface IntervalFilters {
   selectedStop: string | null; // stopId
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
+  livePollingOnly?: boolean; // only show routes covered by Atlas's GTFS-RT adherence polling
 }
 
 export interface ViewportBounds {
@@ -68,7 +70,7 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds, hideSpan } = filters;
+  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds, hideSpan, livePollingOnly } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -119,6 +121,9 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // Agency Filter
       if (agencies.size > 0 && !agencies.has(p.agencySlug!)) return false;
 
+      // Live polling filter (only show routes covered by GTFS-RT adherence trial)
+      if (livePollingOnly && p.routeId && !isLivePollingRoute(p.agencySlug, p.routeShortName)) return false;
+
       // Hide corridor features entirely — corridor stop-pair chords create long diagonal straight
       // lines on express routes / distant stops, which cross water and don't follow road geometry.
       // Individual route shapes already convey frequency via color; corridors add visual noise.
@@ -147,7 +152,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
       return true; // Keep stops (and corridors that passed above)
     }),
-  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan]);
+  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly]);
 
   const filteredLayers = useMemo(() => {
     const result: AgencyLayers = {};
@@ -164,6 +169,9 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
         // Agency Filter
         if (agencies.size > 0 && !agencies.has(slug)) return false;
+
+        // Live polling filter (only show routes covered by GTFS-RT adherence trial)
+        if (livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
 
         // Hide corridor features entirely (same reason as in visibleFeatures above)
         if ((p as any).isCorridor) return false;
@@ -197,7 +205,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       }
     }
     return result;
-  }, [layers, maxHeadway, agencies, modes, day, routesForStop, hideSpan]);
+  }, [layers, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly]);
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;

@@ -17,6 +17,10 @@
   --bg-btn-hover: rgba(0, 0, 0, 0.1);
   --text-legend: #4b5563;
   --dim-route: #cbd5e1;
+  /* Accent — change these two lines to retheme the whole app */
+  --accent: #3f3f46;
+  --accent-bg: rgba(63, 63, 70, 0.08);
+  --accent-border: rgba(63, 63, 70, 0.2);
 }
 
 [data-theme='dark'] {
@@ -32,6 +36,10 @@
   --bg-btn-hover: rgba(255, 255, 255, 0.1);
   --text-legend: rgba(255, 255, 255, 0.7);
   --dim-route: #334155;
+  /* Accent */
+  --accent: #e4e4e7;
+  --accent-bg: rgba(228, 228, 231, 0.08);
+  --accent-border: rgba(228, 228, 231, 0.18);
 }
 
 .atlas-tooltip {
@@ -59,8 +67,7 @@
 .tooltip-name {
   font-size: 10px;
   font-weight: 900;
-  color: #818cf8;
-  text-transform: uppercase;
+  color: var(--accent);
   letter-spacing: 0.1em;
   margin-bottom: 4px;
 }

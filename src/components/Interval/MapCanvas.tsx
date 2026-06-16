@@ -57,7 +57,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  const showStops = zoom >= 13;
+  // zoom 14+: all stops; zoom 13: hubs only (4+ routes); below 13: none
+  const showStops = zoom >= 14;
+  const showHubsOnly = zoom === 13;
 
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
@@ -129,16 +131,19 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       if (feature.geometry.type === 'Point') {
         const { stopName, stopId, routeIds } = props;
+        const displayName = stopName
+          ? stopName.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())
+          : stopName;
         (layer as L.Marker).bindTooltip(
           `<div class="tooltip-content">
             <div class="tooltip-name">Station</div>
-            <div class="tooltip-title">${stopName}</div>
-            <div class="tooltip-info">${routeIds?.length} routes serve this hub</div>
+            <div class="tooltip-title">${displayName}</div>
           </div>`,
           { sticky: true, className: 'atlas-tooltip', opacity: 1 }
         );
         layer.on('click', (e: L.LeafletMouseEvent) => {
           L.DomEvent.stopPropagation(e);
+          setSelectedRoute(null);
           setSelectedStop(selectedStop === stopId ? null : stopId || null);
         });
         return;
@@ -163,19 +168,21 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const { routeId, headway, routeShortName } = props;
+      const { routeId, headway, routeShortName, tier } = props;
       const name = routeShortName || routeId;
       const key = routeKey(props);
+      const headwayLabel = headway != null ? `every ${headway} min` : tier === 'span' ? 'limited service' : 'No headway data';
       // Hover stays minimal — click opens the route panel in the sidebar
       (layer as L.Path).bindTooltip(
         `<div class="tooltip-content">
           <div class="tooltip-name">${name}</div>
-          <div class="tooltip-info">${headway != null ? `every ${headway} min` : 'No headway data'}</div>
+          <div class="tooltip-info">${headwayLabel}</div>
         </div>`,
         { sticky: true, className: 'atlas-tooltip', opacity: 1 }
       );
       (layer as L.Path).on('click', (e: L.LeafletMouseEvent) => {
         L.DomEvent.stopPropagation(e);
+        setSelectedStop(null);
         setSelectedRoute(selectedRoute === key ? null : key);
       });
     },
@@ -189,6 +196,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       style={{ height: '100%', width: '100%', background: 'var(--bg-app)' }}
       zoomControl={false}
       preferCanvas={true}
+      zoomAnimation={true}
+      zoomSnap={0.25}
+      zoomDelta={0.5}
+      wheelPxPerZoomLevel={120}
     >
       <TileLayer
         key={tileUrl}
@@ -218,18 +229,22 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               data={lineFc}
               style={styleFeature}
             />
-            {(showStops || selectedStop != null) && pointFeatures.length > 0 && (
+            {(showStops || showHubsOnly || selectedStop != null) && pointFeatures.length > 0 && (
               <GeoJSON
-                key={`${slug}-stops-${selectedStop}`}
+                key={`${slug}-stops-${selectedStop}-${zoom >= 13 ? zoom : 'hidden'}`}
                 data={pointFc}
                 style={styleFeature}
                 onEachFeature={onEachFeature}
                 pointToLayer={(feature, latlng) => {
                   const props = feature.properties as unknown as ShapeProperties;
                   const isSelected = selectedStop === props.stopId;
+                  const routeCount = (props as any).routeIds?.length ?? 0;
+                  const isHub = routeCount >= 4;
+                  // At zoom 13, only render hub stops
+                  if (showHubsOnly && !isHub && !isSelected) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
                   return L.circleMarker(latlng, {
-                    radius: isSelected ? 6 : 3,
-                    fillColor: isSelected ? '#6366f1' : 'var(--text-dim)',
+                    radius: isSelected ? 6 : isHub ? 4 : 3,
+                    fillColor: isSelected ? 'var(--accent)' : 'var(--text-dim)',
                     color: isSelected ? '#fff' : 'var(--border-primary)',
                     weight: 1,
                     opacity: isSelected ? 1 : 0.5,

@@ -106,20 +106,29 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return stop ? (stop.properties as any) : null;
   }, [selectedStop, layers]);
 
-  const stopRouteNames = useMemo(() => {
+  const stopRoutes = useMemo(() => {
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
-    const names = new Set<string>();
+    const routeMap = new Map<string, { shortName: string; headsigns: Set<string> }>();
     for (const fc of Object.values(layers)) {
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
-        if (p.routeId && routeIds.has(p.routeId)) {
-          names.add(p.routeShortName || p.routeId);
-        }
+        if (!p.routeId || !routeIds.has(p.routeId)) continue;
+        const key = p.routeShortName || p.routeId;
+        if (!routeMap.has(key)) routeMap.set(key, { shortName: key, headsigns: new Set() });
+        if (p.headsign) routeMap.get(key)!.headsigns.add(p.headsign);
       }
     }
-    return Array.from(names).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    return Array.from(routeMap.entries())
+      .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+      .map(([, v]) => ({ shortName: v.shortName, headsigns: Array.from(v.headsigns) }));
   }, [currentStop, layers]);
+
+  // Strip leading "XX - " or "XX: " route-code prefixes that some agencies embed in headsigns
+  const cleanHeadsign = (headsign: string, shortName: string | null) => {
+    if (!shortName) return headsign;
+    return headsign.replace(new RegExp(`^${shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-:]\\s*`, 'i'), '').trim();
+  };
 
   const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null);
   if (!hasContent) return null;
@@ -134,20 +143,31 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {currentStop && (
           <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-black tracking-wide text-indigo-400">Station View</span>
+              <span className="text-[10px] font-black tracking-wide text-[var(--accent)]">Station View</span>
               <button onClick={() => setSelectedStop(null)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
-            <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight mb-2">{currentStop.stopName}</h3>
-            <div className="flex flex-wrap gap-1.5">
-              {stopRouteNames.map((name) => (
-                <span
-                  key={name}
-                  className="px-2 py-1 rounded-md text-[11px] font-black bg-[var(--bg-btn)] border border-[var(--border-primary)] text-[var(--text-primary)]"
-                >
-                  {name}
-                </span>
+            <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight mb-2">
+              {currentStop.stopName.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}
+            </h3>
+            <div className="space-y-2">
+              {stopRoutes.map(({ shortName, headsigns }) => (
+                <div key={shortName} className="text-[11px]">
+                  <span className="font-black text-[var(--text-primary)]">{shortName}</span>
+                  {headsigns.length > 0 && (
+                    <div className="mt-0.5 space-y-0.5">
+                      {headsigns.map(h => {
+                        const ch = cleanHeadsign(h.trim(), shortName);
+                        return (
+                          <div key={h} className="font-bold text-[var(--text-muted)]">
+                            {/^to\s/i.test(ch) ? ch : `→ ${ch}`}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -159,7 +179,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
                 {currentRoute.routeShortName || currentRoute.routeId}
                 {currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()
-                  ? ` — ${currentRoute.routeLongName}`
+                  ? ` — ${currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}`
                   : ''}
               </h3>
               <button onClick={() => setSelectedRoute(null)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] shrink-0 ml-2" aria-label="Close route panel">
@@ -196,13 +216,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 )}
               </div>
             )}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {currentRoute.directions.map((d, i) => (
-                <div key={i} className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-[var(--text-muted)] truncate mr-2">
-                    {d.headsign ? `to ${d.headsign}` : `Direction ${currentRoute.directions.length > 1 ? i + 1 : ''}`}
+                <div key={i} className="text-[11px]">
+                  <span className="font-bold text-[var(--text-muted)] block truncate">
+                    {d.headsign
+                      ? (() => { const h = cleanHeadsign(d.headsign.trim(), currentRoute.routeShortName); return /^to\s/i.test(h) ? h : `to ${h}`; })()
+                      : `Direction ${currentRoute.directions.length > 1 ? i + 1 : ''}`}
                   </span>
-                  <span className="flex items-center gap-2 font-black text-[var(--text-primary)]">
+                  <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
                     <span
                       className="w-2 h-2 rounded-full shrink-0"
                       style={{ background: getTierColor(d.tier ?? null) }}
@@ -216,8 +238,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
 
         {query !== '' && searchMatchResults !== null && (
-          <div className="mb-4 px-3 py-2 bg-indigo-600/5 border border-indigo-500/10 rounded-lg">
-            <div className="text-[10px] font-bold text-indigo-400 tracking-wide mb-1.5">
+          <div className="mb-4 px-3 py-2 bg-[var(--accent-bg)] border border-[var(--accent-border)] rounded-lg">
+            <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
               {searchMatches} route{searchMatches === 1 ? '' : 's'} match
             </div>
             {searchMatchResults.length > 0 && (
@@ -228,8 +250,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     onClick={() => setSelectedRoute(selectedRoute === r.key ? null : r.key)}
                     className={`w-full flex items-center justify-between gap-2 px-1.5 py-1 rounded text-left text-[11px] transition-colors ${
                       selectedRoute === r.key
-                        ? 'bg-indigo-600/20 text-indigo-400'
-                        : 'text-[var(--text-primary)] hover:bg-indigo-600/10'
+                        ? 'bg-[var(--accent-bg)] text-[var(--accent)]'
+                        : 'text-[var(--text-primary)] hover:bg-[var(--accent-bg)]'
                     }`}
                   >
                     <span className="font-black shrink-0">{r.routeShortName ?? r.key}</span>
