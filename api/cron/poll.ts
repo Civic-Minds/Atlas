@@ -12,9 +12,16 @@ const FEEDS = {
 
 const BURLINGTON_ROUTE_ID = '311'; // Route 1
 const BURLINGTON_TARGET_STOPS = new Set(['535', '54', '52', '722', '1073', '834', '679']);
+const BURLINGTON_SCHEDULED_HEADWAY_MIN = 12; // weekday daytime, from static stop_times.txt at stop 679
 
 const HAMILTON_ROUTE_ID = '5677'; // Route 1 (King)
 const HAMILTON_TARGET_STOPS = new Set(['1403', '355415', '1790', '1771', '2138']);
+const HAMILTON_SCHEDULED_HEADWAY_MIN = 12; // weekday midday, from static stop_times.txt at Hamilton GO Centre (355415)
+
+const SCHEDULED_HEADWAY_MIN: Record<string, number> = {
+  burlington: BURLINGTON_SCHEDULED_HEADWAY_MIN,
+  hamilton: HAMILTON_SCHEDULED_HEADWAY_MIN,
+};
 
 async function fetchFeed(agency: string, url: string) {
   const res = await fetch(url);
@@ -77,6 +84,8 @@ export default async function handler(req: Request) {
         }
       }
 
+      const scheduledHeadway = SCHEDULED_HEADWAY_MIN[agency] ?? null;
+
       for (const [stopId, predictions] of Object.entries(stopPredictions)) {
         predictions.sort((a, b) => a.predictedTime - b.predictedTime);
         const gaps = [];
@@ -84,11 +93,18 @@ export default async function handler(req: Request) {
           gaps.push((predictions[i].predictedTime - predictions[i - 1].predictedTime) / 60);
         }
 
+        const avgGap = gaps.length > 0 ? Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length * 10) / 10 : null;
+        const headwayDeltaMin = avgGap != null && scheduledHeadway != null
+          ? Math.round((avgGap - scheduledHeadway) * 10) / 10
+          : null;
+
         snapshots.push({
           agency,
           stopId,
           predictions,
-          avgGap: gaps.length > 0 ? Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length * 10) / 10 : null,
+          avgGap,
+          scheduledHeadwayMin: scheduledHeadway,
+          headwayDeltaMin,
           lastUpdated: timestamp,
         });
       }
