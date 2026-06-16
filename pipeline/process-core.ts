@@ -219,24 +219,21 @@ export async function processGtfsBuffer(
 
   // Extract stops for clickable stations
   const stopFeatures: GeoJsonFeature[] = [];
-  const stopsByRoute = new Map<string, Set<string>>();
-  
-  // Find which stops are served by which routes
+  const routesByStop = new Map<string, Set<string>>();
+  const tripById = new Map((gtfs.trips ?? []).map(t => [t.trip_id, t]));
+
   for (const st of gtfs.stopTimes ?? []) {
-    const trip = (gtfs.trips ?? []).find(t => t.trip_id === st.trip_id);
+    const trip = tripById.get(st.trip_id);
     if (!trip) continue;
-    if (!stopsByRoute.has(trip.route_id)) stopsByRoute.set(trip.route_id, new Set());
-    stopsByRoute.get(trip.route_id)!.add(st.stop_id);
+    if (!routesByStop.has(st.stop_id)) routesByStop.set(st.stop_id, new Set());
+    routesByStop.get(st.stop_id)!.add(trip.route_id);
   }
 
   const servedStopIds = new Set((gtfs.stopTimes ?? []).map(st => st.stop_id));
   for (const stop of gtfs.stops ?? []) {
     if (!servedStopIds.has(stop.stop_id)) continue;
-    
-    // Find all routes serving this stop
-    const routeIds = Array.from(stopsByRoute.entries())
-      .filter(([, stopIds]) => stopIds.has(stop.stop_id))
-      .map(([routeId]) => routeId);
+
+    const routeIds = Array.from(routesByStop.get(stop.stop_id) ?? []);
 
     stopFeatures.push({
       type: 'Feature',
