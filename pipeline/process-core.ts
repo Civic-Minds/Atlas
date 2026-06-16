@@ -75,7 +75,22 @@ export async function processGtfsBuffer(
   const routeDirToHeadsign = new Map<string, string>();
   for (const [key, counts] of headsignCounts) {
     const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
-    if (best) routeDirToHeadsign.set(key, best.replace(/^[A-Z]\s*-\s*/, ''));
+    if (best) {
+      let h = best.replace(/^[A-Z]\s*-\s*/, '');
+      
+      // Strip redundant "Line X (Name) towards " or just "towards "
+      h = h.replace(/^Line\s+\d+\s*\([^)]+\)\s+towards\s+/i, '');
+      h = h.replace(/^towards\s+/i, '');
+      
+      // If the headsign is exactly the same as the route's long name, 
+      // it adds no value (e.g. TTC "Line 1 (Yonge-University)")
+      const route = routeById.get(key.split('::')[0]);
+      if (route?.route_long_name && h.toLowerCase().trim() === route.route_long_name.toLowerCase().trim()) {
+        h = ''; // Let UI fallback to Direction X
+      }
+
+      routeDirToHeadsign.set(key, h.trim());
+    }
   }
 
   // Build shapeById early so rail shape selection can compare lengths.
@@ -109,22 +124,26 @@ export async function processGtfsBuffer(
         .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
       if (byLength) routeDirToDisplayShape.set(key, byLength);
 
-      // Bus analysis: group shapes by point count (a cheap geometry-equivalence proxy).
-      // Some agencies (e.g. TTC) export a separate shape_id per AM/PM service block for
-      // the *same* physical path — filtering to a single "most common" shape_id then
-      // silently drops one whole peak period from the headway analysis, making a
-      // rush-hour-only route (e.g. 954) look like it runs all day. Genuine branches/
-      // short-turns have a different point count, so this still excludes them.
-      const byPointCount = new Map<number, { shapeIds: string[]; trips: number }>();
-      for (const [sid, trips] of counts) {
-        const len = shapeById.get(sid)?.length;
-        if (len == null) continue;
-        if (!byPointCount.has(len)) byPointCount.set(len, { shapeIds: [], trips: 0 });
-        const g = byPointCount.get(len)!;
-        g.shapeIds.push(sid);
-        g.trips += trips;
+      // Bus analysis: cluster shapes by approximate point count (geometry-equivalence proxy).
+      // TTC uses separate shape_ids per AM/PM block on the same path; Burlington uses
+      // different shape_ids per day-type (weekday vs weekend) with nearly identical point
+      // counts — picking only the global trip-count winner drops weekday service entirely.
+      // Genuine short-turns still have a much smaller point count and stay excluded.
+      const shapeEntries = [...counts.entries()]
+        .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
+        .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
+      const clusters: { shapeIds: string[]; trips: number; repLen: number }[] = [];
+      for (const e of shapeEntries) {
+        const tol = Math.max(10, Math.round(e.len * 0.01));
+        const cluster = clusters.find(c => Math.abs(c.repLen - e.len) <= tol);
+        if (cluster) {
+          cluster.shapeIds.push(e.sid);
+          cluster.trips += e.trips;
+        } else {
+          clusters.push({ shapeIds: [e.sid], trips: e.trips, repLen: e.len });
+        }
       }
-      const winningGroup = [...byPointCount.values()].sort((a, b) => b.trips - a.trips)[0];
+      const winningGroup = clusters.sort((a, b) => b.trips - a.trips)[0];
       if (winningGroup) routeDirToAnalysisShapes.set(key, new Set(winningGroup.shapeIds));
     }
   }
@@ -164,7 +183,13 @@ export async function processGtfsBuffer(
     const shortName = route?.route_short_name ?? result.route;
     const dedupeKey = `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
-    if (existing && (existing.properties.headway as number) <= Math.round(result.avgHeadway)) continue;
+    const newHeadway = result.tier === 'span' ? null : Math.round(result.avgHeadway);
+    if (
+      existing &&
+      newHeadway != null &&
+      existing.properties.headway != null &&
+      (existing.properties.headway as number) <= newHeadway
+    ) continue;
 
     dedupedFeatures.set(dedupeKey, {
       type: 'Feature',
@@ -180,7 +205,7 @@ export async function processGtfsBuffer(
         routeId: result.route,
         directionId: parseInt(result.dir),
         tier: result.tier,
-        headway: Math.round(result.avgHeadway),
+        headway: newHeadway,
         routeShortName: shortName,
         routeLongName: route?.route_long_name ?? null,
         routeColor: route?.route_color ?? null,
