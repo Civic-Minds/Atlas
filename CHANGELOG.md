@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - **On screen / Coverage stats as pills**: condensed from boxy stat cards into small inline pill badges in the sidebar panel.
 
 ### Fixed
+- **Redundant TTC headsigns**: stripped redundant "Line X (Name) towards" prefixes and identical-to-line-name headsigns from the display labels, specifically fixing TTC subway directions (e.g., "to Line 4 (Sheppard) towards Don Mills" now shows as "to Don Mills").
 - **Filter chip dropdowns clipped off-screen**: dropdowns were anchored `left-0` on their trigger chip, which overflows the viewport since the chip row sits at the right edge of the screen. Anchored to `right-0` instead so they open leftward.
 
 ### Fixed
