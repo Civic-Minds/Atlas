@@ -36,6 +36,11 @@ async function fetchFeed(agency: string, url: string) {
 }
 
 export default async function handler(req: Request) {
+  const authHeader = req.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
   // Service hours: 5am - 12am ET
   const now = new Date();
   const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));

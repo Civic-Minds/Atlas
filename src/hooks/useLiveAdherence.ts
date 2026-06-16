@@ -57,3 +57,26 @@ export function agencyHeadwayDelta(data: LiveAdherenceData | null, agency: strin
   const avg = stops.reduce((sum, s) => sum + (s.headwayDeltaMin ?? 0), 0) / stops.length;
   return Math.round(avg * 10) / 10;
 }
+
+export interface TripSummary {
+  total: number;
+  onTime: number;
+  early: number;
+  late: number;
+  avgDelayMin: number;
+}
+
+// On time = |avgDelay| ≤ 1 min; early = avgDelay < -1; late = avgDelay > 1
+export function agencyTripSummary(data: LiveAdherenceData | null, agency: string): TripSummary | null {
+  if (!data) return null;
+  const trips = data.trips.filter(t => t.agency === agency);
+  if (trips.length === 0) return null;
+  let onTime = 0, early = 0, late = 0;
+  for (const t of trips) {
+    if (t.avgDelayMin > 1) late++;
+    else if (t.avgDelayMin < -1) early++;
+    else onTime++;
+  }
+  const avgDelayMin = Math.round(trips.reduce((s, t) => s + t.avgDelayMin, 0) / trips.length * 10) / 10;
+  return { total: trips.length, onTime, early, late, avgDelayMin };
+}
