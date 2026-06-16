@@ -167,10 +167,14 @@ export function applyAnalysisCriteria(
         }
 
         const spanMins = windowedTimes[windowedTimes.length - 1] - windowedTimes[0];
+        const windowMins = end - start;
         const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, criteria.modeTierOverrides);
-        // Routes whose trips are compressed into less than 90 minutes (school runs,
-        // shuttle bursts) aren't providing all-day frequent service — classify as span.
-        const tier = spanMins < 90
+        // Routes that don't provide sustained all-day service — classify as span:
+        // - trips compressed into ≤90 minutes (school runs, shuttle bursts)
+        // - active span covers <40% of the analysis window (rush-hour-only, e.g. GO Milton)
+        const coverage = windowMins > 0 ? spanMins / windowMins : 0;
+        const isLimitedService = spanMins <= 90 || coverage < 0.4;
+        const tier = isLimitedService
             ? 'span'
             : determineTier(windowedGaps, windowedTimes.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
         const stats = computeHeadwayStats(windowedTimes);
