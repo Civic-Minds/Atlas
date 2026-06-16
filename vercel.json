@@ -9,6 +9,10 @@
     {
       "source": "/api/gtfs-rt",
       "destination": "/api/gtfs-rt.ts"
+    },
+    {
+      "source": "/api/live-status",
+      "destination": "/api/live-status.ts"
     }
   ]
 }

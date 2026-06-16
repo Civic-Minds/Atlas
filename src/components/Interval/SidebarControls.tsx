@@ -4,6 +4,8 @@ import { getTierColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
+import { useLiveAdherence, agencyHeadwayDelta } from '../../hooks/useLiveAdherence';
+import { isLivePollingRoute } from '../../utils/livePolling';
 
 interface SidebarControlsProps {
   query: string;
@@ -58,6 +60,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
+  const liveData = useLiveAdherence();
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -84,6 +87,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .sort((a, b) => (a.directionId ?? 0) - (b.directionId ?? 0));
     return { ...first, directions };
   }, [selectedRoute, layers, currentDay]);
+
+  const liveRouteInfo = useMemo(() => {
+    if (!currentRoute) return null;
+    const agencySlug = agencies.find(a => a.name === currentRoute.agencyName)?.slug ?? null;
+    if (!agencySlug || !isLivePollingRoute(agencySlug, currentRoute.routeShortName)) return null;
+    return { agencySlug, delta: agencyHeadwayDelta(liveData, agencySlug) };
+  }, [currentRoute, agencies, liveData]);
 
   const currentStop = useMemo(() => {
     if (!selectedStop) return null;
@@ -155,6 +165,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <p className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 mb-3">
               {currentRoute.agencyName}
             </p>
+            {liveRouteInfo && (
+              <div className="flex items-center gap-1.5 mb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
+                <span className="text-[10px] font-black text-green-400">Live</span>
+                {liveRouteInfo.delta != null ? (
+                  <span className="text-[10px] font-bold text-[var(--text-muted)]">
+                    {liveRouteInfo.delta > 0 ? `+${liveRouteInfo.delta}` : liveRouteInfo.delta} min vs schedule
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
+                )}
+              </div>
+            )}
             <div className="space-y-1.5">
               {currentRoute.directions.map((d, i) => (
                 <div key={i} className="flex items-center justify-between text-[11px]">
