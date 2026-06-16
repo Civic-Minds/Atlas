@@ -9,6 +9,7 @@ export interface ShapeProperties {
   routeShortName: string | null;
   routeLongName: string | null;
   agencyName?: string;
+  headsign?: string | null;
 }
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;
@@ -23,7 +24,7 @@ export function useAgencyData(agencies: Agency[]) {
     setLoadedCount(0);
 
     for (const agency of agencies) {
-      fetch(agency.url)
+      fetch(agency.url, { cache: 'no-store' })
         .then(r => r.json())
         .then((data: GeoJSON.FeatureCollection) => {
           if (cancelled) return;

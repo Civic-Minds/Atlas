@@ -62,35 +62,38 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
       const p = feature?.properties as unknown as ShapeProperties;
-      
+
       // Stop points: hide at regional zoom, show when zoomed in
       if (feature?.geometry.type === 'Point') return {};
 
       const isCorridor = !!(p as any)?.isCorridor;
 
+      // Visible line is purely decorative — interaction is handled by the wider
+      // invisible "hit" layer below, so thin lines stay easy to click without
+      // visually thickening them.
       if (selectedRoute !== null) {
         if (isCorridor) {
           // When a route is selected, keep its overlapping corridors visible at full combined color; dim others
           const cRoutes: string[] = (p as any)?.routeIds || [];
           const contrib = cRoutes.some((rid) => routeKey({ agencyName: p?.agencyName, routeId: rid } as any) === selectedRoute);
           if (contrib) {
-            return { color: getTierColor((p as any)?.tier ?? null), weight: 3, opacity: 0.9 };
+            return { color: getTierColor((p as any)?.tier ?? null), weight: 3, opacity: 0.9, interactive: false };
           }
-          return { color: '#1e293b', weight: 0.5, opacity: 0.15 };
+          return { color: '#1e293b', weight: 0.5, opacity: 0.15, interactive: false };
         }
         const key = p ? routeKey(p) : null;
         if (key === selectedRoute) {
-          return { color: getTierColor(p?.tier ?? null), weight: 4, opacity: 1 };
+          return { color: getTierColor(p?.tier ?? null), weight: 4, opacity: 1, interactive: false };
         }
-        return { color: '#1e293b', weight: 0.5, opacity: 0.2 };
+        return { color: '#1e293b', weight: 0.5, opacity: 0.2, interactive: false };
       }
       const match = matchesQuery(p);
       if (!match) {
         if (isCorridor) {
           // Dim corridors during search (but they may still match via corridorShortNames/routeIds)
-          return { color: lightMode ? '#cbd5e1' : '#334155', weight: 1.25, opacity: 0.2 };
+          return { color: lightMode ? '#cbd5e1' : '#334155', weight: 1.25, opacity: 0.2, interactive: false };
         }
-        return { color: lightMode ? '#cbd5e1' : '#334155', weight: 0.75, opacity: 0.12 };
+        return { color: lightMode ? '#cbd5e1' : '#334155', weight: 0.75, opacity: 0.12, interactive: false };
       }
       if (isCorridor) {
         // Corridors (combined freq) render on top with stronger weight to surface the aggregate frequency
@@ -98,16 +101,27 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           color: getTierColor((p as any)?.tier ?? null),
           weight: 2.5,
           opacity: 0.9,
+          interactive: false,
         };
       }
       return {
         color: getTierColor(p?.tier ?? null),
         weight: q !== '' ? 3 : p?.tier && parseInt(p.tier) <= 15 ? 2 : 1,
         opacity: p?.tier ? (q !== '' ? 1 : 0.8) : 0.3,
+        interactive: false,
       };
     },
     [maxHeadway, q, selectedRoute, lightMode, matchesQuery]
   );
+
+  // Invisible, much wider line drawn under the visible one purely to make routes
+  // easier to click/tap — the visible style above stays thin for legibility.
+  const hitStyle = useCallback((): L.PathOptions => ({
+    color: '#000000',
+    weight: 16,
+    opacity: 0,
+    interactive: true,
+  }), []);
 
   const onEachFeature = useCallback(
     (feature: GeoJSON.Feature, layer: L.Layer) => {
@@ -194,10 +208,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         return (
           <React.Fragment key={slug}>
             <GeoJSON
+              key={`${slug}-hit-${lineFeatures.length}`}
+              data={lineFc}
+              style={hitStyle}
+              onEachFeature={onEachFeature}
+            />
+            <GeoJSON
               key={`${slug}-lines-${maxHeadway}-${q}-${lineFeatures.length}`}
               data={lineFc}
               style={styleFeature}
-              onEachFeature={onEachFeature}
             />
             {(showStops || selectedStop != null) && pointFeatures.length > 0 && (
               <GeoJSON

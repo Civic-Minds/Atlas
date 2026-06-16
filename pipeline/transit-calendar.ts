@@ -161,25 +161,37 @@ export function getActiveServiceIds(
         calendar.filter(c => DOW_FIELDS.some(f => c[f] === '1')).map(c => c.service_id)
     );
 
-    // Step 1: calendar.txt
-    // For single-day services (start_date === end_date) the normal range check
-    // would only match when referenceDate is the exact service date. Instead use
-    // a ±90-day proximity window — the same tolerance used for calendar_dates in
-    // Step 2. This handles feeds like Washington State Ferries which encode every
-    // operating day as a separate one-day service_id in calendar.txt.
+    // Step 1: calendar.txt — two passes, same logic as Step 2's holiday handling.
+    //
+    // Pass A: multi-day services (start_date !== end_date). These are the regular
+    //   scheduled services; include them if the reference date falls in their range.
+    //
+    // Pass B: single-day services (start_date === end_date). These are holiday
+    //   overrides (e.g. Burlington Transit Victoria Day service with all DOW=1) or
+    //   WSF-style feeds where every operating day is a separate service_id. Use a
+    //   ±90-day proximity window like Step 2. Only include them when Pass A found
+    //   nothing — otherwise the holiday trips get merged with the regular weekday
+    //   pool, halving the apparent headway (Burlington Route 1: 30m→10m).
+    const singleDayCalEntries: GtfsCalendar[] = [];
     for (const cal of calendar) {
         if (cal[field] !== '1') continue;
-        if (referenceDate) {
-            if (cal.start_date === cal.end_date) {
+        if (cal.start_date === cal.end_date) {
+            if (referenceDate) {
                 const sy = parseInt(cal.start_date.substring(0, 4)), sm = parseInt(cal.start_date.substring(4, 6)) - 1, sd = parseInt(cal.start_date.substring(6, 8));
                 const ry = parseInt(referenceDate.substring(0, 4)), rm = parseInt(referenceDate.substring(4, 6)) - 1, rd = parseInt(referenceDate.substring(6, 8));
                 const diffDays = Math.abs(new Date(sy, sm, sd).getTime() - new Date(ry, rm, rd).getTime()) / 86400000;
-                if (diffDays > 90) continue;
+                if (diffDays <= 90) singleDayCalEntries.push(cal);
             } else {
-                if (referenceDate < cal.start_date || referenceDate > cal.end_date) continue;
+                singleDayCalEntries.push(cal);
             }
+        } else {
+            if (referenceDate && (referenceDate < cal.start_date || referenceDate > cal.end_date)) continue;
+            active.add(cal.service_id);
         }
-        active.add(cal.service_id);
+    }
+    // Pass B: only include single-day calendar entries when no multi-day service was found
+    if (active.size === 0) {
+        for (const cal of singleDayCalEntries) active.add(cal.service_id);
     }
 
     // Step 2: calendar_dates-only services (and all-zero placeholder calendar entries)

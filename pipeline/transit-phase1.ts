@@ -116,7 +116,7 @@ function deduplicateDepartures(times: number[]): number[] {
  * Produces one RawRouteDepartures per route/direction/day (Mon–Sun).
  * No time window filtering, no tier classification — all gaps preserved.
  */
-export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, string>): RawRouteDepartures[] {
+export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, Set<string>>): RawRouteDepartures[] {
     const { routes, calendar, calendarDates } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
 
@@ -136,7 +136,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
             const key = `${data.routeId}::${data.dirId}`;
             if (shapeFilter) {
                 const expected = shapeFilter.get(key);
-                if (expected && data.shapeId !== expected) continue;
+                if (expected && !expected.has(data.shapeId)) continue;
             }
             if (!grouped.has(key)) grouped.set(key, { routeId: data.routeId, dirId: data.dirId, times: [], serviceIds: new Set(), missingDir: false });
             const group = grouped.get(key)!;

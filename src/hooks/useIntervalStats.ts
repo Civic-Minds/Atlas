@@ -30,6 +30,7 @@ export interface IntervalFilters {
   day: 'Weekday' | 'Saturday' | 'Sunday';
   selectedStop: string | null; // stopId
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
+  hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
 }
 
 export interface ViewportBounds {
@@ -67,7 +68,7 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds } = filters;
+  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds, hideSpan } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -128,6 +129,9 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // Day Filter (routes + corridors carry day; stops do not)
       if (p.day !== undefined && p.day !== day) return false;
 
+      // Hide routes with no sustained tier (irregular/peak-only/school-run service)
+      if (hideSpan && p.tier === 'span') return false;
+
       // Tier filter: use the qualifying tier (sustained peak headway) so colour and
       // visibility are always consistent. Fall back to numeric headway for legacy
       // features that pre-date the tier field, and for corridors which carry headway
@@ -143,7 +147,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
       return true; // Keep stops (and corridors that passed above)
     }),
-  [allFeatures, maxHeadway, agencies, modes, day, routesForStop]);
+  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan]);
 
   const filteredLayers = useMemo(() => {
     const result: AgencyLayers = {};
@@ -169,6 +173,9 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         // Day Filter (routes + corridors)
         if (p.day !== undefined && p.day !== day) return false;
 
+        // Hide routes with no sustained tier (irregular/peak-only/school-run service)
+        if (hideSpan && p.tier === 'span') return false;
+
         // Tier filter: same logic as visibleFeatures — use qualifying tier for consistency.
         const tierVal = p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null;
         if (tierVal != null) {
@@ -190,7 +197,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       }
     }
     return result;
-  }, [layers, maxHeadway, agencies, modes, day, routesForStop]);
+  }, [layers, maxHeadway, agencies, modes, day, routesForStop, hideSpan]);
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
@@ -205,15 +212,22 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     };
   }, [allFeatures, visibleFeatures, bounds]);
 
-  const searchMatches = useMemo(() => {
+  const searchMatchResults = useMemo(() => {
     if (q === '') return null;
     const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId);
-    return new Set(
-      visibleRoutesOnly
-        .filter(f => matchesQuery(f.properties as unknown as ShapeProperties))
-        .map(f => routeKey(f.properties as unknown as ShapeProperties))
-    ).size;
+    const byKey = new Map<string, ShapeProperties>();
+    for (const f of visibleRoutesOnly) {
+      const p = f.properties as unknown as ShapeProperties;
+      if (!matchesQuery(p)) continue;
+      const key = routeKey(p);
+      if (!byKey.has(key)) byKey.set(key, p);
+    }
+    return [...byKey.entries()]
+      .map(([key, p]) => ({ key, routeShortName: p.routeShortName, routeLongName: p.routeLongName, agencyName: p.agencyName }))
+      .sort((a, b) => (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true }));
   }, [visibleFeatures, q]);
 
-  return { stats, searchMatches, matchesQuery, q, filteredLayers, routesForStop };
+  const searchMatches = searchMatchResults?.length ?? null;
+
+  return { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop };
 }

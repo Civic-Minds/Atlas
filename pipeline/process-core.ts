@@ -6,6 +6,7 @@ import { parseGtfsZip } from './parseGtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
+import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
 
 export interface GeoJsonFeature {
@@ -38,19 +39,57 @@ export async function processGtfsBuffer(
     }
   }
 
+  // Determine the active service period before building the shape filter.
+  // Some agencies (e.g. DRT) encode the schedule version in shape IDs
+  // (e.g. `-2026-04` vs `-2026-06`). Counting shapes across ALL trips then picks
+  // the future period's shape ID, which no current-period trip matches — the shape
+  // filter silently drops every trip and produces missing or wildly wrong headways.
+  // Fix: count shapes only from trips in the currently active service period.
+  const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
+  const activeForShapes = new Set<string>([
+    ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Monday', refDate),
+    ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Saturday', refDate),
+    ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Sunday', refDate),
+  ]);
+
   const shapeCounts = new Map<string, Map<string, number>>();
+  const headsignCounts = new Map<string, Map<string, number>>();
   for (const trip of gtfs.trips ?? []) {
-    if (!trip.shape_id) continue;
+    if (!activeForShapes.has(trip.service_id)) continue;
     const key = `${trip.route_id}::${trip.direction_id ?? '0'}`;
-    if (!shapeCounts.has(key)) shapeCounts.set(key, new Map());
-    const m = shapeCounts.get(key)!;
-    m.set(trip.shape_id, (m.get(trip.shape_id) ?? 0) + 1);
+    if (trip.shape_id) {
+      if (!shapeCounts.has(key)) shapeCounts.set(key, new Map());
+      const m = shapeCounts.get(key)!;
+      m.set(trip.shape_id, (m.get(trip.shape_id) ?? 0) + 1);
+    }
+    if (trip.trip_headsign) {
+      if (!headsignCounts.has(key)) headsignCounts.set(key, new Map());
+      const hm = headsignCounts.get(key)!;
+      hm.set(trip.trip_headsign, (hm.get(trip.trip_headsign) ?? 0) + 1);
+    }
+  }
+
+  // Most common headsign per route+direction, stripped of branch-letter prefixes
+  // (e.g. DRT's "A - Windfields Farm" -> "Windfields Farm") since those internal
+  // codes are meaningless without the agency's own branch legend.
+  const routeDirToHeadsign = new Map<string, string>();
+  for (const [key, counts] of headsignCounts) {
+    const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (best) routeDirToHeadsign.set(key, best.replace(/^[A-Z]\s*-\s*/, ''));
   }
 
   // Build shapeById early so rail shape selection can compare lengths.
   const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
 
-  const routeDirToShape = new Map<string, string>();
+  // Two separate shape maps:
+  // - routeDirToDisplayShape: longest shape per direction, so branching routes (e.g. HSR Route 5
+  //   via Downtown Dundas) show their full geographic extent on the map.
+  // - routeDirToAnalysisShape: most-common shape per direction, used to filter trips for phase 1
+  //   frequency analysis so that short-turn/branch trips don't distort the headway calculation.
+  const routeDirToDisplayShape = new Map<string, string>();
+  // Set of shape_ids to include in the phase-1 analysis per route+dir (may contain
+  // several shape_ids when they're geometrically equivalent — see below).
+  const routeDirToAnalysisShapes = new Map<string, Set<string>>();
   for (const [key, counts] of shapeCounts) {
     const routeId = key.split('::')[0];
     const routeType = routeById.get(routeId)?.route_type;
@@ -62,15 +101,50 @@ export async function processGtfsBuffer(
       const best = [...counts.keys()]
         .filter(sid => shapeById.has(sid))
         .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
-      if (best) routeDirToShape.set(key, best);
+      if (best) { routeDirToDisplayShape.set(key, best); routeDirToAnalysisShapes.set(key, new Set([best])); }
     } else {
-      const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
-      if (best) routeDirToShape.set(key, best[0]);
+      // Bus display: longest shape shows full branch extent.
+      const byLength = [...counts.keys()]
+        .filter(sid => shapeById.has(sid))
+        .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
+      if (byLength) routeDirToDisplayShape.set(key, byLength);
+
+      // Bus analysis: group shapes by point count (a cheap geometry-equivalence proxy).
+      // Some agencies (e.g. TTC) export a separate shape_id per AM/PM service block for
+      // the *same* physical path — filtering to a single "most common" shape_id then
+      // silently drops one whole peak period from the headway analysis, making a
+      // rush-hour-only route (e.g. 954) look like it runs all day. Genuine branches/
+      // short-turns have a different point count, so this still excludes them.
+      const byPointCount = new Map<number, { shapeIds: string[]; trips: number }>();
+      for (const [sid, trips] of counts) {
+        const len = shapeById.get(sid)?.length;
+        if (len == null) continue;
+        if (!byPointCount.has(len)) byPointCount.set(len, { shapeIds: [], trips: 0 });
+        const g = byPointCount.get(len)!;
+        g.shapeIds.push(sid);
+        g.trips += trips;
+      }
+      const winningGroup = [...byPointCount.values()].sort((a, b) => b.trips - a.trips)[0];
+      if (winningGroup) routeDirToAnalysisShapes.set(key, new Set(winningGroup.shapeIds));
     }
   }
 
+  // Shape filter passed to phase 1: bus only, using the analysis shape group(s).
+  // Rail short-turn trains (e.g. GO Union→Bramalea) still serve every intermediate stop,
+  // so they should count toward effective corridor frequency. Excluding them (by filtering
+  // to the longest shape) inflates the computed headway and pushes real rail lines like
+  // Lakeshore West or Kitchener into tier=span. Bus short-turns are genuinely different
+  // products (they skip part of the route) so the shape filter still applies there.
+  const shapeFilterForPhase1 = new Map<string, Set<string>>();
+  for (const [key, shapeIds] of routeDirToAnalysisShapes) {
+    const routeId = key.split('::')[0];
+    const route = routeById.get(routeId);
+    const isRail = route?.route_type === '2' || route?.route_type === 2;
+    if (!isRail) shapeFilterForPhase1.set(key, shapeIds);
+  }
+
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs, undefined, routeDirToShape);
+  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1);
   onStatus?.('Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 
@@ -81,7 +155,7 @@ export async function processGtfsBuffer(
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
-    const shapeId = routeDirToShape.get(key);
+    const shapeId = routeDirToDisplayShape.get(key);
     if (!shapeId) continue;
     const points = shapeById.get(shapeId);
     if (!points || points.length < 2) continue;
@@ -112,6 +186,7 @@ export async function processGtfsBuffer(
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         day: result.day,
+        headsign: routeDirToHeadsign.get(key) ?? null,
       },
     });
   }
