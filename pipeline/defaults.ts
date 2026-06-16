@@ -27,7 +27,7 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     graceMinutes: 5,
     maxGraceViolations: 2,
     modeTierOverrides: {
-        rail: [5, 8, 10, 15, 30],
+        rail: [5, 8, 10, 15, 30, 60],
         surface: [10, 15, 20, 30, 60],
     },
     isDefault: true,

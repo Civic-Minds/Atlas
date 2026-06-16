@@ -168,7 +168,11 @@ export function applyAnalysisCriteria(
 
         const spanMins = windowedTimes[windowedTimes.length - 1] - windowedTimes[0];
         const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, criteria.modeTierOverrides);
-        const tier = determineTier(windowedGaps, windowedTimes.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
+        // Routes whose trips are compressed into less than 90 minutes (school runs,
+        // shuttle bursts) aren't providing all-day frequent service — classify as span.
+        const tier = spanMins < 90
+            ? 'span'
+            : determineTier(windowedGaps, windowedTimes.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
         const stats = computeHeadwayStats(windowedTimes);
         
         const resourceStats = computeResourceStats(

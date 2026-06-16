@@ -28,18 +28,20 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     if (d === 6) return 'Saturday';
     return 'Weekday';
   });
+  const [hideSpan, setHideSpan] = useState(false);
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
 
   const { layers, loadedCount, isLoading } = useAgencyData(agencies);
-  const { stats, searchMatches, matchesQuery, q, filteredLayers } = useIntervalStats(layers, {
+  const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers } = useIntervalStats(layers, {
     query,
     maxHeadway,
     agencies: selectedAgencies,
     modes: selectedModes,
     day,
     selectedStop,
-    bounds
+    bounds,
+    hideSpan
   });
 
   return (
@@ -72,6 +74,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         query={query}
         setQuery={setQuery}
         searchMatches={searchMatches}
+        searchMatchResults={searchMatchResults}
         maxHeadway={maxHeadway}
         setMaxHeadway={setMaxHeadway}
         stats={stats}
@@ -88,6 +91,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedRoute={selectedRoute}
         setSelectedRoute={setSelectedRoute}
         layers={layers}
+        currentDay={day}
+        hideSpan={hideSpan}
+        setHideSpan={setHideSpan}
       />
     </div>
   );

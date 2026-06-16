@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Filter, Sun, Moon, X, ChevronDown, ChevronUp, Landmark, Bus, Train, Calendar, Route } from 'lucide-react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { Filter, Sun, Moon, X, ChevronDown, ChevronUp, Landmark, Bus, Train, Calendar } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
@@ -11,6 +11,7 @@ interface SidebarControlsProps {
   query: string;
   setQuery: (q: string) => void;
   searchMatches: number | null;
+  searchMatchResults: { key: string; routeShortName: string | null; routeLongName: string | null; agencyName?: string }[] | null;
   maxHeadway: number;
   setMaxHeadway: (h: number) => void;
   stats: { total: number; matching: number } | null;
@@ -26,6 +27,9 @@ interface SidebarControlsProps {
   selectedRoute: string | null;
   setSelectedRoute: (r: string | null) => void;
   layers: Record<string, GeoJSON.FeatureCollection>;
+  currentDay: 'Weekday' | 'Saturday' | 'Sunday';
+  hideSpan: boolean;
+  setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 const MODES = [
@@ -41,6 +45,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   query,
   setQuery,
   searchMatches,
+  searchMatchResults,
   maxHeadway,
   setMaxHeadway,
   stats,
@@ -56,8 +61,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   selectedRoute,
   setSelectedRoute,
   layers,
+  currentDay,
+  hideSpan,
+  setHideSpan,
 }) => {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollMore, setCanScrollMore] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollMore(el.scrollHeight - el.scrollTop - el.clientHeight > 8);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+  }, [checkScroll, isAdvancedOpen, agencies, selectedRoute, selectedStop, stats]);
 
   const toggleAgency = (slug: string) => {
     const next = new Set(selectedAgencies);
@@ -78,6 +98,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     setSelectedModes(new Set());
     setDay('Weekday');
     setMaxHeadway(60);
+    setHideSpan(false);
     setQuery('');
     setSelectedStop(null);
     setSelectedRoute(null);
@@ -89,7 +110,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .flatMap(fc => fc.features)
       .filter(f => {
         const p = f.properties as unknown as ShapeProperties;
-        return p.routeId && routeKey(p) === selectedRoute;
+        return p.routeId && routeKey(p) === selectedRoute && (p.day === undefined || p.day === currentDay);
       });
     if (features.length === 0) return null;
     const first = features[0].properties as unknown as ShapeProperties;
@@ -97,7 +118,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .map(f => f.properties as unknown as ShapeProperties)
       .sort((a, b) => (a.directionId ?? 0) - (b.directionId ?? 0));
     return { ...first, directions };
-  }, [selectedRoute, layers]);
+  }, [selectedRoute, layers, currentDay]);
 
   const currentStop = useMemo(() => {
     if (!selectedStop) return null;
@@ -108,11 +129,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   return (
     <div className="absolute top-6 left-6 z-[1000] w-72 max-h-[calc(100vh-48px)] flex flex-col">
-      <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-5 rounded-2xl shadow-2xl transition-colors duration-200 overflow-y-auto custom-scrollbar">
+      <div
+        ref={scrollRef}
+        onScroll={checkScroll}
+        className="flex-1 min-h-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-5 rounded-2xl shadow-2xl transition-colors duration-200 overflow-y-auto custom-scrollbar"
+      >
         <div className="flex items-start justify-between mb-1">
           <h2 className="text-xl font-black leading-tight italic text-[var(--text-primary)]">Interval</h2>
           <div className="flex gap-2">
-            {(selectedAgencies.size > 0 || selectedModes.size > 0 || query !== '' || maxHeadway !== 60 || selectedStop !== null || selectedRoute !== null) && (
+            {(selectedAgencies.size > 0 || selectedModes.size > 0 || query !== '' || maxHeadway !== 60 || hideSpan || selectedStop !== null || selectedRoute !== null) && (
               <button 
                 onClick={clearAllFilters}
                 className="text-[10px] font-bold text-indigo-400 hover:text-indigo-500 uppercase tracking-tighter mt-1"
@@ -153,18 +178,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
         {currentRoute && (
           <div className="mb-5 bg-indigo-600/10 border border-indigo-500/30 rounded-xl p-4 animate-in fade-in slide-in-from-left-2 duration-300">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2 text-indigo-400">
-                <Route className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Route</span>
-              </div>
+            <div className="flex items-center justify-end mb-2">
               <button onClick={() => setSelectedRoute(null)} className="text-indigo-400/50 hover:text-indigo-400" aria-label="Close route panel">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
             <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
               {currentRoute.routeShortName || currentRoute.routeId}
-              {currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}
+              {currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()
+                ? ` — ${currentRoute.routeLongName}`
+                : ''}
             </h3>
             <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider mt-0.5 mb-3">
               {currentRoute.agencyName}
@@ -172,8 +195,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <div className="space-y-1.5">
               {currentRoute.directions.map((d, i) => (
                 <div key={i} className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-[var(--text-muted)]">
-                    Direction {currentRoute.directions.length > 1 ? i + 1 : ''}
+                  <span className="font-bold text-[var(--text-muted)] truncate mr-2">
+                    {d.headsign ? `to ${d.headsign}` : `Direction ${currentRoute.directions.length > 1 ? i + 1 : ''}`}
                   </span>
                   <span className="flex items-center gap-2 font-black text-[var(--text-primary)]">
                     <span
@@ -188,11 +211,31 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           </div>
         )}
 
-        {query !== '' && searchMatches !== null && (
+        {query !== '' && searchMatchResults !== null && (
           <div className="mb-4 px-3 py-2 bg-indigo-600/5 border border-indigo-500/10 rounded-lg">
-             <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
-                {searchMatches} route{searchMatches === 1 ? '' : 's'} match
+            <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-1.5">
+              {searchMatches} route{searchMatches === 1 ? '' : 's'} match
+            </div>
+            {searchMatchResults.length > 0 && (
+              <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
+                {searchMatchResults.map((r) => (
+                  <button
+                    key={r.key}
+                    onClick={() => setSelectedRoute(selectedRoute === r.key ? null : r.key)}
+                    className={`w-full flex items-center justify-between gap-2 px-1.5 py-1 rounded text-left text-[11px] transition-colors ${
+                      selectedRoute === r.key
+                        ? 'bg-indigo-600/20 text-indigo-400'
+                        : 'text-[var(--text-primary)] hover:bg-indigo-600/10'
+                    }`}
+                  >
+                    <span className="font-black shrink-0">{r.routeShortName ?? r.key}</span>
+                    <span className="truncate text-[var(--text-muted)] font-bold flex-1 text-right">
+                      {r.agencyName}
+                    </span>
+                  </button>
+                ))}
               </div>
+            )}
           </div>
         )}
 
@@ -217,17 +260,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]">
               <Filter className="w-3 h-3" />
-              <span>Frequency — show up to</span>
+              <span>Frequency</span>
             </div>
-            <div className="grid grid-cols-2 gap-1.5">
-              {HEADWAY_TIERS.map(({ max, color, label }) => {
+            <div className="flex gap-1">
+              {HEADWAY_TIERS.map(({ max, label }) => {
                 const isSelected = maxHeadway === max;
                 const isVisible = max <= maxHeadway;
                 return (
                   <button
                     key={label}
                     onClick={() => setMaxHeadway(max)}
-                    className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
+                    className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
                       isSelected
                         ? 'bg-indigo-600/20 border-indigo-500/50 text-[var(--text-primary)]'
                         : 'bg-[var(--bg-btn)] border-[var(--border-primary)] hover:text-[var(--text-primary)] ' +
@@ -235,11 +278,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     }`}
                     title={max === Infinity ? 'Show all routes' : `Show routes running every ${max} min or better`}
                   >
-                    <div
-                      className="w-2 h-2 rounded-full shrink-0 transition-opacity"
-                      style={{ background: color, opacity: isVisible ? 1 : 0.3 }}
-                    />
-                    <span className="tracking-tight">{label === 'Infrequent' ? 'All' : label}</span>
+                    {label === 'Infrequent' ? 'All' : label}
                   </button>
                 );
               })}
@@ -257,6 +296,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
           {isAdvancedOpen && (
             <div className="space-y-5 pb-2 animate-in fade-in slide-in-from-top-1 duration-200">
+              {/* Irregular Service Toggle */}
+              <button
+                onClick={() => setHideSpan((v) => !v)}
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
+                  hideSpan
+                    ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-400'
+                    : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+                }`}
+                title="Hide routes with no sustained frequency tier (peak-only, school runs, shuttles)"
+              >
+                <span>Hide irregular / peak-only routes</span>
+                {hideSpan && <X className="w-2.5 h-2.5 shrink-0" />}
+              </button>
+
               {/* Day Filter */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-wider text-[var(--text-dim)]">
@@ -339,6 +392,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         </div>
 
       </div>
+      {canScrollMore && (
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 rounded-b-2xl bg-gradient-to-t from-[var(--bg-panel)] to-transparent" />
+      )}
     </div>
   );
 };
