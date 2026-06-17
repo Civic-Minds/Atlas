@@ -39,6 +39,10 @@ server/.env
 HANDOFF.md
 handoff.txt
 
+# Planning and integration docs
+INTEGRATION.md
+release-notes.txt
+
 # AI Rules and Context
 ATLASLOG.md
 CLAUDE.md
