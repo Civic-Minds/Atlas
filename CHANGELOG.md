@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 - **Support for bidirectional routes with shared `direction_id`**: Generalized the pipeline's headsign-splitting logic to all agencies. This ensures that bus routes using a single `direction_id` for both ways (like Simcoe LINX) are correctly processed into separate features for each direction on the map.
 
 ### Fixed
-- **Missing `feedUrl`s**: London, Kingston, Stratford, and NFTA Rail now have stable source URLs for `npm run refresh` and the weekly GitHub Action. NFTA bus/rail split from the same zip via optional `routeTypes` on registry entries.
+- **NFTA feed URL**: `www.nfta.com` URL was dead (HTML response); switched to `metro.nfta.com/__googletransit/google_transit.zip`. `refresh.ts` falls back to `curl` when Node fetch fails TLS verification.
 - **Simcoe County LINX center** corrected from Barrie's coordinates to mid-county (`44.35, -79.75`).
 - **Sidebar UI Alignment**: Fixed the Close (X) button padding in the Station and Route panels; it now sits flush in the corner with a larger, more accessible click target.
 - **Redundant Headsigns**: Refined the `cleanHeadsign` logic to aggressively strip redundant route names (e.g., "510 Spadina towards..."), direction suffixes (" - Sb", " - Nb"), and redundant street addresses ("Wasaga Beach, 25 45th Street S" -> "Wasaga Beach").

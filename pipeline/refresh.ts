@@ -9,6 +9,7 @@
  * Exits non-zero if any agency fails, but always processes the full list.
  */
 import { readFileSync, writeFileSync } from 'fs';
+import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 import { put } from '@vercel/blob';
 import { config } from 'dotenv';
@@ -32,18 +33,34 @@ interface AgencyEntry {
   routeTypes?: number[];
 }
 
+async function downloadFeed(url: string): Promise<Buffer> {
+  try {
+    const res = await fetch(url, {
+      redirect: 'follow',
+      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return Buffer.from(await res.arrayBuffer());
+  } catch (fetchErr) {
+    // Some agency hosts (e.g. NFTA) have TLS chains Node rejects; curl uses system trust store.
+    try {
+      return execFileSync('curl', ['-fsSL', url], {
+        maxBuffer: 64 * 1024 * 1024,
+        timeout: 120_000,
+      });
+    } catch {
+      throw fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
+    }
+  }
+}
+
 async function refreshAgency(agency: AgencyEntry): Promise<string> {
   if (!agency.feedUrl) {
     return 'skipped (no feedUrl)';
   }
 
-  const res = await fetch(agency.feedUrl, {
-    redirect: 'follow',
-    headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-    signal: AbortSignal.timeout(120_000),
-  });
-  if (!res.ok) throw new Error(`download failed: HTTP ${res.status}`);
-  const buf = Buffer.from(await res.arrayBuffer());
+  const buf = await downloadFeed(agency.feedUrl);
 
   // Sanity: zip magic bytes
   if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
