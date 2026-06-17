@@ -136,7 +136,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <Dot show={selectedModes.size > 0} />
         </button>
         {openChip === 'mode' && (
-          <div className="absolute top-10 right-0 w-44 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 grid grid-cols-2 gap-1.5">
+          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 flex gap-1">
             {MODES.map((m) => {
               const isActive = selectedModes.has(m.id);
               return (
@@ -162,20 +162,20 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <Dot show={selectedAgencies.size > 0} />
         </button>
         {openChip === 'agencies' && (
-          <div className="absolute top-10 right-0 w-56 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 grid grid-cols-1 gap-1">
+          <div className="absolute top-10 right-0 w-56 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 flex flex-wrap gap-1">
             {agencies.map((a) => {
               const isActive = selectedAgencies.has(a.slug);
               return (
                 <button
                   key={a.slug}
                   onClick={() => toggleAgency(a.slug)}
-                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border ${
+                  className={`px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border whitespace-nowrap ${
                     isActive
                       ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                       : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
                   }`}
                 >
-                  <span className="truncate mr-2">{a.name}</span>
+                  {a.name}
                 </button>
               );
             })}

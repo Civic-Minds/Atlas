@@ -42,6 +42,29 @@
   --accent-border: rgba(228, 228, 231, 0.18);
 }
 
+/* Stop cluster icon (leaflet.markercluster) */
+.stop-cluster-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  border: 1.5px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  font-weight: 900;
+  color: var(--accent);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-in;
+}
+
 .atlas-tooltip {
   background: none !important;
   border: none !important;
