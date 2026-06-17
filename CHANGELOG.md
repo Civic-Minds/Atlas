@@ -4,12 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Agency name is clickable in route panel**: clicking the agency name below the route title filters the map to show only that agency's routes. Click again to clear.
+
 ### Fixed
 - **Initial map zoom way too far out**: `getRegionalView` was computing a midpoint over all agencies including Kingston and London, dragging the center east and producing zoom 7. Initial load now always uses the GTHA core default (43.65, -79.45, zoom 9); the reset button still uses `fitBounds` to show all agencies.
 - **Mouse wheel zoom too slow**: `zoomDelta` 0.5 → 1, `wheelPxPerZoomLevel` 120 → 60 (back to Leaflet defaults).
 - **One-way routes showing "Direction 1"**: when a route has a single direction and no headsign the label is meaningless. Direction heading is now omitted entirely for single-direction routes with no headsign; it still shows for multi-direction routes and routes with a headsign.
 - **API error leakage**: `/api/live-adherence` and `/api/gtfs-rt` no longer return raw `err.message` to clients on 500 errors (CodeQL `js/stack-trace-exposure`). Errors are now logged to the Vercel function log and a generic "Internal server error" is returned instead.
 - **Station View stop collision across agencies**: stops with the same `stopId` from different agencies were colliding — clicking one could match another agency's stop. Click handlers in `MapCanvas` now set `selectedStop` as `agencySlug::stopId`; `SidebarControls` and `pointToLayer` both resolve using the same composite key.
+- **Station View showing routes from wrong agencies** (AI-67): `stopRoutes` searched all agency layers by bare `routeId`, so clicking a Stratford stop showed Simcoe and YRT routes that also have a route "3". Scoped the lookup to only the owning agency's layer.
+- **Large headways displayed as raw minutes**: routes with headways over 60 min now display as `every ~Xh` (rounded to nearest 0.5h). Applies to route panel, station view, and map tooltips.
+- **Headsign double "to"**: headsigns already containing " to " mid-string (e.g. "Brant South to Downtown") were getting an extra "to " prepended. The `fmtH` formatter now checks for this.
+- **Commas stripped from headsigns**: GTFS headsigns with commas (e.g. "New Tecumseth, Recreation Centre") now display without the comma.
+- **Search results include unrelated routes** (AI-70): searching "2" returned 221 routes because `routeLongName.includes("2")` matched any long name containing that character. Route number search now uses `startsWith`; long-name search only activates for queries 3+ characters.
+- **Search results panel two-tone background**: the search results container used `bg-[var(--accent-bg)]` creating a visually nested box inside the panel. Removed the background and border so results blend cleanly.
+- **DRT and GO data refreshed**: re-downloaded feeds to pick up schedule changes.
 
 ## [2.0.0] - 2026-06-17
 

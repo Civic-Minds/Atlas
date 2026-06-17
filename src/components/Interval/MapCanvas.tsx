@@ -4,7 +4,7 @@ import { LocateFixed } from 'lucide-react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
-import { titleCase } from '../../utils/format';
+import { titleCase, fmtHeadway } from '../../utils/format';
 import { getRegionalView, getAgencyBounds } from '../../utils/regionView';
 import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
@@ -232,7 +232,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const { routeId, headway, routeShortName, tier } = props;
       const name = routeShortName || routeId;
       const key = routeKey(props);
-      const headwayLabel = headway != null ? `every ${headway} min` : tier === 'span' ? 'limited service' : tier === 'infrequent' ? 'infrequent service' : 'No headway data';
+      const headwayLabel = headway != null ? fmtHeadway(headway) : tier === 'span' ? 'limited service' : tier === 'infrequent' ? 'infrequent service' : 'No headway data';
       // Hover stays minimal — click opens the route panel in the sidebar
       (layer as L.Path).bindTooltip(
         `<div class="tooltip-content">

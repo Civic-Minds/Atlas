@@ -17,6 +17,12 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
 // Articles/prepositions that stay lowercase unless they open the string
 const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for)$/i;
 
+export function fmtHeadway(minutes: number): string {
+  if (minutes <= 60) return `every ${minutes} min`;
+  const hrs = Math.round(minutes / 30) / 2;
+  return `every ~${hrs}h`;
+}
+
 export function titleCase(s: string): string {
   return s
     .toLowerCase()

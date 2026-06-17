@@ -29,6 +29,7 @@ export function cleanHeadsign(
   h = h.replace(/^(?:towards|to)\s+/i, '');
   h = h.replace(/\s+-\s+[NSEW]b$/i, '');
   h = h.replace(/,\s+\d+.*$/i, '');
+  h = h.replace(/,/g, '');
 
   const lowerH = h.toLowerCase().trim();
   if (longName && lowerH === longName.toLowerCase().trim()) return '';

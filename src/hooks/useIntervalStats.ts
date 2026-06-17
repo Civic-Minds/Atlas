@@ -59,13 +59,14 @@ function passesRouteFilter(
   p: ShapeProperties,
   slug: string,
   filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean },
-  routesForStop: Set<string> | null,
+  routesForStop: { slug: string; routeIds: Set<string> } | null,
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
   if (routesForStop) {
-    if (p.routeId && !routesForStop.has(p.routeId)) return false;
-    if (isCorridor && corridorRouteIds && !corridorRouteIds.some((rid) => routesForStop.has(rid))) return false;
+    if (slug !== routesForStop.slug) return false;
+    if (p.routeId && !routesForStop.routeIds.has(p.routeId)) return false;
+    if (isCorridor && corridorRouteIds && !corridorRouteIds.some((rid) => routesForStop.routeIds.has(rid))) return false;
   }
   if (filters.agencies.size > 0 && !filters.agencies.has(slug)) return false;
   if (filters.livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
@@ -135,19 +136,31 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     });
   }, [layers]);
 
-  // Find routes for selected stop if any
+  // Find routes for selected stop if any. selectedStop is now "agencySlug::stopId"
   const routesForStop = useMemo(() => {
     if (!selectedStop) return null;
-    const stopFeature = allFeatures.find(f => (f.properties as any).stopId === selectedStop);
-    return stopFeature ? new Set((stopFeature.properties as any).routeIds as string[]) : null;
+    const parts = selectedStop.split('::');
+    const [agencySlug, stopId] = parts.length === 2 ? parts : [null, selectedStop];
+
+    const stopFeature = allFeatures.find(f => {
+      const p = f.properties as any;
+      if (agencySlug && p.agencySlug !== agencySlug) return false;
+      return p.stopId === stopId;
+    });
+
+    if (!stopFeature) return null;
+    return {
+      slug: (stopFeature.properties as any).agencySlug,
+      routeIds: new Set((stopFeature.properties as any).routeIds as string[])
+    };
   }, [allFeatures, selectedStop]);
 
   const matchesQuery = useCallback((p: ShapeProperties) => {
     if (q === '') return true;
     const nameHit =
-      (p.routeShortName ?? '').toLowerCase().includes(q) ||
-      (p.routeLongName ?? '').toLowerCase().includes(q) ||
-      (p.routeId ?? '').toLowerCase().includes(q);
+      (p.routeShortName ?? '').toLowerCase().startsWith(q) ||
+      (p.routeId ?? '').toLowerCase().startsWith(q) ||
+      (q.length >= 3 && (p.routeLongName ?? '').toLowerCase().includes(q));
     if (nameHit) return true;
     const cIds = (p as any).routeIds as string[] | undefined;
     if (cIds && cIds.some((r) => r.toLowerCase().includes(q))) return true;
