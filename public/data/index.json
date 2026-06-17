@@ -34,8 +34,8 @@
       "slug": "drt",
       "name": "Durham Region Transit",
       "center": [
-        43.8971,
-        -78.8658
+        43.9,
+        -78.85
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/drt.json",
       "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip"
