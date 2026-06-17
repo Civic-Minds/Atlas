@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- **API error leakage**: `/api/live-adherence` and `/api/gtfs-rt` no longer return raw `err.message` to clients on 500 errors (CodeQL `js/stack-trace-exposure`). Errors are now logged to the Vercel function log and a generic "Internal server error" is returned instead.
+
 ## [2.0.0] - 2026-06-17
 
 ### Added
