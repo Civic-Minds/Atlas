@@ -150,26 +150,42 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const stopRoutes = useMemo(() => {
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
-    const routeMap = new Map<string, { shortName: string; longName: string; headsigns: Set<string>; agencyName: string; rKey: string }>();
+    const routeMap = new Map<string, { shortName: string; longName: string; headsigns: Set<string>; agencyName: string; rKey: string; bestHeadway?: number }>();
     for (const [slug, fc] of Object.entries(layers)) {
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
+        if (p.day !== undefined && p.day !== currentDay) continue;
+
         const key = p.routeShortName || p.routeId;
-        if (!routeMap.has(key)) routeMap.set(key, {
-          shortName: key,
-          longName: p.routeLongName || '',
-          headsigns: new Set(),
-          agencyName: p.agencyName || slug,
-          rKey: routeKey(p),
-        });
-        if (p.headsign) routeMap.get(key)!.headsigns.add(p.headsign);
+        if (!routeMap.has(key)) {
+          routeMap.set(key, {
+            shortName: key,
+            longName: p.routeLongName || '',
+            headsigns: new Set(),
+            agencyName: p.agencyName || slug,
+            rKey: routeKey(p),
+          });
+        }
+        
+        const entry = routeMap.get(key)!;
+        if (p.headsign) entry.headsigns.add(p.headsign);
+        if (p.headway != null && (entry.bestHeadway === undefined || p.headway < entry.bestHeadway)) {
+          entry.bestHeadway = p.headway;
+        }
       }
     }
     return Array.from(routeMap.entries())
       .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-      .map(([, v]) => ({ shortName: v.shortName, longName: v.longName, headsigns: Array.from(v.headsigns), agencyName: v.agencyName, rKey: v.rKey }));
-  }, [currentStop, layers]);
+      .map(([, v]) => ({ 
+        shortName: v.shortName, 
+        longName: v.longName, 
+        headsigns: Array.from(v.headsigns), 
+        agencyName: v.agencyName, 
+        rKey: v.rKey,
+        headway: v.bestHeadway 
+      }));
+  }, [currentStop, layers, currentDay]);
 
   const stopAgencies = useMemo(() => {
     const seen = new Set<string>();
@@ -221,14 +237,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             )}
             <div className="space-y-2">
-              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey }) => (
+              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey, headway }) => (
                 <div key={shortName} className="text-[11px]">
-                  <button
-                    onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
-                    className="font-black text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
-                  >
-                    {shortName}
-                  </button>
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
+                      className="font-black text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
+                    >
+                      {shortName}
+                    </button>
+                    {headway && (
+                      <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)]">
+                        <span 
+                          className="w-1.5 h-1.5 rounded-full shrink-0" 
+                          style={{ background: getTierColor(String(headway)) }} 
+                        />
+                        {`every ${headway} min`}
+                      </span>
+                    )}
+                  </div>
                   {headsigns.length > 0 && (
                     <div className="mt-0.5 space-y-0.5">
                       {[...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))]

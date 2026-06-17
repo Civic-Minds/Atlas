@@ -33,6 +33,7 @@ export interface IntervalFilters {
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
   livePollingOnly?: boolean; // only show routes covered by Atlas's GTFS-RT adherence polling
+  showCorridors?: boolean; // show segments where multiple routes overlap to provide higher frequency
 }
 
 export interface ViewportBounds {
@@ -57,7 +58,7 @@ function resolveTierVal(p: ShapeProperties): number | null {
 function passesRouteFilter(
   p: ShapeProperties,
   slug: string,
-  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; hideSpan?: boolean; livePollingOnly?: boolean },
+  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean },
   routesForStop: Set<string> | null,
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
@@ -68,7 +69,15 @@ function passesRouteFilter(
   }
   if (filters.agencies.size > 0 && !filters.agencies.has(slug)) return false;
   if (filters.livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
-  if (isCorridor) return false;
+  
+  if (isCorridor) {
+    if (!filters.showCorridors) return false;
+    // Filter out short/noisy corridor fragments: only show if 3+ routes overlap OR combined headway is high frequency (<= 15 min)
+    const routeCount = corridorRouteIds?.length ?? 0;
+    const headway = p.headway ?? Infinity;
+    if (routeCount < 3 && headway > 15) return false;
+  }
+
   if (filters.modes.size > 0 && p.routeType !== undefined && !filters.modes.has(p.routeType)) return false;
   if (p.day !== undefined && p.day !== filters.day) return false;
   if (filters.hideSpan && p.tier === 'span') return false;
@@ -111,7 +120,7 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds, hideSpan, livePollingOnly } = filters;
+  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -153,7 +162,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop);
     }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly]);
+  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors]);
 
   const filteredLayers = useMemo(() => {
     const result: AgencyLayers = {};
@@ -168,7 +177,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     }
     return result;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly]);
+  }, [layers, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors]);
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
