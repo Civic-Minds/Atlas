@@ -194,17 +194,34 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               />
             </div>
             <div className="max-h-52 overflow-y-auto custom-scrollbar flex flex-col gap-1">
-              {agencies
-                .filter(a => a.name.toLowerCase().includes(agencyQuery.toLowerCase()))
-                .map((a) => (
-                  <button
-                    key={a.slug}
-                    onClick={() => toggleAgency(a.slug)}
-                    className={rowBtn(selectedAgencies.has(a.slug))}
-                  >
-                    {a.name}
-                  </button>
-                ))}
+              {(() => {
+                // Group agencies by display name (e.g. NFTA bus + rail → one chip)
+                const groups: { name: string; slugs: string[] }[] = [];
+                for (const a of agencies) {
+                  const g = groups.find(x => x.name === a.name);
+                  if (g) g.slugs.push(a.slug);
+                  else groups.push({ name: a.name, slugs: [a.slug] });
+                }
+                return groups
+                  .filter(g => g.name.toLowerCase().includes(agencyQuery.toLowerCase()))
+                  .map(g => {
+                    const active = g.slugs.every(s => selectedAgencies.has(s));
+                    return (
+                      <button
+                        key={g.name}
+                        onClick={() => {
+                          const next = new Set(selectedAgencies);
+                          if (active) g.slugs.forEach(s => next.delete(s));
+                          else g.slugs.forEach(s => next.add(s));
+                          setSelectedAgencies(next);
+                        }}
+                        className={rowBtn(active)}
+                      >
+                        {g.name}
+                      </button>
+                    );
+                  });
+              })()}
             </div>
           </div>
         )}

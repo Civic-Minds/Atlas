@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Agency name is clickable in route panel**: clicking the agency name below the route title filters the map to show only that agency's routes. Click again to clear.
+- **Agency name is clickable in route panel**: clicking the agency name below the route title filters the map to show only that agency's routes. Click again to clear. (Now uses the correct agency slug so the filter actually works.)
+- **NFTA merged into one filter chip**: NFTA Metro and NFTA Rail both renamed to "NFTA (Buffalo)" and shown as a single agency chip that toggles both layers together. FilterChips now groups agencies by display name.
 
 ### Fixed
 - **Initial map zoom way too far out**: `getRegionalView` was computing a midpoint over all agencies including Kingston and London, dragging the center east and producing zoom 7. Initial load now always uses the GTHA core default (43.65, -79.45, zoom 9); the reset button still uses `fitBounds` to show all agencies.
