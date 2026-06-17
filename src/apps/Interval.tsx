@@ -57,6 +57,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   return (
     <div className="relative w-full h-full transition-colors duration-200">
       <MapCanvas
+        agencies={agencies}
         layers={filteredLayers}
         maxHeadway={maxHeadway}
         q={q}

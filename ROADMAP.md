@@ -1,10 +1,10 @@
 # Roadmap
 
-Atlas is a static GTHA frequency map: GTFS feeds → GeoJSON → Vercel Blob, rendered by a React + Leaflet frontend. No server, no database.
+Atlas is a static regional frequency map: GTFS feeds → GeoJSON → Vercel Blob, rendered by a React + Leaflet frontend. No server, no database. Coverage extends outward from the Greater Golden Horseshoe — Buffalo, London, Kingston, and more on one continuous map.
 
 ## Now
 
-- Grow agency coverage outward from the Greater Golden Horseshoe, one continuous regional map.
+- Grow agency coverage outward from the core, one continuous regional map.
 - Bug fixes and UX polish tracked in Linear (AI team → Atlas project).
 
 ## Next: Schedule adherence (targeted)

@@ -8,6 +8,12 @@ import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
+import { filterGtfsByRouteTypes } from './filterGtfs.js';
+import { cleanHeadsign } from '../shared/cleanHeadsign.js';
+
+export interface ProcessOptions {
+  routeTypes?: number[];
+}
 
 export interface GeoJsonFeature {
   type: 'Feature';
@@ -23,9 +29,13 @@ export interface ProcessResult {
 
 export async function processGtfsBuffer(
   buf: Buffer,
-  onStatus?: (msg: string) => void
+  onStatus?: (msg: string) => void,
+  options?: ProcessOptions,
 ): Promise<ProcessResult> {
-  const gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus);
+  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus);
+  if (options?.routeTypes?.length) {
+    gtfs = filterGtfsByRouteTypes(gtfs, options.routeTypes);
+  }
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
@@ -92,41 +102,11 @@ export async function processGtfsBuffer(
   for (const [key, counts] of headsignCounts) {
     const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
     if (best) {
-      // Strip branch/direction prefix codes: single letters (DRT "A - "),
-      // multi-letter route codes ("KI - "), or directional words (TTC "East - ", "West - ")
-      let h = best.replace(/^(?:[A-Z]{1,3}|East|West|North|South)\s*-\s*/i, '');
-
-      // Strip redundant "Line X (Name) towards " or just "towards "
-      h = h.replace(/^Line\s+\d+\s*\([^)]+\)\s+towards\s+/i, '');
-
-      // Strip redundant "RouteNumber RouteName towards " (TTC pattern)
       const routeId = key.split('::')[0];
       const route = routeById.get(routeId);
-      if (route) {
-        const sn = route.route_short_name?.trim();
-        const ln = route.route_long_name?.trim();
-        if (sn && ln) {
-          h = h.replace(new RegExp(`^${sn}\\s+${ln}\\s+towards\\s+`, 'i'), '');
-        }
-        if (sn) {
-          h = h.replace(new RegExp(`^${sn}\\s+towards\\s+`, 'i'), '');
-        }
-      }
-
-      h = h.replace(/^towards\s+/i, '');
-
-      // If the headsign is exactly the same as the route's long name (or short + long), 
-      // it adds no value (e.g. TTC "Line 1 (Yonge-University)")
-      const lowerH = h.toLowerCase().trim();
-      const sn = route?.route_short_name?.toLowerCase().trim();
-      const ln = route?.route_long_name?.toLowerCase().trim();
-      if (ln && lowerH === ln) {
-        h = ''; 
-      } else if (sn && ln && lowerH === `${sn} ${ln}`) {
-        h = '';
-      }
-
-      routeDirToHeadsign.set(key, h.trim());
+      const sn = route?.route_short_name?.trim() ?? null;
+      const ln = route?.route_long_name?.trim() ?? null;
+      routeDirToHeadsign.set(key, cleanHeadsign(best, sn, ln));
     }
   }
 
@@ -259,10 +239,8 @@ export async function processGtfsBuffer(
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         day: result.day,
-        // Rail: use per-pattern headsign, stripping agency route-code prefix
-        // ("KI - Bramalea GO" → "Bramalea GO"); bus: use most-common headsign
         headsign: result.headsign
-          ? result.headsign.replace(/^[A-Za-z0-9]{1,5}\s*-\s*/i, '')
+          ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || null
           : routeDirToHeadsign.get(key) ?? null,
       },
     });

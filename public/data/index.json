@@ -154,8 +154,8 @@
       "slug": "simcoe",
       "name": "Simcoe County LINX",
       "center": [
-        44.3894,
-        -79.6903
+        44.35,
+        -79.75
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/simcoe.json",
       "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip"
@@ -168,7 +168,10 @@
         -78.8784
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta.json",
-      "feedUrl": "https://www.nfta.com/gtfs/google_transit.zip"
+      "feedUrl": "https://www.nfta.com/gtfs/google_transit.zip",
+      "routeTypes": [
+        3
+      ]
     },
     {
       "slug": "nfta-rail",
@@ -178,7 +181,10 @@
         -78.8784
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta-rail.json",
-      "feedUrl": null
+      "feedUrl": "https://www.nfta.com/gtfs/google_transit.zip",
+      "routeTypes": [
+        0
+      ]
     },
     {
       "slug": "london",
@@ -188,7 +194,7 @@
         -81.2453
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/london.json",
-      "feedUrl": null
+      "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip"
     },
     {
       "slug": "kingston",
@@ -198,7 +204,17 @@
         -76.486
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/kingston.json",
-      "feedUrl": null
+      "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip"
+    },
+    {
+      "slug": "stratford",
+      "name": "Stratford Transit",
+      "center": [
+        43.37,
+        -80.98
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/stratford.json",
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip"
     }
   ]
 }
