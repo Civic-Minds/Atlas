@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Nearby Routes panel (AI-71)**: tapping the locate button now shows a "Near You" panel above it listing every route within 500 m of your location, sorted by best headway. Tapping a route opens its detail panel in the sidebar. The panel shows the nearest stop name and distance (e.g. "Queen Station · 290 m") at the bottom, and closes with the X button. Implemented via `useNearbyRoutes` hook (Haversine distance across all loaded GeoJSON Point features) and `NearbyRoutesPanel` component.
+
 ## [2.1.0] - 2026-06-17
 
 ### Added
