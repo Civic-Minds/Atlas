@@ -192,6 +192,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       if (feature.geometry.type === 'Point') {
         const { stopName, stopId, routeIds } = props;
+        const agencySlug = (props as any).agencySlug as string | undefined;
+        const compositeStopId = agencySlug && stopId ? `${agencySlug}::${stopId}` : stopId || null;
         const displayName = stopName ? titleCase(stopName) : stopName;
         (layer as L.Marker).bindTooltip(
           `<div class="tooltip-content">
@@ -203,7 +205,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         layer.on('click', (e: L.LeafletMouseEvent) => {
           L.DomEvent.stopPropagation(e);
           setSelectedRoute(null);
-          setSelectedStop(selectedStop === stopId ? null : stopId || null);
+          setSelectedStop(selectedStop === compositeStopId ? null : compositeStopId);
         });
         return;
       }
@@ -276,7 +278,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         const lineFeatures = fc.features.filter(f => f.geometry.type !== 'Point');
         const pointFeatures = fc.features.filter(f => f.geometry.type === 'Point');
         const lineFc = { ...fc, features: lineFeatures };
-        const pointFc = { ...fc, features: pointFeatures };
+        // Inject agencySlug so onEachFeature can build the composite stopId key
+        const pointFc = { ...fc, features: pointFeatures.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })) };
         return (
           <React.Fragment key={slug}>
             <GeoJSON
@@ -298,7 +301,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                 onEachFeature={onEachFeature}
                 pointToLayer={(feature, latlng) => {
                   const props = feature.properties as unknown as ShapeProperties;
-                  const isSelected = selectedStop === props.stopId;
+                  const agSlug = (props as any).agencySlug as string | undefined;
+                  const compositeId = agSlug && props.stopId ? `${agSlug}::${props.stopId}` : props.stopId;
+                  const isSelected = selectedStop === compositeId;
                   const routeCount = (props as any).routeIds?.length ?? 0;
                   const isHub = (props as any).isHub || routeCount >= 4;
                   const isRail = (props as any).isRail;
