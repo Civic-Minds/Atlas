@@ -161,7 +161,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         if (isCorridor) {
           return { color: lightMode ? '#cbd5e1' : '#334155', weight: 1.25, opacity: 0.2, interactive: false };
         }
-        return { color: lightMode ? '#cbd5e1' : '#334155', weight: isRail ? 1 : 0.75, opacity: 0.12, interactive: false };
+        return { color: lightMode ? '#cbd5e1' : '#334155', weight: isRail ? 1 : 0.5, opacity: 0.12, interactive: false };
       }
       if (isCorridor) {
         return {
