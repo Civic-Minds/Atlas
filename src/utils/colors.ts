@@ -8,7 +8,7 @@ export const HEADWAY_TIERS = [
 ];
 
 export const getTierColor = (tier: string | null): string => {
-  if (!tier || tier === 'span') return '#4b5563';
+  if (!tier || tier === 'span' || tier === 'infrequent') return '#4b5563';
   const t = parseInt(tier);
   for (const { max, color } of HEADWAY_TIERS) {
     if (t <= max) return color;

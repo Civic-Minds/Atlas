@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMapEvents, useMap } from 'react-leaflet';
+import { LocateFixed } from 'lucide-react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
+import { titleCase } from '../../utils/format';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 import type { ViewportBounds } from '../../hooks/useIntervalStats';
 
@@ -17,6 +19,7 @@ interface MapCanvasProps {
   lightMode: boolean;
   matchesQuery: (p: ShapeProperties) => boolean;
   onBoundsChange: (b: ViewportBounds) => void;
+  resetViewKey?: number;
 }
 
 const REGION_CENTER: [number, number] = [43.65, -79.45];
@@ -24,6 +27,53 @@ const REGION_ZOOM = 10;
 
 function MapClickHandler({ onClear }: { onClear: () => void }) {
   useMapEvents({ click: onClear });
+  return null;
+}
+
+function LocateControl() {
+  const map = useMap();
+  const [locating, setLocating] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (btnRef.current) L.DomEvent.disableClickPropagation(btnRef.current);
+  }, []);
+
+  const locate = useCallback(() => {
+    if (!navigator.geolocation || locating) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        map.flyTo([coords.latitude, coords.longitude], 14, { duration: 1.2 });
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { timeout: 10000 }
+    );
+  }, [map, locating]);
+
+  return (
+    <button
+      ref={btnRef}
+      onClick={locate}
+      title="Go to my location"
+      style={{ position: 'absolute', bottom: 24, right: 12, zIndex: 1000 }}
+      className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors"
+    >
+      <LocateFixed className={`w-4 h-4 ${locating ? 'animate-pulse text-[var(--accent)]' : ''}`} />
+    </button>
+  );
+}
+
+function ResetViewControl({ resetKey }: { resetKey?: number }) {
+  const map = useMap();
+  const prevKey = useRef(resetKey);
+  useEffect(() => {
+    if (resetKey !== undefined && resetKey !== prevKey.current) {
+      prevKey.current = resetKey;
+      map.flyTo(REGION_CENTER, REGION_ZOOM, { duration: 1.2 });
+    }
+  }, [map, resetKey]);
   return null;
 }
 
@@ -52,6 +102,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   lightMode,
   matchesQuery,
   onBoundsChange,
+  resetViewKey,
 }) => {
   const [zoom, setZoom] = useState(REGION_ZOOM);
   const tileUrl = lightMode
@@ -132,9 +183,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       if (feature.geometry.type === 'Point') {
         const { stopName, stopId, routeIds } = props;
-        const displayName = stopName
-          ? stopName.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())
-          : stopName;
+        const displayName = stopName ? titleCase(stopName) : stopName;
         (layer as L.Marker).bindTooltip(
           `<div class="tooltip-content">
             <div class="tooltip-name">Station</div>
@@ -172,7 +221,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const { routeId, headway, routeShortName, tier } = props;
       const name = routeShortName || routeId;
       const key = routeKey(props);
-      const headwayLabel = headway != null ? `every ${headway} min` : tier === 'span' ? 'limited service' : 'No headway data';
+      const headwayLabel = headway != null ? `every ${headway} min` : tier === 'span' ? 'limited service' : tier === 'infrequent' ? 'infrequent service' : 'No headway data';
       // Hover stays minimal — click opens the route panel in the sidebar
       (layer as L.Path).bindTooltip(
         `<div class="tooltip-content">
@@ -209,6 +258,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       />
       <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
       <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
+      <ResetViewControl resetKey={resetViewKey} />
+      <LocateControl />
       {Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         // Split route shapes from stop points — stops mount/unmount on zoom without
