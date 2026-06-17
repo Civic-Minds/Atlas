@@ -63,11 +63,8 @@ function passesRouteFilter(
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
-  if (routesForStop) {
-    if (slug !== routesForStop.slug) return false;
-    if (p.routeId && !routesForStop.routeIds.has(p.routeId)) return false;
-    if (isCorridor && corridorRouteIds && !corridorRouteIds.some((rid) => routesForStop.routeIds.has(rid))) return false;
-  }
+  // Note: routesForStop now only used for sidebar; map shows full context with dimming in styleFeature
+
   if (filters.agencies.size > 0 && !filters.agencies.has(slug)) return false;
   if (filters.livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
   
