@@ -14,7 +14,7 @@ export function cleanHeadsign(
 
   if (shortName) {
     const escaped = shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*[-:]\\s*`, 'i'), '');
+    h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*`, 'i'), '');
     if (longName) {
       const escapedL = longName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       h = h.replace(new RegExp(`^${escaped}\\s+${escapedL}\\s+(?:towards|to)\\s+`, 'i'), '');
@@ -30,6 +30,17 @@ export function cleanHeadsign(
   h = h.replace(/^Line\s+\d+\s*\([^)]+\)\s+towards\s+/i, '');
 
   h = h.replace(/^(?:towards|to)\s+/i, '');
+
+  // TTC express headsigns like "960b Steeles West Express Towards Finch Station Via Pioneer Village Station"
+  // -> "Finch via Pioneer Village"
+  h = h.replace(/\bExpress\b/gi, '');
+  const ttcMatch = h.match(/(?:Towards|To)\s+(.+?)(?:\s+Via\s+(.+))?$/i);
+  if (ttcMatch) {
+    let dest = ttcMatch[1].trim().replace(/\s+Station\b/gi, '');
+    let via = ttcMatch[2] ? ttcMatch[2].trim().replace(/\s+Station\b/gi, '') : '';
+    h = dest;
+    if (via) h += ' via ' + via;
+  }
   h = h.replace(/\s+-\s+[NSEW]b$/i, '');
   h = h.replace(/,\s+\d+.*$/i, '');
   h = h.replace(/,/g, '');
