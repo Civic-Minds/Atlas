@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 ### Improved
 - **Montreal/REM + French headsign presentation**: REM branches now show cleanly as e.g. "A3-A1 — Anse-à-l'Orme / Brossard" (instead of redundant "A3-A1 — A3 - Anse-à-..."). Fixed title-casing for accented French names ("Jérôme", "Anse-à-l'Orme" etc.). Stripped verbose "Destination " prefixes on exo headsigns. Wider agency/stop panel + `break-words` + `title` tooltips to prevent cutoff on long destinations.
 - **Agency filter names**: shortened MTL agencies to clean short forms (STM, STL, RTL) without bracketed qualifiers or cities for less clutter in the list.
+- **TTC headsign cleaning**: better stripping for express routes like "960b Steeles West Express Towards Finch Station Via Pioneer Village Station" → "Finch via Pioneer Village". Improves long verbose TTC headsigns.
 
 ### Fixed
 - **Loading indicator covers locate button**: moved loading spinner from bottom-right to bottom-left so it can no longer overlap the locate button or the Nearby Routes panel.
