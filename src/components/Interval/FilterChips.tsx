@@ -111,7 +111,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                   key={label}
                   onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
                   className={rowBtn(isSelected)}
-                  title={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
+                  aria-label={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
                 >
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
                   {label === 'Infrequent' ? 'All' : label}

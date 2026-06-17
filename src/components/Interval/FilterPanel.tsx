@@ -73,7 +73,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                 : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
             }`}
-            title="Show shared segments where overlapping routes provide higher combined frequency"
+            aria-label="Show shared segments where overlapping routes provide higher combined frequency"
           >
             <span className="flex items-center gap-1.5">
               <Zap className="w-3 h-3" />
@@ -90,7 +90,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                 : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
             }`}
-            title="Show only routes with live GTFS-RT schedule-adherence polling"
+            aria-label="Show only routes with live GTFS-RT schedule-adherence polling"
           >
             <span className="flex items-center gap-1.5">
               <Radio className="w-3 h-3" />
@@ -107,7 +107,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
                 : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
             }`}
-            title="Hide routes with no sustained frequency tier (peak-only, school runs, shuttles)"
+            aria-label="Hide routes with no sustained frequency tier (peak-only, school runs, shuttles)"
           >
             <span>Hide irregular / peak-only routes</span>
             {hideSpan && <X className="w-2.5 h-2.5 shrink-0" />}

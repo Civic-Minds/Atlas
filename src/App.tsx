@@ -38,7 +38,7 @@ export default function App() {
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
         <button
           onClick={() => setResetViewKey(k => k + 1)}
-          title="Reset map view"
+          aria-label="Reset map view"
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
           <MapIcon className="w-3.5 h-3.5 text-white" />

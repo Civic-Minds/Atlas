@@ -3,7 +3,7 @@ import type { Agency } from '../App';
 // GTHA core — good starting view for the full 20-agency network.
 // The reset button uses fitBounds to show all agencies; this is just the initial load state.
 const DEFAULT_CENTER: [number, number] = [43.65, -79.45];
-const DEFAULT_ZOOM = 9;
+const DEFAULT_ZOOM = 11;
 
 /** Initial center and zoom for MapContainer. Always returns the GTHA core default —
  *  outlier agencies like Kingston and London drag a computed midpoint too far east/west.
