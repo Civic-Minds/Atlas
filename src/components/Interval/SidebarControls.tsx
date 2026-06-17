@@ -287,13 +287,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               <div className="flex-1 mt-2">
                 <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
                   {(() => {
-                    const rem = formatRemDisplay(currentRoute.routeShortName, currentRoute.routeLongName);
-                    if (rem && rem !== (currentRoute.routeShortName || '')) return rem;
-                    return currentRoute.routeShortName || currentRoute.routeId;
+                    const remLabel = formatRemDisplay(currentRoute.routeShortName, currentRoute.routeLongName);
+                    if (remLabel && remLabel !== currentRoute.routeShortName) return remLabel;
+                    const short = currentRoute.routeShortName || currentRoute.routeId;
+                    if (currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()) {
+                      const title = currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                      return `${short} — ${title}`;
+                    }
+                    return short;
                   })()}
-                  {!formatRemDisplay(currentRoute.routeShortName ?? undefined, currentRoute.routeLongName ?? undefined) && currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()
-                    ? ` — ${currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}`
-                    : ''}
                 </h3>
                 {(() => {
                   const slug = (currentRoute as any).agencySlug as string | undefined;
