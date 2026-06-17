@@ -34,7 +34,22 @@ export function cleanHeadsign(
   h = h.replace(/,\s+\d+.*$/i, '');
   h = h.replace(/,/g, '');
 
-  const lowerH = h.toLowerCase().trim();
+  // REM specific full station names (after all stripping, fix any mangled abbreviations/casing)
+  const remNames: Record<string, string> = {
+    'brossard': 'Brossard',
+    'orme': "Anse-à-l'Orme",
+    'deux-montagnes': 'Deux-Montagnes',
+    'montagnes': 'Deux-Montagnes',
+  };
+  let lowerH = h.toLowerCase();
+  for (const [key, full] of Object.entries(remNames)) {
+    if (lowerH.includes(key)) {
+      h = full;
+      break;
+    }
+  }
+
+  lowerH = h.toLowerCase().trim();
   if (longName && lowerH === longName.toLowerCase().trim()) return '';
   if (shortName && longName && lowerH === `${shortName.toLowerCase()} ${longName.toLowerCase()}`.trim()) {
     return '';
