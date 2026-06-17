@@ -298,9 +298,8 @@ export async function processGtfsBuffer(
     const isHub = stop.location_type === '1' || uniqueRoutes >= 3;
     const isRail = routeIds.some(rid => {
       const r = routeById.get(rid);
-      return r?.route_type === '0' || r?.route_type === 0 ||
-             r?.route_type === '1' || r?.route_type === 1 ||
-             r?.route_type === '2' || r?.route_type === 2;
+      const rt = r?.route_type;
+      return rt === '0' || rt === '1' || rt === '2';
     });
 
     stopFeatures.push({
