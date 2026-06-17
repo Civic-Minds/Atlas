@@ -93,7 +93,9 @@ export async function processGtfsBuffer(
   for (const [key, counts] of headsignCounts) {
     const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
     if (best) {
-      let h = best.replace(/^[A-Z]\s*-\s*/, '');
+      // Strip branch/direction prefix codes: single letters (DRT "A - "),
+      // multi-letter route codes ("KI - "), or directional words (TTC "East - ", "West - ")
+      let h = best.replace(/^(?:[A-Z]{1,3}|East|West|North|South)\s*-\s*/i, '');
       
       // Strip redundant "Line X (Name) towards " or just "towards "
       h = h.replace(/^Line\s+\d+\s*\([^)]+\)\s+towards\s+/i, '');
