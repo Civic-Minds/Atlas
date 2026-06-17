@@ -9,6 +9,9 @@ export function cleanHeadsign(
 ): string {
   let h = headsign;
 
+  // REM branch prefixes (headsigns like "A3 - Anse-à-l'Orme")
+  h = h.replace(/^A[0-9]+\s*-\s*/i, '');
+
   if (shortName) {
     const escaped = shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*[-:]\\s*`, 'i'), '');
@@ -37,4 +40,24 @@ export function cleanHeadsign(
     return '';
   }
   return h.trim();
+}
+
+/**
+ * For REM, turn cryptic "A3-A1" + long name into something readable.
+ * Example: "A3-A1 Anse-à-l'Orme – Brossard"
+ */
+export function formatRemDisplay(shortName: string | null | undefined, longName: string | null | undefined): string {
+  if (!shortName) return '';
+  if (!/^A[0-9]/.test(shortName) || !longName) return shortName;
+
+  // longName e.g. "A3 - Anse-à-l'Orme / A1 - Brossard"
+  const parts = longName.split(/\s*\/\s*/);
+  if (parts.length === 2) {
+    const t1 = parts[0].replace(/^A[0-9]\s*-\s*/, '').trim();
+    const t2 = parts[1].replace(/^A[0-9]\s*-\s*/, '').trim();
+    return `${shortName}  ${t1} – ${t2}`;
+  }
+  // fallback
+  const cleaned = longName.replace(/A[0-9]\s*-\s*/g, '').replace(/\s*\/\s*/g, ' – ');
+  return `${shortName}  ${cleaned}`;
 }
