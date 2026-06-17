@@ -7,6 +7,13 @@ All notable changes to this project will be documented in this file.
 ### Added
 - **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), Saint-Jean-sur-Richelieu local transit, and Mont-Tremblant. All processed with current GTFS and stable direct feedUrls.
 
+### Changed
+- **Frequency tier colours**: updated to a clearer sequential palette (emerald green for highest frequency → lime → yellow → orange → slate for infrequent). Improves visual hierarchy and works better with high-frequency REM/STM metro services.
+
+### Improved
+- **Montreal/REM + French headsign presentation**: REM branches now show cleanly as e.g. "A3-A1 — Anse-à-l'Orme / Brossard" (instead of redundant "A3-A1 — A3 - Anse-à-..."). Fixed title-casing for accented French names ("Jérôme", "Anse-à-l'Orme" etc.). Stripped verbose "Destination " prefixes on exo headsigns. Wider agency/stop panel + `break-words` + `title` tooltips to prevent cutoff on long destinations.
+- **Agency filter names**: shortened MTL agencies to clean short forms (STM, STL, RTL) without bracketed qualifiers or cities for less clutter in the list.
+
 ### Fixed
 - **Loading indicator covers locate button**: moved loading spinner from bottom-right to bottom-left so it can no longer overlap the locate button or the Nearby Routes panel.
 - **Sticky native tooltip on locate button and other controls**: replaced `title` attributes with `aria-label` across all buttons (locate, reset view, filter panel toggles, frequency tier chips). Eliminates the browser's slow-to-dismiss native tooltip.
