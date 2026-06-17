@@ -78,7 +78,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <Dot show={true} />
         </button>
         {openChip === 'frequency' && (
-          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 flex gap-1">
+          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex gap-1">
             {HEADWAY_TIERS.map(({ max, label }) => {
               const isSelected = maxHeadway === max;
               return (
@@ -109,7 +109,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <Dot show={true} />
         </button>
         {openChip === 'day' && (
-          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 flex gap-1">
+          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex gap-1">
             {(['Weekday', 'Saturday', 'Sunday'] as const).map((d) => (
               <button
                 key={d}
@@ -136,7 +136,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <Dot show={selectedModes.size > 0} />
         </button>
         {openChip === 'mode' && (
-          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 flex gap-1">
+          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex gap-1">
             {MODES.map((m) => {
               const isActive = selectedModes.has(m.id);
               return (
@@ -162,7 +162,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <Dot show={selectedAgencies.size > 0} />
         </button>
         {openChip === 'agencies' && (
-          <div className="absolute top-10 right-0 w-56 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 flex flex-wrap gap-1">
+          <div className="absolute top-10 right-0 w-56 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-wrap gap-1">
             {agencies.map((a) => {
               const isActive = selectedAgencies.has(a.slug);
               return (
