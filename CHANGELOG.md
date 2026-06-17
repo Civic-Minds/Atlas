@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **API error leakage**: `/api/live-adherence` and `/api/gtfs-rt` no longer return raw `err.message` to clients on 500 errors (CodeQL `js/stack-trace-exposure`). Errors are now logged to the Vercel function log and a generic "Internal server error" is returned instead.
+- **Station View stop collision across agencies**: stops with the same `stopId` from different agencies were colliding — clicking one could match another agency's stop. Click handlers in `MapCanvas` now set `selectedStop` as `agencySlug::stopId`; `SidebarControls` and `pointToLayer` both resolve using the same composite key.
 
 ## [2.0.0] - 2026-06-17
 

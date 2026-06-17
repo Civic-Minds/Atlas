@@ -142,8 +142,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const currentStop = useMemo(() => {
     if (!selectedStop) return null;
-    const allFeatures = Object.values(layers).flatMap(fc => fc.features);
-    const stop = allFeatures.find(f => (f.properties as any).stopId === selectedStop);
+    const allFeatures = Object.entries(layers).flatMap(([slug, fc]) =>
+      fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } }))
+    );
+    const stop = allFeatures.find(f => {
+      const p = f.properties as any;
+      const compositeId = p.agencySlug && p.stopId ? `${p.agencySlug}::${p.stopId}` : p.stopId;
+      return compositeId === selectedStop;
+    });
     return stop ? (stop.properties as any) : null;
   }, [selectedStop, layers]);
 
