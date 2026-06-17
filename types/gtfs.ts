@@ -138,6 +138,8 @@ export interface RawRouteDepartures {
     day: DayName;
     routeType: string;
     modeName: string;
+    /** For rail routes split by terminus — e.g. "Kitchener GO" vs "Bramalea GO" */
+    headsign?: string;
 
     /** Every departure time in minutes from midnight, sorted ascending, deduplicated */
     departureTimes: number[];
@@ -226,6 +228,8 @@ export interface AnalysisResult {
     warnings?: string[];
     /** Which individual days this rolled-up result covers */
     daysIncluded?: DayName[];
+    /** For rail routes: the terminus headsign this result represents (e.g. "Kitchener GO") */
+    headsign?: string;
 }
 
 export interface CorridorResult {

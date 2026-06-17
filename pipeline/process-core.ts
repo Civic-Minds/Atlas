@@ -54,19 +54,36 @@ export async function processGtfsBuffer(
 
   const shapeCounts = new Map<string, Map<string, number>>();
   const headsignCounts = new Map<string, Map<string, number>>();
+  // For rail: shape counts per (routeId, dir, headsign) so each terminus gets its own shape
+  const railHeadsignShapeCounts = new Map<string, Map<string, number>>();
   for (const trip of gtfs.trips ?? []) {
     if (!activeForShapes.has(trip.service_id)) continue;
     const key = `${trip.route_id}::${trip.direction_id ?? '0'}`;
+    const isRail = routeById.get(trip.route_id)?.route_type === '2';
     if (trip.shape_id) {
       if (!shapeCounts.has(key)) shapeCounts.set(key, new Map());
       const m = shapeCounts.get(key)!;
       m.set(trip.shape_id, (m.get(trip.shape_id) ?? 0) + 1);
+      // Rail: also count shapes per headsign so Bramalea trips → Bramalea shape, etc.
+      if (isRail && trip.trip_headsign) {
+        const hKey = `${key}::${trip.trip_headsign}`;
+        if (!railHeadsignShapeCounts.has(hKey)) railHeadsignShapeCounts.set(hKey, new Map());
+        const hm = railHeadsignShapeCounts.get(hKey)!;
+        hm.set(trip.shape_id, (hm.get(trip.shape_id) ?? 0) + 1);
+      }
     }
     if (trip.trip_headsign) {
       if (!headsignCounts.has(key)) headsignCounts.set(key, new Map());
       const hm = headsignCounts.get(key)!;
       hm.set(trip.trip_headsign, (hm.get(trip.trip_headsign) ?? 0) + 1);
     }
+  }
+
+  // Most common shape per (routeId, dir, headsign) for rail terminus splitting
+  const railHeadsignDisplayShape = new Map<string, string>(); // "routeId::dir::headsign" → shapeId
+  for (const [hKey, counts] of railHeadsignShapeCounts) {
+    const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (best) railHeadsignDisplayShape.set(hKey, best);
   }
 
   // Most common headsign per route+direction, stripped of branch-letter prefixes
@@ -174,31 +191,39 @@ export async function processGtfsBuffer(
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
-    const shapeId = routeDirToDisplayShape.get(key);
+    // For rail results with a terminus headsign, use the headsign-specific shape so each
+    // pattern (e.g. Bramalea GO vs Kitchener GO) maps to its own correctly-lengthed geometry.
+    const hKey = (result.headsign) ? `${key}::${result.headsign}` : null;
+    const shapeId = (hKey && railHeadsignDisplayShape.has(hKey))
+      ? railHeadsignDisplayShape.get(hKey)
+      : routeDirToDisplayShape.get(key);
     if (!shapeId) continue;
     const points = shapeById.get(shapeId);
     if (!points || points.length < 2) continue;
 
     const route = routeById.get(result.route);
     const shortName = route?.route_short_name ?? result.route;
-    const dedupeKey = `${shortName}::${result.dir}::${result.day}`;
+    // Rail patterns deduplicate by (shortName, dir, day, headsign) so Bramalea and Kitchener
+    // aren't collapsed together; bus routes deduplicate by (shortName, dir, day) as before.
+    const dedupeKey = result.headsign
+      ? `${shortName}::${result.dir}::${result.day}::${result.headsign}`
+      : `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
-    // Rail routes use median headway: avg is pulled down by dense peak clusters
-    // (GO peak every 10 min + midday every 60 min → avg ~11 min, median ~25-30 min)
     const newHeadway = result.tier === 'span' ? null : Math.round(isRailRoute ? result.medianHeadway : result.avgHeadway);
+    // Skip if: new result is span (null headway) — span never beats a real tier.
+    // Or if existing already has an equal or better real headway.
     if (
       existing &&
-      newHeadway != null &&
-      existing.properties.headway != null &&
-      (existing.properties.headway as number) <= newHeadway
+      (newHeadway == null ||
+       (existing.properties.headway != null &&
+        (existing.properties.headway as number) <= newHeadway))
     ) continue;
 
     dedupedFeatures.set(dedupeKey, {
       type: 'Feature',
       geometry: {
         type: 'LineString',
-        // Truncate to 5 decimal places (~1m precision) to reduce file size
         coordinates: points.map(([lat, lon]) => [
           Math.round(lon * 100000) / 100000,
           Math.round(lat * 100000) / 100000,
@@ -214,7 +239,11 @@ export async function processGtfsBuffer(
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         day: result.day,
-        headsign: routeDirToHeadsign.get(key) ?? null,
+        // Rail: use per-pattern headsign, stripping agency route-code prefix
+        // ("KI - Bramalea GO" → "Bramalea GO"); bus: use most-common headsign
+        headsign: result.headsign
+          ? result.headsign.replace(/^[A-Z]{1,3}\s*-\s*/, '')
+          : routeDirToHeadsign.get(key) ?? null,
       },
     });
   }
