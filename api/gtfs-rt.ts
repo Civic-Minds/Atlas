@@ -54,8 +54,9 @@ export default async function handler(req: Request) {
         'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=30',
       },
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    console.error('[gtfs-rt]', err);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
