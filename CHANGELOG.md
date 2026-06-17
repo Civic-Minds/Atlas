@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.1.0] - 2026-06-17
 
 ### Added
 - **Agency name is clickable in route panel**: clicking the agency name below the route title filters the map to show only that agency's routes. Click again to clear. (Now uses the correct agency slug so the filter actually works.)
