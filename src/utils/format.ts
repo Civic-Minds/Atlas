@@ -26,9 +26,12 @@ export function fmtHeadway(minutes: number): string {
 export function titleCase(s: string): string {
   return s
     .toLowerCase()
-    .replace(/\b\w+/g, (word, offset) =>
-      offset > 0 && KEEP_LOWER.test(word) ? word : word.replace(/^\w/, c => c.toUpperCase())
-    )
+    .replace(/\b(\p{L}+)/gu, (fullWord, word, offset) => {
+      if (offset > 0 && KEEP_LOWER.test(word)) {
+        return word;
+      }
+      return word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
+    })
     .replace(/\b(Go|Dc|Yrt|Ttc|Hsr|Grt|Brt|Lrt|Nfta|Ltc|Ktc)\b/g, m => TRANSIT_ACRONYMS[m] ?? m)
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
