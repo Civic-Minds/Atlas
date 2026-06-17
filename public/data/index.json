@@ -346,6 +346,16 @@
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/linter.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter"
+    },
+    {
+      "slug": "saint-hyacinthe",
+      "name": "Ville de Saint-Hyacinthe",
+      "center": [
+        45.63,
+        -72.95
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/saint-hyacinthe.json",
+      "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs"
     }
   ]
 }
