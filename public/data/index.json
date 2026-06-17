@@ -336,6 +336,16 @@
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/mont-tremblant.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm"
+    },
+    {
+      "slug": "linter",
+      "name": "L'Inter des Laurentides",
+      "center": [
+        45.98,
+        -74.23
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/linter.json",
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter"
     }
   ]
 }

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), Saint-Jean-sur-Richelieu local transit, and Mont-Tremblant. All processed with current GTFS and stable direct feedUrls.
+- **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), Saint-Jean-sur-Richelieu local transit, Mont-Tremblant, and L'Inter des Laurentides (intermunicipal). All processed with current GTFS and stable direct feedUrls.
 
 ### Changed
 - **Frequency tier colours**: updated to a clearer sequential palette (emerald green for highest frequency → lime → yellow → orange → slate for infrequent). Improves visual hierarchy and works better with high-frequency REM/STM metro services.
