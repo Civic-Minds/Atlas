@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Shared live polling config** (`shared/livePollingConfig.ts`) — one module for cron, POC scripts, and the UI Live badge filter. Burlington accepts both `311` and `351` route_id prefixes; Hamilton 1A detected by marker stop instead of hardcoded trip IDs.
+- **`npm run validate-headsigns`** — diagnostic script listing routes where multiple headsigns share one `direction_id` (run after feed changes; `npm run validate-headsigns -- simcoe` for one agency).
 - **Stratford Transit** in the agency registry with weekly-refresh `feedUrl`.
 - **Shared `cleanHeadsign` module** (`shared/cleanHeadsign.ts`) used by both the pipeline and frontend so headsign labels stay consistent at build time and render time.
 - **Regional default map view** computed from all agency centers; logo-reset uses `fitBounds` over the full coverage area.
