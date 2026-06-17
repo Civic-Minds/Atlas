@@ -173,7 +173,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
       return {
         color: getTierColor(p?.tier ?? null),
-        weight: q !== '' ? (isRail ? 4 : 3) : isRail ? 3 : (p?.tier && parseInt(p.tier) <= 15 ? 2 : 1),
+        weight: q !== '' ? (isRail ? 4 : 3) : isRail ? 3 : 2,
         opacity: p?.tier ? (q !== '' ? 1 : isRail ? 0.9 : 0.8) : 0.3,
         interactive: false,
       };

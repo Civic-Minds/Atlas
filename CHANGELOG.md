@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Frequency tier colours**: switched to a monochrome grey gradient (dark slate for ≤10m → progressively lighter greys; medium grey for infrequent) for a more neutral, single-hue look instead of teal/green.
+- **Line thickness**: simplified to avoid confusion. Thickness now only distinguishes rail vs bus (+1 for rail), selection state (thickest), and search matches (boosted). Removed frequency-tier boost for buses (color already handles that). Corridors and hit areas unchanged.
 
 ### Improved
 - **Montreal/REM + French headsign presentation**: REM branches now show cleanly as e.g. "A3-A1 — Anse-à-l'Orme / Brossard" (instead of redundant "A3-A1 — A3 - Anse-à-..."). Fixed title-casing for accented French names ("Jérôme", "Anse-à-l'Orme" etc.). Stripped verbose "Destination " prefixes on exo headsigns. Wider agency/stop panel + `break-words` + `title` tooltips to prevent cutoff on long destinations.
