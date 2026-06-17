@@ -55,9 +55,9 @@ export function formatRemDisplay(shortName: string | null | undefined, longName:
   if (parts.length === 2) {
     const t1 = parts[0].replace(/^A[0-9]\s*-\s*/, '').trim();
     const t2 = parts[1].replace(/^A[0-9]\s*-\s*/, '').trim();
-    return `${shortName}  ${t1} – ${t2}`;
+    return `${shortName} — ${t1} / ${t2}`;
   }
   // fallback
-  const cleaned = longName.replace(/A[0-9]\s*-\s*/g, '').replace(/\s*\/\s*/g, ' – ');
-  return `${shortName}  ${cleaned}`;
+  const cleaned = longName.replace(/A[0-9]\s*-\s*/g, '').replace(/\s*\/\s*/g, ' / ');
+  return `${shortName} — ${cleaned}`;
 }
