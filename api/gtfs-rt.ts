@@ -4,14 +4,19 @@ export const config = {
   maxDuration: 60,
 };
 
+function queryParams(req: Request & { url?: string }): URLSearchParams {
+  const raw = req.url ?? '';
+  const qs = raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : raw;
+  return new URLSearchParams(qs);
+}
+
 const FEEDS = {
   burlington: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb',
   hamilton: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
 };
 
 export default async function handler(req: Request) {
-  const url = new URL(req.url);
-  const agency = url.searchParams.get('agency');
+  const agency = queryParams(req).get('agency');
 
   if (!agency || !FEEDS[agency as keyof typeof FEEDS]) {
     return new Response(JSON.stringify({ error: 'Invalid agency. Use burlington or hamilton.' }), {

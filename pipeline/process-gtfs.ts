@@ -35,10 +35,19 @@ const argCenter = centerArg
 async function main() {
   console.log(`\nAtlas — processing ${zipPath}`);
 
+  const indexPath = resolve('public/data/index.json');
+  let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
+  if (existsSync(indexPath)) {
+    const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
+      agencies: Array<{ slug: string; preprocess?: import('./process-core.js').GtfsPreprocess }>;
+    };
+    preprocess = index.agencies.find(a => a.slug === slug)?.preprocess;
+  }
+
   const buf = readFileSync(zipPath);
   const { geojson, featureCount, center: computedCenter } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  });
+  }, { preprocess });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
@@ -50,7 +59,6 @@ async function main() {
   });
   console.log(`  Uploaded → ${blob.url}`);
 
-  const indexPath = resolve('public/data/index.json');
   let index: { agencies: any[] } = { agencies: [] };
   if (existsSync(indexPath)) {
     index = JSON.parse(readFileSync(indexPath, 'utf8'));
