@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - **Support for bidirectional routes with shared `direction_id`**: Generalized the pipeline's headsign-splitting logic to all agencies. This ensures that bus routes using a single `direction_id` for both ways (like Simcoe LINX) are correctly processed into separate features for each direction on the map.
 
 ### Fixed
+- **Niagara Region Transit day/night route pairs**: NRT uses 3xx (weekday daytime) and 4xx (evening/weekend) for the same corridor. A feed-specific preprocess (`preprocess: "nrt-day-night"` in `index.json`) reassigns 4xx trips onto their 3xx twin before analysis so corridors get full-day headway tiers instead of false `span` on evening-only numbers. A warn-only shape audit logs evening shapes that do not match any daytime geometry (merge is not blocked).
 - **NFTA feed URL**: `www.nfta.com` URL was dead (HTML response); switched to `metro.nfta.com/__googletransit/google_transit.zip`. `refresh.ts` falls back to `curl` when Node fetch fails TLS verification.
 - **Simcoe County LINX center** corrected from Barrie's coordinates to mid-county (`44.35, -79.75`).
 - **Sidebar UI Alignment**: Fixed the Close (X) button padding in the Station and Route panels; it now sits flush in the corner with a larger, more accessible click target.

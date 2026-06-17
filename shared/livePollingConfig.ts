@@ -76,8 +76,8 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     tripUpdatesUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
     vehiclePositionsUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb',
     scheduleOffsetMin: {
-      '0': { '355415': 0, '1790': 2, '1403': 32 },
-      '1': { '1403': 0, '1771': 27.7, '355415': 30 },
+      '0': { '355415': 0, '1790': 2, '1403': 31 },
+      '1': { '1403': 0, '1771': 37, '355415': 39 },
     },
     longPatternKey: '1A',
     longPatternStops: ['2138'],

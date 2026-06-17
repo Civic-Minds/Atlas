@@ -13,7 +13,7 @@ import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 import { put } from '@vercel/blob';
 import { config } from 'dotenv';
-import { processGtfsBuffer } from './process-core.js';
+import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
 
 config({ path: resolve('.env.local') });
 
@@ -31,6 +31,7 @@ interface AgencyEntry {
   url: string;
   feedUrl: string | null;
   routeTypes?: number[];
+  preprocess?: GtfsPreprocess;
 }
 
 async function downloadFeed(url: string): Promise<Buffer> {
@@ -69,6 +70,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
 
   const { geojson, featureCount } = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
+    preprocess: agency.preprocess,
   });
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
 
