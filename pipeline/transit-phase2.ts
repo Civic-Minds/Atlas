@@ -177,7 +177,26 @@ export function applyAnalysisCriteria(
         const tier = isLimitedService
             ? 'span'
             : determineTier(windowedGaps, windowedTimes.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
-        const stats = computeHeadwayStats(windowedTimes);
+        // Rail routes (route_type=2) dir0 only: compute display headway from the midday window.
+        // Peak trains at the origin hub cluster every 8–10 min and pull the all-day median
+        // down to ~16 min even when midday service is every 30–60 min. Tier classification
+        // stays on the full window (so Milton, with zero midday trips, still gets span=true).
+        //
+        // Only applies to dir=0 (outbound from hub, e.g. Union→Kitchener). Dir=1 inbound
+        // trains start from different western termini (short-turns from Aldershot, Bramalea,
+        // etc.) so their first-stop departure times are not comparable — a West Harbour train
+        // and an Aldershot train can both depart at 11:06 and 11:08 from different stations,
+        // creating false 2-min gaps that the midday window can't resolve.
+        const statsWindow = (() => {
+          if (raw.routeType === '2' && raw.dir === '0') {
+            const MIDDAY_START = 570; // 09:30
+            const MIDDAY_END = 870;   // 14:30
+            const midday = windowedTimes.filter(t => t >= MIDDAY_START && t <= MIDDAY_END);
+            if (midday.length >= 2) return midday;
+          }
+          return windowedTimes;
+        })();
+        const stats = computeHeadwayStats(statsWindow);
         
         const resourceStats = computeResourceStats(
             stats.avg, 
@@ -236,9 +255,31 @@ export function applyAnalysisCriteria(
 
         const allTimes = entries.flatMap(e => e.result.times);
         const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
-        const stats = computeHeadwayStats(mergedTimes);
-        const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const rep = entries[0].result;
+        // Rail dir=0 rollup: same midday-window logic as per-day stats.
+        // Only dir=0 (outbound from hub) — dir=1 inbound trains start from mixed origins
+        // so their first-stop departure times are not safely comparable across patterns.
+        const isRailOutboundRollup = rep.routeType === '2' && rep.dir === '0';
+        const rollupStatsBase = (() => {
+          if (isRailOutboundRollup) {
+            // Union of all weekdays creates spurious short gaps when some days (e.g. Fridays)
+            // run extra trains. Pick the "representative day" — the day whose midday trip count
+            // is closest to the median count across all days — and use only its times.
+            const MIDDAY_START = 570; // 09:30
+            const MIDDAY_END = 870;   // 14:30
+            const dayMiddays = entries.map(e => e.result.times.filter(t => t >= MIDDAY_START && t <= MIDDAY_END));
+            const counts = dayMiddays.map(d => d.length);
+            const sortedCounts = [...counts].sort((a, b) => a - b);
+            const medianCount = sortedCounts[Math.floor(sortedCounts.length / 2)];
+            const bestIdx = counts.reduce((bestI, c, i) =>
+              Math.abs(c - medianCount) < Math.abs(counts[bestI] - medianCount) ? i : bestI, 0);
+            const repTimes = dayMiddays[bestIdx];
+            if (repTimes.length >= 2) return repTimes;
+          }
+          return mergedTimes;
+        })();
+        const stats = computeHeadwayStats(rollupStatsBase);
+        const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
         const allServiceIds = [...new Set(entries.flatMap(e => e.result.serviceIds || []))];

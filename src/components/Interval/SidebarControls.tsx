@@ -60,6 +60,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
+  const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
   const liveData = useLiveAdherence();
 
   const checkScroll = useCallback(() => {
@@ -71,6 +72,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   useEffect(() => {
     checkScroll();
   }, [checkScroll, agencies, selectedRoute, selectedStop]);
+
+  // Reset agency filter when stop changes
+  useEffect(() => {
+    setStopAgencyFilter(null);
+  }, [selectedStop]);
 
   const currentRoute = useMemo(() => {
     if (!selectedRoute) return null;
@@ -109,20 +115,35 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const stopRoutes = useMemo(() => {
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
-    const routeMap = new Map<string, { shortName: string; headsigns: Set<string> }>();
-    for (const fc of Object.values(layers)) {
+    const routeMap = new Map<string, { shortName: string; headsigns: Set<string>; agencyName: string }>();
+    for (const [slug, fc] of Object.entries(layers)) {
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         const key = p.routeShortName || p.routeId;
-        if (!routeMap.has(key)) routeMap.set(key, { shortName: key, headsigns: new Set() });
+        if (!routeMap.has(key)) routeMap.set(key, {
+          shortName: key,
+          headsigns: new Set(),
+          agencyName: p.agencyName || slug,
+        });
         if (p.headsign) routeMap.get(key)!.headsigns.add(p.headsign);
       }
     }
     return Array.from(routeMap.entries())
       .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-      .map(([, v]) => ({ shortName: v.shortName, headsigns: Array.from(v.headsigns) }));
+      .map(([, v]) => ({ shortName: v.shortName, headsigns: Array.from(v.headsigns), agencyName: v.agencyName }));
   }, [currentStop, layers]);
+
+  const stopAgencies = useMemo(() => {
+    const seen = new Set<string>();
+    return stopRoutes
+      .map(r => r.agencyName)
+      .filter(n => { if (seen.has(n)) return false; seen.add(n); return true; });
+  }, [stopRoutes]);
+
+  const filteredStopRoutes = useMemo(() =>
+    stopAgencyFilter ? stopRoutes.filter(r => r.agencyName === stopAgencyFilter) : stopRoutes,
+  [stopRoutes, stopAgencyFilter]);
 
   // Strip leading "XX - " or "XX: " route-code prefixes that some agencies embed in headsigns
   const cleanHeadsign = (headsign: string, shortName: string | null) => {
@@ -151,8 +172,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight mb-2">
               {currentStop.stopName.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}
             </h3>
+            {stopAgencies.length > 1 && (
+              <div className="flex flex-wrap gap-1 mb-2">
+                {stopAgencies.map(name => (
+                  <button
+                    key={name}
+                    onClick={() => setStopAgencyFilter(stopAgencyFilter === name ? null : name)}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                      stopAgencyFilter === name
+                        ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+                        : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="space-y-2">
-              {stopRoutes.map(({ shortName, headsigns }) => (
+              {filteredStopRoutes.map(({ shortName, headsigns }) => (
                 <div key={shortName} className="text-[11px]">
                   <span className="font-black text-[var(--text-primary)]">{shortName}</span>
                   {headsigns.length > 0 && (

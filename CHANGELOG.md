@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Station View agency filter pills**: when a stop is served by more than one agency (e.g. a GO/TTC interchange stop), filter pills appear above the route list so the user can narrow to one agency at a time. Pills reset when a new stop is selected.
+
+### Changed
+- **Filter dropdown layout unified**: Mode and Agencies dropdowns now use the same `flex wrap` pill layout as Frequency and Day — Mode was a 2×2 grid, Agencies was a full-width stacked list, both are now pill rows consistent with the rest of the filter chips.
+
+### Fixed
+- **GO Transit rail headway using midday window**: full-day analysis (7am–10pm) clusters peak trains every 8–10 min and drags the median to ~16 min even when midday service is every 30 min. Rail `dir=0` (outbound from hub) now computes display headway from a 09:30–14:30 midday window. Tier classification still uses the full window so peak-only lines (Milton, Richmond Hill) correctly get `span`.
+- **GO weekday rollup inflated by outlier days**: the Weekday rollup was merging all 5 days' departure times into a union set. When one day has a different schedule (e.g. extra Friday trains, event-day service), those extra trips inflate the apparent midday frequency. The rollup now picks the single most-representative day — the one whose midday trip count is closest to the median across all weekdays — and computes stats from that day's times only.
+
+### Added
 - **Accent CSS variable system**: all accent colours now come from `--accent`, `--accent-bg`, and `--accent-border` CSS variables (light/dark values in `index.css`). Replaced every scattered `indigo-*` Tailwind class across the UI. Changing the two `:root` colour values repaints the entire app.
 - **Zoom-based stop visibility**: stop markers now show at three levels — all stops at zoom ≥ 14, hub stops only (4+ routes) at zoom 13, none below 13. Hub stops render slightly larger (radius 4 vs 3). Stops and route lines are mounted on separate Leaflet layers so zoom changes don't remount the (much larger) route layer.
 - **Smooth map zooming**: `zoomSnap={0.25}`, `zoomDelta={0.5}`, `wheelPxPerZoomLevel={120}` on `MapContainer` for sub-integer zoom steps and slower mouse-wheel panning.
