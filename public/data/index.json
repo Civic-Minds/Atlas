@@ -326,6 +326,16 @@
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/sjsr.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu"
+    },
+    {
+      "slug": "mont-tremblant",
+      "name": "Mont-Tremblant",
+      "center": [
+        46.15,
+        -74.6
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/mont-tremblant.json",
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm"
     }
   ]
 }
