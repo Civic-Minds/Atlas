@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 - **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), Saint-Jean-sur-Richelieu local transit, Mont-Tremblant, and L'Inter des Laurentides (intermunicipal). All processed with current GTFS and stable direct feedUrls.
 
 ### Changed
-- **Frequency tier colours**: updated to a clearer sequential palette (emerald green for highest frequency → lime → yellow → orange → slate for infrequent). Improves visual hierarchy and works better with high-frequency REM/STM metro services.
+- **Frequency tier colours**: switched to a single-colour teal gradient (#0f766e for ≤10m → lighter teals for lower freq, gray for infrequent) for smoother progression instead of multi-hue lime/yellow/orange.
 
 ### Improved
 - **Montreal/REM + French headsign presentation**: REM branches now show cleanly as e.g. "A3-A1 — Anse-à-l'Orme / Brossard" (instead of redundant "A3-A1 — A3 - Anse-à-..."). Fixed title-casing for accented French names ("Jérôme", "Anse-à-l'Orme" etc.). Stripped verbose "Destination " prefixes on exo headsigns. Wider agency/stop panel + `break-words` + `title` tooltips to prevent cutoff on long destinations.
