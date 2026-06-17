@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **GO rail terminus pattern splitting**: GO rail routes (e.g. Kitchener line) now split by headsign so each terminus (Bramalea GO, Kitchener GO) gets its own frequency analysis and its own correctly-sized GeoJSON shape. Selecting ≤60 min shows only the Bramalea segment; Kitchener (sparse midday service) remains span. Implemented via headsign-keyed grouping in `transit-phase1.ts`, per-headsign shape maps in `process-core.ts`, and headsign propagation through `transit-phase2.ts`.
+- **GO rail tier classification uses midday window**: full-window analysis created a ~90-min afternoon gap (e.g. KI 16:04→17:34) that broke the tier=60 grace check, forcing all terminus patterns to `span`. Rail outbound (`dir=0`) now classifies tier and computes display headway from the same 09:30–14:30 midday window; falls back to full window when midday has <2 trips (Milton, Richmond Hill correctly stay `span`).
+- **Schedule-period dedup overwriting best tier**: when a `tier=span` (null headway) result from one GO schedule period was processed after a real-tier result from another period, the dedup guard skipped its check and the span result overwrote the better one. Fixed: `null` headway never replaces an existing feature. Resolves LW showing "every 96 min" (AI-63).
+- **GO rail headsign prefix stripped from display**: terminus headsigns like "KI - Bramalea GO" are now stripped of their route-code prefix before being stored in GeoJSON properties ("Bramalea GO"), matching the UI's existing headsign cleaning.
+- **Oakville 86B showing "every 5 min"**: 86B has 3 trips total; the 5-min gap between its 2 in-window trips was previously escaping the `isLimitedService` guard in older pipeline builds. Current pipeline correctly classifies it as `span`. Resolved on next refresh (AI-62).
+
 ### Added
 - **Station View agency filter pills**: when a stop is served by more than one agency (e.g. a GO/TTC interchange stop), filter pills appear above the route list so the user can narrow to one agency at a time. Pills reset when a new stop is selected.
 

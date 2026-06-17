@@ -49,7 +49,7 @@ function expandFrequencies(frequencies: GtfsFrequency[] | undefined): Map<string
  */
 function buildTripDepartures(
     gtfs: GtfsData
-): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null }> {
+): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null }> {
     const { trips, stopTimes } = gtfs;
 
     const tripFirstDep = new Map<string, number>();
@@ -70,7 +70,7 @@ function buildTripDepartures(
 
     const freqExpanded = expandFrequencies(gtfs.frequencies);
 
-    const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean }>();
+    const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null }>();
     for (const trip of trips) {
         const tripMeta = {
             routeId: trip.route_id,
@@ -78,6 +78,7 @@ function buildTripDepartures(
             serviceId: trip.service_id,
             missingDir: !trip.direction_id?.trim(),
             shapeId: trip.shape_id ?? null,
+            headsign: trip.trip_headsign ?? null,
         };
 
         const freqDeps = freqExpanded.get(trip.trip_id);
@@ -129,16 +130,32 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         const activeServiceIds = getActiveServiceIds(calendar, calendarDates, day, refDate);
         if (activeServiceIds.size === 0) continue;
 
-        const grouped = new Map<string, { routeId: string; dirId: string; times: number[]; serviceIds: Set<string>; missingDir: boolean }>();
+        const grouped = new Map<string, {
+            routeId: string; dirId: string; headsign?: string;
+            times: number[]; serviceIds: Set<string>; missingDir: boolean;
+        }>();
 
         for (const [, data] of tripData) {
             if (!activeServiceIds.has(data.serviceId)) continue;
-            const key = `${data.routeId}::${data.dirId}`;
+            const isRail = routeById.get(data.routeId)?.route_type === '2';
+            // Rail routes are split by headsign so each terminus pattern gets its own
+            // frequency analysis and its own correctly-shaped GeoJSON feature.
+            const key = (isRail && data.headsign)
+                ? `${data.routeId}::${data.dirId}::${data.headsign}`
+                : `${data.routeId}::${data.dirId}`;
+            const baseKey = `${data.routeId}::${data.dirId}`;
             if (shapeFilter) {
-                const expected = shapeFilter.get(key);
+                const expected = shapeFilter.get(baseKey);
                 if (expected && !expected.has(data.shapeId)) continue;
             }
-            if (!grouped.has(key)) grouped.set(key, { routeId: data.routeId, dirId: data.dirId, times: [], serviceIds: new Set(), missingDir: false });
+            if (!grouped.has(key)) grouped.set(key, {
+                routeId: data.routeId,
+                dirId: data.dirId,
+                headsign: (isRail && data.headsign) ? data.headsign : undefined,
+                times: [],
+                serviceIds: new Set(),
+                missingDir: false,
+            });
             const group = grouped.get(key)!;
             group.times.push(data.depTime);
             group.serviceIds.add(data.serviceId);
@@ -146,7 +163,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         }
 
         for (const [, group] of grouped) {
-            const { routeId, dirId } = group;
+            const { routeId, dirId, headsign } = group;
             const departureTimes = deduplicateDepartures(group.times);
             if (departureTimes.length < 2) continue;
 
@@ -166,6 +183,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
             results.push({
                 route: routeId,
                 dir: dirId,
+                headsign,
                 day,
                 routeType,
                 modeName: getModeName(routeType),

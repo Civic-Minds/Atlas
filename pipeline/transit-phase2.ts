@@ -161,42 +161,42 @@ export function applyAnalysisCriteria(
         const windowedTimes = raw.departureTimes.filter(t => t >= start && t <= end);
         if (windowedTimes.length < 2) continue;
 
-        const windowedGaps: number[] = [];
-        for (let i = 1; i < windowedTimes.length; i++) {
-            windowedGaps.push(windowedTimes[i] - windowedTimes[i - 1]);
+        // For rail outbound (dir=0), use the midday window (09:30–14:30) for both tier
+        // classification and display stats. Peak short-turn trains cluster every 8–10 min at
+        // Union, inflating full-window trip count and creating a multi-hour afternoon gap
+        // (e.g. 16:04→17:34 on KI) that breaks the tier=60 grace check. The midday window
+        // reflects the sustained off-peak service each terminus pattern actually sees.
+        // Falls back to full window when midday has <2 trips (e.g. GO Milton, Kitchener GO).
+        const MIDDAY_START = 570; // 09:30
+        const MIDDAY_END = 870;   // 14:30
+        const isRailOutbound = raw.routeType === '2' && raw.dir === '0';
+        let analysisWindow = windowedTimes;
+        let analysisWindowMins = end - start;
+        if (isRailOutbound) {
+            const midday = windowedTimes.filter(t => t >= MIDDAY_START && t <= MIDDAY_END);
+            if (midday.length >= 2) {
+                analysisWindow = midday;
+                analysisWindowMins = MIDDAY_END - MIDDAY_START;
+            }
         }
 
-        const spanMins = windowedTimes[windowedTimes.length - 1] - windowedTimes[0];
-        const windowMins = end - start;
+        const analysisGaps: number[] = [];
+        for (let i = 1; i < analysisWindow.length; i++) {
+            analysisGaps.push(analysisWindow[i] - analysisWindow[i - 1]);
+        }
+
+        const spanMins = analysisWindow[analysisWindow.length - 1] - analysisWindow[0];
         const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, criteria.modeTierOverrides);
         // Routes that don't provide sustained all-day service — classify as span:
         // - trips compressed into ≤90 minutes (school runs, shuttle bursts)
         // - active span covers <40% of the analysis window (rush-hour-only, e.g. GO Milton)
-        const coverage = windowMins > 0 ? spanMins / windowMins : 0;
+        const coverage = analysisWindowMins > 0 ? spanMins / analysisWindowMins : 0;
         const isLimitedService = spanMins <= 90 || coverage < 0.4;
         const tier = isLimitedService
             ? 'span'
-            : determineTier(windowedGaps, windowedTimes.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
-        // Rail routes (route_type=2) dir0 only: compute display headway from the midday window.
-        // Peak trains at the origin hub cluster every 8–10 min and pull the all-day median
-        // down to ~16 min even when midday service is every 30–60 min. Tier classification
-        // stays on the full window (so Milton, with zero midday trips, still gets span=true).
-        //
-        // Only applies to dir=0 (outbound from hub, e.g. Union→Kitchener). Dir=1 inbound
-        // trains start from different western termini (short-turns from Aldershot, Bramalea,
-        // etc.) so their first-stop departure times are not comparable — a West Harbour train
-        // and an Aldershot train can both depart at 11:06 and 11:08 from different stations,
-        // creating false 2-min gaps that the midday window can't resolve.
-        const statsWindow = (() => {
-          if (raw.routeType === '2' && raw.dir === '0') {
-            const MIDDAY_START = 570; // 09:30
-            const MIDDAY_END = 870;   // 14:30
-            const midday = windowedTimes.filter(t => t >= MIDDAY_START && t <= MIDDAY_END);
-            if (midday.length >= 2) return midday;
-          }
-          return windowedTimes;
-        })();
-        const stats = computeHeadwayStats(statsWindow);
+            : determineTier(analysisGaps, analysisWindow.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
+
+        const stats = computeHeadwayStats(analysisWindow);
         
         const resourceStats = computeResourceStats(
             stats.avg, 
@@ -230,15 +230,16 @@ export function applyAnalysisCriteria(
             serviceIds: raw.serviceIds,
             warnings: raw.warnings,
             daysIncluded: [raw.day],
+            headsign: raw.headsign,
             ...resourceStats
         };
-        perDayResults.set(`${raw.route}::${raw.dir}::${raw.day}`, { dayType, day: raw.day, result });
+        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
     }
 
     // Roll up per-day results into day-type summaries
     const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult }[] }>();
     for (const [, entry] of perDayResults) {
-        const key = `${entry.result.route}::${entry.result.dir}::${entry.dayType}`;
+        const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.dayType}`;
         if (!rollupGroups.has(key)) rollupGroups.set(key, { dayType: entry.dayType, entries: [] });
         rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result });
     }
@@ -319,6 +320,7 @@ export function applyAnalysisCriteria(
             serviceIds: allServiceIds,
             warnings: allWarnings.length > 0 ? allWarnings : undefined,
             daysIncluded,
+            headsign: rep.headsign,
             ...resourceStats
         });
     }
