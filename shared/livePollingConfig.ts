@@ -1,59 +1,77 @@
 /**
- * Shared GTFS-RT schedule-adherence config for cron polling, POC scripts, and the UI.
- * Single source of truth — update here when adding routes or schedule periods change.
+ * Shared GTFS-RT schedule-adherence config for on-demand API, POC scripts, and the UI.
+ *
+ * Each route lists 3–5 anchor stops: both termini where applicable, plus one or two
+ * mid-corridor points for headway drift (not every stop on the line).
  */
 
 export interface LiveRouteConfig {
   slug: string;
   /** route_short_name as stored in GeoJSON (Hamilton zero-pads King St as "01"). */
   displayRouteShortName: string;
-  /** Live GTFS-RT route_id values — include schedule-period prefixes (e.g. Burlington 311 and 351). */
+  /** Live GTFS-RT route_id values — include schedule-period variants. */
   routeIds: string[];
   scheduledHeadwayMin: number;
+  /** 3–5 anchor stop_ids to read from TripUpdates. */
   targetStops: Record<string, string>;
   tripUpdatesUrl: string;
   vehiclePositionsUrl: string;
-  /** Minutes from trip start at each target stop, keyed by direction_id (or pattern key). */
   scheduleOffsetMin: Record<string, Record<string, number>>;
-  /** Optional sub-pattern key for long/branch runs that share a route_id (Hamilton 1A). */
   longPatternKey?: string;
-  /** Stops only served by the long pattern — visiting one marks the vehicle as that pattern. */
   longPatternStops?: string[];
   longPatternScheduleOffsetMin?: Record<string, number>;
 }
 
-export const LIVE_POLLING_CONFIG: Record<string, LiveRouteConfig> = {
-  burlington: {
+export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
+  {
     slug: 'burlington',
     displayRouteShortName: '1',
     routeIds: ['311', '351'],
     scheduledHeadwayMin: 12,
+    // Plains–Fairview: Appleby GO, Fairview/Brant (both platforms), Plains/Waterdown mid-corridor
     targetStops: {
       '535': 'Appleby GO Station',
       '54': 'Fairview at Brant (eastbound)',
       '52': 'Fairview at Brant (westbound)',
-      '722': 'Plains at Waterdown (dir 0)',
-      '1073': 'Plains at Waterdown (dir 1)',
-      '834': 'York at James',
+      '722': 'Plains at Waterdown',
     },
     tripUpdatesUrl: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb',
     vehiclePositionsUrl: 'https://opendata.burlington.ca/gtfs-rt/GTFS_VehiclePositions.pb',
     scheduleOffsetMin: {
-      '0': { '679': 0, '722': 12, '54': 20, '535': 36 },
-      '1': { '535': 0, '52': 12, '1073': 20, '834': 34, '679': 41 },
+      '0': { '722': 12, '54': 20, '535': 36 },
+      '1': { '535': 0, '52': 12, '54': 20 },
     },
   },
-  hamilton: {
+  {
+    slug: 'burlington',
+    displayRouteShortName: '10',
+    routeIds: ['3510', '3150', '3151', '3152'],
+    scheduledHeadwayMin: 15,
+    // New–Maple: Burlington GO, Fairview/Brant corridor, Appleby GO
+    targetStops: {
+      '85': 'Burlington GO Station',
+      '52': 'Fairview at Brant (westbound)',
+      '54': 'Fairview at Brant (eastbound)',
+      '535': 'Appleby GO Station',
+    },
+    tripUpdatesUrl: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb',
+    vehiclePositionsUrl: 'https://opendata.burlington.ca/gtfs-rt/GTFS_VehiclePositions.pb',
+    scheduleOffsetMin: {
+      '0': { '85': 0, '52': 2, '535': 40 },
+      '1': { '535': 0, '54': 33, '85': 34 },
+    },
+  },
+  {
     slug: 'hamilton',
     displayRouteShortName: '01',
     routeIds: ['5677'],
     scheduledHeadwayMin: 12,
+    // King St short-turn: Eastgate, Hamilton GO Centre, Jackson St (one stop per direction)
     targetStops: {
       '1403': 'Eastgate Terminal',
       '355415': 'Hamilton GO Centre',
-      '1790': 'John at Jackson (dir 0)',
-      '1771': 'James at Jackson (dir 1)',
-      '2138': 'Main at Emerson (1A only)',
+      '1790': 'John at Jackson (outbound)',
+      '1771': 'James at Jackson (inbound)',
     },
     tripUpdatesUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
     vehiclePositionsUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb',
@@ -65,21 +83,47 @@ export const LIVE_POLLING_CONFIG: Record<string, LiveRouteConfig> = {
     longPatternStops: ['2138'],
     longPatternScheduleOffsetMin: { '1403': 0, '2138': 45 },
   },
-};
+  {
+    slug: 'hamilton',
+    displayRouteShortName: '10',
+    routeIds: ['5678', '5696'],
+    scheduledHeadwayMin: 10,
+    // B-Line: University Plaza, Main/Emerson, Main/Kenilworth, Eastgate
+    targetStops: {
+      '356299': 'University Plaza',
+      '2137': 'Main at Emerson',
+      '2094': 'Main at Kenilworth',
+      '1400': 'Eastgate Terminal',
+    },
+    tripUpdatesUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
+    vehiclePositionsUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb',
+    scheduleOffsetMin: {
+      '0': { '356299': 0, '2137': 6, '1400': 40 },
+      '1': { '1400': 0, '2094': 10, '356299': 44 },
+    },
+  },
+];
 
-/** UI + filter: which agency/route pairs show the Live badge. */
+export function getLiveRouteConfig(
+  slug: string,
+  routeShortName: string | null | undefined,
+): LiveRouteConfig | undefined {
+  if (!routeShortName) return undefined;
+  return LIVE_POLLING_ROUTES.find(
+    c => c.slug === slug && c.displayRouteShortName === routeShortName,
+  );
+}
+
 export function isLivePollingRoute(agencySlug?: string, routeShortName?: string | null): boolean {
   if (!agencySlug || !routeShortName) return false;
-  const cfg = LIVE_POLLING_CONFIG[agencySlug];
-  return cfg?.displayRouteShortName === routeShortName;
+  return !!getLiveRouteConfig(agencySlug, routeShortName);
 }
 
-export function matchesLiveRouteId(slug: string, routeId: string | null | undefined): boolean {
+export function matchesLiveRouteId(cfg: LiveRouteConfig, routeId: string | null | undefined): boolean {
   if (!routeId) return false;
-  return LIVE_POLLING_CONFIG[slug]?.routeIds.includes(routeId) ?? false;
+  return cfg.routeIds.includes(routeId);
 }
 
-/** Resolve pattern key for Hamilton-style long/short branches from the stop being served. */
 export function resolvePatternKey(
   cfg: LiveRouteConfig,
   directionId: string | number | null | undefined,
@@ -105,10 +149,14 @@ export function scheduleOffsetForPattern(
   return cfg.scheduleOffsetMin[patternKey];
 }
 
-export const LIVE_TRIP_UPDATES_FEEDS: Record<string, string> = Object.fromEntries(
-  Object.entries(LIVE_POLLING_CONFIG).map(([slug, cfg]) => [slug, cfg.tripUpdatesUrl]),
+/** @deprecated use getLiveRouteConfig */
+export const LIVE_POLLING_CONFIG: Record<string, LiveRouteConfig> = Object.fromEntries(
+  LIVE_POLLING_ROUTES.map(c => [c.slug, c]),
 );
 
-export const LIVE_SCHEDULED_HEADWAY_MIN: Record<string, number> = Object.fromEntries(
-  Object.entries(LIVE_POLLING_CONFIG).map(([slug, cfg]) => [slug, cfg.scheduledHeadwayMin]),
+export const LIVE_TRIP_UPDATES_FEEDS: Record<string, string> = Object.fromEntries(
+  [...new Set(LIVE_POLLING_ROUTES.map(c => c.slug))].map(slug => [
+    slug,
+    LIVE_POLLING_ROUTES.find(c => c.slug === slug)!.tripUpdatesUrl,
+  ]),
 );

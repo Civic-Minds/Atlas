@@ -1,18 +1,12 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/poll",
-      "schedule": "0 14 * * *"
-    }
-  ],
   "rewrites": [
     {
       "source": "/api/gtfs-rt",
       "destination": "/api/gtfs-rt.ts"
     },
     {
-      "source": "/api/live-status",
-      "destination": "/api/live-status.ts"
+      "source": "/api/live-adherence",
+      "destination": "/api/live-adherence.ts"
     }
   ]
 }

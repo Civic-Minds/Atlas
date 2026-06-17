@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Shared live polling config** (`shared/livePollingConfig.ts`) — one module for cron, POC scripts, and the UI Live badge filter. Burlington accepts both `311` and `351` route_id prefixes; Hamilton 1A detected by marker stop instead of hardcoded trip IDs.
+- **On-demand live adherence** (`/api/live-adherence`): selecting a covered route fetches GTFS-RT TripUpdates and computes headway drift in real time — no background cron or Blob snapshots.
+- **Live route coverage (4 routes)**: Burlington 1 & 10, Hamilton 01 (King) & 10 (B-Line). Each polls 3–5 anchor stops (termini + mid-corridor), configured in `shared/livePollingConfig.ts`.
+- **Shared `computeLiveAdherence`** (`shared/computeLiveAdherence.ts`) — GTFS-RT parsing logic used by the live API.
+- **Shared live polling config** (`shared/livePollingConfig.ts`) — one module for the live API, POC scripts, and the UI Live badge. Supports multiple routes per agency; Burlington/Hamilton `route_id` schedule-period variants included.
 - **`npm run validate-headsigns`** — diagnostic script listing routes where multiple headsigns share one `direction_id` (run after feed changes; `npm run validate-headsigns -- simcoe` for one agency).
 - **Stratford Transit** in the agency registry with weekly-refresh `feedUrl`.
 - **Shared `cleanHeadsign` module** (`shared/cleanHeadsign.ts`) used by both the pipeline and frontend so headsign labels stay consistent at build time and render time.
@@ -20,8 +23,8 @@ All notable changes to this project will be documented in this file.
 - **Redundant Headsigns**: Refined the `cleanHeadsign` logic to aggressively strip redundant route names (e.g., "510 Spadina towards..."), direction suffixes (" - Sb", " - Nb"), and redundant street addresses ("Wasaga Beach, 25 45th Street S" -> "Wasaga Beach").
 
 ### Changed
-- **Live adherence cron**: Vercel Hobby allows only daily crons — schedule changed from every minute to `0 14 * * *` (14:00 UTC). Per-minute polling requires Pro or an external scheduler.
-- **POC real-time scripts** moved from repo root to `scripts/poc/`.
+- **Live adherence architecture**: removed Vercel cron (`api/cron/poll`), Blob snapshot proxy (`api/live-status`), and `crons` from `vercel.json`. Live badge polls `/api/live-adherence?agency=&route=` every 60s only while a covered route is open.
+- **POC real-time scripts** moved from repo root to `scripts/poc/`; Hamilton 1A long-pattern detection uses marker stop `2138` instead of hardcoded trip IDs.
 - **README and ROADMAP** updated to reflect regional coverage beyond the GTHA core.
 - **`titleCase` acronyms** extended for NFTA, LTC, and KTC.
 - **Consolidated Niagara Data**: Removed the redundant "Niagara (Legacy)" entry from the registry in favor of the working unified "Niagara Region Transit" feed.

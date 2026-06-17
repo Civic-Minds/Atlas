@@ -24,15 +24,30 @@ export interface LiveAdherenceData {
   trips: TripDrift[];
 }
 
-export function useLiveAdherence(pollIntervalMs = 60_000) {
+/** Fetch live GTFS-RT adherence on demand when a covered route is selected. */
+export function useLiveAdherence(
+  agencySlug: string | null,
+  routeShortName: string | null,
+  pollIntervalMs = 60_000,
+) {
   const [data, setData] = useState<LiveAdherenceData | null>(null);
 
   useEffect(() => {
+    if (!agencySlug || !routeShortName) {
+      setData(null);
+      return;
+    }
+
     let cancelled = false;
+
+    const slug = agencySlug;
+    const route = routeShortName;
 
     async function poll() {
       try {
-        const res = await fetch('/api/live-status');
+        const res = await fetch(
+          `/api/live-adherence?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(route)}`,
+        );
         if (!res.ok) return;
         const json = await res.json();
         if (!cancelled && json && !json.noData && !json.error) setData(json);
@@ -45,7 +60,7 @@ export function useLiveAdherence(pollIntervalMs = 60_000) {
       cancelled = true;
       clearInterval(id);
     };
-  }, [pollIntervalMs]);
+  }, [agencySlug, routeShortName, pollIntervalMs]);
 
   return data;
 }
@@ -66,7 +81,6 @@ export interface TripSummary {
   avgDelayMin: number;
 }
 
-// On time = |avgDelay| ≤ 1 min; early = avgDelay < -1; late = avgDelay > 1
 export function agencyTripSummary(data: LiveAdherenceData | null, agency: string): TripSummary | null {
   if (!data) return null;
   const trips = data.trips.filter(t => t.agency === agency);
