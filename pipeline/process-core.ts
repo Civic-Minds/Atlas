@@ -296,6 +296,12 @@ export async function processGtfsBuffer(
     // Used to show interchange markers at regional zoom levels (zoom 11–12).
     const uniqueRoutes = uniqueShortsByStop.get(stop.stop_id) ?? 0;
     const isHub = stop.location_type === '1' || uniqueRoutes >= 3;
+    const isRail = routeIds.some(rid => {
+      const r = routeById.get(rid);
+      return r?.route_type === '0' || r?.route_type === 0 ||
+             r?.route_type === '1' || r?.route_type === 1 ||
+             r?.route_type === '2' || r?.route_type === 2;
+    });
 
     stopFeatures.push({
       type: 'Feature',
@@ -311,6 +317,7 @@ export async function processGtfsBuffer(
         stopName: stop.stop_name,
         routeIds,
         isHub,
+        isRail,
       },
     } as any);
   }

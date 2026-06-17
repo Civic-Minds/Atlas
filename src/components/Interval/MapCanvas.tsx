@@ -116,9 +116,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  // zoom 14+: all stops; zoom 13: hubs only (4+ routes); below 13: none
+  // zoom 14+: all stops; zoom 13: hubs (4+ routes); zoom 12+: rail stops
   const showStops = zoom >= 14;
   const showHubsOnly = zoom === 13;
+  const showRailOnly = zoom >= 12 && zoom < 13;
 
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
@@ -288,10 +289,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               key={`${slug}-lines-${maxHeadway}-${q}-${lineFeatures.length}`}
               data={lineFc}
               style={styleFeature}
-            />
-            {(showStops || showHubsOnly || selectedStop != null) && pointFeatures.length > 0 && (
+              />
+              {(showStops || showHubsOnly || showRailOnly || selectedStop != null) && pointFeatures.length > 0 && (
               <GeoJSON
-                key={`${slug}-stops-${selectedStop}-${zoom >= 13 ? zoom : 'hidden'}`}
+                key={`${slug}-stops-${selectedStop}-${zoom >= 12 ? zoom : 'hidden'}`}
                 data={pointFc}
                 style={styleFeature}
                 onEachFeature={onEachFeature}
@@ -299,21 +300,34 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                   const props = feature.properties as unknown as ShapeProperties;
                   const isSelected = selectedStop === props.stopId;
                   const routeCount = (props as any).routeIds?.length ?? 0;
-                  const isHub = routeCount >= 4;
-                  // At zoom 13, only render hub stops
-                  if (showHubsOnly && !isHub && !isSelected) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                  const isHub = (props as any).isHub || routeCount >= 4;
+                  const isRail = (props as any).isRail;
+
+                  // Visibility logic
+                  if (!isSelected) {
+                    if (showRailOnly && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                    if (showHubsOnly && !isHub && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                  }
+
+                  const radius = isSelected ? 6 : isRail ? 4.5 : isHub ? 4 : 3;
+                  const fillColor = isSelected ? 'var(--accent)' : isRail ? (lightMode ? '#fff' : 'var(--accent)') : 'var(--text-dim)';
+                  const color = isSelected ? '#fff' : isRail ? 'var(--accent)' : 'var(--border-primary)';
+                  const weight = isSelected ? 1.5 : isRail ? 2 : 1;
+                  const opacity = isSelected ? 1 : isRail ? 0.9 : 0.5;
+                  const fillOpacity = isSelected ? 1 : isRail ? 1 : 0.3;
+
                   return L.circleMarker(latlng, {
-                    radius: isSelected ? 6 : isHub ? 4 : 3,
-                    fillColor: isSelected ? 'var(--accent)' : 'var(--text-dim)',
-                    color: isSelected ? '#fff' : 'var(--border-primary)',
-                    weight: 1,
-                    opacity: isSelected ? 1 : 0.5,
-                    fillOpacity: isSelected ? 1 : 0.3,
+                    radius,
+                    fillColor,
+                    color,
+                    weight,
+                    opacity,
+                    fillOpacity,
                   });
                 }}
               />
-            )}
-          </React.Fragment>
+              )}
+              </React.Fragment>
         );
       })}
     </MapContainer>

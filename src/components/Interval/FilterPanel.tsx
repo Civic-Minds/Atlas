@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, X, Radio, Sun, Moon } from 'lucide-react';
+import { Settings, X, Radio, Sun, Moon, Zap } from 'lucide-react';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -8,6 +8,8 @@ interface FilterPanelProps {
   setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
+  showCorridors: boolean;
+  setShowCorridors: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
@@ -17,6 +19,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setHideSpan,
   livePollingOnly,
   setLivePollingOnly,
+  showCorridors,
+  setShowCorridors,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -30,7 +34,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     return () => document.removeEventListener('mousedown', onClick);
   }, [isOpen]);
 
-  const hasActiveFilters = hideSpan || livePollingOnly;
+  const hasActiveFilters = hideSpan || livePollingOnly || showCorridors;
 
   return (
     <div ref={panelRef} className="relative flex items-center gap-2">
@@ -60,6 +64,23 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
+
+          {/* Combined frequency */}
+          <button
+            onClick={() => setShowCorridors((v) => !v)}
+            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
+              showCorridors
+                ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+                : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+            }`}
+            title="Show shared segments where overlapping routes provide higher combined frequency"
+          >
+            <span className="flex items-center gap-1.5">
+              <Zap className="w-3 h-3" />
+              Show combined corridors
+            </span>
+            {showCorridors && <X className="w-2.5 h-2.5 shrink-0" />}
+          </button>
 
           {/* Live polling */}
           <button

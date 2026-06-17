@@ -32,7 +32,7 @@ type ChipId = 'frequency' | 'day' | 'mode' | 'agencies';
 const PANEL = 'absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-col gap-1';
 
 const rowBtn = (active: boolean) =>
-  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left ${
+  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left whitespace-nowrap ${
     active
       ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
       : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
@@ -125,7 +125,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       {/* Day */}
       <div className="relative">
         <button onClick={() => toggle('day')} className={chipClass(true)}>
-          Day
+          {day}
           <Dot show={true} />
         </button>
         {openChip === 'day' && (

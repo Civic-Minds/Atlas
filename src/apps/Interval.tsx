@@ -34,6 +34,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   });
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
+  const [showCorridors, setShowCorridors] = useState(false);
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
 
@@ -47,7 +48,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     selectedStop,
     bounds,
     hideSpan,
-    livePollingOnly
+    livePollingOnly,
+    showCorridors
   });
 
   useEffect(() => {
@@ -99,6 +101,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           setHideSpan={setHideSpan}
           livePollingOnly={livePollingOnly}
           setLivePollingOnly={setLivePollingOnly}
+          showCorridors={showCorridors}
+          setShowCorridors={setShowCorridors}
         />
       </div>
 

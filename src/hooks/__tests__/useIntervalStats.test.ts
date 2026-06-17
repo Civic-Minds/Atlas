@@ -189,4 +189,59 @@ describe('useIntervalStats', () => {
     const { result: unscoped } = renderHook(() => useIntervalStats(layersSpread, defaultFilters));
     expect(unscoped.current.stats).toEqual({ total: 2, matching: 2 });
   });
+
+  it('should handle combined-frequency corridors', () => {
+    const layersWithCorridor: AgencyLayers = {
+      'ttc': {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+            properties: { 
+              isCorridor: true, 
+              headway: 5, 
+              routeIds: ['1', '2', '3'], 
+              agencyName: 'TTC' 
+            }
+          }
+        ]
+      }
+    };
+
+    // By default corridors are hidden (showCorridors is false)
+    const { result: hidden } = renderHook(() => useIntervalStats(layersWithCorridor, defaultFilters));
+    expect(hidden.current.filteredLayers['ttc']).toBeUndefined();
+
+    // When enabled, corridors should appear if they meet the criteria (3+ routes or high freq)
+    const { result: visible } = renderHook(() => useIntervalStats(layersWithCorridor, { 
+      ...defaultFilters, 
+      showCorridors: true 
+    }));
+    expect(visible.current.filteredLayers['ttc'].features.length).toBe(1);
+
+    // Corridors with few routes and low frequency should stay hidden
+    const layersWithNoisyCorridor: AgencyLayers = {
+      'ttc': {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+            properties: { 
+              isCorridor: true, 
+              headway: 20, 
+              routeIds: ['1', '2'], 
+              agencyName: 'TTC' 
+            }
+          }
+        ]
+      }
+    };
+    const { result: noisy } = renderHook(() => useIntervalStats(layersWithNoisyCorridor, { 
+      ...defaultFilters, 
+      showCorridors: true 
+    }));
+    expect(noisy.current.filteredLayers['ttc']).toBeUndefined();
+  });
 });
