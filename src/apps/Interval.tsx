@@ -15,15 +15,16 @@ interface Props {
   query: string;
   setQuery: (q: string) => void;
   onStatsChange?: (stats: { total: number; matching: number } | null) => void;
+  resetViewKey?: number;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey }: Props) {
   const [maxHeadway, setMaxHeadway] = useState(60);
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
   
   // Advanced Filter State
-  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(new Set());
+  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => new Set(agencies.map(a => a.slug)));
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
   const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>(() => {
     const d = new Date().getDay();
@@ -66,6 +67,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         lightMode={lightMode}
         matchesQuery={matchesQuery}
         onBoundsChange={onBoundsChange}
+        resetViewKey={resetViewKey}
       />
 
       {isLoading && (

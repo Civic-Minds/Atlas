@@ -166,10 +166,21 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Agencies */}
       <div className="relative">
-        <button onClick={() => toggle('agencies')} className={chipClass(selectedAgencies.size > 0)}>
-          Agencies
-          <Dot show={selectedAgencies.size > 0} />
-        </button>
+        {(() => {
+          const allOn = selectedAgencies.size >= agencies.length;
+          const hiddenCount = agencies.length - selectedAgencies.size;
+          const label = allOn
+            ? 'Agencies'
+            : hiddenCount === agencies.length - 1
+              ? (agencies.find(a => selectedAgencies.has(a.slug))?.name ?? '1 agency')
+              : `${selectedAgencies.size} agencies`;
+          return (
+            <button onClick={() => toggle('agencies')} className={chipClass(!allOn)}>
+              {label}
+              <Dot show={!allOn} />
+            </button>
+          );
+        })()}
         {openChip === 'agencies' && (
           <div className={`${PANEL} w-52`}>
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">

@@ -1,11 +1,10 @@
 import { AnalysisCriteria } from '../types/gtfs';
 
 /**
- * Default analysis criteria matching the established methodology:
- * - Weekday: 07:00–22:00
- * - Saturday: 07:00–22:00
- * - Sunday: 09:00–21:00
- * - Grace: 5 minutes over threshold, max 2 violations
+ * Default analysis criteria:
+ * - Weekday: 07:00–22:00 · Saturday: 07:00–22:00 · Sunday: 09:00–21:00
+ * - Grace: max(5 min, T × 15%) per tier — tier=60 gets 9 min, tighter tiers keep 5 min floor
+ * - Violations: max(2, gaps × 30%) — proportional to route length in window
  */
 export const DEFAULT_CRITERIA: AnalysisCriteria = {
     id: 'default',
@@ -25,7 +24,9 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
         },
     },
     graceMinutes: 5,
+    gracePercent: 0.15,
     maxGraceViolations: 2,
+    violationPercent: 0.30,
     modeTierOverrides: {
         rail: [5, 8, 10, 15, 30, 60],
         surface: [10, 15, 20, 30, 60],

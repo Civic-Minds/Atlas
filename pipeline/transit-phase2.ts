@@ -260,9 +260,16 @@ export function applyAnalysisCriteria(
         const { dayType, entries } = group;
         if (entries.length === 0) continue;
 
-        const tierValues = entries.map(e => e.result.tier === 'span' ? Infinity : parseInt(e.result.tier));
+        const INFREQUENT_VAL = 1e6; // sentinel: worse than any real tier, better than span (Infinity)
+        const tierValues = entries.map(e =>
+            e.result.tier === 'span' ? Infinity
+            : e.result.tier === 'infrequent' ? INFREQUENT_VAL
+            : parseInt(e.result.tier)
+        );
         const worstTierValue = Math.max(...tierValues);
-        const worstTier = worstTierValue === Infinity ? 'span' : String(worstTierValue);
+        const worstTier = worstTierValue === Infinity ? 'span'
+            : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
+            : String(worstTierValue);
 
         const allTimes = entries.flatMap(e => e.result.times);
         const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
