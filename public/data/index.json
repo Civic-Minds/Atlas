@@ -249,7 +249,7 @@
     },
     {
       "slug": "exo",
-      "name": "exo Trains",
+      "name": "exo",
       "center": [
         45.5,
         -73.57
@@ -269,7 +269,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo La Presqu'île",
+      "name": "exo",
       "center": [
         45.406,
         -74.0382
@@ -279,7 +279,7 @@
     },
     {
       "slug": "exo-sudouest",
-      "name": "exo Sud-Ouest",
+      "name": "exo",
       "center": [
         45.3549,
         -73.7643
@@ -289,7 +289,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo Le Richelain / Roussillon",
+      "name": "exo",
       "center": [
         45.4086,
         -73.5026
@@ -299,7 +299,7 @@
     },
     {
       "slug": "exo-laurentides",
-      "name": "exo Laurentides",
+      "name": "exo",
       "center": [
         45.6611,
         -73.9029
@@ -309,7 +309,7 @@
     },
     {
       "slug": "exo-terrebonne",
-      "name": "exo Terrebonne-Mascouche",
+      "name": "exo",
       "center": [
         45.7032,
         -73.6487
