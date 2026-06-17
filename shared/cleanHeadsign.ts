@@ -34,6 +34,9 @@ export function cleanHeadsign(
   h = h.replace(/,\s+\d+.*$/i, '');
   h = h.replace(/,/g, '');
 
+  // Long descriptive headsign cleanup (common in exo/Montreal buses/trains)
+  h = h.replace(/\bDestination\b/gi, '');
+
   // REM specific full station names (after all stripping, fix any mangled abbreviations/casing)
   const remNames: Record<string, string> = {
     'brossard': 'Brossard',

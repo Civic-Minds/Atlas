@@ -210,7 +210,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   if (!hasContent) return null;
 
   return (
-    <div className="absolute top-20 left-16 z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col">
+    <div className="absolute top-20 left-16 z-[1000] w-72 max-h-[calc(100vh-104px)] flex flex-col">
       <div
         ref={scrollRef}
         onScroll={checkScroll}
@@ -269,7 +269,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       {[...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))]
                         .filter(Boolean)
                         .map(ch => (
-                        <div key={ch} className="font-bold text-[var(--text-muted)]">
+                        <div key={ch} className="font-bold text-[var(--text-muted)] break-words" title={ch}>
                           {/^to\s/i.test(ch) ? ch : `→ ${ch}`}
                         </div>
                       ))}
@@ -358,7 +358,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
                             {(d.headsign || directionGroups.length > 1) && (
-                              <span className="font-bold text-[var(--text-muted)] block truncate">
+                              <span className="font-bold text-[var(--text-muted)] block break-words" title={d.headsign || ''}>
                                 {d.headsign ? fmtH(d) : `Direction ${gi + 1}`}
                               </span>
                             )}
@@ -371,7 +371,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       })}
                       {!hideSpan && group.span.length === 1 && (
                         <div key="s0" className="text-[11px]">
-                          <span className="font-bold text-[var(--text-muted)] block truncate">
+                          <span className="font-bold text-[var(--text-muted)] block break-words" title={group.span[0].headsign || ''}>
                             {group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'}
                           </span>
                           <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
