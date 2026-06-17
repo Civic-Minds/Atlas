@@ -168,7 +168,7 @@
         -78.8784
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta.json",
-      "feedUrl": "https://www.nfta.com/gtfs/google_transit.zip",
+      "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
       "routeTypes": [
         3
       ]
@@ -181,7 +181,7 @@
         -78.8784
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta-rail.json",
-      "feedUrl": "https://www.nfta.com/gtfs/google_transit.zip",
+      "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
       "routeTypes": [
         0
       ]
