@@ -21,7 +21,7 @@ export interface ShapeProperties extends BaseShapeProperties {
   reliabilityScore?: number;
 }
 
-export const routeKey = (p: ShapeProperties) => `${p.agencyName}::${p.routeId}`;
+export const routeKey = (p: ShapeProperties) => `${(p as any).agencySlug ?? p.agencyName ?? ''}::${p.routeId}`;
 
 export interface IntervalFilters {
   query: string;

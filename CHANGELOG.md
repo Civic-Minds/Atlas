@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - **NFTA merged into one filter chip**: NFTA Metro and NFTA Rail both renamed to "NFTA (Buffalo)" and shown as a single agency chip that toggles both layers together. FilterChips now groups agencies by display name.
 
 ### Fixed
+- **Route key collision across agencies** (AI-69): `routeKey` was built from `agencyName`, which the pipeline never writes into GeoJSON properties (always null). All routes from every agency shared the same `null::routeId` namespace, so selecting TTC Route 1 also highlighted Hamilton Route 1, Barrie Route 1, etc. `routeKey` now uses `agencySlug` (injected at render time by `MapCanvas` and `useIntervalStats`). Fixed in: `useIntervalStats.ts`, `MapCanvas.tsx` (line and corridor layers), `SidebarControls.tsx` (`stopRoutes` rKey, `liveAgencySlug`, `liveRouteInfo`).
 - **Initial map zoom way too far out**: `getRegionalView` was computing a midpoint over all agencies including Kingston and London, dragging the center east and producing zoom 7. Initial load now always uses the GTHA core default (43.65, -79.45, zoom 9); the reset button still uses `fitBounds` to show all agencies.
 - **Mouse wheel zoom too slow**: `zoomDelta` 0.5 → 1, `wheelPxPerZoomLevel` 120 → 60 (back to Leaflet defaults).
 - **One-way routes showing "Direction 1"**: when a route has a single direction and no headsign the label is meaningless. Direction heading is now omitted entirely for single-direction routes with no headsign; it still shows for multi-direction routes and routes with a headsign.

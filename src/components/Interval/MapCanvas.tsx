@@ -139,7 +139,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         if (isCorridor) {
           // When a route is selected, keep its overlapping corridors visible at full combined color; dim others
           const cRoutes: string[] = (p as any)?.routeIds || [];
-          const contrib = cRoutes.some((rid) => routeKey({ agencyName: p?.agencyName, routeId: rid } as any) === selectedRoute);
+          const cAgencySlug = (p as any)?.agencySlug;
+          const contrib = cRoutes.some((rid) => routeKey({ agencySlug: cAgencySlug, routeId: rid } as any) === selectedRoute);
           if (contrib) {
             return { color: getTierColor((p as any)?.tier ?? null), weight: 3, opacity: 0.9, interactive: false };
           }
@@ -277,7 +278,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         // triggering expensive remounts of the much larger route layer.
         const lineFeatures = fc.features.filter(f => f.geometry.type !== 'Point');
         const pointFeatures = fc.features.filter(f => f.geometry.type === 'Point');
-        const lineFc = { ...fc, features: lineFeatures };
+        const lineFc = { ...fc, features: lineFeatures.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })) };
         // Inject agencySlug so onEachFeature can build the composite stopId key
         const pointFc = { ...fc, features: pointFeatures.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })) };
         return (
