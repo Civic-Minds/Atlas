@@ -144,7 +144,13 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 : `${data.routeId}::${data.dirId}`;
             const baseKey = `${data.routeId}::${data.dirId}`;
             if (shapeFilter) {
-                const expected = shapeFilter.get(baseKey);
+                // Prefer headsign-specific filter when available (handles genuine headsign
+                // branches like DRT 905 "A - Windfields Farm" vs "C - Uxbridge"). Falls
+                // back to the base routeId::dirId filter for undifferentiated short-turns.
+                const headsignKey = data.headsign ? `${baseKey}::${data.headsign}` : null;
+                const expected = (headsignKey && shapeFilter.has(headsignKey))
+                    ? shapeFilter.get(headsignKey)!
+                    : shapeFilter.get(baseKey);
                 if (expected && !expected.has(data.shapeId)) continue;
             }
             if (!grouped.has(key)) grouped.set(key, {

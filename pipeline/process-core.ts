@@ -195,6 +195,33 @@ export async function processGtfsBuffer(
     if (!isRail) shapeFilterForPhase1.set(key, shapeIds);
   }
 
+  // Per-headsign shape filters for routes with genuine headsign-based branches
+  // (e.g. DRT 905 "A - Windfields Farm" vs "C - Uxbridge / Port Perry").
+  // The base cluster picks the majority headsign's shape, filtering out minority
+  // branches entirely. By adding headsign-specific entries, each branch uses only
+  // its own shape for analysis — the existing short-turn filter behaviour is
+  // preserved for trips that share the dominant headsign.
+  for (const [hKey, hShapeCounts] of headsignShapeCounts) {
+    const parts = hKey.split('::');
+    const routeId = parts[0];
+    const dirId = parts[1];
+    const route = routeById.get(routeId);
+    if (route?.route_type === '2' || route?.route_type === 2) continue;
+    const shapeEntries = [...hShapeCounts.entries()]
+      .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
+      .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
+    if (shapeEntries.length === 0) continue;
+    const hClusters: { shapeIds: string[]; trips: number; repLen: number }[] = [];
+    for (const e of shapeEntries) {
+      const tol = Math.max(10, Math.round(e.len * 0.01));
+      const cluster = hClusters.find(c => Math.abs(c.repLen - e.len) <= tol);
+      if (cluster) { cluster.shapeIds.push(e.sid); cluster.trips += e.trips; }
+      else hClusters.push({ shapeIds: [e.sid], trips: e.trips, repLen: e.len });
+    }
+    const winning = hClusters.sort((a, b) => b.trips - a.trips)[0];
+    if (winning) shapeFilterForPhase1.set(hKey, new Set(winning.shapeIds));
+  }
+
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1);
   onStatus?.('Running phase 2...');
