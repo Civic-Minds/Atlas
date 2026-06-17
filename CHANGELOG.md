@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche). All processed with current GTFS and stable direct feedUrls.
+- **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), and Saint-Jean-sur-Richelieu local transit. All processed with current GTFS and stable direct feedUrls.
 
 ### Fixed
 - **Loading indicator covers locate button**: moved loading spinner from bottom-right to bottom-left so it can no longer overlap the locate button or the Nearby Routes panel.

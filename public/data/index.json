@@ -316,6 +316,16 @@
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo-terrebonne.json",
       "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip"
+    },
+    {
+      "slug": "sjsr",
+      "name": "Saint-Jean-sur-Richelieu",
+      "center": [
+        45.31,
+        -73.27
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/sjsr.json",
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu"
     }
   ]
 }
