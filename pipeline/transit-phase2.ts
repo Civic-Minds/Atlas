@@ -23,8 +23,12 @@ export const determineTier = (
     tiers: number[] = [10, 15, 20, 30, 60],
     graceMinutes: number = 5,
     maxGraceViolations: number = 2,
+    gracePercent: number = 0.15,
+    violationPercent: number = 0.30,
 ): string => {
     for (const T of tiers) {
+        const grace = Math.max(graceMinutes, Math.round(T * gracePercent));
+        const allowedViolations = Math.max(maxGraceViolations, Math.floor(headways.length * violationPercent));
         const minTrips = Math.ceil(spanMinutes / T);
         if (tripCount < minTrips) continue;
 
@@ -32,9 +36,9 @@ export const determineTier = (
         let fail = false;
         for (const h of headways) {
             if (h <= T) continue;
-            if (h <= T + graceMinutes) {
+            if (h <= T + grace) {
                 graceCount++;
-                if (graceCount > maxGraceViolations) { fail = true; break; }
+                if (graceCount > allowedViolations) { fail = true; break; }
             } else {
                 fail = true; break;
             }
@@ -161,18 +165,20 @@ export function applyAnalysisCriteria(
         const windowedTimes = raw.departureTimes.filter(t => t >= start && t <= end);
         if (windowedTimes.length < 2) continue;
 
-        // For rail outbound (dir=0), use the midday window (09:30–14:30) for both tier
-        // classification and display stats. Peak short-turn trains cluster every 8–10 min at
-        // Union, inflating full-window trip count and creating a multi-hour afternoon gap
-        // (e.g. 16:04→17:34 on KI) that breaks the tier=60 grace check. The midday window
-        // reflects the sustained off-peak service each terminus pattern actually sees.
+        // For all rail routes, use the midday window (09:30–14:30) for tier classification
+        // and display stats. Outbound (dir=0): peak short-turn trains cluster every 8–10 min
+        // at Union, inflating trip count and creating long afternoon gaps that break tier checks.
+        // Inbound (dir=1): trains from multiple origin stations are merged into one "to Union"
+        // pool; full-window rush-hour density gives a spuriously low headway (e.g. every 18 min
+        // on KI when actual sustained service is much less frequent). Midday window reflects the
+        // honest off-peak combined frequency for both directions.
         // Falls back to full window when midday has <2 trips (e.g. GO Milton, Kitchener GO).
         const MIDDAY_START = 570; // 09:30
         const MIDDAY_END = 870;   // 14:30
-        const isRailOutbound = raw.routeType === '2' && raw.dir === '0';
+        const isRail = raw.routeType === '2';
         let analysisWindow = windowedTimes;
         let analysisWindowMins = end - start;
-        if (isRailOutbound) {
+        if (isRail) {
             const midday = windowedTimes.filter(t => t >= MIDDAY_START && t <= MIDDAY_END);
             if (midday.length >= 2) {
                 analysisWindow = midday;
@@ -192,9 +198,13 @@ export function applyAnalysisCriteria(
         // - active span covers <40% of the analysis window (rush-hour-only, e.g. GO Milton)
         const coverage = analysisWindowMins > 0 ? spanMins / analysisWindowMins : 0;
         const isLimitedService = spanMins <= 90 || coverage < 0.4;
-        const tier = isLimitedService
+        const tierRaw = isLimitedService
             ? 'span'
-            : determineTier(analysisGaps, analysisWindow.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations);
+            : determineTier(analysisGaps, analysisWindow.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations, criteria.gracePercent, criteria.violationPercent);
+        // 'span' from determineTier means all-day but no frequency tier fits (e.g. Barrie line, GO Route 11);
+        // distinguish from isLimitedService 'span' (truly peak-only/short-window) so the frontend can
+        // show infrequent routes at "All" frequency while hiding genuinely limited ones.
+        const tier = !isLimitedService && tierRaw === 'span' ? 'infrequent' : tierRaw;
 
         const stats = computeHeadwayStats(analysisWindow);
         
@@ -257,12 +267,13 @@ export function applyAnalysisCriteria(
         const allTimes = entries.flatMap(e => e.result.times);
         const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
         const rep = entries[0].result;
-        // Rail dir=0 rollup: same midday-window logic as per-day stats.
-        // Only dir=0 (outbound from hub) — dir=1 inbound trains start from mixed origins
-        // so their first-stop departure times are not safely comparable across patterns.
-        const isRailOutboundRollup = rep.routeType === '2' && rep.dir === '0';
+        // Rail rollup: same midday representative-day logic for both directions.
+        // For dir=0 (outbound): avoids Friday extra-train distortion.
+        // For dir=1 (inbound): all trains share "Union Station" headsign so the pool is the
+        // same across weekdays; representative-day pick is still valid.
+        const isRailRollup = rep.routeType === '2';
         const rollupStatsBase = (() => {
-          if (isRailOutboundRollup) {
+          if (isRailRollup) {
             // Union of all weekdays creates spurious short gaps when some days (e.g. Fridays)
             // run extra trains. Pick the "representative day" — the day whose midday trip count
             // is closest to the median count across all days — and use only its times.

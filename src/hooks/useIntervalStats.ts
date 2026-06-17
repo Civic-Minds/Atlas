@@ -141,7 +141,8 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // visibility are always consistent. Fall back to numeric headway for legacy
       // features that pre-date the tier field, and for corridors which carry headway
       // but not a discrete tier bucket.
-      const tierVal = p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null;
+      // 'infrequent' = all-day but no frequency tier; treat as Infinity so it shows only at "All".
+      const tierVal = p.tier === 'infrequent' ? Infinity : (p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null);
       if (tierVal != null) {
         if (tierVal > maxHeadway) return false;
       } else if (p.headway != null) {
@@ -185,7 +186,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         if (hideSpan && p.tier === 'span') return false;
 
         // Tier filter: same logic as visibleFeatures — use qualifying tier for consistency.
-        const tierVal = p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null;
+        const tierVal = p.tier === 'infrequent' ? Infinity : (p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null);
         if (tierVal != null) {
           if (tierVal > maxHeadway) return false;
         } else if (p.headway != null) {
