@@ -1,19 +1,19 @@
 # Atlas
 
-A regional transit frequency map for the Greater Golden Horseshoe, Montreal area, and beyond.
+A unified frequency map for transit networks from multiple agencies.
 
 ## Problem
 
-Transit frequency data is scattered across 20+ agency GTFS feeds with no unified way to see it. Atlas pulls every feed, runs a two-phase headway analysis, and renders all networks on one continuous map — GTHA through Montreal and beyond — colored by how often service actually runs. Frequent transit jumps out; infrequent coverage fades back.
+Transit frequency data lives in separate GTFS feeds across many agencies, with no easy way to see the combined picture. Atlas pulls any number of feeds, runs a two-phase headway analysis, and renders all networks together on one continuous map. Routes are colored by how often service actually runs — frequent service stands out; infrequent service recedes.
 
 ## Features
 
-- **Frequency Map**: 20+ agencies on one regional canvas (GTHA + Montreal metro area), each route colored by scheduled headway tier (≤10m to infrequent). Pan continuously across networks.
-- **Headway Tiers**: Two-phase GTFS analysis extracts per-direction departure times for each day type, applies configurable criteria, and assigns a tier — or flags routes as peak-only (span) vs. all-day-but-slow (infrequent).
-- **Filtering**: Agency, mode (bus/rail/LRT), frequency ceiling, and day-of-week filters. Optional service span toggle hides peak-only and school-run routes.
+- **Frequency Map**: Routes from multiple agencies displayed together on a single interactive map, colored by scheduled headway tier (frequent to infrequent). Pan seamlessly across the combined network.
+- **Headway Tiers**: Two-phase GTFS analysis extracts per-direction departure times for each day type, applies configurable criteria, and assigns a tier — or flags routes as peak-only (span) vs. all-day-but-infrequent.
+- **Filtering**: By agency, mode (bus/rail/etc.), frequency ceiling, and day of week. Optional service span toggle hides peak-only and school-run routes.
 - **Search**: Cross-agency route search by number or name, scoped to the current frequency filter.
 - **Station View**: Click any stop to pin it and see every route serving it along with their current-day headways.
-- **Live Adherence**: Real-time headway drift for covered routes (Burlington 1 & 10, Hamilton 01 & 10) via GTFS-RT TripUpdates — no background cron, fetched on demand.
+- **Live Adherence**: Real-time headway drift for supported routes via GTFS-RT TripUpdates — no background cron, fetched on demand.
 - **Combined Corridors**: Overlay showing segments where multiple overlapping routes combine to provide higher aggregate frequency.
 
 ## Stack
