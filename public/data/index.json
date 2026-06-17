@@ -219,7 +219,7 @@
     },
     {
       "slug": "stm",
-      "name": "Société de transport de Montréal (STM)",
+      "name": "STM (Montréal)",
       "center": [
         45.5017,
         -73.5673
@@ -239,7 +239,7 @@
     },
     {
       "slug": "stl",
-      "name": "Société de transport de Laval (STL)",
+      "name": "STL (Laval)",
       "center": [
         45.61,
         -73.71
@@ -259,7 +259,7 @@
     },
     {
       "slug": "rtl",
-      "name": "Réseau de transport de Longueuil (RTL)",
+      "name": "RTL (Longueuil)",
       "center": [
         45.538,
         -73.465
