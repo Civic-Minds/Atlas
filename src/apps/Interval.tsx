@@ -2,8 +2,10 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { useIntervalStats } from '../hooks/useIntervalStats';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
+import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { SidebarControls } from '../components/Interval/SidebarControls';
+import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips } from '../components/Interval/FilterChips';
 import type { Agency } from '../App';
@@ -37,8 +39,11 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [showCorridors, setShowCorridors] = useState(false);
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
 
   const { layers, loadedCount, isLoading } = useAgencyData(agencies);
+  const nearbyRoutes = useNearbyRoutes(userLocation, layers, day);
   const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers } = useIntervalStats(layers, {
     query,
     maxHeadway,
@@ -71,6 +76,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         matchesQuery={matchesQuery}
         onBoundsChange={onBoundsChange}
         resetViewKey={resetViewKey}
+        onLocate={onLocate}
       />
 
       {isLoading && (
@@ -80,6 +86,14 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             {loadedCount}/{agencies.length} networks
           </span>
         </div>
+      )}
+
+      {userLocation && (
+        <NearbyRoutesPanel
+          routes={nearbyRoutes}
+          onClose={() => setUserLocation(null)}
+          setSelectedRoute={setSelectedRoute}
+        />
       )}
 
       <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2">

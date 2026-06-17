@@ -23,6 +23,7 @@ interface MapCanvasProps {
   matchesQuery: (p: ShapeProperties) => boolean;
   onBoundsChange: (b: ViewportBounds) => void;
   resetViewKey?: number;
+  onLocate?: (lat: number, lon: number) => void;
 }
 
 function MapClickHandler({ onClear }: { onClear: () => void }) {
@@ -30,7 +31,7 @@ function MapClickHandler({ onClear }: { onClear: () => void }) {
   return null;
 }
 
-function LocateControl() {
+function LocateControl({ onLocate }: { onLocate?: (lat: number, lon: number) => void }) {
   const map = useMap();
   const [locating, setLocating] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -45,12 +46,13 @@ function LocateControl() {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         map.flyTo([coords.latitude, coords.longitude], 14, { duration: 1.2 });
+        onLocate?.(coords.latitude, coords.longitude);
         setLocating(false);
       },
       () => setLocating(false),
       { timeout: 10000 }
     );
-  }, [map, locating]);
+  }, [map, locating, onLocate]);
 
   return (
     <button
@@ -110,6 +112,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   matchesQuery,
   onBoundsChange,
   resetViewKey,
+  onLocate,
 }) => {
   const regionalView = getRegionalView(agencies);
   const [zoom, setZoom] = useState(regionalView.zoom);
@@ -271,7 +274,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
       <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
       <ResetViewControl resetKey={resetViewKey} agencies={agencies} />
-      <LocateControl />
+      <LocateControl onLocate={onLocate} />
       {Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         // Split route shapes from stop points — stops mount/unmount on zoom without
