@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Frequency tier colours**: switched to a monochrome grey gradient (dark slate for ≤10m → progressively lighter greys; medium grey for infrequent) for a more neutral, single-hue look instead of teal/green.
-- **Line thickness**: simplified to avoid confusion. Thickness now only distinguishes rail vs bus (+1 for rail), selection state (thickest), and search matches (boosted). Removed frequency-tier boost for buses (color already handles that). Corridors and hit areas unchanged.
+- **Line thickness**: further reduced base weights (bus 1.5 / rail 2.5 normal) and made corridors thinner (2) so dense areas like Toronto don't look too thick. Selection still thickens the chosen route.
 - **Stop selection dimming**: when a stop is selected, routes not serving it are now dimmed on the map (instead of hidden), providing network context while highlighting relevant routes.
 
 ### Improved
