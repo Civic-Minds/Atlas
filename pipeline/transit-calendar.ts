@@ -257,9 +257,33 @@ export function getActiveServiceIds(
     // always a holiday replacement (e.g. GRT Holiday1 on Family Day / Good Friday)
     // that runs instead of the normal service, not in addition to it. Merging it in
     // adds spurious unique departure times and understates the typical headway.
+    //
+    // For GO-Transit-style feeds where each calendar date has its own service_id, the
+    // ±90-day window can produce 20+ single-occurrence entries for the same day-of-week.
+    // Merging all of them together creates thousands of near-duplicate departure times
+    // (slightly different schedules each week) that collapse the median headway to ~1 min.
+    // Fix: when a reference date is available, pick just the ONE service_id closest to
+    // it rather than all of them. Correct representative-day behaviour is preserved; the
+    // WSF/daily-service_id pattern still works because each selected service_id still
+    // contains all trips for that operating day.
     if (active.size === 0) {
-        for (const [serviceId, dates] of candidateDates) {
-            if (dates.length === 1) active.add(serviceId);
+        const singles = [...candidateDates.entries()].filter(([, dates]) => dates.length === 1);
+        if (referenceDate && singles.length > 0) {
+            const refMs = (() => {
+                const ry = parseInt(referenceDate.substring(0, 4));
+                const rm = parseInt(referenceDate.substring(4, 6)) - 1;
+                const rd = parseInt(referenceDate.substring(6, 8));
+                return new Date(ry, rm, rd).getTime();
+            })();
+            let bestId = '';
+            let bestDiff = Infinity;
+            for (const [serviceId, [ts]] of singles) {
+                const diff = Math.abs(ts - refMs);
+                if (diff < bestDiff) { bestDiff = diff; bestId = serviceId; }
+            }
+            if (bestId) active.add(bestId);
+        } else {
+            for (const [serviceId] of singles) active.add(serviceId);
         }
     }
 
