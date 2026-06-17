@@ -53,7 +53,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-10 right-0 w-64 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-5 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200 space-y-5">
+        <div className="absolute top-10 right-0 w-64 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-5 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out space-y-5">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-black tracking-wide text-[var(--text-dim)]">Settings</h3>
             <button onClick={() => setIsOpen(false)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
