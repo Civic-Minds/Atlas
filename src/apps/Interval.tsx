@@ -80,7 +80,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       />
 
       {isLoading && (
-        <div className="absolute bottom-6 right-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
+        <div className="absolute bottom-6 left-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
           <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
           <span className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide">
             {loadedCount}/{agencies.length} networks

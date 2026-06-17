@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Loading indicator covers locate button**: moved loading spinner from bottom-right to bottom-left so it can no longer overlap the locate button or the Nearby Routes panel.
+
+### Changed
+- **Pointer cursor on all buttons**: Tailwind v4 preflight resets button cursor to `default`; added a global `button { cursor: pointer; }` rule so all interactive elements show the hand cursor.
+
 ### Added
 - **Nearby Routes panel (AI-71)**: tapping the locate button now shows a "Near You" panel above it listing every route within 500 m of your location, sorted by best headway. Tapping a route opens its detail panel in the sidebar. The panel shows the nearest stop name and distance (e.g. "Queen Station · 290 m") at the bottom, and closes with the X button. Implemented via `useNearbyRoutes` hook (Haversine distance across all loaded GeoJSON Point features) and `NearbyRoutesPanel` component.
 

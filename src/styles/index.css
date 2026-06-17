@@ -42,6 +42,10 @@
   --accent-border: rgba(228, 228, 231, 0.18);
 }
 
+button {
+  cursor: pointer;
+}
+
 /* Stop cluster icon (leaflet.markercluster) */
 .stop-cluster-icon {
   width: 26px;
