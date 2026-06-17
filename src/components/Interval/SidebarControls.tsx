@@ -80,8 +80,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const currentRoute = useMemo(() => {
     if (!selectedRoute) return null;
-    const features = Object.values(layers)
-      .flatMap(fc => fc.features)
+    const features = Object.entries(layers)
+      .flatMap(([slug, fc]) => fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })))
       .filter(f => {
         const p = f.properties as unknown as ShapeProperties;
         return p.routeId && routeKey(p) === selectedRoute && (p.day === undefined || p.day === currentDay);
@@ -291,20 +291,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     ? ` — ${currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}`
                     : ''}
                 </h3>
-                {currentRoute.agencyName && (
-                  <button
-                    onClick={() => {
-                      const name = currentRoute.agencyName!;
-                      setSelectedAgencies(prev => {
-                        if (prev.size === 1 && prev.has(name)) return new Set();
-                        return new Set([name]);
-                      });
-                    }}
-                    className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
-                  >
-                    {currentRoute.agencyName}
-                  </button>
-                )}
+                {(() => {
+                  const slug = (currentRoute as any).agencySlug as string | undefined;
+                  const displayName = agencies.find(a => a.slug === slug)?.name ?? slug;
+                  if (!slug) return null;
+                  return (
+                    <button
+                      onClick={() => setSelectedAgencies(prev => {
+                        if (prev.size === 1 && prev.has(slug)) return new Set();
+                        return new Set([slug]);
+                      })}
+                      className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
+                    >
+                      {displayName}
+                    </button>
+                  );
+                })()}
               </div>
               <button onClick={() => setSelectedRoute(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full shrink-0 transition-colors" aria-label="Close route panel">
                 <X className="w-3.5 h-3.5" />

@@ -163,7 +163,7 @@
     },
     {
       "slug": "nfta",
-      "name": "NFTA Metro (Buffalo)",
+      "name": "NFTA (Buffalo)",
       "center": [
         42.8864,
         -78.8784
@@ -176,7 +176,7 @@
     },
     {
       "slug": "nfta-rail",
-      "name": "NFTA Rail (Buffalo)",
+      "name": "NFTA (Buffalo)",
       "center": [
         42.8864,
         -78.8784
