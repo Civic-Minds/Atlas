@@ -6,7 +6,7 @@ import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute } from '../../utils/livePolling';
-import { titleCase, cleanHeadsign } from '../../utils/format';
+import { titleCase, cleanHeadsign, fmtHeadway } from '../../utils/format';
 
 interface SidebarControlsProps {
   query: string;
@@ -156,8 +156,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const stopRoutes = useMemo(() => {
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
+    const stopAgencySlug = currentStop.agencySlug as string | undefined;
     const routeMap = new Map<string, { shortName: string; longName: string; headsigns: Set<string>; agencyName: string; rKey: string; bestHeadway?: number }>();
     for (const [slug, fc] of Object.entries(layers)) {
+      if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
@@ -254,11 +256,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     </button>
                     {headway && (
                       <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)]">
-                        <span 
-                          className="w-1.5 h-1.5 rounded-full shrink-0" 
-                          style={{ background: getTierColor(String(headway)) }} 
+                        <span
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{ background: getTierColor(String(headway)) }}
                         />
-                        {`every ${headway} min`}
+                        {fmtHeadway(headway)}
                       </span>
                     )}
                   </div>
@@ -289,9 +291,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     ? ` — ${currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}`
                     : ''}
                 </h3>
-                <p className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5">
-                  {currentRoute.agencyName}
-                </p>
+                {currentRoute.agencyName && (
+                  <button
+                    onClick={() => {
+                      const name = currentRoute.agencyName!;
+                      setSelectedAgencies(prev => {
+                        if (prev.size === 1 && prev.has(name)) return new Set();
+                        return new Set([name]);
+                      });
+                    }}
+                    className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
+                  >
+                    {currentRoute.agencyName}
+                  </button>
+                )}
               </div>
               <button onClick={() => setSelectedRoute(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full shrink-0 transition-colors" aria-label="Close route panel">
                 <X className="w-3.5 h-3.5" />
@@ -330,7 +343,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   const cleaned = cleanHeadsign((d.headsign ?? '').trim(), currentRoute.routeShortName, currentRoute.routeLongName);
                   if (!cleaned) return `Direction ${gi + 1}`;
                   const h = titleCase(cleaned);
-                  return /^to\s/i.test(h) ? h : `to ${h}`;
+                  return /^to\s/i.test(h) || / to /i.test(h) ? h : `to ${h}`;
                 };
                 const spanNames = group.span
                   .map(d => d.headsign ? titleCase(cleanHeadsign(d.headsign.trim(), currentRoute.routeShortName, currentRoute.routeLongName)) : '')
@@ -352,7 +365,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                             )}
                             <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
                               <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(d.tier ?? null) }} />
-                              {`every ${d.headway} min`}
+                              {fmtHeadway(d.headway!)}
                             </span>
                           </div>
                         );
@@ -393,7 +406,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
 
         {query !== '' && searchMatchResults !== null && (
-          <div className="mb-4 px-3 py-2 bg-[var(--accent-bg)] border border-[var(--accent-border)] rounded-lg">
+          <div className="mb-4">
             <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
               {searchMatches} route{searchMatches === 1 ? '' : 's'} match
             </div>
