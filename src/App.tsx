@@ -13,6 +13,7 @@ export default function App() {
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [query, setQuery] = useState('');
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
+  const [resetViewKey, setResetViewKey] = useState(0);
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -35,9 +36,13 @@ export default function App() {
   return (
     <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
-        <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl">
+        <button
+          onClick={() => setResetViewKey(k => k + 1)}
+          title="Reset map view"
+          className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
+        >
           <MapIcon className="w-3.5 h-3.5 text-white" />
-        </div>
+        </button>
 
         <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -84,6 +89,7 @@ export default function App() {
             query={query}
             setQuery={setQuery}
             onStatsChange={setStats}
+            resetViewKey={resetViewKey}
           />
         ) : (
           <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">

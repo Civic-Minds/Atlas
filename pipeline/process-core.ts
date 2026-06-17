@@ -54,21 +54,20 @@ export async function processGtfsBuffer(
 
   const shapeCounts = new Map<string, Map<string, number>>();
   const headsignCounts = new Map<string, Map<string, number>>();
-  // For rail: shape counts per (routeId, dir, headsign) so each terminus gets its own shape
-  const railHeadsignShapeCounts = new Map<string, Map<string, number>>();
+  // shape counts per (routeId, dir, headsign) so each direction/terminus gets its own shape
+  const headsignShapeCounts = new Map<string, Map<string, number>>();
   for (const trip of gtfs.trips ?? []) {
     if (!activeForShapes.has(trip.service_id)) continue;
     const key = `${trip.route_id}::${trip.direction_id ?? '0'}`;
-    const isRail = routeById.get(trip.route_id)?.route_type === '2';
     if (trip.shape_id) {
       if (!shapeCounts.has(key)) shapeCounts.set(key, new Map());
       const m = shapeCounts.get(key)!;
       m.set(trip.shape_id, (m.get(trip.shape_id) ?? 0) + 1);
-      // Rail: also count shapes per headsign so Bramalea trips → Bramalea shape, etc.
-      if (isRail && trip.trip_headsign) {
+      
+      if (trip.trip_headsign) {
         const hKey = `${key}::${trip.trip_headsign}`;
-        if (!railHeadsignShapeCounts.has(hKey)) railHeadsignShapeCounts.set(hKey, new Map());
-        const hm = railHeadsignShapeCounts.get(hKey)!;
+        if (!headsignShapeCounts.has(hKey)) headsignShapeCounts.set(hKey, new Map());
+        const hm = headsignShapeCounts.get(hKey)!;
         hm.set(trip.shape_id, (hm.get(trip.shape_id) ?? 0) + 1);
       }
     }
@@ -79,11 +78,11 @@ export async function processGtfsBuffer(
     }
   }
 
-  // Most common shape per (routeId, dir, headsign) for rail terminus splitting
-  const railHeadsignDisplayShape = new Map<string, string>(); // "routeId::dir::headsign" → shapeId
-  for (const [hKey, counts] of railHeadsignShapeCounts) {
+  // Most common shape per (routeId, dir, headsign) for terminus splitting
+  const headsignDisplayShape = new Map<string, string>(); // "routeId::dir::headsign" → shapeId
+  for (const [hKey, counts] of headsignShapeCounts) {
     const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
-    if (best) railHeadsignDisplayShape.set(hKey, best);
+    if (best) headsignDisplayShape.set(hKey, best);
   }
 
   // Most common headsign per route+direction, stripped of branch-letter prefixes
@@ -96,16 +95,35 @@ export async function processGtfsBuffer(
       // Strip branch/direction prefix codes: single letters (DRT "A - "),
       // multi-letter route codes ("KI - "), or directional words (TTC "East - ", "West - ")
       let h = best.replace(/^(?:[A-Z]{1,3}|East|West|North|South)\s*-\s*/i, '');
-      
+
       // Strip redundant "Line X (Name) towards " or just "towards "
       h = h.replace(/^Line\s+\d+\s*\([^)]+\)\s+towards\s+/i, '');
+
+      // Strip redundant "RouteNumber RouteName towards " (TTC pattern)
+      const routeId = key.split('::')[0];
+      const route = routeById.get(routeId);
+      if (route) {
+        const sn = route.route_short_name?.trim();
+        const ln = route.route_long_name?.trim();
+        if (sn && ln) {
+          h = h.replace(new RegExp(`^${sn}\\s+${ln}\\s+towards\\s+`, 'i'), '');
+        }
+        if (sn) {
+          h = h.replace(new RegExp(`^${sn}\\s+towards\\s+`, 'i'), '');
+        }
+      }
+
       h = h.replace(/^towards\s+/i, '');
-      
-      // If the headsign is exactly the same as the route's long name, 
+
+      // If the headsign is exactly the same as the route's long name (or short + long), 
       // it adds no value (e.g. TTC "Line 1 (Yonge-University)")
-      const route = routeById.get(key.split('::')[0]);
-      if (route?.route_long_name && h.toLowerCase().trim() === route.route_long_name.toLowerCase().trim()) {
-        h = ''; // Let UI fallback to Direction X
+      const lowerH = h.toLowerCase().trim();
+      const sn = route?.route_short_name?.toLowerCase().trim();
+      const ln = route?.route_long_name?.toLowerCase().trim();
+      if (ln && lowerH === ln) {
+        h = ''; 
+      } else if (sn && ln && lowerH === `${sn} ${ln}`) {
+        h = '';
       }
 
       routeDirToHeadsign.set(key, h.trim());
@@ -193,11 +211,11 @@ export async function processGtfsBuffer(
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
-    // For rail results with a terminus headsign, use the headsign-specific shape so each
-    // pattern (e.g. Bramalea GO vs Kitchener GO) maps to its own correctly-lengthed geometry.
+    // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
+    // bidirectional bus routes with a shared direction_id) maps to its own correctly-lengthed geometry.
     const hKey = (result.headsign) ? `${key}::${result.headsign}` : null;
-    const shapeId = (hKey && railHeadsignDisplayShape.has(hKey))
-      ? railHeadsignDisplayShape.get(hKey)
+    const shapeId = (hKey && headsignDisplayShape.has(hKey))
+      ? headsignDisplayShape.get(hKey)
       : routeDirToDisplayShape.get(key);
     if (!shapeId) continue;
     const points = shapeById.get(shapeId);
@@ -205,14 +223,14 @@ export async function processGtfsBuffer(
 
     const route = routeById.get(result.route);
     const shortName = route?.route_short_name ?? result.route;
-    // Rail patterns deduplicate by (shortName, dir, day, headsign) so Bramalea and Kitchener
-    // aren't collapsed together; bus routes deduplicate by (shortName, dir, day) as before.
+    // Deduplicate by (shortName, dir, day, headsign) so separate directions and terminuses
+    // aren't collapsed together.
     const dedupeKey = result.headsign
       ? `${shortName}::${result.dir}::${result.day}::${result.headsign}`
       : `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
-    const newHeadway = result.tier === 'span' ? null : Math.round(isRailRoute ? result.medianHeadway : result.avgHeadway);
+    const newHeadway = result.tier === 'span' ? null : Math.round(result.medianHeadway);
     // Skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
@@ -244,7 +262,7 @@ export async function processGtfsBuffer(
         // Rail: use per-pattern headsign, stripping agency route-code prefix
         // ("KI - Bramalea GO" → "Bramalea GO"); bus: use most-common headsign
         headsign: result.headsign
-          ? result.headsign.replace(/^[A-Z]{1,3}\s*-\s*/, '')
+          ? result.headsign.replace(/^[A-Za-z0-9]{1,5}\s*-\s*/i, '')
           : routeDirToHeadsign.get(key) ?? null,
       },
     });
@@ -263,11 +281,27 @@ export async function processGtfsBuffer(
     routesByStop.get(st.stop_id)!.add(trip.route_id);
   }
 
+  // Unique route short names per stop — more accurate hub detection than raw route_id count,
+  // which inflates when agencies use separate IDs per direction or schedule period.
+  const uniqueShortsByStop = new Map<string, number>();
+  for (const [stopId, rids] of routesByStop) {
+    const shorts = new Set<string>();
+    for (const rid of rids) {
+      const sn = routeById.get(rid)?.route_short_name;
+      if (sn) shorts.add(sn);
+    }
+    uniqueShortsByStop.set(stopId, shorts.size);
+  }
+
   const servedStopIds = new Set((gtfs.stopTimes ?? []).map(st => st.stop_id));
   for (const stop of gtfs.stops ?? []) {
     if (!servedStopIds.has(stop.stop_id)) continue;
 
     const routeIds = Array.from(routesByStop.get(stop.stop_id) ?? []);
+    // Hub: a named station/terminal (location_type=1) or served by 3+ distinct routes.
+    // Used to show interchange markers at regional zoom levels (zoom 11–12).
+    const uniqueRoutes = uniqueShortsByStop.get(stop.stop_id) ?? 0;
+    const isHub = stop.location_type === '1' || uniqueRoutes >= 3;
 
     stopFeatures.push({
       type: 'Feature',
@@ -282,6 +316,7 @@ export async function processGtfsBuffer(
         stopId: stop.stop_id,
         stopName: stop.stop_name,
         routeIds,
+        isHub,
       },
     } as any);
   }

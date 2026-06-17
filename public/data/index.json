@@ -139,6 +139,66 @@
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/go.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media"
+    },
+    {
+      "slug": "upexpress",
+      "name": "UP Express",
+      "center": [
+        43.6532,
+        -79.3832
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/upexpress.json",
+      "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip"
+    },
+    {
+      "slug": "simcoe",
+      "name": "Simcoe County LINX",
+      "center": [
+        44.3894,
+        -79.6903
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/simcoe.json",
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip"
+    },
+    {
+      "slug": "nfta",
+      "name": "NFTA Metro (Buffalo)",
+      "center": [
+        42.8864,
+        -78.8784
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta.json",
+      "feedUrl": "https://www.nfta.com/gtfs/google_transit.zip"
+    },
+    {
+      "slug": "nfta-rail",
+      "name": "NFTA Rail (Buffalo)",
+      "center": [
+        42.8864,
+        -78.8784
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta-rail.json",
+      "feedUrl": null
+    },
+    {
+      "slug": "london",
+      "name": "London Transit",
+      "center": [
+        42.9849,
+        -81.2453
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/london.json",
+      "feedUrl": null
+    },
+    {
+      "slug": "kingston",
+      "name": "Kingston Transit",
+      "center": [
+        44.2312,
+        -76.486
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/kingston.json",
+      "feedUrl": null
     }
   ]
 }

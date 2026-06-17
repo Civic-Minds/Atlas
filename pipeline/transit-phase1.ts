@@ -137,10 +137,9 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
 
         for (const [, data] of tripData) {
             if (!activeServiceIds.has(data.serviceId)) continue;
-            const isRail = routeById.get(data.routeId)?.route_type === '2';
-            // Rail routes are split by headsign so each terminus pattern gets its own
+            // Split by headsign so each direction/terminus pattern gets its own
             // frequency analysis and its own correctly-shaped GeoJSON feature.
-            const key = (isRail && data.headsign)
+            const key = (data.headsign)
                 ? `${data.routeId}::${data.dirId}::${data.headsign}`
                 : `${data.routeId}::${data.dirId}`;
             const baseKey = `${data.routeId}::${data.dirId}`;
@@ -151,7 +150,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
             if (!grouped.has(key)) grouped.set(key, {
                 routeId: data.routeId,
                 dirId: data.dirId,
-                headsign: (isRail && data.headsign) ? data.headsign : undefined,
+                headsign: data.headsign || undefined,
                 times: [],
                 serviceIds: new Set(),
                 missingDir: false,

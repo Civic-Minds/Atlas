@@ -178,8 +178,10 @@ export interface AnalysisCriteria {
     id: string;
     name: string;
     dayTypes: Partial<Record<DayType, DayTypeCriteria>>;
-    graceMinutes: number;         // default: 5
-    maxGraceViolations: number;   // default: 2
+    graceMinutes: number;         // minimum absolute grace (floor); actual grace = max(this, T × gracePercent)
+    gracePercent: number;         // grace as fraction of tier (e.g. 0.15 → tier=60 gets 9 min grace)
+    maxGraceViolations: number;   // minimum allowed violations (floor); actual = max(this, gaps × violationPercent)
+    violationPercent: number;     // max fraction of gaps allowed to be in grace zone (e.g. 0.30)
     /** Override tiers for rail vs surface modes */
     modeTierOverrides?: Record<string, number[]>;
     isDefault?: boolean;
