@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "test": "vitest",
     "process": "npx tsx pipeline/process-gtfs.ts",
-    "refresh": "npx tsx pipeline/refresh.ts"
+    "refresh": "npx tsx pipeline/refresh.ts",
+    "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
+    "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
+    "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts"
   },
   "dependencies": {
     "@types/leaflet.markercluster": "^1.5.6",

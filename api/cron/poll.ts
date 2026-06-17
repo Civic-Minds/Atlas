@@ -1,29 +1,17 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import { put } from '@vercel/blob';
+import {
+  LIVE_POLLING_CONFIG,
+  LIVE_SCHEDULED_HEADWAY_MIN,
+  LIVE_TRIP_UPDATES_FEEDS,
+  matchesLiveRouteId,
+} from '../../shared/livePollingConfig.js';
 
 export const config = {
   maxDuration: 60,
 };
 
-const FEEDS = {
-  burlington: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb',
-  hamilton: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
-};
-
-const BURLINGTON_ROUTE_ID = '311'; // Route 1
-const BURLINGTON_TARGET_STOPS = new Set(['535', '54', '52', '722', '1073', '834', '679']);
-const BURLINGTON_SCHEDULED_HEADWAY_MIN = 12; // weekday daytime, from static stop_times.txt at stop 679
-
-const HAMILTON_ROUTE_ID = '5677'; // Route 1 (King)
-const HAMILTON_TARGET_STOPS = new Set(['1403', '355415', '1790', '1771', '2138']);
-const HAMILTON_SCHEDULED_HEADWAY_MIN = 12; // weekday midday, from static stop_times.txt at Hamilton GO Centre (355415)
-
-const SCHEDULED_HEADWAY_MIN: Record<string, number> = {
-  burlington: BURLINGTON_SCHEDULED_HEADWAY_MIN,
-  hamilton: HAMILTON_SCHEDULED_HEADWAY_MIN,
-};
-
-async function fetchFeed(agency: string, url: string) {
+async function fetchFeed(url: string) {
   const res = await fetch(url);
   if (!res.ok) return null;
   const buffer = await res.arrayBuffer();
@@ -41,7 +29,6 @@ export default async function handler(req: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  // Service hours: 5am - 12am ET
   const now = new Date();
   const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
   const timestamp = now.toISOString();
@@ -53,27 +40,28 @@ export default async function handler(req: Request) {
   const snapshots: any[] = [];
   const tripDrifts: any[] = [];
 
-  for (const [agency, url] of Object.entries(FEEDS)) {
+  for (const [agency, url] of Object.entries(LIVE_TRIP_UPDATES_FEEDS)) {
+    const cfg = LIVE_POLLING_CONFIG[agency];
+    const targetStops = new Set(Object.keys(cfg.targetStops));
+
     try {
-      const feed = await fetchFeed(agency, url);
+      const feed = await fetchFeed(url);
       if (!feed || !feed.entity) continue;
 
       const stopPredictions: Record<string, any[]> = {};
       const tripPredictions: Record<string, any[]> = {};
-      const routeId = agency === 'burlington' ? BURLINGTON_ROUTE_ID : (agency === 'hamilton' ? HAMILTON_ROUTE_ID : null);
-      const targetStops = agency === 'burlington' ? BURLINGTON_TARGET_STOPS : (agency === 'hamilton' ? HAMILTON_TARGET_STOPS : null);
 
       for (const entity of feed.entity) {
         const tu = entity.tripUpdate;
         if (!tu || !tu.stopTimeUpdate) continue;
-        if (routeId && tu.trip?.routeId !== routeId) continue;
+        if (!matchesLiveRouteId(agency, tu.trip?.routeId)) continue;
 
         const tripId = tu.trip?.tripId;
         const directionId = tu.trip?.directionId;
 
         for (const stu of tu.stopTimeUpdate) {
           const stopId = String(stu.stopId);
-          if (targetStops && !targetStops.has(stopId)) continue;
+          if (!targetStops.has(stopId)) continue;
 
           const arrival = stu.arrival || stu.departure;
           if (!arrival || !arrival.time) continue;
@@ -105,7 +93,7 @@ export default async function handler(req: Request) {
         }
       }
 
-      const scheduledHeadway = SCHEDULED_HEADWAY_MIN[agency] ?? null;
+      const scheduledHeadway = LIVE_SCHEDULED_HEADWAY_MIN[agency] ?? null;
 
       for (const [stopId, predictions] of Object.entries(stopPredictions)) {
         predictions.sort((a, b) => a.predictedTime - b.predictedTime);
@@ -130,7 +118,6 @@ export default async function handler(req: Request) {
         });
       }
 
-      // Per-trip drift: compare delay at entry vs. exit stop to detect bunching/gap
       for (const [tripId, stops] of Object.entries(tripPredictions)) {
         if (stops.length < 2) continue;
         stops.sort((a, b) => a.scheduledTime - b.scheduledTime);
@@ -138,7 +125,6 @@ export default async function handler(req: Request) {
         const entryDelayMin = delays[0];
         const exitDelayMin = delays[delays.length - 1];
         const avgDelayMin = Math.round(delays.reduce((a, b) => a + b, 0) / delays.length * 10) / 10;
-        // Positive = gaining time along route; negative = losing time
         const driftMin = Math.round((exitDelayMin - entryDelayMin) * 10) / 10;
 
         tripDrifts.push({
