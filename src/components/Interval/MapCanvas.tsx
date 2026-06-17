@@ -259,8 +259,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       preferCanvas={true}
       zoomAnimation={true}
       zoomSnap={0.25}
-      zoomDelta={0.5}
-      wheelPxPerZoomLevel={120}
+      zoomDelta={1}
+      wheelPxPerZoomLevel={60}
     >
       <TileLayer
         key={tileUrl}
