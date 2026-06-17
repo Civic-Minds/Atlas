@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
@@ -40,6 +40,47 @@ export interface ViewportBounds {
   w: number;
   n: number;
   e: number;
+}
+
+// Resolves the numeric headway ceiling for tier-based filtering.
+// 'infrequent' = all-day but no frequency tier → Infinity (shows only at "All").
+// 'span' and null → null (not subject to the numeric filter).
+function resolveTierVal(p: ShapeProperties): number | null {
+  if (p.tier === 'infrequent') return Infinity;
+  if (p.tier != null && p.tier !== 'span') return parseInt(p.tier as unknown as string);
+  return null;
+}
+
+// Shared filter predicate for both visibleFeatures and filteredLayers.
+// slug is passed explicitly so the caller can use p.agencySlug (flat array path)
+// or the layer key (per-layer iteration path).
+function passesRouteFilter(
+  p: ShapeProperties,
+  slug: string,
+  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; hideSpan?: boolean; livePollingOnly?: boolean },
+  routesForStop: Set<string> | null,
+): boolean {
+  const isCorridor = !!(p as any).isCorridor;
+  const corridorRouteIds = (p as any).routeIds as string[] | undefined;
+  if (routesForStop) {
+    if (p.routeId && !routesForStop.has(p.routeId)) return false;
+    if (isCorridor && corridorRouteIds && !corridorRouteIds.some((rid) => routesForStop.has(rid))) return false;
+  }
+  if (filters.agencies.size > 0 && !filters.agencies.has(slug)) return false;
+  if (filters.livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
+  if (isCorridor) return false;
+  if (filters.modes.size > 0 && p.routeType !== undefined && !filters.modes.has(p.routeType)) return false;
+  if (p.day !== undefined && p.day !== filters.day) return false;
+  if (filters.hideSpan && p.tier === 'span') return false;
+  const tierVal = resolveTierVal(p);
+  if (tierVal != null) {
+    if (tierVal > filters.maxHeadway) return false;
+  } else if (p.headway != null) {
+    if (p.headway > filters.maxHeadway) return false;
+  } else if (p.routeId != null) {
+    if (filters.maxHeadway !== Infinity) return false;
+  }
+  return true;
 }
 
 // bbox per feature: [minLon, minLat, maxLon, maxLat]; cached per feature object
@@ -92,67 +133,26 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     return stopFeature ? new Set((stopFeature.properties as any).routeIds as string[]) : null;
   }, [allFeatures, selectedStop]);
 
-  const matchesQuery = (p: ShapeProperties) => {
+  const matchesQuery = useCallback((p: ShapeProperties) => {
     if (q === '') return true;
     const nameHit =
       (p.routeShortName ?? '').toLowerCase().includes(q) ||
       (p.routeLongName ?? '').toLowerCase().includes(q) ||
       (p.routeId ?? '').toLowerCase().includes(q);
     if (nameHit) return true;
-    // Corridors match search if query hits any contributing routeId or short name (AI-17)
     const cIds = (p as any).routeIds as string[] | undefined;
     if (cIds && cIds.some((r) => r.toLowerCase().includes(q))) return true;
     const cNames = (p as any).corridorShortNames as string[] | undefined;
     if (cNames && cNames.some((n) => n.toLowerCase().includes(q))) return true;
     return false;
-  };
+  }, [q]);
 
-  const visibleFeatures = useMemo(() => 
+  const visibleFeatures = useMemo(() =>
     allFeatures.filter(f => {
       const p = f.properties as unknown as ShapeProperties;
-      
-      // If a stop is selected, only show routes/corridors serving that stop (AI-17 corridors intersect on routeIds)
-      if (routesForStop) {
-        if (p.routeId && !routesForStop.has(p.routeId)) return false;
-        const cRoutes = (p as any).routeIds as string[] | undefined;
-        if ((p as any).isCorridor && cRoutes && !cRoutes.some((rid) => routesForStop.has(rid))) return false;
-      }
-
-      // Agency Filter
-      if (agencies.size > 0 && !agencies.has(p.agencySlug!)) return false;
-
-      // Live polling filter (only show routes covered by GTFS-RT adherence trial)
-      if (livePollingOnly && p.routeId && !isLivePollingRoute(p.agencySlug, p.routeShortName)) return false;
-
-      // Hide corridor features entirely — corridor stop-pair chords create long diagonal straight
-      // lines on express routes / distant stops, which cross water and don't follow road geometry.
-      // Individual route shapes already convey frequency via color; corridors add visual noise.
-      if ((p as any).isCorridor) return false;
-      // Mode Filter
-      if (modes.size > 0 && p.routeType !== undefined && !modes.has(p.routeType)) return false;
-
-      // Day Filter (routes + corridors carry day; stops do not)
-      if (p.day !== undefined && p.day !== day) return false;
-
-      // Hide routes with no sustained tier (irregular/peak-only/school-run service)
-      if (hideSpan && p.tier === 'span') return false;
-
-      // Tier filter: use the qualifying tier (sustained peak headway) so colour and
-      // visibility are always consistent. Fall back to numeric headway for legacy
-      // features that pre-date the tier field, and for corridors which carry headway
-      // but not a discrete tier bucket.
-      // 'infrequent' = all-day but no frequency tier; treat as Infinity so it shows only at "All".
-      const tierVal = p.tier === 'infrequent' ? Infinity : (p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null);
-      if (tierVal != null) {
-        if (tierVal > maxHeadway) return false;
-      } else if (p.headway != null) {
-        if (p.headway > maxHeadway) return false;
-      } else if (p.routeId != null) {
-        if (maxHeadway !== Infinity) return false;
-      }
-
-      return true; // Keep stops (and corridors that passed above)
+      return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop);
     }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly]);
 
   const filteredLayers = useMemo(() => {
@@ -160,52 +160,14 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     for (const [slug, fc] of Object.entries(layers)) {
       const filteredFeatures = fc.features.filter(f => {
         const p = f.properties as unknown as ShapeProperties;
-        
-        // If a stop is selected, filter routes + relevant corridors (AI-17)
-        if (routesForStop) {
-          if (p.routeId && !routesForStop.has(p.routeId)) return false;
-          const cRoutes = (p as any).routeIds as string[] | undefined;
-          if ((p as any).isCorridor && cRoutes && !cRoutes.some((rid) => routesForStop.has(rid))) return false;
-        }
-
-        // Agency Filter
-        if (agencies.size > 0 && !agencies.has(slug)) return false;
-
-        // Live polling filter (only show routes covered by GTFS-RT adherence trial)
-        if (livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
-
-        // Hide corridor features entirely (same reason as in visibleFeatures above)
-        if ((p as any).isCorridor) return false;
-        // Mode Filter
-        if (modes.size > 0 && p.routeType !== undefined && !modes.has(p.routeType)) return false;
-
-        // Day Filter (routes + corridors)
-        if (p.day !== undefined && p.day !== day) return false;
-
-        // Hide routes with no sustained tier (irregular/peak-only/school-run service)
-        if (hideSpan && p.tier === 'span') return false;
-
-        // Tier filter: same logic as visibleFeatures — use qualifying tier for consistency.
-        const tierVal = p.tier === 'infrequent' ? Infinity : (p.tier != null && p.tier !== 'span' ? parseInt(p.tier as unknown as string) : null);
-        if (tierVal != null) {
-          if (tierVal > maxHeadway) return false;
-        } else if (p.headway != null) {
-          if (p.headway > maxHeadway) return false;
-        } else if (p.routeId != null) {
-          if (maxHeadway !== Infinity) return false;
-        }
-
-        return true; // Keep stops
+        return passesRouteFilter(p, slug, filters, routesForStop);
       });
-
       if (filteredFeatures.length > 0) {
-        result[slug] = {
-          ...fc,
-          features: filteredFeatures
-        };
+        result[slug] = { ...fc, features: filteredFeatures };
       }
     }
     return result;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layers, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly]);
 
   const stats = useMemo(() => {

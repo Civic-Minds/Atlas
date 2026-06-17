@@ -6,6 +6,7 @@ import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute } from '../../utils/livePolling';
+import { titleCase, cleanHeadsign } from '../../utils/format';
 
 interface SidebarControlsProps {
   query: string;
@@ -90,9 +91,34 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const first = features[0].properties as unknown as ShapeProperties;
     const directions = features
       .map(f => f.properties as unknown as ShapeProperties)
-      .sort((a, b) => (a.directionId ?? 0) - (b.directionId ?? 0));
+      .sort((a, b) => {
+        const aH = a.headway ?? Infinity;
+        const bH = b.headway ?? Infinity;
+        if (aH !== bH) return aH - bH;
+        return (a.directionId ?? 0) - (b.directionId ?? 0);
+      });
     return { ...first, directions };
   }, [selectedRoute, layers, currentDay]);
+
+  // Group directions by directionId so outbound/inbound are visually separated,
+  // and collapse multiple span patterns in the same group into one row.
+  const directionGroups = useMemo(() => {
+    if (!currentRoute) return [];
+    type Group = { dirId: number; realTier: ShapeProperties[]; span: ShapeProperties[] };
+    const map = new Map<number, Group>();
+    for (const d of currentRoute.directions) {
+      const dirId = d.directionId ?? 0;
+      if (!map.has(dirId)) map.set(dirId, { dirId, realTier: [], span: [] });
+      const g = map.get(dirId)!;
+      if (d.headway != null) g.realTier.push(d);
+      else g.span.push(d);
+    }
+    return Array.from(map.values()).sort((a, b) => {
+      const aMin = a.realTier[0]?.headway ?? Infinity;
+      const bMin = b.realTier[0]?.headway ?? Infinity;
+      return aMin - bMin;
+    });
+  }, [currentRoute]);
 
   const liveRouteInfo = useMemo(() => {
     if (!currentRoute) return null;
@@ -115,7 +141,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const stopRoutes = useMemo(() => {
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
-    const routeMap = new Map<string, { shortName: string; headsigns: Set<string>; agencyName: string }>();
+    const routeMap = new Map<string, { shortName: string; longName: string; headsigns: Set<string>; agencyName: string; rKey: string }>();
     for (const [slug, fc] of Object.entries(layers)) {
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
@@ -123,15 +149,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const key = p.routeShortName || p.routeId;
         if (!routeMap.has(key)) routeMap.set(key, {
           shortName: key,
+          longName: p.routeLongName || '',
           headsigns: new Set(),
           agencyName: p.agencyName || slug,
+          rKey: routeKey(p),
         });
         if (p.headsign) routeMap.get(key)!.headsigns.add(p.headsign);
       }
     }
     return Array.from(routeMap.entries())
       .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-      .map(([, v]) => ({ shortName: v.shortName, headsigns: Array.from(v.headsigns), agencyName: v.agencyName }));
+      .map(([, v]) => ({ shortName: v.shortName, longName: v.longName, headsigns: Array.from(v.headsigns), agencyName: v.agencyName, rKey: v.rKey }));
   }, [currentStop, layers]);
 
   const stopAgencies = useMemo(() => {
@@ -145,12 +173,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     stopAgencyFilter ? stopRoutes.filter(r => r.agencyName === stopAgencyFilter) : stopRoutes,
   [stopRoutes, stopAgencyFilter]);
 
-  // Strip leading "XX - " or "XX: " route-code prefixes that some agencies embed in headsigns
-  const cleanHeadsign = (headsign: string, shortName: string | null) => {
-    if (!shortName) return headsign;
-    return headsign.replace(new RegExp(`^${shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-:]\\s*`, 'i'), '').trim();
-  };
-
   const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null);
   if (!hasContent) return null;
 
@@ -163,14 +185,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       >
         {currentStop && (
           <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 -mt-2 -mr-2">
               <span className="text-[10px] font-black tracking-wide text-[var(--accent)]">Station View</span>
-              <button onClick={() => setSelectedStop(null)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
+              <button onClick={() => setSelectedStop(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
             <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight mb-2">
-              {currentStop.stopName.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}
+              {titleCase(currentStop.stopName)}
             </h3>
             {stopAgencies.length > 1 && (
               <div className="flex flex-wrap gap-1 mb-2">
@@ -190,19 +212,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             )}
             <div className="space-y-2">
-              {filteredStopRoutes.map(({ shortName, headsigns }) => (
+              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey }) => (
                 <div key={shortName} className="text-[11px]">
-                  <span className="font-black text-[var(--text-primary)]">{shortName}</span>
+                  <button
+                    onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
+                    className="font-black text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
+                  >
+                    {shortName}
+                  </button>
                   {headsigns.length > 0 && (
                     <div className="mt-0.5 space-y-0.5">
-                      {headsigns.map(h => {
-                        const ch = cleanHeadsign(h.trim(), shortName);
-                        return (
-                          <div key={h} className="font-bold text-[var(--text-muted)]">
-                            {/^to\s/i.test(ch) ? ch : `→ ${ch}`}
-                          </div>
-                        );
-                      })}
+                      {[...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))]
+                        .filter(Boolean)
+                        .map(ch => (
+                        <div key={ch} className="font-bold text-[var(--text-muted)]">
+                          {/^to\s/i.test(ch) ? ch : `→ ${ch}`}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -213,20 +239,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
         {currentRoute && (
           <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
-            <div className="flex items-start justify-between">
-              <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
-                {currentRoute.routeShortName || currentRoute.routeId}
-                {currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()
-                  ? ` — ${currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}`
-                  : ''}
-              </h3>
-              <button onClick={() => setSelectedRoute(null)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] shrink-0 ml-2" aria-label="Close route panel">
+            <div className="flex items-start justify-between -mt-2 -mr-2 mb-1">
+              <div className="flex-1 mt-2">
+                <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
+                  {currentRoute.routeShortName || currentRoute.routeId}
+                  {currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()
+                    ? ` — ${currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}`
+                    : ''}
+                </h3>
+                <p className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5">
+                  {currentRoute.agencyName}
+                </p>
+              </div>
+              <button onClick={() => setSelectedRoute(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full shrink-0 transition-colors" aria-label="Close route panel">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
-            <p className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 mb-3">
-              {currentRoute.agencyName}
-            </p>
             {liveRouteInfo && (
               <div className="mb-3 px-2.5 py-2 rounded-lg bg-green-500/5 border border-green-500/15">
                 <div className="flex items-center gap-1.5 mb-1.5">
@@ -254,23 +282,68 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 )}
               </div>
             )}
-            <div className="space-y-2">
-              {currentRoute.directions.map((d, i) => (
-                <div key={i} className="text-[11px]">
-                  <span className="font-bold text-[var(--text-muted)] block truncate">
-                    {d.headsign
-                      ? (() => { const h = cleanHeadsign(d.headsign.trim(), currentRoute.routeShortName); return /^to\s/i.test(h) ? h : `to ${h}`; })()
-                      : `Direction ${currentRoute.directions.length > 1 ? i + 1 : ''}`}
-                  </span>
-                  <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
-                    <span
-                      className="w-2 h-2 rounded-full shrink-0"
-                      style={{ background: getTierColor(d.tier ?? null) }}
-                    />
-                    {d.headway != null ? `every ${d.headway} min` : d.tier === 'span' ? 'limited' : 'no data'}
-                  </span>
-                </div>
-              ))}
+            <div className="space-y-3">
+              {directionGroups.map((group, gi) => {
+                const fmtH = (d: ShapeProperties) => {
+                  const cleaned = cleanHeadsign((d.headsign ?? '').trim(), currentRoute.routeShortName, currentRoute.routeLongName);
+                  if (!cleaned) return `Direction ${gi + 1}`;
+                  const h = titleCase(cleaned);
+                  return /^to\s/i.test(h) ? h : `to ${h}`;
+                };
+                const spanNames = group.span
+                  .map(d => d.headsign ? titleCase(cleanHeadsign(d.headsign.trim(), currentRoute.routeShortName, currentRoute.routeLongName)) : '')
+                  .filter(Boolean);
+                return (
+                  <React.Fragment key={group.dirId}>
+                    {gi > 0 && directionGroups.length > 1 && (
+                      <div className="border-t border-[var(--border-primary)] opacity-30" />
+                    )}
+                    <div className="space-y-2">
+                      {group.realTier.map((d, i) => {
+                        const dimmed = d.headway != null && maxHeadway !== Infinity && d.headway > maxHeadway;
+                        return (
+                          <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
+                            <span className="font-bold text-[var(--text-muted)] block truncate">
+                              {d.headsign ? fmtH(d) : `Direction ${gi + 1}`}
+                            </span>
+                            <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
+                              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(d.tier ?? null) }} />
+                              {`every ${d.headway} min`}
+                            </span>
+                          </div>
+                        );
+                      })}
+                      {!hideSpan && group.span.length === 1 && (
+                        <div key="s0" className="text-[11px]">
+                          <span className="font-bold text-[var(--text-muted)] block truncate">
+                            {group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'}
+                          </span>
+                          <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null) }} />
+                            limited
+                          </span>
+                        </div>
+                      )}
+                      {!hideSpan && group.span.length > 1 && (
+                        <div key="smulti" className="text-[11px]">
+                          <span className="font-bold text-[var(--text-muted)] leading-snug block">
+                            {spanNames.join(' · ')}
+                          </span>
+                          <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null) }} />
+                            limited
+                          </span>
+                        </div>
+                      )}
+                      {hideSpan && spanNames.length > 0 && (
+                        <p key="span-hint" className="text-[10px] text-[var(--text-dim)] font-bold leading-snug">
+                          Also serves: {spanNames.join(' · ')} — infrequent
+                        </p>
+                      )}
+                    </div>
+                  </React.Fragment>
+                );
+              })}
             </div>
           </div>
         )}
