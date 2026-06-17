@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - **Redundant Headsigns**: Refined the `cleanHeadsign` logic to aggressively strip redundant route names (e.g., "510 Spadina towards..."), direction suffixes (" - Sb", " - Nb"), and redundant street addresses ("Wasaga Beach, 25 45th Street S" -> "Wasaga Beach").
 
 ### Changed
+- **Live adherence cron**: Vercel Hobby allows only daily crons — schedule changed from every minute to `0 14 * * *` (14:00 UTC). Per-minute polling requires Pro or an external scheduler.
 - **POC real-time scripts** moved from repo root to `scripts/poc/`.
 - **README and ROADMAP** updated to reflect regional coverage beyond the GTHA core.
 - **`titleCase` acronyms** extended for NFTA, LTC, and KTC.
