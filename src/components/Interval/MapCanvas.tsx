@@ -5,10 +5,13 @@ import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { titleCase } from '../../utils/format';
+import { getRegionalView, getAgencyBounds } from '../../utils/regionView';
+import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 import type { ViewportBounds } from '../../hooks/useIntervalStats';
 
 interface MapCanvasProps {
+  agencies: Agency[];
   layers: AgencyLayers;
   maxHeadway: number;
   q: string;
@@ -21,9 +24,6 @@ interface MapCanvasProps {
   onBoundsChange: (b: ViewportBounds) => void;
   resetViewKey?: number;
 }
-
-const REGION_CENTER: [number, number] = [43.65, -79.45];
-const REGION_ZOOM = 10;
 
 function MapClickHandler({ onClear }: { onClear: () => void }) {
   useMapEvents({ click: onClear });
@@ -65,15 +65,21 @@ function LocateControl() {
   );
 }
 
-function ResetViewControl({ resetKey }: { resetKey?: number }) {
+function ResetViewControl({ resetKey, agencies }: { resetKey?: number; agencies: Agency[] }) {
   const map = useMap();
   const prevKey = useRef(resetKey);
   useEffect(() => {
     if (resetKey !== undefined && resetKey !== prevKey.current) {
       prevKey.current = resetKey;
-      map.flyTo(REGION_CENTER, REGION_ZOOM, { duration: 1.2 });
+      const bounds = getAgencyBounds(agencies);
+      if (bounds) {
+        map.fitBounds(bounds, { padding: [48, 48], duration: 1.2, maxZoom: 10 });
+      } else {
+        const { center, zoom } = getRegionalView(agencies);
+        map.flyTo(center, zoom, { duration: 1.2 });
+      }
     }
-  }, [map, resetKey]);
+  }, [map, resetKey, agencies]);
   return null;
 }
 
@@ -92,6 +98,7 @@ function BoundsReporter({ onBoundsChange, onZoomChange }: { onBoundsChange: (b: 
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
+  agencies,
   layers,
   maxHeadway,
   q,
@@ -104,7 +111,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onBoundsChange,
   resetViewKey,
 }) => {
-  const [zoom, setZoom] = useState(REGION_ZOOM);
+  const regionalView = getRegionalView(agencies);
+  const [zoom, setZoom] = useState(regionalView.zoom);
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
@@ -241,8 +249,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   return (
     <MapContainer
-      center={REGION_CENTER}
-      zoom={REGION_ZOOM}
+      center={regionalView.center}
+      zoom={regionalView.zoom}
       style={{ height: '100%', width: '100%', background: 'var(--bg-app)' }}
       zoomControl={false}
       preferCanvas={true}
@@ -258,7 +266,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       />
       <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
       <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
-      <ResetViewControl resetKey={resetViewKey} />
+      <ResetViewControl resetKey={resetViewKey} agencies={agencies} />
       <LocateControl />
       {Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;

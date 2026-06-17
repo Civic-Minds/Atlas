@@ -1,14 +1,14 @@
 # Atlas
 
-A hosted frequency map for transit in Ontario's Greater Golden Horseshoe.
+A hosted frequency map for transit across Ontario's Greater Golden Horseshoe and beyond — from Buffalo to Kingston on one continuous regional map.
 
 **Live: https://atlas-gamma-two.vercel.app**
 
-One continuous map of 13 transit networks — pan from Niagara Falls to Barrie like you would in Google Maps. Every route is colored by how often service actually runs (weekday scheduled headway, 7am–10pm), so frequent transit jumps out and infrequent coverage fades back. Search any route number or name across every agency at once.
+Pan from Niagara Falls to Barrie, London, or Buffalo like you would in Google Maps. Every route is colored by how often service actually runs (weekday scheduled headway, 7am–10pm), so frequent transit jumps out and infrequent coverage fades back. Search any route number or name across every agency at once.
 
 ## Agencies
 
-TTC · MiWay · Brampton · York Region · Durham Region · Hamilton · Burlington · Oakville · Milton · Grand River · Guelph · Barrie · Niagara Region
+TTC · GO · UP Express · MiWay · Brampton · York Region · Durham Region · Hamilton · Burlington · Oakville · Milton · Grand River · Guelph · Barrie · Simcoe LINX · Niagara · Stratford · London · Kingston · NFTA (Buffalo bus & rail)
 
 ## How it works
 

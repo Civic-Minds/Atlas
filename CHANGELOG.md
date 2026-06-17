@@ -5,14 +5,22 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Stratford Transit** in the agency registry with weekly-refresh `feedUrl`.
+- **Shared `cleanHeadsign` module** (`shared/cleanHeadsign.ts`) used by both the pipeline and frontend so headsign labels stay consistent at build time and render time.
+- **Regional default map view** computed from all agency centers; logo-reset uses `fitBounds` over the full coverage area.
 - **New Agency Coverage**: Expanded the map with **UP Express**, **Simcoe County LINX**, **Stratford Transit**, **London Transit**, **Kingston Transit**, and **Buffalo (NFTA Bus & Rail)**.
 - **Support for bidirectional routes with shared `direction_id`**: Generalized the pipeline's headsign-splitting logic to all agencies. This ensures that bus routes using a single `direction_id` for both ways (like Simcoe LINX) are correctly processed into separate features for each direction on the map.
 
 ### Fixed
+- **Missing `feedUrl`s**: London, Kingston, Stratford, and NFTA Rail now have stable source URLs for `npm run refresh` and the weekly GitHub Action. NFTA bus/rail split from the same zip via optional `routeTypes` on registry entries.
+- **Simcoe County LINX center** corrected from Barrie's coordinates to mid-county (`44.35, -79.75`).
 - **Sidebar UI Alignment**: Fixed the Close (X) button padding in the Station and Route panels; it now sits flush in the corner with a larger, more accessible click target.
 - **Redundant Headsigns**: Refined the `cleanHeadsign` logic to aggressively strip redundant route names (e.g., "510 Spadina towards..."), direction suffixes (" - Sb", " - Nb"), and redundant street addresses ("Wasaga Beach, 25 45th Street S" -> "Wasaga Beach").
 
 ### Changed
+- **POC real-time scripts** moved from repo root to `scripts/poc/`.
+- **README and ROADMAP** updated to reflect regional coverage beyond the GTHA core.
+- **`titleCase` acronyms** extended for NFTA, LTC, and KTC.
 - **Consolidated Niagara Data**: Removed the redundant "Niagara (Legacy)" entry from the registry in favor of the working unified "Niagara Region Transit" feed.
 - **Universal Headsign Deduplication**: Updated the GeoJSON deduplication key to include headsigns for all agencies, preventing separate directions or terminus patterns from being collapsed into a single feature.
 

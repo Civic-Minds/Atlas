@@ -29,6 +29,7 @@ interface AgencyEntry {
   center: [number, number];
   url: string;
   feedUrl: string | null;
+  routeTypes?: number[];
 }
 
 async function refreshAgency(agency: AgencyEntry): Promise<string> {
@@ -49,7 +50,9 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
   }
 
-  const { geojson, featureCount } = await processGtfsBuffer(buf);
+  const { geojson, featureCount } = await processGtfsBuffer(buf, undefined, {
+    routeTypes: agency.routeTypes,
+  });
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
 
   const blob = await put(`atlas/${agency.slug}.json`, geojson, {
