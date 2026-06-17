@@ -101,10 +101,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const liveAgencySlug = useMemo(() => {
     if (!currentRoute) return null;
-    const slug = agencies.find(a => a.name === currentRoute.agencyName)?.slug ?? null;
+    const slug = (currentRoute as any).agencySlug as string | null ?? null;
     if (!slug || !isLivePollingRoute(slug, currentRoute.routeShortName)) return null;
     return slug;
-  }, [currentRoute, agencies]);
+  }, [currentRoute]);
 
   const liveRouteShortName = liveAgencySlug ? currentRoute?.routeShortName ?? null : null;
   const liveData = useLiveAdherence(liveAgencySlug, liveRouteShortName);
@@ -131,14 +131,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const liveRouteInfo = useMemo(() => {
     if (!currentRoute) return null;
-    const agencySlug = agencies.find(a => a.name === currentRoute.agencyName)?.slug ?? null;
+    const agencySlug = (currentRoute as any).agencySlug as string | null ?? null;
     if (!agencySlug || !isLivePollingRoute(agencySlug, currentRoute.routeShortName)) return null;
     return {
       agencySlug,
       delta: agencyHeadwayDelta(liveData, agencySlug),
       trips: agencyTripSummary(liveData, agencySlug),
     };
-  }, [currentRoute, agencies, liveData]);
+  }, [currentRoute, liveData]);
 
   const currentStop = useMemo(() => {
     if (!selectedStop) return null;
@@ -172,7 +172,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             longName: p.routeLongName || '',
             headsigns: new Set(),
             agencyName: p.agencyName || slug,
-            rKey: routeKey(p),
+            rKey: routeKey({ ...p, agencySlug: slug } as any),
           });
         }
         
