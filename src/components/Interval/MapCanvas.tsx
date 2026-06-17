@@ -58,7 +58,7 @@ function LocateControl({ onLocate }: { onLocate?: (lat: number, lon: number) => 
     <button
       ref={btnRef}
       onClick={locate}
-      title="Go to my location"
+      aria-label="Go to my location"
       style={{ position: 'absolute', bottom: 24, right: 12, zIndex: 1000 }}
       className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors"
     >
