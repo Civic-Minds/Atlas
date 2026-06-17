@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { HEADWAY_TIERS } from '../../utils/colors';
+import { Search } from 'lucide-react';
+import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import type { Agency } from '../../App';
 
 interface FilterChipsProps {
@@ -21,7 +22,21 @@ const MODES = [
   { id: 3, label: 'Bus' },
 ];
 
+// Tier value → tier key used by getTierColor
+const TIER_FOR_MAX: Record<number, string> = {
+  10: '10', 15: '15', 20: '20', 30: '30', 60: '60',
+};
+
 type ChipId = 'frequency' | 'day' | 'mode' | 'agencies';
+
+const PANEL = 'absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-col gap-1';
+
+const rowBtn = (active: boolean) =>
+  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left ${
+    active
+      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+  }`;
 
 export const FilterChips: React.FC<FilterChipsProps> = ({
   maxHeadway,
@@ -35,10 +50,12 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   setSelectedAgencies,
 }) => {
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
+  const [agencyQuery, setAgencyQuery] = useState('');
+  const agencySearchRef = useRef<HTMLInputElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!openChip) return;
+    if (!openChip) { setAgencyQuery(''); return; }
     const onClick = (e: MouseEvent) => {
       if (rowRef.current && !rowRef.current.contains(e.target as Node)) setOpenChip(null);
     };
@@ -46,17 +63,19 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return () => document.removeEventListener('mousedown', onClick);
   }, [openChip]);
 
-  const toggleMode = (modeId: number) => {
+  useEffect(() => {
+    if (openChip === 'agencies') setTimeout(() => agencySearchRef.current?.focus(), 50);
+  }, [openChip]);
+
+  const toggleMode = (id: number) => {
     const next = new Set(selectedModes);
-    if (next.has(modeId)) next.delete(modeId);
-    else next.add(modeId);
+    if (next.has(id)) next.delete(id); else next.add(id);
     setSelectedModes(next);
   };
 
   const toggleAgency = (slug: string) => {
     const next = new Set(selectedAgencies);
-    if (next.has(slug)) next.delete(slug);
-    else next.add(slug);
+    if (next.has(slug)) next.delete(slug); else next.add(slug);
     setSelectedAgencies(next);
   };
 
@@ -70,31 +89,31 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const Dot = ({ show }: { show: boolean }) =>
     show ? <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" /> : null;
 
+  const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
+
   return (
     <div ref={rowRef} className="flex items-center gap-2">
+
+      {/* Frequency */}
       <div className="relative">
-        <button onClick={() => setOpenChip((c) => (c === 'frequency' ? null : 'frequency'))} className={chipClass(true)}>
+        <button onClick={() => toggle('frequency')} className={chipClass(true)}>
           Frequency
           <Dot show={true} />
         </button>
         {openChip === 'frequency' && (
-          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex gap-1">
+          <div className={`${PANEL} w-36`}>
             {HEADWAY_TIERS.map(({ max, label }) => {
               const isSelected = maxHeadway === max;
+              const tierKey = TIER_FOR_MAX[max];
+              const color = tierKey ? getTierColor(tierKey) : 'var(--text-dim)';
               return (
                 <button
                   key={label}
-                  onClick={() => {
-                    setMaxHeadway(max);
-                    setOpenChip(null);
-                  }}
-                  className={`px-3 py-1.5 rounded-md text-[11px] font-bold transition-all border whitespace-nowrap ${
-                    isSelected
-                      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--text-primary)]'
-                      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-legend)] hover:text-[var(--text-primary)]'
-                  }`}
-                  title={max === Infinity ? 'Show all routes' : `Show routes running every ${max} min or better`}
+                  onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
+                  className={rowBtn(isSelected)}
+                  title={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
                 >
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
                   {label === 'Infrequent' ? 'All' : label}
                 </button>
               );
@@ -103,25 +122,19 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         )}
       </div>
 
+      {/* Day */}
       <div className="relative">
-        <button onClick={() => setOpenChip((c) => (c === 'day' ? null : 'day'))} className={chipClass(true)}>
+        <button onClick={() => toggle('day')} className={chipClass(true)}>
           Day
           <Dot show={true} />
         </button>
         {openChip === 'day' && (
-          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex gap-1">
+          <div className={`${PANEL} w-36`}>
             {(['Weekday', 'Saturday', 'Sunday'] as const).map((d) => (
               <button
                 key={d}
-                onClick={() => {
-                  setDay(d);
-                  setOpenChip(null);
-                }}
-                className={`px-3 py-1.5 rounded-md text-[11px] font-bold transition-all border whitespace-nowrap ${
-                  day === d
-                    ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                    : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-                }`}
+                onClick={() => { setDay(d); setOpenChip(null); }}
+                className={rowBtn(day === d)}
               >
                 {d}
               </button>
@@ -130,58 +143,62 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         )}
       </div>
 
+      {/* Mode */}
       <div className="relative">
-        <button onClick={() => setOpenChip((c) => (c === 'mode' ? null : 'mode'))} className={chipClass(selectedModes.size > 0)}>
+        <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
           Mode
           <Dot show={selectedModes.size > 0} />
         </button>
         {openChip === 'mode' && (
-          <div className="absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex gap-1">
-            {MODES.map((m) => {
-              const isActive = selectedModes.has(m.id);
-              return (
-                <button
-                  key={m.id}
-                  onClick={() => toggleMode(m.id)}
-                  className={`px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border ${
-                    isActive
-                      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  {m.label}
-                </button>
-              );
-            })}
+          <div className={`${PANEL} w-36`}>
+            {MODES.map((m) => (
+              <button
+                key={m.id}
+                onClick={() => toggleMode(m.id)}
+                className={rowBtn(selectedModes.has(m.id))}
+              >
+                {m.label}
+              </button>
+            ))}
           </div>
         )}
       </div>
+
+      {/* Agencies */}
       <div className="relative">
-        <button onClick={() => setOpenChip((c) => (c === 'agencies' ? null : 'agencies'))} className={chipClass(selectedAgencies.size > 0)}>
+        <button onClick={() => toggle('agencies')} className={chipClass(selectedAgencies.size > 0)}>
           Agencies
           <Dot show={selectedAgencies.size > 0} />
         </button>
         {openChip === 'agencies' && (
-          <div className="absolute top-10 right-0 w-56 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-wrap gap-1">
-            {agencies.map((a) => {
-              const isActive = selectedAgencies.has(a.slug);
-              return (
-                <button
-                  key={a.slug}
-                  onClick={() => toggleAgency(a.slug)}
-                  className={`px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border whitespace-nowrap ${
-                    isActive
-                      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  {a.name}
-                </button>
-              );
-            })}
+          <div className={`${PANEL} w-52`}>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">
+              <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+              <input
+                ref={agencySearchRef}
+                value={agencyQuery}
+                onChange={e => setAgencyQuery(e.target.value)}
+                placeholder="Search…"
+                className="flex-1 bg-transparent text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
+              />
+            </div>
+            <div className="max-h-52 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+              {agencies
+                .filter(a => a.name.toLowerCase().includes(agencyQuery.toLowerCase()))
+                .map((a) => (
+                  <button
+                    key={a.slug}
+                    onClick={() => toggleAgency(a.slug)}
+                    className={rowBtn(selectedAgencies.has(a.slug))}
+                  >
+                    {a.name}
+                  </button>
+                ))}
+            </div>
           </div>
         )}
       </div>
+
     </div>
   );
 };
