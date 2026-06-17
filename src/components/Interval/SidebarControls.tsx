@@ -6,7 +6,7 @@ import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute } from '../../utils/livePolling';
-import { titleCase, cleanHeadsign, fmtHeadway } from '../../utils/format';
+import { titleCase, cleanHeadsign, fmtHeadway, formatRemDisplay } from '../../utils/format';
 
 interface SidebarControlsProps {
   query: string;
@@ -245,14 +245,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             )}
             <div className="space-y-2">
-              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey, headway }) => (
+              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey, headway, agencyName }) => (
                 <div key={shortName} className="text-[11px]">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
                       className="font-black text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
                     >
-                      {shortName}
+                      {formatRemDisplay(shortName, longName) || shortName}
                     </button>
                     {headway && (
                       <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)]">
@@ -264,7 +264,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       </span>
                     )}
                   </div>
-                  {headsigns.length > 0 && (
+                  {headsigns.length > 0 && !/^A[0-9]/.test(shortName) && (
                     <div className="mt-0.5 space-y-0.5">
                       {[...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))]
                         .filter(Boolean)
@@ -286,8 +286,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <div className="flex items-start justify-between -mt-2 -mr-2 mb-1">
               <div className="flex-1 mt-2">
                 <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
-                  {currentRoute.routeShortName || currentRoute.routeId}
-                  {currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()
+                  {(() => {
+                    const rem = formatRemDisplay(currentRoute.routeShortName, currentRoute.routeLongName);
+                    if (rem && rem !== (currentRoute.routeShortName || '')) return rem;
+                    return currentRoute.routeShortName || currentRoute.routeId;
+                  })()}
+                  {!formatRemDisplay(currentRoute.routeShortName ?? undefined, currentRoute.routeLongName ?? undefined) && currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()
                     ? ` — ${currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}`
                     : ''}
                 </h3>
@@ -424,7 +428,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         : 'text-[var(--text-primary)] hover:bg-[var(--accent-bg)]'
                     }`}
                   >
-                    <span className="font-black shrink-0">{r.routeShortName ?? r.key}</span>
+                    <span className="font-black shrink-0">{formatRemDisplay(r.routeShortName, r.routeLongName) || r.routeShortName || r.key}</span>
                     <span className="truncate text-[var(--text-muted)] font-bold flex-1 text-right">
                       {r.agencyName}
                     </span>

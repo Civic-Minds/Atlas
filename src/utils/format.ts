@@ -1,4 +1,4 @@
-export { cleanHeadsign } from '../../shared/cleanHeadsign';
+export { cleanHeadsign, formatRemDisplay } from '../../shared/cleanHeadsign';
 
 const TRANSIT_ACRONYMS: Record<string, string> = {
   Go: 'GO',
@@ -29,5 +29,7 @@ export function titleCase(s: string): string {
     .replace(/\b\w+/g, (word, offset) =>
       offset > 0 && KEEP_LOWER.test(word) ? word : word.replace(/^\w/, c => c.toUpperCase())
     )
-    .replace(/\b(Go|Dc|Yrt|Ttc|Hsr|Grt|Brt|Lrt|Nfta|Ltc|Ktc)\b/g, m => TRANSIT_ACRONYMS[m] ?? m);
+    .replace(/\b(Go|Dc|Yrt|Ttc|Hsr|Grt|Brt|Lrt|Nfta|Ltc|Ktc)\b/g, m => TRANSIT_ACRONYMS[m] ?? m)
+    .replace(/l'orme/gi, "l'Orme")
+    .replace(/à-l'/gi, "à-l'");
 }
