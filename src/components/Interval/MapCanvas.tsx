@@ -133,9 +133,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       const isCorridor = !!(p as any)?.isCorridor;
 
-      // Visible line is purely decorative — interaction is handled by the wider
-      // invisible "hit" layer below, so thin lines stay easy to click without
-      // visually thickening them.
+      // Thickness rules (plain English):
+      // - Rail (routeType=2) always +1 thicker than buses (to distinguish the mode)
+      // - Selected route: thickest (4 bus / 5 rail)
+      // - Search active + match: boosted (3 bus / 4 rail)
+      // - Normal visible: base (2 bus / 3 rail)
+      // - Dimmed/non-match: thin (0.5 bus / 1 rail)
+      // - Corridors: 2.5 when visible
+      // - Hit layer (invisible): 16 for easy clicking
+      // Frequency info comes ONLY from color. Thickness is for mode + state only.
       const isRail = p?.routeType === 2;
 
       if (selectedRoute !== null) {
