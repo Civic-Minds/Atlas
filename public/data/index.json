@@ -219,7 +219,7 @@
     },
     {
       "slug": "stm",
-      "name": "STM (Montréal)",
+      "name": "STM",
       "center": [
         45.5017,
         -73.5673
@@ -239,7 +239,7 @@
     },
     {
       "slug": "stl",
-      "name": "STL (Laval)",
+      "name": "STL",
       "center": [
         45.61,
         -73.71
@@ -259,7 +259,7 @@
     },
     {
       "slug": "rtl",
-      "name": "RTL (Longueuil)",
+      "name": "RTL",
       "center": [
         45.538,
         -73.465
