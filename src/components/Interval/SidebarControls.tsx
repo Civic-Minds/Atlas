@@ -6,7 +6,7 @@ import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute } from '../../utils/livePolling';
-import { titleCase, cleanHeadsign, fmtHeadway, formatRemDisplay } from '../../utils/format';
+import { titleCase, cleanHeadsign, fmtHeadway, formatRemDisplay, getRouteLabel } from '../../utils/format';
 
 interface SidebarControlsProps {
   query: string;
@@ -252,7 +252,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
                       className="font-black text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
                     >
-                      {formatRemDisplay(shortName, longName) || shortName}
+                      {getRouteLabel(shortName, longName, agencyName)}
                     </button>
                     {headway && (
                       <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)]">
@@ -286,16 +286,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <div className="flex items-start justify-between -mt-2 -mr-2 mb-1">
               <div className="flex-1 mt-2">
                 <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
-                  {(() => {
-                    const remLabel = formatRemDisplay(currentRoute.routeShortName, currentRoute.routeLongName);
-                    if (remLabel && remLabel !== currentRoute.routeShortName) return remLabel;
-                    const short = currentRoute.routeShortName || currentRoute.routeId;
-                    if (currentRoute.routeLongName && currentRoute.routeLongName.toLowerCase().trim() !== `route ${currentRoute.routeShortName}`.toLowerCase().trim()) {
-                      const title = currentRoute.routeLongName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                      return `${short} — ${title}`;
-                    }
-                    return short;
-                  })()}
+                  {getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, currentRoute.agencyName || (currentRoute as any).agencySlug)}
                 </h3>
                 {(() => {
                   const slug = (currentRoute as any).agencySlug as string | undefined;
@@ -430,7 +421,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         : 'text-[var(--text-primary)] hover:bg-[var(--accent-bg)]'
                     }`}
                   >
-                    <span className="font-black shrink-0">{formatRemDisplay(r.routeShortName, r.routeLongName) || r.routeShortName || r.key}</span>
+                    <span className="font-black shrink-0">{getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName)}</span>
                     <span className="truncate text-[var(--text-muted)] font-bold flex-1 text-right">
                       {r.agencyName}
                     </span>

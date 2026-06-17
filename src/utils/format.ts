@@ -1,4 +1,4 @@
-export { cleanHeadsign, formatRemDisplay } from '../../shared/cleanHeadsign';
+export { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
 
 const TRANSIT_ACRONYMS: Record<string, string> = {
   Go: 'GO',

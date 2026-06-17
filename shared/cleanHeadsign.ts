@@ -76,3 +76,30 @@ export function formatRemDisplay(shortName: string | null | undefined, longName:
   const cleaned = longName.replace(/A[0-9]\s*-\s*/g, '').replace(/\s*\/\s*/g, ' / ');
   return `${shortName} — ${cleaned}`;
 }
+
+export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string): string {
+  if (!shortName) return longName || '';
+
+  const rem = formatRemDisplay(shortName, longName);
+  if (rem && rem !== shortName) return rem;
+
+  if (!longName) return shortName;
+
+  let cleanedLong = longName;
+
+  // STM metro: "Ligne 5 - Bleue" -> "Bleue"
+  if ((agencyName && /stm/i.test(agencyName)) || /^Ligne\s+\d/i.test(longName)) {
+    cleanedLong = longName.replace(/^Ligne\s+\d+\s*-\s*/i, '').trim();
+  }
+
+  // General: strip if longName basically repeats the short or "route X"
+  const lowerLong = cleanedLong.toLowerCase();
+  const lowerShort = shortName.toLowerCase();
+  if (lowerLong === `route ${lowerShort}` || lowerLong === lowerShort || lowerLong.includes(lowerShort + ' ')) {
+    return shortName;
+  }
+
+  if (!cleanedLong) return shortName;
+
+  return `${shortName} — ${cleanedLong}`;
+}
