@@ -1,10 +1,10 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
-  LIVE_POLLING_CONFIG,
+  getLiveRouteConfig,
   matchesLiveRouteId,
 } from '../../shared/livePollingConfig.js';
 
-const cfg = LIVE_POLLING_CONFIG.burlington;
+const cfg = getLiveRouteConfig('burlington', '1')!;
 const TARGET_STOPS = cfg.targetStops;
 const POLL_INTERVAL_MS = 30_000;
 const RUN_MINUTES = 30;
@@ -21,7 +21,7 @@ async function poll() {
   for (const e of feed.entity) {
     const vp = e.vehicle;
     const routeId = vp?.trip?.routeId;
-    if (!vp || !matchesLiveRouteId('burlington', routeId)) continue;
+    if (!vp || !matchesLiveRouteId(cfg, routeId)) continue;
     const stopId = vp.stopId;
     const vehicleId = vp.vehicle?.id;
     if (!stopId || !vehicleId || !(stopId in TARGET_STOPS)) continue;

@@ -1,12 +1,12 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
-  LIVE_POLLING_CONFIG,
+  getLiveRouteConfig,
   matchesLiveRouteId,
   resolvePatternKey,
   scheduleOffsetForPattern,
 } from '../../shared/livePollingConfig.js';
 
-const cfg = LIVE_POLLING_CONFIG.hamilton;
+const cfg = getLiveRouteConfig('hamilton', '01')!;
 const TARGET_STOPS = cfg.targetStops;
 const POLL_INTERVAL_MS = 30_000;
 const RUN_MINUTES = 30;
@@ -24,7 +24,7 @@ async function poll() {
   for (const e of feed.entity) {
     const vp = e.vehicle;
     const routeId = vp?.trip?.routeId;
-    if (!vp || !matchesLiveRouteId('hamilton', routeId)) continue;
+    if (!vp || !matchesLiveRouteId(cfg, routeId)) continue;
     const stopId = vp.stopId;
     const vehicleId = vp.vehicle?.id;
     if (!stopId || !vehicleId || !(stopId in TARGET_STOPS)) continue;

@@ -62,7 +62,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
-  const liveData = useLiveAdherence();
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -99,6 +98,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       });
     return { ...first, directions };
   }, [selectedRoute, layers, currentDay]);
+
+  const liveAgencySlug = useMemo(() => {
+    if (!currentRoute) return null;
+    const slug = agencies.find(a => a.name === currentRoute.agencyName)?.slug ?? null;
+    if (!slug || !isLivePollingRoute(slug, currentRoute.routeShortName)) return null;
+    return slug;
+  }, [currentRoute, agencies]);
+
+  const liveRouteShortName = liveAgencySlug ? currentRoute?.routeShortName ?? null : null;
+  const liveData = useLiveAdherence(liveAgencySlug, liveRouteShortName);
 
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
