@@ -182,7 +182,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           );
         })()}
         {openChip === 'agencies' && (
-          <div className={`${PANEL} w-52`}>
+          <div className={`${PANEL} w-56`}>
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">
               <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
               <input
@@ -216,6 +216,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                           setSelectedAgencies(next);
                         }}
                         className={rowBtn(active)}
+                        title={g.name}
                       >
                         {g.name}
                       </button>
