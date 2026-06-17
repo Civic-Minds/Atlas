@@ -216,6 +216,56 @@
       ],
       "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/stratford.json",
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip"
+    },
+    {
+      "slug": "stm",
+      "name": "Société de transport de Montréal (STM)",
+      "center": [
+        45.5017,
+        -73.5673
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/stm.json",
+      "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip"
+    },
+    {
+      "slug": "rem",
+      "name": "Réseau express métropolitain (REM)",
+      "center": [
+        45.5,
+        -73.57
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/rem.json",
+      "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip"
+    },
+    {
+      "slug": "stl",
+      "name": "Société de transport de Laval (STL)",
+      "center": [
+        45.61,
+        -73.71
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/stl.json",
+      "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip"
+    },
+    {
+      "slug": "exo",
+      "name": "exo Trains",
+      "center": [
+        45.5,
+        -73.57
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo.json",
+      "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip"
+    },
+    {
+      "slug": "rtl",
+      "name": "Réseau de transport de Longueuil (RTL)",
+      "center": [
+        45.538,
+        -73.465
+      ],
+      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/rtl.json",
+      "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip"
     }
   ]
 }

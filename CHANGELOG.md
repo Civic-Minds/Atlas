@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Montreal transit agencies**: STM (Société de transport de Montréal — bus + metro), REM (Réseau express métropolitain), STL (Laval), RTL (Longueuil), and exo commuter trains. Five new agencies on the shared regional frequency map, with stable feedUrls for weekly refresh. Direct downloads from official sources; processed via the standard pipeline.
+
 ### Fixed
 - **Loading indicator covers locate button**: moved loading spinner from bottom-right to bottom-left so it can no longer overlap the locate button or the Nearby Routes panel.
 - **Sticky native tooltip on locate button and other controls**: replaced `title` attributes with `aria-label` across all buttons (locate, reset view, filter panel toggles, frequency tier chips). Eliminates the browser's slow-to-dismiss native tooltip.
