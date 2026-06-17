@@ -1,31 +1,15 @@
 import type { Agency } from '../App';
 
+// GTHA core — good starting view for the full 20-agency network.
+// The reset button uses fitBounds to show all agencies; this is just the initial load state.
 const DEFAULT_CENTER: [number, number] = [43.65, -79.45];
-const DEFAULT_ZOOM = 8;
+const DEFAULT_ZOOM = 9;
 
-/** Center and zoom that frame every agency in the registry. */
-export function getRegionalView(agencies: Agency[]): { center: [number, number]; zoom: number } {
-  if (agencies.length === 0) {
-    return { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM };
-  }
-
-  const lats = agencies.map(a => a.center[0]);
-  const lons = agencies.map(a => a.center[1]);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const minLon = Math.min(...lons);
-  const maxLon = Math.max(...lons);
-
-  const center: [number, number] = [(minLat + maxLat) / 2, (minLon + maxLon) / 2];
-  const maxSpan = Math.max(maxLat - minLat, maxLon - minLon);
-
-  let zoom = DEFAULT_ZOOM;
-  if (maxSpan < 1.5) zoom = 9;
-  else if (maxSpan < 3) zoom = 8;
-  else if (maxSpan < 5) zoom = 7;
-  else zoom = 6.5;
-
-  return { center, zoom };
+/** Initial center and zoom for MapContainer. Always returns the GTHA core default —
+ *  outlier agencies like Kingston and London drag a computed midpoint too far east/west.
+ *  The reset button (getAgencyBounds + fitBounds) handles "show everything." */
+export function getRegionalView(_agencies: Agency[]): { center: [number, number]; zoom: number } {
+  return { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM };
 }
 
 export function getAgencyBounds(agencies: Agency[]): [[number, number], [number, number]] | null {

@@ -345,9 +345,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         const dimmed = d.headway != null && maxHeadway !== Infinity && d.headway > maxHeadway;
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
-                            <span className="font-bold text-[var(--text-muted)] block truncate">
-                              {d.headsign ? fmtH(d) : `Direction ${gi + 1}`}
-                            </span>
+                            {(d.headsign || directionGroups.length > 1) && (
+                              <span className="font-bold text-[var(--text-muted)] block truncate">
+                                {d.headsign ? fmtH(d) : `Direction ${gi + 1}`}
+                              </span>
+                            )}
                             <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
                               <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(d.tier ?? null) }} />
                               {`every ${d.headway} min`}

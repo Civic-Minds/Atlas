@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Initial map zoom way too far out**: `getRegionalView` was computing a midpoint over all agencies including Kingston and London, dragging the center east and producing zoom 7. Initial load now always uses the GTHA core default (43.65, -79.45, zoom 9); the reset button still uses `fitBounds` to show all agencies.
+- **Mouse wheel zoom too slow**: `zoomDelta` 0.5 → 1, `wheelPxPerZoomLevel` 120 → 60 (back to Leaflet defaults).
+- **One-way routes showing "Direction 1"**: when a route has a single direction and no headsign the label is meaningless. Direction heading is now omitted entirely for single-direction routes with no headsign; it still shows for multi-direction routes and routes with a headsign.
 - **API error leakage**: `/api/live-adherence` and `/api/gtfs-rt` no longer return raw `err.message` to clients on 500 errors (CodeQL `js/stack-trace-exposure`). Errors are now logged to the Vercel function log and a generic "Internal server error" is returned instead.
 - **Station View stop collision across agencies**: stops with the same `stopId` from different agencies were colliding — clicking one could match another agency's stop. Click handlers in `MapCanvas` now set `selectedStop` as `agencySlug::stopId`; `SidebarControls` and `pointToLayer` both resolve using the same composite key.
 
