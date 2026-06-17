@@ -2,15 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.0.0] - 2026-06-17
 
 ### Added
 - **Combined-frequency corridors toggle**: added a "Show combined corridors" toggle in the Settings panel. This surfaces segments where multiple overlapping routes provide higher aggregate frequency (e.g. 504 King + 501 Queen on Queen St). To reduce noise, corridors are only shown if they have 3+ overlapping routes or provide high frequency (<= 15 min).
 - **Rail stop visualization**: rail stops (serving route types 0, 1, or 2) now render on the map starting at zoom level 12 (other stops show at 13/14). Rail stops are styled with a larger radius and higher contrast (white fill in light mode, brand accent in dark mode) to distinguish them from bus hubs.
 - **Frequency in Station View**: the Station View sidebar now displays the best headway for each route serving that stop for the currently selected day type. Includes a small frequency-tier color dot for consistent visual context.
-
-### Fixed
-- **Day filter chip truncation**: fixed an issue where the "Weekday" label was truncated to "Wee" in the service day selector. The Day chip now correctly displays the full selected day name (Weekday, Saturday, or Sunday), and the dropdown buttons use `whitespace-nowrap` with improved width constraints to ensure text fits across all platforms.
 - **On-demand live adherence** (`/api/live-adherence`): selecting a covered route fetches GTFS-RT TripUpdates and computes headway drift in real time — no background cron or Blob snapshots.
 - **Live route coverage (4 routes)**: Burlington 1 & 10, Hamilton 01 (King) & 10 (B-Line). Each polls 3–5 anchor stops (termini + mid-corridor), configured in `shared/livePollingConfig.ts`.
 - **Shared `computeLiveAdherence`** (`shared/computeLiveAdherence.ts`) — GTFS-RT parsing logic used by the live API.
@@ -23,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - **Support for bidirectional routes with shared `direction_id`**: Generalized the pipeline's headsign-splitting logic to all agencies. This ensures that bus routes using a single `direction_id` for both ways (like Simcoe LINX) are correctly processed into separate features for each direction on the map.
 
 ### Fixed
+- **Day filter chip truncation**: fixed an issue where the "Weekday" label was truncated to "Wee" in the service day selector. The Day chip now correctly displays the full selected day name (Weekday, Saturday, or Sunday), and the dropdown buttons use `whitespace-nowrap` with improved width constraints to ensure text fits across all platforms.
 - **Live API on Vercel**: `/api/live-adherence` and `/api/gtfs-rt` use correct `../shared/` imports (were `../../shared/`, causing function crashes) and parse query strings from relative `req.url` (Vercel serverless does not support `new URL(req.url)` alone).
 - **Hamilton 01 live adherence offsets**: inbound short-turn anchor offsets updated from GTFS (`1771` → 37 min, `355415` → 39 min; outbound `1403` → 31 min) so segment drift matches scheduled short-turn trips.
 - **Niagara Region Transit day/night route pairs**: NRT uses 3xx (weekday daytime) and 4xx (evening/weekend) for the same corridor. A feed-specific preprocess (`preprocess: "nrt-day-night"` in `index.json`) reassigns 4xx trips onto their 3xx twin before analysis so corridors get full-day headway tiers instead of false `span` on evening-only numbers. A warn-only shape audit logs evening shapes that do not match any daytime geometry (merge is not blocked).
