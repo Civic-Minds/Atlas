@@ -137,11 +137,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       // Thickness rules (plain English):
       // - Rail (routeType=2) always +1 thicker than buses (to distinguish the mode)
-      // - Selected route: thickest (4 bus / 5 rail)
-      // - Search active + match: boosted (3 bus / 4 rail)
-      // - Normal visible: base (2 bus / 3 rail)
+      // - Selected route: thickest (3.5 bus / 4.5 rail)
+      // - Search active + match: boosted (2.5 bus / 3.5 rail)
+      // - Normal visible: base (1.5 bus / 2.5 rail)
       // - Dimmed/non-match: thin (0.5 bus / 1 rail)
-      // - Corridors: 2.5 when visible
+      // - Corridors: 2 when visible
       // - Hit layer (invisible): 16 for easy clicking
       // Frequency info comes ONLY from color. Thickness is for mode + state only.
       const isRail = p?.routeType === 2;
@@ -165,13 +165,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           const cAgencySlug = (p as any)?.agencySlug;
           const contrib = cRoutes.some((rid) => routeKey({ agencySlug: cAgencySlug, routeId: rid } as any) === selectedRoute);
           if (contrib) {
-            return { color: getTierColor((p as any)?.tier ?? null), weight: 3, opacity: 0.9, interactive: false };
+            return { color: getTierColor((p as any)?.tier ?? null), weight: 2.5, opacity: 0.9, interactive: false };
           }
           return { color: '#1e293b', weight: 0.5, opacity: 0.15, interactive: false };
         }
         const key = p ? routeKey(p) : null;
         if (key === selectedRoute) {
-          return { color: getTierColor(p?.tier ?? null), weight: isRail ? 5 : 4, opacity: 1, interactive: false };
+          return { color: getTierColor(p?.tier ?? null), weight: isRail ? 4.5 : 3.5, opacity: 1, interactive: false };
         }
         // Rail lines stay slightly visible when dimmed so the network structure reads through
         return { color: '#1e293b', weight: isRail ? 1 : 0.5, opacity: isRail ? 0.25 : 0.2, interactive: false };
@@ -179,21 +179,21 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const match = matchesQuery(p);
       if (!match) {
         if (isCorridor) {
-          return { color: lightMode ? '#cbd5e1' : '#334155', weight: 1.25, opacity: 0.2, interactive: false };
+          return { color: lightMode ? '#cbd5e1' : '#334155', weight: 1, opacity: 0.2, interactive: false };
         }
         return { color: lightMode ? '#cbd5e1' : '#334155', weight: isRail ? 1 : 0.5, opacity: 0.12, interactive: false };
       }
       if (isCorridor) {
         return {
           color: getTierColor((p as any)?.tier ?? null),
-          weight: 2.5,
+          weight: 2,
           opacity: 0.9,
           interactive: false,
         };
       }
       return {
         color: getTierColor(p?.tier ?? null),
-        weight: q !== '' ? (isRail ? 4 : 3) : isRail ? 3 : 2,
+        weight: q !== '' ? (isRail ? 3.5 : 2.5) : isRail ? 2.5 : 1.5,
         opacity: p?.tier ? (q !== '' ? 1 : isRail ? 0.9 : 0.8) : 0.3,
         interactive: false,
       };
