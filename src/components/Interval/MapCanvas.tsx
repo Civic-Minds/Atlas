@@ -24,6 +24,7 @@ interface MapCanvasProps {
   onBoundsChange: (b: ViewportBounds) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
+  routesForStop?: { slug: string; routeIds: Set<string> } | null;
 }
 
 function MapClickHandler({ onClear }: { onClear: () => void }) {
@@ -113,6 +114,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onBoundsChange,
   resetViewKey,
   onLocate,
+  routesForStop,
 }) => {
   const regionalView = getRegionalView(agencies);
   const [zoom, setZoom] = useState(regionalView.zoom);
@@ -143,6 +145,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       // - Hit layer (invisible): 16 for easy clicking
       // Frequency info comes ONLY from color. Thickness is for mode + state only.
       const isRail = p?.routeType === 2;
+
+      if (routesForStop) {
+        const featSlug = (p as any)?.agencySlug;
+        const routeId = p?.routeId;
+        const cRouteIds = (p as any)?.routeIds as string[] | undefined;
+        const servesStop = featSlug === routesForStop.slug &&
+          (!routeId || routesForStop.routeIds.has(routeId)) &&
+          (!cRouteIds || cRouteIds.some((rid) => routesForStop.routeIds.has(rid)));
+        if (!servesStop) {
+          return { color: lightMode ? '#cbd5e1' : '#334155', weight: isRail ? 1 : 0.5, opacity: 0.12, interactive: false };
+        }
+      }
 
       if (selectedRoute !== null) {
         if (isCorridor) {
@@ -184,7 +198,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         interactive: false,
       };
     },
-    [maxHeadway, q, selectedRoute, lightMode, matchesQuery]
+    [maxHeadway, q, selectedRoute, lightMode, matchesQuery, routesForStop]
   );
 
   // Invisible, much wider line drawn under the visible one purely to make routes
