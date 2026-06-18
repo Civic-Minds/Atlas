@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - **Stop selection dimming**: when a stop is selected, routes not serving it are now dimmed on the map (instead of hidden), providing network context while highlighting relevant routes.
 
 ### Improved
+- **Terminal / hub stop display at overview zoom**: when zoomed out, only major hubs (3+ routes or GTFS location_type=1 stations) and rail stops are shown as stop markers. This prevents dense terminal loops/bays from rendering as ugly overlapping blobs of tiny circles. Full per-bay detail appears only when you zoom in closer (≥15). Minor stops are also smaller/fainter. Clean single markers now represent terminals far out.
 - **Montreal/REM + French headsign presentation**: REM branches now show cleanly as e.g. "A3-A1 — Anse-à-l'Orme / Brossard" (instead of redundant "A3-A1 — A3 - Anse-à-..."). Fixed title-casing for accented French names ("Jérôme", "Anse-à-l'Orme" etc.). Stripped verbose "Destination " prefixes on exo headsigns. Sidebar panel constrained to search bar width (`w-64`) with `break-words` + `title` tooltips + overflow clip to prevent cutoff on long destinations.
 - **Agency filter names**: shortened MTL agencies to clean short forms (STM, STL, RTL) without bracketed qualifiers or cities for less clutter in the list.
 - **TTC headsign cleaning**: better stripping for express routes like "960b Steeles West Express Towards Finch Station Via Pioneer Village Station" → "Finch via Pioneer Village". Improves long verbose TTC headsigns.
