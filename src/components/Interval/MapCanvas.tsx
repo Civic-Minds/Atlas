@@ -77,10 +77,10 @@ function ResetViewControl({ resetKey, agencies }: { resetKey?: number; agencies:
       prevKey.current = resetKey;
       const bounds = getAgencyBounds(agencies);
       if (bounds) {
-        map.fitBounds(bounds, { padding: [48, 48], duration: 1.2, maxZoom: 10 });
+        map.flyToBounds(bounds, { padding: [64, 64], maxZoom: 9, duration: 1.8 });
       } else {
         const { center, zoom } = getRegionalView(agencies);
-        map.flyTo(center, zoom, { duration: 1.2 });
+        map.flyTo(center, zoom, { duration: 1.8 });
       }
     }
   }, [map, resetKey, agencies]);
