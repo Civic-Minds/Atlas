@@ -8,4 +8,4 @@ binding = "BUCKET"
 bucket_name = "atlas-live"
 
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["* * * * *"]
