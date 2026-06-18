@@ -30,6 +30,7 @@ export interface IntervalFilters {
   modes: Set<number>;    // route_type
   day: 'Weekday' | 'Saturday' | 'Sunday';
   selectedStop: string | null; // stopId
+  selectedRoute?: string | null; // force-include the full geometry of this route even if it doesn't match frequency/agency/etc filters
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
   livePollingOnly?: boolean; // only show routes covered by Atlas's GTFS-RT adherence polling
@@ -58,12 +59,19 @@ function resolveTierVal(p: ShapeProperties): number | null {
 function passesRouteFilter(
   p: ShapeProperties,
   slug: string,
-  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean },
+  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
   // Note: routesForStop now only used for sidebar; map shows full context with dimming in styleFeature
+
+  // Explicitly selected route (e.g. from station panel click) should always be visible with full geometry,
+  // bypassing frequency, agency, span, etc. filters.
+  const thisKey = routeKey({ ...p, agencySlug: slug } as any);
+  if (filters.selectedRoute && thisKey === filters.selectedRoute) {
+    return true;
+  }
 
   if (filters.agencies.size > 0 && !filters.agencies.has(slug)) return false;
   if (filters.livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
@@ -118,7 +126,7 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, selectedStop, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
+  const { query, maxHeadway, agencies, modes, day, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -172,7 +180,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop);
     }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors]);
+  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, selectedRoute]);
 
   const filteredLayers = useMemo(() => {
     const result: AgencyLayers = {};

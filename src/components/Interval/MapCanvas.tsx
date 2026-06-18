@@ -13,6 +13,7 @@ import type { ViewportBounds } from '../../hooks/useIntervalStats';
 interface MapCanvasProps {
   agencies: Agency[];
   layers: AgencyLayers;
+  allLayers?: AgencyLayers; // raw unfiltered data, for computing full route bounds etc.
   maxHeadway: number;
   q: string;
   selectedRoute: string | null;
@@ -86,6 +87,59 @@ function ResetViewControl({ resetKey, agencies }: { resetKey?: number; agencies:
   return null;
 }
 
+// When a route is selected (especially from the station panel), fly to show its full extent.
+// Uses raw layers so we get the complete geometry even if filtered by frequency etc.
+function RouteZoomer({ selectedRoute, layers }: { selectedRoute: string | null; layers: AgencyLayers }) {
+  const map = useMap();
+  const prev = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedRoute || selectedRoute === prev.current) {
+      prev.current = selectedRoute;
+      return;
+    }
+    prev.current = selectedRoute;
+
+    const coords: [number, number][] = [];
+    Object.values(layers).forEach((fc) => {
+      fc.features.forEach((f) => {
+        if (f.geometry.type === 'Point') return;
+        const p = f.properties as any;
+        if (routeKey(p) !== selectedRoute) return;
+
+        const geom = f.geometry as any;
+        if (geom.type === 'LineString' && Array.isArray(geom.coordinates)) {
+          coords.push(...(geom.coordinates as [number, number][]));
+        } else if (geom.type === 'MultiLineString' && Array.isArray(geom.coordinates)) {
+          for (const line of geom.coordinates as [number, number][][]) {
+            if (Array.isArray(line)) coords.push(...line);
+          }
+        }
+      });
+    });
+
+    if (coords.length < 2) return;
+
+    const bounds = L.latLngBounds(coords.map(([lng, lat]) => [lat, lng]));
+    if (!bounds.isValid()) return;
+
+    // Only adjust if the whole route isn't already comfortably in view
+    const current = map.getBounds();
+    const alreadyVisible =
+      current.contains(bounds.getSouthWest()) && current.contains(bounds.getNorthEast());
+
+    if (!alreadyVisible) {
+      map.flyToBounds(bounds, {
+        padding: [50, 50],
+        maxZoom: 14, // don't zoom in too aggressively on short/local routes
+        duration: 0.9,
+      });
+    }
+  }, [selectedRoute, layers, map]);
+
+  return null;
+}
+
 function BoundsReporter({ onBoundsChange, onZoomChange }: { onBoundsChange: (b: ViewportBounds) => void; onZoomChange: (z: number) => void }) {
   const map = useMap();
   const report = useCallback(() => {
@@ -103,6 +157,7 @@ function BoundsReporter({ onBoundsChange, onZoomChange }: { onBoundsChange: (b: 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
   agencies,
   layers,
+  allLayers,
   maxHeadway,
   q,
   selectedRoute,
@@ -290,6 +345,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
       <ResetViewControl resetKey={resetViewKey} agencies={agencies} />
       <LocateControl onLocate={onLocate} />
+      <RouteZoomer selectedRoute={selectedRoute} layers={allLayers || layers} />
       {Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         // Split route shapes from stop points — stops mount/unmount on zoom without
