@@ -2,7 +2,7 @@
   "name": "atlas",
   "private": true,
   "description": "A hosted frequency map for transit routes.",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
