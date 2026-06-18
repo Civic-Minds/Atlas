@@ -7,7 +7,7 @@ import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
-import { isLivePollingRoute } from '../../utils/livePolling';
+import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, cleanHeadsign, fmtHeadway, formatRemDisplay, getRouteLabel } from '../../utils/format';
 
 interface SidebarControlsProps {
@@ -29,6 +29,8 @@ interface SidebarControlsProps {
   setSelectedStop: (s: string | null) => void;
   selectedRoute: string | null;
   setSelectedRoute: (r: string | null) => void;
+  disambiguationRoutes: string[] | null;
+  setDisambiguationRoutes: (routes: string[] | null) => void;
   layers: Record<string, GeoJSON.FeatureCollection>;
   currentDay: 'Weekday' | 'Saturday' | 'Sunday';
   hideSpan: boolean;
@@ -56,6 +58,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setSelectedStop,
   selectedRoute,
   setSelectedRoute,
+  disambiguationRoutes,
+  setDisambiguationRoutes,
   layers,
   currentDay,
   hideSpan,
@@ -181,8 +185,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentRoute) return null;
     const agencySlug = (currentRoute as any).agencySlug as string | null ?? null;
     if (!agencySlug || !isLivePollingRoute(agencySlug, currentRoute.routeShortName)) return null;
+    const cfg = getLiveRouteConfig(agencySlug, currentRoute.routeShortName);
+    const stopRows = cfg && liveData
+      ? liveData.arrivals.map(a => ({
+          stopId: a.stopId,
+          name: cfg.targetStops[a.stopId] ?? a.stopId,
+          avgGap: a.avgGap,
+          delta: a.headwayDeltaMin,
+        }))
+      : [];
     return {
       agencySlug,
+      scheduledMin: cfg?.scheduledHeadwayMin ?? null,
+      stopRows,
       delta: agencyHeadwayDelta(liveData, agencySlug),
       trips: agencyTripSummary(liveData, agencySlug),
     };
@@ -254,17 +269,58 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     stopAgencyFilter ? stopRoutes.filter(r => r.agencyName === stopAgencyFilter) : stopRoutes,
   [stopRoutes, stopAgencyFilter]);
 
-  const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null);
+  const disambigDetails = useMemo(() => {
+    if (!disambiguationRoutes) return null;
+    return disambiguationRoutes.map(key => {
+      for (const [slug, fc] of Object.entries(layers)) {
+        const f = fc.features.find(feat => {
+          const p = feat.properties as any;
+          return routeKey({ ...p, agencySlug: slug } as any) === key;
+        });
+        if (f) {
+          const p = f.properties as any;
+          return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: p.agencyName ?? '', color: getTierColor(p.tier) };
+        }
+      }
+      return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
+    });
+  }, [disambiguationRoutes, layers]);
+
+  const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes;
   if (!hasContent) return null;
 
   return (
-    <div className="absolute top-20 left-16 z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col overflow-hidden">
-      <div
+    <div className="absolute top-20 left-16 z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3">
+      {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
+        <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 pt-4 pb-3 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300 shrink-0">
+          <div className="mb-2 -mt-1">
+            <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">Multiple routes here</span>
+          </div>
+          <div className="space-y-2">
+            {disambigDetails.map(r => (
+              <button
+                key={r.key}
+                onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
+                className="w-full text-left hover:bg-[var(--bg-hover)] rounded-xl px-2 py-1.5 -mx-2 transition-colors group"
+              >
+                <div className="text-[13px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">
+                  {r.shortName}{r.longName ? ` — ${titleCase(r.longName)}` : ''}
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
+                  <span className="text-[11px] font-bold text-[var(--text-muted)]">{r.agencyName}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {(currentStop || currentRoute || (query !== '' && searchMatchResults !== null)) && <div
         ref={scrollRef}
         onScroll={checkScroll}
-        className="flex-1 min-h-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-4 rounded-2xl shadow-2xl transition-colors duration-200 overflow-y-auto overflow-x-hidden custom-scrollbar"
+        className="relative flex-1 min-h-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 pt-4 pb-2 rounded-2xl shadow-2xl transition-colors duration-200 overflow-y-auto overflow-x-hidden custom-scrollbar"
       >
-        {currentStop && (
+        {currentStop && !query.trim() && (
           <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
             <div className="flex items-center justify-between mb-2 -mt-2 -mr-2">
               <span className="text-[10px] font-black tracking-wide text-[var(--accent)]">Station View</span>
@@ -320,7 +376,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       {[...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))]
                         .filter(Boolean)
                         .map(ch => (
-                        <div key={ch} className="font-bold text-[var(--text-muted)] break-words" title={ch}>
+                        <div key={ch} className="font-bold text-[var(--text-muted)] break-words">
                           {/^to\s/i.test(ch) ? ch : `→ ${ch}`}
                         </div>
                       ))}
@@ -332,8 +388,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           </div>
         )}
 
-        {currentRoute && (
+        {currentRoute && !query.trim() && (
           <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
+            {liveRouteInfo && liveStatus !== 'noData' && (
+              <div className="flex items-center gap-1.5 -mt-1 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
+                <span className="text-[10px] font-black text-[var(--text-dim)]">Scheduled</span>
+              </div>
+            )}
             <div className="flex items-start justify-between -mt-2 -mr-2 mb-1">
               <div className="flex-1 mt-2">
                 <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
@@ -356,41 +418,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   );
                 })()}
               </div>
-              <button onClick={() => setSelectedRoute(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full shrink-0 transition-colors" aria-label="Close route panel">
-                <X className="w-3.5 h-3.5" />
-              </button>
             </div>
             {(() => {
               const byPeriod = currentRoute.directions[0]?.headwayByPeriod as HeadwayByPeriod | undefined;
               return byPeriod ? <HeadwaySparkline byPeriod={byPeriod} /> : null;
             })()}
-            {liveRouteInfo && liveStatus !== 'noData' && (
-              <div className="mb-3 px-2.5 py-2 rounded-lg bg-green-500/5 border border-green-500/15">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full bg-green-400 shrink-0 ${liveStatus === 'live' ? 'animate-pulse' : 'opacity-40'}`} />
-                  <span className="text-[10px] font-black text-green-400">Live</span>
-                  {liveStatus === 'pending' ? (
-                    <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
-                  ) : liveRouteInfo.delta != null ? (
-                    <span className="text-[10px] font-bold text-[var(--text-muted)]">
-                      avg headway {liveRouteInfo.delta > 0 ? `+${liveRouteInfo.delta}` : liveRouteInfo.delta} min vs schedule
-                    </span>
-                  ) : null}
-                </div>
-                {liveRouteInfo.trips && (
-                  <div className="flex gap-2 text-[10px] font-bold">
-                    <span className="text-[var(--text-muted)]">{liveRouteInfo.trips.total} trips</span>
-                    <span className="text-green-400">{liveRouteInfo.trips.onTime} on time</span>
-                    {liveRouteInfo.trips.late > 0 && (
-                      <span className="text-amber-400">{liveRouteInfo.trips.late} late</span>
-                    )}
-                    {liveRouteInfo.trips.early > 0 && (
-                      <span className="text-sky-400">{liveRouteInfo.trips.early} early</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
             <div className="space-y-3">
               {directionGroups.map((group, gi) => {
                 const fmtH = (d: ShapeProperties) => {
@@ -413,7 +445,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
                             {(d.headsign || directionGroups.length > 1) && (
-                              <span className="font-bold text-[var(--text-muted)] block break-words" title={d.headsign || ''}>
+                              <span className="font-bold text-[var(--text-muted)] block break-words" title={fmtH(d)}>
                                 {d.headsign ? fmtH(d) : `Direction ${gi + 1}`}
                               </span>
                             )}
@@ -439,7 +471,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       })}
                       {!hideSpan && group.span.length === 1 && (
                         <div key="s0" className="text-[11px]">
-                          <span className="font-bold text-[var(--text-muted)] block break-words" title={group.span[0].headsign || ''}>
+                          <span className="font-bold text-[var(--text-muted)] block break-words">
                             {group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'}
                           </span>
                           <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
@@ -501,9 +533,69 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
 
 
-      </div>
-      {canScrollMore && (
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 rounded-b-2xl bg-gradient-to-t from-[var(--bg-panel)] to-transparent" />
+        {canScrollMore && (
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 rounded-b-2xl bg-gradient-to-t from-[var(--bg-panel)] to-transparent" />
+        )}
+      </div>}
+
+      {liveRouteInfo && liveStatus !== 'noData' && !query.trim() && (
+        <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-4 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-2 shrink-0">
+          <div className="flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full bg-green-400 shrink-0 ${liveStatus === 'live' ? 'animate-pulse' : 'opacity-40'}`} />
+            <span className="text-[10px] font-black text-green-400">Live</span>
+            {liveStatus === 'pending' && (
+              <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
+            )}
+          </div>
+          {liveStatus === 'live' && (
+            <>
+              {liveRouteInfo.stopRows.length > 0 && (
+                <div className="space-y-2">
+                  {liveRouteInfo.stopRows.map(stop => {
+                    const absDelta = stop.delta == null ? null : Math.abs(stop.delta);
+                    const dotColor = absDelta == null ? 'var(--text-dim)'
+                      : absDelta >= 5 ? '#f87171'
+                      : absDelta >= 2 ? '#fbbf24'
+                      : '#4ade80';
+                    const deltaLabel = stop.delta == null ? null
+                      : absDelta! < 2 ? 'on time'
+                      : stop.delta > 0 ? `+${stop.delta} min`
+                      : `${stop.delta} min`;
+                    const deltaColor = absDelta == null ? ''
+                      : absDelta >= 5 ? 'text-red-400'
+                      : absDelta >= 2 ? 'text-amber-400'
+                      : 'text-green-400';
+                    return (
+                      <div key={stop.stopId} className="text-[11px]">
+                        <span className="font-bold text-[var(--text-muted)] block truncate" title={stop.name}>
+                          {stop.name}
+                        </span>
+                        <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
+                          {stop.avgGap != null ? `${stop.avgGap} min` : '—'}
+                          {deltaLabel != null && (
+                            <span className={`text-[10px] font-bold tabular-nums ${deltaColor}`}>{deltaLabel}</span>
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {liveRouteInfo.trips && (
+                <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] font-bold pt-2 border-t border-[var(--border-primary)]">
+                  <span className="text-green-400">{liveRouteInfo.trips.onTime} on time</span>
+                  {liveRouteInfo.trips.late > 0 && (
+                    <span className="text-amber-400">{liveRouteInfo.trips.late} late</span>
+                  )}
+                  {liveRouteInfo.trips.early > 0 && (
+                    <span className="text-sky-400">{liveRouteInfo.trips.early} early</span>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       )}
     </div>
   );

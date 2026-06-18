@@ -1,1 +1,1 @@
-export { isLivePollingRoute } from '../../shared/livePollingConfig';
+export { isLivePollingRoute, getLiveRouteConfig } from '../../shared/livePollingConfig';

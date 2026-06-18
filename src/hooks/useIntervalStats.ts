@@ -184,8 +184,12 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const matchesQuery = useCallback((p: ShapeProperties) => {
     if (q === '') return true;
+    const stripLeadingZeros = (s: string) => s.replace(/^0+/, '') || '0';
+    const qNorm = stripLeadingZeros(q);
+    const shortName = (p.routeShortName ?? '').toLowerCase();
     const nameHit =
-      (p.routeShortName ?? '').toLowerCase().startsWith(q) ||
+      shortName.startsWith(q) ||
+      stripLeadingZeros(shortName).startsWith(qNorm) ||
       (p.routeId ?? '').toLowerCase().startsWith(q) ||
       (q.length >= 3 && (p.routeLongName ?? '').toLowerCase().includes(q));
     if (nameHit) return true;
@@ -235,17 +239,26 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   const searchMatchResults = useMemo(() => {
     if (q === '') return null;
     const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId);
-    const byKey = new Map<string, ShapeProperties>();
+    const byKey = new Map<string, { p: ShapeProperties; inView: boolean }>();
     for (const f of visibleRoutesOnly) {
       const p = f.properties as unknown as ShapeProperties;
       if (!matchesQuery(p)) continue;
       const key = routeKey(p);
-      if (!byKey.has(key)) byKey.set(key, p);
+      const featureInView = !bounds || inViewport(f, bounds);
+      const existing = byKey.get(key);
+      if (!existing) {
+        byKey.set(key, { p, inView: featureInView });
+      } else if (featureInView && !existing.inView) {
+        byKey.set(key, { p, inView: true });
+      }
     }
     return [...byKey.entries()]
-      .map(([key, p]) => ({ key, routeShortName: p.routeShortName, routeLongName: p.routeLongName, agencyName: p.agencyName }))
-      .sort((a, b) => (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true }));
-  }, [visibleFeatures, q]);
+      .map(([key, { p, inView }]) => ({ key, routeShortName: p.routeShortName, routeLongName: p.routeLongName, agencyName: p.agencyName, inView }))
+      .sort((a, b) => {
+        if (a.inView !== b.inView) return a.inView ? -1 : 1;
+        return (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true });
+      });
+  }, [visibleFeatures, q, bounds]);
 
   const searchMatches = searchMatchResults?.length ?? null;
 

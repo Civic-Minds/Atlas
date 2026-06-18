@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Route disambiguation picker (AI-61)**: clicking where multiple routes overlap now shows a compact "Multiple routes here" picker listing each route with its colored tier dot and agency. Selecting one opens its route panel. Clicking anywhere on the map or on a stop dismisses the picker. Uses a pixel-space spatial query across all visible features at the current zoom.
+- **Live adherence panel (AI-61)**: when a route with GTFS-RT coverage is selected (Burlington 1/10, Hamilton 01/10), a separate Live card appears below the Scheduled card showing per-stop actual headways and delta from scheduled. Stops with large gaps show red; minor gaps amber; on-time green.
+- **"Scheduled" label on route panel**: when the live panel is also showing, the route panel gains a small "Scheduled" label so both cards are clearly distinguished.
+
+### Changed
+- **Live panel is a separate card**: previously rendered inside the route panel; now a sibling card with identical styling, maintaining visual separation.
+- **Early buses now amber/red, not blue**: color scheme uses green (on time, <2 min), amber (2–5 min off), red (≥5 min off) for both early and late.
+- **Hamilton 01 live config corrected**: `scheduledHeadwayMin` fixed from 12 → 6 (two 12-min branches interleave at Eastgate), and route ID 5687 added to cover both branches.
+- **Agencies pill dot inverted**: dot now shows when all agencies are selected (default/full-coverage state) rather than when a filter is active.
+- **Route/stop panels hidden during search**: typing a search query hides the route panel, stop panel, and live panel so search results aren't mixed with route detail.
+- **Removed "Scheduled every X min" from live panel**: redundant with the route panel above.
+- **Removed total bus count from live panel**: count includes all-day trips, not just active ones — misleading. Only on-time/late breakdown shown.
+- **Removed X close button from route panel**: click elsewhere on the map to deselect.
+
+### Fixed
+- **Hamilton GTFS refreshed**: re-processed with current feed to include West Hamilton Loop (1A) shape, which was missing from the previous (expired April 2026) feed.
+- **Search leading zero normalization**: typing "1" now matches "01 — King" and other zero-padded route numbers.
+- **Search results sorted by viewport proximity**: routes currently visible on screen sort above off-screen matches.
+- **titleCase single-letter initials**: "Frank A. Cooke" was rendering "Frank a. Cooke" because "a" matched the KEEP_LOWER list. Single-letter words followed by "." are now always capitalized.
+- **Headsign native browser tooltips removed**: `title` attributes on headsign elements in both the route panel and station view caused sticky browser tooltips on hover.
+- **Stop clicks clear disambiguation picker**: clicking a station while the disambiguation panel was open left it visible.
+- **Corridor features excluded from disambiguation spatial query**: corridors were being included in nearby-route detection, generating invalid keys.
+
 ## [2.2.0] - 2026-06-17
 
 ### Added

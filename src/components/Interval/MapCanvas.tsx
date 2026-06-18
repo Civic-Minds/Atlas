@@ -30,7 +30,7 @@ function periodTierColor(p: ShapeProperties, period: TimePeriod): string {
 interface MapCanvasProps {
   agencies: Agency[];
   layers: AgencyLayers;
-  allLayers?: AgencyLayers; // raw unfiltered data, for computing full route bounds etc.
+  allLayers?: AgencyLayers;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -38,12 +38,56 @@ interface MapCanvasProps {
   setSelectedRoute: React.Dispatch<React.SetStateAction<string | null>>;
   selectedStop: string | null;
   setSelectedStop: React.Dispatch<React.SetStateAction<string | null>>;
+  setDisambiguationRoutes: (routes: string[] | null) => void;
   lightMode: boolean;
   matchesQuery: (p: ShapeProperties) => boolean;
   onBoundsChange: (b: ViewportBounds) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
   routesForStop?: { slug: string; routeIds: Set<string> } | null;
+}
+
+function findRoutesNearClick(
+  clickLatLng: L.LatLng,
+  map: L.Map,
+  allLayers: AgencyLayers,
+  pixelTolerance: number,
+): string[] {
+  const zoom = map.getZoom();
+  const clickPx = map.project(clickLatLng, zoom);
+  const found = new Set<string>();
+  const t2 = pixelTolerance * pixelTolerance;
+
+  for (const [slug, fc] of Object.entries(allLayers)) {
+    for (const feature of fc.features) {
+      if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') continue;
+      const p = feature.properties as unknown as ShapeProperties;
+      if ((p as any).isCorridor || !(p as any).routeId) continue;
+      const key = routeKey({ ...p, agencySlug: slug } as any);
+      if (found.has(key)) continue;
+
+      const coords: number[][] =
+        feature.geometry.type === 'LineString'
+          ? feature.geometry.coordinates
+          : (feature.geometry.coordinates as number[][][]).flat();
+
+      const step = Math.max(1, Math.floor(coords.length / 80));
+      for (let i = 0; i < coords.length; i += step) {
+        const [lng, lat] = coords[i];
+        const px = map.project(L.latLng(lat, lng), zoom);
+        const dx = px.x - clickPx.x;
+        const dy = px.y - clickPx.y;
+        if (dx * dx + dy * dy <= t2) { found.add(key); break; }
+      }
+    }
+  }
+  return [...found];
+}
+
+function MapRefCapturer({ mapRef }: { mapRef: React.MutableRefObject<L.Map | null> }) {
+  const map = useMap();
+  mapRef.current = map;
+  return null;
 }
 
 function MapClickHandler({ onClear }: { onClear: () => void }) {
@@ -210,12 +254,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   selectedStop,
   setSelectedStop,
   lightMode,
+  setDisambiguationRoutes,
   matchesQuery,
   onBoundsChange,
   resetViewKey,
   onLocate,
   routesForStop,
 }) => {
+  const mapRef = useRef<L.Map | null>(null);
   const regionalView = getRegionalView(agencies);
   const hasSavedView = getSavedView() !== null;
   const [zoom, setZoom] = useState(regionalView.zoom);
@@ -334,6 +380,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         layer.on('click', (e: L.LeafletMouseEvent) => {
           L.DomEvent.stopPropagation(e);
           setSelectedRoute(null);
+          setDisambiguationRoutes(null);
           setSelectedStop(prev => prev === compositeStopId ? null : compositeStopId);
         });
         return;
@@ -364,10 +411,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       (layer as L.Path).on('click', (e: L.LeafletMouseEvent) => {
         L.DomEvent.stopPropagation(e);
         setSelectedStop(null);
+        const map = mapRef.current;
+        if (map) {
+          const nearby = findRoutesNearClick(e.latlng, map, layers, 10);
+          if (nearby.length > 1) {
+            setDisambiguationRoutes(nearby);
+            return;
+          }
+        }
         setSelectedRoute(prev => (prev === key ? null : key));
       });
     },
-    [selectedRoute, setSelectedRoute, selectedStop, setSelectedStop]
+    [selectedRoute, setSelectedRoute, selectedStop, setSelectedStop, setDisambiguationRoutes, layers]
   );
 
   return (
@@ -387,7 +442,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url={tileUrl}
       />
-      <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
+      <MapRefCapturer mapRef={mapRef} />
+      <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); setDisambiguationRoutes(null); }} />
       <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
       <ViewPersistor />
       <GeolocateOnMount skip={hasSavedView} />

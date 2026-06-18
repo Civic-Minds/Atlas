@@ -64,8 +64,8 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
   {
     slug: 'hamilton',
     displayRouteShortName: '01',
-    routeIds: ['5677'],
-    scheduledHeadwayMin: 12,
+    routeIds: ['5677', '5687'],
+    scheduledHeadwayMin: 6,
     // King St short-turn: Eastgate, Hamilton GO Centre, Jackson St (one stop per direction)
     targetStops: {
       '1403': 'Eastgate Terminal',

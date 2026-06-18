@@ -27,6 +27,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
+  const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
 
   // Advanced Filter State
   const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
@@ -104,6 +105,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setSelectedRoute={setSelectedRoute}
         selectedStop={selectedStop}
         setSelectedStop={setSelectedStop}
+        setDisambiguationRoutes={setDisambiguationRoutes}
         lightMode={lightMode}
         matchesQuery={matchesQuery}
         routesForStop={routesForStop}
@@ -175,6 +177,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setSelectedStop={setSelectedStop}
         selectedRoute={selectedRoute}
         setSelectedRoute={setSelectedRoute}
+        disambiguationRoutes={disambiguationRoutes}
+        setDisambiguationRoutes={setDisambiguationRoutes}
         layers={layers}
         currentDay={day}
         hideSpan={hideSpan}

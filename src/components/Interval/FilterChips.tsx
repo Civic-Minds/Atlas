@@ -220,7 +220,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           return (
             <button onClick={() => toggle('agencies')} className={chipClass(!allOn)}>
               {label}
-              <Dot show={!allOn} />
+              <Dot show={allOn} />
             </button>
           );
         })()}

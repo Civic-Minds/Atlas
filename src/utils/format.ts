@@ -26,7 +26,10 @@ export function fmtHeadway(minutes: number): string {
 export function titleCase(s: string): string {
   return s
     .toLowerCase()
-    .replace(/\b(\p{L}+)/gu, (fullWord, word, offset) => {
+    .replace(/\b(\p{L}+)/gu, (fullWord, word, offset, str) => {
+      if (word.length === 1 && str[offset + word.length] === '.') {
+        return word.toUpperCase();
+      }
       if (offset > 0 && KEEP_LOWER.test(word)) {
         return word;
       }
