@@ -51,6 +51,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     modes: selectedModes,
     day,
     selectedStop,
+    selectedRoute,
     bounds,
     hideSpan,
     livePollingOnly,
@@ -66,6 +67,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       <MapCanvas
         agencies={agencies}
         layers={filteredLayers}
+        allLayers={layers}
         maxHeadway={maxHeadway}
         q={q}
         selectedRoute={selectedRoute}
