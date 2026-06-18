@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - **Sticky native tooltip on locate button and other controls**: replaced `title` attributes with `aria-label` across all buttons (locate, reset view, filter panel toggles, frequency tier chips). Eliminates the browser's slow-to-dismiss native tooltip.
 
 ### Changed
+- **Settings panel redesigned**: replaced the chunky wide border-buttons with compact toggle-switch rows (icon + label left, sliding pill toggle right). Panel is narrower and denser; active state is immediately obvious from the toggle position and accent color rather than a subtle background tint.
 - **Pointer cursor on all buttons**: Tailwind v4 preflight resets button cursor to `default`; added a global `button { cursor: pointer; }` rule so all interactive elements show the hand cursor.
 - **Default map zoom raised from 9 → 11**: initial load now opens on the GTHA core (Toronto metro) instead of the full region from London to Buffalo. The logo reset button still shows all agencies via `fitBounds`.
 
