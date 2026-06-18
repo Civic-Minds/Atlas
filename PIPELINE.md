@@ -169,4 +169,4 @@ Test feeds: `/Users/ryan/Desktop/Data/GTFS/` (organized by country/region).
 
 **Seasonal agencies**: feeds may include future service dates. The pipeline detects the reference date (nearest date within ±90 days that has active service) before counting shapes and building frequency, so it always reflects the current or upcoming schedule rather than old/future service periods.
 
-**Ferries (route_type=4)**: no agencies currently in Atlas have a public GTFS feed. See Linear AI-76 (Toronto Island Ferry) and AI-77 (Montreal navettes fluviales) for tracking. When a ferry feed appears, process it like any other agency — the Mode filter already includes Ferry.
+**Ferries (route_type=4)**: no agencies currently in Atlas have a public GTFS feed. See Linear AI-76 (Toronto Island Ferry) and AI-77 (Montreal navettes fluviales) for tracking. When a ferry feed appears, process it like any other agency — the Mode filter already includes Ferry. Note: the Société des traversiers du Québec publishes a GTFS feed but covers provincial highway crossings (Matane, Rivière-du-Loup, etc.) — not urban transit and not a fit for Atlas.
