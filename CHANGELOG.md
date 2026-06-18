@@ -43,6 +43,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Sticky tooltip on agency filter buttons**: the agency name buttons in the Agencies chip dropdown had a `title` attribute causing the same slow-dismiss native browser tooltip fixed elsewhere. Replaced with `aria-label`.
+- **All-caps route labels (Stratford and others)**: `getRouteLabel` output was rendered raw at all three call sites in the sidebar. Wrapped each with `titleCase` so agencies that store `route_long_name` in all-caps (e.g. Stratford Transit's "CITY CENTRE") display correctly as "City Centre". Headsigns already went through `titleCase`; this brings route labels in line.
+
+### Added
+- **Persist user preferences to localStorage**: frequency filter (`maxHeadway`), day type, and agency selection now survive page reloads. Agency exclusions are saved rather than the inclusion set, so newly added agencies are always visible by default without needing to reset. First-time visit still auto-detects the current day of week.
+- **Loaded state indicator in Agencies dropdown**: agency entries that are selected but not yet fetched (outside the current viewport) show a small hollow circle on the right side of their row, making the lazy-loading behaviour visible to the user.
 
 ## [2.1.0] - 2026-06-17
 
