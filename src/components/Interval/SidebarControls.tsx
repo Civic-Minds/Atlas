@@ -102,11 +102,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             return <rect key={key} x={i * (BW + GAP)} y={H - barH} width={BW} height={barH} rx={2} fill={headwayToTierColor(h)} opacity={0.9}><title>{`${label}: ${h} min`}</title></rect>;
           })}
         </svg>
-        <div className="flex gap-[3px] mt-0.5">
-          {SPARKLINE_PERIODS.map(({ key, label }) => (
-            <span key={key} className="text-[8px] font-bold text-[var(--text-dim)] text-center" style={{ width: BW }}>{label}</span>
-          ))}
-        </div>
       </div>
     );
   }
@@ -447,7 +442,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     )}
                     <div className="space-y-2">
                       {group.realTier.map((d, i) => {
-                        const dimmed = d.headway != null && maxHeadway !== Infinity && d.headway > maxHeadway;
+                        const minStopHw = (d as any).minStopHeadway as number | undefined;
+                        const dimmed = maxHeadway !== Infinity && (minStopHw ?? d.headway ?? Infinity) > maxHeadway;
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
                             {(d.headsign || directionGroups.length > 1) && (
@@ -460,11 +456,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                                 const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
                                 const ph = period !== 'all' ? byPeriod?.[period as keyof HeadwayByPeriod] : undefined;
                                 const displayH = ph ?? d.headway;
-                                const color = ph != null ? headwayToTierColor(ph) : getTierColor(d.tier ?? null);
+                                const color = headwayToTierColor(displayH);
+                                // Show a range when frequency varies significantly along the route
+                                // (e.g. combined service on a shared corridor vs. a branch extension).
+                                const stopHws = (d as any).stopHeadways as Record<string, number> | undefined;
+                                const stopVals = stopHws ? Object.values(stopHws) : [];
+                                const stopMin = stopVals.length > 0 ? Math.round(Math.min(...stopVals)) : null;
+                                const stopMax = stopVals.length > 0 ? Math.round(Math.max(...stopVals)) : null;
+                                const showRange = !ph && stopMin != null && stopMax != null
+                                  && stopMax / stopMin > 1.5 && stopMin !== stopMax;
                                 return (
                                   <>
                                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                                    {fmtHeadway(displayH!)}
+                                    {showRange
+                                      ? `every ${stopMin}–${stopMax} min`
+                                      : fmtHeadway(displayH!)}
                                     {ph != null && (
                                       <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period]}</span>
                                     )}

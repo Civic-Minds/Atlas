@@ -62,14 +62,15 @@ function nearestParamOnSegment(
 /**
  * Projects each stop onto the polyline (shape coordinates [lat, lon][]).
  * Returns stops sorted by their projected position along the shape (0 → end),
- * with normalized t values (0.0–1.0) for frontend geometry clipping.
+ * with normalized t values (0.0–1.0) for frontend geometry clipping and
+ * dev2 (squared degrees deviation from the nearest shape point) for proximity filtering.
  * Stops that can't be projected (not in stopsById) are omitted.
  */
 function projectStopsOntoShape(
   stopIds: string[],
   stopsById: Map<string, { lat: number; lon: number }>,
   shapePts: [number, number][],  // [lat, lon][]
-): { stopId: string; t: number }[] {
+): { stopId: string; t: number; dev2: number }[] {
   if (shapePts.length < 2) return [];
 
   const segLens: number[] = [];
@@ -84,7 +85,7 @@ function projectStopsOntoShape(
   const totalLen = cumLen[cumLen.length - 1];
   if (totalLen === 0) return [];
 
-  const projected: { stopId: string; t: number }[] = [];
+  const projected: { stopId: string; t: number; dev2: number }[] = [];
   for (const stopId of stopIds) {
     const stop = stopsById.get(stopId);
     if (!stop) continue;
@@ -104,7 +105,7 @@ function projectStopsOntoShape(
         bestT = (cumLen[i] + segT * Math.sqrt(segLens[i])) / totalLen;
       }
     }
-    projected.push({ stopId, t: bestT });
+    projected.push({ stopId, t: bestT, dev2: bestDist2 });
   }
 
   return projected.sort((a, b) => a.t - b.t);
@@ -499,7 +500,8 @@ export async function processGtfsBuffer(
     const isRail = routeIds.some(rid => {
       const r = routeById.get(rid);
       const rt = r?.route_type;
-      return rt === '0' || rt === '1' || rt === '2';
+      // type 1 = subway/metro, type 2 = commuter rail; exclude type 0 (streetcar/tram)
+      return rt === '1' || rt === '2';
     });
 
     stopFeatures.push({
@@ -522,31 +524,101 @@ export async function processGtfsBuffer(
   }
 
   // Resolve per-stop headways + stopOrder onto route features.
-  // stopOrder: stop IDs sorted by their projected position along the feature's shape,
-  // enabling the frontend to clip the rendered geometry to the frequency-passing segment.
+  // stopDepsByGroup is keyed at route+direction level (all headsigns combined), so stopHeadways
+  // naturally reflect combined service from overlapping headsigns (e.g. VIVA Blue Bernard + Newmarket).
+  // We project stops onto the specific feature shape and filter by proximity to exclude stops that
+  // belong to a different headsign's extension (e.g. Newmarket stops projected onto Bernard Terminal
+  // shape would land far off — ~1 km — and get filtered out).
+  //
+  // MAX_STOP_DEV_DEG: ~500 m tolerance. Covers legitimate stop offsets from simplified shapes
+  // (especially GO rail) while excluding stops on a different branch entirely.
+  const MAX_STOP_DEV = 0.0045; // degrees; approx 500 m
+  const MAX_STOP_DEV2 = MAX_STOP_DEV * MAX_STOP_DEV;
+
   for (const [feature, { routeId, dirId, day }] of featureStopHeadwaySlots) {
     const gKey = `${routeId}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) continue;
-    const stopHeadways: Record<string, number> = {};
+
+    // Step 1: compute all-day and per-period headways for every stop in the route+dir group.
+    const allStopHw: Record<string, number> = {};
+    const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
     for (const [stopId, times] of stopMap) {
       times.sort((a, b) => a - b);
       const hw = medianHeadwayInWindow(times, 360, 1320);
-      if (hw != null) stopHeadways[stopId] = hw;
+      if (hw != null) allStopHw[stopId] = hw;
+      const byPeriod: Partial<Record<PeriodKey, number>> = {};
+      for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+        const ph = medianHeadwayInWindow(times, start, end);
+        if (ph != null) byPeriod[pk] = ph;
+      }
+      if (Object.keys(byPeriod).length > 0) allStopPeriodHw[stopId] = byPeriod;
+    }
+    if (Object.keys(allStopHw).length === 0) continue;
+
+    // Step 2: project all stops onto this feature's specific shape, then filter to stops
+    // within MAX_STOP_DEV_DEG of the shape (excludes stops from other headsign branches).
+    const coords = (feature.geometry as { type: 'LineString'; coordinates: number[][] }).coordinates;
+    const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
+    const allProjected = projectStopsOntoShape(Object.keys(allStopHw), stopsById, shapePts);
+    const onShape = allProjected.filter(p => p.dev2 <= MAX_STOP_DEV2);
+
+    if (onShape.length > 1) {
+      feature.properties.stopOrder = onShape.map(p => p.stopId);
+      feature.properties.stopPositions = onShape.map(p => Math.round(p.t * 10000) / 10000);
+    }
+
+    // Step 3: build stopHeadways from on-shape stops only.
+    const stopHeadways: Record<string, number> = {};
+    for (const { stopId } of onShape) {
+      if (allStopHw[stopId] != null) stopHeadways[stopId] = allStopHw[stopId];
     }
     if (Object.keys(stopHeadways).length === 0) continue;
     feature.properties.stopHeadways = stopHeadways;
 
-    // Project stops onto the feature's shape to produce an ordered stop list with
-    // normalized t positions (0–1 along the shape) for frontend geometry clipping.
-    const coords = (feature.geometry as { type: 'LineString'; coordinates: number[][] }).coordinates;
-    const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
-    const projected = projectStopsOntoShape(Object.keys(stopHeadways), stopsById, shapePts);
-    if (projected.length > 1) {
-      feature.properties.stopOrder = projected.map(p => p.stopId);
-      // Round t to 4 decimal places to keep GeoJSON compact
-      feature.properties.stopPositions = projected.map(p => Math.round(p.t * 10000) / 10000);
+    // Step 4: override feature headway + tier with the median of on-shape stop headways.
+    // This reflects combined service on shared corridors instead of the headsign-trip median.
+    if (feature.properties.tier !== 'span') {
+      const hwVals = Object.values(stopHeadways).sort((a, b) => a - b);
+      const mid = Math.floor(hwVals.length / 2);
+      const stopMedian = hwVals.length % 2 === 0
+        ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
+        : hwVals[mid];
+      feature.properties.headway = stopMedian;
+      if (stopMedian <= 10)       feature.properties.tier = '10';
+      else if (stopMedian <= 15)  feature.properties.tier = '15';
+      else if (stopMedian <= 20)  feature.properties.tier = '20';
+      else if (stopMedian <= 30)  feature.properties.tier = '30';
+      else if (stopMedian <= 60)  feature.properties.tier = '60';
+      else                        feature.properties.tier = 'infrequent';
+
+      // Minimum stop headway — the best frequency available anywhere on this route.
+      // Used by passesRouteFilter so routes with high-frequency sections aren't excluded
+      // even when the median doesn't meet the active threshold (pairs with AI-97 clipping).
+      feature.properties.minStopHeadway = hwVals[0];
     }
+
+    // Step 5: override headwayByPeriod with median across on-shape stops per period.
+    // Also expose the per-period minimum for accurate period filter matching.
+    const periodMedians: HeadwayByPeriod = {};
+    const periodMins: Partial<Record<PeriodKey, number>> = {};
+    for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
+      const vals = onShape
+        .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
+        .filter((v): v is number => v != null)
+        .sort((a, b) => a - b);
+      if (vals.length > 0) {
+        const mid = Math.floor(vals.length / 2);
+        periodMedians[pk] = vals.length % 2 === 0
+          ? Math.round((vals[mid - 1] + vals[mid]) / 2)
+          : vals[mid];
+        periodMins[pk] = vals[0];
+      } else {
+        periodMedians[pk] = null;
+      }
+    }
+    feature.properties.headwayByPeriod = periodMedians;
+    feature.properties.minStopHeadwayByPeriod = periodMins;
   }
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)

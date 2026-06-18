@@ -81,7 +81,7 @@ function resolveTierVal(p: ShapeProperties): number | null {
 function passesRouteFilter(
   p: ShapeProperties,
   slug: string,
-  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; selectedRoute?: string | null },
+  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
@@ -109,13 +109,34 @@ function passesRouteFilter(
   if (filters.modes.size > 0 && p.routeType !== undefined && !filters.modes.has(effectiveMode(p))) return false;
   if (p.day !== undefined && p.day !== filters.day) return false;
   if (filters.hideSpan && p.tier === 'span') return false;
-  const tierVal = resolveTierVal(p);
-  if (tierVal != null) {
-    if (tierVal > filters.maxHeadway) return false;
-  } else if (p.headway != null) {
-    if (p.headway > filters.maxHeadway) return false;
-  } else if (p.routeId != null) {
-    if (filters.maxHeadway !== Infinity) return false;
+  // When a specific period is active, prefer the per-stop minimum period headway (best frequency
+  // anywhere on the route during that period). This ensures routes with high-frequency sections
+  // pass the filter even if the all-day median doesn't meet the threshold — AI-97 clipping then
+  // visually restricts the displayed geometry to the qualifying section.
+  if (filters.period && filters.period !== 'all') {
+    const minStopPeriodHw = (p as any).minStopHeadwayByPeriod?.[filters.period] as number | undefined;
+    const periodHw = minStopPeriodHw
+      ?? ((p as any).headwayByPeriod?.[filters.period] as number | undefined);
+    if (periodHw != null) {
+      if (periodHw > filters.maxHeadway) return false;
+      return true;
+    }
+    // No period data — fall through to all-day check below.
+  }
+  // All-day check: use the best stop headway (min) so a route with a high-frequency corridor
+  // isn't excluded even if its route-level median is higher than the filter threshold.
+  const minStopHw = (p as any).minStopHeadway as number | undefined;
+  if (minStopHw != null) {
+    if (minStopHw > filters.maxHeadway) return false;
+  } else {
+    const tierVal = resolveTierVal(p);
+    if (tierVal != null) {
+      if (tierVal > filters.maxHeadway) return false;
+    } else if (p.headway != null) {
+      if (p.headway > filters.maxHeadway) return false;
+    } else if (p.routeId != null) {
+      if (filters.maxHeadway !== Infinity) return false;
+    }
   }
   return true;
 }
@@ -148,7 +169,7 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, period: _period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
+  const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -206,7 +227,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop);
     }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [allFeatures, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, selectedRoute]);
+  [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, selectedRoute]);
 
   const filteredLayers = useMemo(() => {
     const result: AgencyLayers = {};
@@ -221,7 +242,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     }
     return result;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, maxHeadway, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors]);
+  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors]);
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
