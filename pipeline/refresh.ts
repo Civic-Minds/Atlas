@@ -11,7 +11,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
-import { put } from '@vercel/blob';
+import { put, list } from '@vercel/blob';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
 
@@ -36,7 +36,7 @@ function isoWeek(date: Date): string {
   return `${d.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
 }
 
-async function writeHistorySnapshot(slug: string, geojson: string): Promise<void> {
+async function writeHistorySnapshot(slug: string, geojson: string): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
   const routes: Record<string, { headway: number | null; tier: string | null }> = {};
   for (const f of fc.features) {
@@ -45,18 +45,30 @@ async function writeHistorySnapshot(slug: string, geojson: string): Promise<void
     const sn = String(p.routeShortName);
     const h = p.headway != null ? Number(p.headway) : null;
     const t = p.tier != null ? String(p.tier) : null;
-    // Keep the best (lowest) headway per route short name across directions
     if (!routes[sn] || (h != null && (routes[sn].headway == null || h < routes[sn].headway!))) {
       routes[sn] = { headway: h, tier: t };
     }
   }
+
+  // Only write when headways actually changed vs the last recorded snapshot.
+  const latestKey = `atlas-history/${slug}/latest.json`;
+  try {
+    const { blobs } = await list({ prefix: latestKey, limit: 1 });
+    if (blobs.length > 0) {
+      const prev = await fetch(blobs[0].url).then(r => r.json()) as { routes: unknown };
+      if (JSON.stringify(prev.routes) === JSON.stringify(routes)) {
+        return 'unchanged (headways identical to last snapshot)';
+      }
+    }
+  } catch { /* no previous snapshot exists yet — write the first one */ }
+
   const week = isoWeek(new Date());
   const snapshot = JSON.stringify({ week, processedAt: new Date().toISOString(), routes });
-  await put(`atlas-history/${slug}/${week}.json`, snapshot, {
-    access: 'public',
-    contentType: 'application/json',
-    allowOverwrite: true,
-  });
+  await Promise.all([
+    put(`atlas-history/${slug}/${week}.json`, snapshot, { access: 'public', contentType: 'application/json', allowOverwrite: true }),
+    put(latestKey, snapshot, { access: 'public', contentType: 'application/json', allowOverwrite: true }),
+  ]);
+  return `snapshot written (${week})`;
 }
 
 interface AgencyEntry {
@@ -118,7 +130,8 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
 
   // For agencies enrolled in history tracking, write a compact headway snapshot.
   if (HISTORY_SLUGS.has(agency.slug)) {
-    await writeHistorySnapshot(agency.slug, geojson);
+    const histResult = await writeHistorySnapshot(agency.slug, geojson);
+    process.stdout.write(`  history: ${histResult}\n`);
   }
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
