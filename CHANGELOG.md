@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Storage migrated from Vercel Blob to Cloudflare R2 (AI-81)**: all 35 agency GeoJSON files moved to R2. Zero egress fees. Pipeline (`refresh.ts`, `process-gtfs.ts`) and GitHub Actions workflow updated to use R2 credentials. Burlington history snapshots also write to R2.
+
 ### Improved
 - **Filter chip labels**: all chips now reflect their current state in the label. Mode shows the mode name when exactly 1 is selected, "N modes" when multiple are selected. Frequency shows the active tier label (e.g., "≤30m") instead of always "Frequency". Day and Period already did this.
 

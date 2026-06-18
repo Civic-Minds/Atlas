@@ -3,284 +3,568 @@
     {
       "slug": "ttc",
       "name": "Toronto Transit Commission",
-      "center": [43.6532, -79.3832],
-      "bbox": [43.25, -79.88, 44.05, -78.88],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/ttc.json",
+      "center": [
+        43.6532,
+        -79.3832
+      ],
+      "bbox": [
+        43.25,
+        -79.88,
+        44.05,
+        -78.88
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc.json",
       "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip"
     },
     {
       "slug": "brampton",
       "name": "Brampton Transit",
-      "center": [43.7315, -79.7624],
-      "bbox": [43.33, -80.26, 44.13, -79.26],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/brampton.json",
+      "center": [
+        43.7315,
+        -79.7624
+      ],
+      "bbox": [
+        43.33,
+        -80.26,
+        44.13,
+        -79.26
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton.json",
       "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data"
     },
     {
       "slug": "burlington",
       "name": "Burlington Transit",
-      "center": [43.3255, -79.799],
-      "bbox": [42.93, -80.30, 43.73, -79.30],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/burlington.json",
+      "center": [
+        43.3255,
+        -79.799
+      ],
+      "bbox": [
+        42.93,
+        -80.3,
+        43.73,
+        -79.3
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington.json",
       "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip"
     },
     {
       "slug": "drt",
       "name": "Durham Region Transit",
-      "center": [43.9, -78.85],
-      "bbox": [43.50, -79.35, 44.30, -78.35],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/drt.json",
+      "center": [
+        43.9,
+        -78.85
+      ],
+      "bbox": [
+        43.5,
+        -79.35,
+        44.3,
+        -78.35
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt.json",
       "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip"
     },
     {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
-      "center": [43.2557, -79.8711],
-      "bbox": [42.86, -80.37, 43.66, -79.37],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/hamilton.json",
+      "center": [
+        43.2557,
+        -79.8711
+      ],
+      "bbox": [
+        42.86,
+        -80.37,
+        43.66,
+        -79.37
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton.json",
       "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip"
     },
     {
       "slug": "milton",
       "name": "Milton Transit",
-      "center": [43.5183, -79.8774],
-      "bbox": [43.12, -80.38, 43.92, -79.38],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/milton.json",
+      "center": [
+        43.5183,
+        -79.8774
+      ],
+      "bbox": [
+        43.12,
+        -80.38,
+        43.92,
+        -79.38
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton.json",
       "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip"
     },
     {
       "slug": "miway",
       "name": "MiWay (Mississauga)",
-      "center": [43.589, -79.6441],
-      "bbox": [43.19, -80.14, 43.99, -79.14],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/miway.json",
+      "center": [
+        43.589,
+        -79.6441
+      ],
+      "bbox": [
+        43.19,
+        -80.14,
+        43.99,
+        -79.14
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway.json",
       "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip"
     },
     {
       "slug": "oakville",
       "name": "Oakville Transit",
-      "center": [43.4675, -79.6877],
-      "bbox": [43.07, -80.19, 43.87, -79.19],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/oakville.json",
+      "center": [
+        43.4675,
+        -79.6877
+      ],
+      "bbox": [
+        43.07,
+        -80.19,
+        43.87,
+        -79.19
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville.json",
       "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data"
     },
     {
       "slug": "yrt",
       "name": "York Region Transit",
-      "center": [43.8828, -79.4403],
-      "bbox": [43.48, -79.94, 44.28, -78.94],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/yrt.json",
+      "center": [
+        43.8828,
+        -79.4403
+      ],
+      "bbox": [
+        43.48,
+        -79.94,
+        44.28,
+        -78.94
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt.json",
       "feedUrl": "https://www.yrt.ca/google/google_transit.zip"
     },
     {
       "slug": "barrie",
       "name": "Barrie Transit",
-      "center": [44.3894, -79.6903],
-      "bbox": [43.99, -80.19, 44.79, -79.19],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/barrie.json",
+      "center": [
+        44.3894,
+        -79.6903
+      ],
+      "bbox": [
+        43.99,
+        -80.19,
+        44.79,
+        -79.19
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie.json",
       "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip"
     },
     {
       "slug": "grt",
       "name": "Grand River Transit",
-      "center": [43.4516, -80.4925],
-      "bbox": [43.05, -80.99, 43.85, -79.99],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/grt.json",
+      "center": [
+        43.4516,
+        -80.4925
+      ],
+      "bbox": [
+        43.05,
+        -80.99,
+        43.85,
+        -79.99
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media"
     },
     {
       "slug": "guelph",
       "name": "Guelph Transit",
-      "center": [43.5448, -80.2482],
-      "bbox": [43.14, -80.75, 43.94, -79.75],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/guelph.json",
+      "center": [
+        43.5448,
+        -80.2482
+      ],
+      "bbox": [
+        43.14,
+        -80.75,
+        43.94,
+        -79.75
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph.json",
       "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip"
     },
     {
       "slug": "niagara",
       "name": "Niagara Region Transit",
-      "center": [43.1594, -79.2469],
-      "bbox": [42.76, -79.75, 43.56, -78.75],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/niagara.json",
+      "center": [
+        43.1594,
+        -79.2469
+      ],
+      "bbox": [
+        42.76,
+        -79.75,
+        43.56,
+        -78.75
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-niagara-region-transit-gtfs-722.zip?alt=media",
       "preprocess": "nrt-day-night"
     },
     {
       "slug": "go",
       "name": "GO Transit",
-      "center": [43.6532, -79.3832],
-      "bbox": [42.30, -81.50, 44.80, -77.50],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/go.json",
+      "center": [
+        43.6532,
+        -79.3832
+      ],
+      "bbox": [
+        42.3,
+        -81.5,
+        44.8,
+        -77.5
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media"
     },
     {
       "slug": "upexpress",
       "name": "UP Express",
-      "center": [43.6532, -79.3832],
-      "bbox": [43.55, -79.65, 43.75, -79.30],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/upexpress.json",
+      "center": [
+        43.6532,
+        -79.3832
+      ],
+      "bbox": [
+        43.55,
+        -79.65,
+        43.75,
+        -79.3
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress.json",
       "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip"
     },
     {
       "slug": "simcoe",
       "name": "Simcoe County LINX",
-      "center": [44.35, -79.75],
-      "bbox": [43.90, -80.35, 44.80, -79.15],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/simcoe.json",
+      "center": [
+        44.35,
+        -79.75
+      ],
+      "bbox": [
+        43.9,
+        -80.35,
+        44.8,
+        -79.15
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe.json",
       "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip"
     },
     {
       "slug": "nfta",
       "name": "NFTA (Buffalo)",
-      "center": [42.8864, -78.8784],
-      "bbox": [42.49, -79.38, 43.29, -78.38],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta.json",
+      "center": [
+        42.8864,
+        -78.8784
+      ],
+      "bbox": [
+        42.49,
+        -79.38,
+        43.29,
+        -78.38
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta.json",
       "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
-      "routeTypes": [3]
+      "routeTypes": [
+        3
+      ]
     },
     {
       "slug": "nfta-rail",
       "name": "NFTA (Buffalo)",
-      "center": [42.8864, -78.8784],
-      "bbox": [42.49, -79.38, 43.29, -78.38],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/nfta-rail.json",
+      "center": [
+        42.8864,
+        -78.8784
+      ],
+      "bbox": [
+        42.49,
+        -79.38,
+        43.29,
+        -78.38
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail.json",
       "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
-      "routeTypes": [0]
+      "routeTypes": [
+        0
+      ]
     },
     {
       "slug": "london",
       "name": "London Transit",
-      "center": [42.9849, -81.2453],
-      "bbox": [42.59, -81.75, 43.39, -80.75],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/london.json",
+      "center": [
+        42.9849,
+        -81.2453
+      ],
+      "bbox": [
+        42.59,
+        -81.75,
+        43.39,
+        -80.75
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london.json",
       "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip"
     },
     {
       "slug": "kingston",
       "name": "Kingston Transit",
-      "center": [44.2312, -76.486],
-      "bbox": [43.83, -76.99, 44.63, -75.99],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/kingston.json",
+      "center": [
+        44.2312,
+        -76.486
+      ],
+      "bbox": [
+        43.83,
+        -76.99,
+        44.63,
+        -75.99
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston.json",
       "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip"
     },
     {
       "slug": "stratford",
       "name": "Stratford Transit",
-      "center": [43.37, -80.98],
-      "bbox": [43.17, -81.23, 43.57, -80.73],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/stratford.json",
+      "center": [
+        43.37,
+        -80.98
+      ],
+      "bbox": [
+        43.17,
+        -81.23,
+        43.57,
+        -80.73
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford.json",
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip"
     },
     {
       "slug": "stm",
       "name": "STM",
-      "center": [45.5017, -73.5673],
-      "bbox": [45.10, -74.07, 45.90, -73.07],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/stm.json",
+      "center": [
+        45.5017,
+        -73.5673
+      ],
+      "bbox": [
+        45.1,
+        -74.07,
+        45.9,
+        -73.07
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm.json",
       "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip"
     },
     {
       "slug": "rem",
       "name": "REM",
-      "center": [45.5, -73.57],
-      "bbox": [45.10, -74.07, 45.90, -73.07],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/rem.json",
+      "center": [
+        45.5,
+        -73.57
+      ],
+      "bbox": [
+        45.1,
+        -74.07,
+        45.9,
+        -73.07
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem.json",
       "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip"
     },
     {
       "slug": "stl",
       "name": "STL",
-      "center": [45.61, -73.71],
-      "bbox": [45.21, -74.21, 46.01, -73.21],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/stl.json",
+      "center": [
+        45.61,
+        -73.71
+      ],
+      "bbox": [
+        45.21,
+        -74.21,
+        46.01,
+        -73.21
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl.json",
       "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip"
     },
     {
       "slug": "exo",
       "name": "exo",
-      "center": [45.5, -73.57],
-      "bbox": [44.80, -75.50, 46.50, -72.00],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo.json",
+      "center": [
+        45.5,
+        -73.57
+      ],
+      "bbox": [
+        44.8,
+        -75.5,
+        46.5,
+        -72
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo.json",
       "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip"
     },
     {
       "slug": "rtl",
       "name": "RTL",
-      "center": [45.538, -73.465],
-      "bbox": [45.14, -73.97, 45.94, -72.97],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/rtl.json",
+      "center": [
+        45.538,
+        -73.465
+      ],
+      "bbox": [
+        45.14,
+        -73.97,
+        45.94,
+        -72.97
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl.json",
       "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip"
     },
     {
       "slug": "exo-presquile",
       "name": "exo",
-      "center": [45.406, -74.0382],
-      "bbox": [45.01, -74.54, 45.81, -73.54],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo-presquile.json",
+      "center": [
+        45.406,
+        -74.0382
+      ],
+      "bbox": [
+        45.01,
+        -74.54,
+        45.81,
+        -73.54
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile.json",
       "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip"
     },
     {
       "slug": "exo-sudouest",
       "name": "exo",
-      "center": [45.3549, -73.7643],
-      "bbox": [44.95, -74.26, 45.75, -73.26],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo-sudouest.json",
+      "center": [
+        45.3549,
+        -73.7643
+      ],
+      "bbox": [
+        44.95,
+        -74.26,
+        45.75,
+        -73.26
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest.json",
       "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip"
     },
     {
       "slug": "exo-lrrs",
       "name": "exo",
-      "center": [45.4086, -73.5026],
-      "bbox": [45.01, -74.00, 45.81, -73.00],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo-lrrs.json",
+      "center": [
+        45.4086,
+        -73.5026
+      ],
+      "bbox": [
+        45.01,
+        -74,
+        45.81,
+        -73
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs.json",
       "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip"
     },
     {
       "slug": "exo-laurentides",
       "name": "exo",
-      "center": [45.6611, -73.9029],
-      "bbox": [45.26, -74.40, 46.06, -73.40],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo-laurentides.json",
+      "center": [
+        45.6611,
+        -73.9029
+      ],
+      "bbox": [
+        45.26,
+        -74.4,
+        46.06,
+        -73.4
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides.json",
       "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip"
     },
     {
       "slug": "exo-terrebonne",
       "name": "exo",
-      "center": [45.7032, -73.6487],
-      "bbox": [45.30, -74.15, 46.10, -73.15],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/exo-terrebonne.json",
+      "center": [
+        45.7032,
+        -73.6487
+      ],
+      "bbox": [
+        45.3,
+        -74.15,
+        46.1,
+        -73.15
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne.json",
       "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip"
     },
     {
       "slug": "sjsr",
       "name": "Saint-Jean-sur-Richelieu",
-      "center": [45.31, -73.27],
-      "bbox": [45.11, -73.47, 45.51, -73.07],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/sjsr.json",
+      "center": [
+        45.31,
+        -73.27
+      ],
+      "bbox": [
+        45.11,
+        -73.47,
+        45.51,
+        -73.07
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu"
     },
     {
       "slug": "mont-tremblant",
       "name": "Mont-Tremblant",
-      "center": [46.15, -74.6],
-      "bbox": [45.95, -74.90, 46.45, -74.30],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/mont-tremblant.json",
+      "center": [
+        46.15,
+        -74.6
+      ],
+      "bbox": [
+        45.95,
+        -74.9,
+        46.45,
+        -74.3
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm"
     },
     {
       "slug": "linter",
       "name": "L'Inter des Laurentides",
-      "center": [45.98, -74.23],
-      "bbox": [45.58, -74.73, 46.38, -73.73],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/linter.json",
+      "center": [
+        45.98,
+        -74.23
+      ],
+      "bbox": [
+        45.58,
+        -74.73,
+        46.38,
+        -73.73
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter"
     },
     {
       "slug": "saint-hyacinthe",
       "name": "Ville de Saint-Hyacinthe",
-      "center": [45.63, -72.95],
-      "bbox": [45.43, -73.15, 45.83, -72.75],
-      "url": "https://vljnqlg1wcdstlfw.public.blob.vercel-storage.com/atlas/saint-hyacinthe.json",
+      "center": [
+        45.63,
+        -72.95
+      ],
+      "bbox": [
+        45.43,
+        -73.15,
+        45.83,
+        -72.75
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe.json",
       "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs"
     }
   ]
