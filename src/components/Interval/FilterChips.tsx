@@ -216,7 +216,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                           setSelectedAgencies(next);
                         }}
                         className={rowBtn(active)}
-                        title={g.name}
+                        aria-label={g.name}
                       >
                         {g.name}
                       </button>
