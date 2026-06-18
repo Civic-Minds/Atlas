@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Agency } from '../App';
 import type { ViewportBounds } from './useIntervalStats';
+import { getSavedView } from '../utils/regionView';
 
 export interface ShapeProperties {
   routeId: string;
@@ -15,8 +16,26 @@ export interface ShapeProperties {
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;
 
-// Used before the map reports its first moveend — matches DEFAULT_CENTER (43.65, -79.45) at zoom 11
-const INITIAL_BOUNDS: ViewportBounds = { s: 43.30, w: -80.00, n: 44.00, e: -78.95 };
+// Used before the map reports its first moveend.
+// Built from the saved view so returning Montreal users don't load Toronto agencies first.
+function buildInitialBounds(): ViewportBounds {
+  const saved = getSavedView();
+  const lat = saved?.lat ?? 43.65;
+  const lon = saved?.lon ?? -79.45;
+  return { s: lat - 0.5, w: lon - 0.6, n: lat + 0.5, e: lon + 0.6 };
+}
+const INITIAL_BOUNDS = buildInitialBounds();
+
+// Cache key rotates weekly so browsers re-download on Monday after the refresh pipeline runs.
+function weekVersion(): string {
+  const d = new Date();
+  const thu = new Date(d);
+  thu.setDate(d.getDate() - d.getDay() + 4);
+  const yearStart = new Date(thu.getFullYear(), 0, 1);
+  const week = Math.ceil(((thu.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${thu.getFullYear()}${String(week).padStart(2, '0')}`;
+}
+const WEEK = weekVersion();
 
 function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
@@ -52,7 +71,7 @@ export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null)
     if (loadedSlugs.current.has(agency.slug)) return;
     loadedSlugs.current.add(agency.slug);
     setRequestedCount(n => n + 1);
-    fetch(agency.url, { cache: 'no-store' })
+    fetch(`${agency.url}?v=${WEEK}`, { cache: 'default' })
       .then(r => r.json())
       .then((data: GeoJSON.FeatureCollection) => {
         if (cancelled.current) return;
