@@ -460,7 +460,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                                 // Show a range when frequency varies significantly along the route
                                 // (e.g. combined service on a shared corridor vs. a branch extension).
                                 const stopHws = (d as any).stopHeadways as Record<string, number> | undefined;
-                                const stopVals = stopHws ? Object.values(stopHws) : [];
+                                // Only consider stops ≤60 min — far-end stations served by 2–3 trains
+                                // per day have headways of 100–500 min and would distort the range.
+                                const stopVals = stopHws
+                                  ? Object.values(stopHws).filter(v => v <= 60)
+                                  : [];
                                 const stopMin = stopVals.length > 0 ? Math.round(Math.min(...stopVals)) : null;
                                 const stopMax = stopVals.length > 0 ? Math.round(Math.max(...stopVals)) : null;
                                 const showRange = !ph && stopMin != null && stopMax != null
