@@ -33,6 +33,10 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **Nearby Routes panel (AI-71)**: tapping the locate button now shows a "Near You" panel above it listing every route within 500 m of your location, sorted by best headway. Tapping a route opens its detail panel in the sidebar. The panel shows the nearest stop name and distance (e.g. "Queen Station · 290 m") at the bottom, and closes with the X button. Implemented via `useNearbyRoutes` hook (Haversine distance across all loaded GeoJSON Point features) and `NearbyRoutesPanel` component.
+- **Viewport-aware lazy loading (AI-72)**: agency GeoJSON is now loaded on-demand as you pan instead of all 35 agencies on mount. GO Transit and UP Express always load immediately as the regional backbone; all others fetch only when their bounding box intersects the visible map viewport. Each agency entry in `index.json` now carries a `bbox: [s, w, n, e]` field; missing bboxes fall back to center ± 0.4°/0.5°. Loading indicator now shows `{loaded}/{requested}` to reflect in-flight requests rather than total agency count.
+
+### Changed
+- **Settings button order**: light/dark toggle now appears to the left of the Settings gear (was reversed). Settings panel dropdown still opens from the rightmost button.
 
 ## [2.1.0] - 2026-06-17
 

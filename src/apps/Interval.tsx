@@ -42,7 +42,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
 
-  const { layers, loadedCount, isLoading } = useAgencyData(agencies);
+  const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds);
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day);
   const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop } = useIntervalStats(layers, {
     query,
@@ -86,7 +86,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         <div className="absolute bottom-6 left-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
           <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
           <span className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide">
-            {loadedCount}/{agencies.length} networks
+            {loadedCount}/{requestedCount} networks
           </span>
         </div>
       )}

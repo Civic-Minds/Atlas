@@ -7,6 +7,7 @@ export interface Agency {
   name: string;
   center: [number, number];
   url: string;
+  bbox?: [number, number, number, number]; // [south, west, north, east]
 }
 
 export default function App() {

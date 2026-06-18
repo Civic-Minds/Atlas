@@ -75,6 +75,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   return (
     <div ref={panelRef} className="relative flex items-center gap-2">
       <button
+        onClick={() => setLightMode((v) => !v)}
+        className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
+        aria-label="Toggle light mode"
+      >
+        {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+      </button>
+      <button
         onClick={() => setIsOpen((v) => !v)}
         className="relative w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
         aria-label="Settings"
@@ -83,13 +90,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         {hasActiveFilters && (
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
         )}
-      </button>
-      <button
-        onClick={() => setLightMode((v) => !v)}
-        className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
-        aria-label="Toggle light mode"
-      >
-        {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
       </button>
 
       {isOpen && (
