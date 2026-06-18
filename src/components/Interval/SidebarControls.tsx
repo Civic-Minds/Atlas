@@ -107,7 +107,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [currentRoute]);
 
   const liveRouteShortName = liveAgencySlug ? currentRoute?.routeShortName ?? null : null;
-  const liveData = useLiveAdherence(liveAgencySlug, liveRouteShortName);
+  const { data: liveData, status: liveStatus } = useLiveAdherence(liveAgencySlug, liveRouteShortName);
 
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
@@ -256,6 +256,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     </button>
                     {headway && (
                       <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)]">
+                        {isLivePollingRoute(rKey.split('::')[0], shortName) && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />
+                        )}
                         <span
                           className="w-1.5 h-1.5 rounded-full shrink-0"
                           style={{ background: getTierColor(String(headway)) }}
@@ -309,18 +312,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
-            {liveRouteInfo && (
+            {liveRouteInfo && liveStatus !== 'noData' && (
               <div className="mb-3 px-2.5 py-2 rounded-lg bg-green-500/5 border border-green-500/15">
                 <div className="flex items-center gap-1.5 mb-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
+                  <span className={`w-1.5 h-1.5 rounded-full bg-green-400 shrink-0 ${liveStatus === 'live' ? 'animate-pulse' : 'opacity-40'}`} />
                   <span className="text-[10px] font-black text-green-400">Live</span>
-                  {liveRouteInfo.delta != null ? (
+                  {liveStatus === 'pending' ? (
+                    <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
+                  ) : liveRouteInfo.delta != null ? (
                     <span className="text-[10px] font-bold text-[var(--text-muted)]">
                       avg headway {liveRouteInfo.delta > 0 ? `+${liveRouteInfo.delta}` : liveRouteInfo.delta} min vs schedule
                     </span>
-                  ) : (
-                    <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
-                  )}
+                  ) : null}
                 </div>
                 {liveRouteInfo.trips && (
                   <div className="flex gap-2 text-[10px] font-bold">
