@@ -16,9 +16,9 @@ interface MapCanvasProps {
   maxHeadway: number;
   q: string;
   selectedRoute: string | null;
-  setSelectedRoute: (route: string | null) => void;
+  setSelectedRoute: React.Dispatch<React.SetStateAction<string | null>>;
   selectedStop: string | null;
-  setSelectedStop: (stop: string | null) => void;
+  setSelectedStop: React.Dispatch<React.SetStateAction<string | null>>;
   lightMode: boolean;
   matchesQuery: (p: ShapeProperties) => boolean;
   onBoundsChange: (b: ViewportBounds) => void;
@@ -229,7 +229,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         layer.on('click', (e: L.LeafletMouseEvent) => {
           L.DomEvent.stopPropagation(e);
           setSelectedRoute(null);
-          setSelectedStop(selectedStop === compositeStopId ? null : compositeStopId);
+          setSelectedStop(prev => prev === compositeStopId ? null : compositeStopId);
         });
         return;
       }
@@ -253,22 +253,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const { routeId, headway, routeShortName, tier } = props;
-      const name = routeShortName || routeId;
+      // Route lines: no map tooltip (hover or click). Click selects and opens the full details
+      // exclusively in the left sidebar panel (sized to match the search bar width).
       const key = routeKey(props);
-      const headwayLabel = headway != null ? fmtHeadway(headway) : tier === 'span' ? 'limited service' : tier === 'infrequent' ? 'infrequent service' : 'No headway data';
-      // Hover stays minimal — click opens the route panel in the sidebar
-      (layer as L.Path).bindTooltip(
-        `<div class="tooltip-content">
-          <div class="tooltip-name">${name}</div>
-          <div class="tooltip-info">${headwayLabel}</div>
-        </div>`,
-        { sticky: true, className: 'atlas-tooltip', opacity: 1 }
-      );
       (layer as L.Path).on('click', (e: L.LeafletMouseEvent) => {
         L.DomEvent.stopPropagation(e);
         setSelectedStop(null);
-        setSelectedRoute(selectedRoute === key ? null : key);
+        setSelectedRoute(prev => (prev === key ? null : key));
       });
     },
     [selectedRoute, setSelectedRoute, selectedStop, setSelectedStop]

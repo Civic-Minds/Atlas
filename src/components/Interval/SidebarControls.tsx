@@ -210,11 +210,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   if (!hasContent) return null;
 
   return (
-    <div className="absolute top-20 left-16 z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col">
+    <div className="absolute top-20 left-16 z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col overflow-hidden">
       <div
         ref={scrollRef}
         onScroll={checkScroll}
-        className="flex-1 min-h-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-5 rounded-2xl shadow-2xl transition-colors duration-200 overflow-y-auto overflow-x-hidden custom-scrollbar"
+        className="flex-1 min-h-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-4 rounded-2xl shadow-2xl transition-colors duration-200 overflow-y-auto overflow-x-hidden custom-scrollbar"
       >
         {currentStop && (
           <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
