@@ -29,6 +29,8 @@ export const VIRTUAL_LRT_MODE = 100;
 
 function effectiveMode(p: ShapeProperties): number {
   if (p.routeType === 0 && p.routeLongName && /^Line \d/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
+  // GRT ION is tagged route_type=2 in GTFS but is urban LRT, not commuter rail
+  if (p.routeType === 2 && p.routeLongName && /\bION\b/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
   return p.routeType ?? 3;
 }
 
