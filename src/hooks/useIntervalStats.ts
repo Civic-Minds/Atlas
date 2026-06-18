@@ -23,6 +23,15 @@ export interface ShapeProperties extends BaseShapeProperties {
 
 export const routeKey = (p: ShapeProperties) => `${(p as any).agencySlug ?? p.agencyName ?? ''}::${p.routeId}`;
 
+// Virtual mode ID for LRT routes that share route_type=0 with streetcars.
+// Identified by routeLongName starting with "Line <digit>" (TTC Line 5 Eglinton, Line 6 Finch West).
+export const VIRTUAL_LRT_MODE = 100;
+
+function effectiveMode(p: ShapeProperties): number {
+  if (p.routeType === 0 && p.routeLongName && /^Line \d/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
+  return p.routeType ?? 3;
+}
+
 export interface IntervalFilters {
   query: string;
   maxHeadway: number;
@@ -84,7 +93,7 @@ function passesRouteFilter(
     if (routeCount < 3 && headway > 15) return false;
   }
 
-  if (filters.modes.size > 0 && p.routeType !== undefined && !filters.modes.has(p.routeType)) return false;
+  if (filters.modes.size > 0 && p.routeType !== undefined && !filters.modes.has(effectiveMode(p))) return false;
   if (p.day !== undefined && p.day !== filters.day) return false;
   if (filters.hideSpan && p.tier === 'span') return false;
   const tierVal = resolveTierVal(p);
