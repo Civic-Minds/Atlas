@@ -29,15 +29,21 @@ export interface LiveAdherenceResult {
 }
 
 async function fetchTripUpdates(url: string) {
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const buffer = await res.arrayBuffer();
-  const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
-  return GtfsRealtimeBindings.transit_realtime.FeedMessage.toObject(feed, {
-    longs: String,
-    enums: String,
-    bytes: String,
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12_000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) return null;
+    const buffer = await res.arrayBuffer();
+    const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
+    return GtfsRealtimeBindings.transit_realtime.FeedMessage.toObject(feed, {
+      longs: String,
+      enums: String,
+      bytes: String,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function computeLiveAdherence(

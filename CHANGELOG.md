@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Live adherence API 504 timeout**: `fetchTripUpdates` had no fetch timeout, causing the Vercel function to hang the full 60 s when Burlington or Hamilton's GTFS-RT endpoint was slow from Vercel's datacenter. Added a 12 s `AbortController` timeout so the function fails fast and returns `noData` instead of timing out.
+
 ### Added
 - **PIPELINE.md**: added pipeline documentation covering the full GTFS → Blob → frontend data flow, GeoJSON schema, `index.json` format, frequency analysis tiers, and how to add or refresh agencies.
 - **Ferry mode in Mode filter**: added Ferry (GTFS route_type=4) as a selectable mode. No ferry agencies are currently in Atlas; Linear AI-76 and AI-77 track Toronto Island Ferry and Montreal navettes fluviales respectively.
