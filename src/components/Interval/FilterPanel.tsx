@@ -12,6 +12,22 @@ interface FilterPanelProps {
   setShowCorridors: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
+function Toggle({ on }: { on: boolean }) {
+  return (
+    <span
+      className={`relative inline-flex h-4 w-7 shrink-0 rounded-full transition-colors duration-200 ${
+        on ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+          on ? 'translate-x-3.5' : 'translate-x-0.5'
+        }`}
+      />
+    </span>
+  );
+}
+
 export const FilterPanel: React.FC<FilterPanelProps> = ({
   lightMode,
   setLightMode,
@@ -36,6 +52,26 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const hasActiveFilters = hideSpan || livePollingOnly || showCorridors;
 
+  const row = (
+    label: string,
+    icon: React.ReactNode,
+    value: boolean,
+    toggle: () => void,
+    ariaLabel: string,
+  ) => (
+    <button
+      onClick={toggle}
+      aria-label={ariaLabel}
+      className="w-full flex items-center justify-between gap-3 py-1.5 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+    >
+      <span className="flex items-center gap-2">
+        {icon}
+        {label}
+      </span>
+      <Toggle on={value} />
+    </button>
+  );
+
   return (
     <div ref={panelRef} className="relative flex items-center gap-2">
       <button
@@ -57,61 +93,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-10 right-0 w-64 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-5 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out space-y-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black tracking-wide text-[var(--text-dim)]">Settings</h3>
-            <button onClick={() => setIsOpen(false)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
+        <div className="absolute top-10 right-0 w-56 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-3.5 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">Settings</h3>
+            <button onClick={() => setIsOpen(false)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors" aria-label="Close settings">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Combined frequency */}
-          <button
-            onClick={() => setShowCorridors((v) => !v)}
-            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
-              showCorridors
-                ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-            }`}
-            aria-label="Show shared segments where overlapping routes provide higher combined frequency"
-          >
-            <span className="flex items-center gap-1.5">
-              <Zap className="w-3 h-3" />
-              Show combined corridors
-            </span>
-            {showCorridors && <X className="w-2.5 h-2.5 shrink-0" />}
-          </button>
-
-          {/* Live polling */}
-          <button
-            onClick={() => setLivePollingOnly((v) => !v)}
-            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
-              livePollingOnly
-                ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-            }`}
-            aria-label="Show only routes with live GTFS-RT schedule-adherence polling"
-          >
-            <span className="flex items-center gap-1.5">
-              <Radio className="w-3 h-3" />
-              Live polling only
-            </span>
-            {livePollingOnly && <X className="w-2.5 h-2.5 shrink-0" />}
-          </button>
-
-          {/* Irregular service */}
-          <button
-            onClick={() => setHideSpan((v) => !v)}
-            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[10px] font-bold transition-all border ${
-              hideSpan
-                ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-            }`}
-            aria-label="Hide routes with no sustained frequency tier (peak-only, school runs, shuttles)"
-          >
-            <span>Hide irregular / peak-only routes</span>
-            {hideSpan && <X className="w-2.5 h-2.5 shrink-0" />}
-          </button>
+          <div className="divide-y divide-[var(--border-primary)]">
+            {row('Combined corridors', <Zap className="w-3 h-3 shrink-0" />, showCorridors, () => setShowCorridors(v => !v), 'Show shared segments where overlapping routes provide higher combined frequency')}
+            {row('Live polling only', <Radio className="w-3 h-3 shrink-0" />, livePollingOnly, () => setLivePollingOnly(v => !v), 'Show only routes with live GTFS-RT schedule-adherence polling')}
+            {row('Hide irregular routes', <span className="w-3 h-3 shrink-0 flex items-center justify-center text-[9px] font-black leading-none">≠</span>, hideSpan, () => setHideSpan(v => !v), 'Hide routes with no sustained frequency tier (peak-only, school runs, shuttles)')}
+          </div>
         </div>
       )}
     </div>
