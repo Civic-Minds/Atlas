@@ -18,7 +18,9 @@ All notable changes to this project will be documented in this file.
 - **TTC headsign cleaning**: better stripping for express routes like "960b Steeles West Express Towards Finch Station Via Pioneer Village Station" → "Finch via Pioneer Village". Improves long verbose TTC headsigns.
 
 ### Fixed
-- **Sidebar panel width**: the details panel for selected stop/route is now strictly `w-64` (and `overflow-x-hidden`) to match the search bar width exactly; never wider.
+- **Sidebar panel width**: the details panel for selected stop/route is now strictly `w-64` (and `overflow-x-hidden`, tighter `p-4`) to match the search bar width exactly; never wider.
+- **Clicking routes showed map tooltip "panel"**: removed `bindTooltip` from route lines (and hit areas). Clicking a route now exclusively opens full details in the left sidebar panel (never a floating mini-card on the map at the click location). Hover on routes is silent; only stops + combined corridors keep minimal tooltips.
+- **Route click toggle was unreliable (stale closure)**: changed `setSelectedRoute` / `setSelectedStop` calls in MapCanvas to functional updaters + widened prop types so toggle (select/deselect) always uses latest state even without layer remount.
 - **Loading indicator covers locate button**: moved loading spinner from bottom-right to bottom-left so it can no longer overlap the locate button or the Nearby Routes panel.
 - **Sticky native tooltip on locate button and other controls**: replaced `title` attributes with `aria-label` across all buttons (locate, reset view, filter panel toggles, frequency tier chips). Eliminates the browser's slow-to-dismiss native tooltip.
 
