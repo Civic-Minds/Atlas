@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Improved
+- **Live polling UX**: routes with live GTFS-RT data (Burlington 1/10, Hamilton 01/10) now show a small green dot in the stop panel route list so users know live data is available before opening the route. Live box in the route panel no longer shows "fetching…" indefinitely — hides entirely when no active trips are detected (e.g. outside service hours), and the pulsing dot is dimmed while pending vs solid when data is live.
+
 ### Fixed
 - **Live adherence API 504 timeout**: `fetchTripUpdates` had no fetch timeout, causing the Vercel function to hang the full 60 s when Burlington or Hamilton's GTFS-RT endpoint was slow from Vercel's datacenter. Added a 12 s `AbortController` timeout so the function fails fast and returns `noData` instead of timing out.
 

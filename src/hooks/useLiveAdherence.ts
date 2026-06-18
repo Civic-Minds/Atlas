@@ -24,22 +24,25 @@ export interface LiveAdherenceData {
   trips: TripDrift[];
 }
 
+export type LiveStatus = 'pending' | 'noData' | 'live';
+
 /** Fetch live GTFS-RT adherence on demand when a covered route is selected. */
 export function useLiveAdherence(
   agencySlug: string | null,
   routeShortName: string | null,
   pollIntervalMs = 60_000,
-) {
+): { data: LiveAdherenceData | null; status: LiveStatus } {
   const [data, setData] = useState<LiveAdherenceData | null>(null);
+  const [status, setStatus] = useState<LiveStatus>('pending');
 
   useEffect(() => {
     if (!agencySlug || !routeShortName) {
       setData(null);
+      setStatus('pending');
       return;
     }
 
     let cancelled = false;
-
     const slug = agencySlug;
     const route = routeShortName;
 
@@ -48,10 +51,18 @@ export function useLiveAdherence(
         const res = await fetch(
           `/api/live-adherence?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(route)}`,
         );
-        if (!res.ok) return;
+        if (!res.ok) { if (!cancelled) setStatus('noData'); return; }
         const json = await res.json();
-        if (!cancelled && json && !json.noData && !json.error) setData(json);
-      } catch {}
+        if (cancelled) return;
+        if (json && !json.noData && !json.error) {
+          setData(json);
+          setStatus('live');
+        } else {
+          setStatus('noData');
+        }
+      } catch {
+        if (!cancelled) setStatus('noData');
+      }
     }
 
     poll();
@@ -62,7 +73,7 @@ export function useLiveAdherence(
     };
   }, [agencySlug, routeShortName, pollIntervalMs]);
 
-  return data;
+  return { data, status };
 }
 
 export function agencyHeadwayDelta(data: LiveAdherenceData | null, agency: string): number | null {
