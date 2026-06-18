@@ -15,8 +15,8 @@ export interface ShapeProperties {
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;
 
-// Always load these regardless of viewport — regional backbone
-const ALWAYS_LOAD = new Set(['go', 'upexpress']);
+// Used before the map reports its first moveend — matches DEFAULT_CENTER (43.65, -79.45) at zoom 11
+const INITIAL_BOUNDS: ViewportBounds = { s: 43.30, w: -80.00, n: 44.00, e: -78.95 };
 
 function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
@@ -69,16 +69,13 @@ export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Phase 1: backbone agencies load immediately regardless of viewport
+  // Load all agencies whose bbox intersects the current viewport.
+  // Before the map reports its first moveend, fall back to the initial Toronto-area bounds
+  // so GTHA agencies load immediately without hardcoding specific slugs.
   useEffect(() => {
-    agencies.filter(a => ALWAYS_LOAD.has(a.slug)).forEach(fetchAgency);
-  }, [agencies, fetchAgency]);
-
-  // Phase 2: load agencies whose bbox intersects the current viewport
-  useEffect(() => {
-    if (!bounds) return;
+    const vp = bounds ?? INITIAL_BOUNDS;
     agencies
-      .filter(a => !ALWAYS_LOAD.has(a.slug) && bboxIntersects(getAgencyBbox(a), bounds))
+      .filter(a => bboxIntersects(getAgencyBbox(a), vp))
       .forEach(fetchAgency);
   }, [agencies, bounds, fetchAgency]);
 
