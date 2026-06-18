@@ -65,7 +65,8 @@ function interpolateAt(coords: number[][], t: number): number[] {
   const target = t * total;
   for (let i = 0; i < lens.length - 1; i++) {
     if (target <= lens[i + 1]) {
-      const frac = (target - lens[i]) / (lens[i + 1] - lens[i]);
+      const segLen = lens[i + 1] - lens[i];
+      const frac = segLen > 0 ? (target - lens[i]) / segLen : 0;
       return [
         coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
         coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
@@ -96,8 +97,9 @@ function clipLinestring(coords: number[][], tStart: number, tEnd: number): numbe
   const result: number[][] = [];
   // Interpolated start point
   for (let i = 0; i < lens.length - 1; i++) {
+    const segLen = lens[i + 1] - lens[i];
     if (lens[i + 1] >= targetStart && result.length === 0) {
-      const frac = (targetStart - lens[i]) / (lens[i + 1] - lens[i]);
+      const frac = segLen > 0 ? (targetStart - lens[i]) / segLen : 0;
       result.push([
         coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
         coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
@@ -109,7 +111,7 @@ function clipLinestring(coords: number[][], tStart: number, tEnd: number): numbe
     }
     // Interpolated end point
     if (lens[i] < targetEnd && lens[i + 1] >= targetEnd) {
-      const frac = (targetEnd - lens[i]) / (lens[i + 1] - lens[i]);
+      const frac = segLen > 0 ? (targetEnd - lens[i]) / segLen : 1;
       result.push([
         coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
         coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
@@ -343,7 +345,9 @@ function GeolocateOnMount({ skip }: { skip: boolean }) {
     if (skip || didRun.current || !navigator.geolocation) return;
     didRun.current = true;
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => map.flyTo([coords.latitude, coords.longitude], 12, { duration: 1.2 }),
+      ({ coords }) => {
+        try { map.flyTo([coords.latitude, coords.longitude], 12, { duration: 1.2 }); } catch { /* map unmounted */ }
+      },
       () => {},
       { timeout: 8000 }
     );
@@ -391,14 +395,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  // Zoom tiers chosen so terminals don't turn into blobs when zoomed out:
-  // - >=15: all individual stops (detailed view of bays/loops inside a terminal)
-  // - 13-14: only hubs (3+ routes or station location_type=1) + rail → clean terminal markers
-  // - 12: rail stops only
+  // Zoom tiers:
+  // - >=15: all individual stops
+  // - 12–14: rail/subway stations only (bus stops too noisy at city scale)
   // - <12: none except explicitly selected
   const showAllStops = zoom >= 15;
-  const showHubsOnly = zoom >= 13 && zoom < 15;
-  const showRailOnly = zoom >= 12 && zoom < 13;
+  const showHubsOnly = false;
+  const showRailOnly = zoom >= 12 && zoom < 15;
 
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
@@ -587,6 +590,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             if (!filterActive || f.geometry.type !== 'LineString') return withSlug;
             const clipped = getClippedCoords(withSlug, maxHeadway);
             if (clipped === (f.geometry as GeoJSON.LineString).coordinates) return withSlug;
+            if (clipped.some(c => isNaN(c[0]) || isNaN(c[1]))) return withSlug;
             return { ...withSlug, geometry: { type: 'LineString' as const, coordinates: clipped } };
           }),
         };
@@ -624,8 +628,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                   // Only "significant" stops (hubs/terminals + rail) are shown until you zoom in.
                   if (!isSelected) {
                     if (zoom < 12) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
-                    if (zoom < 13 && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
-                    if (zoom < 15 && !isHub && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                    if (zoom < 15 && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
                   }
 
                   // Smaller regular stops + slightly scaled by zoom so terminals read cleanly far out.

@@ -24,9 +24,9 @@ const PERIODS = {
 type PeriodKey = keyof typeof PERIODS;
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
-function medianHeadwayInWindow(departureTimes: number[], start: number, end: number): number | null {
+function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
   const times = departureTimes.filter(t => t >= start && t <= end);
-  if (times.length < 2) return null;
+  if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
   gaps.sort((a, b) => a - b);
@@ -36,7 +36,10 @@ function medianHeadwayInWindow(departureTimes: number[], start: number, end: num
 function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    result[key] = medianHeadwayInWindow(departureTimes, start, end);
+    // Require ≥3 departures per period: 2 departures gives only 1 gap, which is a single
+    // measurement, not a repeating headway. Niagara Falls GO with 2 AM Peak trains would
+    // otherwise show "every 90 min AM Peak" from a single gap.
+    result[key] = medianHeadwayInWindow(departureTimes, start, end, 3);
   }
   return result;
 }
@@ -549,7 +552,7 @@ export async function processGtfsBuffer(
       if (hw != null) allStopHw[stopId] = hw;
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-        const ph = medianHeadwayInWindow(times, start, end);
+        const ph = medianHeadwayInWindow(times, start, end, 3);
         if (ph != null) byPeriod[pk] = ph;
       }
       if (Object.keys(byPeriod).length > 0) allStopPeriodHw[stopId] = byPeriod;
