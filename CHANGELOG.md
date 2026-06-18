@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - **Removed X close button from route panel**: click elsewhere on the map to deselect.
 
 ### Fixed
+- **Station View headsigns split by direction (AI-95)**: stop panel now groups headsigns by `directionId` so eastbound and westbound destinations appear as separate rows. Previously all headsigns for a route were lumped together regardless of direction (e.g. Appleby GO showing Union Station GO and Hamilton GO Centre in the same row). `directionId` was already written by the pipeline — this was a UI-only fix.
 - **Hamilton GTFS refreshed**: re-processed with current feed to include West Hamilton Loop (1A) shape, which was missing from the previous (expired April 2026) feed.
 - **Search leading zero normalization**: typing "1" now matches "01 — King" and other zero-padded route numbers.
 - **Search results sorted by viewport proximity**: routes currently visible on screen sort above off-screen matches.

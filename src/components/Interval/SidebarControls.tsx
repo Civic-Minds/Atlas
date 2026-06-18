@@ -220,7 +220,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
     const stopAgencySlug = currentStop.agencySlug as string | undefined;
-    const routeMap = new Map<string, { shortName: string; longName: string; headsigns: Set<string>; agencyName: string; rKey: string; bestHeadway?: number }>();
+    const routeMap = new Map<string, { shortName: string; longName: string; headsigns: Set<string>; agencyName: string; rKey: string; bestHeadway?: number; directionId: number }>();
     for (const [slug, fc] of Object.entries(layers)) {
       if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
@@ -228,17 +228,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
 
-        const key = p.routeShortName || p.routeId;
+        const shortName = p.routeShortName || p.routeId;
+        const dirId = (p as any).directionId ?? 0;
+        const key = `${shortName}::${dirId}`;
         if (!routeMap.has(key)) {
           routeMap.set(key, {
-            shortName: key,
+            shortName,
             longName: p.routeLongName || '',
             headsigns: new Set(),
             agencyName: p.agencyName || slug,
             rKey: routeKey({ ...p, agencySlug: slug } as any),
+            directionId: dirId,
           });
         }
-        
+
         const entry = routeMap.get(key)!;
         if (p.headsign) entry.headsigns.add(p.headsign);
         if (p.headway != null && (entry.bestHeadway === undefined || p.headway < entry.bestHeadway)) {
@@ -248,13 +251,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     return Array.from(routeMap.entries())
       .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-      .map(([, v]) => ({ 
-        shortName: v.shortName, 
-        longName: v.longName, 
-        headsigns: Array.from(v.headsigns), 
-        agencyName: v.agencyName, 
+      .map(([, v]) => ({
+        shortName: v.shortName,
+        longName: v.longName,
+        headsigns: Array.from(v.headsigns),
+        agencyName: v.agencyName,
         rKey: v.rKey,
-        headway: v.bestHeadway 
+        headway: v.bestHeadway,
+        directionId: v.directionId,
       }));
   }, [currentStop, layers, currentDay]);
 
@@ -349,8 +353,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             )}
             <div className="space-y-2">
-              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey, headway, agencyName }) => (
-                <div key={shortName} className="text-[11px]">
+              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey, headway, agencyName, directionId }) => (
+                <div key={`${rKey}::${directionId}`} className="text-[11px]">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
