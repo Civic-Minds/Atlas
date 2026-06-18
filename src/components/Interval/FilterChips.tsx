@@ -19,9 +19,10 @@ interface FilterChipsProps {
 
 const MODES = [
   { id: 1, label: 'Subway' },
-  { id: 0, label: 'Streetcar' },
+  { id: 0, label: 'Streetcar / LRT' },
   { id: 2, label: 'Rail' },
   { id: 3, label: 'Bus' },
+  { id: 4, label: 'Ferry' },
 ];
 
 // Tier value → tier key used by getTierColor
