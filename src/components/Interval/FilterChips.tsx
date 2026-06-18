@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import type { Agency } from '../../App';
+import type { AgencyLayers } from '../../hooks/useAgencyData';
 
 interface FilterChipsProps {
   maxHeadway: number;
@@ -13,6 +14,7 @@ interface FilterChipsProps {
   agencies: Agency[];
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
+  layers: AgencyLayers;
 }
 
 const MODES = [
@@ -48,6 +50,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   agencies,
   selectedAgencies,
   setSelectedAgencies,
+  layers,
 }) => {
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
@@ -206,6 +209,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                   .filter(g => g.name.toLowerCase().includes(agencyQuery.toLowerCase()))
                   .map(g => {
                     const active = g.slugs.every(s => selectedAgencies.has(s));
+                    const loaded = g.slugs.some(s => s in layers);
                     return (
                       <button
                         key={g.name}
@@ -219,6 +223,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                         aria-label={g.name}
                       >
                         {g.name}
+                        {active && !loaded && (
+                          <span className="ml-auto w-2 h-2 rounded-full border border-current opacity-40 shrink-0" />
+                        )}
                       </button>
                     );
                   });

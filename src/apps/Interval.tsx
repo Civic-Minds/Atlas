@@ -21,14 +21,32 @@ interface Props {
 }
 
 export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey }: Props) {
-  const [maxHeadway, setMaxHeadway] = useState(60);
+  const [maxHeadway, setMaxHeadway] = useState<number>(() => {
+    try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
+    return 60;
+  });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
-  
+
   // Advanced Filter State
-  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => new Set(agencies.map(a => a.slug)));
+  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
+    const allSlugs = new Set(agencies.map(a => a.slug));
+    try {
+      const saved = localStorage.getItem('atlas_pref_agencies_off');
+      if (saved) {
+        const off = new Set(JSON.parse(saved) as string[]);
+        // New agencies (not in the saved exclusion list) are included by default
+        return new Set([...allSlugs].filter(s => !off.has(s)));
+      }
+    } catch {}
+    return allSlugs;
+  });
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
   const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>(() => {
+    try {
+      const s = localStorage.getItem('atlas_pref_day');
+      if (s === 'Weekday' || s === 'Saturday' || s === 'Sunday') return s;
+    } catch {}
     const d = new Date().getDay();
     if (d === 0) return 'Sunday';
     if (d === 6) return 'Saturday';
@@ -57,6 +75,15 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     livePollingOnly,
     showCorridors
   });
+
+  useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
+  useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
+  useEffect(() => {
+    try {
+      const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
+      localStorage.setItem('atlas_pref_agencies_off', JSON.stringify(off));
+    } catch {}
+  }, [selectedAgencies, agencies]);
 
   useEffect(() => {
     onStatsChange?.(stats);
@@ -110,6 +137,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           agencies={agencies}
           selectedAgencies={selectedAgencies}
           setSelectedAgencies={setSelectedAgencies}
+          layers={layers}
         />
         <FilterPanel
           lightMode={lightMode}
