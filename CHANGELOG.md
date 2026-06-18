@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **History snapshots keyed by feed expiry date**: Burlington history snapshots now use `feed_end_date` from `feed_info.txt` as the snapshot key instead of ISO week number. Each snapshot now represents a real schedule period (e.g. "expires 2026-09-06") rather than an arbitrary Monday. `ProcessResult` now exposes `feedExpiry` and `feedVersion` for use by the refresh pipeline. Falls back to `feed_version` then processed date if `feed_end_date` is absent.
+- **Frequency-based shape clipping (AI-97)**: when a frequency filter is active, route shapes are now clipped to only show the segment where the stop-level headway meets the threshold. Pipeline projects each stop onto the shape polyline (nearest-point-on-polyline), sorts by position, and writes `stopOrder: string[]` + `stopPositions: number[]` to each GeoJSON feature. Frontend walks these alongside `stopHeadways` to find the longest contiguous passing segment and interpolates the sub-linestring at render time. Trunk sections with combined 10-min service remain visible while branch extensions with 20-min or 30-min service are clipped away when you filter below their threshold.
+
+
 - **Route disambiguation picker (AI-61)**: clicking where multiple routes overlap now shows a compact "Multiple routes here" picker listing each route with its colored tier dot and agency. Selecting one opens its route panel. Clicking anywhere on the map or on a stop dismisses the picker. Uses a pixel-space spatial query across all visible features at the current zoom.
 - **Live adherence panel (AI-61)**: when a route with GTFS-RT coverage is selected (Burlington 1/10, Hamilton 01/10), a separate Live card appears below the Scheduled card showing per-stop actual headways and delta from scheduled. Stops with large gaps show red; minor gaps amber; on-time green.
 - **"Scheduled" label on route panel**: when the live panel is also showing, the route panel gains a small "Scheduled" label so both cards are clearly distinguished.

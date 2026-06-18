@@ -47,6 +47,122 @@ interface MapCanvasProps {
   routesForStop?: { slug: string; routeIds: Set<string> } | null;
 }
 
+/**
+ * Interpolates a point along a linestring at parameter t ∈ [0,1].
+ * Coordinates are [lon, lat] (GeoJSON order).
+ */
+function interpolateAt(coords: number[][], t: number): number[] {
+  if (t <= 0) return coords[0];
+  if (t >= 1) return coords[coords.length - 1];
+  // Compute cumulative lengths
+  const lens: number[] = [0];
+  for (let i = 0; i < coords.length - 1; i++) {
+    const dx = coords[i + 1][0] - coords[i][0];
+    const dy = coords[i + 1][1] - coords[i][1];
+    lens.push(lens[i] + Math.sqrt(dx * dx + dy * dy));
+  }
+  const total = lens[lens.length - 1];
+  const target = t * total;
+  for (let i = 0; i < lens.length - 1; i++) {
+    if (target <= lens[i + 1]) {
+      const frac = (target - lens[i]) / (lens[i + 1] - lens[i]);
+      return [
+        coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
+        coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
+      ];
+    }
+  }
+  return coords[coords.length - 1];
+}
+
+/**
+ * Returns the sub-array of coords between parameters tStart and tEnd (0–1),
+ * with interpolated endpoints. Returns null if the segment is degenerate.
+ */
+function clipLinestring(coords: number[][], tStart: number, tEnd: number): number[][] | null {
+  if (tEnd <= tStart) return null;
+  // Compute cumulative lengths once
+  const lens: number[] = [0];
+  for (let i = 0; i < coords.length - 1; i++) {
+    const dx = coords[i + 1][0] - coords[i][0];
+    const dy = coords[i + 1][1] - coords[i][1];
+    lens.push(lens[i] + Math.sqrt(dx * dx + dy * dy));
+  }
+  const total = lens[lens.length - 1];
+  if (total === 0) return null;
+  const targetStart = tStart * total;
+  const targetEnd = tEnd * total;
+
+  const result: number[][] = [];
+  // Interpolated start point
+  for (let i = 0; i < lens.length - 1; i++) {
+    if (lens[i + 1] >= targetStart && result.length === 0) {
+      const frac = (targetStart - lens[i]) / (lens[i + 1] - lens[i]);
+      result.push([
+        coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
+        coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
+      ]);
+    }
+    // Interior vertices within the window
+    if (lens[i + 1] > targetStart && lens[i + 1] < targetEnd) {
+      result.push(coords[i + 1]);
+    }
+    // Interpolated end point
+    if (lens[i] < targetEnd && lens[i + 1] >= targetEnd) {
+      const frac = (targetEnd - lens[i]) / (lens[i + 1] - lens[i]);
+      result.push([
+        coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
+        coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
+      ]);
+      break;
+    }
+  }
+  return result.length >= 2 ? result : null;
+}
+
+/**
+ * Given a route feature with stopOrder/stopPositions/stopHeadways, returns the
+ * clipped coordinate array covering only the longest contiguous segment where every
+ * stop has headway <= maxHeadway. Falls back to the full coords if data is absent.
+ */
+function getClippedCoords(feature: GeoJSON.Feature, maxHeadway: number): number[][] {
+  const p = feature.properties as any;
+  const stopOrder: string[] | undefined = p.stopOrder;
+  const stopPositions: number[] | undefined = p.stopPositions;
+  const stopHeadways: Record<string, number> | undefined = p.stopHeadways;
+  const coords = (feature.geometry as GeoJSON.LineString).coordinates;
+
+  if (!stopOrder || !stopPositions || !stopHeadways || stopOrder.length < 2) return coords;
+
+  // Find the longest contiguous run of stops passing the threshold.
+  // A stop "passes" if its headway <= maxHeadway.
+  let bestStart = -1, bestEnd = -1, bestLen = 0;
+  let runStart = -1;
+  for (let i = 0; i < stopOrder.length; i++) {
+    const hw = stopHeadways[stopOrder[i]];
+    const passes = hw != null && hw <= maxHeadway;
+    if (passes) {
+      if (runStart === -1) runStart = i;
+      const len = i - runStart + 1;
+      if (len > bestLen) { bestLen = len; bestStart = runStart; bestEnd = i; }
+    } else {
+      runStart = -1;
+    }
+  }
+
+  if (bestStart === -1 || bestLen < 2) return coords;
+
+  // Add a half-stop buffer at each end so the line doesn't abruptly end mid-block.
+  const tStart = bestStart > 0
+    ? (stopPositions[bestStart] + stopPositions[bestStart - 1]) / 2
+    : stopPositions[bestStart];
+  const tEnd = bestEnd < stopPositions.length - 1
+    ? (stopPositions[bestEnd] + stopPositions[bestEnd + 1]) / 2
+    : stopPositions[bestEnd];
+
+  return clipLinestring(coords, tStart, tEnd) ?? coords;
+}
+
 function findRoutesNearClick(
   clickLatLng: L.LatLng,
   map: L.Map,
@@ -463,7 +579,17 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         // triggering expensive remounts of the much larger route layer.
         const lineFeatures = fc.features.filter(f => f.geometry.type !== 'Point');
         const pointFeatures = fc.features.filter(f => f.geometry.type === 'Point');
-        const lineFc = { ...fc, features: lineFeatures.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })) };
+        const filterActive = maxHeadway !== Infinity;
+        const lineFc = {
+          ...fc,
+          features: lineFeatures.map(f => {
+            const withSlug = { ...f, properties: { ...f.properties, agencySlug: slug } };
+            if (!filterActive || f.geometry.type !== 'LineString') return withSlug;
+            const clipped = getClippedCoords(withSlug, maxHeadway);
+            if (clipped === (f.geometry as GeoJSON.LineString).coordinates) return withSlug;
+            return { ...withSlug, geometry: { type: 'LineString' as const, coordinates: clipped } };
+          }),
+        };
         // Inject agencySlug so onEachFeature can build the composite stopId key
         const pointFc = { ...fc, features: pointFeatures.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })) };
         return (

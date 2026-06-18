@@ -41,6 +41,75 @@ function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
   return result;
 }
 
+/**
+ * Returns the parameter t ∈ [0, cumLen] (cumulative metres along the polyline)
+ * of the nearest point to `pt` on the segment from `a` to `b`.
+ * Uses flat-earth approximation — accurate enough for stops within a city.
+ */
+function nearestParamOnSegment(
+  pt: [number, number],   // [lat, lon]
+  a: [number, number],
+  b: [number, number],
+  segLen: number,         // precomputed length of a→b in degrees²-space
+): number {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  if (segLen === 0) return 0;
+  const t = Math.max(0, Math.min(1, ((pt[0] - a[0]) * dx + (pt[1] - a[1]) * dy) / segLen));
+  return t;
+}
+
+/**
+ * Projects each stop onto the polyline (shape coordinates [lat, lon][]).
+ * Returns stops sorted by their projected position along the shape (0 → end),
+ * with normalized t values (0.0–1.0) for frontend geometry clipping.
+ * Stops that can't be projected (not in stopsById) are omitted.
+ */
+function projectStopsOntoShape(
+  stopIds: string[],
+  stopsById: Map<string, { lat: number; lon: number }>,
+  shapePts: [number, number][],  // [lat, lon][]
+): { stopId: string; t: number }[] {
+  if (shapePts.length < 2) return [];
+
+  const segLens: number[] = [];
+  const cumLen: number[] = [0];
+  for (let i = 0; i < shapePts.length - 1; i++) {
+    const dx = shapePts[i + 1][0] - shapePts[i][0];
+    const dy = shapePts[i + 1][1] - shapePts[i][1];
+    const len2 = dx * dx + dy * dy;
+    segLens.push(len2);
+    cumLen.push(cumLen[i] + Math.sqrt(len2));
+  }
+  const totalLen = cumLen[cumLen.length - 1];
+  if (totalLen === 0) return [];
+
+  const projected: { stopId: string; t: number }[] = [];
+  for (const stopId of stopIds) {
+    const stop = stopsById.get(stopId);
+    if (!stop) continue;
+    const pt: [number, number] = [stop.lat, stop.lon];
+
+    let bestT = 0;
+    let bestDist2 = Infinity;
+    for (let i = 0; i < shapePts.length - 1; i++) {
+      const segT = nearestParamOnSegment(pt, shapePts[i], shapePts[i + 1], segLens[i]);
+      const nearLat = shapePts[i][0] + segT * (shapePts[i + 1][0] - shapePts[i][0]);
+      const nearLon = shapePts[i][1] + segT * (shapePts[i + 1][1] - shapePts[i][1]);
+      const dx = pt[0] - nearLat;
+      const dy = pt[1] - nearLon;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < bestDist2) {
+        bestDist2 = d2;
+        bestT = (cumLen[i] + segT * Math.sqrt(segLens[i])) / totalLen;
+      }
+    }
+    projected.push({ stopId, t: bestT });
+  }
+
+  return projected.sort((a, b) => a.t - b.t);
+}
+
 export interface ProcessOptions {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
@@ -56,6 +125,8 @@ export interface ProcessResult {
   geojson: string;
   featureCount: number;
   center: [number, number] | null;
+  feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
+  feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
 }
 
 export async function processGtfsBuffer(
@@ -84,11 +155,13 @@ export async function processGtfsBuffer(
 
   // Stop coords for corridor link geometry (stop-pair chords; dense stops approximate paths)
   const stopCoords = new Map<string, [number, number]>();
+  const stopsById = new Map<string, { lat: number; lon: number }>();
   for (const stop of gtfs.stops ?? []) {
     const lat = parseFloat(stop.stop_lat);
     const lon = parseFloat(stop.stop_lon);
     if (Number.isFinite(lat) && Number.isFinite(lon)) {
       stopCoords.set(stop.stop_id, [lon, lat]);
+      stopsById.set(stop.stop_id, { lat, lon });
     }
   }
 
@@ -448,7 +521,9 @@ export async function processGtfsBuffer(
     } as any);
   }
 
-  // Resolve per-stop headways onto route features now that stopDepsByGroup is populated
+  // Resolve per-stop headways + stopOrder onto route features.
+  // stopOrder: stop IDs sorted by their projected position along the feature's shape,
+  // enabling the frontend to clip the rendered geometry to the frequency-passing segment.
   for (const [feature, { routeId, dirId, day }] of featureStopHeadwaySlots) {
     const gKey = `${routeId}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
@@ -459,7 +534,19 @@ export async function processGtfsBuffer(
       const hw = medianHeadwayInWindow(times, 360, 1320);
       if (hw != null) stopHeadways[stopId] = hw;
     }
-    if (Object.keys(stopHeadways).length > 0) feature.properties.stopHeadways = stopHeadways;
+    if (Object.keys(stopHeadways).length === 0) continue;
+    feature.properties.stopHeadways = stopHeadways;
+
+    // Project stops onto the feature's shape to produce an ordered stop list with
+    // normalized t positions (0–1 along the shape) for frontend geometry clipping.
+    const coords = (feature.geometry as { type: 'LineString'; coordinates: number[][] }).coordinates;
+    const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
+    const projected = projectStopsOntoShape(Object.keys(stopHeadways), stopsById, shapePts);
+    if (projected.length > 1) {
+      feature.properties.stopOrder = projected.map(p => p.stopId);
+      // Round t to 4 decimal places to keep GeoJSON compact
+      feature.properties.stopPositions = projected.map(p => Math.round(p.t * 10000) / 10000);
+    }
   }
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)
@@ -518,10 +605,13 @@ export async function processGtfsBuffer(
     center = [Math.round(avgLat * 10000) / 10000, Math.round(avgLon * 10000) / 10000];
   }
 
+  const feedInfo = gtfs.feedInfo?.[0];
   const allFeatures = [...features, ...stopFeatures, ...corridorFeatures];
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: allFeatures }),
     featureCount: allFeatures.length,
     center,
+    feedExpiry: feedInfo?.feed_end_date ?? null,
+    feedVersion: feedInfo?.feed_version ?? null,
   };
 }
