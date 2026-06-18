@@ -11,14 +11,14 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
-import { put, list } from '@vercel/blob';
+import { r2Put, r2Get } from './r2.js';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
 
 config({ path: resolve('.env.local') });
 
-if (!process.env.BLOB_READ_WRITE_TOKEN) {
-  console.error('Missing BLOB_READ_WRITE_TOKEN. Run: vercel env pull .env.local');
+if (!process.env.R2_ACCESS_KEY_ID) {
+  console.error('Missing R2 credentials. Add R2_* vars to .env.local');
   process.exit(1);
 }
 
@@ -53,9 +53,9 @@ async function writeHistorySnapshot(slug: string, geojson: string): Promise<stri
   // Only write when headways actually changed vs the last recorded snapshot.
   const latestKey = `atlas-history/${slug}/latest.json`;
   try {
-    const { blobs } = await list({ prefix: latestKey, limit: 1 });
-    if (blobs.length > 0) {
-      const prev = await fetch(blobs[0].url).then(r => r.json()) as { routes: unknown };
+    const prevRaw = await r2Get(latestKey);
+    if (prevRaw) {
+      const prev = JSON.parse(prevRaw) as { routes: unknown };
       if (JSON.stringify(prev.routes) === JSON.stringify(routes)) {
         return 'unchanged (headways identical to last snapshot)';
       }
@@ -65,8 +65,8 @@ async function writeHistorySnapshot(slug: string, geojson: string): Promise<stri
   const week = isoWeek(new Date());
   const snapshot = JSON.stringify({ week, processedAt: new Date().toISOString(), routes });
   await Promise.all([
-    put(`atlas-history/${slug}/${week}.json`, snapshot, { access: 'public', contentType: 'application/json', allowOverwrite: true }),
-    put(latestKey, snapshot, { access: 'public', contentType: 'application/json', allowOverwrite: true }),
+    r2Put(`atlas-history/${slug}/${week}.json`, snapshot),
+    r2Put(latestKey, snapshot),
   ]);
   return `snapshot written (${week})`;
 }
@@ -121,12 +121,8 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   });
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
 
-  const blob = await put(`atlas/${agency.slug}.json`, geojson, {
-    access: 'public',
-    contentType: 'application/json',
-    allowOverwrite: true,
-  });
-  agency.url = blob.url;
+  const url = await r2Put(`atlas/${agency.slug}.json`, geojson);
+  agency.url = url;
 
   // For agencies enrolled in history tracking, write a compact headway snapshot.
   if (HISTORY_SLUGS.has(agency.slug)) {

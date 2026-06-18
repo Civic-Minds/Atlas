@@ -7,9 +7,9 @@
  */
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
-import { put } from '@vercel/blob';
 import { config } from 'dotenv';
 import { processGtfsBuffer } from './process-core.js';
+import { r2Put } from './r2.js';
 
 config({ path: resolve('.env.local') });
 
@@ -23,8 +23,8 @@ if (!zipPath || !slug) {
   process.exit(1);
 }
 
-if (!process.env.BLOB_READ_WRITE_TOKEN) {
-  console.error('Missing BLOB_READ_WRITE_TOKEN. Run: vercel env pull .env.local');
+if (!process.env.R2_ACCESS_KEY_ID) {
+  console.error('Missing R2 credentials. Add R2_* vars to .env.local');
   process.exit(1);
 }
 
@@ -51,13 +51,9 @@ async function main() {
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
-  console.log(`\n  Uploading ${featureCount} features (${kb} KB) to Blob...`);
-  const blob = await put(`atlas/${slug}.json`, geojson, {
-    access: 'public',
-    contentType: 'application/json',
-    allowOverwrite: true,
-  });
-  console.log(`  Uploaded → ${blob.url}`);
+  console.log(`\n  Uploading ${featureCount} features (${kb} KB) to R2...`);
+  const url = await r2Put(`atlas/${slug}.json`, geojson);
+  console.log(`  Uploaded → ${url}`);
 
   let index: { agencies: any[] } = { agencies: [] };
   if (existsSync(indexPath)) {
@@ -65,9 +61,9 @@ async function main() {
   }
   const existing = index.agencies.findIndex(a => a.slug === slug);
   if (existing >= 0) {
-    index.agencies[existing] = { ...index.agencies[existing], name: agencyName, center, url: blob.url };
+    index.agencies[existing] = { ...index.agencies[existing], name: agencyName, center, url };
   } else {
-    index.agencies.push({ slug, name: agencyName, center, url: blob.url, feedUrl: null });
+    index.agencies.push({ slug, name: agencyName, center, url, feedUrl: null });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   console.log(`  index.json updated\n`);
