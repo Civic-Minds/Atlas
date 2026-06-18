@@ -24,6 +24,41 @@ if (!process.env.BLOB_READ_WRITE_TOKEN) {
 
 const onlySlugs = process.argv.slice(2);
 
+// Agencies enrolled in history snapshot tracking (AI-83).
+const HISTORY_SLUGS = new Set(['burlington']);
+
+function isoWeek(date: Date): string {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
+async function writeHistorySnapshot(slug: string, geojson: string): Promise<void> {
+  const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
+  const routes: Record<string, { headway: number | null; tier: string | null }> = {};
+  for (const f of fc.features) {
+    const p = f.properties;
+    if (!p.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
+    const sn = String(p.routeShortName);
+    const h = p.headway != null ? Number(p.headway) : null;
+    const t = p.tier != null ? String(p.tier) : null;
+    // Keep the best (lowest) headway per route short name across directions
+    if (!routes[sn] || (h != null && (routes[sn].headway == null || h < routes[sn].headway!))) {
+      routes[sn] = { headway: h, tier: t };
+    }
+  }
+  const week = isoWeek(new Date());
+  const snapshot = JSON.stringify({ week, processedAt: new Date().toISOString(), routes });
+  await put(`atlas-history/${slug}/${week}.json`, snapshot, {
+    access: 'public',
+    contentType: 'application/json',
+    allowOverwrite: true,
+  });
+}
+
 interface AgencyEntry {
   slug: string;
   name: string;
@@ -80,6 +115,11 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     allowOverwrite: true,
   });
   agency.url = blob.url;
+
+  // For agencies enrolled in history tracking, write a compact headway snapshot.
+  if (HISTORY_SLUGS.has(agency.slug)) {
+    await writeHistorySnapshot(agency.slug, geojson);
+  }
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return `${featureCount} features, ${kb} KB`;
