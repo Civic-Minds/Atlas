@@ -110,7 +110,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       {/* Frequency */}
       <div className="relative">
         <button onClick={() => toggle('frequency')} className={chipClass(true)}>
-          Frequency
+          {maxHeadway === Infinity ? 'Frequency' : (HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? 'Frequency')}
           <Dot show={true} />
         </button>
         {openChip === 'frequency' && (
@@ -179,10 +179,19 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Mode */}
       <div className="relative">
-        <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
-          Mode
-          <Dot show={selectedModes.size > 0} />
-        </button>
+        {(() => {
+          const modeLabel = selectedModes.size === 0
+            ? 'Mode'
+            : selectedModes.size === 1
+              ? (MODES.find(m => selectedModes.has(m.id))?.label ?? 'Mode')
+              : `${selectedModes.size} modes`;
+          return (
+            <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
+              {modeLabel}
+              <Dot show={selectedModes.size > 0} />
+            </button>
+          );
+        })()}
         {openChip === 'mode' && (
           <div className={`${PANEL} w-36`}>
             {MODES.map((m) => (

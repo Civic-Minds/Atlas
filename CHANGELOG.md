@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Improved
+- **Filter chip labels**: all chips now reflect their current state in the label. Mode shows the mode name when exactly 1 is selected, "N modes" when multiple are selected. Frequency shows the active tier label (e.g., "≤30m") instead of always "Frequency". Day and Period already did this.
+
 ### Added
 - **Time-of-day period switcher (AI-59)**: new "Period" chip in the filter bar — All day / AM Peak (6–9) / Midday (9–15) / PM Peak (15–19) / Evening (19–22). Selecting a period recolors all map lines based on that period's frequency. When a route panel is open, the headway display updates to the selected period and a label tag appears next to the value. Defaults to "All day" (existing behavior unchanged).
 - **Per-period headways in pipeline (AI-59)**: `process-core.ts` now computes `headwayByPeriod: { amPeak, midday, pmPeak, evening }` on each GeoJSON route feature by reusing the existing phase-1 departure times. Stored as extra properties so file size only grows marginally (no geometry duplication). Data populates automatically on next refresh.
