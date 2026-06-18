@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - **PIPELINE.md**: added pipeline documentation covering the full GTFS → Blob → frontend data flow, GeoJSON schema, `index.json` format, frequency analysis tiers, and how to add or refresh agencies.
 - **Ferry mode in Mode filter**: added Ferry (GTFS route_type=4) as a selectable mode. No ferry agencies are currently in Atlas; Linear AI-76 and AI-77 track Toronto Island Ferry and Montreal navettes fluviales respectively.
-- **Streetcar / LRT split in Mode filter**: Line 5 Eglinton and Line 6 Finch West are open and in the TTC GTFS as route_type=0, mixed with streetcar routes. Mode filter now has separate "LRT" and "Streetcar" entries. LRT is detected via a frontend heuristic (`routeLongName` starts with "Line \d") — no pipeline reprocessing needed. GRT ION already uses route_type=2 (Rail) so it is unaffected.
+- **Streetcar / LRT split in Mode filter**: Line 5 Eglinton and Line 6 Finch West are open and in the TTC GTFS as route_type=0, mixed with streetcar routes. GRT ION is tagged route_type=2 in their GTFS but is urban LRT. Mode filter now has separate "LRT" and "Streetcar" entries; LRT covers TTC Lines 5/6 (heuristic: routeLongName starts with "Line \d") and GRT ION (routeLongName contains "ION"). No pipeline reprocessing needed.
 
 ### Added
 - **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), Saint-Jean-sur-Richelieu local transit, Mont-Tremblant, L'Inter des Laurentides (intermunicipal), and Ville de Saint-Hyacinthe. All processed with current GTFS and stable direct feedUrls.
