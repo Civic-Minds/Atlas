@@ -2,7 +2,9 @@ import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react'
 import { X } from 'lucide-react';
 import { getTierColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
-import type { ShapeProperties } from '../../hooks/useIntervalStats';
+import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
+import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute } from '../../utils/livePolling';
@@ -22,6 +24,7 @@ interface SidebarControlsProps {
   setSelectedModes: React.Dispatch<React.SetStateAction<Set<number>>>;
   day: 'Weekday' | 'Saturday' | 'Sunday';
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  period: TimePeriod;
   selectedStop: string | null;
   setSelectedStop: (s: string | null) => void;
   selectedRoute: string | null;
@@ -48,6 +51,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setSelectedModes,
   day,
   setDay,
+  period,
   selectedStop,
   setSelectedStop,
   selectedRoute,
@@ -59,6 +63,50 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   livePollingOnly,
   setLivePollingOnly,
 }) => {
+  const SPARKLINE_PERIODS: Array<{ key: keyof HeadwayByPeriod; label: string }> = [
+    { key: 'amPeak', label: 'AM' },
+    { key: 'midday', label: 'Mid' },
+    { key: 'pmPeak', label: 'PM' },
+    { key: 'evening', label: 'Eve' },
+  ];
+
+  function headwayToTierColor(h: number | null | undefined): string {
+    if (!h) return getTierColor(null);
+    if (h <= 10) return getTierColor('10');
+    if (h <= 15) return getTierColor('15');
+    if (h <= 20) return getTierColor('20');
+    if (h <= 30) return getTierColor('30');
+    if (h <= 60) return getTierColor('60');
+    return getTierColor('infrequent');
+  }
+
+  function HeadwaySparkline({ byPeriod }: { byPeriod: HeadwayByPeriod }) {
+    const values = SPARKLINE_PERIODS.map(p => byPeriod[p.key] ?? null);
+    const valids = values.filter((v): v is number => v != null);
+    if (valids.length === 0) return null;
+    const maxFreq = Math.max(...valids.map(v => 1 / v));
+    const minFreq = Math.min(...valids.map(v => 1 / v));
+    const H = 18; const BW = 8; const GAP = 3;
+    return (
+      <div className="mt-1.5 mb-3">
+        <svg width={SPARKLINE_PERIODS.length * (BW + GAP) - GAP} height={H} className="block">
+          {SPARKLINE_PERIODS.map(({ key, label }, i) => {
+            const h = byPeriod[key];
+            if (!h) return <rect key={key} x={i * (BW + GAP)} y={H - 3} width={BW} height={3} rx={2} fill="var(--border-primary)" opacity={0.4} />;
+            const freq = 1 / h;
+            const barH = maxFreq > minFreq ? Math.max(4, Math.round((freq - minFreq) / (maxFreq - minFreq) * (H - 4) + 4)) : H;
+            return <rect key={key} x={i * (BW + GAP)} y={H - barH} width={BW} height={barH} rx={2} fill={headwayToTierColor(h)} opacity={0.9}><title>{`${label}: ${h} min`}</title></rect>;
+          })}
+        </svg>
+        <div className="flex gap-[3px] mt-0.5">
+          {SPARKLINE_PERIODS.map(({ key, label }) => (
+            <span key={key} className="text-[8px] font-bold text-[var(--text-dim)] text-center" style={{ width: BW }}>{label}</span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
@@ -312,6 +360,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
+            {(() => {
+              const byPeriod = currentRoute.directions[0]?.headwayByPeriod as HeadwayByPeriod | undefined;
+              return byPeriod ? <HeadwaySparkline byPeriod={byPeriod} /> : null;
+            })()}
             {liveRouteInfo && liveStatus !== 'noData' && (
               <div className="mb-3 px-2.5 py-2 rounded-lg bg-green-500/5 border border-green-500/15">
                 <div className="flex items-center gap-1.5 mb-1.5">
@@ -366,8 +418,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                               </span>
                             )}
                             <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
-                              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(d.tier ?? null) }} />
-                              {fmtHeadway(d.headway!)}
+                              {(() => {
+                                const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
+                                const ph = period !== 'all' ? byPeriod?.[period as keyof HeadwayByPeriod] : undefined;
+                                const displayH = ph ?? d.headway;
+                                const color = ph != null ? headwayToTierColor(ph) : getTierColor(d.tier ?? null);
+                                return (
+                                  <>
+                                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                                    {fmtHeadway(displayH!)}
+                                    {ph != null && (
+                                      <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period]}</span>
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </span>
                           </div>
                         );

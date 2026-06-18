@@ -34,12 +34,23 @@ function effectiveMode(p: ShapeProperties): number {
   return p.routeType ?? 3;
 }
 
+export type TimePeriod = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
+
+export const PERIOD_LABELS: Record<TimePeriod, string> = {
+  all: 'All day',
+  amPeak: 'AM Peak',
+  midday: 'Midday',
+  pmPeak: 'PM Peak',
+  evening: 'Evening',
+};
+
 export interface IntervalFilters {
   query: string;
   maxHeadway: number;
   agencies: Set<string>; // slugs
   modes: Set<number>;    // route_type
   day: 'Weekday' | 'Saturday' | 'Sunday';
+  period: TimePeriod;
   selectedStop: string | null; // stopId
   selectedRoute?: string | null; // force-include the full geometry of this route even if it doesn't match frequency/agency/etc filters
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
@@ -137,7 +148,7 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
+  const { query, maxHeadway, agencies, modes, day, period: _period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { useIntervalStats } from '../hooks/useIntervalStats';
-import type { ViewportBounds } from '../hooks/useIntervalStats';
+import type { ViewportBounds, TimePeriod } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { SidebarControls } from '../components/Interval/SidebarControls';
@@ -52,6 +52,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     if (d === 6) return 'Saturday';
     return 'Weekday';
   });
+  const [period, setPeriod] = useState<TimePeriod>('all');
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
   const [showCorridors, setShowCorridors] = useState(false);
@@ -68,6 +69,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     agencies: selectedAgencies,
     modes: selectedModes,
     day,
+    period,
     selectedStop,
     selectedRoute,
     bounds,
@@ -96,6 +98,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         layers={filteredLayers}
         allLayers={layers}
         maxHeadway={maxHeadway}
+        period={period}
         q={q}
         selectedRoute={selectedRoute}
         setSelectedRoute={setSelectedRoute}
@@ -134,6 +137,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           setSelectedModes={setSelectedModes}
           day={day}
           setDay={setDay}
+          period={period}
+          setPeriod={setPeriod}
           agencies={agencies}
           selectedAgencies={selectedAgencies}
           setSelectedAgencies={setSelectedAgencies}
@@ -165,6 +170,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setSelectedModes={setSelectedModes}
         day={day}
         setDay={setDay}
+        period={period}
         selectedStop={selectedStop}
         setSelectedStop={setSelectedStop}
         selectedRoute={selectedRoute}

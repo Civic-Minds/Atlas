@@ -3,11 +3,19 @@ import type { Agency } from '../App';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 
+export interface HeadwayByPeriod {
+  amPeak?: number | null;
+  midday?: number | null;
+  pmPeak?: number | null;
+  evening?: number | null;
+}
+
 export interface ShapeProperties {
   routeId: string;
   directionId: number;
   tier: string | null;
   headway: number | null;
+  headwayByPeriod?: HeadwayByPeriod;
   routeShortName: string | null;
   routeLongName: string | null;
   agencyName?: string;
