@@ -568,16 +568,6 @@
       "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs"
     },
     {
-      "slug": "go-test",
-      "name": "GO Transit",
-      "center": [
-        43.65,
-        -79.38
-      ],
-      "url": null,
-      "feedUrl": null
-    },
-    {
       "slug": "hsr",
       "name": "Hamilton Street Railway",
       "center": [
