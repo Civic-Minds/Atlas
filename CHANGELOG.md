@@ -2,77 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
-
-### Changed
-- **Storage migrated from Vercel Blob to Cloudflare R2 (AI-81)**: all 35 agency GeoJSON files moved to R2. Zero egress fees. Pipeline (`refresh.ts`, `process-gtfs.ts`) and GitHub Actions workflow updated to use R2 credentials. Burlington history snapshots also write to R2.
-
-### Improved
-- **Filter chip labels**: all chips now reflect their current state in the label. Mode shows the mode name when exactly 1 is selected, "N modes" when multiple are selected. Frequency shows the active tier label (e.g., "≤30m") instead of always "Frequency". Day and Period already did this.
+## [2.2.0] - 2026-06-17
 
 ### Added
 - **Burlington history snapshots (AI-83)**: on each refresh, the pipeline writes a compact headway snapshot to `atlas-history/burlington/<YYYY-WW>.json` containing the Weekday headway + tier per route short name. No frontend yet — snapshots accumulate until there are enough data points to build a meaningful timeline UI.
-
-### Added
 - **Time-of-day period switcher (AI-59)**: new "Period" chip in the filter bar — All day / AM Peak (6–9) / Midday (9–15) / PM Peak (15–19) / Evening (19–22). Selecting a period recolors all map lines based on that period's frequency. When a route panel is open, the headway display updates to the selected period and a label tag appears next to the value. Defaults to "All day" (existing behavior unchanged).
 - **Per-period headways in pipeline (AI-59)**: `process-core.ts` now computes `headwayByPeriod: { amPeak, midday, pmPeak, evening }` on each GeoJSON route feature by reusing the existing phase-1 departure times. Stored as extra properties so file size only grows marginally (no geometry duplication). Data populates automatically on next refresh.
-- **Headway sparklines on route cards (AI-74)**: when `headwayByPeriod` data is present for a route, a compact 4-bar SVG sparkline appears in the route panel below the route title. Bar height reflects relative frequency (taller = more frequent); bars are colored by tier (green → red). Hovering a bar shows the exact period + headway. Gracefully hidden when period data hasn't been processed yet.
-
-### Improved
-- **Live polling UX**: routes with live GTFS-RT data (Burlington 1/10, Hamilton 01/10) now show a small green dot in the stop panel route list so users know live data is available before opening the route. Live box in the route panel no longer shows "fetching…" indefinitely — hides entirely when no active trips are detected (e.g. outside service hours), and the pulsing dot is dimmed while pending vs solid when data is live.
-
-### Fixed
-- **Live adherence API 504 timeout**: `fetchTripUpdates` had no fetch timeout, causing the Vercel function to hang the full 60 s when Burlington or Hamilton's GTFS-RT endpoint was slow from Vercel's datacenter. Added a 12 s `AbortController` timeout so the function fails fast and returns `noData` instead of timing out.
-
-### Added
+- **Headway sparklines on route cards (AI-74)**: when `headwayByPeriod` data is present for a route, a compact 4-bar SVG sparkline appears in the route panel below the route title. Bar height reflects relative frequency (taller = more frequent); bars are colored by tier. Hovering a bar shows the exact period + headway. Gracefully hidden when period data hasn't been processed yet.
 - **PIPELINE.md**: added pipeline documentation covering the full GTFS → Blob → frontend data flow, GeoJSON schema, `index.json` format, frequency analysis tiers, and how to add or refresh agencies.
 - **Ferry mode in Mode filter**: added Ferry (GTFS route_type=4) as a selectable mode. No ferry agencies are currently in Atlas; Linear AI-76 and AI-77 track Toronto Island Ferry and Montreal navettes fluviales respectively.
-- **Streetcar / LRT split in Mode filter**: Line 5 Eglinton and Line 6 Finch West are open and in the TTC GTFS as route_type=0, mixed with streetcar routes. GRT ION is tagged route_type=2 in their GTFS but is urban LRT. Mode filter now has separate "LRT" and "Streetcar" entries; LRT covers TTC Lines 5/6 (heuristic: routeLongName starts with "Line \d") and GRT ION (routeLongName contains "ION"). No pipeline reprocessing needed.
-
-### Added
-- **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), Saint-Jean-sur-Richelieu local transit, Mont-Tremblant, L'Inter des Laurentides (intermunicipal), and Ville de Saint-Hyacinthe. All processed with current GTFS and stable direct feedUrls.
+- **Streetcar / LRT split in Mode filter**: Line 5 Eglinton and Line 6 Finch West are open and in the TTC GTFS as route_type=0, mixed with streetcar routes. GRT ION is tagged route_type=2 in their GTFS but is urban LRT. Mode filter now has separate "LRT" and "Streetcar" entries; LRT covers TTC Lines 5/6 and GRT ION. No pipeline reprocessing needed.
+- **Montreal transit agencies**: STM (bus + metro), REM, STL (Laval), RTL (Longueuil), exo trains, plus five exo bus sectors (Sud-Ouest, La Presqu'île, Laurentides, Le Richelain/Roussillon, Terrebonne-Mascouche), Saint-Jean-sur-Richelieu, Mont-Tremblant, L'Inter des Laurentides, and Ville de Saint-Hyacinthe. All processed with current GTFS and stable direct feedUrls.
+- **Nearby Routes panel (AI-71)**: tapping the locate button shows a "Near You" panel listing every route within 500 m of your location, sorted by best headway. Tapping a route opens its detail panel. Implemented via `useNearbyRoutes` hook (Haversine distance across all loaded GeoJSON Point features) and `NearbyRoutesPanel` component.
+- **Viewport-aware lazy loading (AI-72)**: agency GeoJSON is now loaded on-demand as you pan instead of all 35 agencies on mount. Agencies fetch only when their bounding box intersects the visible map viewport. Each agency entry in `index.json` now carries a `bbox: [s, w, n, e]` field. Loading indicator shows `{loaded}/{requested}`.
+- **Persist user preferences to localStorage**: frequency filter, day type, and agency selection now survive page reloads. Agency exclusions are saved rather than the inclusion set, so newly added agencies are always visible by default without needing to reset.
+- **Loaded state indicator in Agencies dropdown**: agency entries that are selected but not yet fetched (outside the current viewport) show a small hollow circle on the right side of their row.
 
 ### Changed
-- **Frequency tier colours**: switched to a monochrome grey gradient (dark slate for ≤10m → progressively lighter greys; medium grey for infrequent) for a more neutral, single-hue look instead of teal/green.
-- **Line thickness**: further reduced base weights (bus 1.5 / rail 2.5 normal) and made corridors thinner (2) so dense areas like Toronto don't look too thick. Selection still thickens the chosen route.
-- **Stop selection dimming**: when a stop is selected, routes not serving it are now dimmed on the map (instead of hidden), providing network context while highlighting relevant routes.
+- **Storage migrated from Vercel Blob to Cloudflare R2 (AI-81)**: all 35 agency GeoJSON files moved to R2. Zero egress fees. Pipeline (`refresh.ts`, `process-gtfs.ts`) and GitHub Actions workflow updated to use R2 credentials. Burlington history snapshots also write to R2.
+- **Frequency tier colours**: switched to a monochrome grey gradient (dark slate for ≤10m → progressively lighter greys) for a more neutral single-hue look.
+- **Line thickness**: reduced base weights (bus 1.5 / rail 2.5) and made corridors thinner so dense areas don't look too thick. Selection still thickens the chosen route.
+- **Stop selection dimming**: when a stop is selected, routes not serving it are dimmed (instead of hidden), preserving network context.
+- **Settings panel redesigned**: replaced chunky wide border-buttons with compact toggle-switch rows. Panel is narrower and denser.
+- **Pointer cursor on all buttons**: Tailwind v4 preflight resets button cursor to `default`; added a global `button { cursor: pointer; }` rule.
+- **Default map zoom raised from 9 → 11**: initial load opens on the GTHA core. The logo reset button still uses `fitBounds` to show all agencies.
+- **Settings button order**: light/dark toggle now appears to the left of the Settings gear.
+- **Initial map view uses last saved position**: the map restores last center and zoom from `localStorage` on every visit. Falls back to geolocation, then GTHA default.
+- **GeoJSON browser caching (AI-75)**: agency files fetch with a weekly `?v=YYYYWW` query param. Cache busts automatically when the Monday refresh runs.
+- **Lazy-load fallback uses saved view**: the pre-`moveend` fallback bounds derives from the last saved map position instead of always assuming Toronto.
 
 ### Improved
-- **Terminal / hub stop display at overview zoom**: when zoomed out, only major hubs (3+ routes or GTFS location_type=1 stations) and rail stops are shown as stop markers. This prevents dense terminal loops/bays from rendering as ugly overlapping blobs of tiny circles. Full per-bay detail appears only when you zoom in closer (≥15). Minor stops are also smaller/fainter. Clean single markers now represent terminals far out.
-- **Zoom to full route when selecting from station panel**: clicking a route in the Station View sidebar now flies the map to show the route's entire extent (with sensible maxZoom + padding). The selected route is also force-included in the map layers so you always see its full path regardless of current frequency/day filters. Works for map clicks too for consistency.
-- **Montreal/REM + French headsign presentation**: REM branches now show cleanly as e.g. "A3-A1 — Anse-à-l'Orme / Brossard" (instead of redundant "A3-A1 — A3 - Anse-à-..."). Fixed title-casing for accented French names ("Jérôme", "Anse-à-l'Orme" etc.). Stripped verbose "Destination " prefixes on exo headsigns. Sidebar panel constrained to search bar width (`w-64`) with `break-words` + `title` tooltips + overflow clip to prevent cutoff on long destinations.
-- **Agency filter names**: shortened MTL agencies to clean short forms (STM, STL, RTL) without bracketed qualifiers or cities for less clutter in the list.
-- **TTC headsign cleaning**: better stripping for express routes like "960b Steeles West Express Towards Finch Station Via Pioneer Village Station" → "Finch via Pioneer Village". Improves long verbose TTC headsigns.
+- **Filter chip labels**: all chips now reflect their current state. Mode shows the mode name when exactly 1 is selected, "N modes" when multiple. Frequency shows the active tier label instead of always "Frequency".
+- **Live polling UX**: routes with live GTFS-RT data (Burlington 1/10, Hamilton 01/10) now show a green dot in the stop panel route list. Live box no longer shows "fetching…" indefinitely — hides entirely when no active trips are detected, pulsing dot is dimmed while pending vs solid when live.
+- **Terminal / hub stop display at overview zoom**: when zoomed out, only major hubs (3+ routes or location_type=1 stations) and rail stops show as stop markers. Full per-bay detail at zoom ≥15.
+- **Zoom to full route when selecting from station panel**: clicking a route in the Station View sidebar flies the map to show the route's entire extent. The selected route is force-included in map layers regardless of current filters.
+- **Montreal/REM + French headsign presentation**: REM branches show cleanly (e.g. "A3-A1 — Anse-à-l'Orme / Brossard"). Fixed title-casing for accented French names. Stripped verbose "Destination " prefixes on exo headsigns. Sidebar panel constrained to `w-64` with `break-words` + `title` tooltips.
+- **Agency filter names**: shortened MTL agencies to clean short forms (STM, STL, RTL) without bracketed qualifiers.
+- **TTC headsign cleaning**: better stripping for express routes (e.g. "960b Steeles West Express Towards Finch Station Via Pioneer Village Station" → "Finch via Pioneer Village").
 
 ### Fixed
-- **Sidebar panel width**: the details panel for selected stop/route is now strictly `w-64` (and `overflow-x-hidden`, tighter `p-4`) to match the search bar width exactly; never wider.
-- **Clicking routes showed map tooltip "panel"**: removed `bindTooltip` from route lines (and hit areas). Clicking a route now exclusively opens full details in the left sidebar panel (never a floating mini-card on the map at the click location). Hover on routes is silent; only stops + combined corridors keep minimal tooltips.
-- **Route click toggle was unreliable (stale closure)**: changed `setSelectedRoute` / `setSelectedStop` calls in MapCanvas to functional updaters + widened prop types so toggle (select/deselect) always uses latest state even without layer remount.
-- **Loading indicator covers locate button**: moved loading spinner from bottom-right to bottom-left so it can no longer overlap the locate button or the Nearby Routes panel.
-- **Sticky native tooltip on locate button and other controls**: replaced `title` attributes with `aria-label` across all buttons (locate, reset view, filter panel toggles, frequency tier chips). Eliminates the browser's slow-to-dismiss native tooltip.
-
-### Changed
-- **Settings panel redesigned**: replaced the chunky wide border-buttons with compact toggle-switch rows (icon + label left, sliding pill toggle right). Panel is narrower and denser; active state is immediately obvious from the toggle position and accent color rather than a subtle background tint.
-- **Pointer cursor on all buttons**: Tailwind v4 preflight resets button cursor to `default`; added a global `button { cursor: pointer; }` rule so all interactive elements show the hand cursor.
-- **Default map zoom raised from 9 → 11**: initial load now opens on the GTHA core (Toronto metro) instead of the full region from London to Buffalo. The logo reset button still shows all agencies via `fitBounds`.
-
-### Added
-- **Nearby Routes panel (AI-71)**: tapping the locate button now shows a "Near You" panel above it listing every route within 500 m of your location, sorted by best headway. Tapping a route opens its detail panel in the sidebar. The panel shows the nearest stop name and distance (e.g. "Queen Station · 290 m") at the bottom, and closes with the X button. Implemented via `useNearbyRoutes` hook (Haversine distance across all loaded GeoJSON Point features) and `NearbyRoutesPanel` component.
-- **Viewport-aware lazy loading (AI-72)**: agency GeoJSON is now loaded on-demand as you pan instead of all 35 agencies on mount. Agencies fetch only when their bounding box intersects the visible map viewport — no hardcoded "always-load" list. Before the map fires its first `moveend`, a static Toronto-area fallback bounds is used so GTHA agencies appear immediately without any per-agency special-casing. Each agency entry in `index.json` now carries a `bbox: [s, w, n, e]` field; missing bboxes fall back to center ± 0.4°/0.5°. Loading indicator now shows `{loaded}/{requested}` to reflect in-flight requests rather than total agency count.
-
-### Changed
-- **Settings button order**: light/dark toggle now appears to the left of the Settings gear (was reversed). Settings panel dropdown still opens from the rightmost button.
-- **Initial map view uses last saved position**: the map now restores your last center and zoom from `localStorage` on every visit. On a fresh visit with no saved position, it silently requests geolocation and flies there (zoom 12) if granted — no button press needed. Falls back to the GTHA core default if both are unavailable. The explicit locate button still works as before and opens the Nearby Routes panel.
-- **GeoJSON browser caching (AI-75)**: agency files now fetch with `cache: 'default'` and a weekly `?v=YYYYWW` query param. Browsers cache each file for the week; the cache busts automatically when the Monday refresh pipeline runs and the week number increments. No pipeline changes needed — Vercel Blob ignores unknown query params.
-- **Lazy-load fallback uses saved view**: the pre-`moveend` fallback bounds in `useAgencyData` now derives from the last saved map position (from `localStorage`) instead of always assuming Toronto. Returning Montreal users no longer briefly load GTHA agencies before the map reports its first viewport.
-
-### Fixed
-- **Sticky tooltip on agency filter buttons**: the agency name buttons in the Agencies chip dropdown had a `title` attribute causing the same slow-dismiss native browser tooltip fixed elsewhere. Replaced with `aria-label`.
-- **All-caps route labels (Stratford and others)**: `getRouteLabel` output was rendered raw at all three call sites in the sidebar. Wrapped each with `titleCase` so agencies that store `route_long_name` in all-caps (e.g. Stratford Transit's "CITY CENTRE") display correctly as "City Centre". Headsigns already went through `titleCase`; this brings route labels in line.
-
-### Added
-- **Persist user preferences to localStorage**: frequency filter (`maxHeadway`), day type, and agency selection now survive page reloads. Agency exclusions are saved rather than the inclusion set, so newly added agencies are always visible by default without needing to reset. First-time visit still auto-detects the current day of week.
-- **Loaded state indicator in Agencies dropdown**: agency entries that are selected but not yet fetched (outside the current viewport) show a small hollow circle on the right side of their row, making the lazy-loading behaviour visible to the user.
+- **Live adherence API 504 timeout**: `fetchTripUpdates` had no fetch timeout, causing the Vercel function to hang 60 s when GTFS-RT endpoints were slow. Added a 12 s `AbortController` timeout.
+- **Sidebar panel width**: details panel is now strictly `w-64` with `overflow-x-hidden` to match the search bar width exactly.
+- **Clicking routes showed map tooltip "panel"**: removed `bindTooltip` from route lines. Clicking a route now exclusively opens full details in the sidebar.
+- **Route click toggle was unreliable (stale closure)**: changed `setSelectedRoute` / `setSelectedStop` calls in MapCanvas to functional updaters so toggle always uses latest state.
+- **Loading indicator covers locate button**: moved spinner from bottom-right to bottom-left.
+- **Sticky native tooltip on locate button and other controls**: replaced `title` attributes with `aria-label` across all buttons.
+- **Sticky tooltip on agency filter buttons**: same fix applied to agency name buttons in the Agencies chip dropdown.
+- **All-caps route labels (Stratford and others)**: `getRouteLabel` output wrapped with `titleCase` so agencies that store `route_long_name` in all-caps display correctly.
 
 ## [2.1.0] - 2026-06-17
 
