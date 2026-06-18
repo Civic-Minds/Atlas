@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import type { Agency } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
+import { VIRTUAL_LRT_MODE } from '../../hooks/useIntervalStats';
 
 interface FilterChipsProps {
   maxHeadway: number;
@@ -19,7 +20,8 @@ interface FilterChipsProps {
 
 const MODES = [
   { id: 1, label: 'Subway' },
-  { id: 0, label: 'Streetcar / LRT' },
+  { id: VIRTUAL_LRT_MODE, label: 'LRT' },
+  { id: 0, label: 'Streetcar' },
   { id: 2, label: 'Rail' },
   { id: 3, label: 'Bus' },
   { id: 4, label: 'Ferry' },
