@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 - **Filter chip labels**: all chips now reflect their current state in the label. Mode shows the mode name when exactly 1 is selected, "N modes" when multiple are selected. Frequency shows the active tier label (e.g., "≤30m") instead of always "Frequency". Day and Period already did this.
 
 ### Added
+- **Burlington history snapshots (AI-83)**: on each refresh, the pipeline writes a compact headway snapshot to `atlas-history/burlington/<YYYY-WW>.json` containing the Weekday headway + tier per route short name. No frontend yet — snapshots accumulate until there are enough data points to build a meaningful timeline UI.
+
+### Added
 - **Time-of-day period switcher (AI-59)**: new "Period" chip in the filter bar — All day / AM Peak (6–9) / Midday (9–15) / PM Peak (15–19) / Evening (19–22). Selecting a period recolors all map lines based on that period's frequency. When a route panel is open, the headway display updates to the selected period and a label tag appears next to the value. Defaults to "All day" (existing behavior unchanged).
 - **Per-period headways in pipeline (AI-59)**: `process-core.ts` now computes `headwayByPeriod: { amPeak, midday, pmPeak, evening }` on each GeoJSON route feature by reusing the existing phase-1 departure times. Stored as extra properties so file size only grows marginally (no geometry duplication). Data populates automatically on next refresh.
 - **Headway sparklines on route cards (AI-74)**: when `headwayByPeriod` data is present for a route, a compact 4-bar SVG sparkline appears in the route panel below the route title. Bar height reflects relative frequency (taller = more frequent); bars are colored by tier (green → red). Hovering a bar shows the exact period + headway. Gracefully hidden when period data hasn't been processed yet.
