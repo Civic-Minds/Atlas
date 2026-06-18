@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Time-of-day period switcher (AI-59)**: new "Period" chip in the filter bar — All day / AM Peak (6–9) / Midday (9–15) / PM Peak (15–19) / Evening (19–22). Selecting a period recolors all map lines based on that period's frequency. When a route panel is open, the headway display updates to the selected period and a label tag appears next to the value. Defaults to "All day" (existing behavior unchanged).
+- **Per-period headways in pipeline (AI-59)**: `process-core.ts` now computes `headwayByPeriod: { amPeak, midday, pmPeak, evening }` on each GeoJSON route feature by reusing the existing phase-1 departure times. Stored as extra properties so file size only grows marginally (no geometry duplication). Data populates automatically on next refresh.
+- **Headway sparklines on route cards (AI-74)**: when `headwayByPeriod` data is present for a route, a compact 4-bar SVG sparkline appears in the route panel below the route title. Bar height reflects relative frequency (taller = more frequent); bars are colored by tier (green → red). Hovering a bar shows the exact period + headway. Gracefully hidden when period data hasn't been processed yet.
+
 ### Improved
 - **Live polling UX**: routes with live GTFS-RT data (Burlington 1/10, Hamilton 01/10) now show a small green dot in the stop panel route list so users know live data is available before opening the route. Live box in the route panel no longer shows "fetching…" indefinitely — hides entirely when no active trips are detected (e.g. outside service hours), and the pulsing dot is dimmed while pending vs solid when data is live.
 

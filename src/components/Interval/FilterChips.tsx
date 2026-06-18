@@ -3,7 +3,8 @@ import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import type { Agency } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { VIRTUAL_LRT_MODE } from '../../hooks/useIntervalStats';
+import { VIRTUAL_LRT_MODE, PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import type { TimePeriod } from '../../hooks/useIntervalStats';
 
 interface FilterChipsProps {
   maxHeadway: number;
@@ -12,6 +13,8 @@ interface FilterChipsProps {
   setSelectedModes: React.Dispatch<React.SetStateAction<Set<number>>>;
   day: 'Weekday' | 'Saturday' | 'Sunday';
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  period: TimePeriod;
+  setPeriod: (p: TimePeriod) => void;
   agencies: Agency[];
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -32,7 +35,9 @@ const TIER_FOR_MAX: Record<number, string> = {
   10: '10', 15: '15', 20: '20', 30: '30', 60: '60',
 };
 
-type ChipId = 'frequency' | 'day' | 'mode' | 'agencies';
+const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+
+type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
 
 const PANEL = 'absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-col gap-1';
 
@@ -50,6 +55,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   setSelectedModes,
   day,
   setDay,
+  period,
+  setPeriod,
   agencies,
   selectedAgencies,
   setSelectedAgencies,
@@ -143,6 +150,27 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 className={rowBtn(day === d)}
               >
                 {d}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Period */}
+      <div className="relative">
+        <button onClick={() => toggle('period')} className={chipClass(period !== 'all')}>
+          {PERIOD_LABELS[period]}
+          <Dot show={period !== 'all'} />
+        </button>
+        {openChip === 'period' && (
+          <div className={`${PANEL} w-36`}>
+            {PERIODS.map((p) => (
+              <button
+                key={p}
+                onClick={() => { setPeriod(p); setOpenChip(null); }}
+                className={rowBtn(period === p)}
+              >
+                {PERIOD_LABELS[p]}
               </button>
             ))}
           </div>

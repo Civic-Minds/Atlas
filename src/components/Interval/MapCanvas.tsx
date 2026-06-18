@@ -8,13 +8,31 @@ import { titleCase, fmtHeadway } from '../../utils/format';
 import { getRegionalView, getAgencyBounds, getSavedView, saveView } from '../../utils/regionView';
 import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
-import type { ViewportBounds } from '../../hooks/useIntervalStats';
+import type { ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
+import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
+
+function periodTierColor(p: ShapeProperties, period: TimePeriod): string {
+  if (period !== 'all') {
+    const byPeriod = (p as any).headwayByPeriod as HeadwayByPeriod | undefined;
+    const h = byPeriod?.[period as keyof HeadwayByPeriod];
+    if (h != null) {
+      if (h <= 10) return getTierColor('10');
+      if (h <= 15) return getTierColor('15');
+      if (h <= 20) return getTierColor('20');
+      if (h <= 30) return getTierColor('30');
+      if (h <= 60) return getTierColor('60');
+      return getTierColor('infrequent');
+    }
+  }
+  return getTierColor(p?.tier ?? null);
+}
 
 interface MapCanvasProps {
   agencies: Agency[];
   layers: AgencyLayers;
   allLayers?: AgencyLayers; // raw unfiltered data, for computing full route bounds etc.
   maxHeadway: number;
+  period: TimePeriod;
   q: string;
   selectedRoute: string | null;
   setSelectedRoute: React.Dispatch<React.SetStateAction<string | null>>;
@@ -185,6 +203,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   layers,
   allLayers,
   maxHeadway,
+  period,
   q,
   selectedRoute,
   setSelectedRoute,
@@ -251,13 +270,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           const cAgencySlug = (p as any)?.agencySlug;
           const contrib = cRoutes.some((rid) => routeKey({ agencySlug: cAgencySlug, routeId: rid } as any) === selectedRoute);
           if (contrib) {
-            return { color: getTierColor((p as any)?.tier ?? null), weight: 2.5, opacity: 0.9, interactive: false };
+            return { color: periodTierColor(p as ShapeProperties, period), weight: 2.5, opacity: 0.9, interactive: false };
           }
           return { color: '#1e293b', weight: 0.5, opacity: 0.15, interactive: false };
         }
         const key = p ? routeKey(p) : null;
         if (key === selectedRoute) {
-          return { color: getTierColor(p?.tier ?? null), weight: isRail ? 4.5 : 3.5, opacity: 1, interactive: false };
+          return { color: periodTierColor(p as ShapeProperties, period), weight: isRail ? 4.5 : 3.5, opacity: 1, interactive: false };
         }
         // Rail lines stay slightly visible when dimmed so the network structure reads through
         return { color: '#1e293b', weight: isRail ? 1 : 0.5, opacity: isRail ? 0.25 : 0.2, interactive: false };
@@ -271,20 +290,20 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
       if (isCorridor) {
         return {
-          color: getTierColor((p as any)?.tier ?? null),
+          color: periodTierColor(p as ShapeProperties, period),
           weight: 2,
           opacity: 0.9,
           interactive: false,
         };
       }
       return {
-        color: getTierColor(p?.tier ?? null),
+        color: periodTierColor(p as ShapeProperties, period),
         weight: q !== '' ? (isRail ? 3.5 : 2.5) : isRail ? 2.5 : 1.5,
         opacity: p?.tier ? (q !== '' ? 1 : isRail ? 0.9 : 0.8) : 0.3,
         interactive: false,
       };
     },
-    [maxHeadway, q, selectedRoute, lightMode, matchesQuery, routesForStop]
+    [maxHeadway, period, q, selectedRoute, lightMode, matchesQuery, routesForStop]
   );
 
   // Invisible, much wider line drawn under the visible one purely to make routes

@@ -14,6 +14,33 @@ import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 
 export type GtfsPreprocess = 'nrt-day-night';
 
+const PERIODS = {
+  amPeak: { start: 360, end: 540 },
+  midday: { start: 540, end: 900 },
+  pmPeak: { start: 900, end: 1140 },
+  evening: { start: 1140, end: 1320 },
+} as const;
+
+type PeriodKey = keyof typeof PERIODS;
+export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
+
+function medianHeadwayInWindow(departureTimes: number[], start: number, end: number): number | null {
+  const times = departureTimes.filter(t => t >= start && t <= end);
+  if (times.length < 2) return null;
+  const gaps: number[] = [];
+  for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
+  gaps.sort((a, b) => a - b);
+  return Math.round(gaps[Math.floor(gaps.length / 2)]);
+}
+
+function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
+  const result: HeadwayByPeriod = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    result[key] = medianHeadwayInWindow(departureTimes, start, end);
+  }
+  return result;
+}
+
 export interface ProcessOptions {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
@@ -227,6 +254,19 @@ export async function processGtfsBuffer(
   onStatus?.('Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 
+  // Build lookup from (route::dir::DayType) → departure times for period headway computation.
+  // When multiple raw entries cover the same route/dir/dayType (Mon–Fri), keep the one with
+  // the most trips as the representative day.
+  const rawByDayType = new Map<string, number[]>();
+  for (const r of raw) {
+    const dayType = (['Monday','Tuesday','Wednesday','Thursday','Friday'] as const).includes(r.day as never)
+      ? 'Weekday'
+      : r.day === 'Saturday' ? 'Saturday' : 'Sunday';
+    const k = `${r.route}::${r.dir}::${dayType}`;
+    const existing = rawByDayType.get(k);
+    if (!existing || r.departureTimes.length > existing.length) rawByDayType.set(k, r.departureTimes);
+  }
+
   // Build route features; deduplicate by (routeShortName, directionId, day) so feeds with
   // multiple schedule-period route IDs (e.g. GO Transit 04260626-LW / 06260926-LW) don't
   // emit two overlapping features per line. When duplicates exist, keep the lower headway
@@ -277,6 +317,10 @@ export async function processGtfsBuffer(
         directionId: parseInt(result.dir),
         tier: result.tier,
         headway: newHeadway,
+        headwayByPeriod: (() => {
+          const times = rawByDayType.get(`${result.route}::${result.dir}::${result.day}`);
+          return times ? computePeriodHeadways(times) : undefined;
+        })(),
         routeShortName: shortName,
         routeLongName: route?.route_long_name ?? null,
         routeColor: route?.route_color ?? null,
