@@ -121,9 +121,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  // zoom 14+: all stops; zoom 13: hubs (4+ routes); zoom 12+: rail stops
-  const showStops = zoom >= 14;
-  const showHubsOnly = zoom === 13;
+  // Zoom tiers chosen so terminals don't turn into blobs when zoomed out:
+  // - >=15: all individual stops (detailed view of bays/loops inside a terminal)
+  // - 13-14: only hubs (3+ routes or station location_type=1) + rail → clean terminal markers
+  // - 12: rail stops only
+  // - <12: none except explicitly selected
+  const showAllStops = zoom >= 15;
+  const showHubsOnly = zoom >= 13 && zoom < 15;
   const showRailOnly = zoom >= 12 && zoom < 13;
 
   const styleFeature = useCallback(
@@ -308,7 +312,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               data={lineFc}
               style={styleFeature}
               />
-              {(showStops || showHubsOnly || showRailOnly || selectedStop != null) && pointFeatures.length > 0 && (
+              {(showAllStops || showHubsOnly || showRailOnly || selectedStop != null) && pointFeatures.length > 0 && (
               <GeoJSON
                 key={`${slug}-stops-${selectedStop}-${zoom >= 12 ? zoom : 'hidden'}`}
                 data={pointFc}
@@ -323,18 +327,24 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                   const isHub = (props as any).isHub || routeCount >= 4;
                   const isRail = (props as any).isRail;
 
-                  // Visibility logic
+                  // Visibility logic — prevents terminal clusters from becoming blobs at overview zooms.
+                  // Only "significant" stops (hubs/terminals + rail) are shown until you zoom in.
                   if (!isSelected) {
-                    if (showRailOnly && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
-                    if (showHubsOnly && !isHub && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                    if (zoom < 12) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                    if (zoom < 13 && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                    if (zoom < 15 && !isHub && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
                   }
 
-                  const radius = isSelected ? 6 : isRail ? 4.5 : isHub ? 4 : 3;
+                  // Smaller regular stops + slightly scaled by zoom so terminals read cleanly far out.
+                  // Hubs (terminals) get a bit more presence.
+                  const baseR = isSelected ? 6 : isRail ? 4.5 : isHub ? 4.2 : 2.2;
+                  const zFactor = zoom >= 15 ? 1.05 : zoom >= 14 ? 0.85 : 0.72;
+                  const radius = Math.max(1.2, baseR * zFactor);
                   const fillColor = isSelected ? 'var(--accent)' : isRail ? (lightMode ? '#fff' : 'var(--accent)') : 'var(--text-dim)';
                   const color = isSelected ? '#fff' : isRail ? 'var(--accent)' : 'var(--border-primary)';
                   const weight = isSelected ? 1.5 : isRail ? 2 : 1;
-                  const opacity = isSelected ? 1 : isRail ? 0.9 : 0.5;
-                  const fillOpacity = isSelected ? 1 : isRail ? 1 : 0.3;
+                  const opacity = isSelected ? 1 : isRail ? 0.9 : 0.55;
+                  const fillOpacity = isSelected ? 1 : isRail ? 1 : isHub ? 0.55 : 0.25;
 
                   return L.circleMarker(latlng, {
                     radius,
