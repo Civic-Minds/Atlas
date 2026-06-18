@@ -125,6 +125,8 @@ export interface ProcessResult {
   geojson: string;
   featureCount: number;
   center: [number, number] | null;
+  feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
+  feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
 }
 
 export async function processGtfsBuffer(
@@ -603,10 +605,13 @@ export async function processGtfsBuffer(
     center = [Math.round(avgLat * 10000) / 10000, Math.round(avgLon * 10000) / 10000];
   }
 
+  const feedInfo = gtfs.feedInfo?.[0];
   const allFeatures = [...features, ...stopFeatures, ...corridorFeatures];
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: allFeatures }),
     featureCount: allFeatures.length,
     center,
+    feedExpiry: feedInfo?.feed_end_date ?? null,
+    feedVersion: feedInfo?.feed_version ?? null,
   };
 }

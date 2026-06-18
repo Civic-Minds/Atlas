@@ -27,16 +27,7 @@ const onlySlugs = process.argv.slice(2);
 // Agencies enrolled in history snapshot tracking (AI-83).
 const HISTORY_SLUGS = new Set(['burlington']);
 
-function isoWeek(date: Date): string {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const day = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const week = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-  return `${d.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
-}
-
-async function writeHistorySnapshot(slug: string, geojson: string): Promise<string> {
+async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
   const routes: Record<string, { headway: number | null; tier: string | null }> = {};
   for (const f of fc.features) {
@@ -62,13 +53,15 @@ async function writeHistorySnapshot(slug: string, geojson: string): Promise<stri
     }
   } catch { /* no previous snapshot exists yet — write the first one */ }
 
-  const week = isoWeek(new Date());
-  const snapshot = JSON.stringify({ week, processedAt: new Date().toISOString(), routes });
+  // Key by feed_end_date so each snapshot represents a distinct schedule period.
+  // Fall back to feed_version, then processed date if neither is available.
+  const periodKey = feedExpiry ?? feedVersion ?? new Date().toISOString().slice(0, 10);
+  const snapshot = JSON.stringify({ period: periodKey, feedExpiry, feedVersion, processedAt: new Date().toISOString(), routes });
   await Promise.all([
-    r2Put(`atlas-history/${slug}/${week}.json`, snapshot),
+    r2Put(`atlas-history/${slug}/${periodKey}.json`, snapshot),
     r2Put(latestKey, snapshot),
   ]);
-  return `snapshot written (${week})`;
+  return `snapshot written (expires ${periodKey})`;
 }
 
 interface AgencyEntry {
@@ -115,7 +108,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
   }
 
-  const { geojson, featureCount } = await processGtfsBuffer(buf, undefined, {
+  const { geojson, featureCount, feedExpiry, feedVersion } = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
   });
@@ -126,7 +119,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
 
   // For agencies enrolled in history tracking, write a compact headway snapshot.
   if (HISTORY_SLUGS.has(agency.slug)) {
-    const histResult = await writeHistorySnapshot(agency.slug, geojson);
+    const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);
     process.stdout.write(`  history: ${histResult}\n`);
   }
 
