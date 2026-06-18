@@ -1,14 +1,30 @@
 import type { Agency } from '../App';
 
-// GTHA core — good starting view for the full 20-agency network.
-// The reset button uses fitBounds to show all agencies; this is just the initial load state.
 const DEFAULT_CENTER: [number, number] = [43.65, -79.45];
 const DEFAULT_ZOOM = 11;
+const VIEW_KEY = 'atlas_view';
 
-/** Initial center and zoom for MapContainer. Always returns the GTHA core default —
- *  outlier agencies like Kingston and London drag a computed midpoint too far east/west.
- *  The reset button (getAgencyBounds + fitBounds) handles "show everything." */
+export interface SavedView { lat: number; lon: number; zoom: number }
+
+export function getSavedView(): SavedView | null {
+  try {
+    const raw = localStorage.getItem(VIEW_KEY);
+    if (!raw) return null;
+    const v = JSON.parse(raw);
+    if (typeof v.lat === 'number' && typeof v.lon === 'number' && typeof v.zoom === 'number') return v;
+    return null;
+  } catch { return null; }
+}
+
+export function saveView(lat: number, lon: number, zoom: number): void {
+  try { localStorage.setItem(VIEW_KEY, JSON.stringify({ lat, lon, zoom })); } catch {}
+}
+
+/** Initial center and zoom for MapContainer. Uses the last saved view when available,
+ *  otherwise falls back to the GTHA core default. The reset button uses fitBounds. */
 export function getRegionalView(_agencies: Agency[]): { center: [number, number]; zoom: number } {
+  const saved = getSavedView();
+  if (saved) return { center: [saved.lat, saved.lon], zoom: saved.zoom };
   return { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM };
 }
 

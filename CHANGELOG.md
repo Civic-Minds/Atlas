@@ -37,6 +37,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Settings button order**: light/dark toggle now appears to the left of the Settings gear (was reversed). Settings panel dropdown still opens from the rightmost button.
+- **Initial map view uses last saved position**: the map now restores your last center and zoom from `localStorage` on every visit. On a fresh visit with no saved position, it silently requests geolocation and flies there (zoom 12) if granted — no button press needed. Falls back to the GTHA core default if both are unavailable. The explicit locate button still works as before and opens the Nearby Routes panel.
 
 ## [2.1.0] - 2026-06-17
 

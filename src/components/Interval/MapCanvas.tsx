@@ -5,7 +5,7 @@ import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { titleCase, fmtHeadway } from '../../utils/format';
-import { getRegionalView, getAgencyBounds } from '../../utils/regionView';
+import { getRegionalView, getAgencyBounds, getSavedView, saveView } from '../../utils/regionView';
 import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 import type { ViewportBounds } from '../../hooks/useIntervalStats';
@@ -140,6 +140,32 @@ function RouteZoomer({ selectedRoute, layers }: { selectedRoute: string | null; 
   return null;
 }
 
+function ViewPersistor() {
+  const map = useMap();
+  useMapEvents({
+    moveend: () => {
+      const c = map.getCenter();
+      saveView(c.lat, c.lng, map.getZoom());
+    },
+  });
+  return null;
+}
+
+function GeolocateOnMount({ skip }: { skip: boolean }) {
+  const map = useMap();
+  const didRun = useRef(false);
+  useEffect(() => {
+    if (skip || didRun.current || !navigator.geolocation) return;
+    didRun.current = true;
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => map.flyTo([coords.latitude, coords.longitude], 12, { duration: 1.2 }),
+      () => {},
+      { timeout: 8000 }
+    );
+  }, [map, skip]);
+  return null;
+}
+
 function BoundsReporter({ onBoundsChange, onZoomChange }: { onBoundsChange: (b: ViewportBounds) => void; onZoomChange: (z: number) => void }) {
   const map = useMap();
   const report = useCallback(() => {
@@ -172,6 +198,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   routesForStop,
 }) => {
   const regionalView = getRegionalView(agencies);
+  const hasSavedView = getSavedView() !== null;
   const [zoom, setZoom] = useState(regionalView.zoom);
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
@@ -343,6 +370,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       />
       <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); }} />
       <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
+      <ViewPersistor />
+      <GeolocateOnMount skip={hasSavedView} />
       <ResetViewControl resetKey={resetViewKey} agencies={agencies} />
       <LocateControl onLocate={onLocate} />
       <RouteZoomer selectedRoute={selectedRoute} layers={allLayers || layers} />
