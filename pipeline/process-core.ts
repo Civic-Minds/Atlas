@@ -267,6 +267,30 @@ export async function processGtfsBuffer(
     if (!existing || r.departureTimes.length > existing.length) rawByDayType.set(k, r.departureTimes);
   }
 
+  // Per-stop headway computation (AI-96): map serviceId → dayType, then tripId → group,
+  // so we can collect per-stop departure arrays from stop_times without a second GTFS scan.
+  // This runs before the feature-building loop; stop_times are scanned once below alongside
+  // the existing routesByStop collection.
+  const serviceIdToDayType = new Map<string, 'Weekday' | 'Saturday' | 'Sunday'>();
+  for (const dayType of ['Weekday', 'Saturday', 'Sunday'] as const) {
+    const calDay = dayType === 'Weekday' ? 'Monday' : dayType;
+    for (const id of getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], calDay, refDate)) {
+      if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
+    }
+  }
+  const tripGroupByTripId = new Map<string, { routeId: string; dirId: string; dayType: string }>();
+  for (const trip of gtfs.trips ?? []) {
+    const dayType = serviceIdToDayType.get(trip.service_id);
+    if (!dayType) continue;
+    tripGroupByTripId.set(trip.trip_id, {
+      routeId: trip.route_id,
+      dirId: String(trip.direction_id ?? '0'),
+      dayType,
+    });
+  }
+  // stopDepsByGroup["routeId::dirId::dayType"] → stopId → sorted departure minutes
+  const stopDepsByGroup = new Map<string, Map<string, number[]>>();
+
   // Build route features; deduplicate by (routeShortName, directionId, day) so feeds with
   // multiple schedule-period route IDs (e.g. GO Transit 04260626-LW / 06260926-LW) don't
   // emit two overlapping features per line. When duplicates exist, keep the lower headway
@@ -334,6 +358,20 @@ export async function processGtfsBuffer(
   }
   const features = [...dedupedFeatures.values()];
 
+  // Attach per-stop headways — populated once stop_times are scanned below.
+  // We store a reference to the pending map so the loop below can fill it.
+  const featureStopHeadwaySlots = new Map<GeoJsonFeature, { routeId: string; dirId: string; day: string }>();
+  for (const feature of features) {
+    const p = feature.properties;
+    if (p.routeId && p.directionId != null && p.day) {
+      featureStopHeadwaySlots.set(feature, {
+        routeId: p.routeId as string,
+        dirId: String(p.directionId),
+        day: p.day as string,
+      });
+    }
+  }
+
   // Extract stops for clickable stations
   const stopFeatures: GeoJsonFeature[] = [];
   const routesByStop = new Map<string, Set<string>>();
@@ -344,6 +382,24 @@ export async function processGtfsBuffer(
     if (!trip) continue;
     if (!routesByStop.has(st.stop_id)) routesByStop.set(st.stop_id, new Set());
     routesByStop.get(st.stop_id)!.add(trip.route_id);
+
+    // Per-stop departure collection
+    const grp = tripGroupByTripId.get(st.trip_id);
+    if (grp) {
+      const timeStr = st.departure_time || st.arrival_time;
+      if (timeStr) {
+        const parts = timeStr.split(':');
+        const mins = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        if (Number.isFinite(mins)) {
+          const gKey = `${grp.routeId}::${grp.dirId}::${grp.dayType}`;
+          let stopMap = stopDepsByGroup.get(gKey);
+          if (!stopMap) { stopMap = new Map(); stopDepsByGroup.set(gKey, stopMap); }
+          let arr = stopMap.get(st.stop_id);
+          if (!arr) { arr = []; stopMap.set(st.stop_id, arr); }
+          arr.push(mins);
+        }
+      }
+    }
   }
 
   // Unique route short names per stop — more accurate hub detection than raw route_id count,
@@ -390,6 +446,20 @@ export async function processGtfsBuffer(
         isRail,
       },
     } as any);
+  }
+
+  // Resolve per-stop headways onto route features now that stopDepsByGroup is populated
+  for (const [feature, { routeId, dirId, day }] of featureStopHeadwaySlots) {
+    const gKey = `${routeId}::${dirId}::${day}`;
+    const stopMap = stopDepsByGroup.get(gKey);
+    if (!stopMap) continue;
+    const stopHeadways: Record<string, number> = {};
+    for (const [stopId, times] of stopMap) {
+      times.sort((a, b) => a - b);
+      const hw = medianHeadwayInWindow(times, 360, 1320);
+      if (hw != null) stopHeadways[stopId] = hw;
+    }
+    if (Object.keys(stopHeadways).length > 0) feature.properties.stopHeadways = stopHeadways;
   }
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)

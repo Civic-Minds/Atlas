@@ -21,7 +21,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Station View headsigns split by direction (AI-95)**: stop panel now groups headsigns by `directionId` so eastbound and westbound destinations appear as separate rows. Previously all headsigns for a route were lumped together regardless of direction (e.g. Appleby GO showing Union Station GO and Hamilton GO Centre in the same row). `directionId` was already written by the pipeline — this was a UI-only fix.
+- **Per-stop headways in pipeline (AI-96, AI-93)**: `process-core.ts` now collects per-stop departure times from `stop_times` during the existing build pass, computes the all-day median headway at each stop, and writes `stopHeadways: { [stopId]: number }` to each GeoJSON route feature. Station View now reads `stopHeadways[stopId]` for the clicked stop instead of the route-level headway — fixing Aldershot GO showing every 19 min (route-wide) instead of the correct every 29 min (stop-level).
+- **Search ignores agency filter**: search now queries all loaded features regardless of the active agency/mode filter, so routes are findable even when their agency is hidden.
+- **Search and disambiguation picker deduplicate by route name**: different schedule-period `route_id`s for the same route (e.g. two GO "LW" or two HSR "20" feeds) now collapse to a single search result and a single disambiguation row.
+- **Headsign leading dash removed**: GO headsigns like "LW — Union Station GO" were being cleaned to "— Union Station GO" (leaving a leading dash after "LW" was stripped). The shortName strip regex now also consumes the trailing " — " separator.
+- **Remaining browser tooltips removed**: two additional `title` attributes (headsign in route period detail, stop name in live panel) were causing sticky native tooltips.
 - **Hamilton GTFS refreshed**: re-processed with current feed to include West Hamilton Loop (1A) shape, which was missing from the previous (expired April 2026) feed.
+- **HSR GTFS refreshed**: re-processed to pick up the full King (01) shape including the West Hamilton extension (previously only the downtown–east segment was shown because the shorter high-frequency shape was winning).
 - **Search leading zero normalization**: typing "1" now matches "01 — King" and other zero-padded route numbers.
 - **Search results sorted by viewport proximity**: routes currently visible on screen sort above off-screen matches.
 - **titleCase single-letter initials**: "Frank A. Cooke" was rendering "Frank a. Cooke" because "a" matched the KEEP_LOWER list. Single-letter words followed by "." are now always capitalized.

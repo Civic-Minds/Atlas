@@ -12,6 +12,14 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Nfta: 'NFTA',
   Ltc: 'LTC',
   Ktc: 'KTC',
+  // GO Transit line codes
+  Lw: 'LW',
+  Le: 'LE',
+  Ki: 'KI',
+  Mi: 'MI',
+  Br: 'BR',
+  St: 'ST',
+  Rh: 'RH',
 };
 
 // Articles/prepositions that stay lowercase unless they open the string
@@ -35,7 +43,7 @@ export function titleCase(s: string): string {
       }
       return word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
     })
-    .replace(/\b(Go|Dc|Yrt|Ttc|Hsr|Grt|Brt|Lrt|Nfta|Ltc|Ktc)\b/g, m => TRANSIT_ACRONYMS[m] ?? m)
+    .replace(/\b(Go|Dc|Yrt|Ttc|Hsr|Grt|Brt|Lrt|Nfta|Ltc|Ktc|Lw|Le|Ki|Mi|Br|St|Rh)\b/g, m => TRANSIT_ACRONYMS[m] ?? m)
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
 }

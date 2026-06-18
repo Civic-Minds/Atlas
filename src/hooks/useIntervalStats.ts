@@ -238,27 +238,32 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const searchMatchResults = useMemo(() => {
     if (q === '') return null;
-    const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId);
-    const byKey = new Map<string, { p: ShapeProperties; inView: boolean }>();
-    for (const f of visibleRoutesOnly) {
+    // Search all loaded routes regardless of active agency/mode filters.
+    const allRoutesOnly = allFeatures.filter(f => (f.properties as any).routeId);
+    // Deduplicate by agencySlug::shortName::longName so different schedule-period
+    // route_ids for the same route (e.g. two GO "LW" feeds) collapse to one result.
+    // Keep the routeKey of the first match for click-to-select; prefer in-viewport entries.
+    const byDisplay = new Map<string, { p: ShapeProperties; inView: boolean; key: string }>();
+    for (const f of allRoutesOnly) {
       const p = f.properties as unknown as ShapeProperties;
       if (!matchesQuery(p)) continue;
       const key = routeKey(p);
+      const displayKey = `${(p as any).agencySlug ?? p.agencyName ?? ''}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`;
       const featureInView = !bounds || inViewport(f, bounds);
-      const existing = byKey.get(key);
+      const existing = byDisplay.get(displayKey);
       if (!existing) {
-        byKey.set(key, { p, inView: featureInView });
+        byDisplay.set(displayKey, { p, inView: featureInView, key });
       } else if (featureInView && !existing.inView) {
-        byKey.set(key, { p, inView: true });
+        byDisplay.set(displayKey, { p, inView: true, key });
       }
     }
-    return [...byKey.entries()]
-      .map(([key, { p, inView }]) => ({ key, routeShortName: p.routeShortName, routeLongName: p.routeLongName, agencyName: p.agencyName, inView }))
+    return [...byDisplay.values()]
+      .map(({ p, inView, key }) => ({ key, routeShortName: p.routeShortName, routeLongName: p.routeLongName, agencyName: p.agencyName, inView }))
       .sort((a, b) => {
         if (a.inView !== b.inView) return a.inView ? -1 : 1;
         return (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true });
       });
-  }, [visibleFeatures, q, bounds]);
+  }, [allFeatures, q, bounds]);
 
   const searchMatches = searchMatchResults?.length ?? null;
 

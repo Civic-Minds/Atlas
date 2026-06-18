@@ -244,8 +244,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
         const entry = routeMap.get(key)!;
         if (p.headsign) entry.headsigns.add(p.headsign);
-        if (p.headway != null && (entry.bestHeadway === undefined || p.headway < entry.bestHeadway)) {
-          entry.bestHeadway = p.headway;
+        const stopHw = (p as any).stopHeadways?.[currentStop.stopId];
+        const effectiveHw = stopHw ?? p.headway;
+        if (effectiveHw != null && (entry.bestHeadway === undefined || effectiveHw < entry.bestHeadway)) {
+          entry.bestHeadway = effectiveHw;
         }
       }
     }
@@ -449,7 +451,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
                             {(d.headsign || directionGroups.length > 1) && (
-                              <span className="font-bold text-[var(--text-muted)] block break-words" title={fmtH(d)}>
+                              <span className="font-bold text-[var(--text-muted)] block break-words">
                                 {d.headsign ? fmtH(d) : `Direction ${gi + 1}`}
                               </span>
                             )}
@@ -571,7 +573,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       : 'text-green-400';
                     return (
                       <div key={stop.stopId} className="text-[11px]">
-                        <span className="font-bold text-[var(--text-muted)] block truncate" title={stop.name}>
+                        <span className="font-bold text-[var(--text-muted)] block truncate">
                           {stop.name}
                         </span>
                         <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
@@ -584,17 +586,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       </div>
                     );
                   })}
-                </div>
-              )}
-              {liveRouteInfo.trips && (
-                <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] font-bold pt-2 border-t border-[var(--border-primary)]">
-                  <span className="text-green-400">{liveRouteInfo.trips.onTime} on time</span>
-                  {liveRouteInfo.trips.late > 0 && (
-                    <span className="text-amber-400">{liveRouteInfo.trips.late} late</span>
-                  )}
-                  {liveRouteInfo.trips.early > 0 && (
-                    <span className="text-sky-400">{liveRouteInfo.trips.early} early</span>
-                  )}
                 </div>
               )}
             </>

@@ -14,7 +14,7 @@ export function cleanHeadsign(
 
   if (shortName) {
     const escaped = shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*`, 'i'), '');
+    h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*(?:-\\s*)?`, 'i'), '');
     if (longName) {
       const escapedL = longName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       h = h.replace(new RegExp(`^${escaped}\\s+${escapedL}\\s+(?:towards|to)\\s+`, 'i'), '');
@@ -114,6 +114,9 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
   }
 
   if (!cleanedLong) return shortName;
+
+  // Pure-letter short names (e.g. "LW", "LE", "KI") are acronyms of the long name — redundant to show both.
+  if (/^[A-Za-z]+$/.test(shortName)) return cleanedLong;
 
   return `${shortName} — ${cleanedLong}`;
 }

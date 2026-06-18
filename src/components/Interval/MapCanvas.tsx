@@ -55,7 +55,10 @@ function findRoutesNearClick(
 ): string[] {
   const zoom = map.getZoom();
   const clickPx = map.project(clickLatLng, zoom);
-  const found = new Set<string>();
+  // Deduplicate by agencySlug::shortName so different schedule-period route_ids
+  // for the same visible route (e.g. two HSR "20" feeds) don't each get a row.
+  const seenDisplay = new Set<string>();
+  const found: string[] = [];
   const t2 = pixelTolerance * pixelTolerance;
 
   for (const [slug, fc] of Object.entries(allLayers)) {
@@ -63,8 +66,8 @@ function findRoutesNearClick(
       if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') continue;
       const p = feature.properties as unknown as ShapeProperties;
       if ((p as any).isCorridor || !(p as any).routeId) continue;
-      const key = routeKey({ ...p, agencySlug: slug } as any);
-      if (found.has(key)) continue;
+      const displayKey = `${slug}::${p.routeShortName ?? (p as any).routeId}`;
+      if (seenDisplay.has(displayKey)) continue;
 
       const coords: number[][] =
         feature.geometry.type === 'LineString'
@@ -77,11 +80,15 @@ function findRoutesNearClick(
         const px = map.project(L.latLng(lat, lng), zoom);
         const dx = px.x - clickPx.x;
         const dy = px.y - clickPx.y;
-        if (dx * dx + dy * dy <= t2) { found.add(key); break; }
+        if (dx * dx + dy * dy <= t2) {
+          seenDisplay.add(displayKey);
+          found.push(routeKey({ ...p, agencySlug: slug } as any));
+          break;
+        }
       }
     }
   }
-  return [...found];
+  return found;
 }
 
 function MapRefCapturer({ mapRef }: { mapRef: React.MutableRefObject<L.Map | null> }) {
