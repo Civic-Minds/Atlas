@@ -601,24 +601,24 @@ export async function processGtfsBuffer(
       feature.properties.minStopHeadway = hwVals[0];
     }
 
-    // Step 5: override headwayByPeriod with median across on-shape stops per period.
-    // Also expose the per-period minimum for accurate period filter matching.
+    // Step 5: set headwayByPeriod from the terminal stop only.
+    // "to Niagara Falls GO every 30 min AM Peak" means trains arrive at Niagara Falls every
+    // 30 min — not at a station 75 km away. Using the full-shape median inflates the period
+    // headway by borrowing from other headsigns that share the trunk but don't go to the
+    // terminal. The terminal stop (highest t in onShape) is the authoritative source.
+    //
+    // minStopHeadwayByPeriod uses all on-shape stops so the filter correctly shows the route
+    // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
+    const terminalStopId = onShape[onShape.length - 1]?.stopId;
+    const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
     const periodMedians: HeadwayByPeriod = {};
     const periodMins: Partial<Record<PeriodKey, number>> = {};
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
-      const vals = onShape
+      periodMedians[pk] = terminalPeriodHw?.[pk] ?? null;
+      const allVals = onShape
         .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
-        .filter((v): v is number => v != null)
-        .sort((a, b) => a - b);
-      if (vals.length > 0) {
-        const mid = Math.floor(vals.length / 2);
-        periodMedians[pk] = vals.length % 2 === 0
-          ? Math.round((vals[mid - 1] + vals[mid]) / 2)
-          : vals[mid];
-        periodMins[pk] = vals[0];
-      } else {
-        periodMedians[pk] = null;
-      }
+        .filter((v): v is number => v != null);
+      if (allVals.length > 0) periodMins[pk] = Math.min(...allVals);
     }
     feature.properties.headwayByPeriod = periodMedians;
     feature.properties.minStopHeadwayByPeriod = periodMins;
