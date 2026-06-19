@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import type { Agency } from '../App';
 import {
   buildStopCatalog,
@@ -9,6 +11,7 @@ import {
   searchStops,
   type StopEntry,
 } from './corridor-search';
+import { clipBetweenStopIndices, formatRouteColor } from './corridor-geometry';
 
 export type CorridorsFromInputBindings = {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -38,6 +41,7 @@ interface RouteFeature {
   toStopHeadwayByPeriod: Record<string, number | null>;
   color: string;
   stopOrder: string[];
+  coordinates?: number[][];
 }
 
 interface RouteGroup {
@@ -52,6 +56,7 @@ interface RouteGroup {
 interface GeoJsonAgency {
   slug: string;
   features: Array<{
+    geometry?: { type: string; coordinates: number[][] };
     properties: {
       routeId?: string;
       routeShortName?: string;
@@ -59,8 +64,10 @@ interface GeoJsonAgency {
       headsign?: string;
       headway?: number;
       headwayByPeriod?: Record<string, number | null>;
+      routeColor?: string | null;
       color?: string;
       stopOrder?: string[];
+      stopPositions?: number[];
       day?: string;
       directionId?: number;
       isCorridor?: boolean;
@@ -79,6 +86,15 @@ function fmtHeadway(hw: number | null | undefined): string {
   if (hw == null) return '—';
   if (hw >= 60) return `${Math.round(hw / 60)}h`;
   return `${Math.round(hw)} min`;
+}
+
+function FitCorridorBounds({ points }: { points: [number, number][] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (points.length < 2) return;
+    map.fitBounds(L.latLngBounds(points), { padding: [120, 120], maxZoom: 13 });
+  }, [map, points]);
+  return null;
 }
 
 export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput }: Props) {
@@ -218,6 +234,13 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         }
         if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) continue;
 
+        const coords = f.geometry?.coordinates;
+        const stopPositions = p.stopPositions;
+        let coordinates: number[][] | undefined;
+        if (coords && stopPositions && stopPositions.length === p.stopOrder.length) {
+          coordinates = clipBetweenStopIndices(coords, stopPositions, fromIdx, toIdx) ?? undefined;
+        }
+
         // Headway at the TO stop specifically — more accurate than the route terminal median
         const stopHeadways = (p as any).stopHeadways as Record<string, number> | undefined;
         const stopHwByPeriod = (p as any).stopPeriodHeadways as Record<string, Partial<Record<string, number>>> | undefined;
@@ -239,8 +262,9 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
           headwayByPeriod: p.headwayByPeriod ?? {},
           toStopHeadway,
           toStopHeadwayByPeriod,
-          color: p.color ?? '#555',
+          color: formatRouteColor(p.routeColor ?? p.color),
           stopOrder: p.stopOrder,
+          coordinates,
         });
       }
     }
@@ -275,6 +299,31 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
 
     return [...groups.values()].sort((a, b) => (a.bestHeadway ?? 999) - (b.bestHeadway ?? 999));
   }, [fromStop, toStop, day, agencyFeatures, stopsIndexes, agencies]);
+
+  const mapLines = useMemo(() => {
+    const lines: Array<{ key: string; coordinates: number[][]; color: string }> = [];
+    for (const g of results) {
+      for (const b of g.branches) {
+        if (!b.coordinates || b.coordinates.length < 2) continue;
+        lines.push({
+          key: `${b.agencySlug}::${b.routeShortName}::${b.headsign}`,
+          coordinates: b.coordinates,
+          color: b.color,
+        });
+      }
+    }
+    return lines;
+  }, [results]);
+
+  const fitPoints = useMemo(() => {
+    const pts: [number, number][] = [];
+    if (fromStop) pts.push([fromStop.lat, fromStop.lon]);
+    if (toStop) pts.push([toStop.lat, toStop.lon]);
+    for (const line of mapLines) {
+      for (const [lon, lat] of line.coordinates) pts.push([lat, lon]);
+    }
+    return pts;
+  }, [fromStop, toStop, mapLines]);
 
   function selectFrom(s: StopEntry) {
     setFromStop(s);
@@ -363,6 +412,32 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url={tileUrl}
         />
+        {fitPoints.length >= 2 && <FitCorridorBounds points={fitPoints} />}
+        {mapLines.map(line => (
+          <GeoJSON
+            key={line.key}
+            data={{
+              type: 'Feature',
+              geometry: { type: 'LineString', coordinates: line.coordinates },
+              properties: {},
+            } as GeoJSON.Feature}
+            style={() => ({ color: line.color, weight: 4, opacity: 0.85, lineCap: 'round', lineJoin: 'round' })}
+          />
+        ))}
+        {fromStop && (
+          <CircleMarker
+            center={[fromStop.lat, fromStop.lon]}
+            radius={7}
+            pathOptions={{ color: '#fff', weight: 2, fillColor: 'var(--accent)', fillOpacity: 1 }}
+          />
+        )}
+        {toStop && (
+          <CircleMarker
+            center={[toStop.lat, toStop.lon]}
+            radius={7}
+            pathOptions={{ color: '#fff', weight: 2, fillColor: '#e11d48', fillOpacity: 1 }}
+          />
+        )}
       </MapContainer>
 
       {/* From autocomplete — fixed below the App.tsx search bar */}
