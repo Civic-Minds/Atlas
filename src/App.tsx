@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Map as MapIcon, Search, X } from 'lucide-react';
 import Interval from './apps/Interval';
+import Corridors from './apps/Corridors';
+import AppDrawer, { type AppId } from './components/AppDrawer';
 
 export interface Agency {
   slug: string;
@@ -15,6 +17,7 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
+  const [activeApp, setActiveApp] = useState<AppId>('frequency');
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -37,6 +40,8 @@ export default function App() {
   return (
     <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
+        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
+
         <button
           onClick={() => setResetViewKey(k => k + 1)}
           aria-label="Reset map view"
@@ -82,7 +87,17 @@ export default function App() {
       </div>
 
       <main className="absolute inset-0 overflow-hidden">
-        {agencies.length > 0 ? (
+        {agencies.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
+            Loading…
+          </div>
+        ) : activeApp === 'corridors' ? (
+          <Corridors
+            agencies={agencies}
+            lightMode={lightMode}
+            setLightMode={setLightMode}
+          />
+        ) : (
           <Interval
             agencies={agencies}
             lightMode={lightMode}
@@ -92,10 +107,6 @@ export default function App() {
             onStatsChange={setStats}
             resetViewKey={resetViewKey}
           />
-        ) : (
-          <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
-            Loading…
-          </div>
         )}
       </main>
     </div>
