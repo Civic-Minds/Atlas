@@ -27,7 +27,7 @@ User experience and the workflow of a transit professional using Atlas.
 ## Map & Filter Improvements
 
 - [ ] **Bus sub-type filter**: distinguish Express, BRT, and Long-distance bus from local bus in the Mode filter
-- [ ] **On-demand transit zones**: show flex/microtransit service areas on the map alongside fixed routes
+- [ ] **On-demand transit zones**: show flex/microtransit service areas on the map alongside fixed routes, using GTFS-Flex zone geometry and service hours (no booking rules needed)
 - [ ] **Ferries**: Toronto Island Ferry and Montreal navettes fluviales — contingent on GTFS feed availability
 
 ---
