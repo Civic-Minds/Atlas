@@ -43,8 +43,14 @@ export default function App() {
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
         <button
-          onClick={() => setResetViewKey(k => k + 1)}
-          aria-label="Reset map view"
+          onClick={() => {
+            if (activeApp !== 'frequency') {
+              setActiveApp('frequency');
+            } else {
+              setResetViewKey(k => k + 1);
+            }
+          }}
+          aria-label={activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
           <MapIcon className="w-3.5 h-3.5 text-white" />
