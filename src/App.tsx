@@ -40,8 +40,6 @@ export default function App() {
   return (
     <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
-        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
-
         <button
           onClick={() => {
             if (activeApp !== 'frequency') {
@@ -55,6 +53,8 @@ export default function App() {
         >
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
+
+        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
         <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
