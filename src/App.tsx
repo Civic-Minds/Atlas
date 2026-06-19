@@ -3,6 +3,7 @@ import { Map as MapIcon, Search, X } from 'lucide-react';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import AppDrawer, { type AppId } from './components/AppDrawer';
+import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 
 export interface Agency {
   slug: string;
@@ -31,6 +32,7 @@ export default function App() {
   const [corridorsFromFocused, setCorridorsFromFocused] = useState(false);
   const corridorsFromRef = useRef<HTMLInputElement>(null);
   const [fromInputBindings, setFromInputBindings] = useState<CorridorsFromInputBindings | null>(null);
+  const [corridorsMounted, setCorridorsMounted] = useState(false);
 
   const inFrequency = activeApp === 'frequency';
   const searchValue = inFrequency ? query : corridorsFrom;
@@ -50,6 +52,10 @@ export default function App() {
   }
 
   useEffect(() => {
+    if (activeApp === 'corridors') setCorridorsMounted(true);
+  }, [activeApp]);
+
+  useEffect(() => {
     fetch('/data/index.json')
       .then(r => r.json())
       .then(data => setAgencies(data.agencies))
@@ -62,6 +68,7 @@ export default function App() {
   }, [lightMode]);
 
   return (
+    <CorridorMapOverlayProvider>
     <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
         <button
@@ -131,29 +138,38 @@ export default function App() {
           <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
             Loading…
           </div>
-        ) : activeApp === 'corridors' ? (
-          <Corridors
-            agencies={agencies}
-            lightMode={lightMode}
-            setLightMode={setLightMode}
-            fromQuery={corridorsFrom}
-            setFromQuery={setCorridorsFrom}
-            fromFocused={corridorsFromFocused}
-            fromInputRef={corridorsFromRef}
-            onBindFromInput={setFromInputBindings}
-          />
         ) : (
-          <Interval
-            agencies={agencies}
-            lightMode={lightMode}
-            setLightMode={setLightMode}
-            query={query}
-            setQuery={setQuery}
-            onStatsChange={setStats}
-            resetViewKey={resetViewKey}
-          />
+          <>
+            <Interval
+              agencies={agencies}
+              lightMode={lightMode}
+              setLightMode={setLightMode}
+              query={query}
+              setQuery={setQuery}
+              onStatsChange={setStats}
+              resetViewKey={resetViewKey}
+              showUi={inFrequency}
+              showRouteLayers={inFrequency}
+            />
+            {corridorsMounted && (
+              <div className="absolute inset-0 z-[500]">
+                <Corridors
+                  agencies={agencies}
+                  lightMode={lightMode}
+                  setLightMode={setLightMode}
+                  fromQuery={corridorsFrom}
+                  setFromQuery={setCorridorsFrom}
+                  fromFocused={corridorsFromFocused}
+                  fromInputRef={corridorsFromRef}
+                  onBindFromInput={setFromInputBindings}
+                  active={!inFrequency}
+                />
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
+    </CorridorMapOverlayProvider>
   );
 }

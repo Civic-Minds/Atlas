@@ -18,9 +18,11 @@ interface Props {
   setQuery: (q: string) => void;
   onStatsChange?: (stats: { total: number; matching: number } | null) => void;
   resetViewKey?: number;
+  showUi?: boolean;
+  showRouteLayers?: boolean;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -112,9 +114,10 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onBoundsChange={onBoundsChange}
         resetViewKey={resetViewKey}
         onLocate={onLocate}
+        showRouteLayers={showRouteLayers}
       />
 
-      {isLoading && (
+      {showUi && isLoading && (
         <div className="absolute bottom-6 left-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
           <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
           <span className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide">
@@ -123,7 +126,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {userLocation && (
+      {showUi && userLocation && (
         <NearbyRoutesPanel
           routes={nearbyRoutes}
           onClose={() => setUserLocation(null)}
@@ -131,6 +134,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         />
       )}
 
+      {showUi && (
       <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2">
         <FilterChips
           maxHeadway={maxHeadway}
@@ -157,7 +161,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           setShowCorridors={setShowCorridors}
         />
       </div>
+      )}
 
+      {showUi && (
       <SidebarControls
         query={query}
         setQuery={setQuery}
@@ -186,6 +192,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         livePollingOnly={livePollingOnly}
         setLivePollingOnly={setLivePollingOnly}
       />
+      )}
     </div>
   );
 }

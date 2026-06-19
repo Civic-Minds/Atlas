@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import type { Agency } from '../App';
 import {
   buildStopCatalog,
@@ -12,6 +9,7 @@ import {
   type StopEntry,
 } from './corridor-search';
 import { clipBetweenStopIndices, formatRouteColor } from './corridor-geometry';
+import { useCorridorMapOverlay } from '../context/CorridorMapOverlay';
 
 export type CorridorsFromInputBindings = {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -27,6 +25,7 @@ interface Props {
   fromFocused: boolean;
   fromInputRef: React.RefObject<HTMLInputElement | null>;
   onBindFromInput?: (bindings: CorridorsFromInputBindings | null) => void;
+  active?: boolean;
 }
 
 interface RouteFeature {
@@ -88,16 +87,8 @@ function fmtHeadway(hw: number | null | undefined): string {
   return `${Math.round(hw)} min`;
 }
 
-function FitCorridorBounds({ points }: { points: [number, number][] }) {
-  const map = useMap();
-  useEffect(() => {
-    if (points.length < 2) return;
-    map.fitBounds(L.latLngBounds(points), { padding: [120, 120], maxZoom: 13 });
-  }, [map, points]);
-  return null;
-}
-
-export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput }: Props) {
+export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true }: Props) {
+  const { setOverlay } = useCorridorMapOverlay();
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
   const [agencyFeatures, setAgencyFeatures] = useState<GeoJsonAgency[]>([]);
   const [loading, setLoading] = useState(true);
@@ -325,6 +316,20 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
     return pts;
   }, [fromStop, toStop, mapLines]);
 
+  useEffect(() => {
+    if (!active) {
+      setOverlay(null);
+      return;
+    }
+    setOverlay({
+      lines: mapLines,
+      fromStop: fromStop ? { lat: fromStop.lat, lon: fromStop.lon } : null,
+      toStop: toStop ? { lat: toStop.lat, lon: toStop.lon } : null,
+      fitPoints,
+    });
+    return () => setOverlay(null);
+  }, [active, mapLines, fromStop, toStop, fitPoints, setOverlay]);
+
   function selectFrom(s: StopEntry) {
     setFromStop(s);
     setFromQuery(s.displayName);
@@ -394,57 +399,13 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
 
   function clearTo() { setToStop(null); setToQuery(''); setToActive(true); toRef.current?.focus(); }
 
-  const tileUrl = lightMode
-    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
   return (
-    <div className="relative h-full w-full overflow-hidden">
-      {/* Base map */}
-      <MapContainer
-        center={[43.7, -79.4]}
-        zoom={9}
-        zoomControl={false}
-        className="absolute inset-0 h-full w-full"
-      >
-        <TileLayer
-          key={tileUrl}
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url={tileUrl}
-        />
-        {fitPoints.length >= 2 && <FitCorridorBounds points={fitPoints} />}
-        {mapLines.map(line => (
-          <GeoJSON
-            key={line.key}
-            data={{
-              type: 'Feature',
-              geometry: { type: 'LineString', coordinates: line.coordinates },
-              properties: {},
-            } as GeoJSON.Feature}
-            style={() => ({ color: line.color, weight: 4, opacity: 0.85, lineCap: 'round', lineJoin: 'round' })}
-          />
-        ))}
-        {fromStop && (
-          <CircleMarker
-            center={[fromStop.lat, fromStop.lon]}
-            radius={7}
-            pathOptions={{ color: '#fff', weight: 2, fillColor: 'var(--accent)', fillOpacity: 1 }}
-          />
-        )}
-        {toStop && (
-          <CircleMarker
-            center={[toStop.lat, toStop.lon]}
-            radius={7}
-            pathOptions={{ color: '#fff', weight: 2, fillColor: '#e11d48', fillOpacity: 1 }}
-          />
-        )}
-      </MapContainer>
-
+    <div className="relative h-full w-full overflow-hidden pointer-events-none">
       {/* From autocomplete — fixed below the App.tsx search bar */}
       {showFromDropdown && (
         <div
           ref={fromDropdownRef}
-          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden"
+          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
           style={{ top: 60, left: 104, width: 256 }}
         >
           {fromSuggestions.length === 0 ? (
@@ -467,7 +428,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       )}
 
       {/* To pill — same style as From (App.tsx search bar), stacked below it */}
-      <div ref={toPanelRef} className="absolute z-[1100]" style={{ top: 64, left: 104, width: 256 }}>
+      <div ref={toPanelRef} className="absolute z-[1100] pointer-events-auto" style={{ top: 64, left: 104, width: 256 }}>
         <div className="h-8 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-2 pr-3">
           <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
           <input
@@ -496,7 +457,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       {showToDropdown && (
         <div
           ref={toDropdownRef}
-          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden"
+          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
           style={{ top: 100, left: 104, width: 256 }}
         >
           {toSuggestions.length === 0 ? (
@@ -521,7 +482,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       {/* Results panel — only appears once both stops are selected */}
       {fromStop && toStop && (
         <div
-          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col"
+          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col pointer-events-auto"
           style={{ top: 104, left: 104, width: 256, maxHeight: 'calc(100vh - 120px)' }}
         >
           {results.length === 0 ? (
@@ -542,7 +503,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       )}
 
       {/* Day picker — top-right */}
-      <div className="absolute top-6 right-6 z-[1100] flex gap-1.5">
+      <div className="absolute top-6 right-6 z-[1100] flex gap-1.5 pointer-events-auto">
         {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
           <button
             key={d}
@@ -562,7 +523,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       {/* Timeline panel — right of results, appears with results */}
       {(fromStop && toStop) && (
         <div
-          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
+          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden pointer-events-auto"
           style={{ top: 104, left: 104 + 256 + 16, right: 24, maxHeight: 'calc(100vh - 120px)' }}
         >
           <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />

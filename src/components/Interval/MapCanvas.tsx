@@ -6,6 +6,8 @@ import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { titleCase, fmtHeadway } from '../../utils/format';
 import { getRegionalView, getAgencyBounds, getSavedView, saveView } from '../../utils/regionView';
+import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
+import { CorridorMapLayers } from '../corridor/CorridorMapLayers';
 import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
@@ -45,6 +47,7 @@ interface MapCanvasProps {
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
   routesForStop?: { slug: string; routeIds: Set<string> } | null;
+  showRouteLayers?: boolean;
 }
 
 /**
@@ -387,8 +390,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   resetViewKey,
   onLocate,
   routesForStop,
+  showRouteLayers = true,
 }) => {
   const mapRef = useRef<L.Map | null>(null);
+  const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const regionalView = getRegionalView(agencies);
   const hasSavedView = getSavedView() !== null;
   const [zoom, setZoom] = useState(regionalView.zoom);
@@ -576,7 +581,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <ResetViewControl resetKey={resetViewKey} agencies={agencies} />
       <LocateControl onLocate={onLocate} />
       <RouteZoomer selectedRoute={selectedRoute} layers={allLayers || layers} />
-      {Object.entries(layers).map(([slug, data]) => {
+      {!showRouteLayers && corridorOverlay && <CorridorMapLayers overlay={corridorOverlay} />}
+      {showRouteLayers && Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         // Split route shapes from stop points — stops mount/unmount on zoom without
         // triggering expensive remounts of the much larger route layer.
