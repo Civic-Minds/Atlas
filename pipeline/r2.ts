@@ -33,16 +33,40 @@ export function r2PublicUrl(key: string): string {
   return `${base}/${key}`;
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isRetryableR2Error(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up/i.test(msg);
+}
+
 export async function r2Put(key: string, body: string, contentType = 'application/json'): Promise<string> {
   const client = getR2Client();
   const bucket = requireEnv('R2_BUCKET_NAME');
-  await client.send(new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-    Body: body,
-    ContentType: contentType,
-  }));
-  return r2PublicUrl(key);
+  const maxAttempts = 4;
+  let lastErr: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await client.send(new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+      }));
+      return r2PublicUrl(key);
+    } catch (err) {
+      lastErr = err;
+      if (attempt < maxAttempts && isRetryableR2Error(err)) {
+        await sleep(500 * 2 ** (attempt - 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
 }
 
 export async function r2Get(key: string): Promise<string | null> {

@@ -6,7 +6,8 @@ The product direction is **map apps** — multiple task-specific views on the sa
 
 ## Now
 
-- **Corridors app** (AI-104, branch `ai-104-corridors`): station-to-station lookup — find all direct routes connecting two stops, grouped by route with branch headsigns and headway at the destination stop. Pipeline emits per-agency stop indexes (`{slug}-stops.json`); not yet merged to `main`.
+- **Rail stops & departures (AI-52/53)**: GO rail stations and major hubs on the map; click a station for a scheduled departures board. GO feed refreshed on R2 with embedded `departures` stop properties.
+- **Corridors app** (AI-104, branch `ai-104-corridors`): station-to-station lookup — merge after QA.
 - Grow agency coverage outward from the core, one continuous regional map.
 - Bug fixes and UX polish tracked in Linear (AI team → Atlas project).
 
@@ -22,19 +23,24 @@ The product direction is **map apps** — multiple task-specific views on the sa
 
 **History** builds on schedule snapshots already written during refresh (`atlas-history/{slug}/{period}.json`, keyed by feed expiry date). Frontend timeline UI is the remaining work.
 
-## Schedule adherence
+## Live data (shipped)
+
+**GTFS-RT archiver Worker** (`workers/gtfs-rt-archiver/`) polls Burlington and Hamilton TripUpdates on a cron and writes raw `.pb` snapshots to the **`atlas-live`** R2 bucket at `{slug}/{YYYY-MM-DD}/{unix-seconds}.pb`. No parsing at capture time — storage for later analysis. Separate bucket from the main `atlas` GeoJSON bucket.
+
+The in-app **live adherence panel** (Burlington 1/10, Hamilton 01/10) still fetches TripUpdates on demand when a covered route is selected.
+
+## Schedule adherence (next)
 
 Per-stop comparison of scheduled vs. actual headway — e.g. "scheduled every 10 minutes but actually running every 15–20 here."
 
-- **Shipped (partial)**: on-demand GTFS-RT TripUpdates for Burlington 1/10 and Hamilton 01/10; live adherence card in the route panel when a covered route is selected.
-- **In progress**: GTFS-RT archiver Worker (AI-98) captures raw TripUpdates snapshots to R2 every 5 minutes for later analysis — no parsing at capture time.
-- **Next**: expand route coverage once the first pass proves useful; consider richer analysis from archived RT data.
-- **Constraint**: stays serverless and small. Atlas previously ran a full GTFS-RT polling backend on an always-on VM; that ate more ops time than it delivered.
+- **Scope**: start with Hamilton B-Line and Burlington Route 1.
+- **Approach**: combine on-demand TripUpdates (live panel) with archived snapshots from `atlas-live` for historical drift analysis — no always-on VM.
+- **Constraint**: stays serverless and small.
 
 ## Later
 
+- Expand schedule adherence to more routes/agencies once the first pass proves useful.
 - History app UI once enough schedule snapshots have accumulated.
-- Broader schedule-adherence coverage across routes and agencies.
 
 ---
 
