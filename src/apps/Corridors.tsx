@@ -37,10 +37,21 @@ interface RouteFeature {
   routeShortName: string;
   routeLongName: string;
   headsign: string;
-  headway: number | null;
-  headwayByPeriod: Record<string, number | null>;
+  headway: number | null;           // route-level (fallback)
+  headwayByPeriod: Record<string, number | null>; // route-level (fallback)
+  toStopHeadway: number | null;     // headway at the TO stop specifically
+  toStopHeadwayByPeriod: Record<string, number | null>;
   color: string;
   stopOrder: string[];
+}
+
+interface RouteGroup {
+  agencySlug: string;
+  agencyName: string;
+  routeShortName: string;
+  color: string;
+  branches: RouteFeature[];
+  bestHeadway: number | null;
 }
 
 interface GeoJsonAgency {
@@ -144,20 +155,15 @@ export default function Corridors({ agencies }: Props) {
   const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
   const toSuggestions = useMemo(() => searchStops(toQuery), [toQuery, allStops]);
 
-  // Corridor query: for each agency, find stop IDs matching both from and to names,
-  // then find features where stopOrder contains a from-stop before a to-stop.
-  // Searching per-agency prevents cross-agency name collisions (e.g. a local HSR stop
-  // named "Square One" matching Square One in Mississauga).
-  const results = useMemo<RouteFeature[]>(() => {
+  const results = useMemo<RouteGroup[]>(() => {
     if (!fromStop || !toStop) return [];
     const fromNorm = fromStop.displayName.toLowerCase();
     const toNorm = toStop.displayName.toLowerCase();
-    const out: RouteFeature[] = [];
+    const features: RouteFeature[] = [];
 
-    for (const { slug, features } of agencyFeatures) {
+    for (const { slug, features: fcs } of agencyFeatures) {
       const agencyStops = stopsIndexes[slug] ?? {};
 
-      // Pre-build matching stop ID sets for this agency
       const fromIds = new Set<string>();
       const toIds = new Set<string>();
       for (const [id, s] of Object.entries(agencyStops)) {
@@ -165,23 +171,32 @@ export default function Corridors({ agencies }: Props) {
         if (norm.includes(fromNorm)) fromIds.add(id);
         if (norm.includes(toNorm)) toIds.add(id);
       }
-      // Skip agencies that don't have stops matching both endpoints
       if (fromIds.size === 0 || toIds.size === 0) continue;
 
       const agency = agencies.find(a => a.slug === slug);
-      for (const f of features) {
+      for (const f of fcs) {
         const p = f.properties;
         if (!p.stopOrder || !p.routeShortName || p.day !== 'Weekday' || p.isCorridor) continue;
 
-        // Find first from-stop and last to-stop positions in stopOrder
-        let fromIdx = -1, toIdx = -1;
+        let fromIdx = -1, toIdx = -1, toStopId: string | null = null;
         for (let i = 0; i < p.stopOrder.length; i++) {
           if (fromIds.has(p.stopOrder[i]) && fromIdx === -1) fromIdx = i;
-          if (toIds.has(p.stopOrder[i])) toIdx = i;
+          if (toIds.has(p.stopOrder[i])) { toIdx = i; toStopId = p.stopOrder[i]; }
         }
         if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) continue;
 
-        out.push({
+        // Headway at the TO stop specifically — more accurate than the route median
+        const stopHeadways = (p as any).stopHeadways as Record<string, number> | undefined;
+        const stopHwByPeriod = (p as any).allStopPeriodHw as Record<string, Record<string, number>> | undefined;
+        const toStopHeadway = toStopId && stopHeadways ? (stopHeadways[toStopId] ?? null) : null;
+        const toStopHeadwayByPeriod: Record<string, number | null> = {};
+        for (const pk of Object.keys(PERIOD_LABELS)) {
+          toStopHeadwayByPeriod[pk] = (toStopId && stopHwByPeriod)
+            ? (stopHwByPeriod[toStopId]?.[pk] ?? null)
+            : null;
+        }
+
+        features.push({
           agencySlug: slug,
           agencyName: agency?.name ?? slug,
           routeShortName: p.routeShortName,
@@ -189,19 +204,43 @@ export default function Corridors({ agencies }: Props) {
           headsign: p.headsign ?? '',
           headway: p.headway ?? null,
           headwayByPeriod: p.headwayByPeriod ?? {},
+          toStopHeadway,
+          toStopHeadwayByPeriod,
           color: p.color ?? '#555',
           stopOrder: p.stopOrder,
         });
       }
     }
 
-    // Deduplicate by routeShortName + normalized headsign + agency
+    // Dedup branches by normalized headsign within each route
     const seen = new Set<string>();
-    return out.filter(r => {
+    const deduped = features.filter(r => {
       const key = `${r.agencySlug}::${r.routeShortName}::${r.headsign.trim().toLowerCase()}`;
       if (seen.has(key)) return false;
       seen.add(key); return true;
-    }).sort((a, b) => (a.headway ?? 999) - (b.headway ?? 999));
+    });
+
+    // Group by route number + agency
+    const groups = new Map<string, RouteGroup>();
+    for (const r of deduped) {
+      const key = `${r.agencySlug}::${r.routeShortName}`;
+      if (!groups.has(key)) {
+        groups.set(key, {
+          agencySlug: r.agencySlug,
+          agencyName: r.agencyName,
+          routeShortName: r.routeShortName,
+          color: r.color,
+          branches: [],
+          bestHeadway: null,
+        });
+      }
+      const g = groups.get(key)!;
+      g.branches.push(r);
+      const hw = r.toStopHeadway ?? r.headway;
+      if (hw != null && (g.bestHeadway == null || hw < g.bestHeadway)) g.bestHeadway = hw;
+    }
+
+    return [...groups.values()].sort((a, b) => (a.bestHeadway ?? 999) - (b.bestHeadway ?? 999));
   }, [fromStop, toStop, agencyFeatures, stopsIndexes, agencies]);
 
   function selectFrom(s: StopEntry) {
@@ -289,8 +328,8 @@ export default function Corridors({ agencies }: Props) {
               <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
                 {results.length} route{results.length !== 1 ? 's' : ''} · Weekday
               </p>
-              {results.map((r, i) => (
-                <RouteCard key={i} route={r} />
+              {results.map((g, i) => (
+                <RouteGroupCard key={i} group={g} />
               ))}
             </div>
           )}
@@ -338,42 +377,61 @@ const StopInput = React.forwardRef<HTMLInputElement, StopInputProps>(
 );
 StopInput.displayName = 'StopInput';
 
-function RouteCard({ route }: { route: RouteFeature }) {
-  const periods = Object.entries(PERIOD_LABELS).filter(
-    ([key]) => route.headwayByPeriod[key] != null
-  );
-
+function RouteGroupCard({ group }: { group: RouteGroup }) {
   return (
-    <div className="bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
-      <div className="flex items-start gap-2 mb-2">
+    <div className="bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl overflow-hidden">
+      {/* Route header */}
+      <div className="flex items-center gap-2 px-3 pt-3 pb-2">
         <span
           className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
-          style={{ backgroundColor: route.color || '#555' }}
+          style={{ backgroundColor: group.color || '#555' }}
         >
-          {route.routeShortName}
+          {group.routeShortName}
         </span>
-        <div className="min-w-0">
-          <div className="text-xs font-bold text-[var(--text-primary)] truncate">
-            {route.headsign || route.routeLongName}
-          </div>
-          <div className="text-[10px] text-[var(--text-muted)]">{route.agencyName}</div>
-        </div>
-        <div className="ml-auto shrink-0 text-right">
-          <span className="text-xs font-black text-[var(--text-primary)]">
-            {fmtHeadway(route.headway)}
+        <span className="text-[10px] text-[var(--text-muted)]">{group.agencyName}</span>
+        {group.bestHeadway != null && (
+          <span className="ml-auto text-xs font-black text-[var(--text-primary)]">
+            {fmtHeadway(group.bestHeadway)}
           </span>
-        </div>
+        )}
       </div>
-      {periods.length > 0 && (
-        <div className="flex flex-wrap gap-x-3 gap-y-0.5">
-          {periods.map(([key, label]) => (
-            <span key={key} className="text-[10px] text-[var(--text-muted)]">
-              <span className="font-bold text-[var(--text-primary)]">{fmtHeadway(route.headwayByPeriod[key])}</span>
-              {' '}{label}
-            </span>
-          ))}
-        </div>
-      )}
+
+      {/* Branches */}
+      <div className="divide-y divide-[var(--border-primary)]">
+        {group.branches.map((b, i) => {
+          const hw = b.toStopHeadway ?? b.headway;
+          const byPeriod = Object.entries(PERIOD_LABELS).filter(
+            ([key]) => (b.toStopHeadwayByPeriod[key] ?? b.headwayByPeriod[key]) != null
+          );
+          return (
+            <div key={i} className="px-3 py-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] text-[var(--text-muted)]">
+                  to {b.headsign || b.routeLongName}
+                </span>
+                {group.branches.length > 1 && hw != null && (
+                  <span className="text-[11px] font-bold text-[var(--text-primary)]">
+                    {fmtHeadway(hw)}
+                  </span>
+                )}
+              </div>
+              {byPeriod.length > 0 && (
+                <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+                  {byPeriod.map(([key, label]) => {
+                    const val = b.toStopHeadwayByPeriod[key] ?? b.headwayByPeriod[key];
+                    return (
+                      <span key={key} className="text-[10px] text-[var(--text-muted)]">
+                        <span className="font-bold text-[var(--text-primary)]">{fmtHeadway(val)}</span>
+                        {' '}{label}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
