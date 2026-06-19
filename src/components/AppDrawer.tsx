@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeftRight, Clock } from 'lucide-react';
+import { ArrowLeftRight, Clock, Map } from 'lucide-react';
 
 export type AppId = 'frequency' | 'corridors' | 'history';
 
@@ -12,6 +12,13 @@ interface AppEntry {
 }
 
 const APPS: AppEntry[] = [
+  {
+    id: 'frequency',
+    label: 'Frequency Map',
+    description: 'Routes coloured by how often they run',
+    icon: <Map className="w-5 h-5" />,
+    available: true,
+  },
   {
     id: 'corridors',
     label: 'Corridors',
