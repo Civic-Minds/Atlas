@@ -137,9 +137,17 @@ export default function Corridors({ agencies }: Props) {
   function searchStops(q: string): StopEntry[] {
     if (q.trim().length < 2) return [];
     const lower = q.toLowerCase();
-    return allStops
-      .filter(s => s.displayName.toLowerCase().includes(lower) || s.name.toLowerCase().includes(lower))
-      .slice(0, 8);
+    const seen = new Set<string>();
+    const results: StopEntry[] = [];
+    for (const s of allStops) {
+      if (!s.displayName.toLowerCase().includes(lower)) continue;
+      const key = `${s.agencySlug}::${s.displayName.toLowerCase()}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      results.push(s);
+      if (results.length >= 8) break;
+    }
+    return results;
   }
 
   const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
