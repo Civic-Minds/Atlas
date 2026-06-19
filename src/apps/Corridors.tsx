@@ -8,8 +8,22 @@ interface Props {
   setLightMode: (v: boolean) => void;
 }
 
+// Strip platform/bay/direction suffixes so "Hamilton GO Centre Platform 18"
+// and "Hamilton GO Centre Bus" both resolve to "Hamilton GO Centre" in search.
+function normalizeStopName(name: string): string {
+  return name
+    .replace(/\s+platform\s+\w+/gi, '')
+    .replace(/\s+bay\s+\w+/gi, '')
+    .replace(/\s+stop\s+\w+/gi, '')
+    .replace(/\s+bus(\s+terminal)?$/gi, '')
+    .replace(/\s+(train|rail)(\s+station)?$/gi, '')
+    .replace(/\bopposite\b.*/i, '')
+    .trim();
+}
+
 interface StopEntry {
-  name: string;
+  name: string;        // original name
+  displayName: string; // normalized for display + dedup
   lat: number;
   lon: number;
   agencySlug: string;
@@ -103,13 +117,18 @@ export default function Corridors({ agencies }: Props) {
     }).catch(() => setLoading(false));
   }, [agencies]);
 
-  // Flatten stops for search
+  // Flatten stops for search, deduped by normalized name + agency
   const allStops = useMemo<StopEntry[]>(() => {
+    const seen = new Set<string>();
     const out: StopEntry[] = [];
     for (const [slug, index] of Object.entries(stopsIndexes)) {
       const agency = agencies.find(a => a.slug === slug);
       for (const [stopId, s] of Object.entries(index)) {
-        out.push({ stopId, agencySlug: slug, agencyName: agency?.name ?? slug, ...s });
+        const displayName = normalizeStopName(s.name);
+        const key = `${slug}::${displayName.toLowerCase()}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push({ stopId, agencySlug: slug, agencyName: agency?.name ?? slug, displayName, ...s });
       }
     }
     return out;
@@ -118,15 +137,9 @@ export default function Corridors({ agencies }: Props) {
   function searchStops(q: string): StopEntry[] {
     if (q.trim().length < 2) return [];
     const lower = q.toLowerCase();
-    const results = allStops.filter(s => s.name.toLowerCase().includes(lower));
-    // Deduplicate by name+agency, keep first occurrence
-    const seen = new Set<string>();
-    const deduped: StopEntry[] = [];
-    for (const s of results) {
-      const key = `${s.agencySlug}::${s.name.toLowerCase()}`;
-      if (!seen.has(key)) { seen.add(key); deduped.push(s); }
-    }
-    return deduped.slice(0, 8);
+    return allStops
+      .filter(s => s.displayName.toLowerCase().includes(lower) || s.name.toLowerCase().includes(lower))
+      .slice(0, 8);
   }
 
   const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
@@ -145,8 +158,19 @@ export default function Corridors({ agencies }: Props) {
         // Only match routes from the same agency as one of the stops
         if (slug !== fromStop.agencySlug && slug !== toStop.agencySlug) continue;
 
-        const fromIdx = p.stopOrder.indexOf(fromStop.stopId);
-        const toIdx = p.stopOrder.indexOf(toStop.stopId);
+        // Match by normalized name, not just stopId — handles train/bus terminal splits
+        // e.g. "Hamilton GO Centre" (stopId HA) matches "Hamilton GO Centre Bus" (stopId 00141)
+        const agencyStops = stopsIndexes[slug] ?? {};
+        const fromNorm = fromStop.displayName.toLowerCase();
+        const toNorm = toStop.displayName.toLowerCase();
+        const fromIdx = p.stopOrder.findIndex(id =>
+          normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase().includes(fromNorm) ||
+          fromNorm.includes(normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase())
+        );
+        const toIdx = p.stopOrder.findIndex(id =>
+          normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase().includes(toNorm) ||
+          toNorm.includes(normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase())
+        );
         if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) continue;
 
         out.push({
@@ -174,14 +198,14 @@ export default function Corridors({ agencies }: Props) {
 
   function selectFrom(s: StopEntry) {
     setFromStop(s);
-    setFromQuery(s.name);
+    setFromQuery(s.displayName);
     setActiveField(null);
     if (!toStop) { setActiveField('to'); toRef.current?.focus(); }
   }
 
   function selectTo(s: StopEntry) {
     setToStop(s);
-    setToQuery(s.name);
+    setToQuery(s.displayName);
     setActiveField(null);
   }
 
@@ -233,7 +257,7 @@ export default function Corridors({ agencies }: Props) {
                   onMouseDown={e => { e.preventDefault(); activeField === 'from' ? selectFrom(s) : selectTo(s); }}
                   className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
                 >
-                  <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.name}</div>
+                  <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
                   <div className="text-[10px] text-[var(--text-muted)]">{s.agencyName}</div>
                 </button>
               ))}
