@@ -33,7 +33,10 @@ export default function App() {
 
   const inFrequency = activeApp === 'frequency';
   const searchValue = inFrequency ? query : corridorsFrom;
-  const searchPlaceholder = inFrequency ? 'Search routes' : 'Search stations…';
+  // In corridors mode: show "From" as the placeholder when empty+unfocused, then "Search stations…" on focus
+  const searchPlaceholder = inFrequency
+    ? 'Search routes'
+    : (corridorsFromFocused || corridorsFrom) ? 'Search stations…' : 'From';
 
   function handleSearchChange(v: string) {
     if (inFrequency) setQuery(v);

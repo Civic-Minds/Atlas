@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, ArrowRight, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import type { Agency } from '../App';
 
@@ -327,11 +327,13 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         </div>
       )}
 
-      {/* Left floating panel — To picker + results */}
+      {/* Left floating panel — To picker + results, aligned with search bar */}
       <div
         ref={panelRef}
-        className="absolute top-20 left-6 z-[500] w-80 bg-[var(--bg-panel)] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[var(--border-primary)]"
+        className="absolute top-20 z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[var(--border-primary)]"
         style={{
+          left: 104,
+          width: 256,
           maxHeight: 'calc(100vh - 6rem)',
           opacity: panelVisible ? 1 : 0,
           transform: panelVisible ? 'none' : 'translateY(-8px) scale(0.97)',
@@ -340,9 +342,6 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       >
         {/* To picker */}
         <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative shrink-0">
-          <div className="flex items-center justify-center mb-3">
-            <ArrowRight className="w-3.5 h-3.5 text-[var(--text-dim)]" />
-          </div>
           <StopInput
             ref={toRef}
             label="To"
@@ -561,26 +560,30 @@ interface StopInputProps {
 }
 
 const StopInput = React.forwardRef<HTMLInputElement, StopInputProps>(
-  ({ label, value, selected, onChange, onFocus, onClear }, ref) => (
-    <div className="flex items-center gap-2 h-9 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg px-3 focus-within:border-[var(--accent)] transition-colors">
-      <span className="text-[10px] font-black text-[var(--text-muted)] w-6 shrink-0">{label}</span>
-      <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-      <input
-        ref={ref}
-        type="text"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        onFocus={onFocus}
-        placeholder={`Search stations…`}
-        className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none min-w-0"
-      />
-      {value && (
-        <button onClick={onClear} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
-          <X className="w-3 h-3" />
-        </button>
-      )}
-    </div>
-  )
+  ({ label, value, selected, onChange, onFocus, onClear }, ref) => {
+    const [focused, setFocused] = React.useState(false);
+    const placeholder = (focused || value) ? 'Search stations…' : label;
+    return (
+      <div className="flex items-center gap-2 h-9 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg px-3 focus-within:border-[var(--accent)] transition-colors">
+        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+        <input
+          ref={ref}
+          type="text"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          onFocus={() => { setFocused(true); onFocus(); }}
+          onBlur={() => setFocused(false)}
+          placeholder={placeholder}
+          className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none min-w-0"
+        />
+        {value && (
+          <button onClick={onClear} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+    );
+  }
 );
 StopInput.displayName = 'StopInput';
 
