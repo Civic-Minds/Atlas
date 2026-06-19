@@ -369,9 +369,139 @@ export default function Corridors({ agencies }: Props) {
           ))}
         </div>
 
-        <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
-          Map coming soon
-        </div>
+        <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
+      </div>
+    </div>
+  );
+}
+
+// Approximate period durations in hours (used for proportional flex widths)
+const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: number }> = [
+  { key: 'amPeak',  label: 'AM Peak', time: '6–9 AM',     flex: 3 },
+  { key: 'midday',  label: 'Midday',  time: '9 AM–3 PM',  flex: 6 },
+  { key: 'pmPeak',  label: 'PM Peak', time: '3–7 PM',     flex: 4 },
+  { key: 'evening', label: 'Evening', time: '7 PM–12 AM', flex: 5 },
+];
+
+function hwColor(hw: number | null): { bg: string; fg: string } {
+  if (hw == null) return { bg: 'var(--bg-hover)',  fg: 'var(--text-dim)' };
+  if (hw <= 10)   return { bg: '#22863a',          fg: '#fff' };
+  if (hw <= 15)   return { bg: '#3da44d',          fg: '#fff' };
+  if (hw <= 20)   return { bg: '#78c87e',          fg: '#1a1a1a' };
+  if (hw <= 30)   return { bg: '#d4a017',          fg: '#fff' };
+  if (hw <= 60)   return { bg: '#d4671e',          fg: '#fff' };
+  return                  { bg: '#c0392b',          fg: '#fff' };
+}
+
+function ServiceTimeline({
+  results,
+  fromStop,
+  toStop,
+}: {
+  results: RouteGroup[];
+  fromStop: StopEntry | null;
+  toStop: StopEntry | null;
+}) {
+  if (!fromStop || !toStop) {
+    return (
+      <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-xs text-center px-8">
+        Select two stations to see the service timeline
+      </div>
+    );
+  }
+  if (results.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-xs text-center px-8">
+        No direct service found between these stations
+      </div>
+    );
+  }
+
+  return (
+    <div className="absolute inset-0 overflow-y-auto pt-20 pb-6 px-6">
+      {/* Period header */}
+      <div className="flex mb-3 ml-24">
+        {TIMELINE_PERIODS.map(p => (
+          <div key={p.key} className="flex flex-col" style={{ flex: p.flex }}>
+            <span className="text-[10px] font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
+            <span className="text-[9px] text-[var(--text-dim)] mt-0.5">{p.time}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Route groups */}
+      <div className="flex flex-col gap-3">
+        {results.map((g, gi) => (
+          <div key={gi}>
+            {/* Route badge row */}
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span
+                className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
+                style={{ backgroundColor: g.color || '#555' }}
+              >
+                {g.routeShortName}
+              </span>
+              <span className="text-[10px] text-[var(--text-muted)]">{g.agencyName}</span>
+            </div>
+
+            {/* Branch rows */}
+            <div className="flex flex-col gap-1">
+              {g.branches.map((b, bi) => {
+                const hw = b.toStopHeadwayByPeriod.amPeak != null || b.toStopHeadwayByPeriod.midday != null
+                  ? b.toStopHeadwayByPeriod
+                  : b.headwayByPeriod;
+                return (
+                  <div key={bi} className="flex items-center gap-2">
+                    {/* Branch label */}
+                    <div className="w-22 shrink-0 text-right pr-2" style={{ width: '88px' }}>
+                      <span className="text-[10px] text-[var(--text-muted)] truncate block">
+                        to {b.headsign || b.routeLongName}
+                      </span>
+                    </div>
+                    {/* Period blocks */}
+                    <div className="flex flex-1 rounded overflow-hidden h-7 gap-px">
+                      {TIMELINE_PERIODS.map(p => {
+                        const val = hw[p.key] ?? null;
+                        const { bg, fg } = hwColor(val);
+                        return (
+                          <div
+                            key={p.key}
+                            className="flex items-center justify-center"
+                            style={{ flex: p.flex, backgroundColor: bg }}
+                          >
+                            <span className="text-[10px] font-bold" style={{ color: fg }}>
+                              {fmtHeadway(val)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="mt-6 flex items-center gap-3 flex-wrap">
+        <span className="text-[9px] text-[var(--text-dim)] uppercase tracking-wider font-bold">Frequency</span>
+        {[
+          { label: '≤10 min', hw: 10 },
+          { label: '≤20 min', hw: 20 },
+          { label: '≤30 min', hw: 30 },
+          { label: '≤60 min', hw: 60 },
+          { label: '>60 min', hw: 120 },
+        ].map(({ label, hw }) => {
+          const { bg, fg } = hwColor(hw);
+          return (
+            <div key={label} className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: bg }} />
+              <span className="text-[9px] text-[var(--text-muted)]">{label}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
