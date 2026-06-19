@@ -56,3 +56,7 @@ gtfs-test-log.md
 .env*
 public/data/*.json
 !public/data/index.json
+
+# Wrangler local dev state
+workers/**/.wrangler/
+workers/**/burlington/
