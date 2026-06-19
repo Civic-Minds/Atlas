@@ -546,11 +546,11 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         </div>
       )}
 
-      {/* Results + timeline — single left panel */}
+      {/* Results panel */}
       {fromStop && toStop && (
         <div
           className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col pointer-events-auto"
-          style={{ top: 104, left: 104, width: 380, maxHeight: 'calc(100vh - 120px)' }}
+          style={{ top: 104, left: 104, width: 256, maxHeight: 'calc(100vh - 120px)' }}
         >
           {geoLoading ? (
             <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
@@ -561,20 +561,25 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
               No direct routes found
             </div>
           ) : (
-            <>
-              <div className="overflow-y-auto py-3 px-4 flex flex-col gap-2 border-b border-[var(--border-primary)] shrink-0 max-h-[40%]">
-                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
-                  {results.length} route{results.length !== 1 ? 's' : ''} · {day}
-                </p>
-                {results.map((g, i) => (
-                  <RouteGroupCard key={i} group={g} />
-                ))}
-              </div>
-              <div className="overflow-y-auto">
-                <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
-              </div>
-            </>
+            <div className="overflow-y-auto py-3 px-4 flex flex-col gap-2">
+              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
+                {results.length} route{results.length !== 1 ? 's' : ''} · {day}
+              </p>
+              {results.map((g, i) => (
+                <RouteGroupCard key={i} group={g} />
+              ))}
+            </div>
           )}
+        </div>
+      )}
+
+      {/* Timeline panel — fixed width so map stays visible on the right */}
+      {fromStop && toStop && results.length > 0 && (
+        <div
+          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden pointer-events-auto"
+          style={{ top: 104, left: 104 + 256 + 12, width: 440, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}
+        >
+          <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
         </div>
       )}
 
@@ -601,10 +606,10 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
 
 // Approximate period durations in hours (used for proportional flex widths)
 const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: number }> = [
-  { key: 'amPeak',  label: 'AM Peak', time: '6–9 AM',     flex: 3 },
-  { key: 'midday',  label: 'Midday',  time: '9 AM–3 PM',  flex: 6 },
-  { key: 'pmPeak',  label: 'PM Peak', time: '3–7 PM',     flex: 4 },
-  { key: 'evening', label: 'Evening', time: '7–10 PM',    flex: 5 },
+  { key: 'amPeak',  label: 'AM Peak', time: '6–9 AM',     flex: 1 },
+  { key: 'midday',  label: 'Midday',  time: '9 AM–3 PM',  flex: 1 },
+  { key: 'pmPeak',  label: 'PM Peak', time: '3–7 PM',     flex: 1 },
+  { key: 'evening', label: 'Evening', time: '7–10 PM',    flex: 1 },
 ];
 
 function hwColor(hw: number | null): { bg: string; fg: string } {

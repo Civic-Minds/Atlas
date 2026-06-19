@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Map as MapIcon, Search, X } from 'lucide-react';
+import { Map as MapIcon, Search, X, ArrowLeft } from 'lucide-react';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import AppDrawer, { type AppId } from './components/AppDrawer';
@@ -82,7 +82,10 @@ export default function App() {
           aria-label={activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
-          <MapIcon className="w-3.5 h-3.5 text-white" />
+          {inFrequency
+            ? <MapIcon className="w-3.5 h-3.5 text-white" />
+            : <ArrowLeft className="w-3.5 h-3.5 text-white" />
+          }
         </button>
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
