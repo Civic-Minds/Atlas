@@ -10,6 +10,7 @@ import {
 } from './corridor-search';
 import { clipBetweenStopIndices, formatRouteColor } from './corridor-geometry';
 import { useCorridorMapOverlay } from '../context/CorridorMapOverlay';
+import { fetchAgencyGeo } from '../lib/agencyGeo';
 
 export type CorridorsFromInputBindings = {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -160,10 +161,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
 
       const geoResults = await Promise.allSettled(
         eligible.map(async a => {
-          const geo = await fetch(a.url).then(r => {
-            if (!r.ok) throw new Error(`${a.slug} geo ${r.status}`);
-            return r.json();
-          });
+          const geo = await fetchAgencyGeo(a);
           return { slug: a.slug, features: geo.features ?? [] };
         }),
       );

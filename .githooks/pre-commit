@@ -1,0 +1,26 @@
+#!/bin/sh
+# Reject commits authored or committed as Slop Factory (or slopfactory.dev).
+name=$(git config --get user.name 2>/dev/null || true)
+email=$(git config --get user.email 2>/dev/null || true)
+
+case "$name" in
+  *[Ss]lop*[Ff]actory*|Slop\ Factory)
+    echo "pre-commit: blocked — git user.name is '$name'."
+    echo "Set author to Ryan Hanna before committing:"
+    echo "  git config user.name 'Ryan Hanna'"
+    echo "  git config user.email '36575799+ryanphanna@users.noreply.github.com'"
+    exit 1
+    ;;
+esac
+
+case "$email" in
+  *slopfactory*|*@slop.*)
+    echo "pre-commit: blocked — git user.email is '$email'."
+    echo "Set author to Ryan Hanna before committing:"
+    echo "  git config user.name 'Ryan Hanna'"
+    echo "  git config user.email '36575799+ryanphanna@users.noreply.github.com'"
+    exit 1
+    ;;
+esac
+
+exit 0

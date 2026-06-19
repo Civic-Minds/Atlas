@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Agency } from '../App';
+import { fetchAgencyGeo, getCachedAgencyGeo } from '../lib/agencyGeo';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 
@@ -34,17 +35,6 @@ function buildInitialBounds(): ViewportBounds {
 }
 const INITIAL_BOUNDS = buildInitialBounds();
 
-// Cache key rotates weekly so browsers re-download on Monday after the refresh pipeline runs.
-function weekVersion(): string {
-  const d = new Date();
-  const thu = new Date(d);
-  thu.setDate(d.getDate() - d.getDay() + 4);
-  const yearStart = new Date(thu.getFullYear(), 0, 1);
-  const week = Math.ceil(((thu.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-  return `${thu.getFullYear()}${String(week).padStart(2, '0')}`;
-}
-const WEEK = weekVersion();
-
 function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
   const [lat, lon] = agency.center;
@@ -78,14 +68,17 @@ export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null)
   const fetchAgency = useCallback((agency: Agency) => {
     if (loadedSlugs.current.has(agency.slug)) return;
     loadedSlugs.current.add(agency.slug);
+
+    const cached = getCachedAgencyGeo(agency.slug);
+    if (cached) {
+      setLayers(prev => ({ ...prev, [agency.slug]: cached }));
+      return;
+    }
+
     setRequestedCount(n => n + 1);
-    fetch(`${agency.url}?v=${WEEK}`, { cache: 'default' })
-      .then(r => r.json())
-      .then((data: GeoJSON.FeatureCollection) => {
+    fetchAgencyGeo(agency)
+      .then(data => {
         if (cancelled.current) return;
-        for (const f of data.features) {
-          (f.properties as ShapeProperties).agencyName = agency.name;
-        }
         setLayers(prev => ({ ...prev, [agency.slug]: data }));
         setLoadedCount(n => n + 1);
       })
