@@ -7,7 +7,7 @@ function FitCorridorBounds({ points }: { points: [number, number][] }) {
   const map = useMap();
   useEffect(() => {
     if (points.length < 2) return;
-    map.fitBounds(L.latLngBounds(points), { padding: [120, 120], maxZoom: 13 });
+    map.fitBounds(L.latLngBounds(points), { paddingTopLeft: [520, 120], paddingBottomRight: [60, 60], maxZoom: 13 });
   }, [map, points]);
   return null;
 }
