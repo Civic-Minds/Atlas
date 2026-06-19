@@ -144,30 +144,41 @@ export default function Corridors({ agencies }: Props) {
   const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
   const toSuggestions = useMemo(() => searchStops(toQuery), [toQuery, allStops]);
 
-  // Corridor query: find routes where stopOrder includes both fromStop and toStop (from before to)
+  // Corridor query: for each agency, find stop IDs matching both from and to names,
+  // then find features where stopOrder contains a from-stop before a to-stop.
+  // Searching per-agency prevents cross-agency name collisions (e.g. a local HSR stop
+  // named "Square One" matching Square One in Mississauga).
   const results = useMemo<RouteFeature[]>(() => {
     if (!fromStop || !toStop) return [];
+    const fromNorm = fromStop.displayName.toLowerCase();
+    const toNorm = toStop.displayName.toLowerCase();
     const out: RouteFeature[] = [];
 
     for (const { slug, features } of agencyFeatures) {
+      const agencyStops = stopsIndexes[slug] ?? {};
+
+      // Pre-build matching stop ID sets for this agency
+      const fromIds = new Set<string>();
+      const toIds = new Set<string>();
+      for (const [id, s] of Object.entries(agencyStops)) {
+        const norm = normalizeStopName(s.name).toLowerCase();
+        if (norm.includes(fromNorm) || fromNorm.includes(norm)) fromIds.add(id);
+        if (norm.includes(toNorm) || toNorm.includes(norm)) toIds.add(id);
+      }
+      // Skip agencies that don't have stops matching both endpoints
+      if (fromIds.size === 0 || toIds.size === 0) continue;
+
       const agency = agencies.find(a => a.slug === slug);
       for (const f of features) {
         const p = f.properties;
         if (!p.stopOrder || !p.routeShortName || p.day !== 'Weekday' || p.isCorridor) continue;
 
-        // Match by normalized name, not just stopId — handles train/bus terminal splits
-        // e.g. "Hamilton GO Centre" (stopId HA) matches "Hamilton GO Centre Bus" (stopId 00141)
-        const agencyStops = stopsIndexes[slug] ?? {};
-        const fromNorm = fromStop.displayName.toLowerCase();
-        const toNorm = toStop.displayName.toLowerCase();
-        const fromIdx = p.stopOrder.findIndex(id =>
-          normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase().includes(fromNorm) ||
-          fromNorm.includes(normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase())
-        );
-        const toIdx = p.stopOrder.findIndex(id =>
-          normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase().includes(toNorm) ||
-          toNorm.includes(normalizeStopName(agencyStops[id]?.name ?? '').toLowerCase())
-        );
+        // Find first from-stop and last to-stop positions in stopOrder
+        let fromIdx = -1, toIdx = -1;
+        for (let i = 0; i < p.stopOrder.length; i++) {
+          if (fromIds.has(p.stopOrder[i]) && fromIdx === -1) fromIdx = i;
+          if (toIds.has(p.stopOrder[i])) toIdx = i;
+        }
         if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) continue;
 
         out.push({
@@ -184,14 +195,14 @@ export default function Corridors({ agencies }: Props) {
       }
     }
 
-    // Deduplicate by routeShortName + headsign
+    // Deduplicate by routeShortName + headsign + agency
     const seen = new Set<string>();
     return out.filter(r => {
       const key = `${r.agencySlug}::${r.routeShortName}::${r.headsign}`;
       if (seen.has(key)) return false;
       seen.add(key); return true;
     }).sort((a, b) => (a.headway ?? 999) - (b.headway ?? 999));
-  }, [fromStop, toStop, agencyFeatures, agencies]);
+  }, [fromStop, toStop, agencyFeatures, stopsIndexes, agencies]);
 
   function selectFrom(s: StopEntry) {
     setFromStop(s);
