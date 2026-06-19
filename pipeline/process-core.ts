@@ -586,6 +586,17 @@ export async function processGtfsBuffer(
     if (Object.keys(stopHeadways).length === 0) continue;
     feature.properties.stopHeadways = stopHeadways;
 
+    // Per-stop period headways for on-shape stops — used by Corridors to show
+    // frequency at the user's chosen TO stop, not just the route terminal.
+    const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
+    for (const { stopId } of onShape) {
+      const periods = allStopPeriodHw[stopId];
+      if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
+    }
+    if (Object.keys(stopPeriodHeadways).length > 0) {
+      feature.properties.stopPeriodHeadways = stopPeriodHeadways;
+    }
+
     // Step 4: override feature headway + tier with the median of on-shape stop headways.
     // This reflects combined service on shared corridors instead of the headsign-trip median.
     if (feature.properties.tier !== 'span') {

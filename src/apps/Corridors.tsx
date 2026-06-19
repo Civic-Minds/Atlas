@@ -199,9 +199,9 @@ export default function Corridors({ agencies, lightMode }: Props) {
         }
         if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) continue;
 
-        // Headway at the TO stop specifically — more accurate than the route median
+        // Headway at the TO stop specifically — more accurate than the route terminal median
         const stopHeadways = (p as any).stopHeadways as Record<string, number> | undefined;
-        const stopHwByPeriod = (p as any).allStopPeriodHw as Record<string, Record<string, number>> | undefined;
+        const stopHwByPeriod = (p as any).stopPeriodHeadways as Record<string, Partial<Record<string, number>>> | undefined;
         const toStopHeadway = toStopId && stopHeadways ? (stopHeadways[toStopId] ?? null) : null;
         const toStopHeadwayByPeriod: Record<string, number | null> = {};
         for (const pk of Object.keys(PERIOD_LABELS)) {
@@ -408,7 +408,7 @@ const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: 
   { key: 'amPeak',  label: 'AM Peak', time: '6–9 AM',     flex: 3 },
   { key: 'midday',  label: 'Midday',  time: '9 AM–3 PM',  flex: 6 },
   { key: 'pmPeak',  label: 'PM Peak', time: '3–7 PM',     flex: 4 },
-  { key: 'evening', label: 'Evening', time: '7 PM–12 AM', flex: 5 },
+  { key: 'evening', label: 'Evening', time: '7–10 PM',    flex: 5 },
 ];
 
 function hwColor(hw: number | null): { bg: string; fg: string } {
