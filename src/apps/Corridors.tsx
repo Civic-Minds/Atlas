@@ -101,6 +101,18 @@ export default function Corridors({ agencies }: Props) {
 
   const fromRef = useRef<HTMLInputElement>(null);
   const toRef = useRef<HTMLInputElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!activeField) return;
+    function onPointerDown(e: PointerEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setActiveField(null);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [activeField]);
 
   // Load all stops indexes and GeoJSON on mount
   useEffect(() => {
@@ -272,7 +284,7 @@ export default function Corridors({ agencies }: Props) {
         </div>
 
         {/* Stop pickers */}
-        <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative">
+        <div ref={pickerRef} className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative">
           <StopInput
             ref={fromRef}
             label="From"
