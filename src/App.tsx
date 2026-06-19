@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Map as MapIcon, Search, X } from 'lucide-react';
 import Interval from './apps/Interval';
-import Corridors from './apps/Corridors';
+import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import AppDrawer, { type AppId } from './components/AppDrawer';
 
 export interface Agency {
@@ -30,6 +30,7 @@ export default function App() {
   const [corridorsFrom, setCorridorsFrom] = useState('');
   const [corridorsFromFocused, setCorridorsFromFocused] = useState(false);
   const corridorsFromRef = useRef<HTMLInputElement>(null);
+  const [fromInputBindings, setFromInputBindings] = useState<CorridorsFromInputBindings | null>(null);
 
   const inFrequency = activeApp === 'frequency';
   const searchValue = inFrequency ? query : corridorsFrom;
@@ -88,7 +89,13 @@ export default function App() {
             value={searchValue}
             onChange={e => handleSearchChange(e.target.value)}
             onFocus={() => { if (!inFrequency) setCorridorsFromFocused(true); }}
-            onBlur={() => setCorridorsFromFocused(false)}
+            onBlur={() => {
+              if (!inFrequency) {
+                fromInputBindings?.onBlur();
+                setCorridorsFromFocused(false);
+              }
+            }}
+            onKeyDown={!inFrequency ? fromInputBindings?.onKeyDown : undefined}
             placeholder={searchPlaceholder}
             className="w-full bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none transition-all"
           />
@@ -133,6 +140,7 @@ export default function App() {
             setFromQuery={setCorridorsFrom}
             fromFocused={corridorsFromFocused}
             fromInputRef={corridorsFromRef}
+            onBindFromInput={setFromInputBindings}
           />
         ) : (
           <Interval

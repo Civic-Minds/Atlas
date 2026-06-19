@@ -1,40 +1,29 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import type { Agency } from '../App';
+import {
+  buildStopCatalog,
+  normalizeStopName,
+  resolveAutoSelect,
+  searchStops,
+  type StopEntry,
+} from './corridor-search';
+
+export type CorridorsFromInputBindings = {
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onBlur: () => void;
+};
 
 interface Props {
   agencies: Agency[];
   lightMode: boolean;
   setLightMode: (v: boolean) => void;
-  // From search lives in the App.tsx search bar
   fromQuery: string;
   setFromQuery: (v: string) => void;
   fromFocused: boolean;
   fromInputRef: React.RefObject<HTMLInputElement | null>;
-}
-
-// Strip platform/bay/direction suffixes so "Hamilton GO Centre Platform 18"
-// and "Hamilton GO Centre Bus" both resolve to "Hamilton GO Centre" in search.
-function normalizeStopName(name: string): string {
-  return name
-    .replace(/\s+platform\s+\w+/gi, '')
-    .replace(/\s+bay\s+\w+/gi, '')
-    .replace(/\s+stop\s+\w+/gi, '')
-    .replace(/\s+bus(\s+terminal)?$/gi, '')
-    .replace(/\s+(train|rail)(\s+station)?$/gi, '')
-    .replace(/\bopposite\b.*/i, '')
-    .trim();
-}
-
-interface StopEntry {
-  name: string;        // original name
-  displayName: string; // normalized for display + dedup
-  lat: number;
-  lon: number;
-  agencySlug: string;
-  agencyName: string;
-  stopId: string;
+  onBindFromInput?: (bindings: CorridorsFromInputBindings | null) => void;
 }
 
 interface RouteFeature {
@@ -92,7 +81,7 @@ function fmtHeadway(hw: number | null | undefined): string {
   return `${Math.round(hw)} min`;
 }
 
-export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef }: Props) {
+export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput }: Props) {
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
   const [agencyFeatures, setAgencyFeatures] = useState<GeoJsonAgency[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,90 +91,102 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
   const [toStop, setToStop] = useState<StopEntry | null>(null);
   const [toActive, setToActive] = useState(false);
   const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
-  const [panelVisible, setPanelVisible] = useState(false);
+  const [stopsReady, setStopsReady] = useState(false);
+  const [fromHighlight, setFromHighlight] = useState(0);
+  const [toHighlight, setToHighlight] = useState(0);
 
   // Clear fromStop when the search bar query no longer matches it
   useEffect(() => {
     if (fromStop && fromQuery.toLowerCase() !== fromStop.displayName.toLowerCase()) {
       setFromStop(null);
     }
-  }, [fromQuery]);
-
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => setPanelVisible(true));
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [fromQuery, fromStop]);
 
   const toRef = useRef<HTMLInputElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const toPanelRef = useRef<HTMLDivElement>(null);
+  const fromDropdownRef = useRef<HTMLDivElement>(null);
+  const toDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!toActive) return;
+    if (!toActive && !fromFocused) return;
     function onPointerDown(e: PointerEvent) {
+      const t = e.target as Node;
       if (
-        panelRef.current && !panelRef.current.contains(e.target as Node) &&
-        fromInputRef.current && !fromInputRef.current.contains(e.target as Node)
-      ) {
-        setToActive(false);
-      }
+        fromInputRef.current?.contains(t) ||
+        fromDropdownRef.current?.contains(t) ||
+        toPanelRef.current?.contains(t) ||
+        toDropdownRef.current?.contains(t)
+      ) return;
+      setToActive(false);
     }
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [toActive]);
+  }, [toActive, fromFocused, fromInputRef]);
 
-  // Load all stops indexes and GeoJSON on mount
+  // Stops indexes first (fast — powers autocomplete), then GeoJSON (slow — powers results)
   useEffect(() => {
-    const eligible = agencies.filter(a => (a as any).stopsUrl && a.url);
-    if (eligible.length === 0) { setLoading(false); return; }
+    const eligible = agencies.filter(a => a.stopsUrl && a.url);
+    if (eligible.length === 0) { setStopsReady(true); return; }
 
-    Promise.all(
-      eligible.map(async a => {
-        const [stopsRes, geoRes] = await Promise.all([
-          fetch((a as any).stopsUrl).then(r => r.json()),
-          fetch(a.url).then(r => r.json()),
-        ]);
-        return { agency: a, stops: stopsRes, geo: geoRes };
-      })
-    ).then(results => {
+    let cancelled = false;
+
+    (async () => {
+      const stopResults = await Promise.allSettled(
+        eligible.map(async a => {
+          const stops = await fetch(a.stopsUrl!).then(r => {
+            if (!r.ok) throw new Error(`${a.slug} stops ${r.status}`);
+            return r.json();
+          });
+          return { slug: a.slug, stops };
+        }),
+      );
+
+      if (cancelled) return;
+
       const indexes: typeof stopsIndexes = {};
-      const features: GeoJsonAgency[] = [];
-      for (const { agency, stops, geo } of results) {
-        indexes[agency.slug] = stops;
-        features.push({ slug: agency.slug, features: geo.features ?? [] });
+      for (const r of stopResults) {
+        if (r.status === 'fulfilled') indexes[r.value.slug] = r.value.stops;
+        else console.warn('Corridors: stops load failed', r.reason);
       }
       setStopsIndexes(indexes);
+      setStopsReady(true);
+
+      const geoResults = await Promise.allSettled(
+        eligible.map(async a => {
+          const geo = await fetch(a.url).then(r => {
+            if (!r.ok) throw new Error(`${a.slug} geo ${r.status}`);
+            return r.json();
+          });
+          return { slug: a.slug, features: geo.features ?? [] };
+        }),
+      );
+
+      if (cancelled) return;
+
+      const features: GeoJsonAgency[] = [];
+      for (const r of geoResults) {
+        if (r.status === 'fulfilled') features.push(r.value);
+        else console.warn('Corridors: geo load failed', r.reason);
+      }
       setAgencyFeatures(features);
       setLoading(false);
-    }).catch(() => setLoading(false));
+    })();
+
+    return () => { cancelled = true; };
   }, [agencies]);
 
-  // Flatten stops for search, deduped by normalized name only (cross-agency).
-  // Hamilton GO Centre is one place regardless of whether GO Transit or HSR owns the stop.
-  const allStops = useMemo<StopEntry[]>(() => {
-    const seen = new Set<string>();
-    const out: StopEntry[] = [];
-    for (const [slug, index] of Object.entries(stopsIndexes)) {
-      const agency = agencies.find(a => a.slug === slug);
-      for (const [stopId, s] of Object.entries(index)) {
-        const displayName = normalizeStopName(s.name);
-        const key = displayName.toLowerCase();
-        if (seen.has(key)) continue;
-        seen.add(key);
-        out.push({ stopId, agencySlug: slug, agencyName: agency?.name ?? slug, displayName, ...s });
-      }
-    }
-    return out;
-  }, [stopsIndexes, agencies]);
+  const allStops = useMemo(
+    () => buildStopCatalog(stopsIndexes, agencies),
+    [stopsIndexes, agencies],
+  );
 
-  function searchStops(q: string): StopEntry[] {
-    if (q.trim().length < 2) return [];
-    const lower = q.toLowerCase();
-    return allStops.filter(s => s.displayName.toLowerCase().includes(lower)).slice(0, 8);
-  }
+  const fromSuggestions = useMemo(() => searchStops(allStops, fromQuery), [fromQuery, allStops]);
+  const toSuggestions = useMemo(() => searchStops(allStops, toQuery), [toQuery, allStops]);
+  const showFromDropdown = fromFocused && fromQuery.trim().length >= 2 && !fromStop;
+  const showToDropdown = toActive && toQuery.trim().length >= 2 && !toStop;
 
-  const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
-  const toSuggestions = useMemo(() => searchStops(toQuery), [toQuery, allStops]);
-  const showFromDropdown = fromFocused && fromSuggestions.length > 0 && !fromStop;
+  useEffect(() => { setFromHighlight(0); }, [fromQuery]);
+  useEffect(() => { setToHighlight(0); }, [toQuery]);
 
   const results = useMemo<RouteGroup[]>(() => {
     if (!fromStop || !toStop) return [];
@@ -278,6 +279,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
   function selectFrom(s: StopEntry) {
     setFromStop(s);
     setFromQuery(s.displayName);
+    setFromHighlight(0);
     if (!toStop) { setToActive(true); toRef.current?.focus(); }
   }
 
@@ -285,7 +287,61 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
     setToStop(s);
     setToQuery(s.displayName);
     setToActive(false);
+    setToHighlight(0);
   }
+
+  function tryAutoSelectFrom() {
+    if (fromStop) return;
+    const pick = resolveAutoSelect(fromSuggestions, fromQuery);
+    if (pick) selectFrom(pick);
+  }
+
+  function tryAutoSelectTo() {
+    if (toStop) return;
+    const pick = resolveAutoSelect(toSuggestions, toQuery);
+    if (pick) selectTo(pick);
+  }
+
+  function handleListKeyDown(
+    e: React.KeyboardEvent,
+    suggestions: StopEntry[],
+    highlight: number,
+    setHighlight: (n: number) => void,
+    select: (s: StopEntry) => void,
+    tryAuto: () => void,
+    onEscape?: () => void,
+  ) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (suggestions.length) setHighlight(Math.min(highlight + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (suggestions.length) setHighlight(Math.max(highlight - 1, 0));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (suggestions[highlight]) select(suggestions[highlight]);
+      else tryAuto();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      onEscape?.();
+    }
+  }
+
+  const handleFromKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    handleListKeyDown(
+      e, fromSuggestions, fromHighlight, setFromHighlight, selectFrom, tryAutoSelectFrom,
+      () => fromInputRef.current?.blur(),
+    );
+  }, [fromSuggestions, fromHighlight, fromQuery, fromStop]);
+
+  const handleFromBlur = useCallback(() => {
+    tryAutoSelectFrom();
+  }, [fromSuggestions, fromQuery, fromStop]);
+
+  useEffect(() => {
+    onBindFromInput?.({ onKeyDown: handleFromKeyDown, onBlur: handleFromBlur });
+    return () => onBindFromInput?.(null);
+  }, [onBindFromInput, handleFromKeyDown, handleFromBlur]);
 
   function clearTo() { setToStop(null); setToQuery(''); setToActive(true); toRef.current?.focus(); }
 
@@ -312,14 +368,22 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       {/* From autocomplete — fixed below the App.tsx search bar */}
       {showFromDropdown && (
         <div
+          ref={fromDropdownRef}
           className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden"
           style={{ top: 60, left: 104, width: 256 }}
         >
-          {fromSuggestions.map(s => (
+          {fromSuggestions.length === 0 ? (
+            <div className="px-3 py-2 text-xs text-[var(--text-muted)]">
+              {!stopsReady ? 'Loading stations…' : 'No stations found'}
+            </div>
+          ) : fromSuggestions.map((s, i) => (
             <button
               key={`${s.agencySlug}::${s.stopId}`}
               onMouseDown={e => { e.preventDefault(); selectFrom(s); }}
-              className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
+              className={[
+                'w-full text-left px-3 py-2 transition-colors',
+                i === fromHighlight ? 'bg-[var(--bg-active)]' : 'hover:bg-[var(--bg-hover)]',
+              ].join(' ')}
             >
               <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
             </button>
@@ -328,7 +392,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       )}
 
       {/* To pill — same style as From (App.tsx search bar), stacked below it */}
-      <div ref={panelRef} className="absolute z-[500]" style={{ top: 64, left: 104, width: 256 }}>
+      <div ref={toPanelRef} className="absolute z-[1100]" style={{ top: 64, left: 104, width: 256 }}>
         <div className="h-8 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-2 pr-3">
           <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
           <input
@@ -337,7 +401,11 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
             value={toQuery}
             onChange={e => { setToQuery(e.target.value); setToStop(null); setToActive(true); }}
             onFocus={() => setToActive(true)}
-            onBlur={() => {/* keep toActive; dismissed by click-outside */}}
+            onBlur={() => tryAutoSelectTo()}
+            onKeyDown={e => handleListKeyDown(
+              e, toSuggestions, toHighlight, setToHighlight, selectTo, tryAutoSelectTo,
+              () => setToActive(false),
+            )}
             placeholder={toActive || toQuery ? 'Search stations…' : 'To'}
             className="flex-1 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-2 py-0 text-xs font-bold focus:outline-none"
           />
@@ -347,27 +415,38 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
             </button>
           )}
         </div>
-
-        {/* To autocomplete */}
-        {toActive && toSuggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-full mt-1 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden z-50">
-            {toSuggestions.map(s => (
-              <button
-                key={`${s.agencySlug}::${s.stopId}`}
-                onMouseDown={e => { e.preventDefault(); selectTo(s); }}
-                className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
-              >
-                <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
-              </button>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* To autocomplete — fixed below To pill (same pattern as From) */}
+      {showToDropdown && (
+        <div
+          ref={toDropdownRef}
+          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden"
+          style={{ top: 100, left: 104, width: 256 }}
+        >
+          {toSuggestions.length === 0 ? (
+            <div className="px-3 py-2 text-xs text-[var(--text-muted)]">
+              {!stopsReady ? 'Loading stations…' : 'No stations found'}
+            </div>
+          ) : toSuggestions.map((s, i) => (
+            <button
+              key={`${s.agencySlug}::${s.stopId}`}
+              onMouseDown={e => { e.preventDefault(); selectTo(s); }}
+              className={[
+                'w-full text-left px-3 py-2 transition-colors',
+                i === toHighlight ? 'bg-[var(--bg-active)]' : 'hover:bg-[var(--bg-hover)]',
+              ].join(' ')}
+            >
+              <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Results panel — only appears once both stops are selected */}
       {fromStop && toStop && (
         <div
-          className="absolute z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col"
+          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col"
           style={{ top: 104, left: 104, width: 256, maxHeight: 'calc(100vh - 120px)' }}
         >
           {results.length === 0 ? (
@@ -388,7 +467,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       )}
 
       {/* Day picker — top-right */}
-      <div className="absolute top-6 right-6 z-[500] flex gap-1.5">
+      <div className="absolute top-6 right-6 z-[1100] flex gap-1.5">
         {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
           <button
             key={d}
@@ -408,7 +487,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       {/* Timeline panel — right of results, appears with results */}
       {(fromStop && toStop) && (
         <div
-          className="absolute z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
+          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
           style={{ top: 104, left: 104 + 256 + 16, right: 24, maxHeight: 'calc(100vh - 120px)' }}
         >
           <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />

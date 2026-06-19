@@ -5,10 +5,15 @@ How GTFS feeds become the frequency map.
 ## Overview
 
 ```
-GTFS zip  →  process-core.ts  →  GeoJSON  →  Vercel Blob  →  frontend
+GTFS zip  →  process-core.ts  →  GeoJSON + stops index  →  Cloudflare R2  →  frontend
 ```
 
-All 35 agencies are stored as individual GeoJSON files on Vercel Blob. The frontend fetches `public/data/index.json` to get the Blob URL for each agency, then lazy-loads each file as the user pans into its bounding box.
+Each agency produces two R2 objects:
+
+- `atlas/<slug>.json` — GeoJSON FeatureCollection (routes, stops, corridor chords)
+- `atlas/<slug>-stops.json` — stop lookup index (`stopId → { name, lat, lon }`) for the Corridors app
+
+The frontend fetches `public/data/index.json` to get the R2 URL for each agency, then lazy-loads GeoJSON as the user pans into its bounding box. The Corridors app additionally loads all `stopsUrl` indexes on mount.
 
 No server, no database. The pipeline only runs during processing or the weekly refresh job.
 
@@ -17,14 +22,14 @@ No server, no database. The pipeline only runs during processing or the weekly r
 ## Adding an Agency
 
 ```bash
-# 1. Pull credentials (once per machine)
-vercel env pull .env.local
+# 1. Add R2 credentials to .env.local (once per machine)
+#    R2_ACCOUNT_ID, R2_BUCKET_NAME, R2_PUBLIC_URL, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY
 
 # 2. Process the feed
 npm run process -- /path/to/feed.zip <slug> "Display Name" "lat,lon"
 ```
 
-This uploads `atlas/<slug>.json` to Vercel Blob and updates `public/data/index.json` with the Blob URL.
+This uploads `atlas/<slug>.json` and `atlas/<slug>-stops.json` to R2 and updates `public/data/index.json` with both URLs.
 
 After that, **manually edit `index.json`** to add:
 - `feedUrl` — the stable download URL (used by the weekly refresh)
@@ -47,11 +52,11 @@ npm run refresh              # all agencies
 npm run refresh -- ttc yrt   # specific slugs only
 ```
 
-Reads each agency's `feedUrl` from `index.json`, downloads the zip, reprocesses, and re-uploads to Blob. The Blob URL stays the same across refreshes (same `atlas/<slug>.json` path) — only the content changes.
+Reads each agency's `feedUrl` from `index.json`, downloads the zip, reprocesses, and re-uploads to R2. URLs stay the same across refreshes (same `atlas/<slug>.json` path) — only the content changes. Schedule snapshots for History are written to a separate `atlas-history/` prefix when enabled for an agency.
 
 ### Weekly Auto-Refresh
 
-GitHub Actions runs `.github/workflows/refresh-feeds.yml` every Monday at 06:00 UTC (~01:00 Toronto). It requires `BLOB_READ_WRITE_TOKEN` as a repository secret (already set). If `index.json` changes during refresh (e.g. center coordinates updated), the workflow commits it automatically.
+GitHub Actions runs `.github/workflows/refresh-feeds.yml` every Monday at 06:00 UTC (~01:00 Toronto). It requires `R2_*` repository secrets (already set). If `index.json` changes during refresh (e.g. center coordinates updated), the workflow commits it automatically.
 
 ---
 
@@ -74,6 +79,10 @@ One per route direction per day type. Properties:
 | `day` | string | `"Weekday"`, `"Saturday"`, or `"Sunday"` |
 | `tier` | string | Frequency tier label or `"span"` |
 | `headway` | number \| null | Median headway in minutes; `null` when `tier === "span"` |
+| `stopOrder` | string[] | Stop IDs in shape order (for clipping and Corridors matching) |
+| `stopHeadways` | Record<string, number> | Per-stop all-day headway |
+| `stopPeriodHeadways` | Record<string, Record<string, number>> | Per-stop headway by period (`amPeak`, `midday`, etc.) |
+| `minStopHeadway` | number \| null | Best (minimum) headway at any on-shape stop — used by filters |
 
 `tier === "span"` means the route runs only outside the analysis window (before 07:00 or after 22:00).
 
@@ -98,7 +107,20 @@ Combined-frequency segments where 2+ routes overlap. Properties:
 | `headway` | number | Aggregate headway for all overlapping routes |
 | `routes` | string[] | Short names of overlapping routes |
 
-Corridors are skipped for all-rail feeds (GO, UP Express, VIA) since shared rail frequency isn't meaningful in the same way.
+Corridors are skipped for all-rail feeds (GO, UP Express, VIA) since shared rail frequency isn't meaningful in the same way. These pipeline corridor features are distinct from the **Corridors map app**, which finds direct routes between two user-selected stations.
+
+### Stops index (`{slug}-stops.json`)
+
+Separate JSON file per agency, not GeoJSON. Used by the Corridors app for station search:
+
+```json
+{
+  "stop_id_1": { "name": "Union Station", "lat": 43.645, "lon": -79.38 },
+  "stop_id_2": { "name": "King Station", "lat": 43.649, "lon": -79.378 }
+}
+```
+
+Only stops that appear in at least one route feature's `stopOrder` are included.
 
 ---
 
@@ -139,7 +161,8 @@ Phase 1 (`transit-phase1.ts`) computes departure gaps per route per direction pe
       "slug": "ttc",
       "name": "TTC",
       "center": [43.653, -79.383],
-      "url": "https://...vercel-storage.com/atlas/ttc.json",
+      "url": "https://...r2.dev/atlas/ttc.json",
+      "stopsUrl": "https://...r2.dev/atlas/ttc-stops.json",
       "feedUrl": "https://open.toronto.ca/.../GTFS.zip",
       "bbox": [43.55, -79.65, 43.85, -79.10],
       "preprocess": "nrt-day-night"
@@ -148,7 +171,8 @@ Phase 1 (`transit-phase1.ts`) computes departure gaps per route per direction pe
 }
 ```
 
-- `url` — Vercel Blob URL, written by the pipeline automatically
+- `url` — R2 public URL for GeoJSON, written by the pipeline automatically
+- `stopsUrl` — R2 public URL for the stops index, written by the pipeline automatically
 - `feedUrl` — source for weekly refresh; add manually when adding a new agency; use Mobility Database mirror if official URL is unstable
 - `bbox` — `[south, west, north, east]` for lazy loading; add manually; missing bbox falls back to `center ± 0.4°`
 - `preprocess` — optional transform applied before analysis; currently only `"nrt-day-night"` (NRT Toronto day/night route merge)
