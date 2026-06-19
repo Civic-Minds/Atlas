@@ -327,61 +327,55 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         </div>
       )}
 
-      {/* Left floating panel — To picker + results, aligned with search bar */}
-      <div
-        ref={panelRef}
-        className="absolute top-20 z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[var(--border-primary)]"
-        style={{
-          left: 104,
-          width: 256,
-          maxHeight: 'calc(100vh - 6rem)',
-          opacity: panelVisible ? 1 : 0,
-          transform: panelVisible ? 'none' : 'translateY(-8px) scale(0.97)',
-          transition: 'opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s',
-        }}
-      >
-        {/* To picker */}
-        <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative shrink-0">
-          <StopInput
+      {/* To pill — same style as From (App.tsx search bar), stacked below it */}
+      <div ref={panelRef} className="absolute z-[500]" style={{ top: 64, left: 104, width: 256 }}>
+        <div className="h-8 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-2 pr-3">
+          <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
+          <input
             ref={toRef}
-            label="To"
+            type="text"
             value={toQuery}
-            selected={!!toStop}
-            onChange={v => { setToQuery(v); setToStop(null); setToActive(true); }}
+            onChange={e => { setToQuery(e.target.value); setToStop(null); setToActive(true); }}
             onFocus={() => setToActive(true)}
-            onClear={clearTo}
+            onBlur={() => {/* keep toActive; dismissed by click-outside */}}
+            placeholder={toActive || toQuery ? 'Search stations…' : 'To'}
+            className="flex-1 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-2 py-0 text-xs font-bold focus:outline-none"
           />
-
-          {/* To autocomplete */}
-          {toActive && toSuggestions.length > 0 && (
-            <div className="absolute left-4 right-4 top-full mt-1 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden z-50">
-              {toSuggestions.map(s => (
-                <button
-                  key={`${s.agencySlug}::${s.stopId}`}
-                  onMouseDown={e => { e.preventDefault(); selectTo(s); }}
-                  className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
-                >
-                  <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
-                </button>
-              ))}
-            </div>
+          {toQuery && (
+            <button onClick={clearTo} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
+              <X className="w-3.5 h-3.5" />
+            </button>
           )}
         </div>
 
-        {/* Results */}
-        <div className="flex-1 overflow-y-auto">
-          {loading ? (
-            <div className="flex items-center justify-center h-32 text-[var(--text-dim)] text-xs">Loading stops…</div>
-          ) : !fromStop || !toStop ? (
-            <div className="flex items-center justify-center h-32 text-[var(--text-muted)] text-xs px-6 text-center">
-              Choose two stations to see what routes connect them
-            </div>
-          ) : results.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-[var(--text-muted)] text-xs px-6 text-center">
-              No direct routes found between these stations
+        {/* To autocomplete */}
+        {toActive && toSuggestions.length > 0 && (
+          <div className="absolute left-0 right-0 top-full mt-1 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden z-50">
+            {toSuggestions.map(s => (
+              <button
+                key={`${s.agencySlug}::${s.stopId}`}
+                onMouseDown={e => { e.preventDefault(); selectTo(s); }}
+                className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
+              >
+                <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Results panel — only appears once both stops are selected */}
+      {fromStop && toStop && (
+        <div
+          className="absolute z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col"
+          style={{ top: 104, left: 104, width: 256, maxHeight: 'calc(100vh - 120px)' }}
+        >
+          {results.length === 0 ? (
+            <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
+              No direct routes found
             </div>
           ) : (
-            <div className="py-3 px-4 flex flex-col gap-2">
+            <div className="overflow-y-auto py-3 px-4 flex flex-col gap-2">
               <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
                 {results.length} route{results.length !== 1 ? 's' : ''} · {day}
               </p>
@@ -391,7 +385,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
             </div>
           )}
         </div>
-      </div>
+      )}
 
       {/* Day picker — top-right */}
       <div className="absolute top-6 right-6 z-[500] flex gap-1.5">
@@ -411,11 +405,11 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         ))}
       </div>
 
-      {/* Timeline floating panel — right of left panel, below day picker */}
+      {/* Timeline panel — right of results, appears with results */}
       {(fromStop && toStop) && (
         <div
-          className="absolute top-20 right-6 z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
-          style={{ left: 'calc(320px + 48px + 24px)', maxHeight: 'calc(100vh - 6rem)' }}
+          className="absolute z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
+          style={{ top: 104, left: 104 + 256 + 16, right: 24, maxHeight: 'calc(100vh - 120px)' }}
         >
           <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
         </div>
