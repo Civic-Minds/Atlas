@@ -24,6 +24,14 @@ User experience and the workflow of a transit professional using Atlas.
 
 ---
 
+## Map & Filter Improvements
+
+- [ ] **Bus sub-type filter**: distinguish Express, BRT, and Long-distance bus from local bus in the Mode filter
+- [ ] **On-demand transit zones**: show flex/microtransit service areas on the map alongside fixed routes
+- [ ] **Ferries**: Toronto Island Ferry and Montreal navettes fluviales — contingent on GTFS feed availability
+
+---
+
 ## Design Principles
 
 - Every view should be usable by a transit planner without data science training
