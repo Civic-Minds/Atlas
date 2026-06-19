@@ -7,6 +7,11 @@ interface Props {
   agencies: Agency[];
   lightMode: boolean;
   setLightMode: (v: boolean) => void;
+  // From search lives in the App.tsx search bar
+  fromQuery: string;
+  setFromQuery: (v: string) => void;
+  fromFocused: boolean;
+  fromInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 // Strip platform/bay/direction suffixes so "Hamilton GO Centre Platform 18"
@@ -87,40 +92,46 @@ function fmtHeadway(hw: number | null | undefined): string {
   return `${Math.round(hw)} min`;
 }
 
-export default function Corridors({ agencies, lightMode }: Props) {
-  // Stops index: agencySlug → Record<stopId, {name, lat, lon}>
+export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef }: Props) {
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
-  // GeoJSON features per agency (loaded lazily — only those with stopsUrl)
   const [agencyFeatures, setAgencyFeatures] = useState<GeoJsonAgency[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [fromQuery, setFromQuery] = useState('');
-  const [toQuery, setToQuery] = useState('');
   const [fromStop, setFromStop] = useState<StopEntry | null>(null);
+  const [toQuery, setToQuery] = useState('');
   const [toStop, setToStop] = useState<StopEntry | null>(null);
-  const [activeField, setActiveField] = useState<'from' | 'to' | null>(null);
+  const [toActive, setToActive] = useState(false);
   const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
   const [panelVisible, setPanelVisible] = useState(false);
+
+  // Clear fromStop when the search bar query no longer matches it
+  useEffect(() => {
+    if (fromStop && fromQuery.toLowerCase() !== fromStop.displayName.toLowerCase()) {
+      setFromStop(null);
+    }
+  }, [fromQuery]);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setPanelVisible(true));
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  const fromRef = useRef<HTMLInputElement>(null);
   const toRef = useRef<HTMLInputElement>(null);
-  const pickerRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!activeField) return;
+    if (!toActive) return;
     function onPointerDown(e: PointerEvent) {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
-        setActiveField(null);
+      if (
+        panelRef.current && !panelRef.current.contains(e.target as Node) &&
+        fromInputRef.current && !fromInputRef.current.contains(e.target as Node)
+      ) {
+        setToActive(false);
       }
     }
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [activeField]);
+  }, [toActive]);
 
   // Load all stops indexes and GeoJSON on mount
   useEffect(() => {
@@ -174,6 +185,7 @@ export default function Corridors({ agencies, lightMode }: Props) {
 
   const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
   const toSuggestions = useMemo(() => searchStops(toQuery), [toQuery, allStops]);
+  const showFromDropdown = fromFocused && fromSuggestions.length > 0 && !fromStop;
 
   const results = useMemo<RouteGroup[]>(() => {
     if (!fromStop || !toStop) return [];
@@ -266,20 +278,16 @@ export default function Corridors({ agencies, lightMode }: Props) {
   function selectFrom(s: StopEntry) {
     setFromStop(s);
     setFromQuery(s.displayName);
-    setActiveField(null);
-    if (!toStop) { setActiveField('to'); toRef.current?.focus(); }
+    if (!toStop) { setToActive(true); toRef.current?.focus(); }
   }
 
   function selectTo(s: StopEntry) {
     setToStop(s);
     setToQuery(s.displayName);
-    setActiveField(null);
+    setToActive(false);
   }
 
-  function clearFrom() { setFromStop(null); setFromQuery(''); setActiveField('from'); fromRef.current?.focus(); }
-  function clearTo() { setToStop(null); setToQuery(''); setActiveField('to'); toRef.current?.focus(); }
-
-  const activeSuggestions = activeField === 'from' ? fromSuggestions : activeField === 'to' ? toSuggestions : [];
+  function clearTo() { setToStop(null); setToQuery(''); setToActive(true); toRef.current?.focus(); }
 
   const tileUrl = lightMode
     ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
@@ -301,9 +309,27 @@ export default function Corridors({ agencies, lightMode }: Props) {
         />
       </MapContainer>
 
-      {/* Left floating panel */}
+      {/* From autocomplete — fixed below the App.tsx search bar */}
+      {showFromDropdown && (
+        <div
+          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden"
+          style={{ top: 60, left: 104, width: 256 }}
+        >
+          {fromSuggestions.map(s => (
+            <button
+              key={`${s.agencySlug}::${s.stopId}`}
+              onMouseDown={e => { e.preventDefault(); selectFrom(s); }}
+              className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
+            >
+              <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Left floating panel — To picker + results */}
       <div
-        ref={pickerRef}
+        ref={panelRef}
         className="absolute top-20 left-6 z-[500] w-80 bg-[var(--bg-panel)] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[var(--border-primary)]"
         style={{
           maxHeight: 'calc(100vh - 6rem)',
@@ -312,24 +338,9 @@ export default function Corridors({ agencies, lightMode }: Props) {
           transition: 'opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s',
         }}
       >
-        {/* Header */}
-        <div className="px-5 pt-4 pb-3 border-b border-[var(--border-primary)] shrink-0">
-          <h1 className="text-sm font-black text-[var(--text-primary)] mb-0.5">Corridors</h1>
-          <p className="text-[11px] text-[var(--text-muted)]">Find routes connecting two stations</p>
-        </div>
-
-        {/* Stop pickers */}
+        {/* To picker */}
         <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative shrink-0">
-          <StopInput
-            ref={fromRef}
-            label="From"
-            value={fromQuery}
-            selected={!!fromStop}
-            onChange={v => { setFromQuery(v); setFromStop(null); setActiveField('from'); }}
-            onFocus={() => setActiveField('from')}
-            onClear={clearFrom}
-          />
-          <div className="flex items-center justify-center my-2">
+          <div className="flex items-center justify-center mb-3">
             <ArrowRight className="w-3.5 h-3.5 text-[var(--text-dim)]" />
           </div>
           <StopInput
@@ -337,18 +348,18 @@ export default function Corridors({ agencies, lightMode }: Props) {
             label="To"
             value={toQuery}
             selected={!!toStop}
-            onChange={v => { setToQuery(v); setToStop(null); setActiveField('to'); }}
-            onFocus={() => setActiveField('to')}
+            onChange={v => { setToQuery(v); setToStop(null); setToActive(true); }}
+            onFocus={() => setToActive(true)}
             onClear={clearTo}
           />
 
-          {/* Autocomplete dropdown */}
-          {activeField && activeSuggestions.length > 0 && (
+          {/* To autocomplete */}
+          {toActive && toSuggestions.length > 0 && (
             <div className="absolute left-4 right-4 top-full mt-1 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden z-50">
-              {activeSuggestions.map(s => (
+              {toSuggestions.map(s => (
                 <button
                   key={`${s.agencySlug}::${s.stopId}`}
-                  onMouseDown={e => { e.preventDefault(); activeField === 'from' ? selectFrom(s) : selectTo(s); }}
+                  onMouseDown={e => { e.preventDefault(); selectTo(s); }}
                   className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
                 >
                   <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>

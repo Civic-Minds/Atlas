@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Map as MapIcon, Search, X } from 'lucide-react';
 import Interval from './apps/Interval';
 import Corridors from './apps/Corridors';
@@ -25,6 +25,25 @@ export default function App() {
     }
     return true;
   });
+
+  // Corridors From state — lives here so the search bar IS the From input
+  const [corridorsFrom, setCorridorsFrom] = useState('');
+  const [corridorsFromFocused, setCorridorsFromFocused] = useState(false);
+  const corridorsFromRef = useRef<HTMLInputElement>(null);
+
+  const inFrequency = activeApp === 'frequency';
+  const searchValue = inFrequency ? query : corridorsFrom;
+  const searchPlaceholder = inFrequency ? 'Search routes' : 'Search stations…';
+
+  function handleSearchChange(v: string) {
+    if (inFrequency) setQuery(v);
+    else setCorridorsFrom(v);
+  }
+
+  function handleSearchClear() {
+    if (inFrequency) setQuery('');
+    else setCorridorsFrom('');
+  }
 
   useEffect(() => {
     fetch('/data/index.json')
@@ -57,26 +76,22 @@ export default function App() {
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
-        <div
-          className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3"
-          style={{
-            opacity: activeApp === 'frequency' ? 1 : 0,
-            transform: activeApp === 'frequency' ? 'none' : 'translateY(-4px) scale(0.96)',
-            pointerEvents: activeApp === 'frequency' ? 'auto' : 'none',
-            transition: 'opacity 0.18s ease, transform 0.18s ease',
-          }}
-        >
+        {/* Search bar — doubles as Corridors From input */}
+        <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
+            ref={corridorsFromRef}
             type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search routes"
-            className="w-full bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
+            value={searchValue}
+            onChange={e => handleSearchChange(e.target.value)}
+            onFocus={() => { if (!inFrequency) setCorridorsFromFocused(true); }}
+            onBlur={() => setCorridorsFromFocused(false)}
+            placeholder={searchPlaceholder}
+            className="w-full bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none transition-all"
           />
-          {query !== '' && (
+          {searchValue !== '' && (
             <button
-              onClick={() => setQuery('')}
+              onClick={handleSearchClear}
               className="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-0.5"
               aria-label="Clear search"
             >
@@ -85,7 +100,7 @@ export default function App() {
           )}
         </div>
 
-        {activeApp === 'frequency' && stats && (
+        {inFrequency && stats && (
           <>
             <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
               <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
@@ -99,7 +114,6 @@ export default function App() {
             </div>
           </>
         )}
-
       </div>
 
       <main className="absolute inset-0 overflow-hidden">
@@ -112,6 +126,10 @@ export default function App() {
             agencies={agencies}
             lightMode={lightMode}
             setLightMode={setLightMode}
+            fromQuery={corridorsFrom}
+            setFromQuery={setCorridorsFrom}
+            fromFocused={corridorsFromFocused}
+            fromInputRef={corridorsFromRef}
           />
         ) : (
           <Interval
