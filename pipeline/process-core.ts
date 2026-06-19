@@ -125,8 +125,15 @@ export interface GeoJsonFeature {
   properties: Record<string, unknown>;
 }
 
+export interface StopEntry {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
 export interface ProcessResult {
   geojson: string;
+  stopsJson: string; // JSON: Record<stopId, StopEntry> — for Corridors stop search
   featureCount: number;
   center: [number, number] | null;
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
@@ -680,10 +687,31 @@ export async function processGtfsBuffer(
     center = [Math.round(avgLat * 10000) / 10000, Math.round(avgLon * 10000) / 10000];
   }
 
+  // Build stops index: only stops that appear in at least one feature's stopOrder.
+  // Keeps the index small and relevant — no ghost stops from routes we don't display.
+  const referencedStopIds = new Set<string>();
+  for (const f of features) {
+    for (const id of (f.properties.stopOrder as string[] | undefined) ?? []) {
+      referencedStopIds.add(id);
+    }
+  }
+  const allStopsById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s]));
+  const stopsIndex: Record<string, StopEntry> = {};
+  for (const stopId of referencedStopIds) {
+    const s = allStopsById.get(stopId);
+    if (!s?.stop_name) continue;
+    stopsIndex[stopId] = {
+      name: s.stop_name,
+      lat: parseFloat(s.stop_lat as unknown as string),
+      lon: parseFloat(s.stop_lon as unknown as string),
+    };
+  }
+
   const feedInfo = gtfs.feedInfo?.[0];
   const allFeatures = [...features, ...stopFeatures, ...corridorFeatures];
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: allFeatures }),
+    stopsJson: JSON.stringify(stopsIndex),
     featureCount: allFeatures.length,
     center,
     feedExpiry: feedInfo?.feed_end_date ?? null,

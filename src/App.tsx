@@ -9,6 +9,7 @@ export interface Agency {
   name: string;
   center: [number, number];
   url: string;
+  stopsUrl?: string;
   bbox?: [number, number, number, number]; // [south, west, north, east]
 }
 
@@ -56,7 +57,7 @@ export default function App() {
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
-        <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
+        {activeApp === 'frequency' && <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             type="text"
@@ -74,9 +75,9 @@ export default function App() {
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>
+        </div>}
 
-        {stats && (
+        {activeApp === 'frequency' && stats && (
           <>
             <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
               <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
@@ -90,6 +91,7 @@ export default function App() {
             </div>
           </>
         )}
+
       </div>
 
       <main className="absolute inset-0 overflow-hidden">

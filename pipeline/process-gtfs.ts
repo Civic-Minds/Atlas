@@ -45,14 +45,17 @@ async function main() {
   }
 
   const buf = readFileSync(zipPath);
-  const { geojson, featureCount, center: computedCenter } = await processGtfsBuffer(buf, msg => {
+  const { geojson, stopsJson, featureCount, center: computedCenter } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { preprocess });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   console.log(`\n  Uploading ${featureCount} features (${kb} KB) to R2...`);
-  const url = await r2Put(`atlas/${slug}.json`, geojson);
+  const [url, stopsUrl] = await Promise.all([
+    r2Put(`atlas/${slug}.json`, geojson),
+    r2Put(`atlas/${slug}-stops.json`, stopsJson),
+  ]);
   console.log(`  Uploaded → ${url}`);
 
   let index: { agencies: any[] } = { agencies: [] };
@@ -61,9 +64,9 @@ async function main() {
   }
   const existing = index.agencies.findIndex(a => a.slug === slug);
   if (existing >= 0) {
-    index.agencies[existing] = { ...index.agencies[existing], name: agencyName, center, url };
+    index.agencies[existing] = { ...index.agencies[existing], name: agencyName, center, url, stopsUrl };
   } else {
-    index.agencies.push({ slug, name: agencyName, center, url, feedUrl: null });
+    index.agencies.push({ slug, name: agencyName, center, url, stopsUrl, feedUrl: null });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   console.log(`  index.json updated\n`);

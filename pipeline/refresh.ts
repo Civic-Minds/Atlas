@@ -69,6 +69,7 @@ interface AgencyEntry {
   name: string;
   center: [number, number];
   url: string;
+  stopsUrl: string;
   feedUrl: string | null;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
@@ -108,14 +109,18 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
   }
 
-  const { geojson, featureCount, feedExpiry, feedVersion } = await processGtfsBuffer(buf, undefined, {
+  const { geojson, stopsJson, featureCount, feedExpiry, feedVersion } = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
   });
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
 
-  const url = await r2Put(`atlas/${agency.slug}.json`, geojson);
+  const [url, stopsUrl] = await Promise.all([
+    r2Put(`atlas/${agency.slug}.json`, geojson),
+    r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
+  ]);
   agency.url = url;
+  agency.stopsUrl = stopsUrl;
 
   // For agencies enrolled in history tracking, write a compact headway snapshot.
   if (HISTORY_SLUGS.has(agency.slug)) {

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Search, ArrowRight, X } from 'lucide-react';
 import type { Agency } from '../App';
 
 interface Props {
@@ -7,10 +8,341 @@ interface Props {
   setLightMode: (v: boolean) => void;
 }
 
-export default function Corridors({ agencies: _agencies, lightMode: _lightMode, setLightMode: _setLightMode }: Props) {
+interface StopEntry {
+  name: string;
+  lat: number;
+  lon: number;
+  agencySlug: string;
+  agencyName: string;
+  stopId: string;
+}
+
+interface RouteFeature {
+  agencySlug: string;
+  agencyName: string;
+  routeShortName: string;
+  routeLongName: string;
+  headsign: string;
+  headway: number | null;
+  headwayByPeriod: Record<string, number | null>;
+  color: string;
+  stopOrder: string[];
+}
+
+interface GeoJsonAgency {
+  slug: string;
+  features: Array<{
+    properties: {
+      routeId?: string;
+      routeShortName?: string;
+      routeLongName?: string;
+      headsign?: string;
+      headway?: number;
+      headwayByPeriod?: Record<string, number | null>;
+      color?: string;
+      stopOrder?: string[];
+      day?: string;
+      directionId?: number;
+      isCorridor?: boolean;
+    };
+  }>;
+}
+
+const PERIOD_LABELS: Record<string, string> = {
+  amPeak: 'AM Peak',
+  midday: 'Midday',
+  pmPeak: 'PM Peak',
+  evening: 'Evening',
+};
+
+function fmtHeadway(hw: number | null | undefined): string {
+  if (hw == null) return '—';
+  if (hw >= 60) return `${Math.round(hw / 60)}h`;
+  return `${Math.round(hw)} min`;
+}
+
+export default function Corridors({ agencies }: Props) {
+  // Stops index: agencySlug → Record<stopId, {name, lat, lon}>
+  const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
+  // GeoJSON features per agency (loaded lazily — only those with stopsUrl)
+  const [agencyFeatures, setAgencyFeatures] = useState<GeoJsonAgency[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [fromQuery, setFromQuery] = useState('');
+  const [toQuery, setToQuery] = useState('');
+  const [fromStop, setFromStop] = useState<StopEntry | null>(null);
+  const [toStop, setToStop] = useState<StopEntry | null>(null);
+  const [activeField, setActiveField] = useState<'from' | 'to' | null>(null);
+
+  const fromRef = useRef<HTMLInputElement>(null);
+  const toRef = useRef<HTMLInputElement>(null);
+
+  // Load all stops indexes and GeoJSON on mount
+  useEffect(() => {
+    const eligible = agencies.filter(a => (a as any).stopsUrl && a.url);
+    if (eligible.length === 0) { setLoading(false); return; }
+
+    Promise.all(
+      eligible.map(async a => {
+        const [stopsRes, geoRes] = await Promise.all([
+          fetch((a as any).stopsUrl).then(r => r.json()),
+          fetch(a.url).then(r => r.json()),
+        ]);
+        return { agency: a, stops: stopsRes, geo: geoRes };
+      })
+    ).then(results => {
+      const indexes: typeof stopsIndexes = {};
+      const features: GeoJsonAgency[] = [];
+      for (const { agency, stops, geo } of results) {
+        indexes[agency.slug] = stops;
+        features.push({ slug: agency.slug, features: geo.features ?? [] });
+      }
+      setStopsIndexes(indexes);
+      setAgencyFeatures(features);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [agencies]);
+
+  // Flatten stops for search
+  const allStops = useMemo<StopEntry[]>(() => {
+    const out: StopEntry[] = [];
+    for (const [slug, index] of Object.entries(stopsIndexes)) {
+      const agency = agencies.find(a => a.slug === slug);
+      for (const [stopId, s] of Object.entries(index)) {
+        out.push({ stopId, agencySlug: slug, agencyName: agency?.name ?? slug, ...s });
+      }
+    }
+    return out;
+  }, [stopsIndexes, agencies]);
+
+  function searchStops(q: string): StopEntry[] {
+    if (q.trim().length < 2) return [];
+    const lower = q.toLowerCase();
+    const results = allStops.filter(s => s.name.toLowerCase().includes(lower));
+    // Deduplicate by name+agency, keep first occurrence
+    const seen = new Set<string>();
+    const deduped: StopEntry[] = [];
+    for (const s of results) {
+      const key = `${s.agencySlug}::${s.name.toLowerCase()}`;
+      if (!seen.has(key)) { seen.add(key); deduped.push(s); }
+    }
+    return deduped.slice(0, 8);
+  }
+
+  const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
+  const toSuggestions = useMemo(() => searchStops(toQuery), [toQuery, allStops]);
+
+  // Corridor query: find routes where stopOrder includes both fromStop and toStop (from before to)
+  const results = useMemo<RouteFeature[]>(() => {
+    if (!fromStop || !toStop) return [];
+    const out: RouteFeature[] = [];
+
+    for (const { slug, features } of agencyFeatures) {
+      const agency = agencies.find(a => a.slug === slug);
+      for (const f of features) {
+        const p = f.properties;
+        if (!p.stopOrder || !p.routeShortName || p.day !== 'Weekday' || p.isCorridor) continue;
+        // Only match routes from the same agency as one of the stops
+        if (slug !== fromStop.agencySlug && slug !== toStop.agencySlug) continue;
+
+        const fromIdx = p.stopOrder.indexOf(fromStop.stopId);
+        const toIdx = p.stopOrder.indexOf(toStop.stopId);
+        if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) continue;
+
+        out.push({
+          agencySlug: slug,
+          agencyName: agency?.name ?? slug,
+          routeShortName: p.routeShortName,
+          routeLongName: p.routeLongName ?? '',
+          headsign: p.headsign ?? '',
+          headway: p.headway ?? null,
+          headwayByPeriod: p.headwayByPeriod ?? {},
+          color: p.color ?? '#555',
+          stopOrder: p.stopOrder,
+        });
+      }
+    }
+
+    // Deduplicate by routeShortName + headsign
+    const seen = new Set<string>();
+    return out.filter(r => {
+      const key = `${r.agencySlug}::${r.routeShortName}::${r.headsign}`;
+      if (seen.has(key)) return false;
+      seen.add(key); return true;
+    }).sort((a, b) => (a.headway ?? 999) - (b.headway ?? 999));
+  }, [fromStop, toStop, agencyFeatures, agencies]);
+
+  function selectFrom(s: StopEntry) {
+    setFromStop(s);
+    setFromQuery(s.name);
+    setActiveField(null);
+    if (!toStop) { setActiveField('to'); toRef.current?.focus(); }
+  }
+
+  function selectTo(s: StopEntry) {
+    setToStop(s);
+    setToQuery(s.name);
+    setActiveField(null);
+  }
+
+  function clearFrom() { setFromStop(null); setFromQuery(''); setActiveField('from'); fromRef.current?.focus(); }
+  function clearTo() { setToStop(null); setToQuery(''); setActiveField('to'); toRef.current?.focus(); }
+
+  const activeSuggestions = activeField === 'from' ? fromSuggestions : activeField === 'to' ? toSuggestions : [];
+
   return (
-    <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
-      Corridors — coming soon
+    <div className="relative h-full w-full bg-[var(--bg-app)] flex">
+      {/* Sidebar */}
+      <div className="w-80 shrink-0 h-full flex flex-col border-r border-[var(--border-primary)] bg-[var(--bg-panel)] z-10">
+        {/* Header */}
+        <div className="px-5 pt-6 pb-4 border-b border-[var(--border-primary)]">
+          <h1 className="text-sm font-black text-[var(--text-primary)] mb-1">Corridors</h1>
+          <p className="text-[11px] text-[var(--text-muted)]">Find routes connecting two stations</p>
+        </div>
+
+        {/* Stop pickers */}
+        <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative">
+          <StopInput
+            ref={fromRef}
+            label="From"
+            value={fromQuery}
+            selected={!!fromStop}
+            onChange={v => { setFromQuery(v); setFromStop(null); setActiveField('from'); }}
+            onFocus={() => setActiveField('from')}
+            onClear={clearFrom}
+          />
+          <div className="flex items-center justify-center my-2">
+            <ArrowRight className="w-3.5 h-3.5 text-[var(--text-dim)]" />
+          </div>
+          <StopInput
+            ref={toRef}
+            label="To"
+            value={toQuery}
+            selected={!!toStop}
+            onChange={v => { setToQuery(v); setToStop(null); setActiveField('to'); }}
+            onFocus={() => setActiveField('to')}
+            onClear={clearTo}
+          />
+
+          {/* Autocomplete dropdown */}
+          {activeField && activeSuggestions.length > 0 && (
+            <div className="absolute left-4 right-4 top-full mt-1 bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden z-50">
+              {activeSuggestions.map(s => (
+                <button
+                  key={`${s.agencySlug}::${s.stopId}`}
+                  onMouseDown={e => { e.preventDefault(); activeField === 'from' ? selectFrom(s) : selectTo(s); }}
+                  className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
+                >
+                  <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.name}</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">{s.agencyName}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Results */}
+        <div className="flex-1 overflow-y-auto">
+          {loading ? (
+            <div className="flex items-center justify-center h-32 text-[var(--text-dim)] text-xs">Loading stops…</div>
+          ) : !fromStop || !toStop ? (
+            <div className="flex items-center justify-center h-32 text-[var(--text-muted)] text-xs px-6 text-center">
+              Choose two stations to see what routes connect them
+            </div>
+          ) : results.length === 0 ? (
+            <div className="flex items-center justify-center h-32 text-[var(--text-muted)] text-xs px-6 text-center">
+              No direct routes found between these stations
+            </div>
+          ) : (
+            <div className="py-3 px-4 flex flex-col gap-2">
+              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
+                {results.length} route{results.length !== 1 ? 's' : ''} · Weekday
+              </p>
+              {results.map((r, i) => (
+                <RouteCard key={i} route={r} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Map placeholder */}
+      <div className="flex-1 flex items-center justify-center text-[var(--text-dim)] text-sm">
+        Map coming soon
+      </div>
+    </div>
+  );
+}
+
+interface StopInputProps {
+  label: string;
+  value: string;
+  selected: boolean;
+  onChange: (v: string) => void;
+  onFocus: () => void;
+  onClear: () => void;
+}
+
+const StopInput = React.forwardRef<HTMLInputElement, StopInputProps>(
+  ({ label, value, selected, onChange, onFocus, onClear }, ref) => (
+    <div className="flex items-center gap-2 h-9 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg px-3 focus-within:border-[var(--accent)] transition-colors">
+      <span className="text-[10px] font-black text-[var(--text-muted)] w-6 shrink-0">{label}</span>
+      <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+      <input
+        ref={ref}
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onFocus={onFocus}
+        placeholder={`Search stations…`}
+        className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none min-w-0"
+      />
+      {value && (
+        <button onClick={onClear} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
+          <X className="w-3 h-3" />
+        </button>
+      )}
+    </div>
+  )
+);
+StopInput.displayName = 'StopInput';
+
+function RouteCard({ route }: { route: RouteFeature }) {
+  const periods = Object.entries(PERIOD_LABELS).filter(
+    ([key]) => route.headwayByPeriod[key] != null
+  );
+
+  return (
+    <div className="bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
+      <div className="flex items-start gap-2 mb-2">
+        <span
+          className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
+          style={{ backgroundColor: route.color || '#555' }}
+        >
+          {route.routeShortName}
+        </span>
+        <div className="min-w-0">
+          <div className="text-xs font-bold text-[var(--text-primary)] truncate">
+            {route.headsign || route.routeLongName}
+          </div>
+          <div className="text-[10px] text-[var(--text-muted)]">{route.agencyName}</div>
+        </div>
+        <div className="ml-auto shrink-0 text-right">
+          <span className="text-xs font-black text-[var(--text-primary)]">
+            {fmtHeadway(route.headway)}
+          </span>
+        </div>
+      </div>
+      {periods.length > 0 && (
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+          {periods.map(([key, label]) => (
+            <span key={key} className="text-[10px] text-[var(--text-muted)]">
+              <span className="font-bold text-[var(--text-primary)]">{fmtHeadway(route.headwayByPeriod[key])}</span>
+              {' '}{label}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
