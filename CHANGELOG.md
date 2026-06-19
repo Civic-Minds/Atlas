@@ -39,6 +39,7 @@ All notable changes to this project will be documented in this file.
 - **Removed X close button from route panel**: click elsewhere on the map to deselect.
 
 ### Fixed
+- **YRT + RTL stops indexes (AI-106)**: refreshed both feeds; `stopsUrl` added to `index.json` for Corridors stop search.
 - **CI workflow Node version bump**: updated the CI test/build runner to use Node.js 24 to match the local and scheduled refresh environments, resolving `npm ci` lockfile verification failures caused by newer npm v11 package-lock format.
 - **Station View headsigns split by direction (AI-95)**: stop panel now groups headsigns by `directionId` so eastbound and westbound destinations appear as separate rows. Previously all headsigns for a route were lumped together regardless of direction (e.g. Appleby GO showing Union Station GO and Hamilton GO Centre in the same row). `directionId` was already written by the pipeline — this was a UI-only fix.
 - **Per-stop headways in pipeline (AI-96, AI-93)**: `process-core.ts` now collects per-stop departure times from `stop_times` during the existing build pass, computes the all-day median headway at each stop, and writes `stopHeadways: { [stopId]: number }` to each GeoJSON route feature. Station View now reads `stopHeadways[stopId]` for the clicked stop instead of the route-level headway — fixing Aldershot GO showing every 19 min (route-wide) instead of the correct every 29 min (stop-level).

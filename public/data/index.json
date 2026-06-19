@@ -150,7 +150,8 @@
         -78.94
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt.json",
-      "feedUrl": "https://www.yrt.ca/google/google_transit.zip"
+      "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-stops.json"
     },
     {
       "slug": "barrie",
@@ -445,7 +446,8 @@
         -72.97
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl.json",
-      "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip"
+      "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-stops.json"
     },
     {
       "slug": "exo-presquile",
