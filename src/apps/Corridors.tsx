@@ -194,8 +194,8 @@ export default function Corridors({ agencies }: Props) {
     <div className="relative h-full w-full bg-[var(--bg-app)] flex">
       {/* Sidebar */}
       <div className="w-80 shrink-0 h-full flex flex-col border-r border-[var(--border-primary)] bg-[var(--bg-panel)] z-10">
-        {/* Header */}
-        <div className="px-5 pt-6 pb-4 border-b border-[var(--border-primary)]">
+        {/* Header — pt-16 clears the top-left app controls (top-6 + h-8 + gap) */}
+        <div className="px-5 pt-16 pb-4 border-b border-[var(--border-primary)]">
           <h1 className="text-sm font-black text-[var(--text-primary)] mb-1">Corridors</h1>
           <p className="text-[11px] text-[var(--text-muted)]">Find routes connecting two stations</p>
         </div>
