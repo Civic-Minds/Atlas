@@ -100,6 +100,12 @@ export default function Corridors({ agencies, lightMode }: Props) {
   const [toStop, setToStop] = useState<StopEntry | null>(null);
   const [activeField, setActiveField] = useState<'from' | 'to' | null>(null);
   const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
+  const [panelVisible, setPanelVisible] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setPanelVisible(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const fromRef = useRef<HTMLInputElement>(null);
   const toRef = useRef<HTMLInputElement>(null);
@@ -295,11 +301,16 @@ export default function Corridors({ agencies, lightMode }: Props) {
         />
       </MapContainer>
 
-      {/* Left floating panel — top-20 clears the app bar (top-6 + h-8 + gap) */}
+      {/* Left floating panel */}
       <div
         ref={pickerRef}
         className="absolute top-20 left-6 z-[500] w-80 bg-[var(--bg-panel)] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[var(--border-primary)]"
-        style={{ maxHeight: 'calc(100vh - 6rem)' }}
+        style={{
+          maxHeight: 'calc(100vh - 6rem)',
+          opacity: panelVisible ? 1 : 0,
+          transform: panelVisible ? 'none' : 'translateY(-8px) scale(0.97)',
+          transition: 'opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s',
+        }}
       >
         {/* Header */}
         <div className="px-5 pt-4 pb-3 border-b border-[var(--border-primary)] shrink-0">

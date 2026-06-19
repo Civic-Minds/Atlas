@@ -57,7 +57,15 @@ export default function App() {
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
-        {activeApp === 'frequency' && <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
+        <div
+          className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3"
+          style={{
+            opacity: activeApp === 'frequency' ? 1 : 0,
+            transform: activeApp === 'frequency' ? 'none' : 'translateY(-4px) scale(0.96)',
+            pointerEvents: activeApp === 'frequency' ? 'auto' : 'none',
+            transition: 'opacity 0.18s ease, transform 0.18s ease',
+          }}
+        >
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             type="text"
@@ -75,7 +83,7 @@ export default function App() {
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>}
+        </div>
 
         {activeApp === 'frequency' && stats && (
           <>
