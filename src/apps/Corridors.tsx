@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, ArrowRight, X } from 'lucide-react';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import type { Agency } from '../App';
 
 interface Props {
@@ -86,7 +87,7 @@ function fmtHeadway(hw: number | null | undefined): string {
   return `${Math.round(hw)} min`;
 }
 
-export default function Corridors({ agencies }: Props) {
+export default function Corridors({ agencies, lightMode }: Props) {
   // Stops index: agencySlug → Record<stopId, {name, lat, lon}>
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
   // GeoJSON features per agency (loaded lazily — only those with stopsUrl)
@@ -274,18 +275,40 @@ export default function Corridors({ agencies }: Props) {
 
   const activeSuggestions = activeField === 'from' ? fromSuggestions : activeField === 'to' ? toSuggestions : [];
 
+  const tileUrl = lightMode
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
   return (
-    <div className="relative h-full w-full bg-[var(--bg-app)] flex">
-      {/* Sidebar */}
-      <div className="w-80 shrink-0 h-full flex flex-col border-r border-[var(--border-primary)] bg-[var(--bg-panel)] z-10">
-        {/* Header — pt-16 clears the top-left app controls (top-6 + h-8 + gap) */}
-        <div className="px-5 pt-16 pb-4 border-b border-[var(--border-primary)]">
-          <h1 className="text-sm font-black text-[var(--text-primary)] mb-1">Corridors</h1>
+    <div className="relative h-full w-full overflow-hidden">
+      {/* Base map */}
+      <MapContainer
+        center={[43.7, -79.4]}
+        zoom={9}
+        zoomControl={false}
+        className="absolute inset-0 h-full w-full"
+      >
+        <TileLayer
+          key={tileUrl}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url={tileUrl}
+        />
+      </MapContainer>
+
+      {/* Left floating panel — top-20 clears the app bar (top-6 + h-8 + gap) */}
+      <div
+        ref={pickerRef}
+        className="absolute top-20 left-6 z-[500] w-80 bg-[var(--bg-panel)] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[var(--border-primary)]"
+        style={{ maxHeight: 'calc(100vh - 6rem)' }}
+      >
+        {/* Header */}
+        <div className="px-5 pt-4 pb-3 border-b border-[var(--border-primary)] shrink-0">
+          <h1 className="text-sm font-black text-[var(--text-primary)] mb-0.5">Corridors</h1>
           <p className="text-[11px] text-[var(--text-muted)]">Find routes connecting two stations</p>
         </div>
 
         {/* Stop pickers */}
-        <div ref={pickerRef} className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative">
+        <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)] relative shrink-0">
           <StopInput
             ref={fromRef}
             label="From"
@@ -349,28 +372,33 @@ export default function Corridors({ agencies }: Props) {
         </div>
       </div>
 
-      {/* Right side: map + top-right controls */}
-      <div className="flex-1 relative">
-        {/* Day picker — top-right, matching frequency map chip position */}
-        <div className="absolute top-6 right-6 z-10 flex gap-1.5">
-          {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
-            <button
-              key={d}
-              onClick={() => setDay(d)}
-              className={[
-                'h-8 text-xs font-bold px-3 rounded-full shadow-2xl border transition-colors',
-                day === d
-                  ? 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)]'
-                  : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-muted)] hover:text-[var(--text-primary)]',
-              ].join(' ')}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
-
-        <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
+      {/* Day picker — top-right */}
+      <div className="absolute top-6 right-6 z-[500] flex gap-1.5">
+        {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
+          <button
+            key={d}
+            onClick={() => setDay(d)}
+            className={[
+              'h-8 text-xs font-bold px-3 rounded-full shadow-2xl border transition-colors',
+              day === d
+                ? 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)]'
+                : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-muted)] hover:text-[var(--text-primary)]',
+            ].join(' ')}
+          >
+            {d}
+          </button>
+        ))}
       </div>
+
+      {/* Timeline floating panel — right of left panel, below day picker */}
+      {(fromStop && toStop) && (
+        <div
+          className="absolute top-20 right-6 z-[500] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
+          style={{ left: 'calc(320px + 48px + 24px)', maxHeight: 'calc(100vh - 6rem)' }}
+        >
+          <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
+        </div>
+      )}
     </div>
   );
 }
@@ -402,25 +430,20 @@ function ServiceTimeline({
   fromStop: StopEntry | null;
   toStop: StopEntry | null;
 }) {
-  if (!fromStop || !toStop) {
-    return (
-      <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-xs text-center px-8">
-        Select two stations to see the service timeline
-      </div>
-    );
-  }
   if (results.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-xs text-center px-8">
+      <div className="flex items-center justify-center p-8 text-[var(--text-muted)] text-xs text-center">
         No direct service found between these stations
       </div>
     );
   }
 
+  const LABEL_W = 120;
+
   return (
-    <div className="absolute inset-0 overflow-y-auto pt-20 pb-6 px-6">
+    <div className="overflow-y-auto p-6">
       {/* Period header */}
-      <div className="flex mb-3 ml-24">
+      <div className="flex mb-3" style={{ marginLeft: LABEL_W + 8 }}>
         {TIMELINE_PERIODS.map(p => (
           <div key={p.key} className="flex flex-col" style={{ flex: p.flex }}>
             <span className="text-[10px] font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
@@ -433,7 +456,7 @@ function ServiceTimeline({
       <div className="flex flex-col gap-3">
         {results.map((g, gi) => (
           <div key={gi}>
-            {/* Route badge row */}
+            {/* Route badge */}
             <div className="flex items-center gap-1.5 mb-1.5">
               <span
                 className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
@@ -452,13 +475,11 @@ function ServiceTimeline({
                   : b.headwayByPeriod;
                 return (
                   <div key={bi} className="flex items-center gap-2">
-                    {/* Branch label */}
-                    <div className="w-22 shrink-0 text-right pr-2" style={{ width: '88px' }}>
+                    <div className="shrink-0 text-right pr-2" style={{ width: LABEL_W }}>
                       <span className="text-[10px] text-[var(--text-muted)] truncate block">
                         to {b.headsign || b.routeLongName}
                       </span>
                     </div>
-                    {/* Period blocks */}
                     <div className="flex flex-1 rounded overflow-hidden h-7 gap-px">
                       {TIMELINE_PERIODS.map(p => {
                         const val = hw[p.key] ?? null;
@@ -489,12 +510,13 @@ function ServiceTimeline({
         <span className="text-[9px] text-[var(--text-dim)] uppercase tracking-wider font-bold">Frequency</span>
         {[
           { label: '≤10 min', hw: 10 },
+          { label: '≤15 min', hw: 15 },
           { label: '≤20 min', hw: 20 },
           { label: '≤30 min', hw: 30 },
           { label: '≤60 min', hw: 60 },
           { label: '>60 min', hw: 120 },
         ].map(({ label, hw }) => {
-          const { bg, fg } = hwColor(hw);
+          const { bg } = hwColor(hw);
           return (
             <div key={label} className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: bg }} />
