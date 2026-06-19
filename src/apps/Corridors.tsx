@@ -546,39 +546,22 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         </div>
       )}
 
-      {/* Results + timeline — flex row so both panels match height */}
+      {/* Single combined panel */}
       {fromStop && toStop && (
         <div
-          className="absolute z-[1100] pointer-events-auto flex items-stretch gap-3"
-          style={{ top: 104, left: 104, maxHeight: 'calc(100vh - 120px)' }}
+          className="absolute z-[1100] pointer-events-auto bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
+          style={{ top: 104, left: 104, width: 500, maxHeight: 'calc(100vh - 120px)' }}
         >
-          {/* Route list */}
-          <div className="bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col w-64">
-            {geoLoading ? (
-              <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
-                Searching routes…
-              </div>
-            ) : results.length === 0 ? (
-              <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
-                No direct routes found
-              </div>
-            ) : (
-              <div className="overflow-y-auto py-3 px-4 flex flex-col gap-2">
-                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
-                  {results.length} route{results.length !== 1 ? 's' : ''} · {day}
-                </p>
-                {results.map((g, i) => (
-                  <RouteGroupCard key={i} group={g} />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Timeline */}
-          {results.length > 0 && (
-            <div className="bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-y-auto w-[440px]">
-              <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
+          {geoLoading ? (
+            <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
+              Searching routes…
             </div>
+          ) : results.length === 0 ? (
+            <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
+              No direct routes found
+            </div>
+          ) : (
+            <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} day={day} />
           )}
         </div>
       )}
@@ -622,14 +605,19 @@ function hwColor(hw: number | null): { bg: string; fg: string } {
   return                  { bg: '#c0392b',          fg: '#fff' };
 }
 
+const LABEL_W = 136;
+const BEST_W = 48;
+
 function ServiceTimeline({
   results,
   fromStop,
   toStop,
+  day,
 }: {
   results: RouteGroup[];
   fromStop: StopEntry | null;
   toStop: StopEntry | null;
+  day: string;
 }) {
   if (results.length === 0) {
     return (
@@ -640,15 +628,22 @@ function ServiceTimeline({
   }
 
   return (
-    <div className="overflow-y-auto p-6">
+    <div className="overflow-y-auto p-5">
+      {/* Summary */}
+      <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3">
+        {results.length} route{results.length !== 1 ? 's' : ''} · {day}
+      </p>
+
       {/* Period header */}
-      <div className="flex mb-3">
+      <div className="flex items-end mb-2">
+        <div style={{ width: LABEL_W }} className="shrink-0" />
         {TIMELINE_PERIODS.map(p => (
-          <div key={p.key} className="flex flex-col" style={{ flex: p.flex }}>
+          <div key={p.key} className="flex-1 flex flex-col">
             <span className="text-[10px] font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
             <span className="text-[9px] text-[var(--text-dim)] mt-0.5">{p.time}</span>
           </div>
         ))}
+        <div style={{ width: BEST_W }} className="shrink-0" />
       </div>
 
       {/* Route groups */}
@@ -656,7 +651,7 @@ function ServiceTimeline({
         {results.map((g, gi) => (
           <div key={gi}>
             {/* Route badge */}
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-1.5 mb-1.5">
               <span
                 className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
                 style={{ backgroundColor: g.color || '#555' }}
@@ -666,18 +661,21 @@ function ServiceTimeline({
               <span className="text-[10px] text-[var(--text-muted)]">{g.agencyName}</span>
             </div>
 
-            {/* Branch rows — destination label above each bar */}
-            <div className="flex flex-col gap-2">
+            {/* Branch rows — label | bars | best headway */}
+            <div className="flex flex-col gap-1.5">
               {g.branches.map((b, bi) => {
                 const hw = b.toStopHeadwayByPeriod.amPeak != null || b.toStopHeadwayByPeriod.midday != null
                   ? b.toStopHeadwayByPeriod
                   : b.headwayByPeriod;
+                const bestHw = b.toStopHeadway ?? b.headway;
                 return (
-                  <div key={bi}>
-                    <span className="text-[10px] text-[var(--text-muted)] mb-1 block">
-                      to {b.headsign || b.routeLongName}
-                    </span>
-                    <div className="flex rounded overflow-hidden h-7 gap-px">
+                  <div key={bi} className="flex items-center gap-1">
+                    <div className="shrink-0 pr-2" style={{ width: LABEL_W }}>
+                      <span className="text-[10px] text-[var(--text-muted)] truncate block">
+                        to {b.headsign || b.routeLongName}
+                      </span>
+                    </div>
+                    <div className="flex flex-1 rounded overflow-hidden h-7 gap-px">
                       {TIMELINE_PERIODS.map(p => {
                         const val = hw[p.key] ?? null;
                         const { bg, fg } = hwColor(val);
@@ -693,6 +691,13 @@ function ServiceTimeline({
                           </div>
                         );
                       })}
+                    </div>
+                    <div className="shrink-0 text-right pl-1.5" style={{ width: BEST_W }}>
+                      {bestHw != null && (
+                        <span className="text-[11px] font-black text-[var(--text-primary)]">
+                          {fmtHeadway(bestHw)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
