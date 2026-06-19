@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Corridors map shell**: Corridors reuses the frequency map's Leaflet instance (overlay context) instead of mounting a second map — eliminates tile flash when switching apps.
+- **Corridors query-scoped GeoJSON load**: route GeoJSON fetches only when From and To are set — typically 1–2 agencies instead of all 36 on mount. Stops indexes still load upfront for autocomplete.
 - **Shared agency GeoJSON cache**: Frequency and Corridors reuse the same in-memory cache (`agencyGeo.ts`) for route GeoJSON — switching apps after panning the map does not re-download agencies already loaded.
 - **Corridors UX**: To autocomplete uses fixed positioning at app-bar z-index (was clipped under the Leaflet map); per-agency `allSettled` loading so one failed feed does not blank search; README/ROADMAP/PIPELINE updated for map-apps direction and R2 storage.
 - **R2 upload retries**: `r2Put` retries up to 4 times on transient SSL/network errors during refresh — avoids the partial-failure pattern seen on full refreshes.

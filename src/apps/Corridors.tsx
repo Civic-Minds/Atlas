@@ -10,7 +10,7 @@ import {
 } from './corridor-search';
 import { clipBetweenStopIndices, formatRouteColor } from './corridor-geometry';
 import { useCorridorMapOverlay } from '../context/CorridorMapOverlay';
-import { fetchAgencyGeo } from '../lib/agencyGeo';
+import { fetchAgencyGeo, getCachedAgencyGeo } from '../lib/agencyGeo';
 
 export type CorridorsFromInputBindings = {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -88,11 +88,34 @@ function fmtHeadway(hw: number | null | undefined): string {
   return `${Math.round(hw)} min`;
 }
 
+/** Agencies that might serve a direct corridor between two normalized stop names. */
+function agencySlugsForQuery(
+  indexes: Record<string, Record<string, { name: string; lat: number; lon: number }>>,
+  fromNorm: string,
+  toNorm: string,
+  fromAgency: string,
+  toAgency: string,
+): Set<string> {
+  const slugs = new Set<string>([fromAgency, toAgency]);
+  for (const [slug, stops] of Object.entries(indexes)) {
+    let hasFrom = false;
+    let hasTo = false;
+    for (const s of Object.values(stops)) {
+      const norm = normalizeStopName(s.name).toLowerCase();
+      if (norm.includes(fromNorm)) hasFrom = true;
+      if (norm.includes(toNorm)) hasTo = true;
+    }
+    if (hasFrom && hasTo) slugs.add(slug);
+  }
+  return slugs;
+}
+
 export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true }: Props) {
   const { setOverlay } = useCorridorMapOverlay();
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
   const [agencyFeatures, setAgencyFeatures] = useState<GeoJsonAgency[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const loadedGeoSlugs = useRef(new Set<string>());
 
   const [fromStop, setFromStop] = useState<StopEntry | null>(null);
   const [toQuery, setToQuery] = useState('');
@@ -131,7 +154,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [toActive, fromFocused, fromInputRef]);
 
-  // Stops indexes first (fast — powers autocomplete), then GeoJSON (slow — powers results)
+  // Stops indexes on mount (powers autocomplete); route GeoJSON loads when From+To are set.
   useEffect(() => {
     const eligible = agencies.filter(a => a.stopsUrl && a.url);
     if (eligible.length === 0) { setStopsReady(true); return; }
@@ -158,9 +181,52 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       }
       setStopsIndexes(indexes);
       setStopsReady(true);
+    })();
 
+    return () => { cancelled = true; };
+  }, [agencies]);
+
+  useEffect(() => {
+    if (!fromStop || !toStop) return;
+
+    const fromNorm = fromStop.displayName.toLowerCase();
+    const toNorm = toStop.displayName.toLowerCase();
+    const slugsNeeded = agencySlugsForQuery(
+      stopsIndexes,
+      fromNorm,
+      toNorm,
+      fromStop.agencySlug,
+      toStop.agencySlug,
+    );
+
+    const fromCache: GeoJsonAgency[] = [];
+    for (const slug of slugsNeeded) {
+      if (loadedGeoSlugs.current.has(slug)) continue;
+      const cached = getCachedAgencyGeo(slug);
+      if (cached) {
+        fromCache.push({ slug, features: cached.features ?? [] });
+        loadedGeoSlugs.current.add(slug);
+      }
+    }
+    if (fromCache.length > 0) {
+      setAgencyFeatures(prev => {
+        const bySlug = new Map(prev.map(entry => [entry.slug, entry]));
+        for (const entry of fromCache) bySlug.set(entry.slug, entry);
+        return [...bySlug.values()];
+      });
+    }
+
+    const toFetch = agencies.filter(
+      a => slugsNeeded.has(a.slug) && a.url && !loadedGeoSlugs.current.has(a.slug),
+    );
+    if (toFetch.length === 0) return;
+
+    let cancelled = false;
+    setGeoLoading(true);
+
+    (async () => {
       const geoResults = await Promise.allSettled(
-        eligible.map(async a => {
+        toFetch.map(async a => {
           const geo = await fetchAgencyGeo(a);
           return { slug: a.slug, features: geo.features ?? [] };
         }),
@@ -168,17 +234,20 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
 
       if (cancelled) return;
 
-      const features: GeoJsonAgency[] = [];
-      for (const r of geoResults) {
-        if (r.status === 'fulfilled') features.push(r.value);
-        else console.warn('Corridors: geo load failed', r.reason);
-      }
-      setAgencyFeatures(features);
-      setLoading(false);
+      setAgencyFeatures(prev => {
+        const bySlug = new Map(prev.map(entry => [entry.slug, entry]));
+        for (const r of geoResults) {
+          if (r.status === 'fulfilled') bySlug.set(r.value.slug, r.value);
+          else console.warn('Corridors: geo load failed', r.reason);
+        }
+        return [...bySlug.values()];
+      });
+      for (const a of toFetch) loadedGeoSlugs.current.add(a.slug);
+      setGeoLoading(false);
     })();
 
     return () => { cancelled = true; };
-  }, [agencies]);
+  }, [fromStop, toStop, stopsIndexes, agencies]);
 
   const allStops = useMemo(
     () => buildStopCatalog(stopsIndexes, agencies),
@@ -483,7 +552,11 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
           className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col pointer-events-auto"
           style={{ top: 104, left: 104, width: 256, maxHeight: 'calc(100vh - 120px)' }}
         >
-          {results.length === 0 ? (
+          {geoLoading ? (
+            <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
+              Searching routes…
+            </div>
+          ) : results.length === 0 ? (
             <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
               No direct routes found
             </div>
