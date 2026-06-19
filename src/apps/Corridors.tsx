@@ -546,40 +546,40 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         </div>
       )}
 
-      {/* Results panel */}
+      {/* Results + timeline — flex row so both panels match height */}
       {fromStop && toStop && (
         <div
-          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col pointer-events-auto"
-          style={{ top: 104, left: 104, width: 256, maxHeight: 'calc(100vh - 120px)' }}
+          className="absolute z-[1100] pointer-events-auto flex items-stretch gap-3"
+          style={{ top: 104, left: 104, maxHeight: 'calc(100vh - 120px)' }}
         >
-          {geoLoading ? (
-            <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
-              Searching routes…
-            </div>
-          ) : results.length === 0 ? (
-            <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
-              No direct routes found
-            </div>
-          ) : (
-            <div className="overflow-y-auto py-3 px-4 flex flex-col gap-2">
-              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
-                {results.length} route{results.length !== 1 ? 's' : ''} · {day}
-              </p>
-              {results.map((g, i) => (
-                <RouteGroupCard key={i} group={g} />
-              ))}
+          {/* Route list */}
+          <div className="bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden flex flex-col w-64">
+            {geoLoading ? (
+              <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
+                Searching routes…
+              </div>
+            ) : results.length === 0 ? (
+              <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
+                No direct routes found
+              </div>
+            ) : (
+              <div className="overflow-y-auto py-3 px-4 flex flex-col gap-2">
+                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
+                  {results.length} route{results.length !== 1 ? 's' : ''} · {day}
+                </p>
+                {results.map((g, i) => (
+                  <RouteGroupCard key={i} group={g} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Timeline */}
+          {results.length > 0 && (
+            <div className="bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-y-auto w-[440px]">
+              <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
             </div>
           )}
-        </div>
-      )}
-
-      {/* Timeline panel — fixed width so map stays visible on the right */}
-      {fromStop && toStop && results.length > 0 && (
-        <div
-          className="absolute z-[1100] bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden pointer-events-auto"
-          style={{ top: 104, left: 104 + 256 + 12, width: 440, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}
-        >
-          <ServiceTimeline results={results} fromStop={fromStop} toStop={toStop} />
         </div>
       )}
 
