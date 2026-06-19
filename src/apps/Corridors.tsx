@@ -204,7 +204,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       if (loadedGeoSlugs.current.has(slug)) continue;
       const cached = getCachedAgencyGeo(slug);
       if (cached) {
-        fromCache.push({ slug, features: cached.features ?? [] });
+        fromCache.push({ slug, features: (cached.features ?? []) as GeoJsonAgency['features'] });
         loadedGeoSlugs.current.add(slug);
       }
     }
@@ -228,7 +228,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       const geoResults = await Promise.allSettled(
         toFetch.map(async a => {
           const geo = await fetchAgencyGeo(a);
-          return { slug: a.slug, features: geo.features ?? [] };
+          return { slug: a.slug, features: (geo.features ?? []) as GeoJsonAgency['features'] };
         }),
       );
 
