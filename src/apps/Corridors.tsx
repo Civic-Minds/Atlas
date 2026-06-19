@@ -117,7 +117,8 @@ export default function Corridors({ agencies }: Props) {
     }).catch(() => setLoading(false));
   }, [agencies]);
 
-  // Flatten stops for search, deduped by normalized name + agency
+  // Flatten stops for search, deduped by normalized name only (cross-agency).
+  // Hamilton GO Centre is one place regardless of whether GO Transit or HSR owns the stop.
   const allStops = useMemo<StopEntry[]>(() => {
     const seen = new Set<string>();
     const out: StopEntry[] = [];
@@ -125,7 +126,7 @@ export default function Corridors({ agencies }: Props) {
       const agency = agencies.find(a => a.slug === slug);
       for (const [stopId, s] of Object.entries(index)) {
         const displayName = normalizeStopName(s.name);
-        const key = `${slug}::${displayName.toLowerCase()}`;
+        const key = displayName.toLowerCase();
         if (seen.has(key)) continue;
         seen.add(key);
         out.push({ stopId, agencySlug: slug, agencyName: agency?.name ?? slug, displayName, ...s });
@@ -137,17 +138,7 @@ export default function Corridors({ agencies }: Props) {
   function searchStops(q: string): StopEntry[] {
     if (q.trim().length < 2) return [];
     const lower = q.toLowerCase();
-    const seen = new Set<string>();
-    const results: StopEntry[] = [];
-    for (const s of allStops) {
-      if (!s.displayName.toLowerCase().includes(lower)) continue;
-      const key = `${s.agencySlug}::${s.displayName.toLowerCase()}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      results.push(s);
-      if (results.length >= 8) break;
-    }
-    return results;
+    return allStops.filter(s => s.displayName.toLowerCase().includes(lower)).slice(0, 8);
   }
 
   const fromSuggestions = useMemo(() => searchStops(fromQuery), [fromQuery, allStops]);
@@ -163,8 +154,6 @@ export default function Corridors({ agencies }: Props) {
       for (const f of features) {
         const p = f.properties;
         if (!p.stopOrder || !p.routeShortName || p.day !== 'Weekday' || p.isCorridor) continue;
-        // Only match routes from the same agency as one of the stops
-        if (slug !== fromStop.agencySlug && slug !== toStop.agencySlug) continue;
 
         // Match by normalized name, not just stopId — handles train/bus terminal splits
         // e.g. "Hamilton GO Centre" (stopId HA) matches "Hamilton GO Centre Bus" (stopId 00141)
@@ -266,7 +255,6 @@ export default function Corridors({ agencies }: Props) {
                   className="w-full text-left px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors"
                 >
                   <div className="text-xs font-bold text-[var(--text-primary)] truncate">{s.displayName}</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">{s.agencyName}</div>
                 </button>
               ))}
             </div>
