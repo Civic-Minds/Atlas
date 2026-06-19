@@ -37,7 +37,8 @@ interface RouteFeature {
   headsign: string;
   headway: number | null;           // route-level (fallback)
   headwayByPeriod: Record<string, number | null>; // route-level (fallback)
-  toStopHeadway: number | null;     // headway at the TO stop specifically
+  fromStopHeadwayByPeriod: Record<string, number | null>; // headway at FROM stop — where the user waits
+  toStopHeadway: number | null;
   toStopHeadwayByPeriod: Record<string, number | null>;
   color: string;
   stopOrder: string[];
@@ -299,9 +300,19 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
           coordinates = clipBetweenStopIndices(coords, stopPositions, fromIdx, toIdx) ?? undefined;
         }
 
-        // Headway at the TO stop specifically — more accurate than the route terminal median
         const stopHeadways = (p as any).stopHeadways as Record<string, number> | undefined;
         const stopHwByPeriod = (p as any).stopPeriodHeadways as Record<string, Partial<Record<string, number>>> | undefined;
+
+        // FROM stop headway — this is where the user waits, so it's the most honest number.
+        // TO stop headway can be misleadingly low at major hubs (many patterns converge there).
+        const fromStopId = p.stopOrder[fromIdx];
+        const fromStopHeadwayByPeriod: Record<string, number | null> = {};
+        for (const pk of Object.keys(PERIOD_LABELS)) {
+          fromStopHeadwayByPeriod[pk] = stopHwByPeriod
+            ? (stopHwByPeriod[fromStopId]?.[pk] ?? null)
+            : null;
+        }
+
         const toStopHeadway = toStopId && stopHeadways ? (stopHeadways[toStopId] ?? null) : null;
         const toStopHeadwayByPeriod: Record<string, number | null> = {};
         for (const pk of Object.keys(PERIOD_LABELS)) {
@@ -318,6 +329,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
           headsign: p.headsign ?? '',
           headway: p.headway ?? null,
           headwayByPeriod: p.headwayByPeriod ?? {},
+          fromStopHeadwayByPeriod,
           toStopHeadway,
           toStopHeadwayByPeriod,
           color: formatRouteColor(p.routeColor ?? p.color),
@@ -662,9 +674,12 @@ function ServiceTimeline({
             {/* Branch rows — label | bars | best headway */}
             <div className="flex flex-col gap-1.5">
               {g.branches.map((b, bi) => {
-                const hw = b.toStopHeadwayByPeriod.amPeak != null || b.toStopHeadwayByPeriod.midday != null
-                  ? b.toStopHeadwayByPeriod
-                  : b.headwayByPeriod;
+                // Prefer FROM stop headway (where the user waits), fall back to TO stop, then route-level.
+                const hw = Object.values(b.fromStopHeadwayByPeriod).some(v => v != null)
+                  ? b.fromStopHeadwayByPeriod
+                  : Object.values(b.toStopHeadwayByPeriod).some(v => v != null)
+                    ? b.toStopHeadwayByPeriod
+                    : b.headwayByPeriod;
                 return (
                   <div key={bi} className="flex items-center gap-1">
                     <div className="shrink-0 pr-2" style={{ width: LABEL_W }}>
