@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.3.0] — 2026-06-19
 
 ### Added
 - **GO Rail & Transit Hub departures schedule panel (AI-52)**: Station View detail sidebar now displays a **Scheduled Departures** board for subway and commuter rail stops. The board is populated by the pipeline extracting, sorting, and deduplicating departure schedules for `isRail` stops. Displays route pill colored by headway-tier, time (formatted to 12h clock), destination headsign, and direction. Includes a filter to show upcoming departures from the current local time (browser clock) with automatic wrap-around, and a "Show All" toggle to view the full timetable.
@@ -48,6 +48,7 @@ All notable changes to this project will be documented in this file.
 - **Removed X close button from route panel**: click elsewhere on the map to deselect.
 
 ### Fixed
+- **Corridors TypeScript build error**: cast `geo.features` to `GeoJsonAgency['features']` at the two assignment sites in `Corridors.tsx` — GeoJSON's `Geometry` union includes `Point` (with `coordinates: number[]`) which TypeScript couldn't assign to the hand-rolled `number[][]` type; actual data is always LineString.
 - **YRT + RTL stops indexes (AI-106)**: refreshed both feeds; `stopsUrl` added to `index.json` for Corridors stop search.
 - **CI workflow Node version bump**: updated the CI test/build runner to use Node.js 24 to match the local and scheduled refresh environments, resolving `npm ci` lockfile verification failures caused by newer npm v11 package-lock format.
 - **Station View headsigns split by direction (AI-95)**: stop panel now groups headsigns by `directionId` so eastbound and westbound destinations appear as separate rows. Previously all headsigns for a route were lumped together regardless of direction (e.g. Appleby GO showing Union Station GO and Hamilton GO Centre in the same row). `directionId` was already written by the pipeline — this was a UI-only fix.
