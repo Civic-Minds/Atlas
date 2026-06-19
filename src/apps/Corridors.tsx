@@ -195,10 +195,10 @@ export default function Corridors({ agencies }: Props) {
       }
     }
 
-    // Deduplicate by routeShortName + headsign + agency
+    // Deduplicate by routeShortName + normalized headsign + agency
     const seen = new Set<string>();
     return out.filter(r => {
-      const key = `${r.agencySlug}::${r.routeShortName}::${r.headsign}`;
+      const key = `${r.agencySlug}::${r.routeShortName}::${r.headsign.trim().toLowerCase()}`;
       if (seen.has(key)) return false;
       seen.add(key); return true;
     }).sort((a, b) => (a.headway ?? 999) - (b.headway ?? 999));
