@@ -1,4 +1,4 @@
-# Atlas Strategy
+# Strategy
 
 Competitive context and long-term product positioning.
 
@@ -11,33 +11,31 @@ The main players in transit analytics are Remix (Via), Swiftly, and Optibus. All
 | Feature | Atlas | Remix | Swiftly | Optibus |
 |---------|-------|-------|---------|---------|
 | Frequency mapping | Automatic from GTFS | Manual/auto | Static only | No |
-| Real-time headway | Planned | No | Yes | Yes |
-| Historical snapshots | Planned | No | No | No |
-| Isochrone / travel-time | Planned | Yes (industry standard) | No | No |
-| Equity / Title VI | Planned | Yes (best-in-class) | No | No |
-| Scenario sandbox | Planned | Yes (core) | No | Yes (core) |
+| Real-time headway tracking | In progress | No | Yes | Yes |
+| Historical schedule snapshots | In progress | No | No | No |
+| Adherence analysis | In progress | No | Yes | No |
 | Open public view | Yes | No | No | No |
 
-The main gap vs. Remix is scenario planning and travel-time analysis. The main gap vs. Swiftly is live operations monitoring. Atlas's advantage: it accumulates historical data passively and offers a public-facing map that agencies can share, which neither Remix nor Swiftly provide.
+The main gap vs. Swiftly is live operations depth — Swiftly is purpose-built for operations monitoring and has years of data. Atlas's advantage is that it accumulates data passively across a broad regional network, and the public map is something agencies can actually share with riders and stakeholders.
 
 ---
 
 ## The data flywheel
 
-The live data layer (GTFS-RT archiving → Postgres → pattern analysis) is the core business logic:
+The live data layer (GTFS-RT archiving → Postgres → pattern analysis) is the core long-term logic:
 
 1. Atlas watches agency networks continuously
 2. Historical data accumulates
 3. Atlas surfaces patterns the agency can't see in their own tools
 4. Agency subscribes to see their own data in context
 
-An agency doesn't need to set up anything — Atlas has already been watching before they subscribe. That's the pitch.
+An agency doesn't need to set up anything — Atlas has already been watching before they subscribe.
 
 ---
 
 ## Who pays
 
-Transit planner or analytics team at a mid-sized agency. Not the executive level. The value prop is time savings on work they're already doing (NTD reporting, OTP analysis, board presentations) and evidence they currently can't produce at all (before/after service change, segment-level lateness).
+Transit planner or analytics team at a mid-sized agency. Not the executive level. The value is time savings on analysis they're already doing manually and evidence they currently can't produce at all (segment-level lateness, before/after a schedule change).
 
 Target: ~$500/month per agency. Mid-sized agencies (10–100 buses) are the sweet spot — large enough to have planning staff, small enough not to have Swiftly already.
 
@@ -48,10 +46,10 @@ Target: ~$500/month per agency. Mid-sized agencies (10–100 buses) are the swee
 | Tier | Who | Sees |
 |------|-----|------|
 | Public | Anyone | The frequency map and public performance data |
-| Agency | Subscribing agency | Their own reliability data + regional benchmarks |
+| Agency | Subscribing agency | Their own reliability data |
 | Regional | MPO or regional authority | All agencies in their geography |
 
-Agency data is isolated by default — an agency only sees their own numbers plus anonymized regional averages.
+Agency data is isolated by default — an agency only sees their own numbers.
 
 ---
 

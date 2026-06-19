@@ -32,7 +32,6 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 ## Later
 
 - [ ] **Data retention**: define pruning window for raw R2 `.pb` files; aggregate into daily summaries after 90 days
-- [ ] **Feed health scoring**: per-agency reliability rating based on vehicle count consistency and trip assignment rates
 - [ ] **Expand Worker coverage**: add more agencies beyond Burlington and Hamilton once the pipeline is validated
 - [ ] **Trip-matching confidence score**: flag observations where the vehicle-to-trip match is uncertain, so low-quality matches don't pollute performance metrics
 
