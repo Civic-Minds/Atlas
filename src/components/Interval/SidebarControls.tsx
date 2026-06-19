@@ -291,7 +291,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   if (!hasContent) return null;
 
   return (
-    <div className="absolute top-20 left-16 z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3">
+    <div className="absolute top-20 left-[104px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3">
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
         <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 pt-4 pb-3 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300 shrink-0">
           <div className="mb-2 -mt-1">
