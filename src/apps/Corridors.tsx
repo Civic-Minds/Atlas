@@ -606,7 +606,6 @@ function hwColor(hw: number | null): { bg: string; fg: string } {
 }
 
 const LABEL_W = 136;
-const BEST_W = 48;
 
 function ServiceTimeline({
   results,
@@ -643,7 +642,6 @@ function ServiceTimeline({
             <span className="text-[9px] text-[var(--text-dim)] mt-0.5">{p.time}</span>
           </div>
         ))}
-        <div style={{ width: BEST_W }} className="shrink-0" />
       </div>
 
       {/* Route groups */}
@@ -667,7 +665,6 @@ function ServiceTimeline({
                 const hw = b.toStopHeadwayByPeriod.amPeak != null || b.toStopHeadwayByPeriod.midday != null
                   ? b.toStopHeadwayByPeriod
                   : b.headwayByPeriod;
-                const bestHw = b.toStopHeadway ?? b.headway;
                 return (
                   <div key={bi} className="flex items-center gap-1">
                     <div className="shrink-0 pr-2" style={{ width: LABEL_W }}>
@@ -691,13 +688,6 @@ function ServiceTimeline({
                           </div>
                         );
                       })}
-                    </div>
-                    <div className="shrink-0 text-right pl-1.5" style={{ width: BEST_W }}>
-                      {bestHw != null && (
-                        <span className="text-[11px] font-black text-[var(--text-primary)]">
-                          {fmtHeadway(bestHw)}
-                        </span>
-                      )}
                     </div>
                   </div>
                 );
