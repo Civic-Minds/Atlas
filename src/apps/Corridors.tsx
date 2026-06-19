@@ -639,12 +639,10 @@ function ServiceTimeline({
     );
   }
 
-  const LABEL_W = 120;
-
   return (
     <div className="overflow-y-auto p-6">
       {/* Period header */}
-      <div className="flex mb-3" style={{ marginLeft: LABEL_W + 8 }}>
+      <div className="flex mb-3">
         {TIMELINE_PERIODS.map(p => (
           <div key={p.key} className="flex flex-col" style={{ flex: p.flex }}>
             <span className="text-[10px] font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
@@ -654,11 +652,11 @@ function ServiceTimeline({
       </div>
 
       {/* Route groups */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {results.map((g, gi) => (
           <div key={gi}>
             {/* Route badge */}
-            <div className="flex items-center gap-1.5 mb-1.5">
+            <div className="flex items-center gap-1.5 mb-2">
               <span
                 className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
                 style={{ backgroundColor: g.color || '#555' }}
@@ -668,28 +666,26 @@ function ServiceTimeline({
               <span className="text-[10px] text-[var(--text-muted)]">{g.agencyName}</span>
             </div>
 
-            {/* Branch rows */}
-            <div className="flex flex-col gap-1">
+            {/* Branch rows — destination label above each bar */}
+            <div className="flex flex-col gap-2">
               {g.branches.map((b, bi) => {
                 const hw = b.toStopHeadwayByPeriod.amPeak != null || b.toStopHeadwayByPeriod.midday != null
                   ? b.toStopHeadwayByPeriod
                   : b.headwayByPeriod;
                 return (
-                  <div key={bi} className="flex items-center gap-2">
-                    <div className="shrink-0 text-right pr-2" style={{ width: LABEL_W }}>
-                      <span className="text-[10px] text-[var(--text-muted)] truncate block">
-                        to {b.headsign || b.routeLongName}
-                      </span>
-                    </div>
-                    <div className="flex flex-1 rounded overflow-hidden h-7 gap-px">
+                  <div key={bi}>
+                    <span className="text-[10px] text-[var(--text-muted)] mb-1 block">
+                      to {b.headsign || b.routeLongName}
+                    </span>
+                    <div className="flex rounded overflow-hidden h-7 gap-px">
                       {TIMELINE_PERIODS.map(p => {
                         const val = hw[p.key] ?? null;
                         const { bg, fg } = hwColor(val);
                         return (
                           <div
                             key={p.key}
-                            className="flex items-center justify-center"
-                            style={{ flex: p.flex, backgroundColor: bg }}
+                            className="flex flex-1 items-center justify-center"
+                            style={{ backgroundColor: bg }}
                           >
                             <span className="text-[10px] font-bold" style={{ color: fg }}>
                               {fmtHeadway(val)}
@@ -790,33 +786,15 @@ function RouteGroupCard({ group }: { group: RouteGroup }) {
       <div className="divide-y divide-[var(--border-primary)]">
         {group.branches.map((b, i) => {
           const hw = b.toStopHeadway ?? b.headway;
-          const byPeriod = Object.entries(PERIOD_LABELS).filter(
-            ([key]) => (b.toStopHeadwayByPeriod[key] ?? b.headwayByPeriod[key]) != null
-          );
           return (
-            <div key={i} className="px-3 py-2">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] text-[var(--text-muted)]">
-                  to {b.headsign || b.routeLongName}
+            <div key={i} className="px-3 py-2 flex items-center justify-between">
+              <span className="text-[11px] text-[var(--text-muted)]">
+                to {b.headsign || b.routeLongName}
+              </span>
+              {hw != null && (
+                <span className="text-[11px] font-bold text-[var(--text-primary)]">
+                  {fmtHeadway(hw)}
                 </span>
-                {group.branches.length > 1 && hw != null && (
-                  <span className="text-[11px] font-bold text-[var(--text-primary)]">
-                    {fmtHeadway(hw)}
-                  </span>
-                )}
-              </div>
-              {byPeriod.length > 0 && (
-                <div className="flex flex-wrap gap-x-3 gap-y-0.5">
-                  {byPeriod.map(([key, label]) => {
-                    const val = b.toStopHeadwayByPeriod[key] ?? b.headwayByPeriod[key];
-                    return (
-                      <span key={key} className="text-[10px] text-[var(--text-muted)]">
-                        <span className="font-bold text-[var(--text-primary)]">{fmtHeadway(val)}</span>
-                        {' '}{label}
-                      </span>
-                    );
-                  })}
-                </div>
               )}
             </div>
           );
