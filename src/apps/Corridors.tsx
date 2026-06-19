@@ -324,24 +324,6 @@ export default function Corridors({ agencies }: Props) {
           )}
         </div>
 
-        {/* Day picker */}
-        <div className="px-4 py-2.5 border-b border-[var(--border-primary)] flex gap-1.5">
-          {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
-            <button
-              key={d}
-              onClick={() => setDay(d)}
-              className={[
-                'text-[10px] font-bold px-2.5 py-1 rounded-full transition-colors',
-                day === d
-                  ? 'bg-[var(--accent)] text-white'
-                  : 'bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-primary)]',
-              ].join(' ')}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
-
         {/* Results */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
@@ -367,9 +349,29 @@ export default function Corridors({ agencies }: Props) {
         </div>
       </div>
 
-      {/* Map placeholder */}
-      <div className="flex-1 flex items-center justify-center text-[var(--text-dim)] text-sm">
-        Map coming soon
+      {/* Right side: map + top-right controls */}
+      <div className="flex-1 relative">
+        {/* Day picker — top-right, matching frequency map chip position */}
+        <div className="absolute top-6 right-6 z-10 flex gap-1.5">
+          {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
+            <button
+              key={d}
+              onClick={() => setDay(d)}
+              className={[
+                'h-8 text-xs font-bold px-3 rounded-full shadow-2xl border transition-colors',
+                day === d
+                  ? 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)]'
+                  : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-muted)] hover:text-[var(--text-primary)]',
+              ].join(' ')}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
+          Map coming soon
+        </div>
       </div>
     </div>
   );
