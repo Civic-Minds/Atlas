@@ -98,6 +98,7 @@ export default function Corridors({ agencies }: Props) {
   const [fromStop, setFromStop] = useState<StopEntry | null>(null);
   const [toStop, setToStop] = useState<StopEntry | null>(null);
   const [activeField, setActiveField] = useState<'from' | 'to' | null>(null);
+  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
 
   const fromRef = useRef<HTMLInputElement>(null);
   const toRef = useRef<HTMLInputElement>(null);
@@ -188,7 +189,7 @@ export default function Corridors({ agencies }: Props) {
       const agency = agencies.find(a => a.slug === slug);
       for (const f of fcs) {
         const p = f.properties;
-        if (!p.stopOrder || !p.routeShortName || p.day !== 'Weekday' || p.isCorridor) continue;
+        if (!p.stopOrder || !p.routeShortName || p.day !== day || p.isCorridor) continue;
 
         let fromIdx = -1, toIdx = -1, toStopId: string | null = null;
         for (let i = 0; i < p.stopOrder.length; i++) {
@@ -253,7 +254,7 @@ export default function Corridors({ agencies }: Props) {
     }
 
     return [...groups.values()].sort((a, b) => (a.bestHeadway ?? 999) - (b.bestHeadway ?? 999));
-  }, [fromStop, toStop, agencyFeatures, stopsIndexes, agencies]);
+  }, [fromStop, toStop, day, agencyFeatures, stopsIndexes, agencies]);
 
   function selectFrom(s: StopEntry) {
     setFromStop(s);
@@ -323,6 +324,24 @@ export default function Corridors({ agencies }: Props) {
           )}
         </div>
 
+        {/* Day picker */}
+        <div className="px-4 py-2.5 border-b border-[var(--border-primary)] flex gap-1.5">
+          {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
+            <button
+              key={d}
+              onClick={() => setDay(d)}
+              className={[
+                'text-[10px] font-bold px-2.5 py-1 rounded-full transition-colors',
+                day === d
+                  ? 'bg-[var(--accent)] text-white'
+                  : 'bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-primary)]',
+              ].join(' ')}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+
         {/* Results */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
@@ -338,7 +357,7 @@ export default function Corridors({ agencies }: Props) {
           ) : (
             <div className="py-3 px-4 flex flex-col gap-2">
               <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
-                {results.length} route{results.length !== 1 ? 's' : ''} · Weekday
+                {results.length} route{results.length !== 1 ? 's' : ''} · {day}
               </p>
               {results.map((g, i) => (
                 <RouteGroupCard key={i} group={g} />
