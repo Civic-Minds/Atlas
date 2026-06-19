@@ -513,7 +513,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
             className="flex-1 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-2 py-0 text-xs font-bold focus:outline-none"
           />
           {toQuery && (
-            <button onClick={clearTo} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
+            <button onClick={clearTo} className="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-0.5">
               <X className="w-3.5 h-3.5" />
             </button>
           )}
