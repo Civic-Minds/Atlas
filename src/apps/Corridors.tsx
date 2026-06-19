@@ -162,8 +162,8 @@ export default function Corridors({ agencies }: Props) {
       const toIds = new Set<string>();
       for (const [id, s] of Object.entries(agencyStops)) {
         const norm = normalizeStopName(s.name).toLowerCase();
-        if (norm.includes(fromNorm) || fromNorm.includes(norm)) fromIds.add(id);
-        if (norm.includes(toNorm) || toNorm.includes(norm)) toIds.add(id);
+        if (norm.includes(fromNorm)) fromIds.add(id);
+        if (norm.includes(toNorm)) toIds.add(id);
       }
       // Skip agencies that don't have stops matching both endpoints
       if (fromIds.size === 0 || toIds.size === 0) continue;
