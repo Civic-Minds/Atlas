@@ -45,4 +45,12 @@ The frontend loads agency data lazily as you pan — only the agencies within yo
 
 ---
 
+## Edge cases
+
+**Agencies with day/night route splits**: some agencies publish separate route IDs for daytime and overnight variants of the same corridor. The pipeline merges these before analysis so they appear as a single route on the map rather than two overlapping ones.
+
+**Commuter rail shape selection**: for rail services, the pipeline always uses the longest shape for both display and frequency analysis. This ensures that short-turn trains — which only run part of the line — don't win the shape competition and cut the route short on the map. Short-turn trips still count toward frequency at every stop they serve.
+
+---
+
 [Back to Home](./README.md)
