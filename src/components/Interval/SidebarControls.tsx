@@ -109,6 +109,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
+  const [showDebug, setShowDebug] = useState(false);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -272,6 +273,31 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     stopAgencyFilter ? stopRoutes.filter(r => r.agencyName === stopAgencyFilter) : stopRoutes,
   [stopRoutes, stopAgencyFilter]);
 
+  const debugRows = useMemo(() => {
+    if (!currentStop) return [];
+    const rows: { routeId: string; shortName: string; dir: number; headsign: string; stopHw: number | null; routeHw: number | null }[] = [];
+    const stopAgencySlug = currentStop.agencySlug as string | undefined;
+    const routeIds = new Set<string>(currentStop.routeIds ?? []);
+    for (const [slug, fc] of Object.entries(layers)) {
+      if (stopAgencySlug && slug !== stopAgencySlug) continue;
+      for (const f of fc.features) {
+        const p = f.properties as unknown as ShapeProperties;
+        if (!p.routeId || !routeIds.has(p.routeId)) continue;
+        if (p.day !== undefined && p.day !== currentDay) continue;
+        const stopHw = (p as any).stopHeadways?.[currentStop.stopId] ?? null;
+        rows.push({
+          routeId: p.routeId,
+          shortName: p.routeShortName || p.routeId,
+          dir: (p as any).directionId ?? 0,
+          headsign: p.headsign || '',
+          stopHw,
+          routeHw: p.headway ?? null,
+        });
+      }
+    }
+    return rows.sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }) || a.dir - b.dir);
+  }, [currentStop, layers, currentDay]);
+
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
     return disambiguationRoutes.map(key => {
@@ -388,6 +414,33 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-3 border-t border-[var(--border-primary)] pt-2">
+              <button
+                onClick={() => setShowDebug(v => !v)}
+                className="text-[10px] text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors font-mono"
+              >
+                {showDebug ? '▾' : '▸'} debug headways
+              </button>
+              {showDebug && (
+                <div className="mt-1.5 space-y-0.5 font-mono text-[9px] text-[var(--text-dim)]">
+                  <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 font-bold text-[var(--text-muted)] border-b border-[var(--border-primary)] pb-0.5 mb-1">
+                    <span>route / dir / headsign</span>
+                    <span>stop hw</span>
+                    <span>route hw</span>
+                    <span>used</span>
+                  </div>
+                  {debugRows.map((r, i) => (
+                    <div key={i} className={`grid grid-cols-[1fr_auto_auto_auto] gap-x-2 ${r.stopHw != null ? 'text-[var(--text-primary)]' : ''}`}>
+                      <span className="truncate">{r.shortName} d{r.dir} {r.headsign}</span>
+                      <span>{r.stopHw != null ? `${r.stopHw}m` : '—'}</span>
+                      <span>{r.routeHw != null ? `${r.routeHw}m` : '—'}</span>
+                      <span>{r.stopHw != null ? '✓' : '✗'}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
