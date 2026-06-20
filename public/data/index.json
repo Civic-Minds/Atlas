@@ -680,6 +680,23 @@
         46.828,
         -71.099
       ]
+    },
+    {
+      "slug": "octranspo",
+      "name": "OC Transpo",
+      "center": [
+        45.325,
+        -75.693
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
+      "bbox": [
+        45.13,
+        -76.043,
+        45.52,
+        -75.343
+      ]
     }
   ]
 }
