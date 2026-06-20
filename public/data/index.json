@@ -697,6 +697,23 @@
         45.52,
         -75.343
       ]
+    },
+    {
+      "slug": "sto",
+      "name": "STO (Gatineau)",
+      "center": [
+        45.487,
+        -75.641
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-stops.json",
+      "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
+      "bbox": [
+        45.381,
+        -75.89,
+        45.593,
+        -75.391
+      ]
     }
   ]
 }
