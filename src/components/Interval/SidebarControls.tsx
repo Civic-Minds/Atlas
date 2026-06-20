@@ -242,11 +242,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         }
         const branch = entry.branches.get(dirId)!;
         if (p.headsign) branch.headsigns.add(p.headsign);
-        // Only use stop-level headway — never fall back to route-level headway.
-        // Features without this stop in stopHeadways have shapes that don't cover it.
-        const stopHw = (p as any).stopHeadways?.[currentStop.stopId];
-        if (stopHw != null && (branch.bestHeadway === undefined || stopHw < branch.bestHeadway)) {
-          branch.bestHeadway = stopHw;
+        // Gate: only include this feature if its shape actually covers this stop.
+        const servesStop = (p as any).stopHeadways?.[currentStop.stopId] != null;
+        // Headway: always use p.headway (terminal-stop headway computed by pipeline).
+        // Never re-derive from stopHeadways — trunk stops aggregate all branches, not just this one.
+        if (servesStop && p.headway != null) {
+          if (branch.bestHeadway === undefined || p.headway < branch.bestHeadway) {
+            branch.bestHeadway = p.headway;
+          }
         }
       }
     }
