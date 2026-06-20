@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **"to GO" on Kitchener GO route card (AI-112)**: `cleanHeadsign` had a case-insensitive flag (`i`) on the short-name prefix regex, causing `^KI[A-Za-z0-9]*` to match "Kitchener" in the already-cleaned headsign "Kitchener GO" — stripping the word and leaving just "GO". Removed the `i` flag so the regex is case-sensitive; "KI" no longer matches "Ki". The function is now idempotent when called a second time on pipeline-cleaned headsigns.
+- **GO Transit terminal stop headway (AI-111)**: pipeline Step 4 was computing feature `headway` and `tier` using the all-stop median, dominated by high-frequency trunk stops. Branching routes (e.g. Kitchener, Niagara Falls, West Harbour GO) now use the terminal stop's headway instead. `minStopHeadway` is still kept as the all-stop minimum for filter visibility.
+- **Station view route duplication (AI-110)**: stop-view route card was keyed by `shortName::directionId`, showing both directions as separate route rows. Changed key to `shortName` and nested directions as branches. Also removed the `?? p.headway` fallback when no stop-level headway exists — this was pulling in trunk headways for terminal-only stops.
+- **Debug headway panel**: added a collapsible "debug headways" panel to both the stop view and route view in the sidebar, showing per-feature stopHw / routeHw and which value was used.
+- **KNOWN_ISSUES.md**: added `docs/KNOWN_ISSUES.md` documenting missing agencies, feed quirks, and platform limitations that are out of scope for Linear.
+
 ### Added
 - **Corridors service timeline**: results panel now shows a service timeline with AM Peak / Midday / PM Peak / Evening columns, color-coded by headway tier. Direction labels appear above each bar row; all period bars are equal width.
 

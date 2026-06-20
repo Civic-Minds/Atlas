@@ -14,7 +14,7 @@ export function cleanHeadsign(
 
   if (shortName) {
     const escaped = shortName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*(?:-\\s*)?`, 'i'), '');
+    h = h.replace(new RegExp(`^${escaped}[A-Za-z0-9]*\\s*(?:-\\s*)?`), '');
     if (longName) {
       const escapedL = longName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       h = h.replace(new RegExp(`^${escaped}\\s+${escapedL}\\s+(?:towards|to)\\s+`, 'i'), '');
