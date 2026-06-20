@@ -381,6 +381,9 @@ export async function processGtfsBuffer(
   }
   // stopDepsByGroup["routeId::dirId::dayType"] → stopId → sorted departure minutes
   const stopDepsByGroup = new Map<string, Map<string, number[]>>();
+  // Track first visit per (trip_id, stop_id) to avoid double-counting loop routes
+  // where the terminus appears at both the start and end of the same trip.
+  const stopFirstVisit = new Map<string, Set<string>>();
 
   // Build route features; deduplicate by (routeShortName, directionId, day) so feeds with
   // multiple schedule-period route IDs (e.g. GO Transit 04260626-LW / 06260926-LW) don't
@@ -501,15 +504,23 @@ export async function processGtfsBuffer(
           const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
           let stopMap = stopDepsByGroup.get(gKey);
           if (!stopMap) { stopMap = new Map(); stopDepsByGroup.set(gKey, stopMap); }
-          // Add departure to child stop
-          let arr = stopMap.get(st.stop_id);
-          if (!arr) { arr = []; stopMap.set(st.stop_id, arr); }
-          arr.push(mins);
-          // Propagate to parent station so it also gets headways
-          if (parentId) {
-            let parentArr = stopMap.get(parentId);
-            if (!parentArr) { parentArr = []; stopMap.set(parentId, parentArr); }
-            parentArr.push(mins);
+          // Only count first visit per (trip, stop) — loop routes visit the terminus
+          // at both the start and end of each trip, which would otherwise interleave
+          // outbound and inbound times to produce a falsely short headway (AI-121).
+          let visitSet = stopFirstVisit.get(st.trip_id);
+          if (!visitSet) { visitSet = new Set(); stopFirstVisit.set(st.trip_id, visitSet); }
+          if (!visitSet.has(st.stop_id)) {
+            visitSet.add(st.stop_id);
+            // Add departure to child stop
+            let arr = stopMap.get(st.stop_id);
+            if (!arr) { arr = []; stopMap.set(st.stop_id, arr); }
+            arr.push(mins);
+            // Propagate to parent station so it also gets headways
+            if (parentId) {
+              let parentArr = stopMap.get(parentId);
+              if (!parentArr) { parentArr = []; stopMap.set(parentId, parentArr); }
+              parentArr.push(mins);
+            }
           }
         }
       }
