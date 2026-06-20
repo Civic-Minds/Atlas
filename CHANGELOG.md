@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Corridors service timeline**: results panel now shows a service timeline with AM Peak / Midday / PM Peak / Evening columns, color-coded by headway tier. Direction labels appear above each bar row; all period bars are equal width.
+
+### Changed
+- **Corridors layout**: merged the route list and service timeline into a single 500 px panel, eliminating the height-mismatch between two side-by-side panels. Route badge + agency header sits above per-direction bar rows.
+- **Corridors headway source**: period headways now use the FROM stop (where the user waits) rather than the TO stop. TO-stop headways were misleadingly low at major hubs where many patterns converge (e.g. Square One showing 7 min for GO route 41 instead of the 30 min wait at Hamilton GO).
+- **Corridors To-input X button**: now uses the same absolute-positioned centering as the From input so both pills are visually consistent.
+- **AppDrawer back button**: replaced the waffle-menu Frequency Map shortcut (was re-added by mistake) with an ← arrow on the home button when inside a sub-app. Waffle menu now only shows non-frequency apps.
+- **Route info card alignment**: left edge aligned to 104 px to match the search bar.
+- **Docs**: rewrote PIPELINE.md as a public-facing explainer (removed ops-manual detail), VISION.md (stripped AI buzzwords), STRATEGY.md (removed false "Planned" competitive features), ROADMAP_PRODUCT.md (removed fabricated Agency Intelligence section; added bus sub-type filter, on-demand zones, ferries from Linear), ROADMAP_TECHNICAL.md and ROADMAP_PLATFORM.md (stripped unplanned items).
+
 ## [2.3.0] — 2026-06-19
 
 ### Added

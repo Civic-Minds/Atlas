@@ -215,7 +215,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
     const stopAgencySlug = currentStop.agencySlug as string | undefined;
-    const routeMap = new Map<string, { shortName: string; longName: string; headsigns: Set<string>; agencyName: string; rKey: string; bestHeadway?: number; directionId: number }>();
+    // Group both directions under one route entry
+    type Branch = { rKey: string; headsigns: Set<string>; bestHeadway?: number; directionId: number };
+    const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<number, Branch> }>();
     for (const [slug, fc] of Object.entries(layers)) {
       if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
@@ -225,24 +227,24 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
         const shortName = p.routeShortName || p.routeId;
         const dirId = (p as any).directionId ?? 0;
-        const key = `${shortName}::${dirId}`;
-        if (!routeMap.has(key)) {
-          routeMap.set(key, {
+        if (!routeMap.has(shortName)) {
+          routeMap.set(shortName, {
             shortName,
             longName: p.routeLongName || '',
-            headsigns: new Set(),
             agencyName: p.agencyName || slug,
-            rKey: routeKey({ ...p, agencySlug: slug } as any),
-            directionId: dirId,
+            branches: new Map(),
           });
         }
-
-        const entry = routeMap.get(key)!;
-        if (p.headsign) entry.headsigns.add(p.headsign);
+        const entry = routeMap.get(shortName)!;
+        if (!entry.branches.has(dirId)) {
+          entry.branches.set(dirId, { rKey: routeKey({ ...p, agencySlug: slug } as any), headsigns: new Set(), directionId: dirId });
+        }
+        const branch = entry.branches.get(dirId)!;
+        if (p.headsign) branch.headsigns.add(p.headsign);
         const stopHw = (p as any).stopHeadways?.[currentStop.stopId];
         const effectiveHw = stopHw ?? p.headway;
-        if (effectiveHw != null && (entry.bestHeadway === undefined || effectiveHw < entry.bestHeadway)) {
-          entry.bestHeadway = effectiveHw;
+        if (effectiveHw != null && (branch.bestHeadway === undefined || effectiveHw < branch.bestHeadway)) {
+          branch.bestHeadway = effectiveHw;
         }
       }
     }
@@ -251,11 +253,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       .map(([, v]) => ({
         shortName: v.shortName,
         longName: v.longName,
-        headsigns: Array.from(v.headsigns),
         agencyName: v.agencyName,
-        rKey: v.rKey,
-        headway: v.bestHeadway,
-        directionId: v.directionId,
+        branches: Array.from(v.branches.values())
+          .sort((a, b) => a.directionId - b.directionId)
+          .map(b => ({ rKey: b.rKey, headsigns: Array.from(b.headsigns), headway: b.bestHeadway, directionId: b.directionId })),
       }));
   }, [currentStop, layers, currentDay]);
 
@@ -350,39 +351,40 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             )}
             <div className="space-y-2">
-              {filteredStopRoutes.map(({ shortName, longName, headsigns, rKey, headway, agencyName, directionId }) => (
-                <div key={`${rKey}::${directionId}`} className="text-[11px]">
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
-                      className="font-black text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
-                    >
-                      {titleCase(getRouteLabel(shortName, longName, agencyName))}
-                    </button>
-                    {headway && (
-                      <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)]">
-                        {isLivePollingRoute(rKey.split('::')[0], shortName) && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />
-                        )}
-                        <span
-                          className="w-1.5 h-1.5 rounded-full shrink-0"
-                          style={{ background: getTierColor(String(headway)) }}
-                        />
-                        {fmtHeadway(headway)}
-                      </span>
-                    )}
+              {filteredStopRoutes.map(({ shortName, longName, agencyName, branches }) => (
+                <div key={shortName} className="text-[11px]">
+                  <div className="font-black text-[var(--text-primary)] mb-0.5">
+                    {titleCase(getRouteLabel(shortName, longName, agencyName))}
                   </div>
-                  {headsigns.length > 0 && !/^A[0-9]/.test(shortName) && (
-                    <div className="mt-0.5 space-y-0.5">
-                      {[...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))]
-                        .filter(Boolean)
-                        .map(ch => (
-                        <div key={ch} className="font-bold text-[var(--text-muted)] break-words">
-                          {/^to\s/i.test(ch) ? ch : `→ ${ch}`}
+                  <div className="space-y-0.5">
+                    {branches.map(({ rKey, headsigns, headway, directionId }) => {
+                      const cleaned = !/^A[0-9]/.test(shortName)
+                        ? [...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))].filter(Boolean)
+                        : [];
+                      return (
+                        <div key={`${rKey}::${directionId}`} className="flex items-center justify-between">
+                          <button
+                            onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
+                            className="font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
+                          >
+                            {cleaned.length > 0 ? cleaned.map(ch => /^to\s/i.test(ch) ? ch : `→ ${ch}`).join(', ') : `→ dir ${directionId}`}
+                          </button>
+                          {headway && (
+                            <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">
+                              {isLivePollingRoute(rKey.split('::')[0], shortName) && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />
+                              )}
+                              <span
+                                className="w-1.5 h-1.5 rounded-full shrink-0"
+                                style={{ background: getTierColor(String(headway)) }}
+                              />
+                              {fmtHeadway(headway)}
+                            </span>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      );
+                    })}
+                  </div>
                 </div>
               ))}
             </div>
