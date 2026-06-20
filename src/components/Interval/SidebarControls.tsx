@@ -241,10 +241,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         }
         const branch = entry.branches.get(dirId)!;
         if (p.headsign) branch.headsigns.add(p.headsign);
+        // Only use stop-level headway — never fall back to route-level headway.
+        // Features without this stop in stopHeadways have shapes that don't cover it.
         const stopHw = (p as any).stopHeadways?.[currentStop.stopId];
-        const effectiveHw = stopHw ?? p.headway;
-        if (effectiveHw != null && (branch.bestHeadway === undefined || effectiveHw < branch.bestHeadway)) {
-          branch.bestHeadway = effectiveHw;
+        if (stopHw != null && (branch.bestHeadway === undefined || stopHw < branch.bestHeadway)) {
+          branch.bestHeadway = stopHw;
         }
       }
     }
