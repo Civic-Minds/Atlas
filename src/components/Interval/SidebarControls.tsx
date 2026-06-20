@@ -656,6 +656,43 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               )}
             </>
           )}
+
+          <div className="mt-3 border-t border-[var(--border-primary)] pt-2">
+            <button
+              onClick={() => setShowDebug(v => !v)}
+              className="text-[10px] text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors font-mono"
+            >
+              {showDebug ? '▾' : '▸'} debug headways
+            </button>
+            {showDebug && currentRoute && (
+              <div className="mt-1.5 space-y-0.5 font-mono text-[9px] text-[var(--text-dim)]">
+                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 font-bold text-[var(--text-muted)] border-b border-[var(--border-primary)] pb-0.5 mb-1">
+                  <span>headsign</span>
+                  <span>dir</span>
+                  <span>route hw</span>
+                  <span>tier</span>
+                </div>
+                {(() => {
+                  const rows: { headsign: string; dir: number; headway: number | null; tier: string }[] = [];
+                  for (const [slug, fc] of Object.entries(layers)) {
+                    for (const f of fc.features) {
+                      const p = f.properties as unknown as ShapeProperties;
+                      if (routeKey({ ...p, agencySlug: slug } as any) !== selectedRoute) continue;
+                      rows.push({ headsign: p.headsign || '—', dir: (p as any).directionId ?? 0, headway: p.headway ?? null, tier: (p as any).tier || '—' });
+                    }
+                  }
+                  return rows.map((r, i) => (
+                    <div key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2">
+                      <span className="truncate">{r.headsign}</span>
+                      <span>d{r.dir}</span>
+                      <span>{r.headway != null ? `${r.headway}m` : '—'}</span>
+                      <span>{r.tier}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
