@@ -597,25 +597,30 @@ export async function processGtfsBuffer(
       feature.properties.stopPeriodHeadways = stopPeriodHeadways;
     }
 
-    // Step 4: override feature headway + tier with the median of on-shape stop headways.
-    // This reflects combined service on shared corridors instead of the headsign-trip median.
+    // Step 4: override feature headway + tier using the terminal stop's headway.
+    // "to Niagara Falls GO every 15 min" is wrong — that's trunk frequency, not branch frequency.
+    // Only trips that reach the terminal stop contribute to its headway, so it correctly reflects
+    // how often a train actually goes there. Falls back to all-stop median if terminal has no data.
     if (feature.properties.tier !== 'span') {
+      const terminalId = onShape[onShape.length - 1]?.stopId;
+      const terminalHw = terminalId ? allStopHw[terminalId] : undefined;
       const hwVals = Object.values(stopHeadways).sort((a, b) => a - b);
       const mid = Math.floor(hwVals.length / 2);
-      const stopMedian = hwVals.length % 2 === 0
+      const allStopMedian = hwVals.length % 2 === 0
         ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
         : hwVals[mid];
-      feature.properties.headway = stopMedian;
-      if (stopMedian <= 10)       feature.properties.tier = '10';
-      else if (stopMedian <= 15)  feature.properties.tier = '15';
-      else if (stopMedian <= 20)  feature.properties.tier = '20';
-      else if (stopMedian <= 30)  feature.properties.tier = '30';
-      else if (stopMedian <= 60)  feature.properties.tier = '60';
-      else                        feature.properties.tier = 'infrequent';
+      const headway = terminalHw ?? allStopMedian;
+      feature.properties.headway = headway;
+      if (headway <= 10)       feature.properties.tier = '10';
+      else if (headway <= 15)  feature.properties.tier = '15';
+      else if (headway <= 20)  feature.properties.tier = '20';
+      else if (headway <= 30)  feature.properties.tier = '30';
+      else if (headway <= 60)  feature.properties.tier = '60';
+      else                     feature.properties.tier = 'infrequent';
 
       // Minimum stop headway — the best frequency available anywhere on this route.
       // Used by passesRouteFilter so routes with high-frequency sections aren't excluded
-      // even when the median doesn't meet the active threshold (pairs with AI-97 clipping).
+      // even when the terminal headway doesn't meet the active threshold (pairs with AI-97 clipping).
       feature.properties.minStopHeadway = hwVals[0];
     }
 
