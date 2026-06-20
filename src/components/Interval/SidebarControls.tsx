@@ -216,15 +216,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
     const stopAgencySlug = currentStop.agencySlug as string | undefined;
-    // Group both directions under one route entry
-    type Branch = { rKey: string; headsigns: Set<string>; bestHeadway?: number; directionId: number };
-    const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<number, Branch> }>();
+    // One branch per headsign per direction — each terminal destination gets its own row
+    // with its own headway (p.headway = terminal-stop headway from pipeline).
+    type Branch = { rKey: string; headsign: string | null; headway: number | null; directionId: number };
+    const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
     for (const [slug, fc] of Object.entries(layers)) {
       if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
+        // Only include features whose shape actually covers this stop.
+        const servesStop = (p as any).stopHeadways?.[currentStop.stopId] != null;
+        if (!servesStop) continue;
 
         const shortName = p.routeShortName || p.routeId;
         const dirId = (p as any).directionId ?? 0;
@@ -237,19 +241,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           });
         }
         const entry = routeMap.get(shortName)!;
-        if (!entry.branches.has(dirId)) {
-          entry.branches.set(dirId, { rKey: routeKey({ ...p, agencySlug: slug } as any), headsigns: new Set(), directionId: dirId });
-        }
-        const branch = entry.branches.get(dirId)!;
-        if (p.headsign) branch.headsigns.add(p.headsign);
-        // Gate: only include this feature if its shape actually covers this stop.
-        const servesStop = (p as any).stopHeadways?.[currentStop.stopId] != null;
-        // Headway: always use p.headway (terminal-stop headway computed by pipeline).
-        // Never re-derive from stopHeadways — trunk stops aggregate all branches, not just this one.
-        if (servesStop && p.headway != null) {
-          if (branch.bestHeadway === undefined || p.headway < branch.bestHeadway) {
-            branch.bestHeadway = p.headway;
-          }
+        // Key per headsign so each terminal destination is its own row.
+        const branchKey = `${dirId}::${p.headsign ?? ''}`;
+        const newHeadway = p.headway ?? null;
+        const existing = entry.branches.get(branchKey);
+        if (!existing || (newHeadway != null && (existing.headway == null || newHeadway < existing.headway))) {
+          entry.branches.set(branchKey, {
+            rKey: routeKey({ ...p, agencySlug: slug } as any),
+            headsign: p.headsign ?? null,
+            headway: newHeadway,
+            directionId: dirId,
+          });
         }
       }
     }
@@ -260,8 +262,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         longName: v.longName,
         agencyName: v.agencyName,
         branches: Array.from(v.branches.values())
-          .sort((a, b) => a.directionId - b.directionId)
-          .map(b => ({ rKey: b.rKey, headsigns: Array.from(b.headsigns), headway: b.bestHeadway, directionId: b.directionId })),
+          .sort((a, b) => a.directionId - b.directionId || (a.headway ?? Infinity) - (b.headway ?? Infinity))
+          .map(b => ({ rKey: b.rKey, headsign: b.headsign, headway: b.headway, directionId: b.directionId })),
       }));
   }, [currentStop, layers, currentDay]);
 
@@ -387,19 +389,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     {titleCase(getRouteLabel(shortName, longName, agencyName))}
                   </div>
                   <div className="space-y-0.5">
-                    {branches.map(({ rKey, headsigns, headway, directionId }) => {
-                      const cleaned = !/^A[0-9]/.test(shortName)
-                        ? [...new Set(headsigns.map(h => titleCase(cleanHeadsign(h.trim(), shortName, longName))))].filter(Boolean)
-                        : [];
+                    {branches.map(({ rKey, headsign, headway, directionId }) => {
+                      const cleaned = headsign && !/^A[0-9]/.test(shortName)
+                        ? titleCase(cleanHeadsign(headsign.trim(), shortName, longName))
+                        : null;
+                      const label = cleaned
+                        ? (/^to\s/i.test(cleaned) ? cleaned : `→ ${cleaned}`)
+                        : `→ dir ${directionId}`;
                       return (
-                        <div key={`${rKey}::${directionId}`} className="flex items-center justify-between">
+                        <div key={`${rKey}::${directionId}::${headsign ?? ''}`} className="flex items-center justify-between">
                           <button
                             onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
                             className="font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
                           >
-                            {cleaned.length > 0 ? cleaned.map(ch => /^to\s/i.test(ch) ? ch : `→ ${ch}`).join(', ') : `→ dir ${directionId}`}
+                            {label}
                           </button>
-                          {headway && (
+                          {headway != null && (
                             <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">
                               {isLivePollingRoute(rKey.split('::')[0], shortName) && (
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />

@@ -362,12 +362,16 @@ export async function processGtfsBuffer(
       if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
     }
   }
-  const tripGroupByTripId = new Map<string, { routeId: string; dirId: string; dayType: string }>();
+  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string }>();
   for (const trip of gtfs.trips ?? []) {
     const dayType = serviceIdToDayType.get(trip.service_id);
     if (!dayType) continue;
+    // Use shortName as the group key so agencies with multiple route_ids per line (e.g. GO Transit
+    // date-prefixed IDs like 04260626-LW / 06260926-LW) merge into one combined stop frequency group.
+    const shortName = routeById.get(trip.route_id)?.route_short_name ?? trip.route_id;
     tripGroupByTripId.set(trip.trip_id, {
       routeId: trip.route_id,
+      shortName,
       dirId: String(trip.direction_id ?? '0'),
       dayType,
     });
@@ -444,12 +448,12 @@ export async function processGtfsBuffer(
 
   // Attach per-stop headways — populated once stop_times are scanned below.
   // We store a reference to the pending map so the loop below can fill it.
-  const featureStopHeadwaySlots = new Map<GeoJsonFeature, { routeId: string; dirId: string; day: string }>();
+  const featureStopHeadwaySlots = new Map<GeoJsonFeature, { shortName: string; dirId: string; day: string }>();
   for (const feature of features) {
     const p = feature.properties;
-    if (p.routeId && p.directionId != null && p.day) {
+    if (p.routeShortName && p.directionId != null && p.day) {
       featureStopHeadwaySlots.set(feature, {
-        routeId: p.routeId as string,
+        shortName: p.routeShortName as string,
         dirId: String(p.directionId),
         day: p.day as string,
       });
@@ -475,7 +479,7 @@ export async function processGtfsBuffer(
         const parts = timeStr.split(':');
         const mins = parseInt(parts[0]) * 60 + parseInt(parts[1]);
         if (Number.isFinite(mins)) {
-          const gKey = `${grp.routeId}::${grp.dirId}::${grp.dayType}`;
+          const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
           let stopMap = stopDepsByGroup.get(gKey);
           if (!stopMap) { stopMap = new Map(); stopDepsByGroup.set(gKey, stopMap); }
           let arr = stopMap.get(st.stop_id);
@@ -545,8 +549,8 @@ export async function processGtfsBuffer(
   const MAX_STOP_DEV = 0.0045; // degrees; approx 500 m
   const MAX_STOP_DEV2 = MAX_STOP_DEV * MAX_STOP_DEV;
 
-  for (const [feature, { routeId, dirId, day }] of featureStopHeadwaySlots) {
-    const gKey = `${routeId}::${dirId}::${day}`;
+  for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
+    const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) continue;
 
