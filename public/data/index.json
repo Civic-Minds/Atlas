@@ -226,7 +226,7 @@
       "slug": "go",
       "name": "GO Transit",
       "center": [
-        43.65,
+        43.645,
         -79.38
       ],
       "bbox": [
@@ -612,6 +612,74 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-hamilton-street-railway-gtfs-723.zip?alt=media",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr-stops.json"
+    },
+    {
+      "slug": "windsor",
+      "name": "Transit Windsor",
+      "center": [
+        42.317,
+        -83.046
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor-stops.json",
+      "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
+      "bbox": [
+        42.042,
+        -83.115,
+        42.342,
+        -82.607
+      ]
+    },
+    {
+      "slug": "belleville",
+      "name": "Belleville Transit",
+      "center": [
+        44.163,
+        -77.383
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville-stops.json",
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
+      "bbox": [
+        44.141,
+        -77.437,
+        44.199,
+        -77.342
+      ]
+    },
+    {
+      "slug": "cornwall",
+      "name": "Cornwall Transit",
+      "center": [
+        45.018,
+        -74.728
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall-stops.json",
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
+      "bbox": [
+        45.01,
+        -74.771,
+        45.063,
+        -74.674
+      ]
+    },
+    {
+      "slug": "stlevis",
+      "name": "STLévis",
+      "center": [
+        46.8,
+        -71.177
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-stops.json",
+      "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
+      "bbox": [
+        46.552,
+        -71.41,
+        46.828,
+        -71.099
+      ]
     }
   ]
 }

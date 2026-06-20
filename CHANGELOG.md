@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - **KNOWN_ISSUES.md**: added `docs/KNOWN_ISSUES.md` documenting missing agencies, feed quirks, and platform limitations that are out of scope for Linear.
 
 ### Added
+- **4 new agencies (AI-82)**: Transit Windsor, Belleville Transit, Cornwall Transit, STLévis — processed and added to index.json with feedUrls and bboxes. Atlas now covers 40 agencies. OC Transpo, STO, RTC, and STTR feeds were dead or unreturnable at time of addition; noted for follow-up.
 - **Corridors service timeline**: results panel now shows a service timeline with AM Peak / Midday / PM Peak / Evening columns, color-coded by headway tier. Direction labels appear above each bar row; all period bars are equal width.
 
 ### Changed
