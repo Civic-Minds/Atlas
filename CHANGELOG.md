@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Search result click does nothing (AI-120)**: clicking a route in search results called `setSelectedRoute` but the route card is gated behind `!query.trim()` — the card never appeared while the query was still set. Fix: clear the query on click alongside setting the route.
 - **OC Transpo Route 1 "every 0 min" (AI-114)**: agencies that split the same schedule across multiple service_ids (OC Transpo uses separate Mon–Thu and Friday service_ids for the Confederation Line, both tagged `monday=1`) produced exact-duplicate departure times in `stopDepsByGroup`. `medianHeadwayInWindow` computed gaps between unsorted duplicates, returning a median of 0. Fixed by deduplicating and sorting times inside `medianHeadwayInWindow` before computing gaps. Route 1 now correctly shows every 5 min weekday.
 - **titleCase capitalizing after apostrophes (AI-115)**: regex `\b` treats apostrophes as word boundaries, so "Tunney's" became "Tunney'S". Added a post-pass `.replace(/'(\p{L})/gu, ...)` to lowercase any letter immediately following an apostrophe.
 - **O-Train classified as Streetcar (AI-116)**: OC Transpo O-Train lines (Confederation, Trillium, Airport) use GTFS `route_type=0` (tram/streetcar) but are urban LRT. Added agency-specific rule to `effectiveMode`: `agencySlug === 'octranspo' && routeType === 0 → VIRTUAL_LRT_MODE`. They now appear under LRT in the mode filter.

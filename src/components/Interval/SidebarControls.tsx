@@ -580,7 +580,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 {searchMatchResults.map((r) => (
                   <button
                     key={r.key}
-                    onClick={() => setSelectedRoute(selectedRoute === r.key ? null : r.key)}
+                    onClick={() => { setQuery(''); setSelectedRoute(selectedRoute === r.key ? null : r.key); }}
                     className={`w-full flex items-center justify-between gap-2 px-1.5 py-1 rounded text-left text-[11px] transition-colors ${
                       selectedRoute === r.key
                         ? 'bg-[var(--accent-bg)] text-[var(--accent)]'
