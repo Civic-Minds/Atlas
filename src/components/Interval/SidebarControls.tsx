@@ -516,24 +516,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                                 const ph = period !== 'all' ? byPeriod?.[period as keyof HeadwayByPeriod] : undefined;
                                 const displayH = ph ?? d.headway;
                                 const color = headwayToTierColor(displayH);
-                                // Show a range when frequency varies significantly along the route
-                                // (e.g. combined service on a shared corridor vs. a branch extension).
-                                const stopHws = (d as any).stopHeadways as Record<string, number> | undefined;
-                                // Only consider stops ≤60 min — far-end stations served by 2–3 trains
-                                // per day have headways of 100–500 min and would distort the range.
-                                const stopVals = stopHws
-                                  ? Object.values(stopHws).filter(v => v <= 60)
-                                  : [];
-                                const stopMin = stopVals.length > 0 ? Math.round(Math.min(...stopVals)) : null;
-                                const stopMax = stopVals.length > 0 ? Math.round(Math.max(...stopVals)) : null;
-                                const showRange = !ph && stopMin != null && stopMax != null
-                                  && stopMax / stopMin > 1.5 && stopMin !== stopMax;
                                 return (
                                   <>
                                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                                    {showRange
-                                      ? `every ${stopMin}–${stopMax} min`
-                                      : fmtHeadway(displayH!)}
+                                    {fmtHeadway(displayH!)}
                                     {ph != null && (
                                       <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period]}</span>
                                     )}
