@@ -685,8 +685,8 @@
       "slug": "octranspo",
       "name": "OC Transpo",
       "center": [
-        45.325,
-        -75.693
+        45.32,
+        -75.69
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-stops.json",
@@ -714,6 +714,17 @@
         45.593,
         -75.391
       ]
+    },
+    {
+      "slug": "octranspo-debug",
+      "name": "OC Transpo",
+      "center": [
+        45.42,
+        -75.69
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-debug.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-debug-stops.json",
+      "feedUrl": null
     }
   ]
 }

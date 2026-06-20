@@ -25,7 +25,10 @@ type PeriodKey = keyof typeof PERIODS;
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
 function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
-  const times = departureTimes.filter(t => t >= start && t <= end);
+  // Deduplicate and sort before computing gaps. Agencies that split the same schedule across
+  // multiple service_ids (e.g. OC Transpo Mon-Thu + Friday Confederation Line both having
+  // monday=1) would otherwise produce exact-duplicate minutes that collapse gaps to 0.
+  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
@@ -465,11 +468,27 @@ export async function processGtfsBuffer(
   const routesByStop = new Map<string, Set<string>>();
   const tripById = new Map((gtfs.trips ?? []).map(t => [t.trip_id, t]));
 
+  // Build child→parent map for GTFS parent_station hierarchy (AI-117).
+  // Some agencies (e.g. OC Transpo) reference only child platform IDs in stop_times;
+  // parent station IDs are never referenced directly. We propagate child routes and
+  // departures up to the parent so parent stations appear on the map with correct badges.
+  const childToParent = new Map<string, string>();
+  for (const stop of gtfs.stops ?? []) {
+    if (stop.parent_station) childToParent.set(stop.stop_id, stop.parent_station);
+  }
+
   for (const st of gtfs.stopTimes ?? []) {
     const trip = tripById.get(st.trip_id);
     if (!trip) continue;
     if (!routesByStop.has(st.stop_id)) routesByStop.set(st.stop_id, new Set());
     routesByStop.get(st.stop_id)!.add(trip.route_id);
+
+    // Propagate route up to parent station
+    const parentId = childToParent.get(st.stop_id);
+    if (parentId) {
+      if (!routesByStop.has(parentId)) routesByStop.set(parentId, new Set());
+      routesByStop.get(parentId)!.add(trip.route_id);
+    }
 
     // Per-stop departure collection
     const grp = tripGroupByTripId.get(st.trip_id);
@@ -482,9 +501,16 @@ export async function processGtfsBuffer(
           const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
           let stopMap = stopDepsByGroup.get(gKey);
           if (!stopMap) { stopMap = new Map(); stopDepsByGroup.set(gKey, stopMap); }
+          // Add departure to child stop
           let arr = stopMap.get(st.stop_id);
           if (!arr) { arr = []; stopMap.set(st.stop_id, arr); }
           arr.push(mins);
+          // Propagate to parent station so it also gets headways
+          if (parentId) {
+            let parentArr = stopMap.get(parentId);
+            if (!parentArr) { parentArr = []; stopMap.set(parentId, parentArr); }
+            parentArr.push(mins);
+          }
         }
       }
     }
@@ -504,7 +530,10 @@ export async function processGtfsBuffer(
 
   const servedStopIds = new Set((gtfs.stopTimes ?? []).map(st => st.stop_id));
   for (const stop of gtfs.stops ?? []) {
-    if (!servedStopIds.has(stop.stop_id)) continue;
+    // Include child stops referenced in stop_times, AND parent stations whose children
+    // gave them routes via the propagation above (AI-117).
+    const isServedParent = stop.location_type === '1' && routesByStop.has(stop.stop_id);
+    if (!servedStopIds.has(stop.stop_id) && !isServedParent) continue;
 
     const routeIds = Array.from(routesByStop.get(stop.stop_id) ?? []);
     // Hub: a named station/terminal (location_type=1) or served by 3+ distinct routes.

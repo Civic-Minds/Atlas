@@ -44,6 +44,7 @@ export function titleCase(s: string): string {
       return word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
     })
     .replace(/\b(Go|Dc|Yrt|Ttc|Hsr|Grt|Brt|Lrt|Nfta|Ltc|Ktc|Lw|Le|Ki|Mi|Br|St|Rh)\b/g, m => TRANSIT_ACRONYMS[m] ?? m)
+    .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
 }

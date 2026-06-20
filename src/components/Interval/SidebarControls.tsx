@@ -338,7 +338,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 className="w-full text-left hover:bg-[var(--bg-hover)] rounded-xl px-2 py-1.5 -mx-2 transition-colors group"
               >
                 <div className="text-[13px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">
-                  {r.shortName}{r.longName ? ` — ${titleCase(r.longName)}` : ''}
+                  {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
