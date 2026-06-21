@@ -398,3 +398,6 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Root Lockfile Sync**: Explicitly installed `@emnapi/core` and `@emnapi/runtime` to resolve a persistent `npm ci` failure in GitHub Actions caused by missing peer dependencies for `firebase`.
+
+## Older Releases
+Earlier release history is available in the [Changelog Archive](./CHANGELOG_ARCHIVE.md).
