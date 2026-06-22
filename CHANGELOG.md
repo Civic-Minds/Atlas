@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.3.1] - 2026-06-22
 
 ### Fixed
 - **NFTA feeds failing weekly refresh**: `metro.nfta.com` has a broken SSL cert that fails certificate verification in CI. Switched `nfta` and `nfta-rail` `feedUrl` to the Mobility Database stable mirror (MDB #465).
