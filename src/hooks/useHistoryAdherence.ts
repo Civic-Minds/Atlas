@@ -20,7 +20,7 @@ export function useHistoryAdherence(
 
     let cancelled = false;
     setStatus('loading');
-    setData(null);
+    // Don't clear data — keep previous visible while new loads
 
     fetch(`/api/history-adherence?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(routeShortName)}&days=${days}`)
       .then(r => r.json())

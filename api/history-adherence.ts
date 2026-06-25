@@ -88,9 +88,9 @@ export default async function handler(req: Request) {
       });
     }
 
-    // Fetch every other snapshot to keep response time reasonable
-    // (5-min polling → every other = 10-min resolution, still plenty for hourly aggregation)
-    const sampledKeys = allKeys.filter((_, i) => i % 2 === 0);
+    // Sample keys: every other file (10-min resolution), capped at 500 to bound response time
+    const strideKeys = allKeys.filter((_, i) => i % 2 === 0);
+    const sampledKeys = strideKeys.slice(0, 500);
     const snapshots = (await Promise.all(sampledKeys.map(k => fetchSnapshot(client, k)))).filter(Boolean) as Snapshot[];
 
     const result = computeHistoryAdherence(agency, route, snapshots, days);

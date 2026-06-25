@@ -124,10 +124,10 @@ export default function History({ active }: Props) {
         <div>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-black text-[var(--text-primary)]">Right now</p>
-            {liveStatus === 'live' && (
+            {liveStatus === 'live' && liveData && (
               <span className="flex items-center gap-1.5 text-[10px] text-green-500 font-bold">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                live
+                updated {new Date(liveData.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
           </div>

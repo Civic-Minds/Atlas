@@ -6,10 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **History app** (`src/apps/History.tsx`): new map app showing actual vs scheduled trip delays for Hamilton King (01), Hamilton B-Line (10), Burlington Route 1, and Burlington Route 10. Route picker, 7/14/30-day window selector, SVG bar chart of avg delay by hour of day, summary stats.
+- **History app live section**: "Right now" panel at top of History app uses existing `useLiveAdherence` hook to show active trips, per-trip on-time status, avg delay, and actual headway vs scheduled at anchor stops — immediately useful without waiting for archived data to accumulate.
 - **`api/history-adherence.ts`**: Vercel function that reads archived trip-update JSON from `atlas-live` R2, filters by route, aggregates delays by hour of day, returns time-series result.
 - **`shared/computeHistoryAdherence.ts`**: analysis logic — filters snapshots by route_id, buckets delays into hours (EST), computes per-hour averages and overall avg.
 - **`src/hooks/useHistoryAdherence.ts`**: React hook for fetching history adherence data with loading/noData/error states.
 - **AppDrawer History entry enabled**: was `available: false`, now live. Description updated to "Actual vs scheduled trip delays".
+- **`R2_LIVE_BUCKET_NAME` added to Vercel env**: production environment variable set explicitly; other environments fall back to `'atlas-live'` default in code.
+
+### Changed
+- **Route switch no longer blanks UI**: `useLiveAdherence` and `useHistoryAdherence` retain previous data while new route loads, preventing flash-to-empty on route change.
+- **History trend API capped at 500 fetches**: `api/history-adherence.ts` limits sampled R2 object fetches to 500 per request to keep response times predictable as archived data grows.
+- **Live section shows last-updated time**: timestamp displayed next to the live indicator dot, updated on each poll.
 
 ### Changed
 - **GTFS-RT archiver rewrites raw protobuf storage to compact JSON**: instead of saving the full feed binary (~1.5 MB/poll), the worker now parses each TripUpdate and extracts only `trip_id`, `route_id`, `direction_id`, and delay in seconds. Output is ~5–20 KB per poll — roughly 99% smaller. Files stored as `{slug}/{date}/{unix}.json`.

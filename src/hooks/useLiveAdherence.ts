@@ -45,6 +45,8 @@ export function useLiveAdherence(
     let cancelled = false;
     const slug = agencySlug;
     const route = routeShortName;
+    // Don't clear data — keep previous visible while new route loads
+    setStatus('pending');
 
     async function poll() {
       try {
@@ -58,6 +60,7 @@ export function useLiveAdherence(
           setData(json);
           setStatus('live');
         } else {
+          setData(null);
           setStatus('noData');
         }
       } catch {
