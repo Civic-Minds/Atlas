@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - **GTFS-RT archiver adds 30-day retention cleanup**: a second cron (`0 4 * * *`) runs daily at 04:00 UTC and deletes date-prefix folders older than 30 days from `atlas-live`.
 - **GTFS-RT archiver skips idle polls**: if the feed response is under 5 KB, no file is written — handles overnight periods when no trips are running without hardcoding service hours.
 - **GTFS-RT archiver fixes Burlington fetch**: added `User-Agent` header to all feed requests; Burlington's server was silently rejecting headerless requests, leaving `atlas-live` with only `hamilton/` data.
+- **R2 credentials rotated to all-buckets token**: `.env.local` and GitHub Actions secrets updated to use new credentials covering `atlas`, `atlas-archive`, and `atlas-live`. Old atlas-only token deleted.
 
 ### Changed
 - **Dependency updates**: `@aws-sdk/client-s3` 3.1071→3.1073, `lucide-react` 1.14→1.21, `papaparse` 5.5.3→5.5.4, `playwright` 1.60→1.61 (Dependabot #65–68)
