@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **GTFS-RT archiver rewrites raw protobuf storage to compact JSON**: instead of saving the full feed binary (~1.5 MB/poll), the worker now parses each TripUpdate and extracts only `trip_id`, `route_id`, `direction_id`, and delay in seconds. Output is ~5–20 KB per poll — roughly 99% smaller. Files stored as `{slug}/{date}/{unix}.json`.
+- **GTFS-RT archiver cron corrected to `*/5 * * * *`**: was unintentionally set to every minute (`* * * * *`); 5 minutes is the right interval to capture Hamilton's 6-minute headway routes without missing trips.
+- **GTFS-RT archiver adds 30-day retention cleanup**: a second cron (`0 4 * * *`) runs daily at 04:00 UTC and deletes date-prefix folders older than 30 days from `atlas-live`.
+- **GTFS-RT archiver skips idle polls**: if the feed response is under 5 KB, no file is written — handles overnight periods when no trips are running without hardcoding service hours.
+- **GTFS-RT archiver fixes Burlington fetch**: added `User-Agent` header to all feed requests; Burlington's server was silently rejecting headerless requests, leaving `atlas-live` with only `hamilton/` data.
+
+### Changed
 - **Dependency updates**: `@aws-sdk/client-s3` 3.1071→3.1073, `lucide-react` 1.14→1.21, `papaparse` 5.5.3→5.5.4, `playwright` 1.60→1.61 (Dependabot #65–68)
 - **GitHub Actions updated**: `actions/checkout` v4→v7, `actions/setup-node` v4→v6 in both workflows (Dependabot #63–64)
 
