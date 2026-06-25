@@ -5,8 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
-- **Refresh pipeline skips unchanged feeds**: before processing, `refresh.ts` now peeks at `feed_info.txt` inside the downloaded zip and compares `feed_end_date` against the stored `lastFeedExpiry` in `index.json`. If the schedule period hasn't changed, the agency is skipped entirely — no reprocessing, no R2 writes.
-- **Raw GTFS zip archiving**: when a feed has a new `feed_end_date`, the raw zip is uploaded to R2 at `gtfs/archive/{slug}/{feedExpiry}.zip` before the processed GeoJSON overwrites the live data. This gives a permanent historical record of each distinct schedule period, keyed by service end date.
+- **Refresh pipeline skips unchanged feeds**: before processing, `refresh.ts` now peeks at `feed_info.txt` inside the downloaded zip and compares `feed_end_date` against `lastFeedExpiry` in `index.json`. If the schedule period hasn't changed, the agency is skipped entirely — no reprocessing, no R2 writes. Falls back to `feed_version` for agencies without a `feed_end_date`.
+- **Raw GTFS zip archiving to private bucket**: when a feed has a new schedule period, the raw zip is uploaded to the private `atlas-archive` R2 bucket at `gtfs/archive/{slug}/{feedExpiry}.zip`. Keeps historical feeds permanently without exposing them publicly.
+- **Crash-resilient index.json writes**: `index.json` is now written after each successfully refreshed agency rather than once at the end, so a mid-run failure doesn't lose `lastFeedExpiry` for completed agencies.
+- **`lastFeedVersion` tracked in index.json**: agencies that publish `feed_version` but no `feed_end_date` now also get skip deduplication.
+- **`migrate-archive` script** (`npm run migrate-archive`): uploads existing local GTFS zips from `Desktop/Data/GTFS/` to the archive bucket, keyed by `feed_end_date`. Supports `--dry-run` to preview without uploading.
 
 ## [2.3.1] - 2026-06-22
 

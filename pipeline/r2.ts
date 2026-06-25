@@ -4,8 +4,9 @@
  *
  * Required env vars (add to .env.local):
  *   R2_ACCOUNT_ID
- *   R2_BUCKET_NAME
- *   R2_PUBLIC_URL   (e.g. https://pub-xxx.r2.dev)
+ *   R2_BUCKET_NAME        — public bucket (live GeoJSON)
+ *   R2_PUBLIC_URL         — e.g. https://pub-xxx.r2.dev
+ *   R2_ARCHIVE_BUCKET_NAME — private bucket (raw GTFS zip archive)
  *   R2_ACCESS_KEY_ID
  *   R2_SECRET_ACCESS_KEY
  */
@@ -42,21 +43,15 @@ function isRetryableR2Error(err: unknown): boolean {
   return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up/i.test(msg);
 }
 
-export async function r2Put(key: string, body: string, contentType = 'application/json'): Promise<string> {
+async function r2PutRaw(key: string, body: string | Buffer, contentType: string, bucket: string): Promise<void> {
   const client = getR2Client();
-  const bucket = requireEnv('R2_BUCKET_NAME');
   const maxAttempts = 4;
   let lastErr: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      await client.send(new PutObjectCommand({
-        Bucket: bucket,
-        Key: key,
-        Body: body,
-        ContentType: contentType,
-      }));
-      return r2PublicUrl(key);
+      await client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }));
+      return;
     } catch (err) {
       lastErr = err;
       if (attempt < maxAttempts && isRetryableR2Error(err)) {
@@ -69,31 +64,19 @@ export async function r2Put(key: string, body: string, contentType = 'applicatio
   throw lastErr;
 }
 
-export async function r2PutBuffer(key: string, body: Buffer, contentType: string): Promise<string> {
-  const client = getR2Client();
-  const bucket = requireEnv('R2_BUCKET_NAME');
-  const maxAttempts = 4;
-  let lastErr: unknown;
+export async function r2Put(key: string, body: string, contentType = 'application/json'): Promise<string> {
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
+  return r2PublicUrl(key);
+}
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      await client.send(new PutObjectCommand({
-        Bucket: bucket,
-        Key: key,
-        Body: body,
-        ContentType: contentType,
-      }));
-      return r2PublicUrl(key);
-    } catch (err) {
-      lastErr = err;
-      if (attempt < maxAttempts && isRetryableR2Error(err)) {
-        await sleep(500 * 2 ** (attempt - 1));
-        continue;
-      }
-      throw err;
-    }
-  }
-  throw lastErr;
+export async function r2PutBuffer(key: string, body: Buffer, contentType: string): Promise<string> {
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
+  return r2PublicUrl(key);
+}
+
+/** Upload to the private archive bucket — no public URL returned. */
+export async function r2PutArchive(key: string, body: Buffer, contentType: string): Promise<void> {
+  await r2PutRaw(key, body, contentType, requireEnv('R2_ARCHIVE_BUCKET_NAME'));
 }
 
 export async function r2Get(key: string): Promise<string | null> {
