@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Dependency updates**: `@aws-sdk/client-s3` 3.1071→3.1073, `lucide-react` 1.14→1.21, `papaparse` 5.5.3→5.5.4, `playwright` 1.60→1.61 (Dependabot #65–68)
+- **GitHub Actions updated**: `actions/checkout` v4→v7, `actions/setup-node` v4→v6 in both workflows (Dependabot #63–64)
+
 ### Fixed
 - **GTFS-RT archiver cron corrected to every 5 minutes**: `wrangler.toml` had `* * * * *` (every minute) — now `*/5 * * * *`. Redeployed.
 - **`atlas-live` R2 lifecycle rule added**: 30-day TTL on all objects (`delete-old-snapshots` rule) so .pb snapshots don't accumulate forever.
