@@ -161,6 +161,8 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;
   if (archiveKey) {
     await r2PutArchive(`gtfs/archive/${agency.slug}/${archiveKey}.zip`, buf, 'application/zip');
+  } else {
+    process.stdout.write(`  [warn] no feed_end_date or feed_version — zip not archived\n`);
   }
   agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
   agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;

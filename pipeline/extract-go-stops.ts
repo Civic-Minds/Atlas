@@ -7,7 +7,7 @@
  */
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { put } from '@vercel/blob';
+import { r2Put } from './r2.js';
 import { config } from 'dotenv';
 import { parseGtfsZip } from './parseGtfs.js';
 
@@ -37,8 +37,8 @@ async function loadGtfsBuffer(): Promise<Buffer> {
 }
 
 async function main() {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.error('Missing BLOB_READ_WRITE_TOKEN. Run: vercel env pull .env.local');
+  if (!process.env.R2_ACCESS_KEY_ID) {
+    console.error('Missing R2 credentials. Add R2_* vars to .env.local');
     process.exit(1);
   }
 
@@ -114,15 +114,11 @@ async function main() {
 
   const payload = JSON.stringify({ stops, generatedAt: new Date().toISOString() });
   const kb = Math.round(Buffer.byteLength(payload) / 1024);
-  console.log(`  Uploading ${stops.length} rail stops (${kb} KB) to Blob...`);
+  console.log(`  Uploading ${stops.length} rail stops (${kb} KB) to R2...`);
 
-  const blob = await put('atlas/go-stops.json', payload, {
-    access: 'public',
-    contentType: 'application/json',
-    allowOverwrite: true,
-  });
+  const url = await r2Put('atlas/go-stops.json', payload);
 
-  console.log(`  Uploaded → ${blob.url}`);
+  console.log(`  Uploaded → ${url}`);
   console.log('\nDone.\n');
 }
 

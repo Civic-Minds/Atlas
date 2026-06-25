@@ -103,7 +103,9 @@ async function main() {
       continue;
     }
 
-    const r2Key = `gtfs/archive/${slug}/${archiveKey}.zip`;
+    // Use gtfs/historical/ prefix (not gtfs/archive/) — local filenames don't match
+    // Atlas agency slugs, so keep them separate from pipeline-generated archives.
+    const r2Key = `gtfs/historical/${slug}/${archiveKey}.zip`;
     const kb = Math.round(buf.length / 1024);
 
     if (dryRun) {

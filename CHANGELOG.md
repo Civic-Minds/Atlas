@@ -9,7 +9,12 @@ All notable changes to this project will be documented in this file.
 - **Raw GTFS zip archiving to private bucket**: when a feed has a new schedule period, the raw zip is uploaded to the private `atlas-archive` R2 bucket at `gtfs/archive/{slug}/{feedExpiry}.zip`. Keeps historical feeds permanently without exposing them publicly.
 - **Crash-resilient index.json writes**: `index.json` is now written after each successfully refreshed agency rather than once at the end, so a mid-run failure doesn't lose `lastFeedExpiry` for completed agencies.
 - **`lastFeedVersion` tracked in index.json**: agencies that publish `feed_version` but no `feed_end_date` now also get skip deduplication.
-- **`migrate-archive` script** (`npm run migrate-archive`): uploads existing local GTFS zips from `Desktop/Data/GTFS/` to the archive bucket, keyed by `feed_end_date`. Supports `--dry-run` to preview without uploading.
+- **`migrate-archive` script** (`npm run migrate-archive`): uploads existing local GTFS zips from `Desktop/Data/GTFS/` to the archive bucket, keyed by `feed_end_date`. Supports `--dry-run` to preview without uploading. Uses `gtfs/historical/` prefix (separate from pipeline's `gtfs/archive/`) since local filenames don't match Atlas agency slugs.
+- **`extract-go-stops.ts` migrated to R2**: was the last pipeline script still writing to Vercel Blob; now uses `r2Put` like everything else.
+
+### Fixed
+- **CI workflow missing `R2_ARCHIVE_BUCKET_NAME`**: the secret was set but never injected into the workflow env block, so every weekly run that encountered a changed feed was marking the agency as FAILED and writing no archive.
+- **Silent skip when feed has no archive key**: feeds without `feed_end_date` or `feed_version` now log a warning instead of silently skipping the archive step.
 
 ## [2.3.1] - 2026-06-22
 
