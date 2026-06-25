@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- **Refresh pipeline skips unchanged feeds**: before processing, `refresh.ts` now peeks at `feed_info.txt` inside the downloaded zip and compares `feed_end_date` against the stored `lastFeedExpiry` in `index.json`. If the schedule period hasn't changed, the agency is skipped entirely — no reprocessing, no R2 writes.
+- **Raw GTFS zip archiving**: when a feed has a new `feed_end_date`, the raw zip is uploaded to R2 at `gtfs/archive/{slug}/{feedExpiry}.zip` before the processed GeoJSON overwrites the live data. This gives a permanent historical record of each distinct schedule period, keyed by service end date.
+
 ## [2.3.1] - 2026-06-22
 
 ### Fixed

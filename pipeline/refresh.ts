@@ -11,7 +11,8 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
-import { r2Put, r2Get } from './r2.js';
+import { r2Put, r2Get, r2PutBuffer } from './r2.js';
+import JSZip from 'jszip';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
 
@@ -64,6 +65,28 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   return `snapshot written (expires ${periodKey})`;
 }
 
+async function peekFeedExpiry(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
+  try {
+    const zip = await JSZip.loadAsync(buf);
+    const entry = zip.file('feed_info.txt') ?? zip.file(
+      Object.keys(zip.files).find(f => f.endsWith('/feed_info.txt') && !zip.files[f].dir) ?? ''
+    );
+    if (!entry) return { feedExpiry: null, feedVersion: null };
+    const text = await entry.async('text');
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return { feedExpiry: null, feedVersion: null };
+    const headers = lines[0].split(',').map(h => h.trim());
+    const values = lines[1].split(',').map(v => v.trim());
+    const get = (col: string) => {
+      const i = headers.indexOf(col);
+      return i >= 0 ? (values[i] || null) : null;
+    };
+    return { feedExpiry: get('feed_end_date'), feedVersion: get('feed_version') };
+  } catch {
+    return { feedExpiry: null, feedVersion: null };
+  }
+}
+
 interface AgencyEntry {
   slug: string;
   name: string;
@@ -71,6 +94,7 @@ interface AgencyEntry {
   url: string;
   stopsUrl: string;
   feedUrl: string | null;
+  lastFeedExpiry?: string | null;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
 }
@@ -109,6 +133,12 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
   }
 
+  // Skip processing if the schedule period hasn't changed since last refresh.
+  const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedExpiry(buf);
+  if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
+    return `skipped (same schedule period: ${peekedExpiry})`;
+  }
+
   const { geojson, stopsJson, featureCount, feedExpiry, feedVersion } = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
@@ -121,6 +151,13 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   ]);
   agency.url = url;
   agency.stopsUrl = stopsUrl;
+
+  // Archive the raw zip keyed by service end date so historical feeds are never lost.
+  const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;
+  if (archiveKey) {
+    await r2PutBuffer(`gtfs/archive/${agency.slug}/${archiveKey}.zip`, buf, 'application/zip');
+  }
+  agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
 
   // For agencies enrolled in history tracking, write a compact headway snapshot.
   if (HISTORY_SLUGS.has(agency.slug)) {

@@ -69,6 +69,33 @@ export async function r2Put(key: string, body: string, contentType = 'applicatio
   throw lastErr;
 }
 
+export async function r2PutBuffer(key: string, body: Buffer, contentType: string): Promise<string> {
+  const client = getR2Client();
+  const bucket = requireEnv('R2_BUCKET_NAME');
+  const maxAttempts = 4;
+  let lastErr: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await client.send(new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+      }));
+      return r2PublicUrl(key);
+    } catch (err) {
+      lastErr = err;
+      if (attempt < maxAttempts && isRetryableR2Error(err)) {
+        await sleep(500 * 2 ** (attempt - 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 export async function r2Get(key: string): Promise<string | null> {
   const client = getR2Client();
   const bucket = requireEnv('R2_BUCKET_NAME');
