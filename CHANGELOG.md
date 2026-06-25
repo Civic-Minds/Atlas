@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **GTFS-RT archiver cron corrected to every 5 minutes**: `wrangler.toml` had `* * * * *` (every minute) — now `*/5 * * * *`. Redeployed.
+- **`atlas-live` R2 lifecycle rule added**: 30-day TTL on all objects (`delete-old-snapshots` rule) so .pb snapshots don't accumulate forever.
+
 ### Changed
 - **Refresh pipeline skips unchanged feeds**: before processing, `refresh.ts` now peeks at `feed_info.txt` inside the downloaded zip and compares `feed_end_date` against `lastFeedExpiry` in `index.json`. If the schedule period hasn't changed, the agency is skipped entirely — no reprocessing, no R2 writes. Falls back to `feed_version` for agencies without a `feed_end_date`.
 - **Raw GTFS zip archiving to private bucket**: when a feed has a new schedule period, the raw zip is uploaded to the private `atlas-archive` R2 bucket at `gtfs/archive/{slug}/{feedExpiry}.zip`. Keeps historical feeds permanently without exposing them publicly.
