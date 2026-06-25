@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Map as MapIcon, Search, X, ArrowLeft } from 'lucide-react';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
+import History from './apps/History';
 import AppDrawer, { type AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 
@@ -35,7 +36,8 @@ export default function App() {
   const [corridorsMounted, setCorridorsMounted] = useState(false);
 
   const inFrequency = activeApp === 'frequency';
-  const searchValue = inFrequency ? query : corridorsFrom;
+  const inHistory = activeApp === 'history';
+  const searchValue = inFrequency ? query : inHistory ? '' : corridorsFrom;
   // In corridors mode: show "From" as the placeholder when empty+unfocused, then "Search stations…" on focus
   const searchPlaceholder = inFrequency
     ? 'Search routes'
@@ -154,6 +156,7 @@ export default function App() {
               showUi={inFrequency}
               showRouteLayers={inFrequency}
             />
+            <History active={inHistory} />
             {corridorsMounted && (
               <div className="absolute inset-0 z-[500]">
                 <Corridors

@@ -22,9 +22,9 @@ const APPS: AppEntry[] = [
   {
     id: 'history',
     label: 'History',
-    description: 'Compare service across schedules',
+    description: 'Actual vs scheduled trip delays',
     icon: <Clock className="w-5 h-5" />,
-    available: false,
+    available: true,
   },
 ];
 
