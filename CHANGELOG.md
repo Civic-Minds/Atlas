@@ -9,9 +9,11 @@ All notable changes to this project will be documented in this file.
 - **BC Transit (Fraser Valley)**: added via MDB unified Fraser Valley Region feed (1991); 1,797 features.
 - **BC Transit (Victoria)**: added via MDB feed (2571); 5,182 features.
 - **RTC (Québec)**: added Quebec City transit via local zip; feedUrl set to MDB stable mirror.
-- **index.json refactored**: added `region` field to all 44 agencies (Ontario/Quebec/British Columbia/New York); sorted by region then name; removed `octranspo-debug` debug entry; added missing bboxes for `hsr`, `translink`, `rtc`; standardized field ordering throughout.
+- **index.json refactored**: added `region` field to all agencies (Ontario/Quebec/British Columbia/New York); sorted by region then name; removed `octranspo-debug` and duplicate `hsr` entries; added missing bboxes for `translink`, `rtc`; standardized field ordering throughout.
 
 ### Added
+- **Region filter chips in agency browser**: "All / Ontario / British Columbia / …" chips in the InfoPanel Agencies tab for quick filtering by province/state. Chips are generated from the `region` field in `index.json` — new regions appear automatically.
+- **Agencies dropdown grouped by region**: the Agencies chip in the frequency map filter bar now groups agencies under region headers (Ontario, British Columbia, Quebec, New York) instead of a flat list. Scales cleanly as coverage expands.
 - **Info panel with agency browser**: (i) button on all three map views opens a panel with two tabs. "About" has a description, frequency tier legend, and GitHub link. "Agencies" has a live-search list of all agencies grouped by region — automatically reflects `index.json` additions with no code changes. Placed next to Settings on Frequency, next to the day picker on Corridors, and in the History panel header.
 
 ### Changed

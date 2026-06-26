@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import type { Agency } from '../../App';
@@ -47,6 +47,85 @@ const rowBtn = (active: boolean) =>
       ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
       : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
   }`;
+
+interface AgenciesPanelProps {
+  agencies: Agency[];
+  selectedAgencies: Set<string>;
+  setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
+  layers: AgencyLayers;
+  agencyQuery: string;
+  setAgencyQuery: (q: string) => void;
+  agencySearchRef: React.RefObject<HTMLInputElement | null>;
+}
+
+function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
+  // Merge same-named agencies (e.g. NFTA bus + rail) then group by region
+  const byRegion = useMemo(() => {
+    const q = agencyQuery.toLowerCase();
+    // Dedupe by name within each region
+    const groups: { name: string; slugs: string[]; region: string }[] = [];
+    for (const a of agencies) {
+      const region = a.region ?? 'Other';
+      const g = groups.find(x => x.name === a.name && x.region === region);
+      if (g) g.slugs.push(a.slug);
+      else groups.push({ name: a.name, slugs: [a.slug], region });
+    }
+    const filtered = q ? groups.filter(g => g.name.toLowerCase().includes(q) || g.region.toLowerCase().includes(q)) : groups;
+    const map = new Map<string, typeof groups>();
+    for (const g of filtered) {
+      if (!map.has(g.region)) map.set(g.region, []);
+      map.get(g.region)!.push(g);
+    }
+    return map;
+  }, [agencies, agencyQuery]);
+
+  return (
+    <div className={`${PANEL} w-56`}>
+      <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">
+        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+        <input
+          ref={agencySearchRef}
+          value={agencyQuery}
+          onChange={e => setAgencyQuery(e.target.value)}
+          placeholder="Search…"
+          className="flex-1 bg-transparent text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
+        />
+      </div>
+      <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
+        {byRegion.size === 0 && (
+          <p className="px-2 py-2 text-[10px] text-[var(--text-dim)]">No matches.</p>
+        )}
+        {[...byRegion.entries()].map(([region, groups]) => (
+          <div key={region}>
+            <p className="px-2 pt-2 pb-0.5 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
+            {groups.map(g => {
+              const active = g.slugs.every(s => selectedAgencies.has(s));
+              const loaded = g.slugs.some(s => s in layers);
+              return (
+                <button
+                  key={g.name}
+                  onClick={() => {
+                    const next = new Set(selectedAgencies);
+                    if (active) g.slugs.forEach(s => next.delete(s));
+                    else g.slugs.forEach(s => next.add(s));
+                    setSelectedAgencies(next);
+                  }}
+                  className={rowBtn(active)}
+                  aria-label={g.name}
+                >
+                  {g.name}
+                  {active && !loaded && (
+                    <span className="ml-auto w-2 h-2 rounded-full border border-current opacity-40 shrink-0" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export const FilterChips: React.FC<FilterChipsProps> = ({
   maxHeadway,
@@ -225,53 +304,15 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           );
         })()}
         {openChip === 'agencies' && (
-          <div className={`${PANEL} w-56`}>
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">
-              <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-              <input
-                ref={agencySearchRef}
-                value={agencyQuery}
-                onChange={e => setAgencyQuery(e.target.value)}
-                placeholder="Search…"
-                className="flex-1 bg-transparent text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
-              />
-            </div>
-            <div className="max-h-52 overflow-y-auto custom-scrollbar flex flex-col gap-1">
-              {(() => {
-                // Group agencies by display name (e.g. NFTA bus + rail → one chip)
-                const groups: { name: string; slugs: string[] }[] = [];
-                for (const a of agencies) {
-                  const g = groups.find(x => x.name === a.name);
-                  if (g) g.slugs.push(a.slug);
-                  else groups.push({ name: a.name, slugs: [a.slug] });
-                }
-                return groups
-                  .filter(g => g.name.toLowerCase().includes(agencyQuery.toLowerCase()))
-                  .map(g => {
-                    const active = g.slugs.every(s => selectedAgencies.has(s));
-                    const loaded = g.slugs.some(s => s in layers);
-                    return (
-                      <button
-                        key={g.name}
-                        onClick={() => {
-                          const next = new Set(selectedAgencies);
-                          if (active) g.slugs.forEach(s => next.delete(s));
-                          else g.slugs.forEach(s => next.add(s));
-                          setSelectedAgencies(next);
-                        }}
-                        className={rowBtn(active)}
-                        aria-label={g.name}
-                      >
-                        {g.name}
-                        {active && !loaded && (
-                          <span className="ml-auto w-2 h-2 rounded-full border border-current opacity-40 shrink-0" />
-                        )}
-                      </button>
-                    );
-                  });
-              })()}
-            </div>
-          </div>
+          <AgenciesPanel
+            agencies={agencies}
+            selectedAgencies={selectedAgencies}
+            setSelectedAgencies={setSelectedAgencies}
+            layers={layers}
+            agencyQuery={agencyQuery}
+            setAgencyQuery={setAgencyQuery}
+            agencySearchRef={agencySearchRef}
+          />
         )}
       </div>
 
