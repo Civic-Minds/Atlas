@@ -6,6 +6,7 @@ import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
 import AppDrawer, { type AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
+import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 
 export interface Agency {
   slug: string;
@@ -93,6 +94,7 @@ export default function App() {
 
   return (
     <CorridorMapOverlayProvider>
+    <HistoryMapOverlayProvider>
     <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
         <button
@@ -176,10 +178,10 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inCorridors}
+              showRouteLayers={inFrequency || inCorridors || inHistory}
               showCorridorBand={inCorridors}
             />
-            <History active={inHistory} />
+            <History active={inHistory} agencies={agencies} />
             {corridorsMounted && (
               <div className="absolute inset-0 z-[500]">
                 <Corridors
@@ -199,6 +201,7 @@ export default function App() {
         )}
       </main>
     </div>
+    </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>
   );
 }

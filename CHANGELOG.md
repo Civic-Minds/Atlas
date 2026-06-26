@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **History app redesigned as map overlay**: History is now a bottom panel over the live map instead of a full-screen overlay. The selected route is highlighted on the map (all other routes dimmed to near-invisible). Each monitored anchor stop gets a floating card on the map showing actual headway gap and vs-scheduled delta, color-coded by severity. Click a card to expand and see scheduled headway. The panel retains the route picker, live summary chips, active trip list, and trend chart. Stop coordinates are resolved by fetching the agency stops index on first load. Implemented via new `HistoryMapOverlay` context, `HistoryStopMarkers` react-leaflet component, and dimming logic in `MapCanvas`.
 - **History route picker grouped by agency**: routes now appear under their agency label (Burlington / Hamilton) rather than in a flat list. Scales cleanly as more routes are added without making the picker harder to read.
 
 ### Fixed

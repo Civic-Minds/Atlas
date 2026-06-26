@@ -8,6 +8,8 @@ import { titleCase, fmtHeadway } from '../../utils/format';
 import { getRegionalView, getAgencyBounds, getSavedView, saveView } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { CorridorMapLayers } from '../corridor/CorridorMapLayers';
+import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
+import { HistoryStopMarkers } from '../history/HistoryStopMarkers';
 import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
@@ -396,6 +398,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 }) => {
   const mapRef = useRef<L.Map | null>(null);
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
+  const { overlay: historyOverlay } = useHistoryMapOverlay();
   const corridorSelected = showCorridorBand && (corridorOverlay?.lines.length ?? 0) > 0;
   const regionalView = getRegionalView(agencies);
   const hasSavedView = getSavedView() !== null;
@@ -426,6 +429,23 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         if (corridorSelected) return { opacity: 0, interactive: false };
         if (!isCorridor) return { opacity: 0, interactive: false };
         return { color: '#2563eb', weight: 3.5, opacity: 0.75, lineCap: 'round' as const, lineJoin: 'round' as const, interactive: false };
+      }
+
+      // History mode: highlight only the focused route, dim everything else.
+      if (historyOverlay && !isCorridor) {
+        const agSlug = (p as any)?.agencySlug as string | undefined;
+        const rShort = p?.routeShortName;
+        const isFocused = agSlug === historyOverlay.slug && rShort === historyOverlay.routeShortName;
+        if (!isFocused) return { opacity: 0.06, interactive: false };
+        const isRailFocus = p?.routeType === 2;
+        return {
+          color: '#2563eb',
+          weight: isRailFocus ? 5 : 4,
+          opacity: 0.9,
+          lineCap: 'round' as const,
+          lineJoin: 'round' as const,
+          interactive: false,
+        };
       }
 
       // Thickness rules (plain English):
@@ -491,7 +511,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         interactive: false,
       };
     },
-    [maxHeadway, period, q, selectedRoute, lightMode, matchesQuery, routesForStop, showCorridorBand, corridorSelected]
+    [maxHeadway, period, q, selectedRoute, lightMode, matchesQuery, routesForStop, showCorridorBand, corridorSelected, historyOverlay]
   );
 
   // Invisible, much wider line drawn under the visible one purely to make routes
@@ -593,6 +613,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <LocateControl onLocate={onLocate} />
       <RouteZoomer selectedRoute={selectedRoute} layers={allLayers || layers} />
       {(showCorridorBand || !showRouteLayers) && corridorOverlay && <CorridorMapLayers overlay={corridorOverlay} />}
+      {historyOverlay && <HistoryStopMarkers />}
       {showRouteLayers && Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         // Split route shapes from stop points — stops mount/unmount on zoom without
