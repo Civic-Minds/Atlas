@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **History crash when API response missing `byHour`**: hook now validates response shape before setting status to `ready`; History.tsx uses optional chaining as a safety net to prevent crashing the whole app.
+- **Corridors map blank on open**: route layers now stay visible in Corridors mode so the network is shown as context before From/To are selected.
 - **History trend API capped at 500 fetches**: `api/history-adherence.ts` limits sampled R2 object fetches to 500 per request to keep response times predictable as archived data grows.
 - **Live section shows last-updated time**: timestamp displayed next to the live indicator dot, updated on each poll.
 

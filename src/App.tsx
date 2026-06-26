@@ -37,6 +37,7 @@ export default function App() {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  const inCorridors = activeApp === 'corridors';
   const searchValue = inFrequency ? query : inHistory ? '' : corridorsFrom;
   // In corridors mode: show "From" as the placeholder when empty+unfocused, then "Search stations…" on focus
   const searchPlaceholder = inFrequency
@@ -154,7 +155,7 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency}
+              showRouteLayers={inFrequency || inCorridors}
             />
             <History active={inHistory} />
             {corridorsMounted && (
