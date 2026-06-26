@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, ArrowLeft } from 'lucide-react';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
@@ -15,12 +16,31 @@ export interface Agency {
   bbox?: [number, number, number, number]; // [south, west, north, east]
 }
 
+const PATH_TO_APP: Record<string, AppId> = {
+  '/': 'frequency',
+  '/corridors': 'corridors',
+  '/history': 'history',
+};
+
+const APP_TO_PATH: Record<AppId, string> = {
+  frequency: '/',
+  corridors: '/corridors',
+  history: '/history',
+};
+
 export default function App() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const activeApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+
+  function setActiveApp(app: AppId) {
+    navigate(APP_TO_PATH[app]);
+  }
+
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [query, setQuery] = useState('');
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
-  const [activeApp, setActiveApp] = useState<AppId>('frequency');
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';

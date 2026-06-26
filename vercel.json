@@ -7,6 +7,14 @@
     {
       "source": "/api/live-adherence",
       "destination": "/api/live-adherence.ts"
+    },
+    {
+      "source": "/api/history-adherence",
+      "destination": "/api/history-adherence.ts"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }
