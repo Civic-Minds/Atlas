@@ -156,6 +156,7 @@ export default function App() {
               resetViewKey={resetViewKey}
               showUi={inFrequency}
               showRouteLayers={inFrequency || inCorridors}
+              showCorridorBand={inCorridors}
             />
             <History active={inHistory} />
             {corridorsMounted && (

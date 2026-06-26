@@ -20,9 +20,10 @@ interface Props {
   resetViewKey?: number;
   showUi?: boolean;
   showRouteLayers?: boolean;
+  showCorridorBand?: boolean;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -115,6 +116,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         resetViewKey={resetViewKey}
         onLocate={onLocate}
         showRouteLayers={showRouteLayers}
+        showCorridorBand={showCorridorBand}
       />
 
       {showUi && isLoading && (

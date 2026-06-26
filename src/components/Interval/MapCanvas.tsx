@@ -48,6 +48,7 @@ interface MapCanvasProps {
   onLocate?: (lat: number, lon: number) => void;
   routesForStop?: { slug: string; routeIds: Set<string> } | null;
   showRouteLayers?: boolean;
+  showCorridorBand?: boolean;
 }
 
 /**
@@ -391,9 +392,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onLocate,
   routesForStop,
   showRouteLayers = true,
+  showCorridorBand = false,
 }) => {
   const mapRef = useRef<L.Map | null>(null);
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
+  const corridorSelected = showCorridorBand && (corridorOverlay?.lines.length ?? 0) > 0;
   const regionalView = getRegionalView(agencies);
   const hasSavedView = getSavedView() !== null;
   const [zoom, setZoom] = useState(regionalView.zoom);
@@ -416,6 +419,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       if (feature?.geometry.type === 'Point') return {};
 
       const isCorridor = !!(p as any)?.isCorridor;
+
+      // Corridors app initial view: show only isCorridor band, hide everything else.
+      // When a corridor selection is active, hide everything (CorridorMapLayers takes over).
+      if (showCorridorBand) {
+        if (corridorSelected) return { opacity: 0, interactive: false };
+        if (!isCorridor) return { opacity: 0, interactive: false };
+        return { color: '#2563eb', weight: 3.5, opacity: 0.75, lineCap: 'round' as const, lineJoin: 'round' as const, interactive: false };
+      }
 
       // Thickness rules (plain English):
       // - Rail (routeType=2) always +1 thicker than buses (to distinguish the mode)
@@ -480,7 +491,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         interactive: false,
       };
     },
-    [maxHeadway, period, q, selectedRoute, lightMode, matchesQuery, routesForStop]
+    [maxHeadway, period, q, selectedRoute, lightMode, matchesQuery, routesForStop, showCorridorBand, corridorSelected]
   );
 
   // Invisible, much wider line drawn under the visible one purely to make routes
@@ -581,7 +592,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <ResetViewControl resetKey={resetViewKey} agencies={agencies} />
       <LocateControl onLocate={onLocate} />
       <RouteZoomer selectedRoute={selectedRoute} layers={allLayers || layers} />
-      {!showRouteLayers && corridorOverlay && <CorridorMapLayers overlay={corridorOverlay} />}
+      {(showCorridorBand || !showRouteLayers) && corridorOverlay && <CorridorMapLayers overlay={corridorOverlay} />}
       {showRouteLayers && Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         // Split route shapes from stop points — stops mount/unmount on zoom without

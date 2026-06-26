@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Corridors band view**: when the Corridors app opens with no From/To selected, the map shows only `isCorridor` segments — stop-link sections where 2+ routes share the same corridor — as solid blue lines on the base map. Regular route layers are hidden. When a From/To corridor is selected, the band clears and the specific corridor routes take over via the existing overlay. Implemented via `showCorridorBand` prop threaded through Interval → MapCanvas.
+
+### Added
 - **History app** (`src/apps/History.tsx`): new map app showing actual vs scheduled trip delays for Hamilton King (01), Hamilton B-Line (10), Burlington Route 1, and Burlington Route 10. Route picker, 7/14/30-day window selector, SVG bar chart of avg delay by hour of day, summary stats.
 - **History app live section**: "Right now" panel at top of History app uses existing `useLiveAdherence` hook to show active trips, per-trip on-time status, avg delay, and actual headway vs scheduled at anchor stops — immediately useful without waiting for archived data to accumulate.
 - **`api/history-adherence.ts`**: Vercel function that reads archived trip-update JSON from `atlas-live` R2, filters by route, aggregates delays by hour of day, returns time-series result.
