@@ -91,6 +91,18 @@
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip"
     },
     {
+      "slug": "sarnia",
+      "name": "Sarnia Transit",
+      "center": [
+        42.9995,
+        -82.3089
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarnia.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarnia-stops.json",
+      "feedUrl": null,
+      "region": "Ontario"
+    },
+    {
       "slug": "drt",
       "name": "Durham Region Transit",
       "region": "Ontario",
@@ -179,24 +191,6 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton-stops.json",
       "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip"
-    },
-    {
-      "slug": "hsr",
-      "name": "Hamilton Street Railway",
-      "region": "Ontario",
-      "center": [
-        43.25,
-        -79.87
-      ],
-      "bbox": [
-        42.86,
-        -80.37,
-        43.66,
-        -79.37
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-hamilton-street-railway-gtfs-723.zip?alt=media"
     },
     {
       "slug": "kingston",
@@ -836,6 +830,114 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media"
+    },
+    {
+      "slug": "ddot",
+      "name": "DDOT (Detroit)",
+      "region": "Michigan",
+      "center": [
+        42.3314,
+        -83.0458
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-department-of-transportation-ddot-gtfs-464.zip?alt=media",
+      "lastFeedExpiry": "20260703",
+      "lastFeedVersion": "S1000180"
+    },
+    {
+      "slug": "smart",
+      "name": "SMART (Detroit suburbs)",
+      "region": "Michigan",
+      "center": [
+        42.4,
+        -83.1
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-suburban-mobility-authority-for-regional-transit-smart-gtfs-414.zip?alt=media",
+      "lastFeedExpiry": "20260621",
+      "lastFeedVersion": "S1000139"
+    },
+    {
+      "slug": "detroit-people-mover",
+      "name": "Detroit People Mover",
+      "region": "Michigan",
+      "center": [
+        42.3314,
+        -83.0458
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-people-mover-gtfs-2281.zip?alt=media",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "1"
+    },
+    {
+      "slug": "qline",
+      "name": "QLine (Detroit)",
+      "region": "Michigan",
+      "center": [
+        42.34,
+        -83.056
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/qline.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/qline-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-qline-detroit-gtfs-802.zip?alt=media",
+      "lastFeedExpiry": "20251231",
+      "lastFeedVersion": "UTC: 21-Apr-2025 21:29"
+    },
+    {
+      "slug": "theride",
+      "name": "TheRide (Ann Arbor)",
+      "region": "Michigan",
+      "center": [
+        42.2808,
+        -83.743
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/theride.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/theride-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-ann-arbor-area-transportation-authority-theride-gtfs-415.zip?alt=media",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "port-huron",
+      "name": "Blue Water Area Transit",
+      "center": [
+        42.9709,
+        -82.4249
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/port-huron.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/port-huron-stops.json",
+      "feedUrl": null,
+      "region": "Michigan"
+    },
+    {
+      "slug": "gcrta",
+      "name": "GCRTA (Cleveland)",
+      "region": "Ohio",
+      "center": [
+        41.4993,
+        -81.6944
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-greater-cleveland-regional-transit-authority-gtfs-406.zip?alt=media",
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "2606a"
+    },
+    {
+      "slug": "tarta",
+      "name": "TARTA (Toledo)",
+      "center": [
+        41.6639,
+        -83.5552
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarta-stops.json",
+      "feedUrl": null,
+      "region": "Ohio"
     }
   ]
 }

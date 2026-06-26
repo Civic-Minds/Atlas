@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Sarnia Transit**: added to index.json.
 - **TransLink (Vancouver)**: added to index.json; processed via refresh pipeline. (WCE MDB feed is a duplicate of the full TransLink network — not added separately.)
 - **BC Transit (Fraser Valley)**: added via MDB unified Fraser Valley Region feed (1991); 1,797 features.
 - **BC Transit (Victoria)**: added via MDB feed (2571); 5,182 features.
