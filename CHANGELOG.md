@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **History route picker grouped by agency**: routes now appear under their agency label (Burlington / Hamilton) rather than in a flat list. Scales cleanly as more routes are added without making the picker harder to read.
+
 ### Fixed
 - **Corridors UI bleeding into History**: `active={!inFrequency}` kept Corridors mounted and visible (From/To inputs, day picker) when History was open. Changed to `active={inCorridors}` so Corridors only activates in its own view.
 - **Search bar hidden in History**: App-level search bar (used for route search / Corridors From) now hidden when History is active — History has its own route picker and the search bar was confusing noise.

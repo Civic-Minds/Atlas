@@ -95,26 +95,40 @@ export default function History({ active }: Props) {
       <div className="shrink-0 px-6 pt-16 pb-4 border-b border-[var(--border-primary)]">
         <h2 className="text-sm font-black text-[var(--text-primary)] mb-3">Schedule adherence</h2>
 
-        {/* Route picker */}
-        <div className="flex flex-wrap gap-2">
-          {LIVE_POLLING_ROUTES.map(r => {
-            const isActive = r.slug === selectedSlug && r.displayRouteShortName === selectedRoute;
-            return (
-              <button
-                key={`${r.slug}-${r.displayRouteShortName}`}
-                onClick={() => { setSelectedSlug(r.slug); setSelectedRoute(r.displayRouteShortName); }}
-                className={[
-                  'px-3 py-1.5 rounded-full text-xs font-bold border transition-colors',
-                  isActive
-                    ? 'bg-[var(--accent)] text-[var(--bg-app)] border-transparent'
-                    : 'bg-[var(--bg-panel)] text-[var(--text-primary)] border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)]',
-                ].join(' ')}
-              >
-                {AGENCY_LABELS[r.slug]} {r.displayRouteShortName}
-                <span className="ml-1.5 opacity-50 font-normal">every {r.scheduledHeadwayMin}m</span>
-              </button>
-            );
-          })}
+        {/* Route picker — grouped by agency */}
+        <div className="flex flex-col gap-2">
+          {Object.entries(
+            LIVE_POLLING_ROUTES.reduce<Record<string, typeof LIVE_POLLING_ROUTES>>((acc, r) => {
+              (acc[r.slug] ??= []).push(r);
+              return acc;
+            }, {})
+          ).map(([slug, routes]) => (
+            <div key={slug} className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-[var(--text-dim)] w-20 shrink-0">
+                {AGENCY_LABELS[slug] ?? slug}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {routes.map(r => {
+                  const isActive = r.slug === selectedSlug && r.displayRouteShortName === selectedRoute;
+                  return (
+                    <button
+                      key={`${r.slug}-${r.displayRouteShortName}`}
+                      onClick={() => { setSelectedSlug(r.slug); setSelectedRoute(r.displayRouteShortName); }}
+                      className={[
+                        'px-3 py-1.5 rounded-full text-xs font-bold border transition-colors',
+                        isActive
+                          ? 'bg-[var(--accent)] text-[var(--bg-app)] border-transparent'
+                          : 'bg-[var(--bg-panel)] text-[var(--text-primary)] border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)]',
+                      ].join(' ')}
+                    >
+                      {r.displayRouteShortName}
+                      <span className="ml-1.5 opacity-50 font-normal">every {r.scheduledHeadwayMin}m</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
