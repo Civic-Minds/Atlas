@@ -1,161 +1,9 @@
 {
   "agencies": [
     {
-      "slug": "ttc",
-      "name": "Toronto Transit Commission",
-      "center": [
-        43.6532,
-        -79.3832
-      ],
-      "bbox": [
-        43.25,
-        -79.88,
-        44.05,
-        -78.88
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc.json",
-      "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-stops.json"
-    },
-    {
-      "slug": "brampton",
-      "name": "Brampton Transit",
-      "center": [
-        43.7315,
-        -79.7624
-      ],
-      "bbox": [
-        43.33,
-        -80.26,
-        44.13,
-        -79.26
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton.json",
-      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton-stops.json"
-    },
-    {
-      "slug": "burlington",
-      "name": "Burlington Transit",
-      "center": [
-        43.3255,
-        -79.799
-      ],
-      "bbox": [
-        42.93,
-        -80.3,
-        43.73,
-        -79.3
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington.json",
-      "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington-stops.json"
-    },
-    {
-      "slug": "drt",
-      "name": "Durham Region Transit",
-      "center": [
-        43.9,
-        -78.85
-      ],
-      "bbox": [
-        43.5,
-        -79.35,
-        44.3,
-        -78.35
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt.json",
-      "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt-stops.json"
-    },
-    {
-      "slug": "hamilton",
-      "name": "Hamilton Street Railway",
-      "center": [
-        43.2557,
-        -79.8711
-      ],
-      "bbox": [
-        42.86,
-        -80.37,
-        43.66,
-        -79.37
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton.json",
-      "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton-stops.json"
-    },
-    {
-      "slug": "milton",
-      "name": "Milton Transit",
-      "center": [
-        43.5183,
-        -79.8774
-      ],
-      "bbox": [
-        43.12,
-        -80.38,
-        43.92,
-        -79.38
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton.json",
-      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton-stops.json"
-    },
-    {
-      "slug": "miway",
-      "name": "MiWay (Mississauga)",
-      "center": [
-        43.589,
-        -79.6441
-      ],
-      "bbox": [
-        43.19,
-        -80.14,
-        43.99,
-        -79.14
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway.json",
-      "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway-stops.json"
-    },
-    {
-      "slug": "oakville",
-      "name": "Oakville Transit",
-      "center": [
-        43.4675,
-        -79.6877
-      ],
-      "bbox": [
-        43.07,
-        -80.19,
-        43.87,
-        -79.19
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville.json",
-      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville-stops.json"
-    },
-    {
-      "slug": "yrt",
-      "name": "York Region Transit",
-      "center": [
-        43.8828,
-        -79.4403
-      ],
-      "bbox": [
-        43.48,
-        -79.94,
-        44.28,
-        -78.94
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt.json",
-      "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-stops.json"
-    },
-    {
       "slug": "barrie",
       "name": "Barrie Transit",
+      "region": "Ontario",
       "center": [
         44.3894,
         -79.6903
@@ -167,64 +15,103 @@
         -79.19
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie.json",
-      "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie-stops.json"
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie-stops.json",
+      "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip"
     },
     {
-      "slug": "grt",
-      "name": "Grand River Transit",
+      "slug": "belleville",
+      "name": "Belleville Transit",
+      "region": "Ontario",
       "center": [
-        43.4516,
-        -80.4925
+        44.163,
+        -77.383
       ],
       "bbox": [
-        43.05,
-        -80.99,
-        43.85,
-        -79.99
+        44.141,
+        -77.437,
+        44.199,
+        -77.342
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville-stops.json",
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip"
     },
     {
-      "slug": "guelph",
-      "name": "Guelph Transit",
+      "slug": "brampton",
+      "name": "Brampton Transit",
+      "region": "Ontario",
       "center": [
-        43.5448,
-        -80.2482
+        43.7315,
+        -79.7624
       ],
       "bbox": [
-        43.14,
-        -80.75,
-        43.94,
-        -79.75
+        43.33,
+        -80.26,
+        44.13,
+        -79.26
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph.json",
-      "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton-stops.json",
+      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data"
     },
     {
-      "slug": "niagara",
-      "name": "Niagara Region Transit",
+      "slug": "burlington",
+      "name": "Burlington Transit",
+      "region": "Ontario",
       "center": [
-        43.1594,
-        -79.2469
+        43.3255,
+        -79.799
       ],
       "bbox": [
-        42.76,
-        -79.75,
-        43.56,
-        -78.75
+        42.93,
+        -80.3,
+        43.73,
+        -79.3
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-niagara-region-transit-gtfs-722.zip?alt=media",
-      "preprocess": "nrt-day-night",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington-stops.json",
+      "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip"
+    },
+    {
+      "slug": "cornwall",
+      "name": "Cornwall Transit",
+      "region": "Ontario",
+      "center": [
+        45.018,
+        -74.728
+      ],
+      "bbox": [
+        45.01,
+        -74.771,
+        45.063,
+        -74.674
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall-stops.json",
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip"
+    },
+    {
+      "slug": "drt",
+      "name": "Durham Region Transit",
+      "region": "Ontario",
+      "center": [
+        43.9,
+        -78.85
+      ],
+      "bbox": [
+        43.5,
+        -79.35,
+        44.3,
+        -78.35
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt-stops.json",
+      "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip"
     },
     {
       "slug": "go",
       "name": "GO Transit",
+      "region": "Ontario",
       "center": [
         43.645,
         -79.38
@@ -236,103 +123,85 @@
         -77.5
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go-stops.json"
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media"
     },
     {
-      "slug": "upexpress",
-      "name": "UP Express",
+      "slug": "grt",
+      "name": "Grand River Transit",
+      "region": "Ontario",
       "center": [
-        43.6532,
-        -79.3832
+        43.4516,
+        -80.4925
       ],
       "bbox": [
-        43.55,
-        -79.65,
-        43.75,
-        -79.3
+        43.05,
+        -80.99,
+        43.85,
+        -79.99
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress.json",
-      "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media"
     },
     {
-      "slug": "simcoe",
-      "name": "Simcoe County LINX",
+      "slug": "guelph",
+      "name": "Guelph Transit",
+      "region": "Ontario",
       "center": [
-        44.35,
+        43.5448,
+        -80.2482
+      ],
+      "bbox": [
+        43.14,
+        -80.75,
+        43.94,
         -79.75
       ],
-      "bbox": [
-        43.9,
-        -80.35,
-        44.8,
-        -79.15
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe.json",
-      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph-stops.json",
+      "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip"
     },
     {
-      "slug": "nfta",
-      "name": "NFTA (Buffalo)",
+      "slug": "hamilton",
+      "name": "Hamilton Street Railway",
+      "region": "Ontario",
       "center": [
-        42.8864,
-        -78.8784
+        43.2557,
+        -79.8711
       ],
       "bbox": [
-        42.49,
-        -79.38,
-        43.29,
-        -78.38
+        42.86,
+        -80.37,
+        43.66,
+        -79.37
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
-      "routeTypes": [
-        3
-      ],
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton-stops.json",
+      "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip"
     },
     {
-      "slug": "nfta-rail",
-      "name": "NFTA (Buffalo)",
+      "slug": "hsr",
+      "name": "Hamilton Street Railway",
+      "region": "Ontario",
       "center": [
-        42.8864,
-        -78.8784
+        43.25,
+        -79.87
       ],
       "bbox": [
-        42.49,
-        -79.38,
-        43.29,
-        -78.38
+        42.86,
+        -80.37,
+        43.66,
+        -79.37
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
-      "routeTypes": [
-        0
-      ],
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-stops.json"
-    },
-    {
-      "slug": "london",
-      "name": "London Transit",
-      "center": [
-        42.9849,
-        -81.2453
-      ],
-      "bbox": [
-        42.59,
-        -81.75,
-        43.39,
-        -80.75
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london.json",
-      "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-hamilton-street-railway-gtfs-723.zip?alt=media"
     },
     {
       "slug": "kingston",
       "name": "Kingston Transit",
+      "region": "Ontario",
       "center": [
         44.2312,
         -76.486
@@ -344,12 +213,140 @@
         -75.99
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston.json",
-      "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston-stops.json"
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston-stops.json",
+      "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip"
+    },
+    {
+      "slug": "london",
+      "name": "London Transit",
+      "region": "Ontario",
+      "center": [
+        42.9849,
+        -81.2453
+      ],
+      "bbox": [
+        42.59,
+        -81.75,
+        43.39,
+        -80.75
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london-stops.json",
+      "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip"
+    },
+    {
+      "slug": "miway",
+      "name": "MiWay (Mississauga)",
+      "region": "Ontario",
+      "center": [
+        43.589,
+        -79.6441
+      ],
+      "bbox": [
+        43.19,
+        -80.14,
+        43.99,
+        -79.14
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway-stops.json",
+      "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip"
+    },
+    {
+      "slug": "milton",
+      "name": "Milton Transit",
+      "region": "Ontario",
+      "center": [
+        43.5183,
+        -79.8774
+      ],
+      "bbox": [
+        43.12,
+        -80.38,
+        43.92,
+        -79.38
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton-stops.json",
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip"
+    },
+    {
+      "slug": "niagara",
+      "name": "Niagara Region Transit",
+      "region": "Ontario",
+      "center": [
+        43.1594,
+        -79.2469
+      ],
+      "bbox": [
+        42.76,
+        -79.75,
+        43.56,
+        -78.75
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-niagara-region-transit-gtfs-722.zip?alt=media",
+      "preprocess": "nrt-day-night"
+    },
+    {
+      "slug": "octranspo",
+      "name": "OC Transpo",
+      "region": "Ontario",
+      "center": [
+        45.32,
+        -75.69
+      ],
+      "bbox": [
+        45.13,
+        -76.043,
+        45.52,
+        -75.343
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media"
+    },
+    {
+      "slug": "oakville",
+      "name": "Oakville Transit",
+      "region": "Ontario",
+      "center": [
+        43.4675,
+        -79.6877
+      ],
+      "bbox": [
+        43.07,
+        -80.19,
+        43.87,
+        -79.19
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville-stops.json",
+      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data"
+    },
+    {
+      "slug": "simcoe",
+      "name": "Simcoe County LINX",
+      "region": "Ontario",
+      "center": [
+        44.35,
+        -79.75
+      ],
+      "bbox": [
+        43.9,
+        -80.35,
+        44.8,
+        -79.15
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe-stops.json",
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip"
     },
     {
       "slug": "stratford",
       "name": "Stratford Transit",
+      "region": "Ontario",
       "center": [
         43.37,
         -80.98
@@ -361,216 +358,85 @@
         -80.73
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford.json",
-      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford-stops.json"
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford-stops.json",
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip"
     },
     {
-      "slug": "stm",
-      "name": "STM",
+      "slug": "ttc",
+      "name": "Toronto Transit Commission",
+      "region": "Ontario",
       "center": [
-        45.5017,
-        -73.5673
+        43.6532,
+        -79.3832
       ],
       "bbox": [
-        45.1,
-        -74.07,
-        45.9,
-        -73.07
+        43.25,
+        -79.88,
+        44.05,
+        -78.88
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm.json",
-      "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-stops.json",
+      "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip"
     },
     {
-      "slug": "rem",
-      "name": "REM",
+      "slug": "windsor",
+      "name": "Transit Windsor",
+      "region": "Ontario",
       "center": [
-        45.5,
-        -73.57
+        42.317,
+        -83.046
       ],
       "bbox": [
-        45.1,
-        -74.07,
-        45.9,
-        -73.07
+        42.042,
+        -83.115,
+        42.342,
+        -82.607
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem.json",
-      "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor-stops.json",
+      "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip"
     },
     {
-      "slug": "stl",
-      "name": "STL",
+      "slug": "upexpress",
+      "name": "UP Express",
+      "region": "Ontario",
       "center": [
-        45.61,
-        -73.71
+        43.6532,
+        -79.3832
       ],
       "bbox": [
-        45.21,
-        -74.21,
-        46.01,
-        -73.21
+        43.55,
+        -79.65,
+        43.75,
+        -79.3
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl.json",
-      "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress-stops.json",
+      "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip"
     },
     {
-      "slug": "exo",
-      "name": "exo",
+      "slug": "yrt",
+      "name": "York Region Transit",
+      "region": "Ontario",
       "center": [
-        45.5,
-        -73.57
+        43.8828,
+        -79.4403
       ],
       "bbox": [
-        44.8,
-        -75.5,
-        46.5,
-        -72
+        43.48,
+        -79.94,
+        44.28,
+        -78.94
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo.json",
-      "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-stops.json"
-    },
-    {
-      "slug": "rtl",
-      "name": "RTL",
-      "center": [
-        45.538,
-        -73.465
-      ],
-      "bbox": [
-        45.14,
-        -73.97,
-        45.94,
-        -72.97
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl.json",
-      "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-stops.json"
-    },
-    {
-      "slug": "exo-presquile",
-      "name": "exo",
-      "center": [
-        45.406,
-        -74.0382
-      ],
-      "bbox": [
-        45.01,
-        -74.54,
-        45.81,
-        -73.54
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile.json",
-      "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-stops.json"
-    },
-    {
-      "slug": "exo-sudouest",
-      "name": "exo",
-      "center": [
-        45.3549,
-        -73.7643
-      ],
-      "bbox": [
-        44.95,
-        -74.26,
-        45.75,
-        -73.26
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest.json",
-      "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-stops.json"
-    },
-    {
-      "slug": "exo-lrrs",
-      "name": "exo",
-      "center": [
-        45.4086,
-        -73.5026
-      ],
-      "bbox": [
-        45.01,
-        -74,
-        45.81,
-        -73
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs.json",
-      "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-stops.json"
-    },
-    {
-      "slug": "exo-laurentides",
-      "name": "exo",
-      "center": [
-        45.6611,
-        -73.9029
-      ],
-      "bbox": [
-        45.26,
-        -74.4,
-        46.06,
-        -73.4
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides.json",
-      "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-stops.json"
-    },
-    {
-      "slug": "exo-terrebonne",
-      "name": "exo",
-      "center": [
-        45.7032,
-        -73.6487
-      ],
-      "bbox": [
-        45.3,
-        -74.15,
-        46.1,
-        -73.15
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne.json",
-      "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-stops.json"
-    },
-    {
-      "slug": "sjsr",
-      "name": "Saint-Jean-sur-Richelieu",
-      "center": [
-        45.31,
-        -73.27
-      ],
-      "bbox": [
-        45.11,
-        -73.47,
-        45.51,
-        -73.07
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr.json",
-      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr-stops.json"
-    },
-    {
-      "slug": "mont-tremblant",
-      "name": "Mont-Tremblant",
-      "center": [
-        46.15,
-        -74.6
-      ],
-      "bbox": [
-        45.95,
-        -74.9,
-        46.45,
-        -74.3
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant.json",
-      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant-stops.json"
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-stops.json",
+      "feedUrl": "https://www.yrt.ca/google/google_transit.zip"
     },
     {
       "slug": "linter",
       "name": "L'Inter des Laurentides",
+      "region": "Quebec",
       "center": [
         45.98,
         -74.23
@@ -582,12 +448,175 @@
         -73.73
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter.json",
-      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter-stops.json"
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter-stops.json",
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter"
+    },
+    {
+      "slug": "mont-tremblant",
+      "name": "Mont-Tremblant",
+      "region": "Quebec",
+      "center": [
+        46.15,
+        -74.6
+      ],
+      "bbox": [
+        45.95,
+        -74.9,
+        46.45,
+        -74.3
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant-stops.json",
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm"
+    },
+    {
+      "slug": "rem",
+      "name": "REM",
+      "region": "Quebec",
+      "center": [
+        45.5,
+        -73.57
+      ],
+      "bbox": [
+        45.1,
+        -74.07,
+        45.9,
+        -73.07
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem-stops.json",
+      "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip"
+    },
+    {
+      "slug": "rtc",
+      "name": "RTC (Québec)",
+      "region": "Quebec",
+      "center": [
+        46.8139,
+        -71.2082
+      ],
+      "bbox": [
+        46.6,
+        -71.5,
+        47,
+        -71
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-la-capitale-gtfs-757.zip?alt=media"
+    },
+    {
+      "slug": "rtl",
+      "name": "RTL",
+      "region": "Quebec",
+      "center": [
+        45.538,
+        -73.465
+      ],
+      "bbox": [
+        45.14,
+        -73.97,
+        45.94,
+        -72.97
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-stops.json",
+      "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip"
+    },
+    {
+      "slug": "stl",
+      "name": "STL",
+      "region": "Quebec",
+      "center": [
+        45.61,
+        -73.71
+      ],
+      "bbox": [
+        45.21,
+        -74.21,
+        46.01,
+        -73.21
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl-stops.json",
+      "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip"
+    },
+    {
+      "slug": "stlevis",
+      "name": "STLévis",
+      "region": "Quebec",
+      "center": [
+        46.8,
+        -71.177
+      ],
+      "bbox": [
+        46.552,
+        -71.41,
+        46.828,
+        -71.099
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-stops.json",
+      "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip"
+    },
+    {
+      "slug": "stm",
+      "name": "STM",
+      "region": "Quebec",
+      "center": [
+        45.5017,
+        -73.5673
+      ],
+      "bbox": [
+        45.1,
+        -74.07,
+        45.9,
+        -73.07
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-stops.json",
+      "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip"
+    },
+    {
+      "slug": "sto",
+      "name": "STO (Gatineau)",
+      "region": "Quebec",
+      "center": [
+        45.487,
+        -75.641
+      ],
+      "bbox": [
+        45.381,
+        -75.89,
+        45.593,
+        -75.391
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-stops.json",
+      "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip"
+    },
+    {
+      "slug": "sjsr",
+      "name": "Saint-Jean-sur-Richelieu",
+      "region": "Quebec",
+      "center": [
+        45.31,
+        -73.27
+      ],
+      "bbox": [
+        45.11,
+        -73.47,
+        45.51,
+        -73.07
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr-stops.json",
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu"
     },
     {
       "slug": "saint-hyacinthe",
       "name": "Ville de Saint-Hyacinthe",
+      "region": "Quebec",
       "center": [
         45.63,
         -72.95
@@ -599,132 +628,214 @@
         -72.75
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe.json",
-      "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe-stops.json"
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe-stops.json",
+      "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs"
     },
     {
-      "slug": "hsr",
-      "name": "Hamilton Street Railway",
+      "slug": "exo",
+      "name": "exo",
+      "region": "Quebec",
       "center": [
-        43.25,
-        -79.87
+        45.5,
+        -73.57
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-hamilton-street-railway-gtfs-723.zip?alt=media",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hsr-stops.json"
-    },
-    {
-      "slug": "windsor",
-      "name": "Transit Windsor",
-      "center": [
-        42.317,
-        -83.046
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor-stops.json",
-      "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
       "bbox": [
-        42.042,
-        -83.115,
-        42.342,
-        -82.607
-      ]
+        44.8,
+        -75.5,
+        46.5,
+        -72
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-stops.json",
+      "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip"
     },
     {
-      "slug": "belleville",
-      "name": "Belleville Transit",
+      "slug": "exo-presquile",
+      "name": "exo",
+      "region": "Quebec",
       "center": [
-        44.163,
-        -77.383
+        45.406,
+        -74.0382
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville-stops.json",
-      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
-      "bbox": [
-        44.141,
-        -77.437,
-        44.199,
-        -77.342
-      ]
-    },
-    {
-      "slug": "cornwall",
-      "name": "Cornwall Transit",
-      "center": [
-        45.018,
-        -74.728
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall-stops.json",
-      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
       "bbox": [
         45.01,
-        -74.771,
-        45.063,
-        -74.674
-      ]
+        -74.54,
+        45.81,
+        -73.54
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-stops.json",
+      "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip"
     },
     {
-      "slug": "stlevis",
-      "name": "STLévis",
+      "slug": "exo-sudouest",
+      "name": "exo",
+      "region": "Quebec",
       "center": [
-        46.8,
-        -71.177
+        45.3549,
+        -73.7643
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-stops.json",
-      "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
       "bbox": [
-        46.552,
-        -71.41,
-        46.828,
-        -71.099
-      ]
+        44.95,
+        -74.26,
+        45.75,
+        -73.26
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-stops.json",
+      "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip"
     },
     {
-      "slug": "octranspo",
-      "name": "OC Transpo",
+      "slug": "exo-lrrs",
+      "name": "exo",
+      "region": "Quebec",
       "center": [
-        45.32,
-        -75.69
+        45.4086,
+        -73.5026
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
       "bbox": [
-        45.13,
-        -76.043,
-        45.52,
-        -75.343
-      ]
+        45.01,
+        -74,
+        45.81,
+        -73
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-stops.json",
+      "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip"
     },
     {
-      "slug": "sto",
-      "name": "STO (Gatineau)",
+      "slug": "exo-laurentides",
+      "name": "exo",
+      "region": "Quebec",
       "center": [
-        45.487,
-        -75.641
+        45.6611,
+        -73.9029
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-stops.json",
-      "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
       "bbox": [
-        45.381,
-        -75.89,
-        45.593,
-        -75.391
-      ]
+        45.26,
+        -74.4,
+        46.06,
+        -73.4
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-stops.json",
+      "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip"
     },
     {
-      "slug": "octranspo-debug",
-      "name": "OC Transpo",
+      "slug": "exo-terrebonne",
+      "name": "exo",
+      "region": "Quebec",
       "center": [
-        45.42,
-        -75.69
+        45.7032,
+        -73.6487
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-debug.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-debug-stops.json",
-      "feedUrl": null
+      "bbox": [
+        45.3,
+        -74.15,
+        46.1,
+        -73.15
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-stops.json",
+      "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip"
+    },
+    {
+      "slug": "translink",
+      "name": "TransLink",
+      "region": "British Columbia",
+      "center": [
+        49.2827,
+        -123.1207
+      ],
+      "bbox": [
+        49,
+        -123.5,
+        49.5,
+        -122.2
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-translink-vancouver-gtfs-1222.zip?alt=media",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "bc-fraser-valley",
+      "name": "BC Transit (Fraser Valley)",
+      "region": "British Columbia",
+      "center": [
+        49.05,
+        -122.3
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-fraser-valley-region-gtfs-1991.zip?alt=media",
+      "lastFeedExpiry": "20260627",
+      "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
+    },
+    {
+      "slug": "victoria",
+      "name": "BC Transit (Victoria)",
+      "region": "British Columbia",
+      "center": [
+        48.4284,
+        -123.3656
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-victoria-regional-transit-system-gtfs-2571.zip?alt=media",
+      "lastFeedExpiry": "20260628",
+      "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
+    },
+    {
+      "slug": "kelowna",
+      "name": "BC Transit (Kelowna)",
+      "region": "British Columbia",
+      "center": [
+        49.888,
+        -119.496
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-kelowna-regional-transit-system-gtfs-2555.zip?alt=media",
+      "lastFeedExpiry": "20260627",
+      "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
+    },
+    {
+      "slug": "nfta",
+      "name": "NFTA (Buffalo)",
+      "region": "New York",
+      "center": [
+        42.8864,
+        -78.8784
+      ],
+      "bbox": [
+        42.49,
+        -79.38,
+        43.29,
+        -78.38
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media"
+    },
+    {
+      "slug": "nfta-rail",
+      "name": "NFTA (Buffalo)",
+      "region": "New York",
+      "center": [
+        42.8864,
+        -78.8784
+      ],
+      "bbox": [
+        42.49,
+        -79.38,
+        43.29,
+        -78.38
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media"
     }
   ]
 }
