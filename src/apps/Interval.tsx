@@ -80,7 +80,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     bounds,
     hideSpan,
     livePollingOnly,
-    showCorridors
+    showCorridors,
+    showCorridorBand,
   });
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);

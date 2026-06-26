@@ -59,6 +59,7 @@ export interface IntervalFilters {
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
   livePollingOnly?: boolean; // only show routes covered by Atlas's GTFS-RT adherence polling
   showCorridors?: boolean; // show segments where multiple routes overlap to provide higher frequency
+  showCorridorBand?: boolean; // Corridors app is open; always pass isCorridor features through for band rendering
 }
 
 export interface ViewportBounds {
@@ -83,7 +84,7 @@ function resolveTierVal(p: ShapeProperties): number | null {
 function passesRouteFilter(
   p: ShapeProperties,
   slug: string,
-  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; selectedRoute?: string | null },
+  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
@@ -99,8 +100,11 @@ function passesRouteFilter(
 
   if (filters.agencies.size > 0 && !filters.agencies.has(slug)) return false;
   if (filters.livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
-  
+
   if (isCorridor) {
+    // showCorridorBand: Corridors app is open — always pass corridor features through so MapCanvas
+    // can render the band; the band uses its own styling and doesn't need the frequency filter.
+    if (filters.showCorridorBand) return true;
     if (!filters.showCorridors) return false;
     // Filter out short/noisy corridor fragments: only show if 3+ routes overlap OR combined headway is high frequency (<= 15 min)
     const routeCount = corridorRouteIds?.length ?? 0;
@@ -175,7 +179,7 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors } = filters;
+  const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors, showCorridorBand } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -233,7 +237,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop);
     }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, selectedRoute]);
+  [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
   const filteredLayers = useMemo(() => {
     const result: AgencyLayers = {};
@@ -248,7 +252,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     }
     return result;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors]);
+  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
