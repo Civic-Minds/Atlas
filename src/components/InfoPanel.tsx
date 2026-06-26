@@ -20,6 +20,7 @@ interface Props {
 export default function InfoPanel({ open, onClose, agencies }: Props) {
   const [tab, setTab] = useState<Tab>('about');
   const [query, setQuery] = useState('');
+  const [regionFilter, setRegionFilter] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -30,14 +31,23 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
 
   // Reset state on close
   useEffect(() => {
-    if (!open) { setTab('about'); setQuery(''); }
+    if (!open) { setTab('about'); setQuery(''); setRegionFilter(null); }
   }, [open]);
+
+  const regions = useMemo(() => {
+    const seen = new Set<string>();
+    for (const a of agencies) seen.add(a.region ?? 'Other');
+    return [...seen].sort();
+  }, [agencies]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return agencies;
-    return agencies.filter(a => a.name.toLowerCase().includes(q) || a.slug.includes(q) || (a.region ?? '').toLowerCase().includes(q));
-  }, [agencies, query]);
+    return agencies.filter(a => {
+      if (regionFilter && (a.region ?? 'Other') !== regionFilter) return false;
+      if (!q) return true;
+      return a.name.toLowerCase().includes(q) || a.slug.includes(q);
+    });
+  }, [agencies, query, regionFilter]);
 
   // Group filtered agencies by region
   const byRegion = useMemo(() => {
@@ -134,8 +144,8 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
 
           {tab === 'agencies' && (
             <div className="flex flex-col">
-              {/* Search */}
-              <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10">
+              {/* Search + region chips */}
+              <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className="relative flex items-center">
                   <Search className="absolute left-3 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
                   <input
@@ -145,6 +155,31 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                     placeholder="Search agencies…"
                     className="w-full pl-8 pr-3 py-1.5 text-xs bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] transition-colors"
                   />
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    onClick={() => setRegionFilter(null)}
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                      regionFilter === null
+                        ? 'bg-[var(--accent)] text-white border-transparent'
+                        : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {regions.map(r => (
+                    <button
+                      key={r}
+                      onClick={() => setRegionFilter(prev => prev === r ? null : r)}
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                        regionFilter === r
+                          ? 'bg-[var(--accent)] text-white border-transparent'
+                          : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
                 </div>
               </div>
 
