@@ -58,7 +58,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
       <div className="absolute inset-0 z-[1200] bg-black/30 backdrop-blur-[2px]" onClick={onClose} />
 
       {/* Panel */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1300] w-[380px] max-h-[80vh] flex flex-col bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-2xl shadow-2xl overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1300] w-[380px] h-[560px] flex flex-col bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-2xl shadow-2xl overflow-hidden">
 
         {/* Header */}
         <div className="shrink-0 flex items-center justify-between px-5 pt-5 pb-3 border-b border-[var(--border-primary)]">
