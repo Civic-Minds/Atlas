@@ -114,8 +114,8 @@ export default function App() {
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
-        {/* Search bar — doubles as Corridors From input */}
-        <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
+        {/* Search bar — hidden in History (has its own UI), doubles as Corridors From input */}
+        {!inHistory && <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             ref={corridorsFromRef}
@@ -142,7 +142,7 @@ export default function App() {
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>
+        </div>}
 
         {inFrequency && stats && (
           <>
@@ -191,7 +191,7 @@ export default function App() {
                   fromFocused={corridorsFromFocused}
                   fromInputRef={corridorsFromRef}
                   onBindFromInput={setFromInputBindings}
-                  active={!inFrequency}
+                  active={inCorridors}
                 />
               </div>
             )}

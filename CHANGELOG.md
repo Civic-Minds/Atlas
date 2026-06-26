@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Corridors UI bleeding into History**: `active={!inFrequency}` kept Corridors mounted and visible (From/To inputs, day picker) when History was open. Changed to `active={inCorridors}` so Corridors only activates in its own view.
+- **Search bar hidden in History**: App-level search bar (used for route search / Corridors From) now hidden when History is active — History has its own route picker and the search bar was confusing noise.
+
 ### Added
 - **URL routing for map apps**: `/apps/frequency`, `/apps/corridors`, `/apps/history` — links are now shareable and browser back/forward works. `/` stays as the frequency map default. Structure leaves room for non-app pages at the root level. Implemented with `react-router-dom` `BrowserRouter`; `vercel.json` SPA catch-all rewrite added; Vite `historyApiFallback` enabled for local dev.
 - **`/api/history-adherence` rewrite added to `vercel.json`**: was missing, relied on Vercel's automatic `.ts` resolution.
