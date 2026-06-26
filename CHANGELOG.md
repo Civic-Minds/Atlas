@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **TransLink (Vancouver)**: added to index.json; processed via refresh pipeline. (WCE MDB feed is a duplicate of the full TransLink network — not added separately.)
+- **RTC (Québec)**: added Quebec City transit via local zip; feedUrl set to MDB stable mirror.
+- **index.json refactored**: added `region` field to all 44 agencies (Ontario/Quebec/British Columbia/New York); sorted by region then name; removed `octranspo-debug` debug entry; added missing bboxes for `hsr`, `translink`, `rtc`; standardized field ordering throughout.
+
+### Added
+- **Info button**: small (i) button in the top bar on all map views opens a panel with a description of Atlas, agency count, frequency tier legend, links to the agency list and GitHub repo, and a data freshness note.
 
 ### Changed
 - **Screen transitions**: switching between apps is now animated — History panel slides up/down (300ms ease-out), Corridors overlay fades in/out (300ms), top-bar search bar and stats chips fade when entering History (200ms). Previously all app switches were instant cuts.

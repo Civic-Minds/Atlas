@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map as MapIcon, Search, X, ArrowLeft } from 'lucide-react';
+import { Map as MapIcon, Search, X, ArrowLeft, Info } from 'lucide-react';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
 import AppDrawer, { type AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
+import InfoPanel from './components/InfoPanel';
 
 export interface Agency {
   slug: string;
@@ -43,6 +44,7 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
+  const [infoOpen, setInfoOpen] = useState(false);
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -115,6 +117,14 @@ export default function App() {
         </button>
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
+
+        <button
+          onClick={() => setInfoOpen(true)}
+          aria-label="About Atlas"
+          className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
+        >
+          <Info className="w-3.5 h-3.5 text-[var(--text-primary)]" />
+        </button>
 
         {/* Search bar — fades out in History (has its own UI), doubles as Corridors From input */}
         <div className={`transition-opacity duration-200 ease-out ${inHistory ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
@@ -202,6 +212,7 @@ export default function App() {
           </>
         )}
       </main>
+      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencyCount={agencies.length} />
     </div>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>
