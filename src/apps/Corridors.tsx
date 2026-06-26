@@ -27,6 +27,7 @@ interface Props {
   fromInputRef: React.RefObject<HTMLInputElement | null>;
   onBindFromInput?: (bindings: CorridorsFromInputBindings | null) => void;
   active?: boolean;
+  onInfoOpen?: () => void;
 }
 
 interface RouteFeature {
@@ -111,7 +112,7 @@ function agencySlugsForQuery(
   return slugs;
 }
 
-export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true }: Props) {
+export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true, onInfoOpen }: Props) {
   const { setOverlay } = useCorridorMapOverlay();
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
   const [agencyFeatures, setAgencyFeatures] = useState<GeoJsonAgency[]>([]);
@@ -578,8 +579,8 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         </div>
       )}
 
-      {/* Day picker — top-right */}
-      <div className="absolute top-6 right-6 z-[1100] flex gap-1.5 pointer-events-auto">
+      {/* Day picker + info — top-right */}
+      <div className="absolute top-6 right-6 z-[1100] flex items-center gap-1.5 pointer-events-auto">
         {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
           <button
             key={d}
@@ -594,6 +595,15 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
             {d}
           </button>
         ))}
+        {onInfoOpen && (
+          <button
+            onClick={onInfoOpen}
+            className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
+            aria-label="About Atlas"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </button>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, X, Radio, Sun, Moon, Zap } from 'lucide-react';
+import { Settings, X, Radio, Sun, Moon, Zap, Info } from 'lucide-react';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -10,6 +10,7 @@ interface FilterPanelProps {
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   showCorridors: boolean;
   setShowCorridors: (v: boolean | ((prev: boolean) => boolean)) => void;
+  onInfoOpen?: () => void;
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -37,6 +38,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setLivePollingOnly,
   showCorridors,
   setShowCorridors,
+  onInfoOpen,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -91,6 +93,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
         )}
       </button>
+      {onInfoOpen && (
+        <button
+          onClick={onInfoOpen}
+          className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
+          aria-label="About Atlas"
+        >
+          <Info className="w-4 h-4" />
+        </button>
+      )}
 
       {isOpen && (
         <div className="absolute top-10 right-0 w-56 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-3.5 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out">

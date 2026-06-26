@@ -9,6 +9,7 @@ import type { HourBucket } from '../../shared/computeHistoryAdherence';
 interface Props {
   active: boolean;
   agencies: Agency[];
+  onInfoOpen?: () => void;
 }
 
 const AGENCY_LABELS: Record<string, string> = {
@@ -75,7 +76,7 @@ function DelayChart({ byHour }: { byHour: HourBucket[] }) {
   );
 }
 
-export default function History({ active, agencies }: Props) {
+export default function History({ active, agencies, onInfoOpen }: Props) {
   const [selectedSlug, setSelectedSlug] = useState('hamilton');
   const [selectedRoute, setSelectedRoute] = useState('10');
   const [days, setDays] = useState<Days>(7);
@@ -153,6 +154,20 @@ export default function History({ active, agencies }: Props) {
 
       {/* Route picker + live summary row */}
       <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
+
+        {/* Row: label + info button */}
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Schedule adherence</p>
+          {onInfoOpen && (
+            <button
+              onClick={onInfoOpen}
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+              aria-label="About Atlas"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </button>
+          )}
+        </div>
 
         {/* Route picker — grouped by agency */}
         <div className="flex flex-col gap-1.5 mb-3">

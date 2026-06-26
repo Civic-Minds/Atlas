@@ -118,14 +118,6 @@ export default function App() {
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
-        <button
-          onClick={() => setInfoOpen(true)}
-          aria-label="About Atlas"
-          className="w-8 h-8 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
-        >
-          <Info className="w-3.5 h-3.5 text-[var(--text-primary)]" />
-        </button>
-
         {/* Search bar — fades out in History (has its own UI), doubles as Corridors From input */}
         <div className={`transition-opacity duration-200 ease-out ${inHistory ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
@@ -192,8 +184,9 @@ export default function App() {
               showUi={inFrequency}
               showRouteLayers={inFrequency || inCorridors || inHistory}
               showCorridorBand={inCorridors}
+              onInfoOpen={() => setInfoOpen(true)}
             />
-            <History active={inHistory} agencies={agencies} />
+            <History active={inHistory} agencies={agencies} onInfoOpen={() => setInfoOpen(true)} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 <Corridors
@@ -206,6 +199,7 @@ export default function App() {
                   fromInputRef={corridorsFromRef}
                   onBindFromInput={setFromInputBindings}
                   active={inCorridors}
+                  onInfoOpen={() => setInfoOpen(true)}
                 />
               </div>
             )}
