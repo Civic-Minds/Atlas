@@ -18,14 +18,15 @@ export interface Agency {
 
 const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
-  '/corridors': 'corridors',
-  '/history': 'history',
+  '/apps/frequency': 'frequency',
+  '/apps/corridors': 'corridors',
+  '/apps/history': 'history',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
-  frequency: '/',
-  corridors: '/corridors',
-  history: '/history',
+  frequency: '/apps/frequency',
+  corridors: '/apps/corridors',
+  history: '/apps/history',
 };
 
 export default function App() {

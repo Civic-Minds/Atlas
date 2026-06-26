@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **URL routing for map apps**: `/` → Frequency map, `/corridors` → Corridors, `/history` → History. Links are now shareable and browser back/forward works. Implemented with `react-router-dom` `BrowserRouter`; `vercel.json` SPA catch-all rewrite added; Vite `historyApiFallback` enabled for local dev.
+- **URL routing for map apps**: `/apps/frequency`, `/apps/corridors`, `/apps/history` — links are now shareable and browser back/forward works. `/` stays as the frequency map default. Structure leaves room for non-app pages at the root level. Implemented with `react-router-dom` `BrowserRouter`; `vercel.json` SPA catch-all rewrite added; Vite `historyApiFallback` enabled for local dev.
 - **`/api/history-adherence` rewrite added to `vercel.json`**: was missing, relied on Vercel's automatic `.ts` resolution.
 - **Corridors band view**: when the Corridors app opens with no From/To selected, the map shows only `isCorridor` segments — stop-link sections where 2+ routes share the same corridor — as solid blue lines on the base map. Regular route layers are hidden. When a From/To corridor is selected, the band clears and the specific corridor routes take over via the existing overlay. Implemented via `showCorridorBand` prop threaded through Interval → MapCanvas.
 
