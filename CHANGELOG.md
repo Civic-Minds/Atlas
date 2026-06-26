@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 - **index.json refactored**: added `region` field to all 44 agencies (Ontario/Quebec/British Columbia/New York); sorted by region then name; removed `octranspo-debug` debug entry; added missing bboxes for `hsr`, `translink`, `rtc`; standardized field ordering throughout.
 
 ### Added
-- **Info button**: (i) button on all three map views opens a panel with a description of Atlas, agency count, frequency tier legend, links to the agency list and GitHub repo, and a data freshness note. Placed next to Settings on Frequency, next to the day picker on Corridors, and in the panel header on History.
+- **Info panel with agency browser**: (i) button on all three map views opens a panel with two tabs. "About" has a description, frequency tier legend, and GitHub link. "Agencies" has a live-search list of all agencies grouped by region — automatically reflects `index.json` additions with no code changes. Placed next to Settings on Frequency, next to the day picker on Corridors, and in the History panel header.
 
 ### Changed
 - **Screen transitions**: switching between apps is now animated — History panel slides up/down (300ms ease-out), Corridors overlay fades in/out (300ms), top-bar search bar and stats chips fade when entering History (200ms). Previously all app switches were instant cuts.

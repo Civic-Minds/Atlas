@@ -16,6 +16,7 @@ export interface Agency {
   url: string;
   stopsUrl?: string;
   bbox?: [number, number, number, number]; // [south, west, north, east]
+  region?: string;
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
@@ -206,7 +207,7 @@ export default function App() {
           </>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencyCount={agencies.length} />
+      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} />
     </div>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>
