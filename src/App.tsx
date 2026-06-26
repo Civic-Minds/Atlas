@@ -116,8 +116,9 @@ export default function App() {
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
-        {/* Search bar — hidden in History (has its own UI), doubles as Corridors From input */}
-        {!inHistory && <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
+        {/* Search bar — fades out in History (has its own UI), doubles as Corridors From input */}
+        <div className={`transition-opacity duration-200 ease-out ${inHistory ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             ref={corridorsFromRef}
@@ -144,10 +145,11 @@ export default function App() {
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>}
+        </div>
+        </div>
 
-        {inFrequency && stats && (
-          <>
+        {stats && (
+          <div className={`flex gap-2 transition-opacity duration-200 ease-out ${inFrequency ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
               <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
               <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
@@ -158,7 +160,7 @@ export default function App() {
               </span>
               <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
             </div>
-          </>
+          </div>
         )}
       </div>
 
@@ -183,7 +185,7 @@ export default function App() {
             />
             <History active={inHistory} agencies={agencies} />
             {corridorsMounted && (
-              <div className="absolute inset-0 z-[500]">
+              <div className={`absolute inset-0 z-[500] transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 <Corridors
                   agencies={agencies}
                   lightMode={lightMode}

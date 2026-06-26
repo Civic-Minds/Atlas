@@ -81,12 +81,27 @@ export default function History({ active, agencies }: Props) {
   const [days, setDays] = useState<Days>(7);
   const [stopsIndex, setStopsIndex] = useState<StopsIndex>({});
   const loadedSlug = useRef<string | null>(null);
+  const [shouldRender, setShouldRender] = useState(active);
+  const [visible, setVisible] = useState(false);
 
   const { setOverlay } = useHistoryMapOverlay();
   const cfg = getLiveRouteConfig(selectedSlug, selectedRoute);
   const { data: liveData, status: liveStatus } = useLiveAdherence(selectedSlug, selectedRoute, 60_000);
   const { data: histData, status: histStatus } = useHistoryAdherence(selectedSlug, selectedRoute, days);
   const tripSummary = agencyTripSummary(liveData, selectedSlug);
+
+  // Mount/unmount with slide animation
+  useEffect(() => {
+    if (active) {
+      setShouldRender(true);
+      const id = setTimeout(() => setVisible(true), 10);
+      return () => clearTimeout(id);
+    } else {
+      setVisible(false);
+      const id = setTimeout(() => setShouldRender(false), 280);
+      return () => clearTimeout(id);
+    }
+  }, [active]);
 
   // Fetch stops index for selected agency to get lat/lon for anchor stops
   useEffect(() => {
@@ -128,10 +143,13 @@ export default function History({ active, agencies }: Props) {
     if (!active) setOverlay(null);
   }, [active, setOverlay]);
 
-  if (!active) return null;
+  if (!shouldRender) return null;
 
   return (
-    <div className="absolute bottom-0 inset-x-0 z-[1000] bg-[var(--bg-panel)]/95 backdrop-blur-md border-t border-[var(--border-primary)] flex flex-col" style={{ maxHeight: '52vh' }}>
+    <div
+      className={`absolute bottom-0 inset-x-0 z-[1000] bg-[var(--bg-panel)]/95 backdrop-blur-md border-t border-[var(--border-primary)] flex flex-col transition-transform duration-300 ease-out ${visible ? 'translate-y-0' : 'translate-y-full'}`}
+      style={{ maxHeight: '52vh' }}
+    >
 
       {/* Route picker + live summary row */}
       <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
