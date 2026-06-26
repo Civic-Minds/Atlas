@@ -26,8 +26,9 @@ export function useHistoryAdherence(
       .then(r => r.json())
       .then(json => {
         if (cancelled) return;
-        if (json?.noData || json?.error) {
-          setStatus(json.noData ? 'noData' : 'error');
+        if (json?.noData || json?.error || !Array.isArray(json?.byHour)) {
+          setData(null);
+          setStatus(json?.noData ? 'noData' : 'error');
         } else {
           setData(json);
           setStatus('ready');

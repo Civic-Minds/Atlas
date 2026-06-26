@@ -254,7 +254,7 @@ export default function History({ active }: Props) {
             </div>
           )}
 
-          {histStatus === 'ready' && histData && histData.byHour.length > 0 && (
+          {histStatus === 'ready' && histData && (histData.byHour?.length ?? 0) > 0 && (
             <div className="bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl p-4">
               <p className="text-[10px] font-bold text-[var(--text-muted)] mb-3">avg delay by hour · last {days} days</p>
               <DelayChart byHour={histData.byHour} />

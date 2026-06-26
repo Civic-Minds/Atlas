@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Route switch no longer blanks UI**: `useLiveAdherence` and `useHistoryAdherence` retain previous data while new route loads, preventing flash-to-empty on route change.
+
+### Fixed
+- **History crash when API response missing `byHour`**: hook now validates response shape before setting status to `ready`; History.tsx uses optional chaining as a safety net to prevent crashing the whole app.
 - **History trend API capped at 500 fetches**: `api/history-adherence.ts` limits sampled R2 object fetches to 500 per request to keep response times predictable as archived data grows.
 - **Live section shows last-updated time**: timestamp displayed next to the live indicator dot, updated on each poll.
 
