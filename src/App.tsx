@@ -15,6 +15,7 @@ export interface Agency {
   center: [number, number];
   url: string;
   stopsUrl?: string;
+  corridorsUrl?: string;
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
 }

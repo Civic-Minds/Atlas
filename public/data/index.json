@@ -16,7 +16,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie-stops.json",
-      "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip"
+      "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie-corridors.json",
+      "lastFeedExpiry": "20261031",
+      "lastFeedVersion": "20260503D"
     },
     {
       "slug": "belleville",
@@ -34,7 +37,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville-stops.json",
-      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip"
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00"
     },
     {
       "slug": "brampton",
@@ -52,7 +58,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton-stops.json",
-      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data"
+      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton-corridors.json",
+      "lastFeedExpiry": "20260802",
+      "lastFeedVersion": "20260629"
     },
     {
       "slug": "burlington",
@@ -70,7 +79,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington-stops.json",
-      "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip"
+      "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington-corridors.json",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": null
     },
     {
       "slug": "cornwall",
@@ -88,7 +100,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall-stops.json",
-      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip"
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00"
     },
     {
       "slug": "sarnia",
@@ -118,7 +133,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt-stops.json",
-      "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip"
+      "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "go",
@@ -136,7 +154,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media"
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go-corridors.json",
+      "lastFeedExpiry": "20260904",
+      "lastFeedVersion": "20260529182459"
     },
     {
       "slug": "grt",
@@ -154,7 +175,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media"
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "guelph",
@@ -172,7 +196,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph-stops.json",
-      "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip"
+      "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph-corridors.json",
+      "lastFeedExpiry": "20250830",
+      "lastFeedVersion": "2025 May _20250801"
     },
     {
       "slug": "hamilton",
@@ -190,7 +217,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton-stops.json",
-      "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip"
+      "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton-corridors.json",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "2026 Spring & 2026 Summer Merged"
     },
     {
       "slug": "kingston",
@@ -208,7 +238,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston-stops.json",
-      "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip"
+      "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston-corridors.json",
+      "lastFeedExpiry": "20270626",
+      "lastFeedVersion": "1/20260626 08:06:05/20260627 04:00:00"
     },
     {
       "slug": "london",
@@ -226,7 +259,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london-stops.json",
-      "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip"
+      "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london-corridors.json",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "2026 Summer_20260615"
     },
     {
       "slug": "miway",
@@ -244,7 +280,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway-stops.json",
-      "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip"
+      "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway-corridors.json",
+      "lastFeedExpiry": "20260802",
+      "lastFeedVersion": "1"
     },
     {
       "slug": "milton",
@@ -262,7 +301,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton-stops.json",
-      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip"
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton-corridors.json",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00"
     },
     {
       "slug": "niagara",
@@ -281,7 +323,10 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-niagara-region-transit-gtfs-722.zip?alt=media",
-      "preprocess": "nrt-day-night"
+      "preprocess": "nrt-day-night",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara-corridors.json",
+      "lastFeedExpiry": "20210109",
+      "lastFeedVersion": "S1000191"
     },
     {
       "slug": "octranspo",
@@ -299,7 +344,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media"
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "S1000499-"
     },
     {
       "slug": "oakville",
@@ -317,7 +365,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville-stops.json",
-      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data"
+      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "simcoe",
@@ -335,7 +386,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe-stops.json",
-      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip"
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe-corridors.json",
+      "lastFeedExpiry": "20270528",
+      "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00"
     },
     {
       "slug": "stratford",
@@ -353,7 +407,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford-stops.json",
-      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip"
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford-corridors.json",
+      "lastFeedExpiry": "20270506",
+      "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00"
     },
     {
       "slug": "ttc",
@@ -371,7 +428,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-stops.json",
-      "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip"
+      "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "windsor",
@@ -389,7 +449,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor-stops.json",
-      "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip"
+      "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor-corridors.json",
+      "lastFeedExpiry": "20260921",
+      "lastFeedVersion": "5a79e7c2-a8fa-492a-a5bf-be4838198f1a"
     },
     {
       "slug": "upexpress",
@@ -407,7 +470,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress-stops.json",
-      "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip"
+      "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress-corridors.json",
+      "lastFeedExpiry": "20261123",
+      "lastFeedVersion": "20260527142759"
     },
     {
       "slug": "yrt",
@@ -425,7 +491,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-stops.json",
-      "feedUrl": "https://www.yrt.ca/google/google_transit.zip"
+      "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "linter",
@@ -443,7 +512,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter-stops.json",
-      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter"
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter-corridors.json",
+      "lastFeedExpiry": "20260802",
+      "lastFeedVersion": "1771259558641"
     },
     {
       "slug": "mont-tremblant",
@@ -461,7 +533,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant-stops.json",
-      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm"
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant-corridors.json",
+      "lastFeedExpiry": "20260907",
+      "lastFeedVersion": "1782135293942"
     },
     {
       "slug": "rem",
@@ -479,7 +554,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem-stops.json",
-      "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip"
+      "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260520"
     },
     {
       "slug": "rtc",
@@ -497,7 +575,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-la-capitale-gtfs-757.zip?alt=media"
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-la-capitale-gtfs-757.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc-corridors.json",
+      "lastFeedExpiry": "20260821",
+      "lastFeedVersion": null
     },
     {
       "slug": "rtl",
@@ -515,7 +596,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-stops.json",
-      "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip"
+      "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "202606181332"
     },
     {
       "slug": "stl",
@@ -533,7 +617,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl-stops.json",
-      "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip"
+      "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl-corridors.json",
+      "lastFeedExpiry": "20260821",
+      "lastFeedVersion": "20260626044619"
     },
     {
       "slug": "stlevis",
@@ -551,7 +638,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-stops.json",
-      "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip"
+      "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "20260615"
     },
     {
       "slug": "stm",
@@ -569,7 +659,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-stops.json",
-      "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip"
+      "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "20260602153030_26U"
     },
     {
       "slug": "sto",
@@ -587,7 +680,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-stops.json",
-      "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip"
+      "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "sjsr",
@@ -605,7 +701,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr-stops.json",
-      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu"
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1778686364253"
     },
     {
       "slug": "saint-hyacinthe",
@@ -623,7 +722,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe-stops.json",
-      "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs"
+      "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "exo",
@@ -641,7 +743,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-stops.json",
-      "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip"
+      "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": null
     },
     {
       "slug": "exo-presquile",
@@ -659,7 +764,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-stops.json",
-      "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip"
+      "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": null
     },
     {
       "slug": "exo-sudouest",
@@ -677,7 +785,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-stops.json",
-      "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip"
+      "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-corridors.json",
+      "lastFeedExpiry": "20260719",
+      "lastFeedVersion": null
     },
     {
       "slug": "exo-lrrs",
@@ -695,7 +806,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-stops.json",
-      "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip"
+      "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": null
     },
     {
       "slug": "exo-laurentides",
@@ -713,7 +827,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-stops.json",
-      "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip"
+      "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": null
     },
     {
       "slug": "exo-terrebonne",
@@ -731,7 +848,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-stops.json",
-      "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip"
+      "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": null
     },
     {
       "slug": "translink",
@@ -751,7 +871,8 @@
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-translink-vancouver-gtfs-1222.zip?alt=media",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-corridors.json"
     },
     {
       "slug": "bc-fraser-valley",
@@ -764,6 +885,7 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-fraser-valley-region-gtfs-1991.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley-corridors.json",
       "lastFeedExpiry": "20260627",
       "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
     },
@@ -778,6 +900,7 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-victoria-regional-transit-system-gtfs-2571.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria-corridors.json",
       "lastFeedExpiry": "20260628",
       "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
     },
@@ -792,6 +915,7 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-kelowna-regional-transit-system-gtfs-2555.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna-corridors.json",
       "lastFeedExpiry": "20260627",
       "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
     },
@@ -811,7 +935,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media"
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "nfta-rail",
@@ -829,7 +956,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media"
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "ddot",
@@ -842,6 +972,7 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-department-of-transportation-ddot-gtfs-464.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot-corridors.json",
       "lastFeedExpiry": "20260703",
       "lastFeedVersion": "S1000180"
     },
@@ -856,6 +987,7 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-suburban-mobility-authority-for-regional-transit-smart-gtfs-414.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-corridors.json",
       "lastFeedExpiry": "20260621",
       "lastFeedVersion": "S1000139"
     },
@@ -870,6 +1002,7 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-people-mover-gtfs-2281.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "1"
     },
@@ -885,7 +1018,8 @@
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/qline-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-qline-detroit-gtfs-802.zip?alt=media",
       "lastFeedExpiry": "20251231",
-      "lastFeedVersion": "UTC: 21-Apr-2025 21:29"
+      "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/qline-corridors.json"
     },
     {
       "slug": "theride",
@@ -899,7 +1033,8 @@
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/theride-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-ann-arbor-area-transportation-authority-theride-gtfs-415.zip?alt=media",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/theride-corridors.json"
     },
     {
       "slug": "port-huron",
@@ -924,6 +1059,7 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-greater-cleveland-regional-transit-authority-gtfs-406.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta-corridors.json",
       "lastFeedExpiry": "20260801",
       "lastFeedVersion": "2606a"
     },

@@ -108,6 +108,10 @@ function passesRouteFilter(
     if (routeCount < 3 && headway > 15) return false;
   }
 
+  // Only render direction 0 — direction 1 traces the same streets in reverse and doubles
+  // polyline count with no visual benefit on a frequency map.
+  if (!isCorridor && p.directionId !== undefined && p.directionId !== 0) return false;
+
   if (filters.modes.size > 0 && p.routeType !== undefined && !filters.modes.has(effectiveMode(p))) return false;
   if (p.day !== undefined && p.day !== filters.day) return false;
   if (filters.hideSpan && p.tier === 'span') return false;

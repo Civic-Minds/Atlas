@@ -93,6 +93,7 @@ interface AgencyEntry {
   center: [number, number];
   url: string;
   stopsUrl: string;
+  corridorsUrl?: string;
   feedUrl: string | null;
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
@@ -144,18 +145,20 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     return `skipped (same feed version: ${peekedVersion})`;
   }
 
-  const { geojson, stopsJson, featureCount, feedExpiry, feedVersion } = await processGtfsBuffer(buf, undefined, {
+  const { geojson, corridorsGeojson, stopsJson, featureCount, feedExpiry, feedVersion } = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
   });
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
 
-  const [url, stopsUrl] = await Promise.all([
+  const [url, stopsUrl, corridorsUrl] = await Promise.all([
     r2Put(`atlas/${agency.slug}.json`, geojson),
     r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
+    r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
   ]);
   agency.url = url;
   agency.stopsUrl = stopsUrl;
+  agency.corridorsUrl = corridorsUrl;
 
   // Archive the raw zip to the private atlas-archive bucket, keyed by service end date.
   const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;

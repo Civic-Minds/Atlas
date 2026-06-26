@@ -66,7 +66,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
 
-  const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds);
+  const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, { showCorridorBand });
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day);
   const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop } = useIntervalStats(layers, {
     query,

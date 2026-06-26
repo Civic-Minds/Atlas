@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Agency } from '../App';
-import { fetchAgencyGeo, getCachedAgencyGeo } from '../lib/agencyGeo';
+import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 
@@ -49,16 +49,19 @@ function bboxIntersects(
   return !(n < vp.s || s > vp.n || e < vp.w || w > vp.e);
 }
 
-export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null) {
+export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null, options?: { showCorridorBand?: boolean }) {
+  const showCorridorBand = options?.showCorridorBand ?? false;
   const [layers, setLayers] = useState<AgencyLayers>({});
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
   const loadedSlugs = useRef(new Set<string>());
+  const loadedCorridorSlugs = useRef(new Set<string>());
   const cancelled = useRef(false);
 
   useEffect(() => {
     cancelled.current = false;
     loadedSlugs.current = new Set();
+    loadedCorridorSlugs.current = new Set();
     setLayers({});
     setLoadedCount(0);
     setRequestedCount(0);
@@ -98,6 +101,33 @@ export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null)
       .filter(a => bboxIntersects(getAgencyBbox(a), vp))
       .forEach(fetchAgency);
   }, [agencies, bounds, fetchAgency]);
+
+  // When the Corridors band view is active, lazily load per-agency corridor GeoJSON
+  // (isCorridor features) for visible agencies that have a corridorsUrl.
+  useEffect(() => {
+    if (!showCorridorBand) return;
+    const vp = bounds ?? INITIAL_BOUNDS;
+    agencies
+      .filter(a => a.corridorsUrl && bboxIntersects(getAgencyBbox(a), vp))
+      .forEach(agency => {
+        if (loadedCorridorSlugs.current.has(agency.slug)) return;
+        loadedCorridorSlugs.current.add(agency.slug);
+
+        const key = `${agency.slug}-corridors`;
+        const cached = getCachedAgencyCorridors(agency.slug);
+        if (cached) {
+          setLayers(prev => ({ ...prev, [key]: cached }));
+          return;
+        }
+
+        fetchAgencyCorridors(agency.slug, agency.corridorsUrl!)
+          .then(data => {
+            if (cancelled.current) return;
+            setLayers(prev => ({ ...prev, [key]: data }));
+          })
+          .catch(err => console.error(`Failed to load corridors for ${agency.slug}`, err));
+      });
+  }, [agencies, bounds, showCorridorBand]);
 
   const isLoading = loadedCount < requestedCount;
 

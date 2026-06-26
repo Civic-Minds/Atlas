@@ -14,6 +14,29 @@ import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 
 export type GtfsPreprocess = 'nrt-day-night';
 
+// Douglas-Peucker line simplification. Tolerance in degrees (~0.0001 ≈ 11m).
+function simplifyLine(coords: number[][], tolerance: number): number[][] {
+  if (coords.length <= 2) return coords;
+  const [x1, y1] = coords[0];
+  const [x2, y2] = coords[coords.length - 1];
+  const dx = x2 - x1, dy = y2 - y1;
+  const lenSq = dx * dx + dy * dy;
+  let maxDist = 0, maxIdx = 0;
+  for (let i = 1; i < coords.length - 1; i++) {
+    const [px, py] = coords[i];
+    const dist = lenSq === 0
+      ? Math.sqrt((px - x1) ** 2 + (py - y1) ** 2)
+      : Math.abs(dy * px - dx * py + x2 * y1 - y2 * x1) / Math.sqrt(lenSq);
+    if (dist > maxDist) { maxDist = dist; maxIdx = i; }
+  }
+  if (maxDist > tolerance) {
+    const left = simplifyLine(coords.slice(0, maxIdx + 1), tolerance);
+    const right = simplifyLine(coords.slice(maxIdx), tolerance);
+    return [...left.slice(0, -1), ...right];
+  }
+  return [coords[0], coords[coords.length - 1]];
+}
+
 const PERIODS = {
   amPeak: { start: 360, end: 540 },
   midday: { start: 540, end: 900 },
@@ -136,6 +159,7 @@ export interface StopEntry {
 
 export interface ProcessResult {
   geojson: string;
+  corridorsGeojson: string; // isCorridor features only, served separately
   stopsJson: string; // JSON: Record<stopId, StopEntry> — for Corridors stop search
   featureCount: number;
   center: [number, number] | null;
@@ -767,12 +791,21 @@ export async function processGtfsBuffer(
     };
   }
 
+  // Simplify route LineString coordinates (Douglas-Peucker, ~11m tolerance).
+  // Reduces file size for dense networks without visible change at typical zoom levels.
+  for (const f of features) {
+    if (f.geometry.type === 'LineString') {
+      f.geometry.coordinates = simplifyLine(f.geometry.coordinates as number[][], 0.0001);
+    }
+  }
+
   const feedInfo = gtfs.feedInfo?.[0];
-  const allFeatures = [...features, ...stopFeatures, ...corridorFeatures];
+  const mainFeatures = [...features, ...stopFeatures];
   return {
-    geojson: JSON.stringify({ type: 'FeatureCollection', features: allFeatures }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', features: mainFeatures }),
+    corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
-    featureCount: allFeatures.length,
+    featureCount: mainFeatures.length,
     center,
     feedExpiry: feedInfo?.feed_end_date ?? null,
     feedVersion: feedInfo?.feed_version ?? null,

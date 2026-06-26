@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 - **14 new agencies**: TransLink (Vancouver), BC Transit Fraser Valley, BC Transit Victoria, BC Transit Kelowna, RTC (Québec City), Sarnia Transit, Blue Water Area Transit (Port Huron), DDOT, SMART, Detroit People Mover, QLine, TheRide (Ann Arbor), GCRTA (Cleveland), TARTA (Toledo). Total: 55 agencies across Ontario, Quebec, British Columbia, New York, Michigan, and Ohio.
 - **index.json refactored**: added `region` field to all agencies; sorted by region then name; removed `octranspo-debug` and duplicate `hsr` entries; added missing bboxes; standardized field ordering.
 
+### Performance
+- **LRU cache for in-memory GeoJSON** (`agencyGeo.ts`): unbounded Map replaced with a 15-slot LRU. Agencies evicted from the LRU remain in React layer state; re-fetches go to the browser HTTP cache. Caps JS heap at ~15 agencies worth of GeoJSON (~75 MB worst case).
+- **Direction 0 only rendered** (`useIntervalStats.ts`): direction 1 features (return trips) are filtered out before rendering. Halves polyline count on the Leaflet canvas with no visual change — frequency is the same in both directions on a given route.
+- **Geometry simplification** (`process-core.ts`): Douglas-Peucker at 0.0001° (~11 m) applied to all route LineStrings during pipeline processing. Reduces dense-network GeoJSON sizes (e.g. TTC: ~7 MB → ~4 MB) with imperceptible rounding at typical zoom levels.
+- **Corridor features split to separate files** (`process-core.ts`, `refresh.ts`, `process-gtfs.ts`): `isCorridor` segments are written to `{slug}-corridors.json` in R2 instead of being embedded in the main agency file. Main GeoJSON is now routes + stops only. Corridors are loaded lazily by `useAgencyData` only when `showCorridorBand` is true (i.e. the Corridors app is open). 52 of 55 agencies have corridors files; the 3 local-zip agencies without a `feedUrl` (sarnia, port-huron, tarta) are unaffected — they show no corridor band until re-processed.
+
 ### Added
 - **Region filter chips in agency browser**: "All / Ontario / British Columbia / …" chips in the InfoPanel Agencies tab for quick filtering by province/state. Chips are generated from the `region` field in `index.json` — new regions appear automatically.
 - **Agencies dropdown grouped by region**: the Agencies chip in the frequency map filter bar now groups agencies under region headers (Ontario, British Columbia, Quebec, New York) instead of a flat list. Scales cleanly as coverage expands.
