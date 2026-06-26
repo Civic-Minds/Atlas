@@ -5,12 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Sarnia Transit**: added to index.json.
-- **TransLink (Vancouver)**: added to index.json; processed via refresh pipeline. (WCE MDB feed is a duplicate of the full TransLink network — not added separately.)
-- **BC Transit (Fraser Valley)**: added via MDB unified Fraser Valley Region feed (1991); 1,797 features.
-- **BC Transit (Victoria)**: added via MDB feed (2571); 5,182 features.
-- **RTC (Québec)**: added Quebec City transit via local zip; feedUrl set to MDB stable mirror.
-- **index.json refactored**: added `region` field to all agencies (Ontario/Quebec/British Columbia/New York); sorted by region then name; removed `octranspo-debug` and duplicate `hsr` entries; added missing bboxes for `translink`, `rtc`; standardized field ordering throughout.
+- **14 new agencies**: TransLink (Vancouver), BC Transit Fraser Valley, BC Transit Victoria, BC Transit Kelowna, RTC (Québec City), Sarnia Transit, Blue Water Area Transit (Port Huron), DDOT, SMART, Detroit People Mover, QLine, TheRide (Ann Arbor), GCRTA (Cleveland), TARTA (Toledo). Total: 55 agencies across Ontario, Quebec, British Columbia, New York, Michigan, and Ohio.
+- **index.json refactored**: added `region` field to all agencies; sorted by region then name; removed `octranspo-debug` and duplicate `hsr` entries; added missing bboxes; standardized field ordering.
 
 ### Added
 - **Region filter chips in agency browser**: "All / Ontario / British Columbia / …" chips in the InfoPanel Agencies tab for quick filtering by province/state. Chips are generated from the `region` field in `index.json` — new regions appear automatically.
