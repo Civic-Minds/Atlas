@@ -17,6 +17,10 @@ export interface LiveRouteConfig {
   tripUpdatesUrl: string;
   vehiclePositionsUrl: string;
   scheduleOffsetMin: Record<string, Record<string, number>>;
+  /** Env var name whose value is appended as `?apikey=VALUE` to the feed URLs (e.g. TransLink). */
+  apiKeyParamEnvVar?: string;
+  /** Env var name whose value is sent as the `apikey` HTTP header (e.g. STM). */
+  apiKeyHeaderEnvVar?: string;
   longPatternKey?: string;
   longPatternStops?: string[];
   longPatternScheduleOffsetMin?: Record<string, number>;
@@ -59,6 +63,48 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     scheduleOffsetMin: {
       '0': { '85': 0, '52': 2, '535': 40 },
       '1': { '535': 0, '54': 33, '85': 34 },
+    },
+  },
+  {
+    slug: 'translink',
+    displayRouteShortName: '099',
+    routeIds: ['6641'],
+    scheduledHeadwayMin: 5,
+    // 99 B-Line (UBC – Commercial-Broadway): both terminals + Granville mid-corridor
+    targetStops: {
+      '12057': 'UBC Exchange',
+      '12721': 'W Broadway at Granville (EB)',
+      '11588': 'Commercial-Broadway Station',
+      '545': 'W Broadway at Granville (WB)',
+      '12600': 'UBC Exchange (WB)',
+    },
+    tripUpdatesUrl: 'https://gtfsapi.translink.ca/v3/gtfsrealtime',
+    vehiclePositionsUrl: 'https://gtfsapi.translink.ca/v3/gtfsposition',
+    apiKeyParamEnvVar: 'TRANSLINK_API_KEY',
+    scheduleOffsetMin: {
+      '0': { '12057': 0, '12721': 24, '11588': 40 },
+      '1': { '11588': 0, '545': 15, '12600': 38 },
+    },
+  },
+  {
+    slug: 'stm',
+    displayRouteShortName: '55',
+    routeIds: ['55'],
+    scheduledHeadwayMin: 6,
+    // Saint-Laurent (Henri-Bourassa – Saint-Jacques): both termini + two mid-corridor stops
+    targetStops: {
+      '50314': 'Henri-Bourassa / Millen',
+      '50869': 'Saint-Laurent / Guizot',
+      '51827': 'Saint-Laurent / Saint-Joseph',
+      '51848': 'Saint-Urbain / Villeneuve',
+      '52947': 'Saint-Laurent / Saint-Jacques',
+    },
+    tripUpdatesUrl: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/tripUpdates',
+    vehiclePositionsUrl: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/vehiclePositions',
+    apiKeyHeaderEnvVar: 'STM_API_KEY',
+    scheduleOffsetMin: {
+      '0': { '50314': 0, '50869': 22, '51848': 44, '52947': 65 },
+      '1': { '52947': 0, '51827': 21, '50785': 46, '50314': 70 },
     },
   },
   {

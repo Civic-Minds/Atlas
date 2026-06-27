@@ -28,11 +28,25 @@ export interface LiveAdherenceResult {
   trips: TripDrift[];
 }
 
-async function fetchTripUpdates(url: string) {
+async function fetchTripUpdates(
+  url: string,
+  opts?: { apiKeyParam?: string; apiKeyHeader?: string },
+) {
+  let finalUrl = url;
+  const headers: Record<string, string> = {};
+  if (opts?.apiKeyParam) {
+    finalUrl += (finalUrl.includes('?') ? '&' : '?') + `apikey=${encodeURIComponent(opts.apiKeyParam)}`;
+  }
+  if (opts?.apiKeyHeader) {
+    headers['apikey'] = opts.apiKeyHeader;
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12_000);
   try {
-    const res = await fetch(url, { signal: controller.signal });
+    const res = await fetch(finalUrl, {
+      headers: Object.keys(headers).length ? headers : undefined,
+      signal: controller.signal,
+    });
     if (!res.ok) return null;
     const buffer = await res.arrayBuffer();
     const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
@@ -53,7 +67,9 @@ export async function computeLiveAdherence(
   const cfg = getLiveRouteConfig(agency, routeShortName);
   if (!cfg) return null;
 
-  const feed = await fetchTripUpdates(cfg.tripUpdatesUrl);
+  const apiKeyParam = cfg.apiKeyParamEnvVar ? process.env[cfg.apiKeyParamEnvVar] : undefined;
+  const apiKeyHeader = cfg.apiKeyHeaderEnvVar ? process.env[cfg.apiKeyHeaderEnvVar] : undefined;
+  const feed = await fetchTripUpdates(cfg.tripUpdatesUrl, { apiKeyParam, apiKeyHeader });
   if (!feed?.entity) return null;
 
   const timestamp = new Date().toISOString();
