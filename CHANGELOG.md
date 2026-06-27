@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 - **STM live polling**: STM Route 55 is now live. Added `active` flag to `LiveRouteConfig` — key-gated routes with `active: true` show in the UI; without it they stay hidden until configured. STM GTFS-RT added to the Cloudflare Worker archiver with `apikey` header auth. `STM_API_KEY` added to Vercel and the Worker secret store.
 
 ### Fixed
-- **Filter chips transition**: was a barely-visible 200ms opacity-only fade; now slides up/fades out (`-translate-y-2`) and slides down/fades in over 300ms when switching apps.
+- **Filter chips transition**: now slides up 16px + scales down to 95% + fades over 500ms when switching apps; was a barely-visible 200ms opacity-only fade.
+- **Settings/InfoPanel header height mismatch**: Settings header `py-4` (60px) was taller than InfoPanel tabs (44px), causing the border-b divider to appear at different heights. Settings reduced to `py-2` (44px) to match.
 - **Corridors alignment**: "To" pill, From/To dropdowns, and results panel were all offset at `left: 104px` (pre-dates wordmark + AppDrawer). All updated to `left: 182px` via `SEARCH_LEFT` constant.
 - **App drawer icon**: switched from rounded rects to circles for a cleaner dot-grid look.
 - **InfoPanel tab header height** now matches the Settings panel header (`pt-4 pb-3.5` on tabs vs `py-4` in Settings).
