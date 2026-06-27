@@ -247,21 +247,37 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
               </div>
             );
           })()}
-          {tab === 'live' && (
-            <div className="px-5 py-4 space-y-3">
-              {LIVE_POLLING_ROUTES.map(r => (
-                <div key={`${r.slug}-${r.displayRouteShortName}`} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)]">
-                  <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-[var(--text-primary)]">Route {r.displayRouteShortName}</p>
-                    <p className="text-[10px] text-[var(--text-dim)] capitalize">{r.slug}</p>
+          {tab === 'live' && (() => {
+            const byAgency = LIVE_POLLING_ROUTES.reduce<Record<string, { slug: string; name: string; routes: typeof LIVE_POLLING_ROUTES }>>((acc, r) => {
+              if (!acc[r.slug]) {
+                const agencyName = agencies.find(a => a.slug === r.slug)?.name ?? r.slug;
+                acc[r.slug] = { slug: r.slug, name: agencyName, routes: [] };
+              }
+              acc[r.slug].routes.push(r);
+              return acc;
+            }, {});
+            return (
+              <div className="flex flex-col py-2">
+                {Object.values(byAgency).map(({ slug, name, routes: agRoutes }) => (
+                  <div key={slug}>
+                    <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{name}</p>
+                    {agRoutes.map(r => (
+                      <div key={r.displayRouteShortName} className="flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
+                        <div className="flex items-center gap-2">
+                          <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                          <span className="text-xs text-[var(--text-primary)]">Route {r.displayRouteShortName}</span>
+                        </div>
+                        {(r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) && (
+                          <span className="text-[10px] text-[var(--text-dim)] font-mono">key required</span>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-[10px] text-[var(--text-dim)] shrink-0">every {r.scheduledHeadwayMin}m</span>
-                </div>
-              ))}
-              <p className="text-[10px] text-[var(--text-dim)] pt-1">Live schedule adherence uses real-time GTFS feeds. Click a route on the map to see current adherence data.</p>
-            </div>
-          )}
+                ))}
+                <p className="px-5 pt-4 text-[10px] text-[var(--text-dim)] leading-relaxed">Click a route on the map to see live schedule adherence.</p>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
