@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **docs/ARCHITECTURE.md**: full bucket contract (atlas/atlas-archive/atlas-live), live polling split (client-side vs. Cloudflare Worker archiver), data flow, env vars, Vercel API routes, retention policy.
+- **CLAUDE.md**: updated agency count (65), added R2 bucket quick-reference and live polling quick-reference, pointer to ARCHITECTURE.md.
+
+### Fixed
+- **atlas-history misplaced in atlas bucket**: headway diff snapshots (`history/{slug}/`) now written to `atlas-archive` (private) instead of `atlas` (public). Added `r2PutArchiveJson` and `r2GetArchive` to `pipeline/r2.ts`; updated `pipeline/refresh.ts` to use them.
+
+### Added
 - **InfoPanel "Live" tab**: dedicated tab listing all live-polled routes (route number, agency, scheduled headway). Replaces the inline list that was in the About tab. Accessible from the Settings panel via "See which routes →" link on the Live tracking toggle.
 - **Agency cards in Agencies tab**: clicking any agency in the list shows a detail view with name, region, slug, and live-polled routes for that agency. Back button returns to list. Agencies with live routes show a Radio icon in the list.
 - **Region chips scroll horizontally** in the Agencies tab — no more multi-row wrap.

@@ -11,7 +11,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
-import { r2Put, r2Get, r2PutArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
 import JSZip from 'jszip';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
@@ -43,9 +43,10 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   }
 
   // Only write when headways actually changed vs the last recorded snapshot.
-  const latestKey = `atlas-history/${slug}/latest.json`;
+  // Stored in atlas-archive (private) — pipeline diff-detection metadata, not served to users.
+  const latestKey = `history/${slug}/latest.json`;
   try {
-    const prevRaw = await r2Get(latestKey);
+    const prevRaw = await r2GetArchive(latestKey);
     if (prevRaw) {
       const prev = JSON.parse(prevRaw) as { routes: unknown };
       if (JSON.stringify(prev.routes) === JSON.stringify(routes)) {
@@ -59,8 +60,8 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   const periodKey = feedExpiry ?? feedVersion ?? new Date().toISOString().slice(0, 10);
   const snapshot = JSON.stringify({ period: periodKey, feedExpiry, feedVersion, processedAt: new Date().toISOString(), routes });
   await Promise.all([
-    r2Put(`atlas-history/${slug}/${periodKey}.json`, snapshot),
-    r2Put(latestKey, snapshot),
+    r2PutArchiveJson(`history/${slug}/${periodKey}.json`, snapshot),
+    r2PutArchiveJson(latestKey, snapshot),
   ]);
   return `snapshot written (expires ${periodKey})`;
 }

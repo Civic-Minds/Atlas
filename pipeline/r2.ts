@@ -74,9 +74,27 @@ export async function r2PutBuffer(key: string, body: Buffer, contentType: string
   return r2PublicUrl(key);
 }
 
-/** Upload to the private archive bucket — no public URL returned. */
+/** Upload binary to the private archive bucket — no public URL returned. */
 export async function r2PutArchive(key: string, body: Buffer, contentType: string): Promise<void> {
   await r2PutRaw(key, body, contentType, requireEnv('R2_ARCHIVE_BUCKET_NAME'));
+}
+
+/** Upload JSON text to the private archive bucket. */
+export async function r2PutArchiveJson(key: string, body: string): Promise<void> {
+  await r2PutRaw(key, body, 'application/json', requireEnv('R2_ARCHIVE_BUCKET_NAME'));
+}
+
+/** Read text from the private archive bucket. */
+export async function r2GetArchive(key: string): Promise<string | null> {
+  const client = getR2Client();
+  const bucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
+  try {
+    const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    return await res.Body!.transformToString();
+  } catch (e: any) {
+    if (e.name === 'NoSuchKey') return null;
+    throw e;
+  }
 }
 
 export async function r2Get(key: string): Promise<string | null> {
