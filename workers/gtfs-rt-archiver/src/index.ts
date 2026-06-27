@@ -12,11 +12,19 @@
 
 interface Env {
   BUCKET: R2Bucket;
+  STM_API_KEY?: string;
 }
 
-const FEEDS: { slug: string; url: string }[] = [
+interface FeedConfig {
+  slug: string;
+  url: string;
+  apiKeyHeader?: keyof Env;
+}
+
+const FEEDS: FeedConfig[] = [
   { slug: 'burlington', url: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb' },
   { slug: 'hamilton',   url: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb' },
+  { slug: 'stm',        url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/tripUpdates', apiKeyHeader: 'STM_API_KEY' },
 ];
 
 const MIN_FEED_BYTES = 5_000;
@@ -198,9 +206,14 @@ export default {
     const ts = Math.floor(now.getTime() / 1000);
 
     const results = await Promise.allSettled(
-      FEEDS.map(async ({ slug, url }) => {
+      FEEDS.map(async ({ slug, url, apiKeyHeader }) => {
+        const headers: Record<string, string> = { 'User-Agent': USER_AGENT };
+        if (apiKeyHeader) {
+          const key = env[apiKeyHeader] as string | undefined;
+          if (key) headers['apikey'] = key;
+        }
         const res = await fetch(url, {
-          headers: { 'User-Agent': USER_AGENT },
+          headers,
           signal: AbortSignal.timeout(15_000),
         });
         if (!res.ok) throw new Error(`${slug}: HTTP ${res.status}`);

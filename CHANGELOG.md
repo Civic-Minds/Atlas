@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **STM live polling**: added STM GTFS-RT to the Cloudflare Worker archiver (`workers/gtfs-rt-archiver`). Worker now supports optional `apiKeyHeader` per feed; STM key read from `STM_API_KEY` Worker secret and forwarded as `apikey` header. `STM_API_KEY` also added to Vercel for the client-side adherence API route.
+
 ### Fixed
 - **App drawer icon**: switched from rounded rects to circles for a cleaner dot-grid look.
 - **InfoPanel tab header height** now matches the Settings panel header (`pt-4 pb-3.5` on tabs vs `py-4` in Settings).
