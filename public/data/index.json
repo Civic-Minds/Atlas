@@ -983,6 +983,27 @@
       "lastFeedVersion": null
     },
     {
+      "slug": "regina",
+      "name": "Regina Transit",
+      "region": "Saskatchewan",
+      "center": [
+        50.4452,
+        -104.6189
+      ],
+      "bbox": [
+        50.37,
+        -104.8,
+        50.52,
+        -104.44
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/regina.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/regina-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-city-of-regina-gtfs-715.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/regina-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
       "slug": "halifax",
       "name": "Halifax Transit",
       "region": "Nova Scotia",
@@ -1002,6 +1023,90 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/halifax-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "2026_05_May_20260428"
+    },
+    {
+      "slug": "codiac",
+      "name": "Codiac Transpo (Moncton)",
+      "region": "New Brunswick",
+      "center": [
+        46.0878,
+        -64.7782
+      ],
+      "bbox": [
+        46.01,
+        -64.97,
+        46.18,
+        -64.55
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/codiac.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/codiac-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-codiac-transport-gtfs-1111.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/codiac-corridors.json",
+      "lastFeedExpiry": "20260630",
+      "lastFeedVersion": "2026 02 28  Bid5 V2"
+    },
+    {
+      "slug": "fredericton",
+      "name": "Fredericton Transit",
+      "region": "New Brunswick",
+      "center": [
+        45.9636,
+        -66.6431
+      ],
+      "bbox": [
+        45.89,
+        -66.8,
+        46.04,
+        -66.49
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fredericton.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fredericton-stops.json",
+      "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fredericton-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "202606260/20260625 23:30:00/20260626 04:00:00"
+    },
+    {
+      "slug": "saint-john",
+      "name": "Saint John Transit",
+      "region": "New Brunswick",
+      "center": [
+        45.2733,
+        -66.0633
+      ],
+      "bbox": [
+        45.19,
+        -66.24,
+        45.38,
+        -65.89
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-john.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-john-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-saint-john-transit-gtfs-2131.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-john-corridors.json",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "a5193e57-6986-42e9-9310-bf35d76fe078"
+    },
+    {
+      "slug": "t3-transit",
+      "name": "T3 Transit (PEI)",
+      "region": "Prince Edward Island",
+      "center": [
+        46.2382,
+        -63.1311
+      ],
+      "bbox": [
+        46.15,
+        -63.3,
+        46.33,
+        -62.96
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/t3-transit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/t3-transit-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-prince-edward-island-t3-transit-gtfs-2132.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/t3-transit-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "UTC: 14-May-2026 15:14"
     },
     {
       "slug": "nfta",
