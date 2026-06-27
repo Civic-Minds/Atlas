@@ -920,6 +920,48 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-corridors.json"
     },
     {
+      "slug": "calgary",
+      "name": "Calgary Transit",
+      "region": "Alberta",
+      "center": [
+        51.0447,
+        -114.0719
+      ],
+      "bbox": [
+        50.84,
+        -114.42,
+        51.27,
+        -113.72
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/calgary.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/calgary-stops.json",
+      "feedUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/calgary-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "edmonton",
+      "name": "Edmonton Transit (ETS)",
+      "region": "Alberta",
+      "center": [
+        53.5461,
+        -113.4938
+      ],
+      "bbox": [
+        53.35,
+        -113.88,
+        53.75,
+        -113.15
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/edmonton.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/edmonton-stops.json",
+      "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/edmonton-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "260623_1347"
+    },
+    {
       "slug": "nfta",
       "name": "NFTA (Buffalo)",
       "region": "New York",
