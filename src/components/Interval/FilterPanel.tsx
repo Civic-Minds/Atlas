@@ -126,10 +126,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           onClick={close}
         >
           <div
-            className={`absolute top-0 right-0 h-full w-72 bg-[var(--bg-panel)] border-l border-[var(--border-primary)] shadow-2xl backdrop-blur-md flex flex-col transition-transform duration-300 ease-out ${visible ? 'translate-x-0' : 'translate-x-full'}`}
+            className={`absolute top-[4.5rem] right-6 w-[360px] max-h-[calc(100vh-5.5rem)] flex flex-col bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden transition-[opacity,transform] duration-200 ease-out origin-top-right ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border-primary)] shrink-0">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-primary)] shrink-0">
               <h2 className="text-xs font-black text-[var(--text-primary)] uppercase tracking-wide">Settings</h2>
               <button
                 onClick={close}
@@ -140,9 +140,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col divide-y divide-[var(--border-primary)]">
+            <div className="overflow-y-auto px-5 py-2 flex flex-col divide-y divide-[var(--border-primary)]">
               {SETTINGS.map(({ id, icon: Icon, label, description }) => (
-                <div key={id} className="flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0">
+                <div key={id} className="flex items-start justify-between gap-4 py-4 first:pt-3 last:pb-3">
                   <div className="flex items-start gap-3 min-w-0">
                     <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                     <div className="min-w-0">
@@ -159,16 +159,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </button>
                 </div>
               ))}
-            </div>
-
-            <div className="shrink-0 px-6 py-4 border-t border-[var(--border-primary)]">
-              <button
-                onClick={() => { close(); onInfoOpen?.(); }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-              >
-                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">About Atlas</span>
-                <Info className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors" />
-              </button>
             </div>
           </div>
         </div>
