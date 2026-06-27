@@ -75,6 +75,10 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
     return map;
   }, [agencies, agencyQuery]);
 
+  const allSlugs = useMemo(() => agencies.map(a => a.slug), [agencies]);
+  const allOn = allSlugs.every(s => selectedAgencies.has(s));
+  const allOff = allSlugs.every(s => !selectedAgencies.has(s));
+
   return (
     <div className={`${PANEL} w-56`}>
       <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)]">
@@ -86,6 +90,22 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
           placeholder="Search…"
           className="flex-1 bg-transparent text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
         />
+      </div>
+      <div className="flex gap-1 px-1 pt-1">
+        <button
+          onClick={() => setSelectedAgencies(new Set(allSlugs))}
+          disabled={allOn}
+          className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
+        >
+          All
+        </button>
+        <button
+          onClick={() => setSelectedAgencies(new Set())}
+          disabled={allOff}
+          className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
+        >
+          None
+        </button>
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
