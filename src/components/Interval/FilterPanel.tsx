@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, X, Radio, Sun, Moon, Zap, Info } from 'lucide-react';
 
 interface FilterPanelProps {
@@ -16,18 +16,39 @@ interface FilterPanelProps {
 function Toggle({ on }: { on: boolean }) {
   return (
     <span
-      className={`relative inline-flex h-4 w-7 shrink-0 rounded-full transition-colors duration-200 ${
+      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors duration-200 ${
         on ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'
       }`}
     >
       <span
-        className={`absolute top-0.5 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-          on ? 'translate-x-3.5' : 'translate-x-0.5'
+        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+          on ? 'translate-x-5' : 'translate-x-1'
         }`}
       />
     </span>
   );
 }
+
+const SETTINGS = [
+  {
+    id: 'corridors',
+    icon: Zap,
+    label: 'Combined corridors',
+    description: 'Highlights segments where multiple routes overlap, showing the combined frequency instead of each route separately. Useful for identifying corridors with de-facto rapid transit.',
+  },
+  {
+    id: 'live',
+    icon: Radio,
+    label: 'Live tracking only',
+    description: 'Show only routes covered by Atlas\'s real-time schedule adherence monitoring. Currently limited to a small set of agencies.',
+  },
+  {
+    id: 'span',
+    icon: () => <span className="w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0">≠</span>,
+    label: 'Hide irregular routes',
+    description: 'Hides peak-only routes, school buses, and demand-responsive shuttles — anything that doesn\'t run a consistent all-day schedule. Useful for focusing on everyday service.',
+  },
+] as const;
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
   lightMode,
@@ -40,85 +61,118 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setShowCorridors,
   onInfoOpen,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setIsOpen(false);
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
-  }, [isOpen]);
+    if (open) {
+      const id = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(id);
+    } else {
+      setVisible(false);
+    }
+  }, [open]);
+
+  const close = () => setOpen(false);
 
   const hasActiveFilters = hideSpan || livePollingOnly || showCorridors;
 
-  const row = (
-    label: string,
-    icon: React.ReactNode,
-    value: boolean,
-    toggle: () => void,
-    ariaLabel: string,
-  ) => (
-    <button
-      onClick={toggle}
-      aria-label={ariaLabel}
-      className="w-full flex items-center justify-between gap-3 py-1.5 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-    >
-      <span className="flex items-center gap-2">
-        {icon}
-        {label}
-      </span>
-      <Toggle on={value} />
-    </button>
-  );
+  const values: Record<string, boolean> = {
+    corridors: showCorridors,
+    live: livePollingOnly,
+    span: hideSpan,
+  };
+
+  const toggles: Record<string, () => void> = {
+    corridors: () => setShowCorridors(v => !v),
+    live: () => setLivePollingOnly(v => !v),
+    span: () => setHideSpan(v => !v),
+  };
 
   return (
-    <div ref={panelRef} className="relative flex items-center gap-2">
-      <button
-        onClick={() => setLightMode((v) => !v)}
-        className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
-        aria-label="Toggle light mode"
-      >
-        {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-      </button>
-      <button
-        onClick={() => setIsOpen((v) => !v)}
-        className="relative w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
-        aria-label="Settings"
-      >
-        <Settings className="w-4 h-4" />
-        {hasActiveFilters && (
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
-        )}
-      </button>
-      {onInfoOpen && (
+    <>
+      <div className="flex items-center gap-2">
         <button
-          onClick={onInfoOpen}
-          className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
-          aria-label="About Atlas"
+          onClick={() => setLightMode((v) => !v)}
+          className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
+          aria-label="Toggle light mode"
         >
-          <Info className="w-4 h-4" />
+          {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
-      )}
+        <button
+          onClick={() => setOpen(v => !v)}
+          className="relative w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
+          aria-label="Settings"
+        >
+          <Settings className="w-4 h-4" />
+          {hasActiveFilters && (
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
+          )}
+        </button>
+        {onInfoOpen && (
+          <button
+            onClick={onInfoOpen}
+            className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
+            aria-label="About Atlas"
+          >
+            <Info className="w-4 h-4" />
+          </button>
+        )}
+      </div>
 
-      {isOpen && (
-        <div className="absolute top-10 right-0 w-56 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-3.5 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">Settings</h3>
-            <button onClick={() => setIsOpen(false)} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors" aria-label="Close settings">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
+      {open && (
+        <div
+          className="fixed inset-0 z-[1500]"
+          onClick={close}
+        >
+          <div
+            className={`absolute top-0 right-0 h-full w-72 bg-[var(--bg-panel)] border-l border-[var(--border-primary)] shadow-2xl backdrop-blur-md flex flex-col transition-transform duration-300 ease-out ${visible ? 'translate-x-0' : 'translate-x-full'}`}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border-primary)] shrink-0">
+              <h2 className="text-xs font-black text-[var(--text-primary)] uppercase tracking-wide">Settings</h2>
+              <button
+                onClick={close}
+                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
+                aria-label="Close settings"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
 
-          <div className="divide-y divide-[var(--border-primary)]">
-            {row('Combined corridors', <Zap className="w-3 h-3 shrink-0" />, showCorridors, () => setShowCorridors(v => !v), 'Show shared segments where overlapping routes provide higher combined frequency')}
-            {row('Live polling only', <Radio className="w-3 h-3 shrink-0" />, livePollingOnly, () => setLivePollingOnly(v => !v), 'Show only routes with live GTFS-RT schedule-adherence polling')}
-            {row('Hide irregular routes', <span className="w-3 h-3 shrink-0 flex items-center justify-center text-[9px] font-black leading-none">≠</span>, hideSpan, () => setHideSpan(v => !v), 'Hide routes with no sustained frequency tier (peak-only, school runs, shuttles)')}
+            <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col divide-y divide-[var(--border-primary)]">
+              {SETTINGS.map(({ id, icon: Icon, label, description }) => (
+                <div key={id} className="flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={toggles[id]}
+                    aria-label={label}
+                    className="mt-0.5 shrink-0"
+                  >
+                    <Toggle on={values[id]} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="shrink-0 px-6 py-4 border-t border-[var(--border-primary)]">
+              <button
+                onClick={() => { close(); onInfoOpen?.(); }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">About Atlas</span>
+                <Info className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors" />
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
