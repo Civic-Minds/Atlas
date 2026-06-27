@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **IndexedDB GeoJSON cache** (`src/lib/idbCache.ts`): agency GeoJSON and corridor data now persists in IndexedDB between sessions, keyed by `{slug}-{weekVersion}`. On repeat visits within the same week, all agencies load from local storage instead of R2 — near-instant on return visits. Falls through to network on any IDB failure (private browsing, quota). Stale entries from prior weeks are pruned automatically on first load. Closes AI-146.
+
+### Added
 - **docs/ARCHITECTURE.md**: full bucket contract (atlas/atlas-archive/atlas-live), live polling split (client-side vs. Cloudflare Worker archiver), data flow, env vars, Vercel API routes, retention policy.
 - **CLAUDE.md**: updated agency count (65), added R2 bucket quick-reference and live polling quick-reference, pointer to ARCHITECTURE.md.
 
