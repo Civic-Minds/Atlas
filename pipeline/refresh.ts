@@ -141,6 +141,16 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   // Skip processing if the feed hasn't changed since last refresh.
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
+
+  if (peekedExpiry) {
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    if (peekedExpiry < today) {
+      const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
+      const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
+      process.stdout.write(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
+    }
+  }
+
   if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
     return `skipped (same schedule period: ${peekedExpiry})`;
   }

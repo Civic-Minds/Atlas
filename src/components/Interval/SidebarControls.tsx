@@ -389,36 +389,47 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     {titleCase(getRouteLabel(shortName, longName, agencyName))}
                   </div>
                   <div className="space-y-0.5">
-                    {branches.map(({ rKey, headsign, headway, directionId }) => {
-                      const cleaned = headsign && !/^A[0-9]/.test(shortName)
-                        ? titleCase(cleanHeadsign(headsign.trim(), shortName, longName))
-                        : null;
-                      const label = cleaned
-                        ? (/^to\s/i.test(cleaned) ? cleaned : `→ ${cleaned}`)
-                        : `→ dir ${directionId}`;
-                      return (
-                        <div key={`${rKey}::${directionId}::${headsign ?? ''}`} className="flex items-center justify-between">
-                          <button
-                            onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
-                            className="font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
-                          >
-                            {label}
-                          </button>
-                          {headway != null && (
-                            <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">
-                              {isLivePollingRoute(rKey.split('::')[0], shortName) && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />
+                    {(() => {
+                      const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
+                      let lastDir: number | null = null;
+                      return branches.map(({ rKey, headsign, headway, directionId }) => {
+                        const cleaned = headsign && !/^A[0-9]/.test(shortName)
+                          ? titleCase(cleanHeadsign(headsign.trim(), shortName, longName))
+                          : null;
+                        const label = cleaned
+                          ? (/^to\s/i.test(cleaned) ? cleaned : `→ ${cleaned}`)
+                          : `→ dir ${directionId}`;
+                        const showDivider = hasMultipleDirections && lastDir !== null && directionId !== lastDir;
+                        lastDir = directionId;
+                        return (
+                          <React.Fragment key={`${rKey}::${directionId}::${headsign ?? ''}`}>
+                            {showDivider && (
+                              <div className="my-1 border-t border-[var(--border-primary)] opacity-50" />
+                            )}
+                            <div className="flex items-center justify-between">
+                              <button
+                                onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
+                                className="font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
+                              >
+                                {label}
+                              </button>
+                              {headway != null && (
+                                <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">
+                                  {isLivePollingRoute(rKey.split('::')[0], shortName) && (
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />
+                                  )}
+                                  <span
+                                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                                    style={{ background: getTierColor(String(headway)) }}
+                                  />
+                                  {fmtHeadway(headway)}
+                                </span>
                               )}
-                              <span
-                                className="w-1.5 h-1.5 rounded-full shrink-0"
-                                style={{ background: getTierColor(String(headway)) }}
-                              />
-                              {fmtHeadway(headway)}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
+                            </div>
+                          </React.Fragment>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               ))}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -260,6 +260,28 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const showHubsOnly = false;
   const showRailOnly = zoom >= 12 && zoom < 15;
 
+  // Per ~50m grid cell, keep only the highest-priority stop across all agencies so
+  // shared stations (e.g. GO + TTC at Union) don't render overlapping duplicate pins.
+  // Score: rail stops beat bus stops; within a mode, more routes = higher priority.
+  const primaryStopKeys = useMemo(() => {
+    const cellBest = new Map<string, { compositeId: string; score: number }>();
+    for (const [slug, data] of Object.entries(layers)) {
+      const fc = data as GeoJSON.FeatureCollection;
+      for (const f of fc.features) {
+        if (f.geometry.type !== 'Point') continue;
+        const [lon, lat] = (f.geometry as GeoJSON.Point).coordinates;
+        const locKey = `${Math.round(lat * 2000)}_${Math.round(lon * 2000)}`;
+        const p = f.properties as any;
+        if (!p.stopId) continue;
+        const compositeId = `${slug}::${p.stopId}`;
+        const score = (p.isRail ? 1000 : 0) + (p.routeIds?.length ?? 0);
+        const prev = cellBest.get(locKey);
+        if (!prev || score > prev.score) cellBest.set(locKey, { compositeId, score });
+      }
+    }
+    return new Set([...cellBest.values()].map(v => v.compositeId));
+  }, [layers]);
+
   const styleFeature = useCallback(
     (feature?: GeoJSON.Feature) => {
       const p = feature?.properties as unknown as ShapeProperties;
@@ -511,6 +533,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                   // Visibility logic — prevents terminal clusters from becoming blobs at overview zooms.
                   // Only "significant" stops (hubs/terminals + rail) are shown until you zoom in.
                   if (!isSelected) {
+                    // Hide stops that lost the per-location priority race (deduplicates shared stations).
+                    if (compositeId && !primaryStopKeys.has(compositeId)) {
+                      return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
+                    }
                     if (zoom < 12) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
                     if (zoom < 15 && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
                   }
