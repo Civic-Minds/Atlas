@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { X, ExternalLink, Search } from 'lucide-react';
+import { X, ExternalLink, Search, ChevronLeft, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import type { Agency } from '../App';
@@ -16,6 +16,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
   const [tab, setTab] = useState<Tab>('about');
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
+  const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -35,8 +36,10 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
   }, [open, onClose]);
 
   useEffect(() => {
-    if (!open) { setTab('about'); setQuery(''); setRegionFilter(null); }
+    if (!open) { setTab('about'); setQuery(''); setRegionFilter(null); setSelectedAgency(null); }
   }, [open]);
+
+  useEffect(() => { if (tab !== 'agencies') setSelectedAgency(null); }, [tab]);
 
   const regions = useMemo(() => {
     const seen = new Set<string>();
@@ -151,7 +154,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
             </div>
           )}
 
-          {tab === 'agencies' && (
+          {tab === 'agencies' && !selectedAgency && (
             <div className="flex flex-col">
               <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className="relative flex items-center">
@@ -198,18 +201,71 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                   {[...byRegion.entries()].map(([region, list]) => (
                     <div key={region}>
                       <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
-                      {list.map(a => (
-                        <div key={a.slug} className="flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
-                          <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
-                          <span className="text-[10px] text-[var(--text-dim)] font-mono ml-2 shrink-0">{a.slug}</span>
-                        </div>
-                      ))}
+                      {list.map(a => {
+                        const hasLive = LIVE_POLLING_ROUTES.some(r => r.slug === a.slug);
+                        return (
+                          <button
+                            key={a.slug}
+                            onClick={() => setSelectedAgency(a)}
+                            className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                          >
+                            <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
+                            <div className="flex items-center gap-2 shrink-0 ml-2">
+                              {hasLive && <Radio className="w-3 h-3 text-[var(--accent)]" />}
+                              <span className="text-[10px] text-[var(--text-dim)] font-mono">{a.slug}</span>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
               )}
             </div>
           )}
+
+          {tab === 'agencies' && selectedAgency && (() => {
+            const liveRoutes = LIVE_POLLING_ROUTES.filter(r => r.slug === selectedAgency.slug);
+            return (
+              <div className="flex flex-col">
+                <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10">
+                  <button
+                    onClick={() => setSelectedAgency(null)}
+                    className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    Agencies
+                  </button>
+                </div>
+                <div className="px-5 py-4 space-y-5">
+                  <div>
+                    <p className="text-base font-black text-[var(--text-primary)]">{selectedAgency.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {selectedAgency.region && (
+                        <span className="text-[10px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5">{selectedAgency.region}</span>
+                      )}
+                      <span className="text-[10px] text-[var(--text-dim)] font-mono">{selectedAgency.slug}</span>
+                    </div>
+                  </div>
+
+                  {liveRoutes.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Live tracking</p>
+                      <div className="space-y-1">
+                        {liveRoutes.map(r => (
+                          <div key={r.displayRouteShortName} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-app)] border border-[var(--border-primary)]">
+                            <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                            <span className="text-xs font-bold text-[var(--text-primary)]">Route {r.displayRouteShortName}</span>
+                            <span className="text-[10px] text-[var(--text-dim)] ml-auto">every {r.scheduledHeadwayMin}m</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
