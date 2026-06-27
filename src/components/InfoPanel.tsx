@@ -4,15 +4,16 @@ import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import type { Agency } from '../App';
 
-type Tab = 'about' | 'agencies';
+type Tab = 'about' | 'agencies' | 'live';
 
 interface Props {
   open: boolean;
   onClose: () => void;
   agencies: Agency[];
+  defaultTab?: Tab;
 }
 
-export default function InfoPanel({ open, onClose, agencies }: Props) {
+export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props) {
   const [tab, setTab] = useState<Tab>('about');
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
@@ -36,8 +37,12 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
   }, [open, onClose]);
 
   useEffect(() => {
-    if (!open) { setTab('about'); setQuery(''); setRegionFilter(null); setSelectedAgency(null); }
-  }, [open]);
+    if (open) {
+      setTab(defaultTab ?? 'about');
+    } else {
+      setQuery(''); setRegionFilter(null); setSelectedAgency(null);
+    }
+  }, [open, defaultTab]);
 
   useEffect(() => { if (tab !== 'agencies') setSelectedAgency(null); }, [tab]);
 
@@ -74,33 +79,30 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
         className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="shrink-0 flex items-center justify-between px-5 pt-5 pb-3 border-b border-[var(--border-primary)]">
-          <h2 className="text-xs font-black text-[var(--text-primary)]">About</h2>
+        {/* Tabs + close */}
+        <div className="shrink-0 flex items-center px-5 border-b border-[var(--border-primary)]">
+          <div className="flex flex-1 gap-3">
+            {(['about', 'agencies', 'live'] as Tab[]).map(t => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`pb-2.5 pt-3 text-xs font-bold capitalize border-b-2 transition-colors ${
+                  tab === t
+                    ? 'border-[var(--accent)] text-[var(--accent)]'
+                    : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                {t === 'agencies' ? 'Agencies' : t === 'live' ? 'Live' : 'About'}
+              </button>
+            ))}
+          </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
           </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="shrink-0 flex px-5 gap-3 border-b border-[var(--border-primary)]">
-          {(['about', 'agencies'] as Tab[]).map(t => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`pb-2.5 pt-3 text-xs font-bold capitalize border-b-2 transition-colors ${
-                tab === t
-                  ? 'border-[var(--accent)] text-[var(--accent)]'
-                  : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              {t === 'agencies' ? 'Agencies' : t}
-            </button>
-          ))}
         </div>
 
         {/* Scrollable body */}
@@ -114,27 +116,6 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A frequency map covering 65 transit agencies across Canada and the US Great Lakes — from Halifax to Vancouver, south into Michigan and Ohio. Routes are colored by headway: blue runs every 10 minutes or better, red runs hourly or less.
               </p>
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                Select routes include live schedule adherence monitoring using real-time GTFS feeds.
-              </p>
-
-              <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Live tracking</p>
-                <div className="space-y-1">
-                  {Object.entries(
-                    LIVE_POLLING_ROUTES.reduce<Record<string, string[]>>((acc, r) => {
-                      (acc[r.slug] ??= []).push(r.displayRouteShortName);
-                      return acc;
-                    }, {})
-                  ).map(([slug, routes]) => (
-                    <div key={slug} className="flex items-baseline gap-2">
-                      <span className="text-[10px] font-bold text-[var(--text-primary)] shrink-0">{slug}</span>
-                      <span className="text-[10px] text-[var(--text-dim)]">{routes.join(', ')}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
                 <a
@@ -266,6 +247,21 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
               </div>
             );
           })()}
+          {tab === 'live' && (
+            <div className="px-5 py-4 space-y-3">
+              {LIVE_POLLING_ROUTES.map(r => (
+                <div key={`${r.slug}-${r.displayRouteShortName}`} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)]">
+                  <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-[var(--text-primary)]">Route {r.displayRouteShortName}</p>
+                    <p className="text-[10px] text-[var(--text-dim)] capitalize">{r.slug}</p>
+                  </div>
+                  <span className="text-[10px] text-[var(--text-dim)] shrink-0">every {r.scheduledHeadwayMin}m</span>
+                </div>
+              ))}
+              <p className="text-[10px] text-[var(--text-dim)] pt-1">Live schedule adherence uses real-time GTFS feeds. Click a route on the map to see current adherence data.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

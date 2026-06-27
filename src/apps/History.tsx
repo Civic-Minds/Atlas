@@ -10,7 +10,7 @@ import type { HourBucket } from '../../shared/computeHistoryAdherence';
 interface Props {
   active: boolean;
   agencies: Agency[];
-  onInfoOpen?: () => void;
+  onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
 }
 
 const AGENCY_LABELS: Record<string, string> = {
@@ -155,7 +155,7 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Schedule adherence</p>
           {onInfoOpen && (
             <button
-              onClick={onInfoOpen}
+              onClick={() => onInfoOpen()}
               className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
               aria-label="About Atlas"
             >

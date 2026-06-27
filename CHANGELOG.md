@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **InfoPanel "Live" tab**: dedicated tab listing all live-polled routes (route number, agency, scheduled headway). Replaces the inline list that was in the About tab. Accessible from the Settings panel via "See which routes →" link on the Live tracking toggle.
+- **Agency cards in Agencies tab**: clicking any agency in the list shows a detail view with name, region, slug, and live-polled routes for that agency. Back button returns to list. Agencies with live routes show a Radio icon in the list.
+- **Region chips scroll horizontally** in the Agencies tab — no more multi-row wrap.
+
+### Fixed
+- **Double "About" header**: removed the static "About" title from the InfoPanel header; tabs (About / Agencies / Live) provide sufficient navigation context.
+- **Search results panel misaligned**: `left-[104px]` hardcoded offset pre-dated the wordmark + AppDrawer additions; updated to `left-[182px]` to align under the search bar.
+- **Leaflet attribution restyled**: smaller font, transparent background, themed text — legally required but no longer visually jarring.
+- **InfoPanel opens to correct tab**: `defaultTab` prop added; Settings "See which routes →" opens directly to the Live tab.
+
+### Added
 - **Shared UI style constants** (`src/styles.ts`): extracted `SURFACE`, `ICON_BTN`, `DROPDOWN_PANEL`, `dropdownAnim`, `FLOATING_CARD`, `PILL_SURFACE`, `CHIP_BASE` — used across `FilterPanel`, `InfoPanel`, `FilterChips`, `AppDrawer`, `App`. Single source of truth for structural tokens; color tokens remain in CSS variables.
 - **InfoPanel redesigned as right-anchored dropdown**: replaces the centered floating modal with a card that drops down from the top-right under the info button (`top-[4.5rem] right-6`), scales in from `origin-top-right`. Settings slide-in is unchanged — the two panels now have distinct but complementary treatments.
 - **Live tracking: TTC 503 Kingston Rd and 504 King**: both routes added using the open `gtfsrt.ttc.ca` feed (no API key). 503 covers York/King → Sackville → Woodbine → Bingham Loop at 10 min; 504 covers Dundas West → Niagara → Church → Broadview at 5 min.

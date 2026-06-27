@@ -48,6 +48,11 @@ export default function App() {
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [infoTab, setInfoTab] = useState<'about' | 'agencies' | 'live'>('about');
+  function openInfo(tab: 'about' | 'agencies' | 'live' = 'about') {
+    setInfoTab(tab);
+    setInfoOpen(true);
+  }
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -192,9 +197,9 @@ export default function App() {
               showUi={inFrequency}
               showRouteLayers={inFrequency || inCorridors || inHistory}
               showCorridorBand={inCorridors}
-              onInfoOpen={() => setInfoOpen(true)}
+              onInfoOpen={openInfo}
             />
-            <History active={inHistory} agencies={agencies} onInfoOpen={() => setInfoOpen(true)} />
+            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
@@ -214,7 +219,7 @@ export default function App() {
           </>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} />
+      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} />
     </div>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>

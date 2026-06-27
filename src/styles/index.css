@@ -46,6 +46,18 @@ button {
   cursor: pointer;
 }
 
+/* Leaflet attribution — required by license, but styled to be unobtrusive */
+.leaflet-control-attribution {
+  font-size: 9px !important;
+  background: transparent !important;
+  color: var(--text-dim) !important;
+  box-shadow: none !important;
+  padding: 0 4px !important;
+}
+.leaflet-control-attribution a {
+  color: var(--text-muted) !important;
+}
+
 /* Stop cluster icon (leaflet.markercluster) */
 .stop-cluster-icon {
   width: 26px;

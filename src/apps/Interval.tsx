@@ -22,7 +22,7 @@ interface Props {
   showUi?: boolean;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
-  onInfoOpen?: () => void;
+  onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
 }
 
 export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen }: Props) {

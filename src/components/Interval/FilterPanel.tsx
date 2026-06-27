@@ -11,7 +11,7 @@ interface FilterPanelProps {
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   showCorridors: boolean;
   setShowCorridors: (v: boolean | ((prev: boolean) => boolean)) => void;
-  onInfoOpen?: () => void;
+  onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -112,7 +112,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         </button>
         {onInfoOpen && (
           <button
-            onClick={onInfoOpen}
+            onClick={() => onInfoOpen()}
             className={ICON_BTN}
             aria-label="About Atlas"
           >
@@ -149,6 +149,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
                       <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
+                      {id === 'live' && onInfoOpen && (
+                        <button
+                          onClick={() => { onInfoOpen('live'); close(); }}
+                          className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                        >
+                          See which routes →
+                        </button>
+                      )}
                     </div>
                   </div>
                   <button
