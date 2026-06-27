@@ -11,6 +11,7 @@ interface Props {
   agencies: Agency[];
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
+  searchFocused: boolean;
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean } | null {
@@ -104,7 +105,7 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
   );
 }
 
-export default function History({ active, agencies, onInfoOpen, query }: Props) {
+export default function History({ active, agencies, onInfoOpen, query, searchFocused }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
@@ -153,8 +154,11 @@ export default function History({ active, agencies, onInfoOpen, query }: Props) 
     >
       {selectedAgency ? (
         <AgencyView agency={selectedAgency} onBack={() => setSelectedSlug(null)} />
-      ) : (
-        <div className={`${FLOATING_CARD} overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+      ) : searchFocused ? (
+        <div
+          className={`${FLOATING_CARD} overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300`}
+          onMouseDown={e => e.preventDefault()}
+        >
           <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
             <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
           </div>
@@ -177,7 +181,7 @@ export default function History({ active, agencies, onInfoOpen, query }: Props) 
             </button>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

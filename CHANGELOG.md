@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **History: removed Year/Freq filter chips**: premature with only one route; will revisit when there's enough data to make filtering meaningful (tracked in Linear).
+- **History: panel renamed "Suggestions"**: the agency list header now reads "Suggestions" instead of "Frequency History"; will dynamically switch to "Recents" once search history is implemented.
+- **History: focus-triggered panel**: the Suggestions panel now appears only when the search bar is focused (or an agency is selected). Clicking map or pressing Escape dismisses it. Agency list items use `onMouseDown` with `preventDefault()` so clicking them doesn't blur the input before the click registers.
 
 ### Fixed
 - **Search bar placeholder transition**: switching apps no longer causes the placeholder text to snap instantly. A custom `<span>` replaces the native `placeholder` attribute and fades out/in (120ms) when the label changes between "Search routes", "Find an agency…", and "From".

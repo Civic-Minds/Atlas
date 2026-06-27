@@ -69,6 +69,8 @@ export default function App() {
   // Corridors From state — lives here so the search bar IS the From input
   const [corridorsFrom, setCorridorsFrom] = useState('');
   const [corridorsFromFocused, setCorridorsFromFocused] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const corridorsFromRef = useRef<HTMLInputElement>(null);
   const [fromInputBindings, setFromInputBindings] = useState<CorridorsFromInputBindings | null>(null);
   const [corridorsMounted, setCorridorsMounted] = useState(false);
@@ -158,9 +160,14 @@ export default function App() {
             type="text"
             value={searchValue}
             onChange={e => handleSearchChange(e.target.value)}
-            onFocus={() => { if (!inFrequency) setCorridorsFromFocused(true); }}
+            onFocus={() => {
+              clearTimeout(searchBlurTimer.current);
+              setSearchFocused(true);
+              if (!inFrequency && !inHistory) setCorridorsFromFocused(true);
+            }}
             onBlur={() => {
-              if (!inFrequency) {
+              searchBlurTimer.current = setTimeout(() => setSearchFocused(false), 150);
+              if (!inFrequency && !inHistory) {
                 fromInputBindings?.onBlur();
                 setCorridorsFromFocused(false);
               }
@@ -228,7 +235,7 @@ export default function App() {
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}
             />
-            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} query={query} />
+            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
