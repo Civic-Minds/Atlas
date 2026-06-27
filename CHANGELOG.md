@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **15 new agencies**: TransLink (Vancouver), BC Transit Fraser Valley, BC Transit Victoria, BC Transit Kelowna, RTC (Québec City), Sarnia Transit, Blue Water Area Transit (Port Huron), DDOT, SMART, Detroit People Mover, QLine, TheRide (Ann Arbor), GCRTA (Cleveland), TARTA (Toledo), NFTA Metro Rail (Buffalo light rail). Total: 55 agencies across Ontario, Quebec, British Columbia, New York, Michigan, and Ohio.
+- **14 new agencies**: TransLink (Vancouver), BC Transit Fraser Valley, BC Transit Victoria, BC Transit Kelowna, RTC (Québec City), Sarnia Transit, Blue Water Area Transit (Port Huron), DDOT, SMART, Detroit People Mover, QLine, TheRide (Ann Arbor), GCRTA (Cleveland), TARTA (Toledo). Total: 54 agencies across Ontario, Quebec, British Columbia, New York, Michigan, and Ohio.
+- **NFTA Metro Rail merged into NFTA**: bus and rail are served as one agency entry. R2 data is manually merged (4061 features). `feedUrl` updated to direct NFTA URL. Rail will be re-merged once AI-137 (multi-feed support) ships.
 - **index.json refactored**: added `region` field to all agencies; sorted by region then name; removed `octranspo-debug` and duplicate `hsr` entries; added missing bboxes; standardized field ordering.
 
 ### Fixed

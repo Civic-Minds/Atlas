@@ -935,29 +935,10 @@
       ],
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
+      "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
-    },
-    {
-      "slug": "nfta-rail",
-      "name": "NFTA Metro Rail",
-      "center": [
-        42.8864,
-        -78.8784
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-corridors.json",
-      "feedUrl": null,
-      "region": "New York",
-      "bbox": [
-        42.83,
-        -78.92,
-        42.95,
-        -78.83
-      ]
     },
     {
       "slug": "port-huron",
