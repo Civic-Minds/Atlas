@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, ArrowLeft, Info } from 'lucide-react';
 import { PILL_SURFACE } from './styles';
@@ -53,6 +53,12 @@ export default function App() {
     setInfoTab(tab);
     setInfoOpen(true);
   }
+  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
+  const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
+  const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
+  const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
+  const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
+  const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -198,6 +204,10 @@ export default function App() {
               showRouteLayers={inFrequency || inCorridors || inHistory}
               showCorridorBand={inCorridors}
               onInfoOpen={openInfo}
+              selectedAgencySlug={selectedAgencySlug}
+              onAgencyCardClose={handleAgencyCardClose}
+              pendingLiveRoute={pendingLiveRoute}
+              onPendingLiveRouteHandled={handlePendingHandled}
             />
             <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} />
             {corridorsMounted && (
@@ -219,7 +229,7 @@ export default function App() {
           </>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} />
+      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
     </div>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>

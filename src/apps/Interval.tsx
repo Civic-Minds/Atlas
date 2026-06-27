@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { useIntervalStats } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod } from '../hooks/useIntervalStats';
@@ -8,6 +8,7 @@ import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips } from '../components/Interval/FilterChips';
+import { AgencyCard } from '../components/Interval/AgencyCard';
 import { SURFACE } from '../styles';
 import type { Agency } from '../App';
 
@@ -23,9 +24,13 @@ interface Props {
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
+  selectedAgencySlug?: string | null;
+  onAgencyCardClose?: () => void;
+  pendingLiveRoute?: { slug: string; routeShortName: string } | null;
+  onPendingLiveRouteHandled?: () => void;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -98,6 +103,26 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     onStatsChange?.(stats);
   }, [stats, onStatsChange]);
 
+  const prevPendingRoute = useRef<typeof pendingLiveRoute>(null);
+  useEffect(() => {
+    if (!pendingLiveRoute || pendingLiveRoute === prevPendingRoute.current) return;
+    prevPendingRoute.current = pendingLiveRoute;
+    const fc = layers[pendingLiveRoute.slug];
+    if (!fc) { onPendingLiveRouteHandled?.(); return; }
+    let found = fc.features.find(f => {
+      const p = f.properties as any;
+      return p.routeShortName === pendingLiveRoute.routeShortName && p.day === day;
+    }) ?? fc.features.find(f => (f.properties as any).routeShortName === pendingLiveRoute.routeShortName);
+    if (found) {
+      const p = found.properties as any;
+      setSelectedRoute(`${p.agencySlug ?? p.agencyName ?? pendingLiveRoute.slug}::${p.routeId}`);
+    }
+    onPendingLiveRouteHandled?.();
+  }, [pendingLiveRoute, layers, day]);
+
+  useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
+  useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
+
   return (
     <div className="relative w-full h-full transition-colors duration-200">
       <MapCanvas
@@ -130,6 +155,19 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           </span>
         </div>
       )}
+
+      {showUi && selectedAgencySlug && !selectedRoute && !selectedStop && query === '' && (() => {
+        const agency = agencies.find(a => a.slug === selectedAgencySlug);
+        return agency ? (
+          <AgencyCard
+            agency={agency}
+            layers={layers}
+            day={day}
+            onClose={onAgencyCardClose ?? (() => {})}
+            onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
+          />
+        ) : null;
+      })()}
 
       {showUi && userLocation && (
         <NearbyRoutesPanel

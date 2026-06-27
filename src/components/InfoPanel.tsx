@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { X, ExternalLink, Search, ChevronLeft, Radio } from 'lucide-react';
+import { X, ExternalLink, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import type { Agency } from '../App';
 
 type Tab = 'about' | 'agencies' | 'live';
 
-function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
+export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return r.displayName;
   const n = parseInt(r.displayRouteShortName, 10);
   return `Route ${isNaN(n) ? r.displayRouteShortName : n}`;
@@ -17,13 +17,14 @@ interface Props {
   onClose: () => void;
   agencies: Agency[];
   defaultTab?: Tab;
+  onAgencySelect?: (slug: string) => void;
+  onLiveRouteClick?: (slug: string, routeShortName: string) => void;
 }
 
-export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props) {
+export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgencySelect, onLiveRouteClick }: Props) {
   const [tab, setTab] = useState<Tab>('about');
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
-  const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
   const [liveQuery, setLiveQuery] = useState('');
   const [visible, setVisible] = useState(false);
 
@@ -47,11 +48,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
     if (open) {
       setTab(defaultTab ?? 'about');
     } else {
-      setQuery(''); setRegionFilter(null); setSelectedAgency(null); setLiveQuery('');
+      setQuery(''); setRegionFilter(null); setLiveQuery('');
     }
   }, [open, defaultTab]);
-
-  useEffect(() => { if (tab !== 'agencies') setSelectedAgency(null); }, [tab]);
 
   const regions = useMemo(() => {
     const seen = new Set<string>();
@@ -142,7 +141,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
             </div>
           )}
 
-          {tab === 'agencies' && !selectedAgency && (
+          {tab === 'agencies' && (
             <div className="flex flex-col">
               <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className="relative flex items-center">
@@ -194,7 +193,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
                         return (
                           <button
                             key={a.slug}
-                            onClick={() => setSelectedAgency(a)}
+                            onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                             className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
                           >
                             <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
@@ -212,48 +211,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
             </div>
           )}
 
-          {tab === 'agencies' && selectedAgency && (() => {
-            const liveRoutes = LIVE_POLLING_ROUTES.filter(r => r.slug === selectedAgency.slug && !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar);
-            return (
-              <div className="flex flex-col">
-                <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10">
-                  <button
-                    onClick={() => setSelectedAgency(null)}
-                    className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                    Agencies
-                  </button>
-                </div>
-                <div className="px-5 py-4 space-y-5">
-                  <div>
-                    <p className="text-base font-black text-[var(--text-primary)]">{selectedAgency.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      {selectedAgency.region && (
-                        <span className="text-[10px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5">{selectedAgency.region}</span>
-                      )}
-                      <span className="text-[10px] text-[var(--text-dim)] font-mono">{selectedAgency.slug}</span>
-                    </div>
-                  </div>
-
-                  {liveRoutes.length > 0 && (
-                    <div>
-                      <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Live tracking</p>
-                      <div className="space-y-1">
-                        {liveRoutes.map(r => (
-                          <div key={r.displayRouteShortName} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-app)] border border-[var(--border-primary)]">
-                            <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
-                            <span className="text-xs font-bold text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
-                            <span className="text-[10px] text-[var(--text-dim)] ml-auto">every {r.scheduledHeadwayMin}m</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
           {tab === 'live' && (() => {
             const lq = liveQuery.toLowerCase().trim();
             const activeRoutes = LIVE_POLLING_ROUTES.filter(r => {
@@ -290,10 +247,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
                     <div key={slug}>
                       <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{name}</p>
                       {agRoutes.map(r => (
-                        <div key={r.displayRouteShortName} className="flex items-center gap-2 px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
+                        <button
+                          key={r.displayRouteShortName}
+                          onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
+                          className="w-full flex items-center gap-2 px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                        >
                           <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
                           <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   ))}
