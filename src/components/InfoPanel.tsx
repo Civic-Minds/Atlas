@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search } from 'lucide-react';
+import { HEADWAY_TIERS } from '../utils/colors';
 import type { Agency } from '../App';
-
-const TIER_LEGEND = [
-  { color: '#2563eb', label: '≤10 min' },
-  { color: '#16a34a', label: '≤20 min' },
-  { color: '#ca8a04', label: '≤30 min' },
-  { color: '#dc2626', label: '≤60 min' },
-  { color: '#6b7280', label: 'Infrequent' },
-];
 
 type Tab = 'about' | 'agencies';
 
@@ -115,7 +108,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">Frequency tiers</p>
                 <div className="space-y-1.5">
-                  {TIER_LEGEND.map(({ color, label }) => (
+                  {HEADWAY_TIERS.map(({ color, label }) => (
                     <div key={label} className="flex items-center gap-2.5">
                       <div className="w-5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
                       <span className="text-xs text-[var(--text-primary)]">{label}</span>
