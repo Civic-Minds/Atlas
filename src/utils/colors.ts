@@ -7,6 +7,14 @@ export const HEADWAY_TIERS = [
   { max: Infinity, color: '#6b7280', label: 'Infrequent' },
 ];
 
+export function getDelayColor(deltaMin: number | null): string {
+  if (deltaMin === null) return '#6b7280';
+  if (deltaMin < -0.5) return '#3b82f6'; // early
+  if (deltaMin <= 1)   return '#22c55e'; // on time
+  if (deltaMin <= 3)   return '#f59e0b'; // slightly late
+  return '#ef4444';                      // late
+}
+
 export const getTierColor = (tier: string | null): string => {
   if (!tier || tier === 'span' || tier === 'infrequent') return '#6b7280';
   const t = parseInt(tier);

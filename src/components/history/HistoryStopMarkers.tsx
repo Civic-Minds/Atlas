@@ -2,15 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { useMap } from 'react-leaflet';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
+import { getDelayColor } from '../../utils/colors';
 import type { HistoryMapStop } from '../../context/HistoryMapOverlay';
-
-function gapColor(delta: number | null): string {
-  if (delta === null) return '#6b7280';
-  if (delta < -0.5) return '#3b82f6';
-  if (delta <= 1) return '#22c55e';
-  if (delta <= 3) return '#f59e0b';
-  return '#ef4444';
-}
 
 function formatGap(gap: number | null): string {
   if (gap === null) return '–';
@@ -25,7 +18,7 @@ function formatDelta(delta: number | null): string {
 }
 
 function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
-  const color = gapColor(stop.headwayDeltaMin);
+  const color = getDelayColor(stop.headwayDeltaMin);
   const delta = formatDelta(stop.headwayDeltaMin);
   const gap = formatGap(stop.avgGap);
 

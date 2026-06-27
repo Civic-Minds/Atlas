@@ -4,6 +4,7 @@ import { LocateFixed } from 'lucide-react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
+import { HEADWAY_TIERS } from '../../utils/colors';
 import { titleCase, fmtHeadway } from '../../utils/format';
 import { getRegionalView, getAgencyBounds, getSavedView, saveView } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
@@ -14,6 +15,8 @@ import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
+
+const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
 function periodTierColor(p: ShapeProperties, period: TimePeriod): string {
   if (period !== 'all') {
@@ -428,7 +431,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       if (showCorridorBand) {
         if (corridorSelected) return { opacity: 0, interactive: false };
         if (!isCorridor) return { opacity: 0, interactive: false };
-        return { color: '#2563eb', weight: 3.5, opacity: 0.75, lineCap: 'round' as const, lineJoin: 'round' as const, interactive: false };
+        return { color: CORRIDOR_BAND_COLOR, weight: 3.5, opacity: 0.75, lineCap: 'round' as const, lineJoin: 'round' as const, interactive: false };
       }
 
       // History mode: highlight only the focused route, dim everything else.
@@ -439,7 +442,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         if (!isFocused) return { opacity: 0.06, interactive: false };
         const isRailFocus = p?.routeType === 2;
         return {
-          color: '#2563eb',
+          color: CORRIDOR_BAND_COLOR,
           weight: isRailFocus ? 5 : 4,
           opacity: 0.9,
           lineCap: 'round' as const,

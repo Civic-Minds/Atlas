@@ -3,6 +3,7 @@ import { LIVE_POLLING_ROUTES, getLiveRouteConfig } from '../../shared/livePollin
 import { useLiveAdherence, agencyTripSummary } from '../hooks/useLiveAdherence';
 import { useHistoryAdherence } from '../hooks/useHistoryAdherence';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
+import { getDelayColor } from '../utils/colors';
 import type { Agency } from '../App';
 import type { HourBucket } from '../../shared/computeHistoryAdherence';
 
@@ -29,12 +30,6 @@ function formatHour(h: number): string {
   return `${h - 12}p`;
 }
 
-function delayColor(delayMin: number): string {
-  if (delayMin < -0.5) return 'var(--accent)';
-  if (delayMin <= 1) return '#22c55e';
-  if (delayMin <= 3) return '#f59e0b';
-  return '#ef4444';
-}
 
 function delayLabel(delayMin: number): string {
   if (Math.abs(delayMin) < 0.5) return 'on time';
@@ -62,7 +57,7 @@ function DelayChart({ byHour }: { byHour: HourBucket[] }) {
           const y = isLate ? zero - barH : zero;
           return (
             <g key={b.hour} transform={`translate(${i * stepW}, 0)`}>
-              <rect x={0} y={y} width={barW} height={barH} fill={delayColor(b.avgDelayMin)} rx={2} opacity={0.9} />
+              <rect x={0} y={y} width={barW} height={barH} fill={getDelayColor(b.avgDelayMin)} rx={2} opacity={0.9} />
               <text x={barW / 2} y={chartH + 12} textAnchor="middle" fontSize={7} fill="var(--text-dim)">
                 {formatHour(b.hour)}
               </text>
@@ -215,7 +210,7 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
             <span className="text-[10px] text-[var(--text-muted)]">
               <span className="font-bold text-[var(--text-primary)]">{tripSummary.total}</span> trips
             </span>
-            <span className="text-[10px]" style={{ color: delayColor(tripSummary.avgDelayMin), fontWeight: 700 }}>
+            <span className="text-[10px]" style={{ color: getDelayColor(tripSummary.avgDelayMin), fontWeight: 700 }}>
               avg {tripSummary.avgDelayMin > 0 ? '+' : ''}{tripSummary.avgDelayMin}m
             </span>
             <span className="text-[10px] text-[var(--text-muted)]">
@@ -243,7 +238,7 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
               {liveData.trips.map(t => (
                 <div key={t.tripId} className="grid grid-cols-3 px-4 py-2 border-b border-[var(--border-primary)] last:border-0">
                   <span className="text-xs text-[var(--text-muted)] font-mono truncate">{t.tripId}</span>
-                  <span className="text-xs font-bold text-center" style={{ color: delayColor(t.avgDelayMin) }}>
+                  <span className="text-xs font-bold text-center" style={{ color: getDelayColor(t.avgDelayMin) }}>
                     {delayLabel(t.avgDelayMin)}
                   </span>
                   <span className="text-xs text-[var(--text-muted)] text-center">
