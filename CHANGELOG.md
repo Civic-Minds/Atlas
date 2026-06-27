@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 - **Search bar suggestions on focus (AI-152)**: Shows a Suggestions panel when clicking into the search input with an empty query. Displays the last 5 searches (stored in localStorage) if they exist.
 - **Search bar suggestions fallbacks**: If no recent searches exist, falls back to recently viewed routes (up to 5 routes saved when tapped on the map) or dynamic popular/frequent routes in the viewport in Frequency map, and falls back to listing all historical agencies in History view.
 
+### Fixed
+- **Corridors app top-right layout overlap**: Fixed a visual clashing bug where the Frequency settings/light-mode panel and the Corridors day-picker overlapped in the top-right corner. The Frequency map settings panel is now conditionally hidden when `showCorridorBand` is active, and the light-mode toggle is integrated cleanly into the Corridors top-right bar next to the day picker.
+
 ### Changed
 - **Systematic style and transition centralization (AI-151 & AI-153)**: Replaced inline CSS panels and raw transition durations (200ms, 300ms) with shared constants `FLOATING_CARD`, `PANEL_ENTER`, `PANEL_ENTER_LEFT`, `PANEL_ENTER_TOP`, `TRANSITION_BASE`, and `TRANSITION_SLOW` from `styles.ts` across all Interval, Corridors, and History components.
 

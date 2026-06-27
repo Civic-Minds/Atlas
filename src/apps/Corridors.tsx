@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { Info, Search, X } from 'lucide-react';
+import { Info, Search, X, Sun, Moon } from 'lucide-react';
 import type { Agency } from '../App';
 import { FLOATING_CARD, ICON_BTN } from '../styles';
 import {
@@ -115,7 +115,7 @@ function agencySlugsForQuery(
 
 const SEARCH_LEFT = 182; // px from left edge — must match App.tsx search bar position
 
-export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true, onInfoOpen }: Props) {
+export default function Corridors({ agencies, lightMode, setLightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true, onInfoOpen }: Props) {
   const { setOverlay } = useCorridorMapOverlay();
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
   const [agencyFeatures, setAgencyFeatures] = useState<GeoJsonAgency[]>([]);
@@ -598,6 +598,13 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
             {d}
           </button>
         ))}
+        <button
+          onClick={() => setLightMode(!lightMode)}
+          className={ICON_BTN}
+          aria-label="Toggle light mode"
+        >
+          {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+        </button>
         {onInfoOpen && (
           <button
             onClick={onInfoOpen}

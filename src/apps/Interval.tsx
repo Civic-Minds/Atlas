@@ -213,18 +213,20 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             );
           })()}
         </div>
-        <FilterPanel
-          lightMode={lightMode}
-          setLightMode={setLightMode}
-          hideSpan={hideSpan}
-          setHideSpan={setHideSpan}
-          livePollingOnly={livePollingOnly}
-          setLivePollingOnly={setLivePollingOnly}
-          showCorridors={showCorridors}
-          setShowCorridors={setShowCorridors}
-          onInfoOpen={onInfoOpen}
-          inFrequency={showUi}
-        />
+        {!showCorridorBand && (
+          <FilterPanel
+            lightMode={lightMode}
+            setLightMode={setLightMode}
+            hideSpan={hideSpan}
+            setHideSpan={setHideSpan}
+            livePollingOnly={livePollingOnly}
+            setLivePollingOnly={setLivePollingOnly}
+            showCorridors={showCorridors}
+            setShowCorridors={setShowCorridors}
+            onInfoOpen={onInfoOpen}
+            inFrequency={showUi}
+          />
+        )}
       </div>
 
       <div className={`transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
