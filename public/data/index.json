@@ -1109,6 +1109,27 @@
       "lastFeedVersion": "UTC: 14-May-2026 15:14"
     },
     {
+      "slug": "metrobus",
+      "name": "Metrobus (St. John's)",
+      "region": "Newfoundland",
+      "center": [
+        47.5615,
+        -52.7126
+      ],
+      "bbox": [
+        47.48,
+        -52.85,
+        47.65,
+        -52.57
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrobus.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrobus-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-newfoundland-metrobus-transit-gtfs-758.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrobus-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
       "slug": "nfta",
       "name": "NFTA (Buffalo)",
       "region": "New York",
