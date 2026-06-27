@@ -167,7 +167,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                 <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                   <button
                     onClick={() => setRegionFilter(null)}
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
                       regionFilter === null
                         ? 'bg-[var(--accent)] text-white border-transparent'
                         : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
@@ -179,7 +179,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                     <button
                       key={r}
                       onClick={() => setRegionFilter(prev => prev === r ? null : r)}
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
                         regionFilter === r
                           ? 'bg-[var(--accent)] text-white border-transparent'
                           : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
