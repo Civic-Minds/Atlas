@@ -43,6 +43,32 @@ const inflight = new Map<string, Promise<GeoJSON.FeatureCollection>>();
 const corridorsCache = new Map<string, GeoJSON.FeatureCollection>();
 const corridorsInflight = new Map<string, Promise<GeoJSON.FeatureCollection>>();
 
+let worker: Worker | null = null;
+const pendingRequests = new Map<
+  string,
+  { resolve: (data: GeoJSON.FeatureCollection) => void; reject: (err: any) => void }
+>();
+
+function getWorker(): Worker | null {
+  if (typeof Worker === 'undefined') return null;
+  if (!worker) {
+    worker = new Worker(new URL('./geoWorker.ts', import.meta.url), { type: 'module' });
+    worker.onmessage = (e: MessageEvent) => {
+      const { slug, type, success, data, error } = e.data;
+      const key = type === 'corridors' ? `${slug}-corridors` : slug;
+      const req = pendingRequests.get(key);
+      if (!req) return;
+      pendingRequests.delete(key);
+      if (success) {
+        req.resolve(data);
+      } else {
+        req.reject(new Error(error));
+      }
+    };
+  }
+  return worker;
+}
+
 let _pruned = false;
 function pruneOnce() {
   if (_pruned) return;
@@ -68,29 +94,55 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
   let pending = inflight.get(agency.slug);
   if (!pending) {
     const weekVer = agencyGeoWeekVersion();
-    const idbKey = `${agency.slug}-${weekVer}`;
+    const w = getWorker();
 
-    pending = idbGet<GeoJSON.FeatureCollection>(idbKey).then(async cached => {
-      if (cached) {
-        lruSet(cache, agency.slug, cached);
-        return cached;
-      }
-      const r = await fetch(`${agency.url}?v=${weekVer}`, { cache: 'default' });
-      if (!r.ok) throw new Error(`${agency.slug} geo ${r.status}`);
-      const data = await r.json() as GeoJSON.FeatureCollection;
-      for (const f of data.features) {
-        const p = f.properties as Record<string, unknown> | null;
-        if (p) p.agencyName = agency.name;
-      }
-      lruSet(cache, agency.slug, data);
-      idbSet(idbKey, data);
-      return data;
-    }).catch(err => {
-      inflight.delete(agency.slug);
-      throw err;
-    }).finally(() => {
-      inflight.delete(agency.slug);
-    });
+    if (w) {
+      pending = new Promise<GeoJSON.FeatureCollection>((resolve, reject) => {
+        const key = agency.slug;
+        pendingRequests.set(key, {
+          resolve: (data) => {
+            lruSet(cache, agency.slug, data);
+            resolve(data);
+          },
+          reject: (err) => {
+            inflight.delete(agency.slug);
+            reject(err);
+          }
+        });
+        w.postMessage({
+          type: 'geo',
+          slug: agency.slug,
+          url: agency.url,
+          name: agency.name,
+          weekVer,
+        });
+      }).finally(() => {
+        inflight.delete(agency.slug);
+      });
+    } else {
+      const idbKey = `${agency.slug}-${weekVer}`;
+      pending = idbGet<GeoJSON.FeatureCollection>(idbKey).then(async cached => {
+        if (cached) {
+          lruSet(cache, agency.slug, cached);
+          return cached;
+        }
+        const r = await fetch(`${agency.url}?v=${weekVer}`, { cache: 'default' });
+        if (!r.ok) throw new Error(`${agency.slug} geo ${r.status}`);
+        const data = await r.json() as GeoJSON.FeatureCollection;
+        for (const f of data.features) {
+          const p = f.properties as Record<string, unknown> | null;
+          if (p) p.agencyName = agency.name;
+        }
+        lruSet(cache, agency.slug, data);
+        idbSet(idbKey, data);
+        return data;
+      }).catch(err => {
+        inflight.delete(agency.slug);
+        throw err;
+      }).finally(() => {
+        inflight.delete(agency.slug);
+      });
+    }
 
     inflight.set(agency.slug, pending);
   }
@@ -106,29 +158,54 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
   let pending = corridorsInflight.get(slug);
   if (!pending) {
     const weekVer = agencyGeoWeekVersion();
-    const idbKey = `${slug}-corridors-${weekVer}`;
+    const w = getWorker();
 
-    pending = idbGet<GeoJSON.FeatureCollection>(idbKey).then(async cached => {
-      if (cached) {
-        lruSet(corridorsCache, slug, cached);
-        return cached;
-      }
-      const r = await fetch(`${corridorsUrl}?v=${weekVer}`, { cache: 'default' });
-      if (!r.ok) throw new Error(`${slug} corridors ${r.status}`);
-      const data = await r.json() as GeoJSON.FeatureCollection;
-      for (const f of data.features) {
-        const p = f.properties as Record<string, unknown> | null;
-        if (p) p.agencySlug = slug;
-      }
-      lruSet(corridorsCache, slug, data);
-      idbSet(idbKey, data);
-      return data;
-    }).catch(err => {
-      corridorsInflight.delete(slug);
-      throw err;
-    }).finally(() => {
-      corridorsInflight.delete(slug);
-    });
+    if (w) {
+      pending = new Promise<GeoJSON.FeatureCollection>((resolve, reject) => {
+        const key = `${slug}-corridors`;
+        pendingRequests.set(key, {
+          resolve: (data) => {
+            lruSet(corridorsCache, slug, data);
+            resolve(data);
+          },
+          reject: (err) => {
+            corridorsInflight.delete(slug);
+            reject(err);
+          }
+        });
+        w.postMessage({
+          type: 'corridors',
+          slug,
+          url: corridorsUrl,
+          weekVer,
+        });
+      }).finally(() => {
+        corridorsInflight.delete(slug);
+      });
+    } else {
+      const idbKey = `${slug}-corridors-${weekVer}`;
+      pending = idbGet<GeoJSON.FeatureCollection>(idbKey).then(async cached => {
+        if (cached) {
+          lruSet(corridorsCache, slug, cached);
+          return cached;
+        }
+        const r = await fetch(`${corridorsUrl}?v=${weekVer}`, { cache: 'default' });
+        if (!r.ok) throw new Error(`${slug} corridors ${r.status}`);
+        const data = await r.json() as GeoJSON.FeatureCollection;
+        for (const f of data.features) {
+          const p = f.properties as Record<string, unknown> | null;
+          if (p) p.agencySlug = slug;
+        }
+        lruSet(corridorsCache, slug, data);
+        idbSet(idbKey, data);
+        return data;
+      }).catch(err => {
+        corridorsInflight.delete(slug);
+        throw err;
+      }).finally(() => {
+        corridorsInflight.delete(slug);
+      });
+    }
 
     corridorsInflight.set(slug, pending);
   }
@@ -142,4 +219,9 @@ export function clearAgencyGeoCache(): void {
   inflight.clear();
   corridorsCache.clear();
   corridorsInflight.clear();
+  pendingRequests.clear();
+  if (worker) {
+    worker.terminate();
+    worker = null;
+  }
 }
