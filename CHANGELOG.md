@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Search bar X button**: was flush with the right border of the pill (`right-0`); moved to `right-2` so it's properly inset.
+
 ### Added
 - **Agency search in main search bar**: typing an agency slug (e.g. "ttc", "hamilton") or display name (3+ chars, e.g. "toronto") now matches all routes for that agency, filtering the map to just that agency's network.
 
