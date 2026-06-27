@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **History app redesigned as Frequency History**: replaced the live schedule-adherence panel entirely. New flow: agency search → route list → before/after headway comparison cards. Shows how a route's weekday frequency has changed across snapshot years (e.g. GCRTA HealthLine: 5 min → 7.5 min → 15 min). Year chips highlight a specific snapshot across all route cards; frequency chips filter routes by headway threshold at the selected year.
+
+### Added
+- **`shared/historyConfig.ts`**: data model for historical GTFS snapshots (`AgencyHistory`, `RouteHistoryEntry`, `RouteSnapshot`). Seeded with GCRTA HealthLine (2008 launch 5 min, 2016 7.5 min, 2026 15 min).
+
 ### Added
 - **"Now" action button**: sits between the filter chips and Settings button; snaps both Day and Period to the current moment (day-of-week + time period). Filled accent when already at "now", tinted accent bg otherwise. Time periods: AM Peak 6–9a, Midday 9a–3p, PM Peak 3–7p, Evening 7–11p, All day outside those hours.
 

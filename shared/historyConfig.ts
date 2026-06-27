@@ -1,0 +1,40 @@
+export interface RouteSnapshot {
+  label: string;
+  year: number;
+  weekdayHeadwayMin: number;
+  note?: string;
+}
+
+export interface RouteHistoryEntry {
+  routeShortName: string;
+  routeName: string;
+  snapshots: RouteSnapshot[];
+}
+
+export interface AgencyHistory {
+  slug: string;
+  name: string;
+  region: string;
+  center?: [number, number];
+  routes: RouteHistoryEntry[];
+}
+
+export const HISTORY_DATA: AgencyHistory[] = [
+  {
+    slug: 'gcrta',
+    name: 'Greater Cleveland RTA',
+    region: 'Ohio',
+    center: [41.4993, -81.6944],
+    routes: [
+      {
+        routeShortName: 'HealthLine',
+        routeName: 'Euclid Avenue BRT',
+        snapshots: [
+          { label: '2008 Launch', year: 2008, weekdayHeadwayMin: 5 },
+          { label: '2016', year: 2016, weekdayHeadwayMin: 7.5 },
+          { label: '2026', year: 2026, weekdayHeadwayMin: 15 },
+        ],
+      },
+    ],
+  },
+];
