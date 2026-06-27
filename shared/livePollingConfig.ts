@@ -66,6 +66,47 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     },
   },
   {
+    slug: 'ttc',
+    displayRouteShortName: '503',
+    routeIds: ['503'],
+    scheduledHeadwayMin: 10,
+    // Kingston Rd (York/King – Bingham Loop): both terminals + King/Sackville + Kingston Rd/Woodbine
+    targetStops: {
+      '18660': 'York St at King St West',
+      '5587': 'King St East at Sackville',
+      '1098': 'Kingston Rd at Woodbine Ave',
+      '17664': 'Kingston Rd at Woodbine Ave (WB)',
+      '5382': 'Bingham Loop',
+    },
+    tripUpdatesUrl: 'https://gtfsrt.ttc.ca/trips/update?format=binary',
+    vehiclePositionsUrl: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary',
+    scheduleOffsetMin: {
+      '0': { '18660': 0, '5587': 17, '1098': 34, '5382': 40 },
+      '1': { '5382': 0, '17664': 9, '2538': 32, '18660': 55 },
+    },
+  },
+  {
+    slug: 'ttc',
+    displayRouteShortName: '504',
+    routeIds: ['504'],
+    scheduledHeadwayMin: 5,
+    // King (Dundas West – Broadview): both terminals + Niagara mid-west + Church mid-east
+    targetStops: {
+      '3760': 'Dundas West Station',
+      '6783': 'King St West at Niagara St',
+      '11190': 'King St East at Church St',
+      '7148': 'Queen St East at Broadview Ave',
+      '11178': 'King St West at Bay St',
+      '5008': 'Queen St East at Carroll St',
+    },
+    tripUpdatesUrl: 'https://gtfsrt.ttc.ca/trips/update?format=binary',
+    vehiclePositionsUrl: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary',
+    scheduleOffsetMin: {
+      '0': { '3760': 0, '6783': 27, '11190': 44, '7148': 54 },
+      '1': { '5008': 0, '11178': 16, '6783': 34, '3760': 61 },
+    },
+  },
+  {
     slug: 'translink',
     displayRouteShortName: '099',
     routeIds: ['6641'],
