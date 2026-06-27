@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Settings panel**: frequency-only settings (Live tracking, Hide irregular, Combined corridors) now appear dimmed with a "These settings apply to the Frequency map" note when in Corridors or History — still editable, but context-appropriate. Settings persist when switching apps since Interval stays mounted.
+- **History route picker**: key-gated routes (TransLink 099, STM 55) were appearing in the History app's route selector even though they're not accessible yet. Now filtered to only show routes without an API key requirement (or with `active: true`).
+
 ### Added
 - **STM live polling**: STM Route 55 is now live. Added `active` flag to `LiveRouteConfig` — key-gated routes with `active: true` show in the UI; without it they stay hidden until configured. STM GTFS-RT added to the Cloudflare Worker archiver with `apikey` header auth. `STM_API_KEY` added to Vercel and the Worker secret store.
 

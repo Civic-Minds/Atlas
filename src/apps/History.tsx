@@ -171,7 +171,8 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
               (acc[r.slug] ??= []).push(r);
               return acc;
             }, {})
-          ).map(([slug, routes]) => (
+          ).filter(([, routes]) => routes.some(r => !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active))
+          .map(([slug, routes]) => (
             <div key={slug} className="flex items-center gap-2">
               <span className="text-[10px] font-bold text-[var(--text-dim)] w-20 shrink-0">
                 {AGENCY_LABELS[slug] ?? slug}
