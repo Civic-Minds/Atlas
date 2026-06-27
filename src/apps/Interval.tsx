@@ -202,6 +202,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           showCorridors={showCorridors}
           setShowCorridors={setShowCorridors}
           onInfoOpen={onInfoOpen}
+          inFrequency={showUi}
         />
       </div>
 
