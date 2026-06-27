@@ -118,6 +118,11 @@ export default function App() {
           }
         </button>
 
+        <div className="flex flex-col leading-tight">
+          <span className="text-sm font-black text-[var(--text-primary)]">Atlas</span>
+          <span className="text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
+        </div>
+
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
         {/* Search bar — fades out in History (has its own UI), doubles as Corridors From input */}

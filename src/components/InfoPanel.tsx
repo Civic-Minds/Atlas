@@ -72,7 +72,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
       >
         {/* Header */}
         <div className="shrink-0 flex items-center justify-between px-5 pt-5 pb-3 border-b border-[var(--border-primary)]">
-          <h2 className="text-xs font-black text-[var(--text-primary)] uppercase tracking-wide">About</h2>
+          <h2 className="text-xs font-black text-[var(--text-primary)]">About</h2>
           <button
             onClick={onClose}
             className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
@@ -113,7 +113,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
               </p>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">Frequency tiers</p>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Frequency tiers</p>
                 <div className="space-y-1.5">
                   {HEADWAY_TIERS.map(({ color, label }) => (
                     <div key={label} className="flex items-center gap-2.5">
@@ -125,7 +125,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
               </div>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">Links</p>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
                 <a
                   href="https://github.com/Civic-Minds/Atlas"
                   target="_blank"
@@ -189,7 +189,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                 <div className="py-2">
                   {[...byRegion.entries()].map(([region, list]) => (
                     <div key={region}>
-                      <p className="px-5 pt-3 pb-1 text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
+                      <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
                       {list.map(a => (
                         <div key={a.slug} className="flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
                           <span className="text-xs text-[var(--text-primary)]">{a.name}</span>

@@ -130,7 +130,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-primary)] shrink-0">
-              <h2 className="text-xs font-black text-[var(--text-primary)] uppercase tracking-wide">Settings</h2>
+              <h2 className="text-xs font-black text-[var(--text-primary)]">Settings</h2>
               <button
                 onClick={close}
                 className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
