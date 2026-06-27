@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - **Search bar suggestions fallbacks**: If no recent searches exist, falls back to recently viewed routes (up to 5 routes saved when tapped on the map) or dynamic popular/frequent routes in the viewport in Frequency map, and falls back to listing all historical agencies in History view.
 
 ### Fixed
+- **Filter History suggestions**: Excluded agencies that have no historical snapshots populated from the search suggestion dropdown in the History app, ensuring only agencies with active history are shown.
 - **Corridors app top-right layout overlap**: Fixed a visual clashing bug where the Frequency settings/light-mode panel and the Corridors day-picker overlapped in the top-right corner. The Frequency map settings panel is now conditionally hidden when `showCorridorBand` is active, and the light-mode toggle is integrated cleanly into the Corridors top-right bar next to the day picker.
 
 ### Changed

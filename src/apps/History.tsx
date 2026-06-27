@@ -124,15 +124,19 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
     }
   }, [active]);
 
+  const historyAgencies = useMemo(() => {
+    return HISTORY_DATA.filter(a => a.routes.some(r => r.snapshots.length > 0));
+  }, []);
+
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
-    const agency = HISTORY_DATA.find(a => a.slug === selectedSlug) ?? HISTORY_DATA[0] ?? null;
+    const agency = historyAgencies.find(a => a.slug === selectedSlug) ?? historyAgencies[0] ?? null;
     if (agency?.center) {
       setOverlay({ slug: agency.slug, routeShortName: '', stops: [], agencyCenter: agency.center });
     } else {
       setOverlay(null);
     }
-  }, [active, selectedSlug, setOverlay]);
+  }, [active, selectedSlug, setOverlay, historyAgencies]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
   useEffect(() => { setSelectedSlug(null); }, [query]);
@@ -177,13 +181,13 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    if (!q) return HISTORY_DATA;
-    return HISTORY_DATA.filter(a =>
+    if (!q) return historyAgencies;
+    return historyAgencies.filter(a =>
       a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, historyAgencies]);
 
-  const selectedAgency = HISTORY_DATA.find(a => a.slug === selectedSlug) ?? null;
+  const selectedAgency = historyAgencies.find(a => a.slug === selectedSlug) ?? null;
 
   if (!shouldRender) return null;
 
