@@ -962,6 +962,48 @@
       "lastFeedVersion": "260623_1347"
     },
     {
+      "slug": "winnipeg",
+      "name": "Winnipeg Transit",
+      "region": "Manitoba",
+      "center": [
+        49.8951,
+        -97.1384
+      ],
+      "bbox": [
+        49.76,
+        -97.44,
+        50.02,
+        -96.86
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/winnipeg.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/winnipeg-stops.json",
+      "feedUrl": "https://gtfs.winnipegtransit.com/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/winnipeg-corridors.json",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "halifax",
+      "name": "Halifax Transit",
+      "region": "Nova Scotia",
+      "center": [
+        44.6488,
+        -63.5752
+      ],
+      "bbox": [
+        44.52,
+        -63.9,
+        44.9,
+        -63.27
+      ],
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/halifax.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/halifax-stops.json",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-nova-scotia-halifax-transit-gtfs-734.zip?alt=media",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/halifax-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "2026_05_May_20260428"
+    },
+    {
       "slug": "nfta",
       "name": "NFTA (Buffalo)",
       "region": "New York",
