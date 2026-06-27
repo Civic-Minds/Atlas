@@ -127,7 +127,7 @@ export default function App() {
 
         {/* Search bar — fades out in History (has its own UI), doubles as Corridors From input */}
         <div className={`transition-opacity duration-200 ease-out ${inHistory ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-1 pr-3">
+        <div className="h-8 w-64 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg pl-1 pr-3">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             ref={corridorsFromRef}
