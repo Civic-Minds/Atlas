@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
+import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import type { Agency } from '../App';
 
 type Tab = 'about' | 'agencies';
@@ -113,6 +114,23 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 Select routes include live schedule adherence monitoring using real-time GTFS feeds.
               </p>
+
+              <div>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Live tracking</p>
+                <div className="space-y-1">
+                  {Object.entries(
+                    LIVE_POLLING_ROUTES.reduce<Record<string, string[]>>((acc, r) => {
+                      (acc[r.slug] ??= []).push(r.displayRouteShortName);
+                      return acc;
+                    }, {})
+                  ).map(([slug, routes]) => (
+                    <div key={slug} className="flex items-baseline gap-2">
+                      <span className="text-[10px] font-bold text-[var(--text-primary)] shrink-0">{slug}</span>
+                      <span className="text-[10px] text-[var(--text-dim)]">{routes.join(', ')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
