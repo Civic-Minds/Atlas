@@ -11,6 +11,7 @@ import { DEFAULT_CRITERIA } from './defaults.js';
 import { filterGtfsByRouteTypes } from './filterGtfs.js';
 import { mergeNrtDayNightRoutes } from './transforms/nrt-day-night.js';
 import { cleanHeadsign } from '../shared/cleanHeadsign.js';
+import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 
 export type GtfsPreprocess = 'nrt-day-night';
 
@@ -143,6 +144,7 @@ function projectStopsOntoShape(
 export interface ProcessOptions {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
+  slug?: string;
 }
 
 export interface GeoJsonFeature {
@@ -165,6 +167,7 @@ export interface ProcessResult {
   center: [number, number] | null;
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
+  livePollingSidecar?: Record<string, any>;
 }
 
 export async function processGtfsBuffer(
@@ -801,6 +804,39 @@ export async function processGtfsBuffer(
 
   const feedInfo = gtfs.feedInfo?.[0];
   const mainFeatures = [...features, ...stopFeatures];
+
+  let livePollingSidecar: Record<string, any> | undefined;
+  if (options?.slug) {
+    const slug = options.slug;
+    const configs = LIVE_POLLING_ROUTES.filter(c => c.slug === slug);
+    if (configs.length > 0) {
+      livePollingSidecar = {};
+      for (const cfg of configs) {
+        let headway = cfg.scheduledHeadwayMin;
+        let minHw = Infinity;
+        for (const f of mainFeatures) {
+          const p = f.properties;
+          if (p.routeShortName === cfg.displayRouteShortName && p.day === 'Weekday' && p.headway != null) {
+            const h = Number(p.headway);
+            if (h < minHw) {
+              minHw = h;
+            }
+          }
+        }
+        if (minHw !== Infinity) {
+          headway = minHw;
+        }
+
+        const scheduleOffsetMin = computeOffsets(gtfs, cfg);
+
+        livePollingSidecar[cfg.displayRouteShortName] = {
+          scheduledHeadwayMin: headway,
+          scheduleOffsetMin,
+        };
+      }
+    }
+  }
+
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: mainFeatures }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
@@ -809,5 +845,93 @@ export async function processGtfsBuffer(
     center,
     feedExpiry: feedInfo?.feed_end_date ?? null,
     feedVersion: feedInfo?.feed_version ?? null,
+    livePollingSidecar,
   };
+}
+
+function computeOffsets(gtfs: any, cfg: any) {
+  const routeIds = new Set(cfg.routeIds);
+  const targetStops = new Set(Object.keys(cfg.targetStops));
+  
+  const childToParent = new Map<string, string>();
+  for (const stop of gtfs.stops ?? []) {
+    if (stop.parent_station) {
+      childToParent.set(stop.stop_id, stop.parent_station);
+    }
+  }
+
+  const weekdayServices = new Set<string>();
+  for (const cal of gtfs.calendar ?? []) {
+    if (
+      cal.monday === '1' ||
+      cal.tuesday === '1' ||
+      cal.wednesday === '1' ||
+      cal.thursday === '1' ||
+      cal.friday === '1'
+    ) {
+      weekdayServices.add(cal.service_id);
+    }
+  }
+
+  const weekdayTrips = (gtfs.trips ?? []).filter((t: any) => 
+    routeIds.has(t.route_id) && weekdayServices.has(t.service_id)
+  );
+
+  const stopTimesByTrip = new Map<string, any[]>();
+  for (const st of gtfs.stopTimes ?? []) {
+    if (!stopTimesByTrip.has(st.trip_id)) {
+      stopTimesByTrip.set(st.trip_id, []);
+    }
+    stopTimesByTrip.get(st.trip_id)!.push(st);
+  }
+
+  const offsetsAccum: Record<string, Record<string, number[]>> = {};
+
+  function timeToMins(t: string): number {
+    const parts = t.split(':').map(Number);
+    if (parts.length < 2) return 0;
+    const h = parts[0];
+    const m = parts[1];
+    const s = parts[2] ?? 0;
+    return h * 60 + m + s / 60;
+  }
+
+  for (const trip of weekdayTrips) {
+    const stList = stopTimesByTrip.get(trip.trip_id);
+    if (!stList || stList.length === 0) continue;
+
+    stList.sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence));
+
+    const t0 = timeToMins(stList[0].departure_time || stList[0].arrival_time);
+    const dir = trip.direction_id ?? '0';
+
+    if (!offsetsAccum[dir]) offsetsAccum[dir] = {};
+
+    for (const st of stList) {
+      const parent = childToParent.get(st.stop_id) ?? st.stop_id;
+      const matchedTarget = targetStops.has(st.stop_id) ? st.stop_id : (targetStops.has(parent) ? parent : null);
+      if (!matchedTarget) continue;
+
+      const ts = timeToMins(st.arrival_time || st.departure_time);
+      const diff = ts - t0;
+      if (diff < 0) continue;
+
+      if (!offsetsAccum[dir][matchedTarget]) {
+        offsetsAccum[dir][matchedTarget] = [];
+      }
+      offsetsAccum[dir][matchedTarget].push(diff);
+    }
+  }
+
+  const result: Record<string, Record<string, number>> = {};
+  for (const [dir, stops] of Object.entries(offsetsAccum)) {
+    result[dir] = {};
+    for (const [stopId, diffs] of Object.entries(stops)) {
+      if (diffs.length === 0) continue;
+      const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+      result[dir][stopId] = Math.round(avg);
+    }
+  }
+
+  return result;
 }

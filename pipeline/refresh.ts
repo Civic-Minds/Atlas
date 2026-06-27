@@ -162,6 +162,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   const primary = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
+    slug: agency.slug,
   });
 
   let { geojson, corridorsGeojson, stopsJson, featureCount } = primary;
@@ -197,11 +198,15 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
 
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
 
-  const [url, stopsUrl, corridorsUrl] = await Promise.all([
+  const uploads: Promise<any>[] = [
     r2Put(`atlas/${agency.slug}.json`, geojson),
     r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
     r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
-  ]);
+  ];
+  if (primary.livePollingSidecar) {
+    uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));
+  }
+  const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   agency.url = url;
   agency.stopsUrl = stopsUrl;
   agency.corridorsUrl = corridorsUrl;

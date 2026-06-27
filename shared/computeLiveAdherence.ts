@@ -60,12 +60,28 @@ async function fetchTripUpdates(
   }
 }
 
+async function fetchSidecar(agency: string): Promise<Record<string, any> | null> {
+  const publicUrl = process.env.R2_PUBLIC_URL || 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+  try {
+    const res = await fetch(`${publicUrl}/atlas/live-polling/${agency}.json`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error(`Failed to fetch sidecar for ${agency}`, err);
+    return null;
+  }
+}
+
 export async function computeLiveAdherence(
   agency: string,
   routeShortName: string,
 ): Promise<LiveAdherenceResult | null> {
   const cfg = getLiveRouteConfig(agency, routeShortName);
   if (!cfg) return null;
+
+  const sidecar = await fetchSidecar(agency);
+  const routeSidecar = sidecar?.[routeShortName];
+  const scheduledHeadway = routeSidecar?.scheduledHeadwayMin ?? cfg.scheduledHeadwayMin;
 
   const apiKeyParam = cfg.apiKeyParamEnvVar ? process.env[cfg.apiKeyParamEnvVar] : undefined;
   const apiKeyHeader = cfg.apiKeyHeaderEnvVar ? process.env[cfg.apiKeyHeaderEnvVar] : undefined;
@@ -111,7 +127,6 @@ export async function computeLiveAdherence(
     }
   }
 
-  const scheduledHeadway = cfg.scheduledHeadwayMin;
   const arrivals: StopAdherence[] = [];
 
   for (const [stopId, predictions] of Object.entries(stopPredictions)) {

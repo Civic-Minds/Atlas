@@ -34,6 +34,7 @@ export function computeHistoryAdherence(
   routeShortName: string,
   snapshots: Snapshot[],
   days: number,
+  overrideHeadway?: number,
 ): HistoryAdherenceResult | null {
   const cfg = getLiveRouteConfig(agency, routeShortName);
   if (!cfg) return null;
@@ -73,10 +74,12 @@ export function computeHistoryAdherence(
     totalSamples += samples.length;
   }
 
+  const scheduledHeadway = overrideHeadway ?? cfg.scheduledHeadwayMin;
+
   return {
     agency,
     routeShortName,
-    scheduledHeadwayMin: cfg.scheduledHeadwayMin,
+    scheduledHeadwayMin: scheduledHeadway,
     days,
     byHour,
     overallAvgDelayMin: totalSamples > 0 ? Math.round(totalDelay / totalSamples * 10) / 10 : 0,

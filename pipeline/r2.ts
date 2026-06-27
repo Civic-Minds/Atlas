@@ -115,3 +115,10 @@ export async function r2List(prefix: string): Promise<string[]> {
   const res = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix }));
   return (res.Contents ?? []).map(o => o.Key!).filter(Boolean);
 }
+
+export async function r2ListArchive(prefix: string): Promise<string[]> {
+  const client = getR2Client();
+  const bucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
+  const res = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix }));
+  return (res.Contents ?? []).map(o => o.Key!).filter(Boolean);
+}

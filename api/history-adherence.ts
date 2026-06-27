@@ -55,6 +55,17 @@ async function fetchSnapshot(client: S3Client, key: string): Promise<Snapshot | 
   }
 }
 
+async function fetchSidecar(agency: string): Promise<Record<string, any> | null> {
+  const publicUrl = process.env.R2_PUBLIC_URL || 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+  try {
+    const res = await fetch(`${publicUrl}/atlas/live-polling/${agency}.json`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(req: Request) {
   const params = queryParams(req);
   const agency = params.get('agency');
@@ -69,6 +80,7 @@ export default async function handler(req: Request) {
 
   try {
     const client = getR2Client();
+    const sidecarPromise = fetchSidecar(agency);
 
     // Build list of dates to fetch
     const dates: string[] = [];
@@ -93,7 +105,11 @@ export default async function handler(req: Request) {
     const sampledKeys = strideKeys.slice(0, 500);
     const snapshots = (await Promise.all(sampledKeys.map(k => fetchSnapshot(client, k)))).filter(Boolean) as Snapshot[];
 
-    const result = computeHistoryAdherence(agency, route, snapshots, days);
+    const sidecar = await sidecarPromise;
+    const routeSidecar = sidecar?.[route];
+    const overrideHeadway = routeSidecar?.scheduledHeadwayMin;
+
+    const result = computeHistoryAdherence(agency, route, snapshots, days, overrideHeadway);
     if (!result || result.sampleCount === 0) {
       return new Response(JSON.stringify({ noData: true }), {
         status: 200, headers: { 'Content-Type': 'application/json' },

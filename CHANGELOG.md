@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Derive headway and stop offsets from GTFS pipeline (AI-150)**: Added automatic headway and stop travel-time offset calculation directly from the GTFS datasets during the pipeline execution (`processGtfsBuffer` in `process-core.ts`). The computed metadata is stored as a sidecar JSON file (`atlas/live-polling/{slug}.json`) on Cloudflare R2.
+- **Dynamic live & history headway overrides (AI-150)**: Updated `computeLiveAdherence` and `api/history-adherence` to asynchronously fetch the pipeline-computed sidecars from R2 and use the dynamically computed scheduled headway values with backwards-compatible fallbacks.
+- **Automated history headway aggregation (AI-154)**: Created the `build-history.ts` pipeline script to fetch all historical agency headway snapshots from R2, compile them, and dynamically generate `shared/historyConfig.ts`, replacing hardcoded history configurations.
 - **Search bar suggestions on focus (AI-152)**: Shows a Suggestions panel when clicking into the search input with an empty query. Displays the last 5 searches (stored in localStorage) if they exist.
 - **Search bar suggestions fallbacks**: If no recent searches exist, falls back to recently viewed routes (up to 5 routes saved when tapped on the map) or dynamic popular/frequent routes in the viewport in Frequency map, and falls back to listing all historical agencies in History view.
 

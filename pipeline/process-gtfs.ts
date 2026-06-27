@@ -45,18 +45,21 @@ async function main() {
   }
 
   const buf = readFileSync(zipPath);
-  const { geojson, corridorsGeojson, stopsJson, featureCount, center: computedCenter } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, featureCount, center: computedCenter, livePollingSidecar } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { preprocess });
+  }, { preprocess, slug });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
-  console.log(`\n  Uploading ${featureCount} features (${kb} KB) to R2...`);
-  const [url, stopsUrl, corridorsUrl] = await Promise.all([
+  const uploads: Promise<any>[] = [
     r2Put(`atlas/${slug}.json`, geojson),
     r2Put(`atlas/${slug}-stops.json`, stopsJson),
     r2Put(`atlas/${slug}-corridors.json`, corridorsGeojson),
-  ]);
+  ];
+  if (livePollingSidecar) {
+    uploads.push(r2Put(`atlas/live-polling/${slug}.json`, JSON.stringify(livePollingSidecar, null, 2)));
+  }
+  const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
 
   let index: { agencies: any[] } = { agencies: [] };
