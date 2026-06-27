@@ -44,13 +44,13 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
   const summary = changeSummary(entry);
 
   return (
-    <div className="py-4 border-b border-[var(--border-primary)] last:border-0">
-      <div className="flex items-baseline gap-2 mb-3">
-        <span className="text-sm font-black text-[var(--text-primary)]">{entry.routeShortName}</span>
-        <span className="text-[11px] text-[var(--text-muted)]">{entry.routeName}</span>
+    <div className="py-3 border-b border-[var(--border-primary)] last:border-0">
+      <div className="flex items-baseline gap-1.5 mb-2">
+        <span className="text-xs font-black text-[var(--text-primary)]">{entry.routeShortName}</span>
+        <span className="text-[10px] text-[var(--text-muted)] truncate">{entry.routeName}</span>
       </div>
 
-      <div className="flex items-end gap-3 flex-wrap">
+      <div className="flex items-end gap-2 flex-wrap">
         {snaps.map((snap, i) => {
           const isLast = i === snaps.length - 1;
           const isHighlighted = highlightYear === snap.year;
@@ -61,16 +61,16 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
               : 'text-[var(--text-dim)]';
           return (
             <React.Fragment key={snap.label}>
-              <div className={`flex flex-col items-center transition-opacity ${isHighlighted ? '' : highlightYear !== null ? 'opacity-50' : ''}`}>
-                <span className={`text-2xl font-black tabular-nums leading-none ${headwayColor}`}>
-                  {Number.isInteger(snap.weekdayHeadwayMin) ? `${snap.weekdayHeadwayMin} min` : `${snap.weekdayHeadwayMin} min`}
+              <div className={`flex flex-col items-center transition-opacity ${isHighlighted ? '' : highlightYear !== null ? 'opacity-40' : ''}`}>
+                <span className={`text-lg font-black tabular-nums leading-none ${headwayColor}`}>
+                  {snap.weekdayHeadwayMin} min
                 </span>
-                <span className={`text-[9px] font-bold mt-1 ${isHighlighted ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}`}>
+                <span className={`text-[8px] font-bold mt-0.5 ${isHighlighted ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}`}>
                   {snap.label}
                 </span>
               </div>
               {!isLast && (
-                <span className="text-[var(--text-dim)] text-lg mb-1">→</span>
+                <span className="text-[var(--text-dim)] mb-1">→</span>
               )}
             </React.Fragment>
           );
@@ -78,7 +78,7 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
       </div>
 
       {summary && (
-        <p className={`text-[10px] font-bold mt-2 ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>
+        <p className={`text-[9px] font-bold mt-1.5 ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>
           {summary.text}
         </p>
       )}
@@ -113,15 +113,16 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
   }, [agency.routes, highlightYear, maxFreq, allYears]);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
-        <div className="flex items-center gap-2 mb-3">
+    <>
+      {/* Header card */}
+      <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-2xl shadow-2xl px-4 pt-3 pb-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex items-center gap-1.5 mb-3">
           <button
             onClick={onBack}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
             aria-label="Back"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <div>
             <p className="text-xs font-black text-[var(--text-primary)]">{agency.name}</p>
@@ -129,39 +130,34 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 flex-wrap mb-2">
-          <span className="text-[9px] font-bold text-[var(--text-dim)] mr-0.5">Year</span>
+        <div className="flex items-center gap-1 flex-wrap mb-1.5">
+          <span className="text-[8px] font-bold text-[var(--text-dim)] mr-0.5">Year</span>
           {allYears.map(year => {
             const active = highlightYear === year;
-            const label = snapLabels.get(year) ?? String(year);
             return (
               <button
                 key={year}
                 onClick={() => setHighlightYear(active ? null : year)}
-                className={`h-6 px-2.5 text-[10px] font-bold ${CHIP_BASE} transition-all ${
-                  active
-                    ? 'bg-[var(--accent)] text-white border-transparent'
-                    : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+                className={`h-5 px-2 text-[9px] font-bold ${CHIP_BASE} transition-all ${
+                  active ? 'bg-[var(--accent)] text-white border-transparent' : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                {label}
+                {snapLabels.get(year) ?? String(year)}
               </button>
             );
           })}
         </div>
 
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[9px] font-bold text-[var(--text-dim)] mr-0.5">Freq</span>
+        <div className="flex items-center gap-1 flex-wrap">
+          <span className="text-[8px] font-bold text-[var(--text-dim)] mr-0.5">Freq</span>
           {FREQ_OPTIONS.map(opt => {
             const active = maxFreq === opt.max;
             return (
               <button
                 key={opt.label}
                 onClick={() => setMaxFreq(opt.max)}
-                className={`h-6 px-2.5 text-[10px] font-bold ${CHIP_BASE} transition-all ${
-                  active
-                    ? 'bg-[var(--accent)] text-white border-transparent'
-                    : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+                className={`h-5 px-2 text-[9px] font-bold ${CHIP_BASE} transition-all ${
+                  active ? 'bg-[var(--accent)] text-white border-transparent' : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 {opt.label}
@@ -171,7 +167,8 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6">
+      {/* Route list card */}
+      <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-2xl shadow-2xl px-4 flex-1 overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-bottom-2 duration-300">
         {filteredRoutes.length === 0 && (
           <p className="text-[11px] text-[var(--text-dim)] py-4">No routes match these filters.</p>
         )}
@@ -179,7 +176,7 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
           <RouteCard key={route.routeShortName} entry={route} highlightYear={highlightYear} />
         ))}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -203,7 +200,7 @@ export default function History({ active, agencies, onInfoOpen, query }: Props) 
 
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
-    const agency = HISTORY_DATA.find(a => a.slug === selectedSlug);
+    const agency = HISTORY_DATA.find(a => a.slug === selectedSlug) ?? HISTORY_DATA[0] ?? null;
     if (agency?.center) {
       setOverlay({ slug: agency.slug, routeShortName: '', stops: [], agencyCenter: agency.center });
     } else {
@@ -212,8 +209,6 @@ export default function History({ active, agencies, onInfoOpen, query }: Props) 
   }, [active, selectedSlug, setOverlay]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
-
-  // Reset selection when query changes
   useEffect(() => { setSelectedSlug(null); }, [query]);
 
   const filtered = useMemo(() => {
@@ -230,38 +225,34 @@ export default function History({ active, agencies, onInfoOpen, query }: Props) 
 
   return (
     <div
-      className={`absolute bottom-0 inset-x-0 z-[1000] bg-[var(--bg-panel)]/95 backdrop-blur-md border-t border-[var(--border-primary)] flex flex-col transition-transform duration-300 ease-out ${visible ? 'translate-y-0' : 'translate-y-full'}`}
-      style={{ maxHeight: '52vh' }}
+      className={`absolute top-20 left-[182px] z-[1000] w-72 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity duration-300 ease-out ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       {selectedAgency ? (
         <AgencyView agency={selectedAgency} onBack={() => setSelectedSlug(null)} />
       ) : (
-        <>
-          <div className="shrink-0 px-6 pt-4 pb-2 border-b border-[var(--border-primary)]">
+        <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
             <p className="text-[10px] font-bold text-[var(--text-muted)]">Frequency History</p>
           </div>
-
-          <div className="flex-1 overflow-y-auto">
-            {filtered.length === 0 && (
-              <p className="text-[11px] text-[var(--text-dim)] px-6 py-4">No agencies match.</p>
-            )}
-            {filtered.map(agency => (
-              <button
-                key={agency.slug}
-                onClick={() => setSelectedSlug(agency.slug)}
-                className="flex items-center justify-between w-full px-6 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-              >
-                <div>
-                  <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
-                  <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
-                    {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
-                  </p>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-              </button>
-            ))}
-          </div>
-        </>
+          {filtered.length === 0 && (
+            <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
+          )}
+          {filtered.map(agency => (
+            <button
+              key={agency.slug}
+              onClick={() => setSelectedSlug(agency.slug)}
+              className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+            >
+              <div>
+                <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
+                <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
+                  {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
