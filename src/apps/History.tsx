@@ -4,7 +4,7 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { HISTORY_DATA } from '../../shared/historyConfig';
 import type { AgencyHistory, RouteHistoryEntry } from '../../shared/historyConfig';
 import type { Agency } from '../App';
-import { CHIP_BASE, FLOATING_CARD } from '../styles';
+import { FLOATING_CARD } from '../styles';
 
 interface Props {
   active: boolean;
@@ -12,13 +12,6 @@ interface Props {
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
 }
-
-const FREQ_OPTIONS: { label: string; max: number }[] = [
-  { label: '≤5 min', max: 5 },
-  { label: '≤10 min', max: 10 },
-  { label: '≤15 min', max: 15 },
-  { label: 'Any', max: Infinity },
-];
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean } | null {
   const snaps = entry.snapshots;
@@ -87,96 +80,27 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
 }
 
 function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => void }) {
-  const allYears = useMemo(() => {
-    const years = new Set<number>();
-    agency.routes.forEach(r => r.snapshots.forEach(s => years.add(s.year)));
-    return [...years].sort((a, b) => a - b);
-  }, [agency]);
-
-  const [highlightYear, setHighlightYear] = useState<number | null>(null);
-  const [maxFreq, setMaxFreq] = useState<number>(Infinity);
-
-  const snapLabels = useMemo(() => {
-    const map = new Map<number, string>();
-    agency.routes.forEach(r => r.snapshots.forEach(s => map.set(s.year, s.label)));
-    return map;
-  }, [agency]);
-
-  const filteredRoutes = useMemo(() => {
-    if (maxFreq === Infinity) return agency.routes;
-    return agency.routes.filter(route => {
-      const year = highlightYear ?? Math.max(...allYears);
-      const snap = route.snapshots.find(s => s.year === year)
-        ?? route.snapshots[route.snapshots.length - 1];
-      return snap.weekdayHeadwayMin <= maxFreq;
-    });
-  }, [agency.routes, highlightYear, maxFreq, allYears]);
-
   return (
-    <>
-      {/* Header card */}
-      <div className={`${FLOATING_CARD} px-4 pt-3 pb-3 animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-        <div className="flex items-center gap-1.5 mb-3">
-          <button
-            onClick={onBack}
-            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-            aria-label="Back"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" />
-          </button>
-          <div>
-            <p className="text-xs font-black text-[var(--text-primary)]">{agency.name}</p>
-            <p className="text-[9px] text-[var(--text-dim)]">{agency.region}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1 flex-wrap mb-1.5">
-          <span className="text-[8px] font-bold text-[var(--text-dim)] mr-0.5">Year</span>
-          {allYears.map(year => {
-            const active = highlightYear === year;
-            return (
-              <button
-                key={year}
-                onClick={() => setHighlightYear(active ? null : year)}
-                className={`h-5 px-2 text-[9px] font-bold ${CHIP_BASE} transition-all ${
-                  active ? 'bg-[var(--accent)] text-white border-transparent' : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                {snapLabels.get(year) ?? String(year)}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[8px] font-bold text-[var(--text-dim)] mr-0.5">Freq</span>
-          {FREQ_OPTIONS.map(opt => {
-            const active = maxFreq === opt.max;
-            return (
-              <button
-                key={opt.label}
-                onClick={() => setMaxFreq(opt.max)}
-                className={`h-5 px-2 text-[9px] font-bold ${CHIP_BASE} transition-all ${
-                  active ? 'bg-[var(--accent)] text-white border-transparent' : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                {opt.label}
-              </button>
-            );
-          })}
+    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+      <div className="flex items-center gap-1.5 px-4 pt-3 pb-2 border-b border-[var(--border-primary)] shrink-0">
+        <button
+          onClick={onBack}
+          className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+          aria-label="Back"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
+        <div>
+          <p className="text-xs font-black text-[var(--text-primary)]">{agency.name}</p>
+          <p className="text-[9px] text-[var(--text-dim)]">{agency.region}</p>
         </div>
       </div>
-
-      {/* Route list card */}
-      <div className={`${FLOATING_CARD} px-4 flex-1 overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-        {filteredRoutes.length === 0 && (
-          <p className="text-[11px] text-[var(--text-dim)] py-4">No routes match these filters.</p>
-        )}
-        {filteredRoutes.map(route => (
-          <RouteCard key={route.routeShortName} entry={route} highlightYear={highlightYear} />
+      <div className="px-4 flex-1 overflow-y-auto custom-scrollbar">
+        {agency.routes.map(route => (
+          <RouteCard key={route.routeShortName} entry={route} highlightYear={null} />
         ))}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **History: removed Year/Freq filter chips**: premature with only one route; will revisit when there's enough data to make filtering meaningful (tracked in Linear).
+
 ### Fixed
 - **Search bar placeholder transition**: switching apps no longer causes the placeholder text to snap instantly. A custom `<span>` replaces the native `placeholder` attribute and fades out/in (120ms) when the label changes between "Search routes", "Find an agency…", and "From".
 
