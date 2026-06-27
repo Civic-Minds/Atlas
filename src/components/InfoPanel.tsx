@@ -6,6 +6,12 @@ import type { Agency } from '../App';
 
 type Tab = 'about' | 'agencies' | 'live';
 
+function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
+  if (r.displayName) return r.displayName;
+  const n = parseInt(r.displayRouteShortName, 10);
+  return `Route ${isNaN(n) ? r.displayRouteShortName : n}`;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -18,6 +24,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+  const [liveQuery, setLiveQuery] = useState('');
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -40,7 +47,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
     if (open) {
       setTab(defaultTab ?? 'about');
     } else {
-      setQuery(''); setRegionFilter(null); setSelectedAgency(null);
+      setQuery(''); setRegionFilter(null); setSelectedAgency(null); setLiveQuery('');
     }
   }, [open, defaultTab]);
 
@@ -114,7 +121,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
                 <p className="text-[11px] text-[var(--text-dim)] mt-0.5">by Civic Minds</p>
               </div>
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                A frequency map covering 65 transit agencies across Canada and the US Great Lakes — from Halifax to Vancouver, south into Michigan and Ohio. Routes are colored by headway: blue runs every 10 minutes or better, red runs hourly or less.
+                A frequency map covering {agencies.length} transit agencies across Canada and the US Great Lakes.
               </p>
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
@@ -236,7 +243,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
                         {liveRoutes.map(r => (
                           <div key={r.displayRouteShortName} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-app)] border border-[var(--border-primary)]">
                             <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
-                            <span className="text-xs font-bold text-[var(--text-primary)]">Route {r.displayRouteShortName}</span>
+                            <span className="text-xs font-bold text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
                             <span className="text-[10px] text-[var(--text-dim)] ml-auto">every {r.scheduledHeadwayMin}m</span>
                           </div>
                         ))}
@@ -248,7 +255,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
             );
           })()}
           {tab === 'live' && (() => {
-            const activeRoutes = LIVE_POLLING_ROUTES.filter(r => !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar);
+            const lq = liveQuery.toLowerCase().trim();
+            const activeRoutes = LIVE_POLLING_ROUTES.filter(r => {
+              if (r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) return false;
+              if (!lq) return true;
+              const label = liveRouteLabel(r).toLowerCase();
+              const agencyName = (agencies.find(a => a.slug === r.slug)?.name ?? r.slug).toLowerCase();
+              return label.includes(lq) || agencyName.includes(lq);
+            });
             const byAgency = activeRoutes.reduce<Record<string, { slug: string; name: string; routes: typeof LIVE_POLLING_ROUTES }>>((acc, r) => {
               if (!acc[r.slug]) {
                 const agencyName = agencies.find(a => a.slug === r.slug)?.name ?? r.slug;
@@ -258,19 +272,35 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
               return acc;
             }, {});
             return (
-              <div className="flex flex-col py-2">
-                {Object.values(byAgency).map(({ slug, name, routes: agRoutes }) => (
-                  <div key={slug}>
-                    <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{name}</p>
-                    {agRoutes.map(r => (
-                      <div key={r.displayRouteShortName} className="flex items-center gap-2 px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
-                        <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
-                        <span className="text-xs text-[var(--text-primary)]">Route {r.displayRouteShortName}</span>
-                      </div>
-                    ))}
+              <div className="flex flex-col">
+                <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10">
+                  <div className="relative flex items-center">
+                    <Search className="absolute left-3 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
+                    <input
+                      type="text"
+                      value={liveQuery}
+                      onChange={e => setLiveQuery(e.target.value)}
+                      placeholder="Search routes…"
+                      className="w-full pl-8 pr-3 py-1.5 text-xs bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                    />
                   </div>
-                ))}
-                <p className="px-5 pt-4 text-[10px] text-[var(--text-dim)] leading-relaxed">Click a route on the map to see live schedule adherence.</p>
+                </div>
+                <div className="py-2">
+                  {Object.values(byAgency).map(({ slug, name, routes: agRoutes }) => (
+                    <div key={slug}>
+                      <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{name}</p>
+                      {agRoutes.map(r => (
+                        <div key={r.displayRouteShortName} className="flex items-center gap-2 px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
+                          <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                          <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  {Object.keys(byAgency).length === 0 && (
+                    <p className="px-5 py-4 text-xs text-[var(--text-dim)]">No routes match.</p>
+                  )}
+                </div>
               </div>
             );
           })()}

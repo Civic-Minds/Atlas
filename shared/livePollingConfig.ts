@@ -9,6 +9,8 @@ export interface LiveRouteConfig {
   slug: string;
   /** route_short_name as stored in GeoJSON (Hamilton zero-pads King St as "01"). */
   displayRouteShortName: string;
+  /** Human-readable label for routes that aren't "Route N" (e.g. "VIVA Blue"). */
+  displayName?: string;
   /** Live GTFS-RT route_id values — include schedule-period variants. */
   routeIds: string[];
   scheduledHeadwayMin: number;
@@ -192,6 +194,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
   {
     slug: 'yrt',
     displayRouteShortName: 'blue',
+    displayName: 'VIVA Blue',
     routeIds: ['601', '60102'],
     scheduledHeadwayMin: 10,
     // VIVA Blue (Finch GO – Yonge – Newmarket): both terminals + two mid-corridor Yonge stops
