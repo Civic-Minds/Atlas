@@ -84,6 +84,66 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     longPatternScheduleOffsetMin: { '1403': 0, '2138': 45 },
   },
   {
+    slug: 'edmonton',
+    displayRouteShortName: '004',
+    routeIds: ['004'],
+    scheduledHeadwayMin: 10,
+    // Lewis Farms – University – Capilano: both terminals + South Campus TC midpoint
+    targetStops: {
+      '8602': 'Lewis Farms Transit Centre',
+      '2712': 'South Campus Fort Edmonton TC',
+      '2306': 'Capilano Transit Centre',
+      '22158': '113 Street & 67 Avenue',
+    },
+    tripUpdatesUrl: 'https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb',
+    vehiclePositionsUrl: 'https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb',
+    scheduleOffsetMin: {
+      '0': { '8602': 0, '2712': 27, '2306': 61 },
+      '1': { '2306': 0, '22158': 31, '8602': 57 },
+    },
+  },
+  {
+    slug: 'yrt',
+    displayRouteShortName: 'blue',
+    routeIds: ['601', '60102'],
+    scheduledHeadwayMin: 10,
+    // VIVA Blue (Finch GO – Yonge – Newmarket): both terminals + two mid-corridor Yonge stops
+    targetStops: {
+      '9769': 'Finch GO Bus Terminal',
+      '9783': 'Yonge / Major Mackenzie',
+      '9797': 'Yonge / Bloomington',
+      '9782': 'Yonge / Weldrick',
+      '9809': 'Newmarket Terminal',
+    },
+    tripUpdatesUrl: 'https://rtu.york.ca/gtfsrealtime/TripUpdates',
+    vehiclePositionsUrl: 'https://rtu.york.ca/gtfsrealtime/VehiclePositions',
+    scheduleOffsetMin: {
+      '0': { '9769': 0, '9783': 30, '9809': 80 },
+      '1': { '9809': 0, '9797': 20, '9782': 42, '9769': 63 },
+    },
+  },
+  {
+    slug: 'halifax',
+    displayRouteShortName: '1',
+    routeIds: ['1'],
+    scheduledHeadwayMin: 15,
+    // Spring Garden (Mumford Terminal – Bridge Terminal): both terminals + Spring Garden corridor
+    targetStops: {
+      '8640': 'Mumford Terminal',
+      '7402': 'Oxford St at Waegwoltic',
+      '6121': 'Barrington St at Sackville',
+      '8330': 'Spring Garden at Dresden Row',
+      '7410': 'Oxford St at Jubilee',
+      '7605': 'Bridge Terminal',
+    },
+    tripUpdatesUrl: 'https://gtfs.halifax.ca/realtime/TripUpdate/TripUpdates.pb',
+    vehiclePositionsUrl: 'https://gtfs.halifax.ca/realtime/Vehicle/VehiclePositions.pb',
+    scheduleOffsetMin: {
+      '0': { '8640': 0, '7402': 8, '6121': 16, '7605': 30 },
+      '1': { '7605': 0, '8330': 14, '7410': 20, '8640': 30 },
+    },
+  },
+  {
     slug: 'hamilton',
     displayRouteShortName: '10',
     routeIds: ['5678', '5696'],
