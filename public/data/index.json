@@ -941,27 +941,6 @@
       "lastFeedVersion": null
     },
     {
-      "slug": "nfta-rail",
-      "name": "NFTA (Buffalo)",
-      "region": "New York",
-      "center": [
-        42.8864,
-        -78.8784
-      ],
-      "bbox": [
-        42.49,
-        -79.38,
-        43.29,
-        -78.38
-      ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-stops.json",
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-rail-corridors.json",
-      "lastFeedExpiry": null,
-      "lastFeedVersion": null
-    },
-    {
       "slug": "ddot",
       "name": "DDOT (Detroit)",
       "region": "Michigan",

@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 - **14 new agencies**: TransLink (Vancouver), BC Transit Fraser Valley, BC Transit Victoria, BC Transit Kelowna, RTC (Québec City), Sarnia Transit, Blue Water Area Transit (Port Huron), DDOT, SMART, Detroit People Mover, QLine, TheRide (Ann Arbor), GCRTA (Cleveland), TARTA (Toledo). Total: 55 agencies across Ontario, Quebec, British Columbia, New York, Michigan, and Ohio.
 - **index.json refactored**: added `region` field to all agencies; sorted by region then name; removed `octranspo-debug` and duplicate `hsr` entries; added missing bboxes; standardized field ordering.
 
+### Fixed
+- **Removed `nfta-rail` duplicate**: the entry shared the exact same feed URL as `nfta` (NFTA only publishes a bus feed — Metro Rail is not in their GTFS). Total agencies: 54.
+- **Corridor layer agency filter**: `passesRouteFilter` now strips the `-corridors` suffix before checking the agencies Set, so corridor features aren't accidentally hidden when a user de-selects then re-selects an agency.
+
 ### Performance
 - **LRU cache for in-memory GeoJSON** (`agencyGeo.ts`): unbounded Map replaced with a 15-slot LRU. Agencies evicted from the LRU remain in React layer state; re-fetches go to the browser HTTP cache. Caps JS heap at ~15 agencies worth of GeoJSON (~75 MB worst case).
 - **Direction 0 only rendered** (`useIntervalStats.ts`): direction 1 features (return trips) are filtered out before rendering. Halves polyline count on the Leaflet canvas with no visual change — frequency is the same in both directions on a given route.

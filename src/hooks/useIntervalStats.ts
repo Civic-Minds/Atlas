@@ -98,7 +98,9 @@ function passesRouteFilter(
     return true;
   }
 
-  if (filters.agencies.size > 0 && !filters.agencies.has(slug)) return false;
+  // Strip -corridors suffix so corridor layers (keyed as "{slug}-corridors") still pass the agency filter.
+  const agencySlug = slug.endsWith('-corridors') ? slug.slice(0, -10) : slug;
+  if (filters.agencies.size > 0 && !filters.agencies.has(agencySlug)) return false;
   if (filters.livePollingOnly && p.routeId && !isLivePollingRoute(slug, p.routeShortName)) return false;
 
   if (isCorridor) {
