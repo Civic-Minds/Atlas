@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **History: settings and info buttons visible again**: FilterChips + Now button are gated by `showUi` (Frequency-only), but FilterPanel (settings + info) is now always rendered regardless of active app.
+- **History: search bar reuses main top bar**: History mode no longer hides the search bar; instead it repurposes it as "Find an agency…" and wires the query into the History agency list filter. Typing clears the agency selection.
+- **History panel**: removed internal search bar; removed custom card styles; agency list uses plain border-b row pattern consistent with the rest of the app; "FREQUENCY HISTORY" all-caps label corrected to "Frequency History".
+
 ### Changed
 - **History app redesigned as Frequency History**: replaced the live schedule-adherence panel entirely. New flow: agency search → route list → before/after headway comparison cards. Shows how a route's weekday frequency has changed across snapshot years (e.g. GCRTA HealthLine: 5 min → 7.5 min → 15 min). Year chips highlight a specific snapshot across all route cards; frequency chips filter routes by headway threshold at the selected year.
 

@@ -76,19 +76,19 @@ export default function App() {
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
   const inCorridors = activeApp === 'corridors';
-  const searchValue = inFrequency ? query : inHistory ? '' : corridorsFrom;
-  // In corridors mode: show "From" as the placeholder when empty+unfocused, then "Search stations…" on focus
+  const searchValue = inFrequency || inHistory ? query : corridorsFrom;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
+    : inHistory ? 'Find an agency…'
     : (corridorsFromFocused || corridorsFrom) ? 'Search stations…' : 'From';
 
   function handleSearchChange(v: string) {
-    if (inFrequency) setQuery(v);
+    if (inFrequency || inHistory) setQuery(v);
     else setCorridorsFrom(v);
   }
 
   function handleSearchClear() {
-    if (inFrequency) setQuery('');
+    if (inFrequency || inHistory) setQuery('');
     else setCorridorsFrom('');
   }
 
@@ -137,8 +137,8 @@ export default function App() {
 
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
-        {/* Search bar — fades out in History (has its own UI), doubles as Corridors From input */}
-        <div className={`transition-opacity duration-200 ease-out ${inHistory ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        {/* Search bar — doubles as Corridors From input and History agency search */}
+        <div>
         <div className={`w-64 relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
@@ -209,7 +209,7 @@ export default function App() {
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}
             />
-            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} />
+            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} query={query} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors

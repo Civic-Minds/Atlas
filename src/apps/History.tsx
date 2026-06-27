@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { HISTORY_DATA } from '../../shared/historyConfig';
 import type { AgencyHistory, RouteHistoryEntry } from '../../shared/historyConfig';
@@ -10,6 +10,7 @@ interface Props {
   active: boolean;
   agencies: Agency[];
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
+  query: string;
 }
 
 const FREQ_OPTIONS: { label: string; max: number }[] = [
@@ -18,10 +19,6 @@ const FREQ_OPTIONS: { label: string; max: number }[] = [
   { label: '≤15 min', max: 15 },
   { label: 'Any', max: Infinity },
 ];
-
-function headwayDisplay(min: number): string {
-  return Number.isInteger(min) ? `${min} min` : `${min} min`;
-}
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean } | null {
   const snaps = entry.snapshots;
@@ -47,7 +44,7 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
   const summary = changeSummary(entry);
 
   return (
-    <div className="bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-4">
+    <div className="py-4 border-b border-[var(--border-primary)] last:border-0">
       <div className="flex items-baseline gap-2 mb-3">
         <span className="text-sm font-black text-[var(--text-primary)]">{entry.routeShortName}</span>
         <span className="text-[11px] text-[var(--text-muted)]">{entry.routeName}</span>
@@ -66,7 +63,7 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
             <React.Fragment key={snap.label}>
               <div className={`flex flex-col items-center transition-opacity ${isHighlighted ? '' : highlightYear !== null ? 'opacity-50' : ''}`}>
                 <span className={`text-2xl font-black tabular-nums leading-none ${headwayColor}`}>
-                  {headwayDisplay(snap.weekdayHeadwayMin)}
+                  {Number.isInteger(snap.weekdayHeadwayMin) ? `${snap.weekdayHeadwayMin} min` : `${snap.weekdayHeadwayMin} min`}
                 </span>
                 <span className={`text-[9px] font-bold mt-1 ${isHighlighted ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}`}>
                   {snap.label}
@@ -81,7 +78,7 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
       </div>
 
       {summary && (
-        <p className={`text-[10px] font-bold mt-3 ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>
+        <p className={`text-[10px] font-bold mt-2 ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>
           {summary.text}
         </p>
       )}
@@ -89,13 +86,7 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
   );
 }
 
-function AgencyView({
-  agency,
-  onBack,
-}: {
-  agency: AgencyHistory;
-  onBack: () => void;
-}) {
+function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => void }) {
   const allYears = useMemo(() => {
     const years = new Set<number>();
     agency.routes.forEach(r => r.snapshots.forEach(s => years.add(s.year)));
@@ -112,9 +103,8 @@ function AgencyView({
   }, [agency]);
 
   const filteredRoutes = useMemo(() => {
-    if (maxFreq === Infinity && highlightYear === null) return agency.routes;
+    if (maxFreq === Infinity) return agency.routes;
     return agency.routes.filter(route => {
-      if (maxFreq === Infinity) return true;
       const year = highlightYear ?? Math.max(...allYears);
       const snap = route.snapshots.find(s => s.year === year)
         ?? route.snapshots[route.snapshots.length - 1];
@@ -139,9 +129,8 @@ function AgencyView({
           </div>
         </div>
 
-        {/* Year filter chips */}
         <div className="flex items-center gap-1.5 flex-wrap mb-2">
-          <span className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide mr-0.5">Year</span>
+          <span className="text-[9px] font-bold text-[var(--text-dim)] mr-0.5">Year</span>
           {allYears.map(year => {
             const active = highlightYear === year;
             const label = snapLabels.get(year) ?? String(year);
@@ -149,7 +138,7 @@ function AgencyView({
               <button
                 key={year}
                 onClick={() => setHighlightYear(active ? null : year)}
-                className={`h-6 px-2.5 text-[10px] font-bold rounded-full border transition-all ${CHIP_BASE} ${
+                className={`h-6 px-2.5 text-[10px] font-bold ${CHIP_BASE} transition-all ${
                   active
                     ? 'bg-[var(--accent)] text-white border-transparent'
                     : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
@@ -161,16 +150,15 @@ function AgencyView({
           })}
         </div>
 
-        {/* Frequency filter chips */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide mr-0.5">Freq</span>
+          <span className="text-[9px] font-bold text-[var(--text-dim)] mr-0.5">Freq</span>
           {FREQ_OPTIONS.map(opt => {
             const active = maxFreq === opt.max;
             return (
               <button
                 key={opt.label}
                 onClick={() => setMaxFreq(opt.max)}
-                className={`h-6 px-2.5 text-[10px] font-bold rounded-full border transition-all ${CHIP_BASE} ${
+                className={`h-6 px-2.5 text-[10px] font-bold ${CHIP_BASE} transition-all ${
                   active
                     ? 'bg-[var(--accent)] text-white border-transparent'
                     : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
@@ -183,9 +171,9 @@ function AgencyView({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-3">
+      <div className="flex-1 overflow-y-auto px-6">
         {filteredRoutes.length === 0 && (
-          <p className="text-[11px] text-[var(--text-dim)]">No routes match these filters.</p>
+          <p className="text-[11px] text-[var(--text-dim)] py-4">No routes match these filters.</p>
         )}
         {filteredRoutes.map(route => (
           <RouteCard key={route.routeShortName} entry={route} highlightYear={highlightYear} />
@@ -195,8 +183,7 @@ function AgencyView({
   );
 }
 
-export default function History({ active, agencies, onInfoOpen }: Props) {
-  const [query, setQuery] = useState('');
+export default function History({ active, agencies, onInfoOpen, query }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
@@ -226,6 +213,9 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 
+  // Reset selection when query changes
+  useEffect(() => { setSelectedSlug(null); }, [query]);
+
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
     if (!q) return HISTORY_DATA;
@@ -247,39 +237,19 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
         <AgencyView agency={selectedAgency} onBack={() => setSelectedSlug(null)} />
       ) : (
         <>
-          <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Frequency History</p>
-              {onInfoOpen && (
-                <button
-                  onClick={() => onInfoOpen()}
-                  className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
-                  aria-label="About Atlas"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--bg-btn)] border border-[var(--border-primary)]">
-              <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
-              <input
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder="Find an agency..."
-                className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none"
-              />
-            </div>
+          <div className="shrink-0 px-6 pt-4 pb-2 border-b border-[var(--border-primary)]">
+            <p className="text-[10px] font-bold text-[var(--text-muted)]">Frequency History</p>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-2">
+          <div className="flex-1 overflow-y-auto">
             {filtered.length === 0 && (
-              <p className="text-[11px] text-[var(--text-dim)]">No agencies match.</p>
+              <p className="text-[11px] text-[var(--text-dim)] px-6 py-4">No agencies match.</p>
             )}
             {filtered.map(agency => (
               <button
                 key={agency.slug}
                 onClick={() => setSelectedSlug(agency.slug)}
-                className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent-border)] hover:bg-[var(--accent-bg)] transition-colors text-left group"
+                className="flex items-center justify-between w-full px-6 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
               >
                 <div>
                   <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
@@ -287,7 +257,7 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
                     {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
                   </p>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0"><polyline points="9 18 15 12 9 6"/></svg>
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
               </button>
             ))}
           </div>
