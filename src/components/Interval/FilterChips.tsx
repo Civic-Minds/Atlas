@@ -34,6 +34,22 @@ const MODES = [
 
 const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
 
+export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
+  const d = new Date().getDay();
+  if (d === 0) return 'Sunday';
+  if (d === 6) return 'Saturday';
+  return 'Weekday';
+}
+
+export function getNowPeriod(): TimePeriod {
+  const h = new Date().getHours();
+  if (h >= 6 && h < 9) return 'amPeak';
+  if (h >= 9 && h < 15) return 'midday';
+  if (h >= 15 && h < 19) return 'pmPeak';
+  if (h >= 19 && h < 23) return 'evening';
+  return 'all';
+}
+
 type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-col gap-1`;

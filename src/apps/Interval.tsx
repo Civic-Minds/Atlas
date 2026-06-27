@@ -7,7 +7,7 @@ import { MapCanvas } from '../components/Interval/MapCanvas';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
-import { FilterChips } from '../components/Interval/FilterChips';
+import { FilterChips, getNowDay, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
 import { SURFACE } from '../styles';
 import type { Agency } from '../App';
@@ -192,6 +192,24 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           setSelectedAgencies={setSelectedAgencies}
           layers={layers}
         />
+        {(() => {
+          const nowDay = getNowDay();
+          const nowPeriod = getNowPeriod();
+          const isNow = day === nowDay && period === nowPeriod;
+          return (
+            <button
+              onClick={() => { setDay(nowDay); setPeriod(nowPeriod); }}
+              aria-label="Jump to current time of day"
+              className={`h-8 px-3 rounded-full text-xs font-bold transition-all border ${
+                isNow
+                  ? 'bg-[var(--accent)] text-white border-transparent shadow-md'
+                  : 'bg-[var(--accent-bg)] text-[var(--accent)] border-[var(--accent-border)] hover:bg-[var(--accent)] hover:text-white hover:border-transparent'
+              }`}
+            >
+              Now
+            </button>
+          );
+        })()}
         <FilterPanel
           lightMode={lightMode}
           setLightMode={setLightMode}

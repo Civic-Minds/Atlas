@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **"Now" action button**: sits between the filter chips and Settings button; snaps both Day and Period to the current moment (day-of-week + time period). Filled accent when already at "now", tinted accent bg otherwise. Time periods: AM Peak 6–9a, Midday 9a–3p, PM Peak 3–7p, Evening 7–11p, All day outside those hours.
+
 ### Fixed
 - **Search bar X button**: was flush with the right border of the pill (`right-0`); moved to `right-2` so it's properly inset.
 
