@@ -23,6 +23,8 @@ export interface LiveRouteConfig {
   apiKeyParamEnvVar?: string;
   /** Env var name whose value is sent as the `apikey` HTTP header (e.g. STM). */
   apiKeyHeaderEnvVar?: string;
+  /** Set to true once the API key is configured in Vercel — makes the route visible in the UI. */
+  active?: boolean;
   longPatternKey?: string;
   longPatternStops?: string[];
   longPatternScheduleOffsetMin?: Record<string, number>;
@@ -145,6 +147,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     tripUpdatesUrl: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/tripUpdates',
     vehiclePositionsUrl: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/vehiclePositions',
     apiKeyHeaderEnvVar: 'STM_API_KEY',
+    active: true,
     scheduleOffsetMin: {
       '0': { '50314': 0, '50869': 22, '51848': 44, '52947': 65 },
       '1': { '52947': 0, '51827': 21, '50785': 46, '50314': 70 },

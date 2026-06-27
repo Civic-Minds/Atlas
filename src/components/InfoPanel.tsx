@@ -189,7 +189,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                     <div key={region}>
                       <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
                       {list.map(a => {
-                        const hasLive = LIVE_POLLING_ROUTES.some(r => r.slug === a.slug && !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar);
+                        const hasLive = LIVE_POLLING_ROUTES.some(r => r.slug === a.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active));
                         return (
                           <button
                             key={a.slug}
@@ -214,7 +214,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
           {tab === 'live' && (() => {
             const lq = liveQuery.toLowerCase().trim();
             const activeRoutes = LIVE_POLLING_ROUTES.filter(r => {
-              if (r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) return false;
+              if ((r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) && !r.active) return false;
               if (!lq) return true;
               const label = liveRouteLabel(r).toLowerCase();
               const agencyName = (agencies.find(a => a.slug === r.slug)?.name ?? r.slug).toLowerCase();

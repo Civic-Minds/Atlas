@@ -58,7 +58,7 @@ interface Props {
 export function AgencyCard({ agency, layers, day, onClose, onRouteSelect }: Props) {
   const routes = useMemo(() => getRoutes(layers, agency.slug, day), [layers, agency.slug, day]);
   const liveRoutes = useMemo(
-    () => LIVE_POLLING_ROUTES.filter(r => r.slug === agency.slug && !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar),
+    () => LIVE_POLLING_ROUTES.filter(r => r.slug === agency.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active)),
     [agency.slug]
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);

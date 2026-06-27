@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **STM live polling**: added STM GTFS-RT to the Cloudflare Worker archiver (`workers/gtfs-rt-archiver`). Worker now supports optional `apiKeyHeader` per feed; STM key read from `STM_API_KEY` Worker secret and forwarded as `apikey` header. `STM_API_KEY` also added to Vercel for the client-side adherence API route.
+- **STM live polling**: STM Route 55 is now live. Added `active` flag to `LiveRouteConfig` — key-gated routes with `active: true` show in the UI; without it they stay hidden until configured. STM GTFS-RT added to the Cloudflare Worker archiver with `apikey` header auth. `STM_API_KEY` added to Vercel and the Worker secret store.
 
 ### Fixed
 - **App drawer icon**: switched from rounded rects to circles for a cleaner dot-grid look.
