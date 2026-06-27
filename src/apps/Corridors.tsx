@@ -112,6 +112,8 @@ function agencySlugsForQuery(
   return slugs;
 }
 
+const SEARCH_LEFT = 182; // px from left edge — must match App.tsx search bar position
+
 export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true, onInfoOpen }: Props) {
   const { setOverlay } = useCorridorMapOverlay();
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
@@ -486,7 +488,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         <div
           ref={fromDropdownRef}
           className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
-          style={{ top: 60, left: 104, width: 256 }}
+          style={{ top: 60, left: SEARCH_LEFT, width: 256 }}
         >
           {fromSuggestions.length === 0 ? (
             <div className="px-3 py-2 text-xs text-[var(--text-muted)]">
@@ -508,7 +510,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       )}
 
       {/* To pill — same style as From (App.tsx search bar), stacked below it */}
-      <div ref={toPanelRef} className="absolute z-[1100] pointer-events-auto" style={{ top: 64, left: 104, width: 256 }}>
+      <div ref={toPanelRef} className="absolute z-[1100] pointer-events-auto" style={{ top: 64, left: SEARCH_LEFT, width: 256 }}>
         <div className="h-8 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-2 pr-3">
           <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
           <input
@@ -538,7 +540,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         <div
           ref={toDropdownRef}
           className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
-          style={{ top: 100, left: 104, width: 256 }}
+          style={{ top: 100, left: SEARCH_LEFT, width: 256 }}
         >
           {toSuggestions.length === 0 ? (
             <div className="px-3 py-2 text-xs text-[var(--text-muted)]">
@@ -563,7 +565,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       {fromStop && toStop && (
         <div
           className="absolute z-[1100] pointer-events-auto bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
-          style={{ top: 104, left: 104, width: 500, maxHeight: 'calc(100vh - 120px)' }}
+          style={{ top: 104, left: SEARCH_LEFT, width: 500, maxHeight: 'calc(100vh - 120px)' }}
         >
           {geoLoading ? (
             <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
