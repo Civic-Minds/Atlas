@@ -30,10 +30,6 @@ const MODES = [
   { id: 4, label: 'Ferry' },
 ];
 
-// Tier value → tier key used by getTierColor
-const TIER_FOR_MAX: Record<number, string> = {
-  10: '10', 15: '15', 20: '20', 30: '30', 60: '60',
-};
 
 const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
 
@@ -196,8 +192,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <div className={`${PANEL} w-36`}>
             {HEADWAY_TIERS.map(({ max, label }) => {
               const isSelected = maxHeadway === max;
-              const tierKey = TIER_FOR_MAX[max];
-              const color = tierKey ? getTierColor(tierKey) : 'var(--text-dim)';
+              const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
               return (
                 <button
                   key={label}
