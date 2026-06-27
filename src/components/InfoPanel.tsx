@@ -164,7 +164,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                     className="w-full pl-8 pr-3 py-1.5 text-xs bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] transition-colors"
                   />
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                   <button
                     onClick={() => setRegionFilter(null)}
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
