@@ -561,7 +561,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -624,7 +624,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -1167,7 +1167,10 @@
       "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-corridors.json",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "supplementalFeedUrls": [
+        "https://metro.nfta.com/__googletransit/rail/google_transit.zip"
+      ]
     },
     {
       "slug": "port-huron",

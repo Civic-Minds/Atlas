@@ -95,11 +95,14 @@ interface AgencyEntry {
   stopsUrl: string;
   corridorsUrl?: string;
   feedUrl: string | null;
+  supplementalFeedUrls?: string[];
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
 }
+
+type GeoJsonFc = { type: string; features: unknown[] };
 
 async function downloadFeed(url: string): Promise<Buffer> {
   try {
@@ -145,10 +148,42 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     return `skipped (same feed version: ${peekedVersion})`;
   }
 
-  const { geojson, corridorsGeojson, stopsJson, featureCount, feedExpiry, feedVersion } = await processGtfsBuffer(buf, undefined, {
+  const primary = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
   });
+
+  let { geojson, corridorsGeojson, stopsJson, featureCount } = primary;
+  const { feedExpiry, feedVersion } = primary;
+
+  // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
+  // Skip-if-unchanged only checks the primary feed; supplemental feeds always reprocess.
+  if (agency.supplementalFeedUrls?.length) {
+    const mainFeatures = (JSON.parse(geojson) as GeoJsonFc).features;
+    const corridorFeatures = (JSON.parse(corridorsGeojson) as GeoJsonFc).features;
+    const stopsIndex = JSON.parse(stopsJson) as Record<string, unknown>;
+
+    for (const suppUrl of agency.supplementalFeedUrls) {
+      const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
+      process.stdout.write(`\n    ↳ ${label} ... `);
+      const suppBuf = await downloadFeed(suppUrl);
+      const supp = await processGtfsBuffer(suppBuf, undefined, {
+        routeTypes: agency.routeTypes,
+        preprocess: agency.preprocess,
+      });
+      mainFeatures.push(...(JSON.parse(supp.geojson) as GeoJsonFc).features);
+      corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as GeoJsonFc).features);
+      Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
+      featureCount += supp.featureCount;
+      process.stdout.write(`+${supp.featureCount} features`);
+    }
+    process.stdout.write('\n    ');
+
+    geojson = JSON.stringify({ type: 'FeatureCollection', features: mainFeatures });
+    corridorsGeojson = JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures });
+    stopsJson = JSON.stringify(stopsIndex);
+  }
+
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
 
   const [url, stopsUrl, corridorsUrl] = await Promise.all([
