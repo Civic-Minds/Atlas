@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Search bar placeholder transition**: switching apps no longer causes the placeholder text to snap instantly. A custom `<span>` replaces the native `placeholder` attribute and fades out/in (120ms) when the label changes between "Search routes", "Find an agency…", and "From".
+
+### Fixed
 - **History: panel now left-side floating card**: History content renders at `top-20 left-[182px]` (same position as Frequency sidebar panels) instead of a bottom slide-up strip. Agency list and route comparison cards use the same `bg-[var(--bg-panel)] rounded-2xl shadow-2xl` style as the rest of the app.
 - **History: map auto-flies on open**: when no agency is selected, falls back to the first entry in HISTORY_DATA so the map always flies somewhere useful when History is opened.
 - **History: settings and info buttons visible again**: FilterChips + Now button are gated by `showUi` (Frequency-only), but FilterPanel (settings + info) is now always rendered regardless of active app.

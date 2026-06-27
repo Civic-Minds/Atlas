@@ -81,6 +81,8 @@ export default function App() {
     ? 'Search routes'
     : inHistory ? 'Find an agency…'
     : (corridorsFromFocused || corridorsFrom) ? 'Search stations…' : 'From';
+  const [shownPlaceholder, setShownPlaceholder] = useState(searchPlaceholder);
+  const [placeholderVisible, setPlaceholderVisible] = useState(true);
 
   function handleSearchChange(v: string) {
     if (inFrequency || inHistory) setQuery(v);
@@ -95,6 +97,16 @@ export default function App() {
   useEffect(() => {
     if (activeApp === 'corridors') setCorridorsMounted(true);
   }, [activeApp]);
+
+  useEffect(() => {
+    if (searchPlaceholder === shownPlaceholder) return;
+    setPlaceholderVisible(false);
+    const id = setTimeout(() => {
+      setShownPlaceholder(searchPlaceholder);
+      setPlaceholderVisible(true);
+    }, 120);
+    return () => clearTimeout(id);
+  }, [searchPlaceholder]);
 
   useEffect(() => {
     fetch('/data/index.json')
@@ -154,9 +166,16 @@ export default function App() {
               }
             }}
             onKeyDown={!inFrequency ? fromInputBindings?.onKeyDown : undefined}
-            placeholder={searchPlaceholder}
-            className="w-full bg-transparent text-[var(--text-primary)] placeholder-[var(--text-dim)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none transition-all"
+            placeholder=""
+            className="w-full bg-transparent text-[var(--text-primary)] pl-7 pr-6 py-0 text-xs font-bold focus:outline-none"
           />
+          {!searchValue && (
+            <span
+              className={`absolute left-8 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none transition-opacity duration-[120ms] ${placeholderVisible ? 'opacity-100' : 'opacity-0'}`}
+            >
+              {shownPlaceholder}
+            </span>
+          )}
           {searchValue !== '' && (
             <button
               onClick={handleSearchClear}
