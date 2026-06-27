@@ -170,7 +170,7 @@ export default function App() {
         </div>
 
         {stats && (
-          <div className={`flex gap-2 transition-all duration-500 ease-in-out ${inFrequency ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}`}>
+          <div className={`flex gap-2 transition-all duration-300 ease-out origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
             <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
               <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
               <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
