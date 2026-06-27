@@ -1,16 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, useMapEvents, useMap } from 'react-leaflet';
-import { LocateFixed } from 'lucide-react';
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { titleCase, fmtHeadway } from '../../utils/format';
-import { getRegionalView, getAgencyBounds, getSavedView, saveView } from '../../utils/regionView';
+import { getRegionalView, getSavedView } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { CorridorMapLayers } from '../corridor/CorridorMapLayers';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { HistoryStopMarkers } from '../history/HistoryStopMarkers';
+import {
+  MapRefCapturer, MapClickHandler, LocateControl, ResetViewControl,
+  RouteZoomer, ViewPersistor, GeolocateOnMount, BoundsReporter,
+} from './MapControls';
 import type { Agency } from '../../App';
 import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
@@ -216,166 +219,6 @@ function findRoutesNearClick(
     }
   }
   return found;
-}
-
-function MapRefCapturer({ mapRef }: { mapRef: React.MutableRefObject<L.Map | null> }) {
-  const map = useMap();
-  mapRef.current = map;
-  return null;
-}
-
-function MapClickHandler({ onClear }: { onClear: () => void }) {
-  useMapEvents({ click: onClear });
-  return null;
-}
-
-function LocateControl({ onLocate }: { onLocate?: (lat: number, lon: number) => void }) {
-  const map = useMap();
-  const [locating, setLocating] = useState(false);
-  const btnRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (btnRef.current) L.DomEvent.disableClickPropagation(btnRef.current);
-  }, []);
-
-  const locate = useCallback(() => {
-    if (!navigator.geolocation || locating) return;
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        map.flyTo([coords.latitude, coords.longitude], 14, { duration: 1.2 });
-        onLocate?.(coords.latitude, coords.longitude);
-        setLocating(false);
-      },
-      () => setLocating(false),
-      { timeout: 10000 }
-    );
-  }, [map, locating, onLocate]);
-
-  return (
-    <button
-      ref={btnRef}
-      onClick={locate}
-      aria-label="Go to my location"
-      style={{ position: 'absolute', bottom: 24, right: 12, zIndex: 1000 }}
-      className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors"
-    >
-      <LocateFixed className={`w-4 h-4 ${locating ? 'animate-pulse text-[var(--accent)]' : ''}`} />
-    </button>
-  );
-}
-
-function ResetViewControl({ resetKey, agencies }: { resetKey?: number; agencies: Agency[] }) {
-  const map = useMap();
-  const prevKey = useRef(resetKey);
-  useEffect(() => {
-    if (resetKey !== undefined && resetKey !== prevKey.current) {
-      prevKey.current = resetKey;
-      const bounds = getAgencyBounds(agencies);
-      if (bounds) {
-        map.flyToBounds(bounds, { padding: [64, 64], maxZoom: 9, duration: 1.8 });
-      } else {
-        const { center, zoom } = getRegionalView(agencies);
-        map.flyTo(center, zoom, { duration: 1.8 });
-      }
-    }
-  }, [map, resetKey, agencies]);
-  return null;
-}
-
-// When a route is selected (especially from the station panel), fly to show its full extent.
-// Uses raw layers so we get the complete geometry even if filtered by frequency etc.
-function RouteZoomer({ selectedRoute, layers }: { selectedRoute: string | null; layers: AgencyLayers }) {
-  const map = useMap();
-  const prev = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!selectedRoute || selectedRoute === prev.current) {
-      prev.current = selectedRoute;
-      return;
-    }
-    prev.current = selectedRoute;
-
-    const coords: [number, number][] = [];
-    Object.values(layers).forEach((fc) => {
-      fc.features.forEach((f) => {
-        if (f.geometry.type === 'Point') return;
-        const p = f.properties as any;
-        if (routeKey(p) !== selectedRoute) return;
-
-        const geom = f.geometry as any;
-        if (geom.type === 'LineString' && Array.isArray(geom.coordinates)) {
-          coords.push(...(geom.coordinates as [number, number][]));
-        } else if (geom.type === 'MultiLineString' && Array.isArray(geom.coordinates)) {
-          for (const line of geom.coordinates as [number, number][][]) {
-            if (Array.isArray(line)) coords.push(...line);
-          }
-        }
-      });
-    });
-
-    if (coords.length < 2) return;
-
-    const bounds = L.latLngBounds(coords.map(([lng, lat]) => [lat, lng]));
-    if (!bounds.isValid()) return;
-
-    // Only adjust if the whole route isn't already comfortably in view
-    const current = map.getBounds();
-    const alreadyVisible =
-      current.contains(bounds.getSouthWest()) && current.contains(bounds.getNorthEast());
-
-    if (!alreadyVisible) {
-      map.flyToBounds(bounds, {
-        padding: [50, 50],
-        maxZoom: 14, // don't zoom in too aggressively on short/local routes
-        duration: 0.9,
-      });
-    }
-  }, [selectedRoute, layers, map]);
-
-  return null;
-}
-
-function ViewPersistor() {
-  const map = useMap();
-  useMapEvents({
-    moveend: () => {
-      const c = map.getCenter();
-      saveView(c.lat, c.lng, map.getZoom());
-    },
-  });
-  return null;
-}
-
-function GeolocateOnMount({ skip }: { skip: boolean }) {
-  const map = useMap();
-  const didRun = useRef(false);
-  useEffect(() => {
-    if (skip || didRun.current || !navigator.geolocation) return;
-    didRun.current = true;
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        try { map.flyTo([coords.latitude, coords.longitude], 12, { duration: 1.2 }); } catch { /* map unmounted */ }
-      },
-      () => {},
-      { timeout: 8000 }
-    );
-  }, [map, skip]);
-  return null;
-}
-
-function BoundsReporter({ onBoundsChange, onZoomChange }: { onBoundsChange: (b: ViewportBounds) => void; onZoomChange: (z: number) => void }) {
-  const map = useMap();
-  const report = useCallback(() => {
-    const b = map.getBounds();
-    onBoundsChange({ s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() });
-    onZoomChange(map.getZoom());
-  }, [map, onBoundsChange, onZoomChange]);
-  useMapEvents({ moveend: report, zoomend: report });
-  useEffect(() => {
-    report();
-  }, [report]);
-  return null;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
