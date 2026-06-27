@@ -14,6 +14,7 @@ export interface HistoryMapOverlay {
   slug: string;
   routeShortName: string;
   stops: HistoryMapStop[];
+  agencyCenter?: [number, number];
 }
 
 interface ContextValue {

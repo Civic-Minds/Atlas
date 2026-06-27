@@ -131,8 +131,9 @@ export default function History({ active, agencies, onInfoOpen }: Props) {
       };
     }).filter(s => s.lat !== 0);
 
-    setOverlay({ slug: selectedSlug, routeShortName: selectedRoute, stops });
-  }, [active, cfg, selectedSlug, selectedRoute, stopsIndex, liveData, setOverlay]);
+    const agencyCenter = agencies.find(a => a.slug === selectedSlug)?.center;
+    setOverlay({ slug: selectedSlug, routeShortName: selectedRoute, stops, agencyCenter });
+  }, [active, cfg, selectedSlug, selectedRoute, stopsIndex, liveData, setOverlay, agencies]);
 
   // Clear overlay when History is inactive
   useEffect(() => {

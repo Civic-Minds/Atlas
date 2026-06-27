@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Agency search in main search bar**: typing an agency slug (e.g. "ttc", "hamilton") or display name (3+ chars, e.g. "toronto") now matches all routes for that agency, filtering the map to just that agency's network.
+
 ### Fixed
+- **History map auto-fly**: switching to the History app now immediately flies the map to the selected agency's center (before stop data loads), then refines to a `fitBounds` around the anchor stops once the stops index loads. Previously the map stayed wherever you last left it.
 - **Settings panel**: frequency-only settings (Live tracking, Hide irregular, Combined corridors) now appear dimmed with a "These settings apply to the Frequency map" note when in Corridors or History — still editable, but context-appropriate. Settings persist when switching apps since Interval stays mounted.
 - **History route picker**: key-gated routes (TransLink 099, STM 55) were appearing in the History app's route selector even though they're not accessible yet. Now filtered to only show routes without an API key requirement (or with `active: true`).
 

@@ -61,7 +61,14 @@ export function HistoryStopMarkers() {
     markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
 
-    if (!overlay || overlay.stops.length === 0) return;
+    if (!overlay) return;
+
+    if (overlay.stops.length === 0) {
+      if (overlay.agencyCenter) {
+        map.flyTo(overlay.agencyCenter, 13, { duration: 1.0 });
+      }
+      return;
+    }
 
     const latlngs: L.LatLngTuple[] = [];
 

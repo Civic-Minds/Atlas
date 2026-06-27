@@ -230,6 +230,10 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     if (cIds && cIds.some((r) => r.toLowerCase().includes(q))) return true;
     const cNames = (p as any).corridorShortNames as string[] | undefined;
     if (cNames && cNames.some((n) => n.toLowerCase().includes(q))) return true;
+    // Agency: slug (e.g. "ttc", "hamilton") or display name (3+ chars, e.g. "toronto transit")
+    const agencySlug = ((p as any).agencySlug ?? '').toLowerCase();
+    if (agencySlug.startsWith(q)) return true;
+    if (q.length >= 3 && (p.agencyName ?? '').toLowerCase().includes(q)) return true;
     return false;
   }, [q]);
 
