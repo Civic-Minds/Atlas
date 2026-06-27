@@ -156,7 +156,7 @@ export default function History({ active, agencies, onInfoOpen, query }: Props) 
       ) : (
         <div className={`${FLOATING_CARD} overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300`}>
           <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
-            <p className="text-[10px] font-bold text-[var(--text-muted)]">Frequency History</p>
+            <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
           </div>
           {filtered.length === 0 && (
             <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
