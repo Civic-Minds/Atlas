@@ -190,7 +190,7 @@ export default function App() {
             />
             <History active={inHistory} agencies={agencies} onInfoOpen={() => setInfoOpen(true)} />
             {corridorsMounted && (
-              <div className={`absolute inset-0 z-[500] transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
                   agencies={agencies}
                   lightMode={lightMode}

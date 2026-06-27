@@ -138,8 +138,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         />
       )}
 
-      {showUi && (
-      <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2">
+      <div className={`absolute top-6 right-6 z-[1000] flex items-center gap-2 transition-opacity duration-200 ease-out ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <FilterChips
           maxHeadway={maxHeadway}
           setMaxHeadway={setMaxHeadway}
@@ -166,9 +165,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           onInfoOpen={onInfoOpen}
         />
       </div>
-      )}
 
-      {showUi && (
+      <div className={`transition-opacity duration-200 ease-out ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <SidebarControls
         query={query}
         setQuery={setQuery}
@@ -197,7 +195,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         livePollingOnly={livePollingOnly}
         setLivePollingOnly={setLivePollingOnly}
       />
-      )}
+      </div>
     </div>
   );
 }

@@ -4,9 +4,10 @@ import type { Agency } from '../App';
 
 const TIER_LEGEND = [
   { color: '#2563eb', label: '≤10 min' },
-  { color: '#16a34a', label: '11–20 min' },
-  { color: '#ca8a04', label: '21–30 min' },
-  { color: '#dc2626', label: '>30 min' },
+  { color: '#16a34a', label: '≤20 min' },
+  { color: '#ca8a04', label: '≤30 min' },
+  { color: '#dc2626', label: '≤60 min' },
+  { color: '#6b7280', label: 'Infrequent' },
 ];
 
 type Tab = 'about' | 'agencies';

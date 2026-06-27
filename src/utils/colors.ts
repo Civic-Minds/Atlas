@@ -1,10 +1,10 @@
 export const HEADWAY_TIERS = [
-  { max: 10, color: '#111827', label: '≤10m' },
-  { max: 15, color: '#1f2937', label: '≤15m' },
-  { max: 20, color: '#374151', label: '≤20m' },
-  { max: 30, color: '#4b5563', label: '≤30m' },
-  { max: 60, color: '#6b7280', label: '≤60m' },
-  { max: Infinity, color: '#9ca3af', label: 'Infrequent' },
+  { max: 10, color: '#2563eb', label: '≤10m' },
+  { max: 15, color: '#16a34a', label: '≤15m' },
+  { max: 20, color: '#16a34a', label: '≤20m' },
+  { max: 30, color: '#ca8a04', label: '≤30m' },
+  { max: 60, color: '#dc2626', label: '≤60m' },
+  { max: Infinity, color: '#6b7280', label: 'Infrequent' },
 ];
 
 export const getTierColor = (tier: string | null): string => {
