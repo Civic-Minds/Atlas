@@ -107,19 +107,12 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
 
 function WaffleIcon({ active }: { active: boolean }) {
   const color = active ? 'var(--accent)' : 'var(--text-dim)';
+  const centers = [2, 7, 12];
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      {[0, 1, 2].flatMap(row =>
-        [0, 1, 2].map(col => (
-          <rect
-            key={`${row}-${col}`}
-            x={col * 5}
-            y={row * 5}
-            width="3"
-            height="3"
-            rx="0.75"
-            fill={color}
-          />
+      {centers.flatMap(cy =>
+        centers.map(cx => (
+          <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.5" fill={color} />
         ))
       )}
     </svg>
