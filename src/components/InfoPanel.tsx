@@ -15,6 +15,16 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
   const [tab, setTab] = useState<Tab>('about');
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      const id = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(id);
+    } else {
+      setVisible(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -23,7 +33,6 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  // Reset state on close
   useEffect(() => {
     if (!open) { setTab('about'); setQuery(''); setRegionFilter(null); }
   }, [open]);
@@ -43,7 +52,6 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
     });
   }, [agencies, query, regionFilter]);
 
-  // Group filtered agencies by region
   const byRegion = useMemo(() => {
     const map = new Map<string, Agency[]>();
     for (const a of filtered) {
@@ -57,19 +65,14 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
   if (!open) return null;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="absolute inset-0 z-[1200] bg-black/30 backdrop-blur-[2px]" onClick={onClose} />
-
-      {/* Panel */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1300] w-[380px] h-[560px] flex flex-col bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-2xl shadow-2xl overflow-hidden">
-
+    <div className="fixed inset-0 z-[1400]" onClick={onClose}>
+      <div
+        className={`absolute top-[4.5rem] right-6 w-[360px] max-h-[calc(100vh-5.5rem)] flex flex-col bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden transition-[opacity,transform] duration-200 ease-out origin-top-right ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="shrink-0 flex items-center justify-between px-5 pt-5 pb-3 border-b border-[var(--border-primary)]">
-          <div>
-            <p className="text-sm font-black text-[var(--text-primary)]">Atlas</p>
-            <p className="text-[10px] text-[var(--text-dim)] mt-0.5">by Civic Minds</p>
-          </div>
+          <h2 className="text-xs font-black text-[var(--text-primary)] uppercase tracking-wide">About</h2>
           <button
             onClick={onClose}
             className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
@@ -80,12 +83,12 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="shrink-0 flex px-5 pt-3 gap-3 border-b border-[var(--border-primary)]">
+        <div className="shrink-0 flex px-5 gap-3 border-b border-[var(--border-primary)]">
           {(['about', 'agencies'] as Tab[]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`pb-2.5 text-xs font-bold capitalize border-b-2 transition-colors ${
+              className={`pb-2.5 pt-3 text-xs font-bold capitalize border-b-2 transition-colors ${
                 tab === t
                   ? 'border-[var(--accent)] text-[var(--accent)]'
                   : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
@@ -138,7 +141,6 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
 
           {tab === 'agencies' && (
             <div className="flex flex-col">
-              {/* Search + region chips */}
               <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className="relative flex items-center">
                   <Search className="absolute left-3 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -177,7 +179,6 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                 </div>
               </div>
 
-              {/* Grouped list */}
               {byRegion.size === 0 ? (
                 <p className="px-5 py-6 text-xs text-[var(--text-dim)] text-center">No agencies match.</p>
               ) : (
@@ -199,6 +200,6 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
