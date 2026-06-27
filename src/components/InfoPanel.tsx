@@ -103,6 +103,10 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
         <div className="flex-1 overflow-y-auto">
           {tab === 'about' && (
             <div className="px-5 py-4 space-y-5">
+              <div>
+                <p className="text-base font-black text-[var(--text-primary)]">Atlas</p>
+                <p className="text-[11px] text-[var(--text-dim)] mt-0.5">by Civic Minds</p>
+              </div>
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A live transit frequency map for the Greater Golden Horseshoe and surrounding region.
                 Routes are colored by how often they run — blue is frequent, red is infrequent.
