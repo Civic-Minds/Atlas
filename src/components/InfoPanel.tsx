@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search } from 'lucide-react';
+import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
 import { HEADWAY_TIERS } from '../utils/colors';
 import type { Agency } from '../App';
 
@@ -67,7 +68,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
   return (
     <div className="fixed inset-0 z-[1400]" onClick={onClose}>
       <div
-        className={`absolute top-[4.5rem] right-6 w-[360px] max-h-[calc(100vh-5.5rem)] flex flex-col bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden transition-[opacity,transform] duration-200 ease-out origin-top-right ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+        className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -94,7 +95,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                   : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
-              {t === 'agencies' ? `Agencies (${agencies.length})` : t}
+              {t === 'agencies' ? 'Agencies' : t}
             </button>
           ))}
         </div>

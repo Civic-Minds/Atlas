@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
+import { FLOATING_CARD, CHIP_BASE } from '../../styles';
 import type { Agency } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { VIRTUAL_LRT_MODE, PERIOD_LABELS } from '../../hooks/useIntervalStats';
@@ -35,7 +36,7 @@ const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
 
 type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
 
-const PANEL = 'absolute top-10 right-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-2 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-col gap-1';
+const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-col gap-1`;
 
 const rowBtn = (active: boolean) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left whitespace-nowrap ${
@@ -188,7 +189,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   };
 
   const chipClass = (active: boolean) =>
-    `relative h-8 px-3.5 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border rounded-full shadow-lg text-xs font-bold transition-colors whitespace-nowrap ${
+    `relative h-8 px-3.5 flex items-center justify-center ${CHIP_BASE} text-xs font-bold transition-colors whitespace-nowrap ${
       active
         ? 'border-[var(--accent-border)] text-[var(--accent)]'
         : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'

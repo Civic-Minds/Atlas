@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeftRight, Clock } from 'lucide-react';
+import { FLOATING_CARD } from '../styles';
 
 export type AppId = 'frequency' | 'corridors' | 'history';
 
@@ -57,7 +58,7 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
       </button>
 
       {open && (
-        <div className="absolute top-10 left-0 w-56 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-2xl shadow-2xl overflow-hidden z-[1200] py-1.5">
+        <div className={`absolute top-10 left-0 w-56 ${FLOATING_CARD} overflow-hidden z-[1200] py-1.5`}>
           {APPS.map(app => {
             const isActive = app.id === activeApp;
             return (

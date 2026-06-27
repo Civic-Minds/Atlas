@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, X, Radio, Sun, Moon, Zap, Info } from 'lucide-react';
+import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim } from '../../styles';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -94,14 +95,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       <div className="flex items-center gap-2">
         <button
           onClick={() => setLightMode((v) => !v)}
-          className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
+          className={ICON_BTN}
           aria-label="Toggle light mode"
         >
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
         <button
           onClick={() => setOpen(v => !v)}
-          className="relative w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
+          className={`relative ${ICON_BTN}`}
           aria-label="Settings"
         >
           <Settings className="w-4 h-4" />
@@ -112,7 +113,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         {onInfoOpen && (
           <button
             onClick={onInfoOpen}
-            className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
+            className={ICON_BTN}
             aria-label="About Atlas"
           >
             <Info className="w-4 h-4" />
@@ -126,7 +127,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           onClick={close}
         >
           <div
-            className={`absolute top-[4.5rem] right-6 w-[360px] max-h-[calc(100vh-5.5rem)] flex flex-col bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden transition-[opacity,transform] duration-200 ease-out origin-top-right ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+            className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-primary)] shrink-0">

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Shared UI style constants** (`src/styles.ts`): extracted `SURFACE`, `ICON_BTN`, `DROPDOWN_PANEL`, `dropdownAnim`, `FLOATING_CARD`, `PILL_SURFACE`, `CHIP_BASE` — used across `FilterPanel`, `InfoPanel`, `FilterChips`, `AppDrawer`, `App`. Single source of truth for structural tokens; color tokens remain in CSS variables.
 - **InfoPanel redesigned as right-anchored dropdown**: replaces the centered floating modal with a card that drops down from the top-right under the info button (`top-[4.5rem] right-6`), scales in from `origin-top-right`. Settings slide-in is unchanged — the two panels now have distinct but complementary treatments.
 - **Live tracking: TTC 503 Kingston Rd and 504 King**: both routes added using the open `gtfsrt.ttc.ca` feed (no API key). 503 covers York/King → Sackville → Woodbine → Bingham Loop at 10 min; 504 covers Dundas West → Niagara → Church → Broadview at 5 min.
 - **Live tracking: TransLink 99 B-Line, STM 55 Saint-Laurent**: two new routes in `livePollingConfig.ts` for key-gated feeds. TransLink 099 (UBC–Commercial-Broadway) uses `TRANSLINK_API_KEY` appended as a URL query param; STM 55 (Henri-Bourassa–Saint-Jacques) uses `STM_API_KEY` sent as an HTTP header. Both degrade gracefully (return `noData`) until the respective env vars are added to Vercel. `LiveRouteConfig` now has optional `apiKeyParamEnvVar` and `apiKeyHeaderEnvVar` fields; `fetchTripUpdates` injects them at call time.
