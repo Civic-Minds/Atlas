@@ -92,7 +92,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`pb-2.5 pt-3 text-xs font-bold capitalize border-b-2 transition-colors ${
+                className={`pb-3.5 pt-4 text-xs font-bold capitalize border-b-2 transition-colors ${
                   tab === t
                     ? 'border-[var(--accent)] text-[var(--accent)]'
                     : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'

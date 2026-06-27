@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **InfoPanel tab header height** now matches the Settings panel header (`pt-4 pb-3.5` on tabs vs `py-4` in Settings).
+
 ### Added
 - **IndexedDB GeoJSON cache** (`src/lib/idbCache.ts`): agency GeoJSON and corridor data now persists in IndexedDB between sessions, keyed by `{slug}-{weekVersion}`. On repeat visits within the same week, all agencies load from local storage instead of R2 — near-instant on return visits. Falls through to network on any IDB failure (private browsing, quota). Stale entries from prior weeks are pruned automatically on first load. Closes AI-146.
 
