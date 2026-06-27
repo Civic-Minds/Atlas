@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, ArrowLeft, Info } from 'lucide-react';
-import { PILL_SURFACE } from './styles';
+import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from './styles';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
@@ -125,7 +125,7 @@ export default function App() {
   return (
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
-    <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors duration-200">
+    <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
         <button
           onClick={() => {
@@ -196,7 +196,7 @@ export default function App() {
         </div>
 
         {stats && (
-          <div className={`flex gap-2 transition-all duration-300 ease-out origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
+          <div className={`flex gap-2 transition-all ${TRANSITION_SLOW} origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
             <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
               <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
               <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
@@ -234,10 +234,11 @@ export default function App() {
               onAgencyCardClose={handleAgencyCardClose}
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}
+              searchFocused={searchFocused}
             />
-            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} />
+            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} />
             {corridorsMounted && (
-              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity duration-300 ease-out ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
                   agencies={agencies}
                   lightMode={lightMode}

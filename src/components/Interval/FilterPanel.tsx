@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, X, Radio, Sun, Moon, Zap, Info } from 'lucide-react';
-import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE } from '../../styles';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -18,12 +18,12 @@ interface FilterPanelProps {
 function Toggle({ on }: { on: boolean }) {
   return (
     <span
-      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors duration-200 ${
+      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
         on ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'
       }`}
     >
       <span
-        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
           on ? 'translate-x-5' : 'translate-x-1'
         }`}
       />
@@ -148,7 +148,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <p className="text-[10px] text-[var(--text-muted)] pt-3 pb-1">These settings apply to the Frequency map.</p>
               )}
               {SETTINGS.map(({ id, icon: Icon, label, description }) => (
-                <div key={id} className={`flex items-start justify-between gap-4 py-4 first:pt-3 last:pb-3 transition-opacity duration-200 ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
+                <div key={id} className={`flex items-start justify-between gap-4 py-4 first:pt-3 last:pb-3 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                   <div className="flex items-start gap-3 min-w-0">
                     <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                     <div className="min-w-0">

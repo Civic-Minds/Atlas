@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { HISTORY_DATA } from '../../shared/historyConfig';
 import type { AgencyHistory, RouteHistoryEntry } from '../../shared/historyConfig';
 import type { Agency } from '../App';
-import { FLOATING_CARD } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW } from '../styles';
 
 interface Props {
   active: boolean;
@@ -12,6 +12,7 @@ interface Props {
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
   searchFocused: boolean;
+  setQuery: (q: string) => void;
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean } | null {
@@ -82,7 +83,7 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
 
 function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => void }) {
   return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
       <div className="flex items-center gap-1.5 px-4 pt-3 pb-2 border-b border-[var(--border-primary)] shrink-0">
         <button
           onClick={onBack}
@@ -105,7 +106,7 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
   );
 }
 
-export default function History({ active, agencies, onInfoOpen, query, searchFocused }: Props) {
+export default function History({ active, agencies, onInfoOpen, query, searchFocused, setQuery }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
@@ -136,6 +137,44 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
   useEffect(() => { setSelectedSlug(null); }, [query]);
 
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (searchFocused) {
+      try {
+        const qRecents = localStorage.getItem('atlas_recent_searches');
+        if (qRecents) setRecentSearches(JSON.parse(qRecents));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [searchFocused]);
+
+  const saveRecentSearch = useCallback((q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    try {
+      const recentsRaw = localStorage.getItem('atlas_recent_searches');
+      const recents: string[] = recentsRaw ? JSON.parse(recentsRaw) : [];
+      const filtered = recents.filter(s => s.toLowerCase() !== trimmed.toLowerCase());
+      filtered.unshift(trimmed);
+      const limited = filtered.slice(0, 5);
+      localStorage.setItem('atlas_recent_searches', JSON.stringify(limited));
+      setRecentSearches(limited);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const clearRecentSearches = useCallback(() => {
+    try {
+      localStorage.removeItem('atlas_recent_searches');
+      setRecentSearches([]);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
     if (!q) return HISTORY_DATA;
@@ -150,36 +189,67 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
 
   return (
     <div
-      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity duration-300 ease-out ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       {selectedAgency ? (
         <AgencyView agency={selectedAgency} onBack={() => setSelectedSlug(null)} />
       ) : searchFocused ? (
         <div
-          className={`${FLOATING_CARD} overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300`}
+          className={`${FLOATING_CARD} overflow-hidden ${PANEL_ENTER}`}
           onMouseDown={e => e.preventDefault()}
         >
-          <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
-            <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
-          </div>
-          {filtered.length === 0 && (
-            <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
-          )}
-          {filtered.map(agency => (
-            <button
-              key={agency.slug}
-              onClick={() => setSelectedSlug(agency.slug)}
-              className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-            >
-              <div>
-                <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
-                <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
-                  {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
-                </p>
+          {query === '' && recentSearches.length > 0 ? (
+            <>
+              <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
+                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase">Recent Searches</p>
+                <button
+                  onClick={clearRecentSearches}
+                  className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+                >
+                  Clear
+                </button>
               </div>
-              <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-            </button>
-          ))}
+              {recentSearches.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => setQuery(s)}
+                  className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                    {s}
+                  </span>
+                  <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
+                </button>
+              ))}
+            </>
+          ) : (
+            <>
+              <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
+                <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
+              </div>
+              {filtered.length === 0 && (
+                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
+              )}
+              {filtered.map(agency => (
+                <button
+                  key={agency.slug}
+                  onClick={() => {
+                    saveRecentSearch(query);
+                    setSelectedSlug(agency.slug);
+                  }}
+                  className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+                >
+                  <div>
+                    <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
+                    <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
+                      {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+                </button>
+              ))}
+            </>
+          )}
         </div>
       ) : null}
     </div>

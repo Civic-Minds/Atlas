@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, CHIP_BASE } from '../../styles';
+import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP } from '../../styles';
 import type { Agency } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { VIRTUAL_LRT_MODE, PERIOD_LABELS } from '../../hooks/useIntervalStats';
@@ -52,7 +52,7 @@ export function getNowPeriod(): TimePeriod {
 
 type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
 
-const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right duration-150 ease-out flex flex-col gap-1`;
+const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
 const rowBtn = (active: boolean) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left whitespace-nowrap ${

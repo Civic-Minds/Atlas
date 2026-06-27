@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { Search, X } from 'lucide-react';
+import { Info, Search, X } from 'lucide-react';
 import type { Agency } from '../App';
+import { FLOATING_CARD, ICON_BTN } from '../styles';
 import {
   buildStopCatalog,
   normalizeStopName,
@@ -564,7 +565,7 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
       {/* Single combined panel */}
       {fromStop && toStop && (
         <div
-          className="absolute z-[1100] pointer-events-auto bg-[var(--bg-panel)] rounded-2xl shadow-2xl border border-[var(--border-primary)] overflow-hidden"
+          className={`absolute z-[1100] pointer-events-auto ${FLOATING_CARD} overflow-hidden`}
           style={{ top: 104, left: SEARCH_LEFT, width: 500, maxHeight: 'calc(100vh - 120px)' }}
         >
           {geoLoading ? (
@@ -600,10 +601,10 @@ export default function Corridors({ agencies, lightMode, fromQuery, setFromQuery
         {onInfoOpen && (
           <button
             onClick={onInfoOpen}
-            className="w-8 h-8 flex items-center justify-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-lg hover:text-[var(--accent)] text-[var(--text-primary)] transition-colors"
+            className={ICON_BTN}
             aria-label="About Atlas"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <Info className="w-4 h-4" />
           </button>
         )}
       </div>

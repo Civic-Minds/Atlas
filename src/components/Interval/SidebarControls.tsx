@@ -9,10 +9,12 @@ import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, cleanHeadsign, fmtHeadway, formatRemDisplay, getRouteLabel } from '../../utils/format';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE } from '../../styles';
 
 interface SidebarControlsProps {
   query: string;
   setQuery: (q: string) => void;
+  searchFocused: boolean;
   searchMatches: number | null;
   searchMatchResults: { key: string; routeShortName: string | null; routeLongName: string | null; agencyName?: string }[] | null;
   maxHeadway: number;
@@ -42,6 +44,7 @@ interface SidebarControlsProps {
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
   query,
   setQuery,
+  searchFocused,
   searchMatches,
   searchMatchResults,
   maxHeadway,
@@ -110,6 +113,102 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
   const [showDebug, setShowDebug] = useState(false);
+
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
+
+  const loadRecents = useCallback(() => {
+    try {
+      const qRecents = localStorage.getItem('atlas_recent_searches');
+      if (qRecents) setRecentSearches(JSON.parse(qRecents));
+
+      const rRecents = localStorage.getItem('atlas_recently_viewed_routes');
+      if (rRecents) setRecentlyViewed(JSON.parse(rRecents));
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (searchFocused) {
+      loadRecents();
+    }
+  }, [searchFocused, loadRecents]);
+
+  const saveRecentSearch = useCallback((q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    try {
+      const recentsRaw = localStorage.getItem('atlas_recent_searches');
+      const recents: string[] = recentsRaw ? JSON.parse(recentsRaw) : [];
+      const filtered = recents.filter(s => s.toLowerCase() !== trimmed.toLowerCase());
+      filtered.unshift(trimmed);
+      const limited = filtered.slice(0, 5);
+      localStorage.setItem('atlas_recent_searches', JSON.stringify(limited));
+      setRecentSearches(limited);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const clearRecentSearches = useCallback(() => {
+    try {
+      localStorage.removeItem('atlas_recent_searches');
+      setRecentSearches([]);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  // Save recently viewed route
+  useEffect(() => {
+    if (!selectedRoute) return;
+    const [slug, routeId] = selectedRoute.split('::');
+    const fc = layers[slug];
+    if (!fc) return;
+    const feat = fc.features.find(f => {
+      const p = f.properties as any;
+      return p.routeId === routeId;
+    });
+    if (feat) {
+      const p = feat.properties as any;
+      const shortName = p.routeShortName || p.routeId || '';
+      const longName = p.routeLongName || '';
+      const agencyName = p.agencyName || slug;
+
+      try {
+        const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
+        const recents: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
+        const filtered = recents.filter(r => r.key !== selectedRoute);
+        filtered.unshift({ key: selectedRoute, shortName, longName, agencyName, headway: p.headway ?? undefined });
+        const limited = filtered.slice(0, 5);
+        localStorage.setItem('atlas_recently_viewed_routes', JSON.stringify(limited));
+        setRecentlyViewed(limited);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [selectedRoute, layers]);
+
+  // Compute notable routes fallback
+  const notableRoutes = useMemo(() => {
+    const routes: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway: number }> = [];
+    for (const [slug, fc] of Object.entries(layers)) {
+      if (!fc?.features) continue;
+      for (const f of fc.features) {
+        const p = f.properties as any;
+        if (!p.routeId || p.stopId) continue;
+        const key = routeKey({ ...p, agencySlug: slug } as any);
+        if (routes.some(r => r.key === key)) continue;
+        const headway = p.headway ?? 999;
+        const shortName = p.routeShortName || p.routeId;
+        const longName = p.routeLongName || '';
+        const agencyName = p.agencyName || slug;
+        routes.push({ key, shortName, longName, agencyName, headway });
+      }
+    }
+    return routes.sort((a, b) => a.headway - b.headway).slice(0, 5);
+  }, [layers]);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -320,13 +419,73 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     });
   }, [disambiguationRoutes, layers]);
 
-  const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes;
+  const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === '');
   if (!hasContent) return null;
 
   return (
     <div className="absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3">
+      {searchFocused && query === '' && (
+        <div className={`${FLOATING_CARD} p-4 shrink-0 flex flex-col gap-2 ${PANEL_ENTER}`}>
+          <div className="flex items-center justify-between border-b border-[var(--border-primary)] pb-1.5 mb-1">
+            <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)] uppercase">
+              {recentSearches.length > 0 ? 'Recent Searches' : 'Suggested Routes'}
+            </span>
+            {recentSearches.length > 0 && (
+              <button
+                onClick={clearRecentSearches}
+                className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          
+          {recentSearches.length > 0 ? (
+            <div className="space-y-1">
+              {recentSearches.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => setQuery(s)}
+                  className="w-full text-left hover:bg-[var(--bg-hover)] rounded-lg px-2 py-1 transition-colors flex items-center justify-between group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                    {s}
+                  </span>
+                  <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {(recentlyViewed.length > 0 ? recentlyViewed : notableRoutes).map((r) => (
+                <button
+                  key={r.key}
+                  onClick={() => setSelectedRoute(r.key)}
+                  className="w-full text-left hover:bg-[var(--bg-hover)] rounded-xl px-2 py-1 -mx-2 transition-colors group"
+                >
+                  <div className="text-[12px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">
+                    {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[10px] font-bold text-[var(--text-muted)]">{r.agencyName}</span>
+                    {recentlyViewed.length === 0 && r.headway !== undefined && r.headway < 999 && (
+                      <>
+                        <span className="text-[10px] text-[var(--text-dim)]">•</span>
+                        <span className="text-[10px] text-[var(--text-dim)]">every {r.headway}m</span>
+                      </>
+                    )}
+                  </div>
+                </button>
+              ))}
+              {recentlyViewed.length === 0 && notableRoutes.length === 0 && (
+                <p className="text-[11px] text-[var(--text-dim)] italic">No route suggestions in this area.</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
-        <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 pt-4 pb-3 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300 shrink-0">
+        <div className={`px-4 pt-4 pb-3 ${FLOATING_CARD} ${PANEL_ENTER} shrink-0`}>
           <div className="mb-2 -mt-1">
             <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">Multiple routes here</span>
           </div>
@@ -352,10 +511,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       {(currentStop || currentRoute || (query !== '' && searchMatchResults !== null)) && <div
         ref={scrollRef}
         onScroll={checkScroll}
-        className="relative flex-1 min-h-0 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 pt-4 pb-2 rounded-2xl shadow-2xl transition-colors duration-200 overflow-y-auto overflow-x-hidden custom-scrollbar"
+        className={`relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
       >
         {currentStop && !query.trim() && (
-          <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
+          <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
             <div className="flex items-center justify-between mb-2 -mt-2 -mr-2">
               <span className="text-[10px] font-black tracking-wide text-[var(--accent)]">Station View</span>
               <button onClick={() => setSelectedStop(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
@@ -465,7 +624,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
 
         {currentRoute && !query.trim() && (
-          <div className="mb-5 animate-in fade-in slide-in-from-left-2 duration-300">
+          <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
             {liveRouteInfo && liveStatus !== 'noData' && (
               <div className="flex items-center gap-1.5 -mt-1 mb-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
@@ -591,7 +750,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 {searchMatchResults.map((r) => (
                   <button
                     key={r.key}
-                    onClick={() => { setQuery(''); setSelectedRoute(selectedRoute === r.key ? null : r.key); }}
+                    onClick={() => {
+                      saveRecentSearch(query);
+                      setQuery('');
+                      setSelectedRoute(selectedRoute === r.key ? null : r.key);
+                    }}
                     className={`w-full flex items-center justify-between gap-2 px-1.5 py-1 rounded text-left text-[11px] transition-colors ${
                       selectedRoute === r.key
                         ? 'bg-[var(--accent-bg)] text-[var(--accent)]'
@@ -616,7 +779,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       </div>}
 
       {liveRouteInfo && liveStatus !== 'noData' && !query.trim() && (
-        <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] p-4 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-2 shrink-0">
+        <div className={`p-4 ${FLOATING_CARD} ${PANEL_ENTER} space-y-2 shrink-0`}>
           <div className="flex items-center gap-1.5">
             <span className={`w-1.5 h-1.5 rounded-full bg-green-400 shrink-0 ${liveStatus === 'live' ? 'animate-pulse' : 'opacity-40'}`} />
             <span className="text-[10px] font-black text-green-400">Live</span>

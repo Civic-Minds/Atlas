@@ -9,7 +9,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowDay, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { SURFACE } from '../styles';
+import { SURFACE, TRANSITION_BASE } from '../styles';
 import type { Agency } from '../App';
 
 interface Props {
@@ -28,9 +28,10 @@ interface Props {
   onAgencyCardClose?: () => void;
   pendingLiveRoute?: { slug: string; routeShortName: string } | null;
   onPendingLiveRouteHandled?: () => void;
+  searchFocused?: boolean;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -124,7 +125,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
 
   return (
-    <div className="relative w-full h-full transition-colors duration-200">
+    <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
       <MapCanvas
         agencies={agencies}
         layers={filteredLayers}
@@ -178,7 +179,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       )}
 
       <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2">
-        <div className={`flex items-center gap-2 transition-opacity duration-200 ease-out ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <FilterChips
             maxHeadway={maxHeadway}
             setMaxHeadway={setMaxHeadway}
@@ -226,10 +227,11 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         />
       </div>
 
-      <div className={`transition-opacity duration-200 ease-out ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <SidebarControls
         query={query}
         setQuery={setQuery}
+        searchFocused={searchFocused}
         searchMatches={searchMatches}
         searchMatchResults={searchMatchResults}
         maxHeadway={maxHeadway}

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Search bar suggestions on focus (AI-152)**: Shows a Suggestions panel when clicking into the search input with an empty query. Displays the last 5 searches (stored in localStorage) if they exist.
+- **Search bar suggestions fallbacks**: If no recent searches exist, falls back to recently viewed routes (up to 5 routes saved when tapped on the map) or dynamic popular/frequent routes in the viewport in Frequency map, and falls back to listing all historical agencies in History view.
+
+### Changed
+- **Systematic style and transition centralization (AI-151 & AI-153)**: Replaced inline CSS panels and raw transition durations (200ms, 300ms) with shared constants `FLOATING_CARD`, `PANEL_ENTER`, `PANEL_ENTER_LEFT`, `PANEL_ENTER_TOP`, `TRANSITION_BASE`, and `TRANSITION_SLOW` from `styles.ts` across all Interval, Corridors, and History components.
+
 ### Changed
 - **History: removed Year/Freq filter chips**: premature with only one route; will revisit when there's enough data to make filtering meaningful (tracked in Linear).
 - **History: panel renamed "Suggestions"**: the agency list header now reads "Suggestions" instead of "Frequency History"; will dynamically switch to "Recents" once search history is implemented.
