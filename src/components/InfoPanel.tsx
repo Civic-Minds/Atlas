@@ -183,7 +183,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
                     <div key={region}>
                       <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
                       {list.map(a => {
-                        const hasLive = LIVE_POLLING_ROUTES.some(r => r.slug === a.slug);
+                        const hasLive = LIVE_POLLING_ROUTES.some(r => r.slug === a.slug && !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar);
                         return (
                           <button
                             key={a.slug}
@@ -206,7 +206,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
           )}
 
           {tab === 'agencies' && selectedAgency && (() => {
-            const liveRoutes = LIVE_POLLING_ROUTES.filter(r => r.slug === selectedAgency.slug);
+            const liveRoutes = LIVE_POLLING_ROUTES.filter(r => r.slug === selectedAgency.slug && !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar);
             return (
               <div className="flex flex-col">
                 <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10">
@@ -248,7 +248,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
             );
           })()}
           {tab === 'live' && (() => {
-            const byAgency = LIVE_POLLING_ROUTES.reduce<Record<string, { slug: string; name: string; routes: typeof LIVE_POLLING_ROUTES }>>((acc, r) => {
+            const activeRoutes = LIVE_POLLING_ROUTES.filter(r => !r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar);
+            const byAgency = activeRoutes.reduce<Record<string, { slug: string; name: string; routes: typeof LIVE_POLLING_ROUTES }>>((acc, r) => {
               if (!acc[r.slug]) {
                 const agencyName = agencies.find(a => a.slug === r.slug)?.name ?? r.slug;
                 acc[r.slug] = { slug: r.slug, name: agencyName, routes: [] };
@@ -262,14 +263,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab }: Props
                   <div key={slug}>
                     <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{name}</p>
                     {agRoutes.map(r => (
-                      <div key={r.displayRouteShortName} className="flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
-                        <div className="flex items-center gap-2">
-                          <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
-                          <span className="text-xs text-[var(--text-primary)]">Route {r.displayRouteShortName}</span>
-                        </div>
-                        {(r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) && (
-                          <span className="text-[10px] text-[var(--text-dim)] font-mono">key required</span>
-                        )}
+                      <div key={r.displayRouteShortName} className="flex items-center gap-2 px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors">
+                        <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                        <span className="text-xs text-[var(--text-primary)]">Route {r.displayRouteShortName}</span>
                       </div>
                     ))}
                   </div>
