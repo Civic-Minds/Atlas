@@ -8,6 +8,8 @@ import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips } from '../components/Interval/FilterChips';
+import { HEADWAY_TIERS } from '../utils/colors';
+import { SURFACE } from '../styles';
 import type { Agency } from '../App';
 
 interface Props {
@@ -121,12 +123,25 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         showCorridorBand={showCorridorBand}
       />
 
-      {showUi && isLoading && (
-        <div className="absolute bottom-6 left-6 z-[1000] flex items-center gap-2 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] px-4 py-2 rounded-xl">
-          <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-          <span className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide">
-            {loadedCount}/{requestedCount} networks
-          </span>
+      {showUi && (
+        <div className="absolute bottom-6 left-6 z-[1000]">
+          {isLoading ? (
+            <div className={`flex items-center gap-2 ${SURFACE} backdrop-blur-md px-4 py-2 rounded-xl`}>
+              <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+              <span className="text-[10px] font-bold text-[var(--text-muted)]">
+                {loadedCount}/{requestedCount} networks
+              </span>
+            </div>
+          ) : (
+            <div className={`${SURFACE} backdrop-blur-md rounded-xl px-3 py-2.5 flex flex-col gap-1.5`}>
+              {HEADWAY_TIERS.map(({ color, label }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <div className="w-4 h-1.5 rounded-full shrink-0" style={{ background: color }} />
+                  <span className="text-[10px] text-[var(--text-primary)]">{label}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

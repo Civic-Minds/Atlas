@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
-import { HEADWAY_TIERS } from '../utils/colors';
 import type { Agency } from '../App';
 
 type Tab = 'about' | 'agencies';
@@ -109,21 +108,11 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
                 <p className="text-[11px] text-[var(--text-dim)] mt-0.5">by Civic Minds</p>
               </div>
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                A live transit frequency map for the Greater Golden Horseshoe and surrounding region.
-                Routes are colored by how often they run — blue is frequent, red is infrequent.
+                A frequency map covering 65 transit agencies across Canada and the US Great Lakes — from Halifax to Vancouver, south into Michigan and Ohio. Routes are colored by headway: blue runs every 10 minutes or better, red runs hourly or less.
               </p>
-
-              <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Frequency tiers</p>
-                <div className="space-y-1.5">
-                  {HEADWAY_TIERS.map(({ color, label }) => (
-                    <div key={label} className="flex items-center gap-2.5">
-                      <div className="w-5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
-                      <span className="text-xs text-[var(--text-primary)]">{label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                Select routes include live schedule adherence monitoring using real-time GTFS feeds.
+              </p>
 
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
@@ -139,7 +128,7 @@ export default function InfoPanel({ open, onClose, agencies }: Props) {
               </div>
 
               <p className="text-[10px] text-[var(--text-dim)] leading-relaxed">
-                Schedule data is sourced from official GTFS feeds and refreshed automatically every Monday.
+                Schedule data from official GTFS feeds, refreshed every Monday. © 2026 Civic Minds.
               </p>
             </div>
           )}
