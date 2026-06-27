@@ -4,7 +4,7 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { HISTORY_DATA } from '../../shared/historyConfig';
 import type { AgencyHistory, RouteHistoryEntry } from '../../shared/historyConfig';
 import type { Agency } from '../App';
-import { CHIP_BASE } from '../styles';
+import { CHIP_BASE, FLOATING_CARD } from '../styles';
 
 interface Props {
   active: boolean;
@@ -115,7 +115,7 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
   return (
     <>
       {/* Header card */}
-      <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-2xl shadow-2xl px-4 pt-3 pb-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <div className={`${FLOATING_CARD} px-4 pt-3 pb-3 animate-in fade-in slide-in-from-bottom-2 duration-300`}>
         <div className="flex items-center gap-1.5 mb-3">
           <button
             onClick={onBack}
@@ -168,7 +168,7 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
       </div>
 
       {/* Route list card */}
-      <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-2xl shadow-2xl px-4 flex-1 overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <div className={`${FLOATING_CARD} px-4 flex-1 overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-bottom-2 duration-300`}>
         {filteredRoutes.length === 0 && (
           <p className="text-[11px] text-[var(--text-dim)] py-4">No routes match these filters.</p>
         )}
@@ -225,12 +225,12 @@ export default function History({ active, agencies, onInfoOpen, query }: Props) 
 
   return (
     <div
-      className={`absolute top-20 left-[182px] z-[1000] w-72 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity duration-300 ease-out ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity duration-300 ease-out ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       {selectedAgency ? (
         <AgencyView agency={selectedAgency} onBack={() => setSelectedSlug(null)} />
       ) : (
-        <div className="bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className={`${FLOATING_CARD} overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300`}>
           <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
             <p className="text-[10px] font-bold text-[var(--text-muted)]">Frequency History</p>
           </div>
