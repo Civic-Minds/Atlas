@@ -2,6 +2,7 @@ import { useMemo, useCallback } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
+import { TIME_PERIODS } from '../../shared/config';
 
 export { HEADWAY_TIERS, getTierColor };
 export type AgencyLayers = BaseAgencyLayers;
@@ -40,11 +41,8 @@ export type TimePeriod = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
 
 export const PERIOD_LABELS: Record<TimePeriod, string> = {
   all: 'All day',
-  amPeak: 'AM Peak',
-  midday: 'Midday',
-  pmPeak: 'PM Peak',
-  evening: 'Evening',
-};
+  ...Object.fromEntries(TIME_PERIODS.map(p => [p.key, p.label]))
+} as Record<TimePeriod, string>;
 
 export interface IntervalFilters {
   query: string;
