@@ -142,7 +142,7 @@ async function main() {
   execSync(`tippecanoe -o "${corridorsPm}" -zg --no-tile-size-limit -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
 
   console.log("Merging into atlas.pmtiles via tile-join ...");
-  execSync(`tile-join -o "${pmtilesPath}" --force "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
+  execSync(`tile-join -o "${pmtilesPath}" --force --no-tile-size-limit "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
 
   const size = fs.statSync(pmtilesPath).size;
   console.log(`atlas.pmtiles size: ${(size/1024/1024).toFixed(1)} MB`);
