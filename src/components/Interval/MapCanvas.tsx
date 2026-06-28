@@ -203,6 +203,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     if (!mapContainerRef.current) return;
     registerProtocol();
 
+    const accent = lightMode ? '#3f3f46' : '#e4e4e7';
+    const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
+    const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+
     const saved = getSavedView();
     const initialCenter = hasSavedView && saved
       ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom }
@@ -279,13 +283,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           ],
           'circle-color': [
             'case',
-            ['boolean', ['feature-state', 'selected'], false], 'var(--accent)',
-            'var(--text-dim)'
+            ['boolean', ['feature-state', 'selected'], false], accent,
+            textDim
           ],
           'circle-stroke-color': [
             'case',
             ['boolean', ['feature-state', 'selected'], false], '#ffffff',
-            'var(--border-primary)'
+            borderPrimary
           ],
           'circle-stroke-width': 1,
           'circle-opacity': 0.75,
