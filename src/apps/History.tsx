@@ -8,8 +8,17 @@ export interface RouteSnapshot {
   label: string;
   year: number;
   weekdayHeadwayMin: number;
+  headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
   note?: string;
 }
+
+type HistoryPeriod = 'midday' | 'amPeak' | 'pmPeak' | 'evening';
+const HISTORY_PERIODS: Array<{ key: HistoryPeriod; label: string; desc: string }> = [
+  { key: 'amPeak', label: 'AM', desc: '6 – 9 AM' },
+  { key: 'midday', label: 'Mid', desc: '12 – 3 PM' },
+  { key: 'pmPeak', label: 'PM', desc: '4 – 7 PM' },
+  { key: 'evening', label: 'Eve', desc: '7 – 10 PM' },
+];
 
 export interface RouteHistoryEntry {
   routeShortName: string;
@@ -60,16 +69,31 @@ function RouteHistoryCard({
   region: string;
   onBack: () => void;
 }) {
+  const [period, setPeriod] = useState<HistoryPeriod>('midday');
   const snaps = route.snapshots;
+
+  // Determine which periods have any data across all snapshots
+  const availablePeriods = HISTORY_PERIODS.filter(p =>
+    p.key === 'midday' || snaps.some(s => s.headwayByPeriod?.[p.key] != null)
+  );
+
+  // Get headway for the selected period, falling back to midday
+  function snapHeadway(snap: RouteSnapshot): number {
+    if (period === 'midday') return snap.weekdayHeadwayMin;
+    return snap.headwayByPeriod?.[period] ?? snap.weekdayHeadwayMin;
+  }
+
   const first = snaps[0];
   const last = snaps[snaps.length - 1];
-  const worse = last.weekdayHeadwayMin > first.weekdayHeadwayMin;
-  const better = last.weekdayHeadwayMin < first.weekdayHeadwayMin;
+  const firstHw = snapHeadway(first);
+  const lastHw = snapHeadway(last);
+  const worse = lastHw > firstHw;
+  const better = lastHw < firstHw;
   const summary = changeSummary(route);
+  const periodInfo = HISTORY_PERIODS.find(p => p.key === period)!;
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
-      {/* Header section styled exactly like the Frequency route card */}
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3">
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">
@@ -89,40 +113,55 @@ function RouteHistoryCard({
         </button>
       </div>
 
-      <div className="p-4 pt-0 flex flex-col gap-4 flex-1 overflow-y-auto custom-scrollbar">
-        <div>
-          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase block mb-0.5">Weekday Midday Headway</span>
-          <span className="text-[8px] text-[var(--text-dim)] block mb-2">Service frequency in minutes (12 PM – 3 PM)</span>
-          <div className="flex items-end gap-2 flex-wrap bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 shadow-sm">
-            {snaps.map((snap, i) => {
-              const isLast = i === snaps.length - 1;
-              const headwayColor = isLast
-                ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
-                : 'text-[var(--text-dim)]';
-              return (
-                <React.Fragment key={snap.label}>
-                  <div className="flex flex-col items-center">
-                    <span className={`text-base font-black tabular-nums leading-none ${headwayColor}`}>
-                      {snap.weekdayHeadwayMin} min
+      <div className="px-4 pb-3 shrink-0 flex items-center gap-1.5">
+        {availablePeriods.map(p => (
+          <button
+            key={p.key}
+            onClick={() => setPeriod(p.key)}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-black transition-colors ${
+              period === p.key
+                ? 'bg-[var(--accent)] text-white'
+                : 'bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+        <span className="text-[9px] text-[var(--text-dim)] ml-1">{periodInfo.desc}</span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="bg-[var(--bg-app)] border-t border-b border-[var(--border-primary)]">
+          {snaps.map((snap, i) => {
+            const hw = snapHeadway(snap);
+            const isLast = i === snaps.length - 1;
+            const hwColor = isLast
+              ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
+              : 'text-[var(--text-dim)]';
+            const delta = i > 0 ? hw - snapHeadway(snaps[i - 1]) : null;
+            return (
+              <div key={snap.label} className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0">
+                <span className={`text-[10px] font-bold ${isLast ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
+                  {snap.label}
+                </span>
+                <div className="flex items-center gap-2">
+                  {delta !== null && delta !== 0 && (
+                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                      {delta > 0 ? `+${delta}` : `${delta}`}
                     </span>
-                    <span className="text-[8px] font-bold mt-1 text-[var(--text-dim)]">
-                      {snap.label}
-                    </span>
-                  </div>
-                  {!isLast && (
-                    <span className="text-[var(--text-dim)] mb-0.5 text-xs">→</span>
                   )}
-                </React.Fragment>
-              );
-            })}
-          </div>
+                  <span className={`text-xs font-black tabular-nums ${hwColor}`}>{hw} min</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {summary && (
-          <div className={`border-l-2 pl-3 py-0.5 ${summary.worse ? 'border-red-500 text-red-500' : 'border-green-500 text-green-500'}`}>
-            <p className="text-xs font-black leading-tight">{summary.text}</p>
+          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
+            <p className={`text-xs font-black leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
             <p className="text-[9px] text-[var(--text-muted)] font-medium mt-0.5">
-              Weekday midday headway comparison from {first.label} to {last.label}.
+              Weekday {periodInfo.label.toLowerCase()} headway, {first.label} to {last.label}.
             </p>
           </div>
         )}

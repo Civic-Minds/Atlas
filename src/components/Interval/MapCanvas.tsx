@@ -641,6 +641,30 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     if (historyOverlay.stops.length === 0) {
       if (historyOverlay.agencyCenter) {
         map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 13 });
+        // After the fly completes, try to zoom to the specific route if one is selected
+        if (historyOverlay.routeShortName) {
+          const rsn = historyOverlay.routeShortName;
+          const tryZoom = () => {
+            if (!map.getLayer('routes-layer')) return;
+            const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+              .filter(f => String(f.properties?.routeShortName ?? '') === rsn);
+            if (features.length === 0) return;
+            let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+            features.forEach(f => {
+              const coords = (f.geometry as any).type === 'LineString'
+                ? (f.geometry as any).coordinates
+                : (f.geometry as any).coordinates.flat();
+              coords.forEach(([lng, lat]: [number, number]) => {
+                if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
+                if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
+              });
+            });
+            if (minLng < maxLng) {
+              map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+            }
+          };
+          map.once('moveend', tryZoom);
+        }
       }
       return;
     }

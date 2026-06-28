@@ -27,9 +27,16 @@ const onlySlugs = process.argv.slice(2);
 
 // All agencies with a feedUrl get history snapshots — no manual opt-in needed.
 
+interface RouteSummary {
+  headway: number;
+  tier: string | null;
+  routeLongName?: string;
+  headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
+}
+
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
-  const current: Record<string, { headway: number; tier: string | null; routeLongName?: string }> = {};
+  const current: Record<string, RouteSummary> = {};
   for (const f of fc.features) {
     const p = f.properties;
     if (!p.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
@@ -38,8 +45,13 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     if (h == null) continue;
     const t = p.tier != null ? String(p.tier) : null;
     const ln = p.routeLongName ? String(p.routeLongName) : undefined;
+    const byp = p.headwayByPeriod as Record<string, number | null> | undefined;
     if (!current[sn] || h < current[sn].headway) {
-      current[sn] = { headway: h, tier: t, routeLongName: ln ?? current[sn]?.routeLongName };
+      current[sn] = {
+        headway: h, tier: t,
+        routeLongName: ln ?? current[sn]?.routeLongName,
+        headwayByPeriod: byp ? { amPeak: byp.amPeak ?? null, midday: byp.midday ?? null, pmPeak: byp.pmPeak ?? null, evening: byp.evening ?? null } : undefined,
+      };
     }
   }
 
@@ -63,7 +75,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     if (prevHeadway !== null && prevHeadway === route.headway) continue;
     changed.push(routeShortName);
     const key = `history/${slug}/${routeShortName}/${periodKey}.json`;
-    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, processedAt });
+    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, processedAt });
     routeWrites.push(() => r2PutArchiveJson(key, body));
   }
 

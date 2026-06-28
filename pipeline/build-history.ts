@@ -37,7 +37,7 @@ const BASE_HISTORY: Array<{
         routeShortName: 'HealthLine',
         routeLongName: 'Euclid Avenue BRT',
         snapshots: [
-          { periodKey: '20080101', headway: 5, label: '2008 Launch' },
+          { periodKey: '20080101', headway: 5 },
         ],
       },
     ],
@@ -145,6 +145,7 @@ async function main() {
   // Map: slug → routeShortName → sorted array of change events
   const archiveRoutes: Record<string, Record<string, Array<{
     periodKey: string; headway: number; routeLongName?: string; label?: string;
+    headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
   }>>> = {};
 
   for (const key of keys) {
@@ -167,6 +168,7 @@ async function main() {
         periodKey,
         headway: h,
         routeLongName: data.routeLongName ?? undefined,
+        headwayByPeriod: data.headwayByPeriod ?? undefined,
       });
     } catch (err) {
       console.error(`Failed to parse: ${key}`, err);
@@ -224,9 +226,9 @@ async function main() {
       changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
 
       // Build snapshot list from archived change events
-      const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number }> = changes.map(c => {
+      const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null } }> = changes.map(c => {
         const { year, label } = parsePeriodKey(c.periodKey);
-        return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway };
+        return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod };
       });
 
       // Deduplicate: collapse consecutive identical headways (keep first occurrence)
@@ -234,12 +236,13 @@ async function main() {
         i === 0 || s.weekdayHeadwayMin !== snapshots[i - 1].weekdayHeadwayMin
       );
 
-      // Add current atlas data as the final point if not already this year
+      // Add current atlas data as the final point only if headway differs from last snapshot
       const currentRoute = current[routeShortName];
       if (currentRoute) {
         const lastSnap = deduped[deduped.length - 1];
         const alreadyCurrentYear = lastSnap && lastSnap.year === currentYear;
-        if (!alreadyCurrentYear) {
+        const headwayChanged = lastSnap && currentRoute.headway !== lastSnap.weekdayHeadwayMin;
+        if (!alreadyCurrentYear && headwayChanged) {
           deduped.push({ label: String(currentYear), year: currentYear, weekdayHeadwayMin: currentRoute.headway });
         }
       }

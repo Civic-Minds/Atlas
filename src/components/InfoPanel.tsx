@@ -244,15 +244,15 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                 <p className="text-[11px] text-[var(--text-dim)] px-5 py-4">No agencies yet.</p>
               )}
               {historyAgencies !== null && historyAgencies.length > 0 && (
-                <div>
+                <div className="py-2">
                   {historyAgencies.map((a) => (
                     <div
                       key={a.slug}
-                      className="flex items-center justify-between px-5 py-2.5 border-b border-[var(--border-primary)] last:border-0"
+                      className="flex items-center justify-between px-5 py-2"
                     >
                       <div>
-                        <p className="text-xs font-black text-[var(--text-primary)]">{a.name}</p>
-                        <p className="text-[10px] text-[var(--text-muted)] font-bold mt-0.5">{a.region}</p>
+                        <p className="text-xs text-[var(--text-primary)]">{a.name}</p>
+                        <p className="text-[10px] text-[var(--text-dim)]">{a.region}</p>
                       </div>
                       <p className="text-[10px] text-[var(--text-dim)] tabular-nums shrink-0 ml-2">{a.routes.length} routes</p>
                     </div>
