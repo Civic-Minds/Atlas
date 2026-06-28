@@ -21,7 +21,7 @@ config({ path: resolve('.env.local') });
 interface ManualAgencyHistory {
   slug: string;
   name: string;
-  region: string;
+  region?: string;
   center?: [number, number];
   routes: Array<{
     routeShortName: string;
@@ -35,7 +35,6 @@ const BASE_HISTORY: ManualAgencyHistory[] = [
   {
     slug: 'gcrta',
     name: 'Greater Cleveland RTA',
-    region: 'Ohio',
     center: [41.4993, -81.6944],
     routes: [
       {
@@ -103,7 +102,7 @@ async function main() {
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: Array<{ slug: string; name: string; center: [number, number] }> } =
     JSON.parse(readFileSync(indexPath, 'utf8'));
-  const registryBySlug = new Map(index.agencies.map(a => [a.slug, a]));
+  const registryBySlug = new Map(index.agencies.map(a => [a.slug, a as { slug: string; name: string; region?: string; center: [number, number] }]));
 
   // 1. List all archive snapshot files under history/
   const keys = await r2ListArchive('history/');
@@ -187,7 +186,14 @@ async function main() {
     }
 
     if (agencyRoutes.length > 0) {
-      historyData.push({ slug: agency.slug, name: agency.name, region: agency.region, center: agency.center, routes: agencyRoutes });
+      const reg = registryBySlug.get(agency.slug);
+      historyData.push({
+        slug: agency.slug,
+        name: agency.name,
+        region: reg?.region ?? agency.region ?? '',
+        center: agency.center ?? reg?.center,
+        routes: agencyRoutes,
+      });
     }
   }
 
@@ -261,7 +267,7 @@ async function main() {
     historyData.push({
       slug,
       name: registryEntry.name,
-      region: 'Canada',
+      region: registryEntry.region ?? '',
       center: registryEntry.center,
       routes: agencyRoutes,
     });
