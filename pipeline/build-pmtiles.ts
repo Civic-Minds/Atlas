@@ -124,19 +124,36 @@ async function main() {
   fs.writeFileSync(stopsPath, JSON.stringify({ type: 'FeatureCollection', features: allStops }));
   fs.writeFileSync(corridorsPath, JSON.stringify({ type: 'FeatureCollection', features: allCorridors }));
 
-  console.log(`Running tippecanoe to compile vector tiles...`);
-  // -zg: auto-calculate zoom
-  // --drop-densest-as-needed: prevent tile size limit errors
-  // -l routes -l stops -l corridors: separate layers
-  const cmd = `tippecanoe -o "${pmtilesPath}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l routes "${routesPath}" -l stops "${stopsPath}" -l corridors "${corridorsPath}" --force`;
-  console.log(`$ ${cmd}`);
-  execSync(cmd, { stdio: 'inherit' });
+  // Build separate pmtiles for each layer.
+  // This avoids memory pressure and command-line issues when combining very large inputs in one tippecanoe invocation.
+  const routesPm = path.join(tmpDir, 'routes.pmtiles');
+  const stopsPm = path.join(tmpDir, 'stops.pmtiles');
+  const corridorsPm = path.join(tmpDir, 'corridors.pmtiles');
 
-  console.log(`PMTiles file size: ${(fs.statSync(pmtilesPath).size / 1024 / 1024).toFixed(2)} MB`);
+  console.log("Building routes.pmtiles ...");
+  execSync(`tippecanoe -o "${routesPm}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l routes "${routesPath}" --force`, { stdio: 'inherit' });
 
-  console.log(`Uploading PMTiles to Cloudflare R2 (streaming)...`);
-  const uploadedUrl = await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
-  console.log(`PMTiles uploaded successfully! Public URL: ${uploadedUrl}`);
+  console.log("Building stops.pmtiles ...");
+  execSync(`tippecanoe -o "${stopsPm}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l stops "${stopsPath}" --force`, { stdio: 'inherit' });
+
+  console.log("Building corridors.pmtiles ...");
+  execSync(`tippecanoe -o "${corridorsPm}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
+
+  const routesSize = fs.statSync(routesPm).size;
+  const stopsSize = fs.statSync(stopsPm).size;
+  const corridorsSize = fs.statSync(corridorsPm).size;
+  console.log(`PMTiles sizes — routes: ${(routesSize/1024/1024).toFixed(1)} MB, stops: ${(stopsSize/1024/1024).toFixed(1)} MB, corridors: ${(corridorsSize/1024/1024).toFixed(1)} MB`);
+
+  console.log("Uploading PMTiles to Cloudflare R2 (streaming)...");
+  await Promise.all([
+    r2PutFile('atlas/routes.pmtiles', routesPm, 'application/octet-stream'),
+    r2PutFile('atlas/stops.pmtiles', stopsPm, 'application/octet-stream'),
+    r2PutFile('atlas/corridors.pmtiles', corridorsPm, 'application/octet-stream'),
+  ]);
+  console.log("PMTiles uploaded successfully!");
+  console.log("  routes:    https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/routes.pmtiles");
+  console.log("  stops:     https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stops.pmtiles");
+  console.log("  corridors: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corridors.pmtiles");
 
   // Cleanup
   console.log(`Cleaning up temporary files...`);

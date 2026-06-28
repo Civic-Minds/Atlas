@@ -26,6 +26,11 @@ export function getR2Client() {
     region: 'auto',
     endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
     credentials: { accessKeyId, secretAccessKey },
+    // Disable automatic checksums for large streaming uploads (avoids
+    // "Unable to calculate hash for flowing readable stream" on R2/S3
+    // when uploading multi-GB files like pmtiles via ReadStream).
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   });
 }
 
@@ -43,14 +48,16 @@ function isRetryableR2Error(err: unknown): boolean {
   return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up/i.test(msg);
 }
 
-async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string): Promise<void> {
+async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string, contentLength?: number): Promise<void> {
   const client = getR2Client();
   const maxAttempts = 4;
   let lastErr: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      await client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }));
+      const params: any = { Bucket: bucket, Key: key, Body: body, ContentType: contentType };
+      if (contentLength != null) params.ContentLength = contentLength;
+      await client.send(new PutObjectCommand(params));
       return;
     } catch (err) {
       lastErr = err;
@@ -76,9 +83,12 @@ export async function r2PutBuffer(key: string, body: Buffer, contentType: string
 
 /** Stream a file for large uploads (avoids loading entire file into memory). */
 export async function r2PutFile(key: string, filePath: string, contentType: string): Promise<string> {
-  const { createReadStream } = await import('fs');
+  const { createReadStream, statSync } = await import('fs');
   const body = createReadStream(filePath);
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
+  const size = statSync(filePath).size;
+  // Pass ContentLength explicitly; helps SDK avoid problematic hash/chunked
+  // calculations on very large flowing streams for R2/S3 PutObject.
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), size);
   return r2PublicUrl(key);
 }
 
