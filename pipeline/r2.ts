@@ -26,11 +26,9 @@ export function getR2Client() {
     region: 'auto',
     endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
     credentials: { accessKeyId, secretAccessKey },
-    // Disable automatic checksums for large streaming uploads (avoids
-    // "Unable to calculate hash for flowing readable stream" on R2/S3
-    // when uploading multi-GB files like pmtiles via ReadStream).
     requestChecksumCalculation: 'WHEN_REQUIRED',
     responseChecksumValidation: 'WHEN_REQUIRED',
+    requestHandler: { requestTimeout: 600_000, connectionTimeout: 30_000 },
   });
 }
 
@@ -45,7 +43,7 @@ function sleep(ms: number): Promise<void> {
 
 function isRetryableR2Error(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
-  return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up/i.test(msg);
+  return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up|EPIPE/i.test(msg);
 }
 
 async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string, contentLength?: number): Promise<void> {
@@ -81,14 +79,11 @@ export async function r2PutBuffer(key: string, body: Buffer, contentType: string
   return r2PublicUrl(key);
 }
 
-/** Stream a file for large uploads (avoids loading entire file into memory). */
+/** Upload a file to R2. Reads into a Buffer to avoid stream EPIPE on PutObject. */
 export async function r2PutFile(key: string, filePath: string, contentType: string): Promise<string> {
-  const { createReadStream, statSync } = await import('fs');
-  const body = createReadStream(filePath);
-  const size = statSync(filePath).size;
-  // Pass ContentLength explicitly; helps SDK avoid problematic hash/chunked
-  // calculations on very large flowing streams for R2/S3 PutObject.
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), size);
+  const { readFileSync } = await import('fs');
+  const body = readFileSync(filePath);
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), body.length);
   return r2PublicUrl(key);
 }
 

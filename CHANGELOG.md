@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **PMTiles blank map (AI-164)**: `atlas.pmtiles` on R2 only contained the `corridors` layer — `routes` and `stops` were missing due to a corrupted previous pipeline run. Rebuilt and re-uploaded with all three layers. Also fixed `r2.ts`: `r2PutFile` now reads into a Buffer instead of a ReadStream (eliminates EPIPE on PutObject), added EPIPE to the retryable error list, and set a 10-minute request timeout on the S3 client.
+
 ### Added
 - **InfoPanel: History tab**: Moved history agency coverage list from the About tab into its own dedicated History tab. Also migrated the Live tab search input to SEARCH_PILL/SEARCH_FIELD. Panel now holds a fixed height across all tabs.
 - **Shared UI primitives (AI-163)**: Added `LIST_ROW`, `LIST_ROW_PRIMARY`, `LIST_ROW_DIM`, `SEARCH_PILL`, `SEARCH_FIELD` constants to `styles.ts`. Migrated History route list, SidebarControls suggestion popup + disambiguation + search results, and InfoPanel agencies search to use them. All list rows now share the same `border-b` full-width row design; all panel search inputs are pill-shaped to match the global search bar.
