@@ -30,3 +30,18 @@ export const TIME_PERIODS: PeriodConfig[] = [
   { key: 'pmPeak',  label: 'PM Peak', startHour: 15, endHour: 19 },
   { key: 'evening', label: 'Evening', startHour: 19, endHour: 22 },
 ];
+
+export interface HeadwayTier {
+  max: number;
+  color: string;
+  label: string;
+}
+
+export const HEADWAY_TIERS: HeadwayTier[] = [
+  { max: 10, color: '#2563eb', label: '≤10m' },
+  { max: 15, color: '#16a34a', label: '≤15m' },
+  { max: 20, color: '#16a34a', label: '≤20m' },
+  { max: 30, color: '#ca8a04', label: '≤30m' },
+  { max: 60, color: '#dc2626', label: '≤60m' },
+  { max: Infinity, color: '#6b7280', label: 'Infrequent' },
+];

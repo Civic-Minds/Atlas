@@ -472,16 +472,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     map.setFilter('routes-hit-layer', filterConditions as any);
 
     // Apply color paint styling based on headway tier
-    map.setPaintProperty('routes-layer', 'line-color', [
-      'match',
-      ['get', 'tier'],
-      '10', '#2563eb',
-      '15', '#16a34a',
-      '20', '#16a34a',
-      '30', '#ca8a04',
-      '60', '#dc2626',
-      '#6b7280'
-    ]);
+    const lineColorMatch: any[] = ['match', ['get', 'tier']];
+    HEADWAY_TIERS.forEach(({ max, color }) => {
+      if (max !== Infinity) {
+        lineColorMatch.push(String(max), color);
+      }
+    });
+    lineColorMatch.push('#6b7280'); // fallback/default
+
+    map.setPaintProperty('routes-layer', 'line-color', lineColorMatch);
 
     // Opacity based on route state (focused vs dimmed)
     if (selectedRoute) {

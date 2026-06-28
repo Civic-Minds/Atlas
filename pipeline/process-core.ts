@@ -12,7 +12,7 @@ import { filterGtfsByRouteTypes } from './filterGtfs.js';
 import { mergeNrtDayNightRoutes } from './transforms/nrt-day-night.js';
 import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { TIME_PERIODS } from '../shared/config.js';
+import { TIME_PERIODS, HEADWAY_TIERS } from '../shared/config.js';
 
 export type GtfsPreprocess = 'nrt-day-night';
 
@@ -680,12 +680,15 @@ export async function processGtfsBuffer(
         : hwVals[mid];
       const headway = terminalHw ?? allStopMedian;
       feature.properties.headway = headway;
-      if (headway <= 10)       feature.properties.tier = '10';
-      else if (headway <= 15)  feature.properties.tier = '15';
-      else if (headway <= 20)  feature.properties.tier = '20';
-      else if (headway <= 30)  feature.properties.tier = '30';
-      else if (headway <= 60)  feature.properties.tier = '60';
-      else                     feature.properties.tier = 'infrequent';
+
+      let tier = 'infrequent';
+      for (const { max } of HEADWAY_TIERS) {
+        if (headway <= max) {
+          tier = max === Infinity ? 'infrequent' : String(max);
+          break;
+        }
+      }
+      feature.properties.tier = tier;
 
       // Minimum stop headway — the best frequency available anywhere on this route.
       // Used by passesRouteFilter so routes with high-frequency sections aren't excluded
