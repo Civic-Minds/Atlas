@@ -1285,6 +1285,383 @@
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarta-stops.json",
       "feedUrl": null,
       "region": "Ohio"
+    },
+    {
+      "slug": "rgrta",
+      "name": "Rochester-Genesee Regional Transportation Authority",
+      "region": "New York",
+      "center": [
+        43.157,
+        -77.615
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "http://scheduledata.rgrta.com/google_transit.zip",
+      "staged": true
+    },
+    {
+      "slug": "cdta",
+      "name": "Capital District Transportation Authority",
+      "region": "New York",
+      "center": [
+        42.652,
+        -73.756
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "http://www.cdta.org/schedules/google_transit.zip",
+      "staged": true
+    },
+    {
+      "slug": "centro",
+      "name": "Centro",
+      "region": "New York",
+      "center": [
+        43.048,
+        -76.147
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
+      "staged": true
+    },
+    {
+      "slug": "tcat",
+      "name": "Tompkins Consolidated Area Transit",
+      "region": "New York",
+      "center": [
+        42.443,
+        -76.501
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
+      "staged": true
+    },
+    {
+      "slug": "broome",
+      "name": "Broome County Transit",
+      "region": "New York",
+      "center": [
+        42.097,
+        -75.917
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
+      "staged": true
+    },
+    {
+      "slug": "emta",
+      "name": "Erie Metropolitan Transit Authority",
+      "region": "Pennsylvania",
+      "center": [
+        42.129,
+        -80.085
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip",
+      "staged": true
+    },
+    {
+      "slug": "akron",
+      "name": "Akron Metro Regional Transit Authority",
+      "region": "Ohio",
+      "center": [
+        41.081,
+        -81.519
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
+      "staged": true
+    },
+    {
+      "slug": "sarta",
+      "name": "Stark Area Regional Transit Authority",
+      "region": "Ohio",
+      "center": [
+        40.798,
+        -81.379
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
+      "staged": true
+    },
+    {
+      "slug": "laketran",
+      "name": "Laketran",
+      "region": "Ohio",
+      "center": [
+        41.713,
+        -81.337
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
+      "staged": true
+    },
+    {
+      "slug": "mta-flint",
+      "name": "Mass Transportation Authority",
+      "region": "Michigan",
+      "center": [
+        43.012,
+        -83.687
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
+      "staged": true
+    },
+    {
+      "slug": "cata-lansing",
+      "name": "Capital Area Transportation Authority",
+      "region": "Michigan",
+      "center": [
+        42.733,
+        -84.556
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base",
+      "staged": true
+    },
+    {
+      "slug": "the-rapid",
+      "name": "The Rapid",
+      "region": "Michigan",
+      "center": [
+        42.963,
+        -85.668
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
+      "staged": true
+    },
+    {
+      "slug": "mbta",
+      "name": "Massachusetts Bay Transportation Authority",
+      "region": "Massachusetts",
+      "center": [
+        42.361,
+        -71.057
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
+      "staged": true
+    },
+    {
+      "slug": "pvta",
+      "name": "Pioneer Valley Transit Authority",
+      "region": "Massachusetts",
+      "center": [
+        42.101,
+        -72.59
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
+      "staged": true
+    },
+    {
+      "slug": "wrta",
+      "name": "Worcester Regional Transit Authority",
+      "region": "Massachusetts",
+      "center": [
+        42.262,
+        -71.802
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip",
+      "staged": true
+    },
+    {
+      "slug": "cttransit",
+      "name": "CTtransit",
+      "region": "Connecticut",
+      "center": [
+        41.765,
+        -72.682
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
+      "staged": true
+    },
+    {
+      "slug": "red-deer",
+      "name": "Red Deer Transit",
+      "region": "Alberta",
+      "center": [
+        52.268,
+        -113.811
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip",
+      "staged": true
+    },
+    {
+      "slug": "lethbridge",
+      "name": "Lethbridge Transit",
+      "region": "Alberta",
+      "center": [
+        49.694,
+        -112.832
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
+      "staged": true
+    },
+    {
+      "slug": "moose-jaw",
+      "name": "Moose Jaw Transit",
+      "region": "Saskatchewan",
+      "center": [
+        50.393,
+        -105.535
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://moosejaw.ca/wp-content/uploads/2023/11/moosejaw-GTFS.zip",
+      "staged": true
+    },
+    {
+      "slug": "prince-albert",
+      "name": "Prince Albert Transit",
+      "region": "Saskatchewan",
+      "center": [
+        53.203,
+        -105.753
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
+      "staged": true
+    },
+    {
+      "slug": "kamloops",
+      "name": "BC Transit (Kamloops)",
+      "region": "British Columbia",
+      "center": [
+        50.674,
+        -120.327
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
+      "staged": true
+    },
+    {
+      "slug": "south-okanagan",
+      "name": "BC Transit (South Okanagan-Similkameen)",
+      "region": "British Columbia",
+      "center": [
+        49.498,
+        -119.586
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
+      "staged": true
+    },
+    {
+      "slug": "nanaimo",
+      "name": "BC Transit (Nanaimo)",
+      "region": "British Columbia",
+      "center": [
+        49.165,
+        -123.936
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
+      "staged": true
+    },
+    {
+      "slug": "cowichan",
+      "name": "BC Transit (Cowichan Valley)",
+      "region": "British Columbia",
+      "center": [
+        48.781,
+        -123.709
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10",
+      "staged": true
+    },
+    {
+      "slug": "comox-valley",
+      "name": "BC Transit (Comox Valley)",
+      "region": "British Columbia",
+      "center": [
+        49.687,
+        -124.993
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
+      "staged": true
+    },
+    {
+      "slug": "campbell-river",
+      "name": "BC Transit (Campbell River)",
+      "region": "British Columbia",
+      "center": [
+        50.022,
+        -125.244
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
+      "staged": true
+    },
+    {
+      "slug": "squamish",
+      "name": "BC Transit (Squamish)",
+      "region": "British Columbia",
+      "center": [
+        49.702,
+        -123.155
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
+      "staged": true
+    },
+    {
+      "slug": "pemberton",
+      "name": "BC Transit (Pemberton Valley)",
+      "region": "British Columbia",
+      "center": [
+        50.319,
+        -122.799
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50",
+      "staged": true
+    },
+    {
+      "slug": "whistler",
+      "name": "BC Transit (Whistler)",
+      "region": "British Columbia",
+      "center": [
+        50.116,
+        -122.957
+      ],
+      "url": "",
+      "stopsUrl": "",
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
+      "staged": true
     }
   ]
 }

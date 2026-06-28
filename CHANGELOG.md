@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **Staged agency support**: New `staged: true` flag in `index.json` marks agencies as pending — frontend hides them until data is ready. Pipeline auto-clears the flag after a successful first refresh, so the next deploy brings them live with no manual step.
+- **29 new agencies staged**: RGRTA, CDTA, Centro, TCAT, Broome County (NY); EMTA (PA); Akron Metro, SARTA, Laketran (OH); MTA Flint, CATA Lansing, The Rapid (MI); MBTA, PVTA, WRTA (MA); CTtransit (CT); Red Deer, Lethbridge (AB); Moose Jaw, Prince Albert (SK); Kamloops, South Okanagan-Similkameen, Nanaimo, Cowichan Valley, Comox Valley, Campbell River, Squamish, Pemberton Valley, Whistler (BC).
 
 - **History route card: period tabs + vertical timeline**: Replaced the cramped wrapping grid with a clean vertical timeline. Added AM/Mid/PM/Eve period tabs — tabs with data in archive snapshots are shown; Mid is always available. Headway delta (+N / -N) shown per row. Summary callout uses a soft tinted background instead of loud red/green text. No more all-caps section header.
 - **History route card: zoom to route on selection**: When a route is selected in the History card, the map flies to the agency center then zooms to fit that route's rendered features.
