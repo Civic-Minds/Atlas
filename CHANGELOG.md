@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **PMTiles blank map (AI-164)**: `atlas.pmtiles` on R2 only contained the `corridors` layer — `routes` and `stops` were missing due to a corrupted previous pipeline run. Rebuilt and re-uploaded with all three layers. Also fixed `r2.ts`: `r2PutFile` now reads into a Buffer instead of a ReadStream (eliminates EPIPE on PutObject), added EPIPE to the retryable error list, and set a 10-minute request timeout on the S3 client.
-- **PMTiles tile boundary dropout**: Routes vanished at intermediate zoom levels in the GTHA due to tippecanoe's 500KB tile size limit culling ~95% of features in dense tiles. Fixed `build-pmtiles.ts` to use `--no-tile-size-limit` for routes and corridors so no routes are ever dropped regardless of tile density.
+- **PMTiles tile boundary dropout**: Routes vanished at intermediate zoom levels in the GTHA due to tippecanoe's 500KB tile size limit culling ~95% of features in dense tiles. Fixed `build-pmtiles.ts` to use `--no-tile-size-limit` for routes and corridors, and `--no-tile-size-limit` on the `tile-join` merge step, so no routes are ever dropped regardless of tile density.
 
 ### Added
 - **InfoPanel: History tab**: Moved history agency coverage list from the About tab into its own dedicated History tab. Also migrated the Live tab search input to SEARCH_PILL/SEARCH_FIELD. Panel now holds a fixed height across all tabs.
