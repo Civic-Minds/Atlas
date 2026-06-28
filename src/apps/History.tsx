@@ -50,63 +50,134 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean
   return { text: `${x}× more frequent since ${first.label}`, worse: false };
 }
 
-function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlightYear: number | null }) {
+function RouteRow({
+  entry,
+  onClick,
+}: {
+  entry: RouteHistoryEntry;
+  onClick: () => void;
+}) {
   const snaps = entry.snapshots;
   const first = snaps[0];
   const last = snaps[snaps.length - 1];
   const worse = last.weekdayHeadwayMin > first.weekdayHeadwayMin;
   const better = last.weekdayHeadwayMin < first.weekdayHeadwayMin;
-  const summary = changeSummary(entry);
 
   return (
-    <div className="bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 mb-3 last:mb-0 shadow-sm flex flex-col gap-2.5">
-      <div className="flex items-baseline justify-between gap-1.5 border-b border-[var(--border-primary)] pb-1.5">
-        <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
-          <span className="text-xs font-black text-[var(--text-primary)] shrink-0">{entry.routeShortName}</span>
-          <span className="text-[10px] text-[var(--text-dim)] truncate">{entry.routeName}</span>
+    <button
+      onClick={onClick}
+      className="w-full flex items-center justify-between px-4 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group border-b border-[var(--border-primary)] last:border-0"
+    >
+      <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
+        <span className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">{entry.routeShortName}</span>
+        <span className="text-[10px] text-[var(--text-dim)] truncate">{entry.routeName}</span>
+      </div>
+      <span className={`text-[10px] font-bold shrink-0 ml-2 ${worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-dim)]'}`}>
+        {first.weekdayHeadwayMin}m → {last.weekdayHeadwayMin}m
+      </span>
+    </button>
+  );
+}
+
+function RouteHistoryCard({
+  route,
+  agencyName,
+  region,
+  onBack,
+}: {
+  route: RouteHistoryEntry;
+  agencyName: string;
+  region: string;
+  onBack: () => void;
+}) {
+  const snaps = route.snapshots;
+  const first = snaps[0];
+  const last = snaps[snaps.length - 1];
+  const worse = last.weekdayHeadwayMin > first.weekdayHeadwayMin;
+  const better = last.weekdayHeadwayMin < first.weekdayHeadwayMin;
+  const summary = changeSummary(route);
+
+  return (
+    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
+      <div className="flex items-center gap-1.5 px-4 pt-3 pb-2 border-b border-[var(--border-primary)] shrink-0">
+        <button
+          onClick={onBack}
+          className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+          aria-label="Back to routes"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-black text-[var(--text-primary)] truncate">{route.routeShortName} <span className="font-normal text-[var(--text-dim)]">{route.routeName}</span></p>
+          <p className="text-[9px] text-[var(--text-dim)]">{agencyName} · {region}</p>
         </div>
-        <span className={`text-[10px] font-bold shrink-0 ${worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-dim)]'}`}>
-          {first.weekdayHeadwayMin}m → {last.weekdayHeadwayMin}m
-        </span>
       </div>
 
-      <div className="flex items-end gap-1.5 flex-wrap">
-        {snaps.map((snap, i) => {
-          const isLast = i === snaps.length - 1;
-          const isHighlighted = highlightYear === snap.year;
-          const headwayColor = isHighlighted
-            ? 'text-[var(--accent)]'
-            : isLast
-              ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
-              : 'text-[var(--text-dim)]';
-          return (
-            <React.Fragment key={snap.label}>
-              <div className={`flex flex-col items-center transition-opacity ${isHighlighted ? '' : highlightYear !== null ? 'opacity-40' : ''}`}>
-                <span className={`text-base font-black tabular-nums leading-none ${headwayColor}`}>
-                  {snap.weekdayHeadwayMin} min
-                </span>
-                <span className={`text-[8px] font-bold mt-0.5 ${isHighlighted ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}`}>
-                  {snap.label}
-                </span>
-              </div>
-              {!isLast && (
-                <span className="text-[var(--text-dim)] mb-0.5 text-xs">→</span>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
+      <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto custom-scrollbar">
+        <div>
+          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase block mb-2">Frequency History</span>
+          <div className="flex items-end gap-2 flex-wrap bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 shadow-sm">
+            {snaps.map((snap, i) => {
+              const isLast = i === snaps.length - 1;
+              const headwayColor = isLast
+                ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
+                : 'text-[var(--text-dim)]';
+              return (
+                <React.Fragment key={snap.label}>
+                  <div className="flex flex-col items-center">
+                    <span className={`text-base font-black tabular-nums leading-none ${headwayColor}`}>
+                      {snap.weekdayHeadwayMin} min
+                    </span>
+                    <span className="text-[8px] font-bold mt-1 text-[var(--text-dim)]">
+                      {snap.label}
+                    </span>
+                  </div>
+                  {!isLast && (
+                    <span className="text-[var(--text-dim)] mb-0.5 text-xs">→</span>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
 
-      {summary && (
-        <p className={`text-[9px] font-bold mt-0.5 ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>
-          {summary.text}
-        </p>
-      )}
+        {summary && (
+          <div className={`border-l-2 pl-3 py-0.5 ${summary.worse ? 'border-red-500 text-red-500' : 'border-green-500 text-green-500'}`}>
+            <p className="text-xs font-black leading-tight">{summary.text}</p>
+            <p className="text-[9px] text-[var(--text-muted)] font-medium mt-0.5">
+              Weekday headway comparison from {first.label} to {last.label}.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => void }) {
+function AgencyView({
+  agency,
+  selectedRouteShortName,
+  setSelectedRouteShortName,
+  onBack,
+}: {
+  agency: AgencyHistory;
+  selectedRouteShortName: string | null;
+  setSelectedRouteShortName: (r: string | null) => void;
+  onBack: () => void;
+}) {
+  const selectedRoute = agency.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
+
+  if (selectedRoute) {
+    return (
+      <RouteHistoryCard
+        route={selectedRoute}
+        agencyName={agency.name}
+        region={agency.region}
+        onBack={() => setSelectedRouteShortName(null)}
+      />
+    );
+  }
+
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
       <div className="flex items-center gap-1.5 px-4 pt-3 pb-2 border-b border-[var(--border-primary)] shrink-0">
@@ -122,12 +193,12 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
           <p className="text-[9px] text-[var(--text-dim)]">{agency.region}</p>
         </div>
       </div>
-      <div className="px-3 py-3 flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
         {agency.routes.map(route => (
-          <RouteCard
+          <RouteRow
             key={route.routeShortName}
             entry={route}
-            highlightYear={null}
+            onClick={() => setSelectedRouteShortName(route.routeShortName)}
           />
         ))}
       </div>
@@ -137,6 +208,7 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
 
 export default function History({ active, agencies, onInfoOpen, query, searchFocused, setQuery }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
@@ -182,14 +254,22 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
     if (!active) { setOverlay(null); return; }
     const agency = historyAgencies.find(a => a.slug === selectedSlug) ?? historyAgencies[0] ?? null;
     if (agency?.center) {
-      setOverlay({ slug: agency.slug, routeShortName: '', stops: [], agencyCenter: agency.center });
+      setOverlay({
+        slug: agency.slug,
+        routeShortName: selectedRouteShortName ?? '',
+        stops: [],
+        agencyCenter: agency.center
+      });
     } else {
       setOverlay(null);
     }
-  }, [active, selectedSlug, setOverlay, historyAgencies]);
+  }, [active, selectedSlug, selectedRouteShortName, setOverlay, historyAgencies]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
-  useEffect(() => { setSelectedSlug(null); }, [query]);
+  useEffect(() => {
+    setSelectedSlug(null);
+    setSelectedRouteShortName(null);
+  }, [query]);
 
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
@@ -246,7 +326,12 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
       className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       {selectedAgency ? (
-        <AgencyView agency={selectedAgency} onBack={() => setSelectedSlug(null)} />
+        <AgencyView
+          agency={selectedAgency}
+          selectedRouteShortName={selectedRouteShortName}
+          setSelectedRouteShortName={setSelectedRouteShortName}
+          onBack={() => setSelectedSlug(null)}
+        />
       ) : (
         <div
           className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
