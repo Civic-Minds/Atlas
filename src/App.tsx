@@ -22,6 +22,7 @@ export interface Agency {
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
   lastFeedExpiry?: string | null; // YYYYMMDD from feed_info.txt feed_end_date
+  staged?: boolean;
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
@@ -134,7 +135,7 @@ export default function App() {
   useEffect(() => {
     fetch('/data/index.json')
       .then(r => r.json())
-      .then(data => setAgencies(data.agencies))
+      .then(data => setAgencies(data.agencies.filter((a: Agency) => !a.staged)))
       .catch(() => {});
   }, []);
 

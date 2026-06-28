@@ -118,6 +118,7 @@ interface AgencyEntry {
   lastFeedVersion?: string | null;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
+  staged?: boolean;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -265,6 +266,8 @@ async function main() {
     try {
       const summary = await refreshAgency(agency);
       console.log(summary);
+      // Clear staged flag once data is live so the next deploy shows the agency.
+      if (agency.staged) delete agency.staged;
       // Write after each agency so a mid-run crash doesn't lose lastFeedExpiry for completed ones.
       writeFileSync(indexPath, JSON.stringify(index, null, 2));
     } catch (e) {
