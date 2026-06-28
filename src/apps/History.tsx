@@ -197,9 +197,9 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
     >
       {selectedAgency ? (
         <AgencyView agency={selectedAgency} onBack={() => setSelectedSlug(null)} />
-      ) : searchFocused ? (
+      ) : (
         <div
-          className={`${FLOATING_CARD} overflow-hidden ${PANEL_ENTER}`}
+          className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
           {query === '' && recentSearches.length > 0 ? (
@@ -255,7 +255,7 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
             </>
           )}
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

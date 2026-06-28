@@ -429,16 +429,31 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     });
   }, [disambiguationRoutes, nonCorridorLayers]);
 
-  const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === '');
-  if (!hasContent) return null;
+  const hasContent = !!(currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === ''));
+
+  const [panelShouldRender, setPanelShouldRender] = useState(false);
+  const [panelVisible, setPanelVisible] = useState(false);
+  useEffect(() => {
+    if (hasContent) {
+      setPanelShouldRender(true);
+      const id = setTimeout(() => setPanelVisible(true), 10);
+      return () => clearTimeout(id);
+    } else {
+      setPanelVisible(false);
+      const id = setTimeout(() => setPanelShouldRender(false), 200);
+      return () => clearTimeout(id);
+    }
+  }, [hasContent]);
+
+  if (!panelShouldRender) return null;
 
   return (
-    <div className="absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3">
+    <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
       {searchFocused && query === '' && (
-        <div className={`${FLOATING_CARD} p-4 shrink-0 flex flex-col gap-2 ${PANEL_ENTER}`}>
+        <div className={`${FLOATING_CARD} p-4 shrink-0 flex flex-col gap-2`}>
           <div className="flex items-center justify-between border-b border-[var(--border-primary)] pb-1.5 mb-1">
-            <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)] uppercase">
-              {recentSearches.length > 0 ? 'Recent Searches' : 'Suggested Routes'}
+            <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">
+              {recentSearches.length > 0 ? 'Recent searches' : 'Suggested routes'}
             </span>
             {recentSearches.length > 0 && (
               <button
