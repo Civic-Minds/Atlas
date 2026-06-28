@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Service Quality Map (AI-109)**: New map app (app drawer) showing every stop in the GTHA colored by its best weekday headway. Frequency tier is determined by the minimum headway across all weekday routes serving that stop. Panel includes threshold filter chips (≤10, ≤15, ≤20, ≤30, All), a color legend, and a live count of visible stops. Stops load lazily from `{slug}-stops.json` on first activate. Pipeline: added `hw` field (best weekday headway) to every `StopEntry` in the stops index, computed by scanning all weekday route `stopHeadways` after Steps 1–5 in `process-core.ts`.
+
+
 - **Derive headway and stop offsets from GTFS pipeline (AI-150)**: Added automatic headway and stop travel-time offset calculation directly from the GTFS datasets during the pipeline execution (`processGtfsBuffer` in `process-core.ts`). The computed metadata is stored as a sidecar JSON file (`atlas/live-polling/{slug}.json`) on Cloudflare R2.
 - **Dynamic live & history headway overrides (AI-150)**: Updated `computeLiveAdherence` and `api/history-adherence` to asynchronously fetch the pipeline-computed sidecars from R2 and use the dynamically computed scheduled headway values with backwards-compatible fallbacks.
 - **Automated history headway aggregation (AI-154)**: Created the `build-history.ts` pipeline script to fetch all historical agency headway snapshots from R2, compile them, and dynamically generate `shared/historyConfig.ts`, replacing hardcoded history configurations.

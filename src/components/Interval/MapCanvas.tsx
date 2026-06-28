@@ -9,6 +9,7 @@ import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
+import { useServiceQualityMapOverlay } from '../../context/ServiceQualityMapOverlay';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
 import { R2_PUBLIC_URL } from '../../../shared/config';
@@ -187,6 +188,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
+  const { overlay: sqOverlay } = useServiceQualityMapOverlay();
 
   const [expandedStop, setExpandedStop] = useState<string | null>(null);
 
@@ -292,6 +294,39 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           'circle-opacity': 0.75,
           'circle-stroke-opacity': 0.6
         }
+      });
+
+      // Service Quality stop dots (colored by best weekday headway)
+      map.addSource('service-quality', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'service-quality-layer',
+        type: 'circle',
+        source: 'service-quality',
+        paint: {
+          'circle-radius': [
+            'interpolate', ['linear'], ['zoom'],
+            10, 2.5,
+            13, 4.5,
+            16, 8
+          ],
+          'circle-color': [
+            'step', ['get', 'hw'],
+            '#2563eb',
+            11, '#16a34a',
+            16, '#16a34a',
+            21, '#ca8a04',
+            31, '#dc2626',
+            61, '#6b7280'
+          ],
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 1,
+          'circle-opacity': 0.9,
+          'circle-stroke-opacity': 0.5
+        },
+        filter: ['<=', ['get', 'hw'], 15]
       });
 
       // Corridor dynamic line layer (loaded in Corridors app)
@@ -673,6 +708,32 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const { lat, lon } = liveOverlay.focusedVehicle;
     map.flyTo({ center: [lon, lat], zoom: 14 });
   }, [liveOverlay?.focusedVehicle, mapLoaded]);
+
+  // Service Quality stop dots
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const src = map.getSource('service-quality') as maplibregl.GeoJSONSource | undefined;
+    if (!src) return;
+
+    if (!sqOverlay) {
+      src.setData({ type: 'FeatureCollection', features: [] });
+      map.setLayoutProperty('service-quality-layer', 'visibility', 'none');
+      return;
+    }
+
+    const fc: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: sqOverlay.stops.map(s => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
+        properties: { hw: s.hw },
+      })),
+    };
+    src.setData(fc);
+    map.setFilter('service-quality-layer', ['<=', ['get', 'hw'], sqOverlay.threshold]);
+    map.setLayoutProperty('service-quality-layer', 'visibility', 'visible');
+  }, [sqOverlay, mapLoaded]);
 
   // Clean overlays on unmount
   useEffect(() => {
