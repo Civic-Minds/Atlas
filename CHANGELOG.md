@@ -36,6 +36,7 @@ All notable changes to this project will be documented in this file.
 - **Optimize MapCanvas rendering speed**: Removed unused `layers` and `allLayers` properties from the `MapCanvas` component definition and JSX instantiation, preventing map redraws and component re-renders when panning or zooming triggers GeoJSON data downloads in the background.
 
 ### Changed
+- **CI: `build-history` wired into weekly refresh workflow**: `shared/historyConfig.ts` is now regenerated automatically after each Monday GTFS refresh and committed back to the repo alongside `index.json`, triggering a Vercel redeploy with up-to-date History data.
 - **Pipeline: R2 list pagination**: `r2List` and `r2ListArchive` in `r2.ts` now follow `NextContinuationToken` to page through all results — previously capped at 1000 objects, which would silently truncate large history archives.
 - **Pipeline: batch R2 writes in `writeHistorySnapshot`**: per-route change files are now flushed in chunks of 20 instead of all at once, preventing R2 rate-limit pressure on first run for large agencies like TTC.
 - **`build-history.ts`: use `latest.json` for current headways**: replaced full GeoJSON fetches (`atlas/{slug}.json`, hundreds of KB each) with the compact `history/{slug}/latest.json` baseline written by `refresh.ts` (a few KB). Fetches are also chunked 10 at a time. `routeLongName` for display now comes from archive snapshots only.
