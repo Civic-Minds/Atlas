@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search, Radio } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import type { Agency } from '../App';
@@ -185,15 +185,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
           {tab === 'agencies' && (
             <div className="flex flex-col">
               <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
-                <div className="relative flex items-center">
-                  <Search className="absolute left-3 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
+                <div className={SEARCH_PILL}>
+                  <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
                   <input
                     type="text"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                     placeholder="Search agencies…"
-                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                    className={SEARCH_FIELD}
                   />
+                  {query && (
+                    <button onClick={() => setQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                   <button

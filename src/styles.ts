@@ -34,3 +34,18 @@ export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shado
 
 /** Filter chip pill base — border color added dynamically per active state */
 export const CHIP_BASE = 'bg-[var(--bg-panel)] backdrop-blur-md border rounded-full shadow-lg';
+
+/** Full-width border-b list row — suggestion lists, route lists, any clickable row inside a panel */
+export const LIST_ROW = 'flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group';
+
+/** Primary text inside a LIST_ROW */
+export const LIST_ROW_PRIMARY = 'text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight';
+
+/** Dim sub-label inside a LIST_ROW */
+export const LIST_ROW_DIM = 'text-[10px] text-[var(--text-muted)] font-bold';
+
+/** Pill search box wrapper — used inside panels (recessed bg-app background) */
+export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-3 gap-1.5';
+
+/** Search input text field (inside SEARCH_PILL) */
+export const SEARCH_FIELD = 'flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none';

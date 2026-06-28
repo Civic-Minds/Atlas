@@ -9,7 +9,7 @@ import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel } from '../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
 
 interface SidebarControlsProps {
   query: string;
@@ -477,8 +477,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   return (
     <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
       {searchFocused && query === '' && (
-        <div className={`${FLOATING_CARD} p-4 shrink-0 flex flex-col gap-2`}>
-          <div className="flex items-center justify-between border-b border-[var(--border-primary)] pb-1.5 mb-1">
+        <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-primary)]">
             <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">
               {recentSearches.length > 0 ? 'Recent searches' : 'Suggested routes'}
             </span>
@@ -491,69 +491,71 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </button>
             )}
           </div>
-          
+
           {recentSearches.length > 0 ? (
-            <div className="space-y-1">
+            <div>
               {recentSearches.map((s, i) => (
                 <button
                   key={i}
                   onClick={() => setQuery(s)}
-                  className="w-full text-left hover:bg-[var(--bg-hover)] rounded-lg px-2 py-1 transition-colors flex items-center justify-between group"
+                  className={LIST_ROW}
                 >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
-                    {s}
-                  </span>
+                  <span className={LIST_ROW_PRIMARY}>{s}</span>
                   <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
                 </button>
               ))}
             </div>
           ) : (
-            <div className="space-y-2">
+            <div>
               {(recentlyViewed.length > 0 ? recentlyViewed : notableRoutes).map((r) => (
                 <button
                   key={r.key}
                   onClick={() => setSelectedRoute(r.key)}
-                  className="w-full text-left hover:bg-[var(--bg-hover)] rounded-xl px-2 py-1 -mx-2 transition-colors group"
+                  className={LIST_ROW}
                 >
-                  <div className="text-[12px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">
-                    {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                  </div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[10px] font-bold text-[var(--text-muted)]">{r.agencyName}</span>
-                    {recentlyViewed.length === 0 && r.headway !== undefined && r.headway < 999 && (
-                      <>
-                        <span className="text-[10px] text-[var(--text-dim)]">•</span>
-                        <span className="text-[10px] text-[var(--text-dim)]">every {r.headway}m</span>
-                      </>
-                    )}
+                  <div className="min-w-0 flex-1">
+                    <div className={LIST_ROW_PRIMARY}>
+                      {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                    </div>
+                    <div className={`flex items-center gap-1.5 mt-0.5`}>
+                      <span className={LIST_ROW_DIM}>{r.agencyName}</span>
+                      {recentlyViewed.length === 0 && r.headway !== undefined && r.headway < 999 && (
+                        <>
+                          <span className="text-[10px] text-[var(--text-dim)]">·</span>
+                          <span className="text-[10px] text-[var(--text-dim)]">every {r.headway}m</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </button>
               ))}
               {recentlyViewed.length === 0 && notableRoutes.length === 0 && (
-                <p className="text-[11px] text-[var(--text-dim)] italic">No route suggestions in this area.</p>
+                <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
               )}
             </div>
           )}
         </div>
       )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
-        <div className={`px-4 pt-4 pb-3 ${FLOATING_CARD} ${PANEL_ENTER} shrink-0`}>
-          <div className="mb-2 -mt-1">
+        <div className={`${FLOATING_CARD} ${PANEL_ENTER} shrink-0 overflow-hidden`}>
+          <div className="px-4 py-2.5 border-b border-[var(--border-primary)]">
             <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">Multiple routes here</span>
           </div>
-          <div className="space-y-2">
+          <div>
             {disambigDetails.map(r => (
               <button
                 key={r.key}
                 onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
-                className="w-full text-left hover:bg-[var(--bg-hover)] rounded-xl px-2 py-1.5 -mx-2 transition-colors group"
+                className={LIST_ROW}
               >
-                <div className="text-[13px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">
-                  {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                </div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
-                  <span className="text-[11px] font-bold text-[var(--text-muted)]">{r.agencyName}</span>
+                <div className="min-w-0 flex-1">
+                  <div className={LIST_ROW_PRIMARY}>
+                    {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
+                    <span className={LIST_ROW_DIM}>{r.agencyName}</span>
+                  </div>
                 </div>
               </button>
             ))}
@@ -831,7 +833,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               {searchMatches} route{searchMatches === 1 ? '' : 's'} match
             </div>
             {searchMatchResults.length > 0 && (
-              <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
+              <div className="max-h-40 overflow-y-auto custom-scrollbar border border-[var(--border-primary)] rounded-xl overflow-hidden">
                 {searchMatchResults.map((r) => (
                   <button
                     key={r.key}
@@ -840,14 +842,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       setQuery('');
                       setSelectedRoute(selectedRoute === r.key ? null : r.key);
                     }}
-                    className={`w-full flex items-center justify-between gap-2 px-1.5 py-1 rounded text-left text-[11px] transition-colors ${
-                      selectedRoute === r.key
-                        ? 'bg-[var(--accent-bg)] text-[var(--accent)]'
-                        : 'text-[var(--text-primary)] hover:bg-[var(--accent-bg)]'
-                    }`}
+                    className={`${LIST_ROW} ${selectedRoute === r.key ? 'bg-[var(--accent-bg)]' : ''}`}
                   >
-                    <span className="font-black shrink-0">{titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}</span>
-                    <span className="truncate text-[var(--text-muted)] font-bold flex-1 text-right">
+                    <span className={`${LIST_ROW_PRIMARY} shrink-0 ${selectedRoute === r.key ? 'text-[var(--accent)]' : ''}`}>
+                      {titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
+                    </span>
+                    <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
                       {r.agencyName}
                     </span>
                   </button>

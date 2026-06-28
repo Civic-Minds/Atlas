@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, SEARCH_PILL, SEARCH_FIELD } from '../styles';
 
 export interface RouteSnapshot {
   label: string;
@@ -207,14 +207,14 @@ function HistoryAgencyPanel({
       </div>
 
       <div className="shrink-0 px-3 py-2 border-b border-[var(--border-primary)]">
-        <div className="flex items-center h-8 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-3 gap-1.5">
+        <div className={SEARCH_PILL}>
           <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <input
             type="text"
             value={routeQuery}
             onChange={e => setRouteQuery(e.target.value)}
             placeholder="Filter routes…"
-            className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none"
+            className={SEARCH_FIELD}
           />
           {routeQuery && (
             <button onClick={() => setRouteQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
@@ -230,16 +230,16 @@ function HistoryAgencyPanel({
             {routeQuery ? 'No routes match.' : 'No data for this period.'}
           </p>
         )}
-        {routeRows.map(({ route, worse, better }) => (
+        {routeRows.map(({ route }) => (
           <button
             key={route.routeShortName}
             onClick={() => onRouteSelect(route.routeShortName)}
-            className="flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+            className={LIST_ROW}
           >
-            <p className="text-xs text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight truncate min-w-0 flex-1">
-              <span className="font-black">{route.routeShortName}</span>
+            <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 flex-1`}>
+              <span>{route.routeShortName}</span>
               {route.routeName && (
-                <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>
+                <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{route.routeName}</span>
               )}
             </p>
             <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />
