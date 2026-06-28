@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import type { Agency } from '../App';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW } from '../styles';
-import { AgencyCard } from '../components/Interval/AgencyCard';
 
 export interface RouteSnapshot {
   label: string;
@@ -29,9 +27,6 @@ export interface AgencyHistory {
 
 interface Props {
   active: boolean;
-  agencies: Agency[];
-  layers: Record<string, GeoJSON.FeatureCollection>;
-  day: 'Weekday' | 'Saturday' | 'Sunday';
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
   searchFocused: boolean;
@@ -136,7 +131,131 @@ function RouteHistoryCard({
   );
 }
 
-export default function History({ active, agencies, layers, day, onInfoOpen, query, searchFocused, setQuery }: Props) {
+const SINCE_FILTERS = [
+  { label: 'All time', year: 0 },
+  { label: 'Since 2018', year: 2018 },
+  { label: 'Since 2022', year: 2022 },
+] as const;
+
+function HistoryAgencyPanel({
+  agencyHistory,
+  onClose,
+  onRouteSelect,
+}: {
+  agencyHistory: AgencyHistory;
+  onClose: () => void;
+  onRouteSelect: (routeShortName: string) => void;
+}) {
+  const [sinceYear, setSinceYear] = useState(0);
+
+  const routeRows = useMemo(() => {
+    return agencyHistory.routes
+      .map(route => {
+        const snaps = sinceYear > 0
+          ? route.snapshots.filter(s => s.year >= sinceYear)
+          : route.snapshots;
+        if (snaps.length === 0) return null;
+        const first = snaps[0];
+        const last = snaps[snaps.length - 1];
+        const worse = last.weekdayHeadwayMin > first.weekdayHeadwayMin;
+        const better = last.weekdayHeadwayMin < first.weekdayHeadwayMin;
+        return { route, first, last, worse, better, changed: snaps.length > 1 };
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null);
+  }, [agencyHistory, sinceYear]);
+
+  const minYear = useMemo(() => {
+    const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
+    return all.length ? Math.min(...all) : 0;
+  }, [agencyHistory]);
+
+  const maxYear = useMemo(() => {
+    const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
+    return all.length ? Math.max(...all) : 0;
+  }, [agencyHistory]);
+
+  return (
+    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
+      <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+        <div className="flex items-start justify-between">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight">{agencyHistory.name}</h2>
+            <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
+              {agencyHistory.region} · {minYear}–{maxYear}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0 mt-0.5"
+            aria-label="Close"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+        <div className="flex gap-1.5 mt-2.5">
+          {SINCE_FILTERS.map(f => (
+            <button
+              key={f.year}
+              onClick={() => setSinceYear(f.year)}
+              className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition-colors ${
+                sinceYear === f.year
+                  ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                  : 'bg-transparent text-[var(--text-muted)] border-[var(--border-primary)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className="shrink-0 text-[9px] text-[var(--text-muted)] font-bold tracking-wider px-4 py-2 border-b border-[var(--border-primary)]">
+        Weekday midday headway · first → latest snapshot
+      </p>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        {routeRows.length === 0 && (
+          <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No data for this period.</p>
+        )}
+        {routeRows.map(({ route, first, last, worse, better, changed }) => (
+          <button
+            key={route.routeShortName}
+            onClick={() => onRouteSelect(route.routeShortName)}
+            className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">
+                <span className="font-black">{route.routeShortName}</span>
+                {route.routeName && (
+                  <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>
+                )}
+              </p>
+              <p className="text-[9px] text-[var(--text-muted)] mt-0.5">
+                {first.label}{changed && first.label !== last.label ? ` → ${last.label}` : ''}
+              </p>
+            </div>
+            <div className="flex items-center gap-1 shrink-0 ml-3">
+              {changed ? (
+                <>
+                  <span className="text-[10px] font-bold text-[var(--text-dim)] tabular-nums">{first.weekdayHeadwayMin}m</span>
+                  <span className="text-[9px] text-[var(--text-dim)]">→</span>
+                  <span className={`text-[10px] font-bold tabular-nums ${worse ? 'text-red-500' : better ? 'text-emerald-500' : 'text-[var(--text-dim)]'}`}>
+                    {last.weekdayHeadwayMin}m
+                  </span>
+                </>
+              ) : (
+                <span className="text-[10px] font-bold text-[var(--text-dim)] tabular-nums">{first.weekdayHeadwayMin}m</span>
+              )}
+              <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors ml-0.5" />
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function History({ active, onInfoOpen, query, searchFocused, setQuery }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [shouldRender, setShouldRender] = useState(active);
@@ -247,7 +366,6 @@ export default function History({ active, agencies, layers, day, onInfoOpen, que
     );
   }, [query, historyAgencies]);
 
-  const matchingAgency = agencies.find(a => a.slug === selectedSlug) ?? null;
 
   if (!shouldRender) return null;
 
@@ -255,33 +373,28 @@ export default function History({ active, agencies, layers, day, onInfoOpen, que
     <div
       className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
-      {selectedSlug && matchingAgency ? (
+      {selectedSlug ? (
         (() => {
+          const agencyHistory = historyData?.find(a => a.slug === selectedSlug) ?? null;
+          if (!agencyHistory) return null;
           if (selectedRouteShortName) {
-            const agencyHistory = historyData?.find(a => a.slug === selectedSlug);
-            const selectedRoute = agencyHistory?.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
+            const selectedRoute = agencyHistory.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
             if (selectedRoute) {
               return (
                 <RouteHistoryCard
                   route={selectedRoute}
-                  agencyName={matchingAgency.name}
-                  region={matchingAgency.region ?? ''}
+                  agencyName={agencyHistory.name}
+                  region={agencyHistory.region}
                   onBack={() => setSelectedRouteShortName(null)}
                 />
               );
             }
           }
           return (
-            <AgencyCard
-              agency={matchingAgency}
-              layers={layers}
-              day={day}
+            <HistoryAgencyPanel
+              agencyHistory={agencyHistory}
               onClose={() => setSelectedSlug(null)}
-              onRouteSelect={(routeKey) => {
-                const shortName = routeKey.split('::')[1];
-                setSelectedRouteShortName(shortName);
-              }}
-              className="relative w-full max-h-full"
+              onRouteSelect={setSelectedRouteShortName}
             />
           );
         })()

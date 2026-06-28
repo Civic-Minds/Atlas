@@ -263,7 +263,7 @@ export default function App() {
               setDay={setDay}
               onLayersChange={setLayers}
             />
-            <History active={inHistory} agencies={agencies} layers={layers} day={day} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} />
+            <History active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
