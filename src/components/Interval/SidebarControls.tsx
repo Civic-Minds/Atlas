@@ -77,6 +77,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     { key: 'evening', label: 'Eve' },
   ];
 
+  const nonCorridorLayers = useMemo(() => {
+    const result: Record<string, GeoJSON.FeatureCollection> = {};
+    for (const [slug, fc] of Object.entries(layers)) {
+      if (!slug.endsWith('-corridors')) {
+        result[slug] = fc;
+      }
+    }
+    return result;
+  }, [layers]);
+
   function headwayToTierColor(h: number | null | undefined): string {
     if (!h) return getTierColor(null);
     if (h <= 10) return getTierColor('10');
@@ -164,7 +174,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   useEffect(() => {
     if (!selectedRoute) return;
     const [slug, routeId] = selectedRoute.split('::');
-    const fc = layers[slug];
+    const fc = nonCorridorLayers[slug];
     if (!fc) return;
     const feat = fc.features.find(f => {
       const p = f.properties as any;
@@ -188,12 +198,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         console.error(e);
       }
     }
-  }, [selectedRoute, layers]);
+  }, [selectedRoute, nonCorridorLayers]);
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {
     const routes: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway: number }> = [];
-    for (const [slug, fc] of Object.entries(layers)) {
+    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
         const p = f.properties as any;
@@ -208,7 +218,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return routes.sort((a, b) => a.headway - b.headway).slice(0, 5);
-  }, [layers]);
+  }, [nonCorridorLayers]);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -227,7 +237,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const currentRoute = useMemo(() => {
     if (!selectedRoute) return null;
-    const features = Object.entries(layers)
+    const features = Object.entries(nonCorridorLayers)
       .flatMap(([slug, fc]) => fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })))
       .filter(f => {
         const p = f.properties as unknown as ShapeProperties;
@@ -244,7 +254,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
     return { ...first, directions };
-  }, [selectedRoute, layers, currentDay]);
+  }, [selectedRoute, nonCorridorLayers, currentDay]);
 
   const liveAgencySlug = useMemo(() => {
     if (!currentRoute) return null;
@@ -300,7 +310,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const currentStop = useMemo(() => {
     if (!selectedStop) return null;
-    const allFeatures = Object.entries(layers).flatMap(([slug, fc]) =>
+    const allFeatures = Object.entries(nonCorridorLayers).flatMap(([slug, fc]) =>
       fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } }))
     );
     const stop = allFeatures.find(f => {
@@ -309,7 +319,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return compositeId === selectedStop;
     });
     return stop ? (stop.properties as any) : null;
-  }, [selectedStop, layers]);
+  }, [selectedStop, nonCorridorLayers]);
 
   const stopRoutes = useMemo(() => {
     if (!currentStop?.routeIds) return [];
@@ -319,7 +329,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     // with its own headway (p.headway = terminal-stop headway from pipeline).
     type Branch = { rKey: string; headsign: string | null; headway: number | null; directionId: number };
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
-    for (const [slug, fc] of Object.entries(layers)) {
+    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
@@ -364,7 +374,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           .sort((a, b) => a.directionId - b.directionId || (a.headway ?? Infinity) - (b.headway ?? Infinity))
           .map(b => ({ rKey: b.rKey, headsign: b.headsign, headway: b.headway, directionId: b.directionId })),
       }));
-  }, [currentStop, layers, currentDay]);
+  }, [currentStop, nonCorridorLayers, currentDay]);
 
   const stopAgencies = useMemo(() => {
     const seen = new Set<string>();
@@ -382,7 +392,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const rows: { routeId: string; shortName: string; dir: number; headsign: string; stopHw: number | null; routeHw: number | null }[] = [];
     const stopAgencySlug = currentStop.agencySlug as string | undefined;
     const routeIds = new Set<string>(currentStop.routeIds ?? []);
-    for (const [slug, fc] of Object.entries(layers)) {
+    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
@@ -400,12 +410,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return rows.sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }) || a.dir - b.dir);
-  }, [currentStop, layers, currentDay]);
+  }, [currentStop, nonCorridorLayers, currentDay]);
 
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
     return disambiguationRoutes.map(key => {
-      for (const [slug, fc] of Object.entries(layers)) {
+      for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
         const f = fc.features.find(feat => {
           const p = feat.properties as any;
           return routeKey({ ...p, agencySlug: slug } as any) === key;
@@ -417,7 +427,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
       return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
     });
-  }, [disambiguationRoutes, layers]);
+  }, [disambiguationRoutes, nonCorridorLayers]);
 
   const hasContent = currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === '');
   if (!hasContent) return null;
@@ -842,7 +852,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 </div>
                 {(() => {
                   const rows: { headsign: string; dir: number; headway: number | null; tier: string }[] = [];
-                  for (const [slug, fc] of Object.entries(layers)) {
+                  for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
                     for (const f of fc.features) {
                       const p = f.properties as unknown as ShapeProperties;
                       if (routeKey({ ...p, agencySlug: slug } as any) !== selectedRoute) continue;

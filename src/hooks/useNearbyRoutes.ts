@@ -46,6 +46,7 @@ export function useNearbyRoutes(
     const nearbyStops: NearbyStop[] = [];
 
     for (const [slug, fc] of Object.entries(layers)) {
+      if (slug.endsWith('-corridors')) continue;
       for (const f of fc.features) {
         if (f.geometry.type !== 'Point') continue;
         const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;

@@ -183,15 +183,17 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
-    return Object.entries(layers).flatMap(([slug, fc]) => {
-      return fc.features.map(f => ({
-        ...f,
-        properties: {
-          ...f.properties,
-          agencySlug: slug
-        }
-      }));
-    });
+    return Object.entries(layers)
+      .filter(([slug]) => !slug.endsWith('-corridors'))
+      .flatMap(([slug, fc]) => {
+        return fc.features.map(f => ({
+          ...f,
+          properties: {
+            ...f.properties,
+            agencySlug: slug
+          }
+        }));
+      });
   }, [layers]);
 
   // Find routes for selected stop if any. selectedStop is now "agencySlug::stopId"
