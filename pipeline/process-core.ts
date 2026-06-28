@@ -12,6 +12,7 @@ import { filterGtfsByRouteTypes } from './filterGtfs.js';
 import { mergeNrtDayNightRoutes } from './transforms/nrt-day-night.js';
 import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
+import { TIME_PERIODS } from '../shared/config.js';
 
 export type GtfsPreprocess = 'nrt-day-night';
 
@@ -38,14 +39,11 @@ function simplifyLine(coords: number[][], tolerance: number): number[][] {
   return [coords[0], coords[coords.length - 1]];
 }
 
-const PERIODS = {
-  amPeak: { start: 360, end: 540 },
-  midday: { start: 540, end: 900 },
-  pmPeak: { start: 900, end: 1140 },
-  evening: { start: 1140, end: 1320 },
-} as const;
+const PERIODS = Object.fromEntries(
+  TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }])
+) as Record<string, { start: number; end: number }>;
 
-type PeriodKey = keyof typeof PERIODS;
+type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening';
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
 function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {

@@ -13,6 +13,7 @@ import {
 import { clipBetweenStopIndices, formatRouteColor } from './corridor-geometry';
 import { useCorridorMapOverlay } from '../context/CorridorMapOverlay';
 import { fetchAgencyGeo, getCachedAgencyGeo } from '../lib/agencyGeo';
+import { TIME_PERIODS } from '../../shared/config';
 
 export type CorridorsFromInputBindings = {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -621,12 +622,26 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
 }
 
 // Approximate period durations in hours (used for proportional flex widths)
-const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: number }> = [
-  { key: 'amPeak',  label: 'AM Peak', time: '6–9 AM',     flex: 1 },
-  { key: 'midday',  label: 'Midday',  time: '9 AM–3 PM',  flex: 1 },
-  { key: 'pmPeak',  label: 'PM Peak', time: '3–7 PM',     flex: 1 },
-  { key: 'evening', label: 'Evening', time: '7–10 PM',    flex: 1 },
-];
+const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: number }> = TIME_PERIODS.map(p => {
+  const formatHour = (hr: number) => {
+    const suffix = hr >= 12 ? 'PM' : 'AM';
+    const h12 = hr % 12 === 0 ? 12 : hr % 12;
+    return `${h12} ${suffix}`;
+  };
+  const startStr = formatHour(p.startHour);
+  const endStr = formatHour(p.endHour);
+  const startSuffix = startStr.split(' ')[1];
+  const endSuffix = endStr.split(' ')[1];
+  const timeStr = startSuffix === endSuffix
+    ? `${startStr.split(' ')[0]}–${endStr}`
+    : `${startStr}–${endStr}`;
+  return {
+    key: p.key,
+    label: p.label,
+    time: timeStr,
+    flex: 1
+  };
+});
 
 
 

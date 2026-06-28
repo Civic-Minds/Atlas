@@ -6,6 +6,7 @@ import type { Agency } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { VIRTUAL_LRT_MODE, PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
+import { TIME_PERIODS } from '../../../shared/config';
 
 interface FilterChipsProps {
   maxHeadway: number;
@@ -43,11 +44,8 @@ export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
 
 export function getNowPeriod(): TimePeriod {
   const h = new Date().getHours();
-  if (h >= 6 && h < 9) return 'amPeak';
-  if (h >= 9 && h < 15) return 'midday';
-  if (h >= 15 && h < 19) return 'pmPeak';
-  if (h >= 19 && h < 23) return 'evening';
-  return 'all';
+  const matched = TIME_PERIODS.find(p => h >= p.startHour && h < p.endHour);
+  return (matched?.key as TimePeriod) || 'all';
 }
 
 type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
