@@ -11,6 +11,8 @@ import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/History
 import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
+import { R2_PUBLIC_URL } from '../../../shared/config';
+
 
 // Register PMTiles protocol once
 let protocolRegistered = false;
@@ -65,7 +67,7 @@ const getMapStyle = (lightMode: boolean) => {
       },
       'atlas-pmtiles': {
         type: 'vector',
-        url: 'pmtiles://https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles'
+        url: `pmtiles://${R2_PUBLIC_URL}/atlas.pmtiles`
       }
     },
     layers: [

@@ -1,6 +1,7 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getLiveRouteConfig } from '../shared/livePollingConfig.js';
 import { computeHistoryAdherence, type Snapshot } from '../shared/computeHistoryAdherence.js';
+import { R2_PUBLIC_URL } from '../shared/config.js';
 
 export const config = { maxDuration: 60 };
 
@@ -56,9 +57,8 @@ async function fetchSnapshot(client: S3Client, key: string): Promise<Snapshot | 
 }
 
 async function fetchSidecar(agency: string): Promise<Record<string, any> | null> {
-  const publicUrl = process.env.R2_PUBLIC_URL || 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
   try {
-    const res = await fetch(`${publicUrl}/atlas/live-polling/${agency}.json`);
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${agency}.json`);
     if (!res.ok) return null;
     return await res.json();
   } catch {

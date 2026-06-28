@@ -3,6 +3,7 @@ import {
   getLiveRouteConfig,
   matchesLiveRouteId,
 } from './livePollingConfig.js';
+import { R2_PUBLIC_URL } from './config.js';
 
 export interface StopAdherence {
   agency: string;
@@ -61,9 +62,8 @@ async function fetchTripUpdates(
 }
 
 async function fetchSidecar(agency: string): Promise<Record<string, any> | null> {
-  const publicUrl = process.env.R2_PUBLIC_URL || 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
   try {
-    const res = await fetch(`${publicUrl}/atlas/live-polling/${agency}.json`);
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${agency}.json`);
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
