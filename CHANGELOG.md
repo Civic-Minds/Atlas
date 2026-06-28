@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - **Staged agency support**: New `staged: true` flag in `index.json` marks agencies as pending — frontend hides them until data is ready. Pipeline auto-clears the flag after a successful first refresh, so the next deploy brings them live with no manual step.
 
+- **LOD route visibility by frequency tier (AI-165)**: Routes now appear progressively as you zoom in based on their headway tier. Frequent rapid routes (≤10 min) visible from zoom 0; frequent (≤15 min) from zoom 7; moderate (≤30 min) from zoom 9; infrequent from zoom 11. Implemented via `tippecanoe:minzoom` property on each GeoJSON feature before encoding in `build-pmtiles.ts`.
+
 ### Fixed
 - **PMTiles blank map (AI-164)**: `atlas.pmtiles` on R2 only contained the `corridors` layer — `routes` and `stops` were missing due to a corrupted previous pipeline run. Rebuilt and re-uploaded with all three layers. Also fixed `r2.ts`: `r2PutFile` now reads into a Buffer instead of a ReadStream (eliminates EPIPE on PutObject), added EPIPE to the retryable error list, and set a 10-minute request timeout on the S3 client.
 - **PMTiles tile boundary dropout**: Routes vanished at intermediate zoom levels in the GTHA due to tippecanoe's 500KB tile size limit culling ~95% of features in dense tiles. Fixed `build-pmtiles.ts` to use `--no-tile-size-limit` for routes and corridors, and `--no-tile-size-limit` on the `tile-join` merge step, so no routes are ever dropped regardless of tile density.

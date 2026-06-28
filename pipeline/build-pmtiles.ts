@@ -113,6 +113,15 @@ async function main() {
   if (allRoutes.length === 0) console.warn("WARNING: 0 routes features — routes layer will be missing from PMTiles!");
   if (allStops.length === 0) console.warn("WARNING: 0 stops features — stops layer will be missing from PMTiles!");
 
+  // LOD: annotate each route feature with tippecanoe:minzoom based on headway tier.
+  // tippecanoe reads this property to set the minimum zoom at which a feature appears in tiles.
+  // ≤10 min (frequent rapid) → visible from zoom 0; less frequent tiers reveal progressively later.
+  for (const f of allRoutes) {
+    const hw = (f.properties?.headway ?? Infinity) as number;
+    const minzoom = hw <= 10 ? 0 : hw <= 15 ? 7 : hw <= 30 ? 9 : 11;
+    f.properties['tippecanoe:minzoom'] = minzoom;
+  }
+
   // Write temporary files
   const routesPath = path.join(tmpDir, 'routes.geojson');
   const stopsPath = path.join(tmpDir, 'stops.geojson');
