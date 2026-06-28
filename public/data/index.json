@@ -561,7 +561,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Qu\u00e9bec)",
+      "name": "RTC (Québec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -624,7 +624,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STL\u00e9vis",
+      "name": "STLévis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -1294,10 +1294,12 @@
         43.157,
         -77.615
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rgrta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rgrta-stops.json",
       "feedUrl": "http://scheduledata.rgrta.com/google_transit.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rgrta-corridors.json",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "AprJun26_Merged"
     },
     {
       "slug": "cdta",
@@ -1307,10 +1309,12 @@
         42.652,
         -73.756
       ],
-      "url": "",
-      "stopsUrl": "",
-      "feedUrl": "http://www.cdta.org/schedules/google_transit.zip",
-      "staged": true
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cdta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cdta-stops.json",
+      "feedUrl": "https://www.cdta.org/schedules/google_transit.zip",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cdta-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "Major"
     },
     {
       "slug": "centro",
@@ -1320,10 +1324,12 @@
         43.048,
         -76.147
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/centro.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/centro-stops.json",
       "feedUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/centro-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "tcat",
@@ -1333,10 +1339,12 @@
         42.443,
         -76.501
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tcat.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tcat-stops.json",
       "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tcat-corridors.json",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "20260625"
     },
     {
       "slug": "broome",
@@ -1346,10 +1354,12 @@
         42.097,
         -75.917
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broome.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broome-stops.json",
       "feedUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broome-corridors.json",
+      "lastFeedExpiry": "20260630",
+      "lastFeedVersion": "20260120"
     },
     {
       "slug": "emta",
@@ -1359,10 +1369,12 @@
         42.129,
         -80.085
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emta-stops.json",
       "feedUrl": "http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emta-corridors.json",
+      "lastFeedExpiry": "20231101",
+      "lastFeedVersion": "UTC: 22-Jun-2023 22:03"
     },
     {
       "slug": "akron",
@@ -1372,10 +1384,12 @@
         41.081,
         -81.519
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/akron.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/akron-stops.json",
       "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/akron-corridors.json",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "20260526"
     },
     {
       "slug": "sarta",
@@ -1385,10 +1399,12 @@
         40.798,
         -81.379
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarta-stops.json",
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarta-corridors.json",
+      "lastFeedExpiry": "20260808",
+      "lastFeedVersion": "MAY 2026_20260409"
     },
     {
       "slug": "laketran",
@@ -1398,10 +1414,12 @@
         41.713,
         -81.337
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/laketran.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/laketran-stops.json",
       "feedUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/laketran-corridors.json",
+      "lastFeedExpiry": "20260927",
+      "lastFeedVersion": "May 2026"
     },
     {
       "slug": "mta-flint",
@@ -1411,10 +1429,12 @@
         43.012,
         -83.687
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mta-flint.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mta-flint-stops.json",
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mta-flint-corridors.json",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260519"
     },
     {
       "slug": "cata-lansing",
@@ -1424,10 +1444,12 @@
         42.733,
         -84.556
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cata-lansing.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cata-lansing-stops.json",
       "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cata-lansing-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "26-04 (May04-Aug23)_20260512"
     },
     {
       "slug": "the-rapid",
@@ -1437,10 +1459,12 @@
         42.963,
         -85.668
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/the-rapid.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/the-rapid-stops.json",
       "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/the-rapid-corridors.json",
+      "lastFeedExpiry": "20260830",
+      "lastFeedVersion": "20260604"
     },
     {
       "slug": "mbta",
@@ -1450,10 +1474,12 @@
         42.361,
         -71.057
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mbta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mbta-stops.json",
       "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mbta-corridors.json",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "Summer 2026, 2026-06-26T19:57:52+00:00, version D"
     },
     {
       "slug": "pvta",
@@ -1463,10 +1489,12 @@
         42.101,
         -72.59
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvta-stops.json",
       "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvta-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": null
     },
     {
       "slug": "wrta",
@@ -1476,10 +1504,12 @@
         42.262,
         -71.802
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wrta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wrta-stops.json",
       "feedUrl": "http://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wrta-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "cttransit",
@@ -1489,10 +1519,12 @@
         41.765,
         -72.682
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cttransit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cttransit-stops.json",
       "feedUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cttransit-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "red-deer",
@@ -1502,10 +1534,12 @@
         52.268,
         -113.811
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/red-deer.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/red-deer-stops.json",
       "feedUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/red-deer-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "S1000149"
     },
     {
       "slug": "lethbridge",
@@ -1515,10 +1549,12 @@
         49.694,
         -112.832
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lethbridge.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lethbridge-stops.json",
       "feedUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lethbridge-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "2026-06-24"
     },
     {
       "slug": "moose-jaw",
@@ -1528,10 +1564,12 @@
         50.393,
         -105.535
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/moose-jaw.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/moose-jaw-stops.json",
       "feedUrl": "https://moosejaw.ca/wp-content/uploads/2023/11/moosejaw-GTFS.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/moose-jaw-corridors.json",
+      "lastFeedExpiry": "20240331",
+      "lastFeedVersion": "1"
     },
     {
       "slug": "prince-albert",
@@ -1541,10 +1579,12 @@
         53.203,
         -105.753
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/prince-albert.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/prince-albert-stops.json",
       "feedUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/prince-albert-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "kamloops",
@@ -1554,10 +1594,12 @@
         50.674,
         -120.327
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kamloops.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kamloops-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kamloops-corridors.json",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "south-okanagan",
@@ -1567,10 +1609,12 @@
         49.498,
         -119.586
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/south-okanagan.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/south-okanagan-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/south-okanagan-corridors.json",
+      "lastFeedExpiry": "20260907",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "nanaimo",
@@ -1580,10 +1624,12 @@
         49.165,
         -123.936
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nanaimo.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nanaimo-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nanaimo-corridors.json",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "cowichan",
@@ -1593,10 +1639,12 @@
         48.781,
         -123.709
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cowichan.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cowichan-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cowichan-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "comox-valley",
@@ -1606,10 +1654,12 @@
         49.687,
         -124.993
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/comox-valley.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/comox-valley-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/comox-valley-corridors.json",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "campbell-river",
@@ -1619,10 +1669,12 @@
         50.022,
         -125.244
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/campbell-river.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/campbell-river-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/campbell-river-corridors.json",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "squamish",
@@ -1632,10 +1684,12 @@
         49.702,
         -123.155
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/squamish.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/squamish-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/squamish-corridors.json",
+      "lastFeedExpiry": "20260907",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "pemberton",
@@ -1645,10 +1699,12 @@
         50.319,
         -122.799
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pemberton.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pemberton-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pemberton-corridors.json",
+      "lastFeedExpiry": "20261124",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     },
     {
       "slug": "whistler",
@@ -1658,10 +1714,12 @@
         50.116,
         -122.957
       ],
-      "url": "",
-      "stopsUrl": "",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whistler.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whistler-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
-      "staged": true
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whistler-corridors.json",
+      "lastFeedExpiry": "20261122",
+      "lastFeedVersion": "202606280/20260627 21:00:00/20260628 04:00:00"
     }
   ]
 }
