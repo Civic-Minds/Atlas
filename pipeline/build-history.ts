@@ -62,9 +62,9 @@ function parsePeriodKey(key: string): { year: number; label: string } {
     return { year, label: `${month} ${year}` };
   }
   // Month-name keys like "Jun-27-2014", "jul-10-2018", "Jun-16-2020"
-  const monthNameMatch = key.match(/([A-Za-z]+)[-\s]+\d+[-\s]+(20\d{2})/);
+  const monthNameMatch = key.match(/([A-Za-z]+)[-\s]+(\d+)[-\s]+(20\d{2})/);
   if (monthNameMatch) {
-    const year = parseInt(monthNameMatch[2]);
+    const year = parseInt(monthNameMatch[3]);
     const monthAbbr = monthNameMatch[1].slice(0, 3);
     const label = `${monthAbbr.charAt(0).toUpperCase()}${monthAbbr.slice(1).toLowerCase()} ${year}`;
     return { year, label };
@@ -78,6 +78,39 @@ function parsePeriodKey(key: string): { year: number; label: string } {
   const yearMatch = key.match(/\b(20\d{2})\b/);
   const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
   return { year, label: key };
+}
+
+function getPeriodKeySortValue(key: string): number {
+  // YYYYMMDD
+  const compact = key.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (compact) {
+    return parseInt(compact[1]) * 10000 + parseInt(compact[2]) * 100 + parseInt(compact[3]);
+  }
+  // YYYY-MM-DD
+  const dashed = key.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (dashed) {
+    return parseInt(dashed[1]) * 10000 + parseInt(dashed[2]) * 100 + parseInt(dashed[3]);
+  }
+  // Month-name keys like "Jun-27-2014", "jul-10-2018", "Jun-16-2020", "june-2-2022"
+  const monthNameMatch = key.match(/([A-Za-z]+)[-\s]+(\d+)[-\s]+(20\d{2})/);
+  if (monthNameMatch) {
+    const year = parseInt(monthNameMatch[3]);
+    const day = parseInt(monthNameMatch[2]);
+    const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const monthAbbr = monthNameMatch[1].slice(0, 3).toLowerCase();
+    const monthIdx = monthNames.indexOf(monthAbbr);
+    const month = monthIdx >= 0 ? monthIdx + 1 : 1;
+    return year * 10000 + month * 100 + day;
+  }
+  // Plain year like "2016"
+  const yearOnlyMatch = key.match(/^(20\d{2})$/);
+  if (yearOnlyMatch) {
+    const year = parseInt(yearOnlyMatch[1]);
+    return year * 10000 + 101;
+  }
+  const yearMatch = key.match(/\b(20\d{2})\b/);
+  const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
+  return year * 10000 + 101;
 }
 
 /** Load compact current headways from history/{slug}/latest.json (written by refresh.ts). */
@@ -188,7 +221,7 @@ async function main() {
 
     for (const [routeShortName, changes] of Object.entries(routeMap)) {
       // Sort change events chronologically
-      changes.sort((a, b) => a.periodKey.localeCompare(b.periodKey));
+      changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
 
       // Build snapshot list from archived change events
       const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number }> = changes.map(c => {

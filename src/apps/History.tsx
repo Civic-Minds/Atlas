@@ -50,7 +50,7 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean
   return { text: `${x}× more frequent since ${first.label}`, worse: false };
 }
 
-function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlightYear: number | null }) {
+function RouteCard({ entry, highlightYear, expanded, onToggle }: { entry: RouteHistoryEntry; highlightYear: number | null; expanded: boolean; onToggle: () => void }) {
   const snaps = entry.snapshots;
   const first = snaps[0];
   const last = snaps[snaps.length - 1];
@@ -59,49 +59,66 @@ function RouteCard({ entry, highlightYear }: { entry: RouteHistoryEntry; highlig
   const summary = changeSummary(entry);
 
   return (
-    <div className="py-3 border-b border-[var(--border-primary)] last:border-0">
-      <div className="flex items-baseline gap-1.5 mb-2">
-        <span className="text-xs font-black text-[var(--text-primary)]">{entry.routeShortName}</span>
-        <span className="text-[10px] text-[var(--text-muted)] truncate">{entry.routeName}</span>
-      </div>
+    <div className="border-b border-[var(--border-primary)] last:border-0 py-1.5">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-baseline justify-between py-1.5 hover:bg-[var(--bg-btn-hover)] px-1.5 rounded transition-colors text-left"
+      >
+        <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
+          <span className="text-xs font-black text-[var(--text-primary)] shrink-0">{entry.routeShortName}</span>
+          <span className="text-[10px] text-[var(--text-dim)] truncate">{entry.routeName}</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 ml-2">
+          <span className={`text-[10px] font-bold ${worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-dim)]'}`}>
+            {first.weekdayHeadwayMin}m → {last.weekdayHeadwayMin}m
+          </span>
+          <span className="text-[9px] text-[var(--text-dim)] font-mono">{expanded ? '▲' : '▼'}</span>
+        </div>
+      </button>
 
-      <div className="flex items-end gap-2 flex-wrap">
-        {snaps.map((snap, i) => {
-          const isLast = i === snaps.length - 1;
-          const isHighlighted = highlightYear === snap.year;
-          const headwayColor = isHighlighted
-            ? 'text-[var(--accent)]'
-            : isLast
-              ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
-              : 'text-[var(--text-dim)]';
-          return (
-            <React.Fragment key={snap.label}>
-              <div className={`flex flex-col items-center transition-opacity ${isHighlighted ? '' : highlightYear !== null ? 'opacity-40' : ''}`}>
-                <span className={`text-lg font-black tabular-nums leading-none ${headwayColor}`}>
-                  {snap.weekdayHeadwayMin} min
-                </span>
-                <span className={`text-[8px] font-bold mt-0.5 ${isHighlighted ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}`}>
-                  {snap.label}
-                </span>
-              </div>
-              {!isLast && (
-                <span className="text-[var(--text-dim)] mb-1">→</span>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
+      {expanded && (
+        <div className="px-2 pt-2.5 pb-3 bg-[var(--bg-app)] rounded-lg mt-1 border border-[var(--border-primary)]">
+          <div className="flex items-end gap-2 flex-wrap">
+            {snaps.map((snap, i) => {
+              const isLast = i === snaps.length - 1;
+              const isHighlighted = highlightYear === snap.year;
+              const headwayColor = isHighlighted
+                ? 'text-[var(--accent)]'
+                : isLast
+                  ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
+                  : 'text-[var(--text-dim)]';
+              return (
+                <React.Fragment key={snap.label}>
+                  <div className={`flex flex-col items-center transition-opacity ${isHighlighted ? '' : highlightYear !== null ? 'opacity-40' : ''}`}>
+                    <span className={`text-base font-black tabular-nums leading-none ${headwayColor}`}>
+                      {snap.weekdayHeadwayMin} min
+                    </span>
+                    <span className={`text-[8px] font-bold mt-0.5 ${isHighlighted ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}`}>
+                      {snap.label}
+                    </span>
+                  </div>
+                  {!isLast && (
+                    <span className="text-[var(--text-dim)] mb-0.5 text-xs">→</span>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
 
-      {summary && (
-        <p className={`text-[9px] font-bold mt-1.5 ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>
-          {summary.text}
-        </p>
+          {summary && (
+            <p className={`text-[9px] font-bold mt-2 ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>
+              {summary.text}
+            </p>
+          )}
+        </div>
       )}
     </div>
   );
 }
 
 function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => void }) {
+  const [expandedRoute, setExpandedRoute] = React.useState<string | null>(null);
+
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
       <div className="flex items-center gap-1.5 px-4 pt-3 pb-2 border-b border-[var(--border-primary)] shrink-0">
@@ -117,9 +134,15 @@ function AgencyView({ agency, onBack }: { agency: AgencyHistory; onBack: () => v
           <p className="text-[9px] text-[var(--text-dim)]">{agency.region}</p>
         </div>
       </div>
-      <div className="px-4 flex-1 overflow-y-auto custom-scrollbar">
+      <div className="px-3 py-1 flex-1 overflow-y-auto custom-scrollbar">
         {agency.routes.map(route => (
-          <RouteCard key={route.routeShortName} entry={route} highlightYear={null} />
+          <RouteCard
+            key={route.routeShortName}
+            entry={route}
+            highlightYear={null}
+            expanded={expandedRoute === route.routeShortName}
+            onToggle={() => setExpandedRoute(expandedRoute === route.routeShortName ? null : route.routeShortName)}
+          />
         ))}
       </div>
     </div>
