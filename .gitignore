@@ -60,3 +60,4 @@ public/data/*.json
 # Wrangler local dev state and captured feed samples
 workers/**/.wrangler/
 workers/**/burlington/
+workers/gtfs-rt-archiver/*/
