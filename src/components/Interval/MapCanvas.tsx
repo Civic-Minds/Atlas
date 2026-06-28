@@ -624,7 +624,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup' })
         .setHTML(`
           <div style="font-family: ui-monospace, monospace; padding: 6px 10px;">
-            <div style="font-size: 8px; font-weight: 800; text-transform: uppercase; color: var(--text-dim, #9ca3af); letter-spacing: 0.5px;">Vehicle Info</div>
+            <div style="font-size: 8px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.5px;">Vehicle info</div>
             <div style="font-size: 11px; font-weight: 900; color: var(--text-primary, #111); margin-top: 2px;">
               Route ${vehicle.routeShortName} • ID ${vehicle.id}
             </div>
@@ -632,7 +632,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               to ${vehicle.headsign || 'Unknown destination'}
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary); padding-top: 4px; margin-top: 4px; font-size: 10px;">
-              <span style="font-size: 8px; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Status</span>
+              <span style="font-size: 8px; color: var(--text-dim); font-weight: 700;">Status</span>
               <span style="font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">
                 ${vehicle.delayMin === null
                   ? 'No schedule data'

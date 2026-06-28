@@ -205,7 +205,7 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
           {query === '' && recentSearches.length > 0 ? (
             <>
               <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
-                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase">Recent Searches</p>
+                <p className="text-[10px] font-bold text-[var(--text-muted)]">Recent searches</p>
                 <button
                   onClick={clearRecentSearches}
                   className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"

@@ -170,7 +170,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
           {/* Agency Dropdown */}
           <div className="flex flex-col gap-1 px-4 py-2 border-b border-[var(--border-primary)] bg-[var(--bg-active)]/10 shrink-0">
-            <label className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-wider">Select Network</label>
+            <label className="text-[8px] font-black text-[var(--text-dim)] tracking-wider">Select network</label>
             <select
               value={selectedSlug}
               onChange={e => setSelectedSlug(e.target.value)}
