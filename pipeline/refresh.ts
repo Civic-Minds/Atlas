@@ -25,20 +25,20 @@ if (!process.env.R2_ACCESS_KEY_ID) {
 
 const onlySlugs = process.argv.slice(2);
 
-// Agencies enrolled in history snapshot tracking (AI-83).
-const HISTORY_SLUGS = new Set(['burlington']);
+// All agencies with a feedUrl get history snapshots — no manual opt-in needed.
 
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
-  const routes: Record<string, { headway: number | null; tier: string | null }> = {};
+  const routes: Record<string, { headway: number | null; tier: string | null; routeLongName?: string }> = {};
   for (const f of fc.features) {
     const p = f.properties;
     if (!p.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
     const sn = String(p.routeShortName);
     const h = p.headway != null ? Number(p.headway) : null;
     const t = p.tier != null ? String(p.tier) : null;
+    const ln = p.routeLongName ? String(p.routeLongName) : undefined;
     if (!routes[sn] || (h != null && (routes[sn].headway == null || h < routes[sn].headway!))) {
-      routes[sn] = { headway: h, tier: t };
+      routes[sn] = { headway: h, tier: t, routeLongName: ln ?? routes[sn]?.routeLongName };
     }
   }
 
@@ -221,11 +221,9 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
   agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
 
-  // For agencies enrolled in history tracking, write a compact headway snapshot.
-  if (HISTORY_SLUGS.has(agency.slug)) {
-    const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);
-    process.stdout.write(`  history: ${histResult}\n`);
-  }
+  // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);
+  process.stdout.write(`  history: ${histResult}\n`);
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return `${featureCount} features, ${kb} KB`;

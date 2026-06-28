@@ -53,21 +53,5 @@ export const HISTORY_DATA: AgencyHistory[] = [
         ]
       }
     ]
-  },
-  {
-    "slug": "burlington",
-    "name": "Burlington Transit",
-    "region": "Ontario",
-    "center": [
-      43.3256,
-      -79.7997
-    ],
-    "routes": [
-      {
-        "routeShortName": "1",
-        "routeName": "Plains-Fairview",
-        "snapshots": []
-      }
-    ]
   }
 ];
