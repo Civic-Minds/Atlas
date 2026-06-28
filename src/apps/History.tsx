@@ -62,17 +62,19 @@ function RouteRow({
   const last = snaps[snaps.length - 1];
   const worse = last.weekdayHeadwayMin > first.weekdayHeadwayMin;
   const better = last.weekdayHeadwayMin < first.weekdayHeadwayMin;
+  const color = worse ? '#f87171' : better ? '#4ade80' : 'var(--text-dim)';
 
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center justify-between px-4 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group border-b border-[var(--border-primary)] last:border-0"
+      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
     >
-      <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
-        <span className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">{entry.routeShortName}</span>
-        <span className="text-[10px] text-[var(--text-dim)] truncate">{entry.routeName}</span>
-      </div>
-      <span className={`text-[10px] font-bold shrink-0 ml-2 ${worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-dim)]'}`}>
+      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
+      <span className="flex-1 text-xs text-[var(--text-primary)] font-bold truncate group-hover:text-[var(--accent)] transition-colors">
+        {entry.routeShortName}
+        {entry.routeName && <span className="font-normal text-[var(--text-dim)] ml-1.5 truncate">{entry.routeName}</span>}
+      </span>
+      <span className={`text-[10px] font-mono shrink-0 ml-2 ${worse ? 'text-red-400' : better ? 'text-green-400' : 'text-[var(--text-dim)]'}`}>
         {first.weekdayHeadwayMin}m → {last.weekdayHeadwayMin}m
       </span>
     </button>
