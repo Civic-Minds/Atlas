@@ -1,10 +1,30 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
-import { HISTORY_DATA } from '../../shared/historyConfig';
-import type { AgencyHistory, RouteHistoryEntry } from '../../shared/historyConfig';
+import { R2_PUBLIC_URL } from '../../shared/config';
 import type { Agency } from '../App';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW } from '../styles';
+
+export interface RouteSnapshot {
+  label: string;
+  year: number;
+  weekdayHeadwayMin: number;
+  note?: string;
+}
+
+export interface RouteHistoryEntry {
+  routeShortName: string;
+  routeName: string;
+  snapshots: RouteSnapshot[];
+}
+
+export interface AgencyHistory {
+  slug: string;
+  name: string;
+  region: string;
+  center?: [number, number];
+  routes: RouteHistoryEntry[];
+}
 
 interface Props {
   active: boolean;
@@ -111,6 +131,14 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
+  const [historyData, setHistoryData] = useState<AgencyHistory[]>([]);
+
+  useEffect(() => {
+    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
+      .then(r => r.json())
+      .then((data: AgencyHistory[]) => setHistoryData(data))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (active) {
@@ -125,8 +153,8 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
   }, [active]);
 
   const historyAgencies = useMemo(() => {
-    return HISTORY_DATA.filter(a => a.routes.some(r => r.snapshots.length > 0));
-  }, []);
+    return historyData.filter(a => a.routes.some(r => r.snapshots.length > 0));
+  }, [historyData]);
 
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
