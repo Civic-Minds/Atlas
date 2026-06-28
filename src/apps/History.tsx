@@ -183,27 +183,43 @@ function AgencyView({
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
+      {/* Header with back button */}
       <div className="flex items-center gap-1.5 px-4 pt-3 pb-2 border-b border-[var(--border-primary)] shrink-0">
         <button
           onClick={onBack}
           className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-          aria-label="Back"
+          aria-label="Back to agencies"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
         </button>
-        <div>
-          <p className="text-xs font-black text-[var(--text-primary)]">{agency.name}</p>
-          <p className="text-[9px] text-[var(--text-dim)]">{agency.region}</p>
-        </div>
+        <span className="text-[10px] font-bold text-[var(--text-muted)]">Agencies</span>
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
-        {agency.routes.map(route => (
-          <RouteRow
-            key={route.routeShortName}
-            entry={route}
-            onClick={() => setSelectedRouteShortName(route.routeShortName)}
-          />
-        ))}
+
+      {/* Body with Agency Info Card and Routes List */}
+      <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto custom-scrollbar">
+        {/* Agency Info Card */}
+        <div className="bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 shadow-sm flex flex-col gap-1 shrink-0">
+          <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{agency.name}</p>
+          <p className="text-[10px] font-bold text-[var(--text-dim)] mt-0.5">{agency.region}</p>
+          <div className="border-t border-[var(--border-primary)] mt-2 pt-2 flex items-center justify-between">
+            <span className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Total Routes</span>
+            <span className="text-xs font-black text-[var(--text-primary)]">{agency.routes.length}</span>
+          </div>
+        </div>
+
+        {/* Routes List */}
+        <div className="flex flex-col flex-1 min-h-0">
+          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase block mb-2">Routes</span>
+          <div className="flex-1 overflow-y-auto custom-scrollbar border border-[var(--border-primary)] rounded-xl bg-[var(--bg-panel)] divide-y divide-[var(--border-primary)]">
+            {agency.routes.map(route => (
+              <RouteRow
+                key={route.routeShortName}
+                entry={route}
+                onClick={() => setSelectedRouteShortName(route.routeShortName)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
