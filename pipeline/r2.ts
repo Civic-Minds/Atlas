@@ -109,16 +109,22 @@ export async function r2Get(key: string): Promise<string | null> {
   }
 }
 
-export async function r2List(prefix: string): Promise<string[]> {
+async function r2ListAll(bucket: string, prefix: string): Promise<string[]> {
   const client = getR2Client();
-  const bucket = requireEnv('R2_BUCKET_NAME');
-  const res = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix }));
-  return (res.Contents ?? []).map(o => o.Key!).filter(Boolean);
+  const keys: string[] = [];
+  let token: string | undefined;
+  do {
+    const res = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: token }));
+    for (const obj of res.Contents ?? []) if (obj.Key) keys.push(obj.Key);
+    token = res.IsTruncated ? res.NextContinuationToken : undefined;
+  } while (token);
+  return keys;
+}
+
+export async function r2List(prefix: string): Promise<string[]> {
+  return r2ListAll(requireEnv('R2_BUCKET_NAME'), prefix);
 }
 
 export async function r2ListArchive(prefix: string): Promise<string[]> {
-  const client = getR2Client();
-  const bucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
-  const res = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix }));
-  return (res.Contents ?? []).map(o => o.Key!).filter(Boolean);
+  return r2ListAll(requireEnv('R2_ARCHIVE_BUCKET_NAME'), prefix);
 }

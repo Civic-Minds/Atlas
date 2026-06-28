@@ -56,25 +56,28 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   const processedAt = new Date().toISOString();
   const changed: string[] = [];
 
-  // Write a per-route file only for routes whose headway changed.
-  const writes: Promise<void>[] = [];
+  // Collect per-route writes — only for routes whose headway changed.
+  const routeWrites: Array<() => Promise<void>> = [];
   for (const [routeShortName, route] of Object.entries(current)) {
     const prevHeadway = prev[routeShortName]?.headway ?? null;
     if (prevHeadway !== null && prevHeadway === route.headway) continue;
     changed.push(routeShortName);
-    writes.push(r2PutArchiveJson(
-      `history/${slug}/${routeShortName}/${periodKey}.json`,
-      JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, processedAt }),
-    ));
+    const key = `history/${slug}/${routeShortName}/${periodKey}.json`;
+    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, processedAt });
+    routeWrites.push(() => r2PutArchiveJson(key, body));
+  }
+
+  // Flush in chunks of 20 to avoid overwhelming R2 on first run for large agencies (e.g. TTC).
+  const CHUNK = 20;
+  for (let i = 0; i < routeWrites.length; i += CHUNK) {
+    await Promise.all(routeWrites.slice(i, i + CHUNK).map(fn => fn()));
   }
 
   // Always update latest.json as the baseline for the next diff.
-  writes.push(r2PutArchiveJson(latestKey, JSON.stringify({
+  await r2PutArchiveJson(latestKey, JSON.stringify({
     processedAt,
     routes: Object.fromEntries(Object.entries(current).map(([sn, r]) => [sn, { headway: r.headway }])),
-  })));
-
-  await Promise.all(writes);
+  }));
 
   if (changed.length === 0) return 'unchanged';
   return `${changed.length} route${changed.length !== 1 ? 's' : ''} changed (${changed.slice(0, 4).join(', ')}${changed.length > 4 ? '…' : ''})`;

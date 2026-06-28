@@ -16,7 +16,7 @@
 import { writeFileSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { config } from 'dotenv';
-import { r2Get, r2ListArchive, r2GetArchive } from './r2.js';
+import { r2ListArchive, r2GetArchive } from './r2.js';
 
 config({ path: resolve('.env.local') });
 
@@ -67,21 +67,15 @@ function parsePeriodKey(key: string): { year: number; label: string } {
   return { year, label: key };
 }
 
-/** Extract compact route → headway map from a full agency GeoJSON. */
-function extractCurrentHeadways(geojson: any): Record<string, { headway: number; routeLongName?: string }> {
-  const routes: Record<string, { headway: number; routeLongName?: string }> = {};
-  for (const f of (geojson.features ?? [])) {
-    const p = f.properties;
-    if (!p?.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
-    const sn = String(p.routeShortName);
-    const h = p.headway != null ? Number(p.headway) : null;
-    if (h == null) continue;
-    const ln = p.routeLongName ? String(p.routeLongName) : undefined;
-    if (!routes[sn] || h < routes[sn].headway) {
-      routes[sn] = { headway: h, routeLongName: ln ?? routes[sn]?.routeLongName };
-    }
+/** Load compact current headways from history/{slug}/latest.json (written by refresh.ts). */
+async function loadLatestHeadways(slug: string): Promise<Record<string, { headway: number }>> {
+  try {
+    const raw = await r2GetArchive(`history/${slug}/latest.json`);
+    if (!raw) return {};
+    return JSON.parse(raw).routes ?? {};
+  } catch {
+    return {};
   }
-  return routes;
 }
 
 async function main() {
@@ -154,20 +148,21 @@ async function main() {
     }
   }
 
-  // 3. Fetch current GeoJSON from atlas for slugs that have archive data
+  // 3. Load current headways from history/{slug}/latest.json (compact baseline written by refresh.ts).
+  //    Much cheaper than fetching full GeoJSONs — latest.json is ~a few KB vs hundreds of KB per agency.
   const slugsWithData = Object.keys(archiveRoutes);
-  console.log(`Fetching current GeoJSON for ${slugsWithData.length} agencies...`);
+  console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
 
-  const currentHeadways: Record<string, Record<string, { headway: number; routeLongName?: string }>> = {};
-  await Promise.all(
-    slugsWithData.map(async slug => {
-      try {
-        const raw = await r2Get(`atlas/${slug}.json`);
-        if (!raw) return;
-        currentHeadways[slug] = extractCurrentHeadways(JSON.parse(raw));
-      } catch { /* agency may not be in atlas bucket */ }
-    })
-  );
+  const currentHeadways: Record<string, Record<string, { headway: number }>> = {};
+  // Fetch in chunks to avoid hammering R2 with 65 simultaneous requests.
+  const CHUNK = 10;
+  for (let i = 0; i < slugsWithData.length; i += CHUNK) {
+    await Promise.all(
+      slugsWithData.slice(i, i + CHUNK).map(async slug => {
+        currentHeadways[slug] = await loadLatestHeadways(slug);
+      })
+    );
+  }
 
   const currentYear = new Date().getFullYear();
   const historyData: any[] = [];
@@ -211,7 +206,7 @@ async function main() {
       if (first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
 
       const routeLongName = changes.find(c => c.routeLongName)?.routeLongName
-        ?? currentRoute?.routeLongName
+        /* routeLongName not in latest.json — comes from archive snapshots only */
         ?? routeShortName;
 
       agencyRoutes.push({ routeShortName, routeName: routeLongName, snapshots: deduped });
