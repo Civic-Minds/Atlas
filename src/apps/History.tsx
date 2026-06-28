@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Search } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW } from '../styles';
@@ -146,6 +146,7 @@ function HistoryAgencyPanel({
   onClose: () => void;
   onRouteSelect: (routeShortName: string) => void;
 }) {
+  const [routeQuery, setRouteQuery] = useState('');
 
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
@@ -158,6 +159,7 @@ function HistoryAgencyPanel({
   }, [agencyHistory]);
 
   const routeRows = useMemo(() => {
+    const q = routeQuery.trim().toLowerCase();
     return agencyHistory.routes
       .map(route => {
         if (route.snapshots.length === 0) return null;
@@ -169,6 +171,11 @@ function HistoryAgencyPanel({
         return { route, first, last, ratio, worse, better };
       })
       .filter((r): r is NonNullable<typeof r> => r !== null)
+      .filter(({ route }) =>
+        !q ||
+        route.routeShortName.toLowerCase().includes(q) ||
+        route.routeName.toLowerCase().includes(q)
+      )
       .sort((a, b) => {
         if (a.worse && b.worse) return b.ratio - a.ratio;
         if (a.better && b.better) return a.ratio - b.ratio;
@@ -176,7 +183,7 @@ function HistoryAgencyPanel({
         if (a.better !== b.better) return a.better ? -1 : 1;
         return 0;
       });
-  }, [agencyHistory]);
+  }, [agencyHistory, routeQuery]);
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
@@ -199,11 +206,28 @@ function HistoryAgencyPanel({
         </div>
       </div>
 
+      <div className="shrink-0 px-3 py-2 border-b border-[var(--border-primary)]">
+        <div className="flex items-center h-8 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-3 gap-1.5">
+          <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+          <input
+            type="text"
+            value={routeQuery}
+            onChange={e => setRouteQuery(e.target.value)}
+            placeholder="Filter routes…"
+            className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none"
+          />
+          {routeQuery && (
+            <button onClick={() => setRouteQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {routeRows.length === 0 && (
           <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">
-            No data for this period.
+            {routeQuery ? 'No routes match.' : 'No data for this period.'}
           </p>
         )}
         {routeRows.map(({ route, worse, better }) => (
