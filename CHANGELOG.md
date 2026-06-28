@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - **Corridors app top-right layout overlap**: Fixed a visual clashing bug where the Frequency settings/light-mode panel and the Corridors day-picker overlapped in the top-right corner. The Frequency map settings panel is now conditionally hidden when `showCorridorBand` is active, and the light-mode toggle is integrated cleanly into the Corridors top-right bar next to the day picker.
 
 ### Changed
+- **Unified color token systems**: Centralized scattered and duplicated early/late/on_time status colors and corridors timeline headway color logic (`hwColor`) from local files (`LiveVehicles.tsx`, `LiveVehiclesLayer.tsx`, `Corridors.tsx`) into `src/utils/colors.ts` under the new `STATUS_COLORS` mapping and helpers (`getVehicleColors` / `getTimelineHeadwayColor`). Updated vehicle list rendering to use separate background and text colors for proper contrast.
 - **Systematic style and transition centralization (AI-151 & AI-153)**: Replaced inline CSS panels and raw transition durations (200ms, 300ms) with shared constants `FLOATING_CARD`, `PANEL_ENTER`, `PANEL_ENTER_LEFT`, `PANEL_ENTER_TOP`, `TRANSITION_BASE`, and `TRANSITION_SLOW` from `styles.ts` across all Interval, Corridors, and History components.
 
 ### Changed

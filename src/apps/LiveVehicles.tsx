@@ -5,6 +5,7 @@ import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import type { Agency } from '../App';
 import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW } from '../styles';
+import { STATUS_COLORS } from '../utils/colors';
 
 interface Props {
   agencies: Agency[];
@@ -16,19 +17,6 @@ interface Props {
 }
 
 const POLL_INTERVAL_MS = 15_000;
-
-function getStatusColor(status: LiveVehicle['status']): string {
-  switch (status) {
-    case 'early':
-      return '#3182ce'; // Blue
-    case 'late':
-      return '#e53e3e'; // Red
-    case 'on_time':
-      return '#38a169'; // Green
-    default:
-      return '#718096'; // Gray
-  }
-}
 
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query }: Props) {
   const { setOverlay } = useLiveVehiclesMapOverlay();
@@ -219,7 +207,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             ) : (
               <div className="flex flex-col gap-1">
                 {filteredVehicles.map(v => {
-                  const color = getStatusColor(v.status);
+                  const colors = STATUS_COLORS[v.status];
                   const isFocused = focusedVehicle?.id === v.id;
                   
                   return (
@@ -232,7 +220,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     >
                       {/* Vehicle Route Code Badge */}
                       <span
-                        style={{ backgroundColor: color }}
+                        style={{ backgroundColor: colors.bg }}
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow-sm"
                       >
                         {v.routeShortName}
@@ -251,7 +239,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       {/* Delay/Adherence label */}
                       <div className="text-right shrink-0 flex items-center gap-1">
                         <span
-                          style={{ color }}
+                          style={{ color: colors.text }}
                           className="text-[10px] font-black tabular-nums"
                         >
                           {v.delayMin === null

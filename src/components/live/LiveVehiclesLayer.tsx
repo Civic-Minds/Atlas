@@ -3,19 +3,7 @@ import L from 'leaflet';
 import { useMap } from 'react-leaflet';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-
-function getVehicleColors(status: LiveVehicle['status']): { bg: string; border: string } {
-  switch (status) {
-    case 'early':
-      return { bg: '#3182ce', border: '#2b6cb0' }; // Blue
-    case 'late':
-      return { bg: '#e53e3e', border: '#9b2c2c' }; // Red
-    case 'on_time':
-      return { bg: '#38a169', border: '#276749' }; // Green
-    default:
-      return { bg: '#718096', border: '#4a5568' }; // Gray
-  }
-}
+import { getVehicleColors } from '../../utils/colors';
 
 function VehicleMarkerHtml(vehicle: LiveVehicle): string {
   const { bg, border } = getVehicleColors(vehicle.status);

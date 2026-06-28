@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Info, Search, X, Sun, Moon } from 'lucide-react';
 import type { Agency } from '../App';
 import { FLOATING_CARD, ICON_BTN } from '../styles';
+import { getTimelineHeadwayColor } from '../utils/colors';
 import {
   buildStopCatalog,
   normalizeStopName,
@@ -627,15 +628,7 @@ const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: 
   { key: 'evening', label: 'Evening', time: '7–10 PM',    flex: 1 },
 ];
 
-function hwColor(hw: number | null): { bg: string; fg: string } {
-  if (hw == null) return { bg: 'var(--bg-hover)',  fg: 'var(--text-dim)' };
-  if (hw <= 10)   return { bg: '#22863a',          fg: '#fff' };
-  if (hw <= 15)   return { bg: '#3da44d',          fg: '#fff' };
-  if (hw <= 20)   return { bg: '#78c87e',          fg: '#1a1a1a' };
-  if (hw <= 30)   return { bg: '#d4a017',          fg: '#fff' };
-  if (hw <= 60)   return { bg: '#d4671e',          fg: '#fff' };
-  return                  { bg: '#c0392b',          fg: '#fff' };
-}
+
 
 const LABEL_W = 136;
 
@@ -710,7 +703,7 @@ function ServiceTimeline({
                     <div className="flex flex-1 rounded overflow-hidden h-7 gap-px">
                       {TIMELINE_PERIODS.map(p => {
                         const val = hw[p.key] ?? null;
-                        const { bg, fg } = hwColor(val);
+                        const { bg, fg } = getTimelineHeadwayColor(val);
                         return (
                           <div
                             key={p.key}
@@ -743,7 +736,7 @@ function ServiceTimeline({
           { label: '≤60 min', hw: 60 },
           { label: '>60 min', hw: 120 },
         ].map(({ label, hw }) => {
-          const { bg } = hwColor(hw);
+          const { bg } = getTimelineHeadwayColor(hw);
           return (
             <div key={label} className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: bg }} />
