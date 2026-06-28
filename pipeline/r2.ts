@@ -43,7 +43,7 @@ function isRetryableR2Error(err: unknown): boolean {
   return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up/i.test(msg);
 }
 
-async function r2PutRaw(key: string, body: string | Buffer, contentType: string, bucket: string): Promise<void> {
+async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string): Promise<void> {
   const client = getR2Client();
   const maxAttempts = 4;
   let lastErr: unknown;
@@ -70,6 +70,14 @@ export async function r2Put(key: string, body: string, contentType = 'applicatio
 }
 
 export async function r2PutBuffer(key: string, body: Buffer, contentType: string): Promise<string> {
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
+  return r2PublicUrl(key);
+}
+
+/** Stream a file for large uploads (avoids loading entire file into memory). */
+export async function r2PutFile(key: string, filePath: string, contentType: string): Promise<string> {
+  const { createReadStream } = await import('fs');
+  const body = createReadStream(filePath);
   await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
   return r2PublicUrl(key);
 }

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
-import { r2PutBuffer } from './r2';
+import { r2PutFile } from './r2';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -18,15 +18,22 @@ interface FeatureCollection {
   features: Feature[];
 }
 
-async function fetchJson(url: string): Promise<FeatureCollection | null> {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    return await res.json() as FeatureCollection;
-  } catch (e) {
-    console.error(`Error fetching ${url}:`, e);
-    return null;
+async function fetchJson(url: string, retries = 3): Promise<FeatureCollection | null> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn(`fetch ${url} not ok ${res.status}, retry ${i+1}`);
+        await new Promise(r => setTimeout(r, 500 * (i+1)));
+        continue;
+      }
+      return await res.json() as FeatureCollection;
+    } catch (e) {
+      console.error(`Error fetching ${url} (try ${i+1}):`, e);
+      await new Promise(r => setTimeout(r, 500 * (i+1)));
+    }
   }
+  return null;
 }
 
 async function main() {
@@ -64,11 +71,22 @@ async function main() {
     if (stopsUrl) {
       console.log(`  Downloading stops from ${stopsUrl}`);
       const data = await fetchJson(stopsUrl);
-      if (data && data.features) {
-        data.features.forEach(f => {
+      if (data) {
+        let stopFeatures: any[] = [];
+        if (data.features) {
+          // Old GeoJSON format
+          stopFeatures = data.features;
+        } else if (typeof data === 'object') {
+          // New compact index format: Record<stopId, {name, lat, lon}>
+          stopFeatures = Object.entries(data).map(([stopId, s]: [string, any]) => ({
+            type: 'Feature',
+            properties: { stopId, name: s.name || '', agencySlug: slug },
+            geometry: { type: 'Point', coordinates: [parseFloat(s.lon), parseFloat(s.lat)] }
+          }));
+        }
+        stopFeatures.forEach(f => {
           f.properties = f.properties || {};
           f.properties.agencySlug = slug;
-          // Flatten routes list to string if it's an array to make it easy for vector tiles
           if (Array.isArray(f.properties.routes)) {
             f.properties.routes = f.properties.routes.join(',');
           }
@@ -91,6 +109,10 @@ async function main() {
     }
   }
 
+  console.log(`Collected features — routes: ${allRoutes.length}, stops: ${allStops.length}, corridors: ${allCorridors.length}`);
+  if (allRoutes.length === 0) console.warn("WARNING: 0 routes features — routes layer will be missing from PMTiles!");
+  if (allStops.length === 0) console.warn("WARNING: 0 stops features — stops layer will be missing from PMTiles!");
+
   // Write temporary files
   const routesPath = path.join(tmpDir, 'routes.geojson');
   const stopsPath = path.join(tmpDir, 'stops.geojson');
@@ -110,12 +132,10 @@ async function main() {
   console.log(`$ ${cmd}`);
   execSync(cmd, { stdio: 'inherit' });
 
-  console.log(`Reading compiled PMTiles file...`);
-  const pmtilesBuffer = fs.readFileSync(pmtilesPath);
-  console.log(`PMTiles file size: ${(pmtilesBuffer.length / 1024 / 1024).toFixed(2)} MB`);
+  console.log(`PMTiles file size: ${(fs.statSync(pmtilesPath).size / 1024 / 1024).toFixed(2)} MB`);
 
-  console.log(`Uploading PMTiles to Cloudflare R2...`);
-  const uploadedUrl = await r2PutBuffer('atlas.pmtiles', pmtilesBuffer, 'application/octet-stream');
+  console.log(`Uploading PMTiles to Cloudflare R2 (streaming)...`);
+  const uploadedUrl = await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
   console.log(`PMTiles uploaded successfully! Public URL: ${uploadedUrl}`);
 
   // Cleanup
