@@ -28,8 +28,6 @@ const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
 interface MapCanvasProps {
   agencies: Agency[];
-  layers?: any;
-  allLayers?: any;
   maxHeadway: number;
   period: TimePeriod;
   q: string;

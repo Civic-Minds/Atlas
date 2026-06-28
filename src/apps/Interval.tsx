@@ -138,8 +138,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
       <MapCanvas
         agencies={agencies}
-        layers={filteredLayers}
-        allLayers={layers}
         maxHeadway={maxHeadway}
         period={period}
         q={q}
