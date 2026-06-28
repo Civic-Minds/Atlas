@@ -122,6 +122,15 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     onPendingLiveRouteHandled?.();
   }, [pendingLiveRoute, layers, day]);
 
+  // Clear map selection states when switching away from the Frequency app
+  useEffect(() => {
+    if (!showUi) {
+      setSelectedRoute(null);
+      setSelectedStop(null);
+      setDisambiguationRoutes(null);
+    }
+  }, [showUi]);
+
   useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
 
