@@ -27,9 +27,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [secondsAgo, setSecondsAgo] = useState<number>(0);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
 
-  // List of agencies that support real-time vehicle positions
+  // Only show agencies whose feeds don't require an unconfigured API key
   const eligibleSlugs = useMemo(() => {
-    return Array.from(new Set(LIVE_POLLING_ROUTES.map(r => r.slug)));
+    const slugs = new Set(
+      LIVE_POLLING_ROUTES
+        .filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active)
+        .map(r => r.slug)
+    );
+    return Array.from(slugs);
   }, []);
 
   const eligibleAgencies = useMemo(() => {
@@ -190,14 +195,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <span className="text-xs text-[var(--text-muted)]">Loading feed…</span>
               </div>
             ) : error && vehicles.length === 0 ? (
-              <div className="py-8 text-center">
-                <p className="text-xs text-red-500 font-bold">Error loading live data</p>
-                <p className="text-[10px] text-[var(--text-muted)] mt-1">{error}</p>
+              <div className="py-8 text-center px-4">
+                <p className="text-xs font-bold text-[var(--text-primary)]">
+                  {error.includes('404') ? 'Live tracking not available for this network' : 'Live data unavailable right now'}
+                </p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-1">
+                  {error.includes('404') ? 'This agency may not have a real-time feed configured.' : 'Something went wrong fetching the live feed. Try again in a moment.'}
+                </p>
                 <button
                   onClick={() => { setLoading(true); fetchVehicles(selectedSlug).finally(() => setLoading(false)); }}
                   className="mt-3 text-[10px] font-bold text-[var(--accent)] hover:underline"
                 >
-                  Retry
+                  Try again
                 </button>
               </div>
             ) : filteredVehicles.length === 0 ? (

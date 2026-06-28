@@ -429,7 +429,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     });
   }, [disambiguationRoutes, nonCorridorLayers]);
 
-  const hasContent = !!(currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === ''));
+  const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0;
+  const hasContent = !!(currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
 
   const [panelShouldRender, setPanelShouldRender] = useState(false);
   const [panelVisible, setPanelVisible] = useState(false);

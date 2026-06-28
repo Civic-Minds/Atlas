@@ -186,7 +186,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         />
       )}
 
-      <div className="absolute top-6 right-6 z-[1000] flex items-center gap-2">
+      <div className={`absolute top-6 right-6 z-[1000] flex items-center gap-2 ${!showUi && hideFilterPanel ? 'pointer-events-none' : ''}`}>
         <div className={`flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <FilterChips
             maxHeadway={maxHeadway}
