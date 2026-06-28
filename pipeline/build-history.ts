@@ -3,14 +3,18 @@
  * build-history.ts — compile generated and manual history configurations.
  * Usage: npm run build-history
  *
- * Agencies in our registry (index.json) appear automatically once they have
- * ≥2 R2 snapshots with a headway change on the same route.
+ * Data sources:
+ *   atlas (public)         — atlas/{slug}.json  →  current headways
+ *   atlas-archive (private) — history/{slug}/*.json  →  historical period snapshots
+ *
+ * Agencies in index.json appear automatically once they have ≥1 archive snapshot
+ * with a route whose current headway differs from the archived one.
  * BASE_HISTORY covers agencies NOT in the registry (e.g. GCRTA case studies).
  */
 import { writeFileSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { config } from 'dotenv';
-import { r2ListArchive, r2GetArchive } from './r2.js';
+import { r2Get, r2ListArchive, r2GetArchive } from './r2.js';
 
 config({ path: resolve('.env.local') });
 
@@ -48,7 +52,7 @@ const BASE_HISTORY: ManualAgencyHistory[] = [
 ];
 
 function parsePeriodKey(key: string) {
-  // YYYYMMDD (feed_end_date without dashes)
+  // YYYYMMDD (feed_end_date without dashes, e.g. 20261231)
   const compact = key.match(/^(\d{4})(\d{2})(\d{2})$/);
   if (compact) {
     const year = parseInt(compact[1]);
@@ -70,6 +74,23 @@ function parsePeriodKey(key: string) {
   return { year, label: key };
 }
 
+/** Extract compact { routeShortName → { headway, routeLongName } } from a full GeoJSON FeatureCollection. */
+function extractCurrentHeadways(geojson: any): Record<string, { headway: number; routeLongName?: string }> {
+  const routes: Record<string, { headway: number; routeLongName?: string }> = {};
+  for (const f of (geojson.features ?? [])) {
+    const p = f.properties;
+    if (!p?.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
+    const sn = String(p.routeShortName);
+    const h = p.headway != null ? Number(p.headway) : null;
+    if (h == null) continue;
+    const ln = p.routeLongName ? String(p.routeLongName) : undefined;
+    if (!routes[sn] || h < routes[sn].headway) {
+      routes[sn] = { headway: h, routeLongName: ln ?? routes[sn]?.routeLongName };
+    }
+  }
+  return routes;
+}
+
 async function main() {
   console.log('Compiling route history from R2 snapshots...');
 
@@ -84,14 +105,14 @@ async function main() {
     JSON.parse(readFileSync(indexPath, 'utf8'));
   const registryBySlug = new Map(index.agencies.map(a => [a.slug, a]));
 
-  // 1. List all keys under history/ in the archive bucket
+  // 1. List all archive snapshot files under history/
   const keys = await r2ListArchive('history/');
-  console.log(`Found ${keys.length} snapshot files in R2`);
+  console.log(`Found ${keys.length} snapshot files in atlas-archive`);
 
-  // Map: slug → periodKey → parsed snapshot data
-  const snapshotData: Record<string, Record<string, any>> = {};
+  // Map: slug → periodKey → { routes: { [routeShortName]: { headway, tier, routeLongName } } }
+  const archiveData: Record<string, Record<string, any>> = {};
 
-  // 2. Fetch and parse each snapshot in parallel
+  // 2. Fetch all archive snapshots in parallel
   await Promise.all(
     keys.map(async key => {
       const parts = key.split('/');
@@ -104,10 +125,27 @@ async function main() {
         const raw = await r2GetArchive(key);
         if (!raw) return;
         const parsed = JSON.parse(raw);
-        if (!snapshotData[slug]) snapshotData[slug] = {};
-        snapshotData[slug][periodKey] = parsed;
+        if (!archiveData[slug]) archiveData[slug] = {};
+        archiveData[slug][periodKey] = parsed;
       } catch (err) {
         console.error(`Failed to parse snapshot: ${key}`, err);
+      }
+    })
+  );
+
+  // 3. For registered agencies that have archive snapshots, fetch current GeoJSON from atlas
+  const slugsWithArchive = Object.keys(archiveData).filter(s => registryBySlug.has(s));
+  console.log(`Fetching current GeoJSON for ${slugsWithArchive.length} agencies with archive data...`);
+
+  const currentHeadways: Record<string, Record<string, { headway: number; routeLongName?: string }>> = {};
+  await Promise.all(
+    slugsWithArchive.map(async slug => {
+      try {
+        const raw = await r2Get(`atlas/${slug}.json`);
+        if (!raw) return;
+        currentHeadways[slug] = extractCurrentHeadways(JSON.parse(raw));
+      } catch (err) {
+        console.error(`Failed to fetch current GeoJSON for ${slug}:`, err);
       }
     })
   );
@@ -115,7 +153,7 @@ async function main() {
   const historyData: any[] = [];
   const processedSlugs = new Set<string>();
 
-  // 3. Process BASE_HISTORY agencies (manual case studies + any R2 data they have)
+  // 4. Process BASE_HISTORY agencies (manual case studies + any R2 data they have)
   for (const agency of BASE_HISTORY) {
     processedSlugs.add(agency.slug);
     const agencyRoutes: any[] = [];
@@ -124,7 +162,7 @@ async function main() {
       const manualSnapshots = [...route.manualSnapshots];
       const manualYears = new Set(manualSnapshots.map(s => s.year));
       const dynamicSnapshots: any[] = [];
-      const agencySnaps = snapshotData[agency.slug] ?? {};
+      const agencySnaps = archiveData[agency.slug] ?? {};
 
       for (const [periodKey, snap] of Object.entries(agencySnaps)) {
         const routeData = (snap as any).routes?.[route.routeShortName];
@@ -153,44 +191,62 @@ async function main() {
     }
   }
 
-  // 4. Auto-discover registered agencies from R2 snapshots
-  for (const [slug, agencySnaps] of Object.entries(snapshotData)) {
+  // 5. Auto-discover registered agencies: combine archive snapshots + current atlas data
+  const currentYear = new Date().getFullYear();
+
+  for (const slug of slugsWithArchive) {
     if (processedSlugs.has(slug)) continue;
-    const registryEntry = registryBySlug.get(slug);
-    if (!registryEntry) continue; // snapshot exists for an unknown slug — skip
+    const registryEntry = registryBySlug.get(slug)!;
+    const agencySnaps = archiveData[slug];
+    const current = currentHeadways[slug] ?? {};
 
-    const periodKeys = Object.keys(agencySnaps);
-    if (periodKeys.length < 2) continue; // need ≥2 distinct service periods
-
-    // Collect all routes that appear in ≥2 periods with different headways
-    const routeSnapshots: Record<string, any[]> = {};
+    // Collect all routes from archive snapshots
+    const routeSnapshotsMap: Record<string, any[]> = {};
 
     for (const [periodKey, snap] of Object.entries(agencySnaps)) {
       const { year, label } = parsePeriodKey(periodKey);
       for (const [routeShortName, routeData] of Object.entries((snap as any).routes ?? {})) {
         const h = (routeData as any).headway;
         if (h == null) continue;
-        if (!routeSnapshots[routeShortName]) routeSnapshots[routeShortName] = [];
-        // Deduplicate by year
-        if (!routeSnapshots[routeShortName].some(s => s.year === year)) {
-          const routeLongName = (routeData as any).routeLongName as string | undefined;
-          routeSnapshots[routeShortName].push({ label, year, weekdayHeadwayMin: h, routeLongName });
+        if (!routeSnapshotsMap[routeShortName]) routeSnapshotsMap[routeShortName] = [];
+        if (!routeSnapshotsMap[routeShortName].some(s => s.year === year)) {
+          routeSnapshotsMap[routeShortName].push({
+            label,
+            year,
+            weekdayHeadwayMin: h,
+            routeLongName: (routeData as any).routeLongName,
+          });
         }
       }
     }
 
+    // Add current atlas data as the "now" snapshot for routes where headways changed
     const agencyRoutes: any[] = [];
-    for (const [routeShortName, snaps] of Object.entries(routeSnapshots)) {
-      if (snaps.length < 2) continue;
-      snaps.sort((a, b) => a.year - b.year);
-      const first = snaps[0];
-      const last = snaps[snaps.length - 1];
-      if (first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue; // no change — not interesting
-      const routeLongName = snaps.find(s => s.routeLongName)?.routeLongName as string | undefined;
+
+    for (const [routeShortName, archiveSnaps] of Object.entries(routeSnapshotsMap)) {
+      const currentRoute = current[routeShortName];
+      if (!currentRoute) continue; // route no longer exists in current GTFS
+
+      archiveSnaps.sort((a, b) => a.year - b.year);
+
+      // Only add the current snapshot if it's not already covered by an archive snapshot this year
+      const hasCurrentYearArchive = archiveSnaps.some(s => s.year === currentYear);
+      const allSnaps = hasCurrentYearArchive
+        ? archiveSnaps
+        : [...archiveSnaps, { label: String(currentYear), year: currentYear, weekdayHeadwayMin: currentRoute.headway }];
+
+      allSnaps.sort((a, b) => a.year - b.year);
+
+      // Only include if headway actually changed between earliest and latest
+      const first = allSnaps[0];
+      const last = allSnaps[allSnaps.length - 1];
+      if (first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
+
+      const routeLongName = archiveSnaps.find((s: any) => s.routeLongName)?.routeLongName ?? currentRoute.routeLongName;
       agencyRoutes.push({
         routeShortName,
         routeName: routeLongName || routeShortName,
-        snapshots: snaps.map(({ label, year, weekdayHeadwayMin }) => ({ label, year, weekdayHeadwayMin })),
+        snapshots: allSnaps.map(({ label, year, weekdayHeadwayMin }) => ({ label, year, weekdayHeadwayMin })),
       });
     }
 
@@ -198,14 +254,14 @@ async function main() {
 
     // Sort routes: biggest % change first
     agencyRoutes.sort((a, b) => {
-      const pctChange = (r: any[]) => Math.abs(r[r.length - 1].weekdayHeadwayMin / r[0].weekdayHeadwayMin - 1);
-      return pctChange(b.snapshots) - pctChange(a.snapshots);
+      const pct = (r: any[]) => Math.abs(r[r.length - 1].weekdayHeadwayMin / r[0].weekdayHeadwayMin - 1);
+      return pct(b.snapshots) - pct(a.snapshots);
     });
 
     historyData.push({
       slug,
       name: registryEntry.name,
-      region: 'Canada', // All registered agencies are Canadian GTHA agencies for now
+      region: 'Canada',
       center: registryEntry.center,
       routes: agencyRoutes,
     });
@@ -213,7 +269,7 @@ async function main() {
     console.log(`  auto-discovered: ${registryEntry.name} (${agencyRoutes.length} routes with changes)`);
   }
 
-  // 5. Generate TS code for shared/historyConfig.ts
+  // 6. Generate TS code for shared/historyConfig.ts
   const tsCode = `// Generated by pipeline/build-history.ts. Do not edit manually.
 
 export interface RouteSnapshot {
