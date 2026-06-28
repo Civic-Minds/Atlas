@@ -147,22 +147,7 @@ function HistoryAgencyPanel({
   onRouteSelect: (routeShortName: string) => void;
 }) {
   const [sinceYear, setSinceYear] = useState(0);
-
-  const routeRows = useMemo(() => {
-    return agencyHistory.routes
-      .map(route => {
-        const snaps = sinceYear > 0
-          ? route.snapshots.filter(s => s.year >= sinceYear)
-          : route.snapshots;
-        if (snaps.length === 0) return null;
-        const first = snaps[0];
-        const last = snaps[snaps.length - 1];
-        const worse = last.weekdayHeadwayMin > first.weekdayHeadwayMin;
-        const better = last.weekdayHeadwayMin < first.weekdayHeadwayMin;
-        return { route, first, last, worse, better, changed: snaps.length > 1 };
-      })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
-  }, [agencyHistory, sinceYear]);
+  const [routeQuery, setRouteQuery] = useState('');
 
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
@@ -174,14 +159,53 @@ function HistoryAgencyPanel({
     return all.length ? Math.max(...all) : 0;
   }, [agencyHistory]);
 
+  const routeRows = useMemo(() => {
+    const q = routeQuery.trim().toLowerCase();
+    return agencyHistory.routes
+      .map(route => {
+        const snaps = sinceYear > 0
+          ? route.snapshots.filter(s => s.year >= sinceYear)
+          : route.snapshots;
+        if (snaps.length === 0) return null;
+        const first = snaps[0];
+        const last = snaps[snaps.length - 1];
+        const ratio = snaps.length > 1 ? last.weekdayHeadwayMin / first.weekdayHeadwayMin : 1;
+        const worse = ratio > 1.05;
+        const better = ratio < 0.95;
+        const changeLabel = worse
+          ? `${Math.round(ratio * 10) / 10}× less frequent`
+          : better
+          ? `${Math.round((1 / ratio) * 10) / 10}× more frequent`
+          : 'no change';
+        return { route, first, last, ratio, worse, better, changeLabel };
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null)
+      .filter(({ route }) =>
+        !q ||
+        route.routeShortName.toLowerCase().includes(q) ||
+        route.routeName.toLowerCase().includes(q)
+      )
+      .sort((a, b) => {
+        // Declined: sort worst first (highest ratio)
+        if (a.worse && b.worse) return b.ratio - a.ratio;
+        // Improved: sort best first (lowest ratio)
+        if (a.better && b.better) return a.ratio - b.ratio;
+        // Declined before improved before unchanged
+        if (a.worse !== b.worse) return a.worse ? -1 : 1;
+        if (a.better !== b.better) return a.better ? -1 : 1;
+        return 0;
+      });
+  }, [agencyHistory, sinceYear, routeQuery]);
+
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
+      {/* Header */}
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="flex items-start justify-between">
           <div className="min-w-0 flex-1">
             <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight">{agencyHistory.name}</h2>
             <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
-              {agencyHistory.region} · {minYear}–{maxYear}
+              {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear}–{maxYear}
             </p>
           </div>
           <button
@@ -192,6 +216,7 @@ function HistoryAgencyPanel({
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
+        {/* Compare-from filter */}
         <div className="flex gap-1.5 mt-2.5">
           {SINCE_FILTERS.map(f => (
             <button
@@ -209,15 +234,38 @@ function HistoryAgencyPanel({
         </div>
       </div>
 
-      <p className="shrink-0 text-[9px] text-[var(--text-muted)] font-bold tracking-wider px-4 py-2 border-b border-[var(--border-primary)]">
+      {/* Route search */}
+      <div className="shrink-0 px-3 py-2 border-b border-[var(--border-primary)]">
+        <div className="relative">
+          <input
+            type="text"
+            value={routeQuery}
+            onChange={e => setRouteQuery(e.target.value)}
+            placeholder="Filter routes…"
+            className="w-full h-7 pl-2.5 pr-6 rounded-lg bg-[var(--bg-app)] border border-[var(--border-primary)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+          />
+          {routeQuery && (
+            <button
+              onClick={() => setRouteQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <p className="shrink-0 text-[9px] text-[var(--text-muted)] font-bold tracking-wider px-4 py-1.5 border-b border-[var(--border-primary)]">
         Weekday midday headway · first → latest snapshot
       </p>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {routeRows.length === 0 && (
-          <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No data for this period.</p>
+          <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">
+            {routeQuery ? 'No routes match.' : 'No data for this period.'}
+          </p>
         )}
-        {routeRows.map(({ route, first, last, worse, better, changed }) => (
+        {routeRows.map(({ route, first, last, worse, better, changeLabel }) => (
           <button
             key={route.routeShortName}
             onClick={() => onRouteSelect(route.routeShortName)}
@@ -230,24 +278,14 @@ function HistoryAgencyPanel({
                   <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>
                 )}
               </p>
-              <p className="text-[9px] text-[var(--text-muted)] mt-0.5">
-                {first.label}{changed && first.label !== last.label ? ` → ${last.label}` : ''}
+              <p className={`text-[9px] font-bold mt-0.5 ${worse ? 'text-red-500' : better ? 'text-emerald-500' : 'text-[var(--text-muted)]'}`}>
+                {changeLabel}
+              </p>
+              <p className="text-[9px] text-[var(--text-muted)] mt-0">
+                {first.weekdayHeadwayMin}m in {first.year} → {last.weekdayHeadwayMin}m in {last.year}
               </p>
             </div>
-            <div className="flex items-center gap-1 shrink-0 ml-3">
-              {changed ? (
-                <>
-                  <span className="text-[10px] font-bold text-[var(--text-dim)] tabular-nums">{first.weekdayHeadwayMin}m</span>
-                  <span className="text-[9px] text-[var(--text-dim)]">→</span>
-                  <span className={`text-[10px] font-bold tabular-nums ${worse ? 'text-red-500' : better ? 'text-emerald-500' : 'text-[var(--text-dim)]'}`}>
-                    {last.weekdayHeadwayMin}m
-                  </span>
-                </>
-              ) : (
-                <span className="text-[10px] font-bold text-[var(--text-dim)] tabular-nums">{first.weekdayHeadwayMin}m</span>
-              )}
-              <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors ml-0.5" />
-            </div>
+            <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />
           </button>
         ))}
       </div>

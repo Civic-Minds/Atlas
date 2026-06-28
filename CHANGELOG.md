@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **History agency panel: clearer route list**: Routes sorted by change severity (worst decline first, then improvements, then unchanged). Change is expressed as `Nx less/more frequent` instead of raw numbers. Sub-line shows `Xm in YYYY → Ym in YYYY` for context. Added route search box within the panel.
 - **History agency panel redesign**: Replaced the borrowed Frequency `AgencyCard` (which showed current headways with no temporal context) with a purpose-built `HistoryAgencyPanel`. Shows `first → last` headway per route with color-coded change direction (red = decline, green = improvement) and a year-range filter (All time / Since 2018 / Since 2022). A "Weekday midday headway · first → latest snapshot" label makes the data source explicit. Routes with no change under the selected filter are hidden.
 - **GCRTA history backfill**: Processed 6 historical GCRTA GTFS feeds (2014, 2016, 2018, 2020, 2022, 2024) through the history pipeline. 21 routes now have documented frequency changes — HealthLine, Route 8, Route 26, Route 5, and 17 others. Previously only HealthLine had history (manually seeded). Backfill script: `pipeline/backfill-gcrta-history.ts`.
 - **History config moved to R2**: `build-history.ts` now writes `atlas/history-config.json` to the public R2 bucket instead of generating `shared/historyConfig.ts`. `History.tsx` fetches it at runtime. Removes all service-change data from the git repo; CI no longer commits a generated file on every refresh.
