@@ -673,12 +673,15 @@ export async function processGtfsBuffer(
     if (feature.properties.tier !== 'span') {
       const terminalId = onShape[onShape.length - 1]?.stopId;
       const terminalHw = terminalId ? allStopHw[terminalId] : undefined;
+      // Use midday as the headline headway — consistent with the "Midday" filter period and
+      // avoids all-day averages being inflated by low-frequency overnight/early-morning runs.
+      const terminalMiddayHw = terminalId ? allStopPeriodHw[terminalId]?.['midday'] : undefined;
       const hwVals = Object.values(stopHeadways).sort((a, b) => a - b);
       const mid = Math.floor(hwVals.length / 2);
       const allStopMedian = hwVals.length % 2 === 0
         ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
         : hwVals[mid];
-      const headway = terminalHw ?? allStopMedian;
+      const headway = terminalMiddayHw ?? terminalHw ?? allStopMedian;
       feature.properties.headway = headway;
 
       let tier = 'infrequent';
