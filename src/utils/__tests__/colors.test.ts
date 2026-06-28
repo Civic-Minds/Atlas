@@ -1,4 +1,4 @@
-import { getTierColor } from '../colors';
+import { getTierColor, getVehicleStatus } from '../colors';
 import { describe, it, expect } from 'vitest';
 
 describe('getTierColor', () => {
@@ -20,5 +20,18 @@ describe('getTierColor', () => {
     expect(getTierColor(null)).toBe('#6b7280');
     expect(getTierColor('span')).toBe('#6b7280');
     expect(getTierColor('invalid')).toBe('#9ca3af');
+  });
+});
+
+describe('getVehicleStatus', () => {
+  it('should classify delays correctly', () => {
+    expect(getVehicleStatus(null)).toBe('no_data');
+    expect(getVehicleStatus(-2)).toBe('early');
+    expect(getVehicleStatus(-1.5)).toBe('early');
+    expect(getVehicleStatus(-1.4)).toBe('on_time');
+    expect(getVehicleStatus(0)).toBe('on_time');
+    expect(getVehicleStatus(5.4)).toBe('on_time');
+    expect(getVehicleStatus(5.5)).toBe('late');
+    expect(getVehicleStatus(10)).toBe('late');
   });
 });

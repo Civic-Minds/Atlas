@@ -29,9 +29,10 @@ interface Props {
   pendingLiveRoute?: { slug: string; routeShortName: string } | null;
   onPendingLiveRouteHandled?: () => void;
   searchFocused?: boolean;
+  hideFilterPanel?: boolean;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -213,7 +214,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             );
           })()}
         </div>
-        {!showCorridorBand && (
+        {!hideFilterPanel && (
           <FilterPanel
             lightMode={lightMode}
             setLightMode={setLightMode}

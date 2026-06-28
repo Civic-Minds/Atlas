@@ -23,3 +23,10 @@ export const getTierColor = (tier: string | null): string => {
   }
   return '#9ca3af';
 };
+
+export function getVehicleStatus(delayMin: number | null): 'no_data' | 'early' | 'late' | 'on_time' {
+  if (delayMin === null) return 'no_data';
+  if (delayMin <= -1.5) return 'early';
+  if (delayMin >= 5.5) return 'late';
+  return 'on_time';
+}

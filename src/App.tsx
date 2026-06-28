@@ -5,9 +5,11 @@ import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from './styles';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
+import LiveVehicles from './apps/LiveVehicles';
 import AppDrawer, { type AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
+import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import InfoPanel from './components/InfoPanel';
 
 export interface Agency {
@@ -26,12 +28,14 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/frequency': 'frequency',
   '/apps/corridors': 'corridors',
   '/apps/history': 'history',
+  '/apps/live': 'live',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
   frequency: '/apps/frequency',
   corridors: '/apps/corridors',
   history: '/apps/history',
+  live: '/apps/live',
 };
 
 export default function App() {
@@ -74,30 +78,34 @@ export default function App() {
   const corridorsFromRef = useRef<HTMLInputElement>(null);
   const [fromInputBindings, setFromInputBindings] = useState<CorridorsFromInputBindings | null>(null);
   const [corridorsMounted, setCorridorsMounted] = useState(false);
+  const [liveMounted, setLiveMounted] = useState(false);
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
   const inCorridors = activeApp === 'corridors';
-  const searchValue = inFrequency || inHistory ? query : corridorsFrom;
+  const inLive = activeApp === 'live';
+  const searchValue = inFrequency || inHistory || inLive ? query : corridorsFrom;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inHistory ? 'Find an agency…'
+    : inLive ? 'Search vehicles…'
     : (corridorsFromFocused || corridorsFrom) ? 'Search stations…' : 'From';
   const [shownPlaceholder, setShownPlaceholder] = useState(searchPlaceholder);
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
 
   function handleSearchChange(v: string) {
-    if (inFrequency || inHistory) setQuery(v);
+    if (inFrequency || inHistory || inLive) setQuery(v);
     else setCorridorsFrom(v);
   }
 
   function handleSearchClear() {
-    if (inFrequency || inHistory) setQuery('');
+    if (inFrequency || inHistory || inLive) setQuery('');
     else setCorridorsFrom('');
   }
 
   useEffect(() => {
     if (activeApp === 'corridors') setCorridorsMounted(true);
+    if (activeApp === 'live') setLiveMounted(true);
   }, [activeApp]);
 
   useEffect(() => {
@@ -125,6 +133,7 @@ export default function App() {
   return (
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
+    <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
         <button
@@ -227,8 +236,9 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inCorridors || inHistory}
+              showRouteLayers={inFrequency || inCorridors || inHistory || inLive}
               showCorridorBand={inCorridors}
+              hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               onAgencyCardClose={handleAgencyCardClose}
@@ -253,11 +263,24 @@ export default function App() {
                 />
               </div>
             )}
+            {liveMounted && (
+              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
+                <LiveVehicles
+                  agencies={agencies}
+                  lightMode={lightMode}
+                  setLightMode={setLightMode}
+                  active={inLive}
+                  onInfoOpen={() => setInfoOpen(true)}
+                  query={query}
+                />
+              </div>
+            )}
           </>
         )}
       </main>
       <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
     </div>
+    </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>
   );

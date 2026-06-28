@@ -10,6 +10,8 @@ import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { CorridorMapLayers } from '../corridor/CorridorMapLayers';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { HistoryStopMarkers } from '../history/HistoryStopMarkers';
+import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
+import { LiveVehiclesLayer } from '../live/LiveVehiclesLayer';
 import {
   MapRefCapturer, MapClickHandler, LocateControl, ResetViewControl,
   RouteZoomer, ViewPersistor, GeolocateOnMount, BoundsReporter,
@@ -245,6 +247,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const mapRef = useRef<L.Map | null>(null);
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
+  const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
   const corridorSelected = showCorridorBand && (corridorOverlay?.lines.length ?? 0) > 0;
   const regionalView = getRegionalView(agencies);
   const hasSavedView = getSavedView() !== null;
@@ -482,6 +485,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <RouteZoomer selectedRoute={selectedRoute} layers={allLayers || layers} />
       {(showCorridorBand || !showRouteLayers) && corridorOverlay && <CorridorMapLayers overlay={corridorOverlay} />}
       {historyOverlay && <HistoryStopMarkers />}
+      {liveOverlay && <LiveVehiclesLayer />}
       {showRouteLayers && Object.entries(layers).map(([slug, data]) => {
         const fc = data as GeoJSON.FeatureCollection;
         // Split route shapes from stop points — stops mount/unmount on zoom without
