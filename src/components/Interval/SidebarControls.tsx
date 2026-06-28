@@ -8,7 +8,7 @@ import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
-import { titleCase, cleanHeadsign, fmtHeadway, formatRemDisplay, getRouteLabel } from '../../utils/format';
+import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel } from '../../utils/format';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE } from '../../styles';
 
 interface SidebarControlsProps {
@@ -730,11 +730,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                                 const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
                                 const ph = period !== 'all' ? byPeriod?.[period as keyof HeadwayByPeriod] : undefined;
                                 const displayH = ph ?? d.headway;
-                                const color = headwayToTierColor(displayH);
+                                // When a period filter is active, check if trunk stops have
+                                // meaningfully better frequency than the terminal — if so show a
+                                // range ("every 6–12 min") rather than the terminal number alone.
+                                const trunkHw = period !== 'all'
+                                  ? ((d as any).minStopHeadwayByPeriod as Partial<Record<string, number>> | undefined)?.[period]
+                                  : undefined;
+                                const showRange = trunkHw != null && displayH != null
+                                  && trunkHw < displayH * 0.65
+                                  && displayH / trunkHw <= 4;
+                                const color = headwayToTierColor(showRange ? trunkHw! : displayH);
                                 return (
                                   <>
                                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                                    {fmtHeadway(displayH!)}
+                                    {showRange
+                                      ? fmtHeadwayRange(trunkHw!, displayH!)
+                                      : fmtHeadway(displayH!)}
                                     {ph != null && (
                                       <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period]}</span>
                                     )}

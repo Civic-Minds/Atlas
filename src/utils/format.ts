@@ -31,6 +31,12 @@ export function fmtHeadway(minutes: number): string {
   return `every ~${hrs}h`;
 }
 
+// "every 6–12 min" when both fit in minutes; fall back to two separate strings otherwise.
+export function fmtHeadwayRange(low: number, high: number): string {
+  if (low <= 60 && high <= 60) return `every ${low}–${high} min`;
+  return `${fmtHeadway(low)} – ${fmtHeadway(high)}`;
+}
+
 export function titleCase(s: string): string {
   return s
     .toLowerCase()
