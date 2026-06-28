@@ -47,19 +47,36 @@ interface MapCanvasProps {
 }
 
 // Map style specification builder utilizing CARTO raster basemaps
+// We declare both light and dark sources + layers so we can toggle visibility
+// at runtime without calling setStyle (which would destroy our added vector layers).
 const getMapStyle = (lightMode: boolean) => {
-  const mode = lightMode ? 'light_all' : 'dark_all';
+  const lightTiles = [
+    'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+    'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+    'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+    'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+  ];
+  const darkTiles = [
+    'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+    'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+    'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+    'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+  ];
+  const lightVis = lightMode ? 'visible' : 'none';
+  const darkVis = lightMode ? 'none' : 'visible';
+
   return {
     version: 8,
     sources: {
-      'cartodb-basemap': {
+      'cartodb-light': {
         type: 'raster',
-        tiles: [
-          `https://a.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`,
-          `https://b.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`,
-          `https://c.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`,
-          `https://d.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`
-        ],
+        tiles: lightTiles,
+        tileSize: 256,
+        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
+      },
+      'cartodb-dark': {
+        type: 'raster',
+        tiles: darkTiles,
         tileSize: 256,
         attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
       },
@@ -70,9 +87,16 @@ const getMapStyle = (lightMode: boolean) => {
     },
     layers: [
       {
-        id: 'basemap-layer',
+        id: 'basemap-light',
         type: 'raster',
-        source: 'cartodb-basemap'
+        source: 'cartodb-light',
+        layout: { visibility: lightVis }
+      },
+      {
+        id: 'basemap-dark',
+        type: 'raster',
+        source: 'cartodb-dark',
+        layout: { visibility: darkVis }
       }
     ]
   } as maplibregl.StyleSpecification;
@@ -388,11 +412,20 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     };
   }, []);
 
-  // Update light/dark basemap mode
+  // Toggle light/dark basemap without setStyle (setStyle would drop all the
+  // programmatically added vector layers like routes-layer, stops-layer, etc.)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    map.setStyle(getMapStyle(lightMode));
+    const lightVis = lightMode ? 'visible' : 'none';
+    const darkVis = lightMode ? 'none' : 'visible';
+    // Guard: layers may not exist in some edge cases (initial load, StrictMode)
+    if (map.getLayer('basemap-light')) {
+      map.setLayoutProperty('basemap-light', 'visibility', lightVis);
+    }
+    if (map.getLayer('basemap-dark')) {
+      map.setLayoutProperty('basemap-dark', 'visibility', darkVis);
+    }
   }, [lightMode, mapLoaded]);
 
   // Handle locating the user
@@ -427,8 +460,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     if (!map || !mapLoaded || !selectedRoute) return;
 
     // Center on the route coordinate box in the viewport
-    const bboxBigger = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-      .filter(f => routeKey(f.properties as any) === selectedRoute);
+    let bboxBigger: any[] = [];
+    if (map.getLayer('routes-layer')) {
+      bboxBigger = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+        .filter(f => routeKey(f.properties as any) === selectedRoute);
+    }
 
     if (bboxBigger.length === 0) return;
     
@@ -455,6 +491,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
 
+    // Defensive guards: the PMTiles layers are added inside the map 'load' callback.
+    // In some cases (StrictMode double-invoke, very early effect runs, or future
+    // changes) they may temporarily not exist. Guard to avoid console spam.
+    const hasRoutes = !!map.getLayer('routes-layer');
+    const hasRoutesHit = !!map.getLayer('routes-hit-layer');
+    const hasStops = !!map.getLayer('stops-layer');
+
     // Filters routes matching search / active status
     const filterConditions: any[] = ['all'];
 
@@ -471,49 +514,53 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-    map.setFilter('routes-layer', filterConditions as any);
-    map.setFilter('routes-hit-layer', filterConditions as any);
+    if (hasRoutes) map.setFilter('routes-layer', filterConditions as any);
+    if (hasRoutesHit) map.setFilter('routes-hit-layer', filterConditions as any);
 
-    // Apply color paint styling based on headway tier
-    const lineColorMatch: any[] = ['match', ['get', 'tier']];
-    HEADWAY_TIERS.forEach(({ max, color }) => {
-      if (max !== Infinity) {
-        lineColorMatch.push(String(max), color);
+    if (hasRoutes) {
+      // Apply color paint styling based on headway tier
+      const lineColorMatch: any[] = ['match', ['get', 'tier']];
+      HEADWAY_TIERS.forEach(({ max, color }) => {
+        if (max !== Infinity) {
+          lineColorMatch.push(String(max), color);
+        }
+      });
+      lineColorMatch.push('#6b7280'); // fallback/default
+
+      map.setPaintProperty('routes-layer', 'line-color', lineColorMatch);
+
+      // Opacity based on route state (focused vs dimmed)
+      if (selectedRoute) {
+        map.setPaintProperty('routes-layer', 'line-opacity', [
+          'case',
+          ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 1.0,
+          0.15
+        ]);
+        map.setPaintProperty('routes-layer', 'line-width', [
+          'case',
+          ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 3.5,
+          0.5
+        ]);
+      } else {
+        map.setPaintProperty('routes-layer', 'line-opacity', 0.85);
+        map.setPaintProperty('routes-layer', 'line-width', 1.8);
       }
-    });
-    lineColorMatch.push('#6b7280'); // fallback/default
-
-    map.setPaintProperty('routes-layer', 'line-color', lineColorMatch);
-
-    // Opacity based on route state (focused vs dimmed)
-    if (selectedRoute) {
-      map.setPaintProperty('routes-layer', 'line-opacity', [
-        'case',
-        ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 1.0,
-        0.15
-      ]);
-      map.setPaintProperty('routes-layer', 'line-width', [
-        'case',
-        ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 3.5,
-        0.5
-      ]);
-    } else {
-      map.setPaintProperty('routes-layer', 'line-opacity', 0.85);
-      map.setPaintProperty('routes-layer', 'line-width', 1.8);
     }
 
     // Stops visibility
-    const showAll = zoom >= 15;
-    const showRail = zoom >= 12 && zoom < 15;
+    if (hasStops) {
+      const showAll = zoom >= 15;
+      const showRail = zoom >= 12 && zoom < 15;
 
-    map.setFilter('stops-layer', [
-      'all',
-      showAll 
-        ? ['all'] 
-        : showRail 
-          ? ['==', ['get', 'isRail'], true]
-          : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
-    ] as any);
+      map.setFilter('stops-layer', [
+        'all',
+        showAll 
+          ? ['all'] 
+          : showRail 
+            ? ['==', ['get', 'isRail'], true]
+            : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
+      ] as any);
+    }
 
   }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers]);
 
@@ -521,7 +568,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    map.setFilter('corridor-shapes-layer', (showCorridorBand ? ['all'] : ['==', 'agencySlug', '']) as any);
+    if (map.getLayer('corridor-shapes-layer')) {
+      map.setFilter('corridor-shapes-layer', (showCorridorBand ? ['all'] : ['==', 'agencySlug', '']) as any);
+    }
   }, [showCorridorBand, mapLoaded]);
 
   // Dynamic corridor overlays
