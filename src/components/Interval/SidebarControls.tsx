@@ -325,9 +325,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!currentStop?.routeIds) return [];
     const routeIds = new Set<string>(currentStop.routeIds);
     const stopAgencySlug = currentStop.agencySlug as string | undefined;
-    // One branch per headsign per direction — each terminal destination gets its own row
-    // with its own headway (p.headway = terminal-stop headway from pipeline).
-    type Branch = { rKey: string; headsign: string | null; headway: number | null; directionId: number };
+    // One branch per headsign per direction — each terminal destination gets its own row.
+    // headway = stop-specific all-day headway (falls back to feature headway for sorting/color).
+    // stopPeriodHw = per-period headways at this specific stop (used when a period filter is active).
+    type Branch = { rKey: string; headsign: string | null; headway: number | null; stopPeriodHw: Partial<Record<string, number>> | undefined; directionId: number };
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (stopAgencySlug && slug !== stopAgencySlug) continue;
@@ -336,8 +337,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
         // Only include features whose shape actually covers this stop.
-        const servesStop = (p as any).stopHeadways?.[currentStop.stopId] != null;
-        if (!servesStop) continue;
+        const stopHw: number | undefined = (p as any).stopHeadways?.[currentStop.stopId];
+        if (stopHw == null) continue;
 
         const shortName = p.routeShortName || p.routeId;
         const dirId = (p as any).directionId ?? 0;
@@ -350,15 +351,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           });
         }
         const entry = routeMap.get(shortName)!;
-        // Key per headsign so each terminal destination is its own row.
         const branchKey = `${dirId}::${p.headsign ?? ''}`;
-        const newHeadway = p.headway ?? null;
+        // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
+        const newHeadway = stopHw ?? p.headway ?? null;
         const existing = entry.branches.get(branchKey);
         if (!existing || (newHeadway != null && (existing.headway == null || newHeadway < existing.headway))) {
           entry.branches.set(branchKey, {
             rKey: routeKey({ ...p, agencySlug: slug } as any),
             headsign: p.headsign ?? null,
             headway: newHeadway,
+            stopPeriodHw: (p as any).stopPeriodHeadways?.[currentStop.stopId] as Partial<Record<string, number>> | undefined,
             directionId: dirId,
           });
         }
@@ -372,7 +374,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         agencyName: v.agencyName,
         branches: Array.from(v.branches.values())
           .sort((a, b) => a.directionId - b.directionId || (a.headway ?? Infinity) - (b.headway ?? Infinity))
-          .map(b => ({ rKey: b.rKey, headsign: b.headsign, headway: b.headway, directionId: b.directionId })),
+          .map(b => ({ rKey: b.rKey, headsign: b.headsign, headway: b.headway, stopPeriodHw: b.stopPeriodHw, directionId: b.directionId })),
       }));
   }, [currentStop, nonCorridorLayers, currentDay]);
 
@@ -577,7 +579,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     {(() => {
                       const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
                       let lastDir: number | null = null;
-                      return branches.map(({ rKey, headsign, headway, directionId }) => {
+                      return branches.map(({ rKey, headsign, headway, stopPeriodHw, directionId }) => {
                         const cleaned = headsign && !/^A[0-9]/.test(shortName)
                           ? titleCase(cleanHeadsign(headsign.trim(), shortName, longName))
                           : null;
@@ -586,6 +588,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           : `→ dir ${directionId}`;
                         const showDivider = hasMultipleDirections && lastDir !== null && directionId !== lastDir;
                         lastDir = directionId;
+                        // Use period-specific stop headway when a filter is active, fall back to all-day stop headway.
+                        const displayHw = (period !== 'all' ? stopPeriodHw?.[period] : undefined) ?? headway;
+                        const showPeriodLabel = period !== 'all' && stopPeriodHw?.[period] != null;
                         return (
                           <React.Fragment key={`${rKey}::${directionId}::${headsign ?? ''}`}>
                             {showDivider && (
@@ -598,16 +603,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                               >
                                 {label}
                               </button>
-                              {headway != null && (
+                              {displayHw != null && (
                                 <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">
                                   {isLivePollingRoute(rKey.split('::')[0], shortName) && (
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />
                                   )}
                                   <span
                                     className="w-1.5 h-1.5 rounded-full shrink-0"
-                                    style={{ background: getTierColor(String(headway)) }}
+                                    style={{ background: headwayToTierColor(displayHw) }}
                                   />
-                                  {fmtHeadway(headway)}
+                                  {fmtHeadway(displayHw)}
+                                  {showPeriodLabel && (
+                                    <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period]}</span>
+                                  )}
                                 </span>
                               )}
                             </div>
