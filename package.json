@@ -12,6 +12,7 @@
     "test": "vitest",
     "process": "npx tsx pipeline/process-gtfs.ts",
     "refresh": "npx tsx pipeline/refresh.ts",
+    "build-pmtiles": "npx tsx pipeline/build-pmtiles.ts",
     "build-history": "npx tsx pipeline/build-history.ts",
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
