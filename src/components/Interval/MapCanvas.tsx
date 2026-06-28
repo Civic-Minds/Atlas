@@ -219,7 +219,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     mapRef.current = map;
 
     map.on('load', () => {
-      setMapLoaded(true);
       setZoom(map.getZoom());
 
       // Add route shapes (line) layers
@@ -352,6 +351,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         setSelectedStop(prev => prev === compositeId ? null : compositeId);
         e.preventDefault();
       });
+
+      setMapLoaded(true);
     });
 
     // Sync viewport boundaries

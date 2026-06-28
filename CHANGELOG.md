@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Interval: fix hidden AgencyCard bug**: Removed the `query === ''` constraint from the `AgencyCard` rendering check in `Interval.tsx`, fixing the bug where searching and selecting an agency left the query field populated and permanently prevented the Agency Card from rendering.
+- **Interval: fix map loading race condition**: Moved `setMapLoaded(true)` to the end of the map `load` event callback to ensure all vector tile layers (`routes-layer`, `stops-layer`, etc.) are fully initialized and registered before any reactive filter/style effects execute.
 - **Interval: Route Card to Agency Card transition**: Wired up the agency link button under the Route Card title to transition directly back to that agency's card (clearing the selected route and setting the selected agency slug), and added a route count label (e.g. `21 routes`) to the header of the `AgencyCard`.
 - **Interval: HeadwaySparkline redesign**: Rebuilt the sparkline in the Route Card into a styled, explanatory "Service Frequency" card widget with labeled period indicators (`AM`, `MID`, `PM`, `EVE`) and an explanation text label clarifying that taller bars signify more frequent service.
 - **History: explicit headway time definitions**: Added clear titles and descriptions defining the headway numbers as "Weekday Midday Headways" (service frequency in minutes between 12 PM – 3 PM) in `RouteHistoryCard` to make them instantly understandable.
