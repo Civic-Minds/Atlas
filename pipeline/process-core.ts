@@ -155,7 +155,6 @@ export interface StopEntry {
   name: string;
   lat: number;
   lon: number;
-  hw?: number; // best weekday headway across all routes serving this stop
 }
 
 export interface ProcessResult {
@@ -787,17 +786,6 @@ export async function processGtfsBuffer(
       referencedStopIds.add(id);
     }
   }
-  const stopBestHeadways = new Map<string, number>();
-  for (const f of features) {
-    if ((f.properties as any).day !== 'Weekday') continue;
-    const sh = (f.properties as any).stopHeadways as Record<string, number> | undefined;
-    if (!sh) continue;
-    for (const [sid, hw] of Object.entries(sh)) {
-      const cur = stopBestHeadways.get(sid);
-      if (cur == null || hw < cur) stopBestHeadways.set(sid, hw);
-    }
-  }
-
   const allStopsById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s]));
   const stopsIndex: Record<string, StopEntry> = {};
   for (const stopId of referencedStopIds) {
@@ -807,7 +795,6 @@ export async function processGtfsBuffer(
       name: s.stop_name,
       lat: parseFloat(s.stop_lat as unknown as string),
       lon: parseFloat(s.stop_lon as unknown as string),
-      hw: stopBestHeadways.get(stopId),
     };
   }
 

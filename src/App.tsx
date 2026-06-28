@@ -6,12 +6,10 @@ import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
 import LiveVehicles from './apps/LiveVehicles';
-import ServiceQuality from './apps/ServiceQuality';
 import AppDrawer, { type AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
-import { ServiceQualityMapOverlayProvider } from './context/ServiceQualityMapOverlay';
 import InfoPanel from './components/InfoPanel';
 
 export interface Agency {
@@ -32,7 +30,6 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/corridors': 'corridors',
   '/apps/history': 'history',
   '/apps/live': 'live',
-  '/apps/quality': 'quality',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -40,7 +37,6 @@ const APP_TO_PATH: Record<AppId, string> = {
   corridors: '/apps/corridors',
   history: '/apps/history',
   live: '/apps/live',
-  quality: '/apps/quality',
 };
 
 export default function App() {
@@ -89,33 +85,28 @@ export default function App() {
   const inHistory = activeApp === 'history';
   const inCorridors = activeApp === 'corridors';
   const inLive = activeApp === 'live';
-  const inQuality = activeApp === 'quality';
-  const searchValue = inFrequency || inHistory || inLive || inQuality ? query : corridorsFrom;
+  const searchValue = inFrequency || inHistory || inLive ? query : corridorsFrom;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inHistory ? 'Find an agency…'
     : inLive ? 'Search vehicles…'
-    : inQuality ? ''
     : (corridorsFromFocused || corridorsFrom) ? 'Search stations…' : 'From';
   const [shownPlaceholder, setShownPlaceholder] = useState(searchPlaceholder);
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
 
   function handleSearchChange(v: string) {
-    if (inFrequency || inHistory || inLive || inQuality) setQuery(v);
+    if (inFrequency || inHistory || inLive) setQuery(v);
     else setCorridorsFrom(v);
   }
 
   function handleSearchClear() {
-    if (inFrequency || inHistory || inLive || inQuality) setQuery('');
+    if (inFrequency || inHistory || inLive) setQuery('');
     else setCorridorsFrom('');
   }
-
-  const [qualityMounted, setQualityMounted] = useState(false);
 
   useEffect(() => {
     if (activeApp === 'corridors') setCorridorsMounted(true);
     if (activeApp === 'live') setLiveMounted(true);
-    if (activeApp === 'quality') setQualityMounted(true);
   }, [activeApp]);
 
   useEffect(() => {
@@ -144,7 +135,6 @@ export default function App() {
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
-    <ServiceQualityMapOverlayProvider>
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
         <button
@@ -247,9 +237,9 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inCorridors || inHistory || inLive || inQuality}
+              showRouteLayers={inFrequency || inCorridors || inHistory || inLive}
               showCorridorBand={inCorridors}
-              hideFilterPanel={inCorridors || inLive || inQuality}
+              hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               onAgencyCardClose={handleAgencyCardClose}
@@ -286,20 +276,11 @@ export default function App() {
                 />
               </div>
             )}
-            {qualityMounted && (
-              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inQuality ? 'opacity-100' : 'opacity-0'}`}>
-                <ServiceQuality
-                  agencies={agencies}
-                  active={inQuality}
-                />
-              </div>
-            )}
           </>
         )}
       </main>
       <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
     </div>
-    </ServiceQualityMapOverlayProvider>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>
