@@ -165,7 +165,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {showUi && selectedAgencySlug && !selectedRoute && !selectedStop && query === '' && (() => {
+      {showUi && selectedAgencySlug && !selectedRoute && !selectedStop && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard

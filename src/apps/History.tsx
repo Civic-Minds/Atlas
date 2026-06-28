@@ -117,7 +117,8 @@ function RouteHistoryCard({
 
       <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto custom-scrollbar">
         <div>
-          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase block mb-2">Frequency History</span>
+          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase block mb-0.5">Weekday Midday Headway</span>
+          <span className="text-[8px] text-[var(--text-dim)] block mb-2">Service frequency in minutes (12 PM – 3 PM)</span>
           <div className="flex items-end gap-2 flex-wrap bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 shadow-sm">
             {snaps.map((snap, i) => {
               const isLast = i === snaps.length - 1;
@@ -147,7 +148,7 @@ function RouteHistoryCard({
           <div className={`border-l-2 pl-3 py-0.5 ${summary.worse ? 'border-red-500 text-red-500' : 'border-green-500 text-green-500'}`}>
             <p className="text-xs font-black leading-tight">{summary.text}</p>
             <p className="text-[9px] text-[var(--text-muted)] font-medium mt-0.5">
-              Weekday headway comparison from {first.label} to {last.label}.
+              Weekday midday headway comparison from {first.label} to {last.label}.
             </p>
           </div>
         )}
