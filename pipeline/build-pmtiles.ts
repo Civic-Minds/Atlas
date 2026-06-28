@@ -131,13 +131,15 @@ async function main() {
   const corridorsPm = path.join(tmpDir, 'corridors.pmtiles');
 
   console.log("Building routes.pmtiles ...");
-  execSync(`tippecanoe -o "${routesPm}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l routes "${routesPath}" --force`, { stdio: 'inherit' });
+  // --no-tile-size-limit: never drop routes due to tile size — dense cities like GTHA
+  // would otherwise lose 95%+ of routes at low zoom levels.
+  execSync(`tippecanoe -o "${routesPm}" -zg --no-tile-size-limit -l routes "${routesPath}" --force`, { stdio: 'inherit' });
 
   console.log("Building stops.pmtiles ...");
   execSync(`tippecanoe -o "${stopsPm}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l stops "${stopsPath}" --force`, { stdio: 'inherit' });
 
   console.log("Building corridors.pmtiles ...");
-  execSync(`tippecanoe -o "${corridorsPm}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
+  execSync(`tippecanoe -o "${corridorsPm}" -zg --no-tile-size-limit -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
 
   console.log("Merging into atlas.pmtiles via tile-join ...");
   execSync(`tile-join -o "${pmtilesPath}" --force "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
