@@ -2,7 +2,10 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
+import { R2_PUBLIC_URL } from '../../shared/config';
 import type { Agency } from '../App';
+
+interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
 type Tab = 'about' | 'agencies' | 'live';
 
@@ -27,6 +30,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
   const [liveQuery, setLiveQuery] = useState('');
   const [visible, setVisible] = useState(false);
+  const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
+
+  useEffect(() => {
+    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
+      .then(r => r.json())
+      .then((d: HistoryAgencySummary[]) => setHistoryAgencies(d))
+      .catch(() => setHistoryAgencies([]));
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -122,6 +133,36 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A frequency map covering {agencies.length} transit agencies across Canada and the US Great Lakes.
               </p>
+
+              <div>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Service History</p>
+                <p className="text-[10px] text-[var(--text-dim)] leading-relaxed mb-2">
+                  Historical frequency data is available for a subset of agencies. More are added as GTFS snapshots accumulate.
+                </p>
+                {historyAgencies === null && (
+                  <p className="text-[10px] text-[var(--text-dim)]">Loading…</p>
+                )}
+                {historyAgencies !== null && historyAgencies.length === 0 && (
+                  <p className="text-[10px] text-[var(--text-dim)]">None yet.</p>
+                )}
+                {historyAgencies !== null && historyAgencies.length > 0 && (
+                  <div className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                    {historyAgencies.map((a, i) => (
+                      <div
+                        key={a.slug}
+                        className={`flex items-center justify-between px-3 py-2 ${i < historyAgencies.length - 1 ? 'border-b border-[var(--border-primary)]' : ''}`}
+                      >
+                        <div>
+                          <p className="text-[11px] font-black text-[var(--text-primary)]">{a.name}</p>
+                          <p className="text-[9px] text-[var(--text-muted)] font-bold">{a.region}</p>
+                        </div>
+                        <p className="text-[9px] text-[var(--text-dim)] tabular-nums">{a.routes.length} routes</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
                 <a

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **About tab: Service History agency list**: Shows which agencies have documented history data, pulled live from `atlas/history-config.json`. Updates automatically as more agencies are added to the pipeline.
 - **History agency panel: simplified route list**: Flat route list with a colored dot (red/green/grey) as the only change signal. Sort by severity. No labels, no year context — those belong in the route detail card. Added route search box. Year-range filter tabs removed (premature; will live on the route card when implemented).
 - **History agency panel redesign**: Replaced the borrowed Frequency `AgencyCard` (which showed current headways with no temporal context) with a purpose-built `HistoryAgencyPanel`. Shows `first → last` headway per route with color-coded change direction (red = decline, green = improvement) and a year-range filter (All time / Since 2018 / Since 2022). A "Weekday midday headway · first → latest snapshot" label makes the data source explicit. Routes with no change under the selected filter are hidden.
 - **GCRTA history backfill**: Processed 6 historical GCRTA GTFS feeds (2014, 2016, 2018, 2020, 2022, 2024) through the history pipeline. 21 routes now have documented frequency changes — HealthLine, Route 8, Route 26, Route 5, and 17 others. Previously only HealthLine had history (manually seeded). Backfill script: `pipeline/backfill-gcrta-history.ts`.
