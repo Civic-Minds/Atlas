@@ -146,7 +146,6 @@ function HistoryAgencyPanel({
   onClose: () => void;
   onRouteSelect: (routeShortName: string) => void;
 }) {
-  const [sinceYear, setSinceYear] = useState(0);
   const [routeQuery, setRouteQuery] = useState('');
 
   const minYear = useMemo(() => {
@@ -163,21 +162,13 @@ function HistoryAgencyPanel({
     const q = routeQuery.trim().toLowerCase();
     return agencyHistory.routes
       .map(route => {
-        const snaps = sinceYear > 0
-          ? route.snapshots.filter(s => s.year >= sinceYear)
-          : route.snapshots;
-        if (snaps.length === 0) return null;
-        const first = snaps[0];
-        const last = snaps[snaps.length - 1];
-        const ratio = snaps.length > 1 ? last.weekdayHeadwayMin / first.weekdayHeadwayMin : 1;
+        if (route.snapshots.length === 0) return null;
+        const first = route.snapshots[0];
+        const last = route.snapshots[route.snapshots.length - 1];
+        const ratio = route.snapshots.length > 1 ? last.weekdayHeadwayMin / first.weekdayHeadwayMin : 1;
         const worse = ratio > 1.05;
         const better = ratio < 0.95;
-        const changeLabel = worse
-          ? `${Math.round(ratio * 10) / 10}× less frequent`
-          : better
-          ? `${Math.round((1 / ratio) * 10) / 10}× more frequent`
-          : 'no change';
-        return { route, first, last, ratio, worse, better, changeLabel };
+        return { route, first, last, ratio, worse, better };
       })
       .filter((r): r is NonNullable<typeof r> => r !== null)
       .filter(({ route }) =>
@@ -186,16 +177,13 @@ function HistoryAgencyPanel({
         route.routeName.toLowerCase().includes(q)
       )
       .sort((a, b) => {
-        // Declined: sort worst first (highest ratio)
         if (a.worse && b.worse) return b.ratio - a.ratio;
-        // Improved: sort best first (lowest ratio)
         if (a.better && b.better) return a.ratio - b.ratio;
-        // Declined before improved before unchanged
         if (a.worse !== b.worse) return a.worse ? -1 : 1;
         if (a.better !== b.better) return a.better ? -1 : 1;
         return 0;
       });
-  }, [agencyHistory, sinceYear, routeQuery]);
+  }, [agencyHistory, routeQuery]);
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
@@ -215,22 +203,6 @@ function HistoryAgencyPanel({
           >
             <X className="w-3.5 h-3.5" />
           </button>
-        </div>
-        {/* Compare-from filter */}
-        <div className="flex gap-1.5 mt-2.5">
-          {SINCE_FILTERS.map(f => (
-            <button
-              key={f.year}
-              onClick={() => setSinceYear(f.year)}
-              className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition-colors ${
-                sinceYear === f.year
-                  ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
-                  : 'bg-transparent text-[var(--text-muted)] border-[var(--border-primary)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -255,34 +227,25 @@ function HistoryAgencyPanel({
         </div>
       </div>
 
-      <p className="shrink-0 text-[9px] text-[var(--text-muted)] font-bold tracking-wider px-4 py-1.5 border-b border-[var(--border-primary)]">
-        Weekday midday headway · first → latest snapshot
-      </p>
-
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {routeRows.length === 0 && (
           <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">
             {routeQuery ? 'No routes match.' : 'No data for this period.'}
           </p>
         )}
-        {routeRows.map(({ route, first, last, worse, better, changeLabel }) => (
+        {routeRows.map(({ route, worse, better }) => (
           <button
             key={route.routeShortName}
             onClick={() => onRouteSelect(route.routeShortName)}
-            className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+            className="flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
           >
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${worse ? 'bg-red-500' : better ? 'bg-emerald-500' : 'bg-[var(--text-dim)]'}`} />
+              <p className="text-xs text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight truncate">
                 <span className="font-black">{route.routeShortName}</span>
                 {route.routeName && (
                   <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>
                 )}
-              </p>
-              <p className={`text-[9px] font-bold mt-0.5 ${worse ? 'text-red-500' : better ? 'text-emerald-500' : 'text-[var(--text-muted)]'}`}>
-                {changeLabel}
-              </p>
-              <p className="text-[9px] text-[var(--text-muted)] mt-0">
-                {first.weekdayHeadwayMin}m in {first.year} → {last.weekdayHeadwayMin}m in {last.year}
               </p>
             </div>
             <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />
