@@ -501,8 +501,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     // Filters routes matching search / active status
     // Support agency search (by slug or name) so that searching an agency actually
     // restricts the visible routes on the map (in addition to sidebar stats).
-    const filterConditions: any[] = ['all'];
-
+    // Use proper MapLibre "in" for substring (contains). Set to null to show all.
     const ql = (q || '').trim().toLowerCase();
     let matchedAgencySlug: string | null = null;
     if (ql && agencies && agencies.length) {
@@ -516,25 +515,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
+    let routeFilter: any = null;
     if (!showRouteLayers) {
-      filterConditions.push(['==', 'agencySlug', '']);
+      routeFilter = ['==', 'agencySlug', ''];
     } else if (ql) {
       if (matchedAgencySlug) {
         // Searching for an agency → show exactly that agency's routes on the map
-        filterConditions.push(['==', 'agencySlug', matchedAgencySlug]);
+        routeFilter = ['==', 'agencySlug', matchedAgencySlug];
       } else {
-        // Route number/name search (also allow agency slug partial match)
-        filterConditions.push([
+        // Route number/name search (also allow agency slug partial match via contains)
+        routeFilter = [
           'any',
-          ['like', ['get', 'routeShortName'], q],
-          ['like', ['get', 'routeId'], q],
-          ['like', ['get', 'agencySlug'], q]
-        ]);
+          ['in', q, ['get', 'routeShortName']],
+          ['in', q, ['get', 'routeId']],
+          ['in', q, ['get', 'agencySlug']]
+        ];
       }
     }
 
-    if (hasRoutes) map.setFilter('routes-layer', filterConditions as any);
-    if (hasRoutesHit) map.setFilter('routes-hit-layer', filterConditions as any);
+    if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
+    if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
 
     if (hasRoutes) {
       // Apply color paint styling based on headway tier
@@ -588,7 +588,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     if (map.getLayer('corridor-shapes-layer')) {
-      map.setFilter('corridor-shapes-layer', (showCorridorBand ? ['all'] : ['==', 'agencySlug', '']) as any);
+      const corrFilter = showCorridorBand ? null : ['==', 'agencySlug', ''];
+      map.setFilter('corridor-shapes-layer', corrFilter as any);
     }
   }, [showCorridorBand, mapLoaded]);
 
