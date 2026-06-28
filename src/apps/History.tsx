@@ -146,7 +146,6 @@ function HistoryAgencyPanel({
   onClose: () => void;
   onRouteSelect: (routeShortName: string) => void;
 }) {
-  const [routeQuery, setRouteQuery] = useState('');
 
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
@@ -159,7 +158,6 @@ function HistoryAgencyPanel({
   }, [agencyHistory]);
 
   const routeRows = useMemo(() => {
-    const q = routeQuery.trim().toLowerCase();
     return agencyHistory.routes
       .map(route => {
         if (route.snapshots.length === 0) return null;
@@ -171,11 +169,6 @@ function HistoryAgencyPanel({
         return { route, first, last, ratio, worse, better };
       })
       .filter((r): r is NonNullable<typeof r> => r !== null)
-      .filter(({ route }) =>
-        !q ||
-        route.routeShortName.toLowerCase().includes(q) ||
-        route.routeName.toLowerCase().includes(q)
-      )
       .sort((a, b) => {
         if (a.worse && b.worse) return b.ratio - a.ratio;
         if (a.better && b.better) return a.ratio - b.ratio;
@@ -183,7 +176,7 @@ function HistoryAgencyPanel({
         if (a.better !== b.better) return a.better ? -1 : 1;
         return 0;
       });
-  }, [agencyHistory, routeQuery]);
+  }, [agencyHistory]);
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
@@ -206,31 +199,11 @@ function HistoryAgencyPanel({
         </div>
       </div>
 
-      {/* Route search */}
-      <div className="shrink-0 px-3 py-2 border-b border-[var(--border-primary)]">
-        <div className="relative">
-          <input
-            type="text"
-            value={routeQuery}
-            onChange={e => setRouteQuery(e.target.value)}
-            placeholder="Filter routes…"
-            className="w-full h-7 pl-2.5 pr-6 rounded-lg bg-[var(--bg-app)] border border-[var(--border-primary)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] transition-colors"
-          />
-          {routeQuery && (
-            <button
-              onClick={() => setRouteQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-      </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {routeRows.length === 0 && (
           <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">
-            {routeQuery ? 'No routes match.' : 'No data for this period.'}
+            No data for this period.
           </p>
         )}
         {routeRows.map(({ route, worse, better }) => (
@@ -239,15 +212,12 @@ function HistoryAgencyPanel({
             onClick={() => onRouteSelect(route.routeShortName)}
             className="flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
           >
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${worse ? 'bg-red-500' : better ? 'bg-emerald-500' : 'bg-[var(--text-dim)]'}`} />
-              <p className="text-xs text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight truncate">
-                <span className="font-black">{route.routeShortName}</span>
-                {route.routeName && (
-                  <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>
-                )}
-              </p>
-            </div>
+            <p className="text-xs text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight truncate min-w-0 flex-1">
+              <span className="font-black">{route.routeShortName}</span>
+              {route.routeName && (
+                <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>
+              )}
+            </p>
             <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />
           </button>
         ))}
