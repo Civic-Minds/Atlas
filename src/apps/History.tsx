@@ -131,13 +131,13 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
-  const [historyData, setHistoryData] = useState<AgencyHistory[]>([]);
+  const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
 
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
       .then((data: AgencyHistory[]) => setHistoryData(data))
-      .catch(() => {});
+      .catch(() => setHistoryData([]));
   }, []);
 
   useEffect(() => {
@@ -153,7 +153,7 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
   }, [active]);
 
   const historyAgencies = useMemo(() => {
-    return historyData.filter(a => a.routes.some(r => r.snapshots.length > 0));
+    return (historyData ?? []).filter(a => a.routes.some(r => r.snapshots.length > 0));
   }, [historyData]);
 
   useEffect(() => {
@@ -259,7 +259,10 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
               <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
                 <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
               </div>
-              {filtered.length === 0 && (
+              {historyData === null && (
+                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
+              )}
+              {historyData !== null && filtered.length === 0 && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
               )}
               {filtered.map(agency => (

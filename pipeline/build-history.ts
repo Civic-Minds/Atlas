@@ -38,7 +38,6 @@ const BASE_HISTORY: Array<{
         routeLongName: 'Euclid Avenue BRT',
         snapshots: [
           { periodKey: '20080101', headway: 5, label: '2008 Launch' },
-          { periodKey: '20160101', headway: 7.5, label: '2016' },
         ],
       },
     ],
@@ -61,6 +60,20 @@ function parsePeriodKey(key: string): { year: number; label: string } {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const month = months[parseInt(dashed[2]) - 1] ?? '';
     return { year, label: `${month} ${year}` };
+  }
+  // Month-name keys like "Jun-27-2014", "jul-10-2018", "Jun-16-2020"
+  const monthNameMatch = key.match(/([A-Za-z]+)[-\s]+\d+[-\s]+(20\d{2})/);
+  if (monthNameMatch) {
+    const year = parseInt(monthNameMatch[2]);
+    const monthAbbr = monthNameMatch[1].slice(0, 3);
+    const label = `${monthAbbr.charAt(0).toUpperCase()}${monthAbbr.slice(1).toLowerCase()} ${year}`;
+    return { year, label };
+  }
+  // Plain year like "2016"
+  const yearOnlyMatch = key.match(/^(20\d{2})$/);
+  if (yearOnlyMatch) {
+    const year = parseInt(yearOnlyMatch[1]);
+    return { year, label: String(year) };
   }
   const yearMatch = key.match(/\b(20\d{2})\b/);
   const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
