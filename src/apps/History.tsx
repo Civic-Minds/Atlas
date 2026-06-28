@@ -253,99 +253,101 @@ export default function History({ active, agencies, layers, day, onInfoOpen, que
 
   return (
     <div
-      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`absolute inset-0 pointer-events-none z-[1000] transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0'}`}
     >
-      {selectedSlug && matchingAgency ? (
-        (() => {
-          if (selectedRouteShortName) {
-            const agencyHistory = historyData?.find(a => a.slug === selectedSlug);
-            const selectedRoute = agencyHistory?.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
-            if (selectedRoute) {
-              return (
-                <RouteHistoryCard
-                  route={selectedRoute}
-                  agencyName={matchingAgency.name}
-                  region={matchingAgency.region ?? ''}
-                  onBack={() => setSelectedRouteShortName(null)}
-                />
-              );
+      <div className="pointer-events-auto">
+        {selectedSlug && matchingAgency ? (
+          (() => {
+            if (selectedRouteShortName) {
+              const agencyHistory = historyData?.find(a => a.slug === selectedSlug);
+              const selectedRoute = agencyHistory?.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
+              if (selectedRoute) {
+                return (
+                  <RouteHistoryCard
+                    route={selectedRoute}
+                    agencyName={matchingAgency.name}
+                    region={matchingAgency.region ?? ''}
+                    onBack={() => setSelectedRouteShortName(null)}
+                  />
+                );
+              }
             }
-          }
-          return (
-            <AgencyCard
-              agency={matchingAgency}
-              layers={layers}
-              day={day}
-              onClose={() => setSelectedSlug(null)}
-              onRouteSelect={(routeKey) => {
-                const shortName = routeKey.split('::')[1];
-                setSelectedRouteShortName(shortName);
-              }}
-            />
-          );
-        })()
-      ) : (
-        <div
-          className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
-          onMouseDown={e => e.preventDefault()}
-        >
-          {query === '' && recentSearches.length > 0 ? (
-            <>
-              <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
-                <p className="text-[10px] font-bold text-[var(--text-muted)]">Recent searches</p>
-                <button
-                  onClick={clearRecentSearches}
-                  className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
-                >
-                  Clear
-                </button>
-              </div>
-              {recentSearches.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => setQuery(s)}
-                  className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
-                    {s}
-                  </span>
-                  <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
-                </button>
-              ))}
-            </>
-          ) : (
-            <>
-              <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
-                <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
-              </div>
-              {historyData === null && (
-                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
-              )}
-              {historyData !== null && filtered.length === 0 && (
-                <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
-              )}
-              {filtered.map(agency => (
-                <button
-                  key={agency.slug}
-                  onClick={() => {
-                    saveRecentSearch(query);
-                    setSelectedSlug(agency.slug);
-                  }}
-                  className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-                >
-                  <div>
-                    <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
-                    <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
-                      {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                </button>
-              ))}
-            </>
-          )}
-        </div>
-      )}
+            return (
+              <AgencyCard
+                agency={matchingAgency}
+                layers={layers}
+                day={day}
+                onClose={() => setSelectedSlug(null)}
+                onRouteSelect={(routeKey) => {
+                  const shortName = routeKey.split('::')[1];
+                  setSelectedRouteShortName(shortName);
+                }}
+              />
+            );
+          })()
+        ) : (
+          <div
+            className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+            onMouseDown={e => e.preventDefault()}
+          >
+            {query === '' && recentSearches.length > 0 ? (
+              <>
+                <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
+                  <p className="text-[10px] font-bold text-[var(--text-muted)]">Recent searches</p>
+                  <button
+                    onClick={clearRecentSearches}
+                    className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+                  >
+                    Clear
+                  </button>
+                </div>
+                {recentSearches.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setQuery(s)}
+                    className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+                  >
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                      {s}
+                    </span>
+                    <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
+                  </button>
+                ))}
+              </>
+            ) : (
+              <>
+                <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
+                  <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
+                </div>
+                {historyData === null && (
+                  <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
+                )}
+                {historyData !== null && filtered.length === 0 && (
+                  <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
+                )}
+                {filtered.map(agency => (
+                  <button
+                    key={agency.slug}
+                    onClick={() => {
+                      saveRecentSearch(query);
+                      setSelectedSlug(agency.slug);
+                    }}
+                    className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+                  >
+                    <div>
+                      <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
+                      <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
+                        {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+                  </button>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
