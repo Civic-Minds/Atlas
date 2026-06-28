@@ -31,9 +31,12 @@ interface Props {
   onPendingLiveRouteHandled?: () => void;
   searchFocused?: boolean;
   hideFilterPanel?: boolean;
+  day: 'Weekday' | 'Saturday' | 'Sunday';
+  setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -56,16 +59,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     return allSlugs;
   });
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
-  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>(() => {
-    try {
-      const s = localStorage.getItem('atlas_pref_day');
-      if (s === 'Weekday' || s === 'Saturday' || s === 'Sunday') return s;
-    } catch {}
-    const d = new Date().getDay();
-    if (d === 0) return 'Sunday';
-    if (d === 6) return 'Saturday';
-    return 'Weekday';
-  });
   const [period, setPeriod] = useState<TimePeriod>('all');
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
@@ -76,6 +69,10 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
 
   const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, { showCorridorBand });
+
+  useEffect(() => {
+    onLayersChange?.(layers);
+  }, [layers, onLayersChange]);
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day);
   const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop } = useIntervalStats(layers, {
     query,

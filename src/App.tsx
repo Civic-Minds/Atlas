@@ -80,6 +80,18 @@ export default function App() {
   const [fromInputBindings, setFromInputBindings] = useState<CorridorsFromInputBindings | null>(null);
   const [corridorsMounted, setCorridorsMounted] = useState(false);
   const [liveMounted, setLiveMounted] = useState(false);
+  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>(() => {
+    try {
+      const s = localStorage.getItem('atlas_pref_day');
+      if (s === 'Weekday' || s === 'Saturday' || s === 'Sunday') return s;
+    } catch {}
+    const d = new Date().getDay();
+    if (d === 0) return 'Sunday';
+    if (d === 6) return 'Saturday';
+    return 'Weekday';
+  });
+
+  const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
@@ -247,8 +259,11 @@ export default function App() {
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}
               searchFocused={searchFocused}
+              day={day}
+              setDay={setDay}
+              onLayersChange={setLayers}
             />
-            <History active={inHistory} agencies={agencies} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} />
+            <History active={inHistory} agencies={agencies} layers={layers} day={day} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors

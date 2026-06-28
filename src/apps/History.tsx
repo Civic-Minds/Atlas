@@ -4,6 +4,7 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import type { Agency } from '../App';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW } from '../styles';
+import { AgencyCard } from '../components/Interval/AgencyCard';
 
 export interface RouteSnapshot {
   label: string;
@@ -29,6 +30,8 @@ export interface AgencyHistory {
 interface Props {
   active: boolean;
   agencies: Agency[];
+  layers: Record<string, GeoJSON.FeatureCollection>;
+  day: 'Weekday' | 'Saturday' | 'Sunday';
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
   searchFocused: boolean;
@@ -50,36 +53,6 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean
   return { text: `${x}× more frequent since ${first.label}`, worse: false };
 }
 
-function RouteRow({
-  entry,
-  onClick,
-}: {
-  entry: RouteHistoryEntry;
-  onClick: () => void;
-}) {
-  const snaps = entry.snapshots;
-  const first = snaps[0];
-  const last = snaps[snaps.length - 1];
-  const worse = last.weekdayHeadwayMin > first.weekdayHeadwayMin;
-  const better = last.weekdayHeadwayMin < first.weekdayHeadwayMin;
-  const color = worse ? '#f87171' : better ? '#4ade80' : 'var(--text-dim)';
-
-  return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-    >
-      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
-      <span className="flex-1 text-xs text-[var(--text-primary)] font-bold truncate group-hover:text-[var(--accent)] transition-colors">
-        {entry.routeShortName}
-        {entry.routeName && <span className="font-normal text-[var(--text-dim)] ml-1.5 truncate">{entry.routeName}</span>}
-      </span>
-      <span className={`text-[10px] font-mono shrink-0 ml-2 ${worse ? 'text-red-400' : better ? 'text-green-400' : 'text-[var(--text-dim)]'}`}>
-        {first.weekdayHeadwayMin}m → {last.weekdayHeadwayMin}m
-      </span>
-    </button>
-  );
-}
 
 function RouteHistoryCard({
   route,
@@ -163,71 +136,7 @@ function RouteHistoryCard({
   );
 }
 
-function AgencyView({
-  agency,
-  selectedRouteShortName,
-  setSelectedRouteShortName,
-  onBack,
-}: {
-  agency: AgencyHistory;
-  selectedRouteShortName: string | null;
-  setSelectedRouteShortName: (r: string | null) => void;
-  onBack: () => void;
-}) {
-  const selectedRoute = agency.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
-
-  if (selectedRoute) {
-    return (
-      <RouteHistoryCard
-        route={selectedRoute}
-        agencyName={agency.name}
-        region={agency.region}
-        onBack={() => setSelectedRouteShortName(null)}
-      />
-    );
-  }
-
-  return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
-      {/* Header section styled exactly like the Frequency route card */}
-      <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3">
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">
-            {agency.name}
-          </h3>
-          <p className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5">
-            {agency.region} · {agency.routes.length} routes
-          </p>
-        </div>
-        <button
-          onClick={onBack}
-          className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0 mt-0.5"
-          aria-label="Back to agencies"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Routes list directly on the card face */}
-      <div className="flex-grow flex flex-col overflow-hidden">
-        <div className="px-4 pb-1.5 shrink-0">
-          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase block">Routes</span>
-        </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-[var(--border-primary)]">
-          {agency.routes.map(route => (
-            <RouteRow
-              key={route.routeShortName}
-              entry={route}
-              onClick={() => setSelectedRouteShortName(route.routeShortName)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function History({ active, agencies, onInfoOpen, query, searchFocused, setQuery }: Props) {
+export default function History({ active, agencies, layers, day, onInfoOpen, query, searchFocused, setQuery }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [shouldRender, setShouldRender] = useState(active);
@@ -338,7 +247,7 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
     );
   }, [query, historyAgencies]);
 
-  const selectedAgency = historyAgencies.find(a => a.slug === selectedSlug) ?? null;
+  const matchingAgency = agencies.find(a => a.slug === selectedSlug) ?? null;
 
   if (!shouldRender) return null;
 
@@ -346,13 +255,35 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
     <div
       className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
-      {selectedAgency ? (
-        <AgencyView
-          agency={selectedAgency}
-          selectedRouteShortName={selectedRouteShortName}
-          setSelectedRouteShortName={setSelectedRouteShortName}
-          onBack={() => setSelectedSlug(null)}
-        />
+      {selectedSlug && matchingAgency ? (
+        (() => {
+          if (selectedRouteShortName) {
+            const agencyHistory = historyData?.find(a => a.slug === selectedSlug);
+            const selectedRoute = agencyHistory?.routes.find(r => r.routeShortName === selectedRouteShortName) ?? null;
+            if (selectedRoute) {
+              return (
+                <RouteHistoryCard
+                  route={selectedRoute}
+                  agencyName={matchingAgency.name}
+                  region={matchingAgency.region ?? ''}
+                  onBack={() => setSelectedRouteShortName(null)}
+                />
+              );
+            }
+          }
+          return (
+            <AgencyCard
+              agency={matchingAgency}
+              layers={layers}
+              day={day}
+              onClose={() => setSelectedSlug(null)}
+              onRouteSelect={(routeKey) => {
+                const shortName = routeKey.split('::')[1];
+                setSelectedRouteShortName(shortName);
+              }}
+            />
+          );
+        })()
       ) : (
         <div
           className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
