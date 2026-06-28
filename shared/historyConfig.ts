@@ -24,7 +24,7 @@ export interface AgencyHistory {
 export const HISTORY_DATA: AgencyHistory[] = [
   {
     "slug": "gcrta",
-    "name": "Greater Cleveland RTA",
+    "name": "GCRTA (Cleveland)",
     "region": "Ohio",
     "center": [
       41.4993,
@@ -43,12 +43,447 @@ export const HISTORY_DATA: AgencyHistory[] = [
           {
             "label": "2016",
             "year": 2016,
+            "weekdayHeadwayMin": 8
+          },
+          {
+            "label": "2016",
+            "year": 2016,
             "weekdayHeadwayMin": 7.5
+          },
+          {
+            "label": "Aug 2022",
+            "year": 2022,
+            "weekdayHeadwayMin": 15
+          },
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 10
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 12
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 7
           },
           {
             "label": "2026",
             "year": 2026,
             "weekdayHeadwayMin": 15
+          }
+        ]
+      },
+      {
+        "routeShortName": "16",
+        "routeName": "E. 55",
+        "snapshots": [
+          {
+            "label": "2016",
+            "year": 2016,
+            "weekdayHeadwayMin": 30
+          },
+          {
+            "label": "Aug 2022",
+            "year": 2022,
+            "weekdayHeadwayMin": 60
+          },
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 40
+          },
+          {
+            "label": "2026",
+            "year": 2026,
+            "weekdayHeadwayMin": 60
+          }
+        ]
+      },
+      {
+        "routeShortName": "55-A-B-C",
+        "routeName": "Cleveland State Line",
+        "snapshots": [
+          {
+            "label": "2016",
+            "year": 2016,
+            "weekdayHeadwayMin": 30
+          },
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 40
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 60
+          }
+        ]
+      },
+      {
+        "routeShortName": "19",
+        "routeName": "Broadway - Miles",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 38
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 39
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 60
+          }
+        ]
+      },
+      {
+        "routeShortName": "37",
+        "routeName": "E. 185 - Taylor",
+        "snapshots": [
+          {
+            "label": "2016",
+            "year": 2016,
+            "weekdayHeadwayMin": 60
+          },
+          {
+            "label": "Aug 2022",
+            "year": 2022,
+            "weekdayHeadwayMin": 30
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 61
+          },
+          {
+            "label": "2026",
+            "year": 2026,
+            "weekdayHeadwayMin": 30
+          }
+        ]
+      },
+      {
+        "routeShortName": "49",
+        "routeName": "Center Ridge",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 40
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 60
+          }
+        ]
+      },
+      {
+        "routeShortName": "79-79A",
+        "routeName": "Fulton",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 30
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 45
+          }
+        ]
+      },
+      {
+        "routeShortName": "8",
+        "routeName": "Cedar - E 116",
+        "snapshots": [
+          {
+            "label": "2016",
+            "year": 2016,
+            "weekdayHeadwayMin": 45
+          },
+          {
+            "label": "Aug 2024",
+            "year": 2024,
+            "weekdayHeadwayMin": 61
+          },
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 60
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 35
+          },
+          {
+            "label": "2026",
+            "year": 2026,
+            "weekdayHeadwayMin": 61
+          }
+        ]
+      },
+      {
+        "routeShortName": "32",
+        "routeName": "Cedar",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 45
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 46
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 30
+          }
+        ]
+      },
+      {
+        "routeShortName": "14",
+        "routeName": "Kinsman",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 20
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 30
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 15
+          }
+        ]
+      },
+      {
+        "routeShortName": "26",
+        "routeName": "Detroit",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 20
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 15
+          }
+        ]
+      },
+      {
+        "routeShortName": "75",
+        "routeName": "Lorain",
+        "snapshots": [
+          {
+            "label": "2016",
+            "year": 2016,
+            "weekdayHeadwayMin": 40
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 30
+          }
+        ]
+      },
+      {
+        "routeShortName": "48-48A",
+        "routeName": "University Circle - East 131",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 29
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 30
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 22
+          }
+        ]
+      },
+      {
+        "routeShortName": "90F",
+        "routeName": "Broadway - Libby",
+        "snapshots": [
+          {
+            "label": "2016",
+            "year": 2016,
+            "weekdayHeadwayMin": 38
+          },
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 40
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 45
+          }
+        ]
+      },
+      {
+        "routeShortName": "76",
+        "routeName": "Broadway - Turney",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 46
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 45
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 40
+          }
+        ]
+      },
+      {
+        "routeShortName": "61",
+        "routeName": "E-Line Trolley",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 11
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 10
+          }
+        ]
+      },
+      {
+        "routeShortName": "39",
+        "routeName": "Lakeshore",
+        "snapshots": [
+          {
+            "label": "Aug 2022",
+            "year": 2022,
+            "weekdayHeadwayMin": 31
+          },
+          {
+            "label": "Aug 2024",
+            "year": 2024,
+            "weekdayHeadwayMin": 30
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 44
+          },
+          {
+            "label": "2026",
+            "year": 2026,
+            "weekdayHeadwayMin": 30
+          }
+        ]
+      },
+      {
+        "routeShortName": "5",
+        "routeName": "Chagrin",
+        "snapshots": [
+          {
+            "label": "jul-10-2018",
+            "year": 2018,
+            "weekdayHeadwayMin": 59
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 61
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 60
+          }
+        ]
+      },
+      {
+        "routeShortName": "34",
+        "routeName": "East 200 - Green",
+        "snapshots": [
+          {
+            "label": "Aug 2022",
+            "year": 2022,
+            "weekdayHeadwayMin": 61
+          },
+          {
+            "label": "Aug 2024",
+            "year": 2024,
+            "weekdayHeadwayMin": 60
+          },
+          {
+            "label": "2026",
+            "year": 2026,
+            "weekdayHeadwayMin": 60
+          }
+        ]
+      },
+      {
+        "routeShortName": "38",
+        "routeName": "Hough",
+        "snapshots": [
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 61
+          },
+          {
+            "label": "Jun-27-2014",
+            "year": 2014,
+            "weekdayHeadwayMin": 60
+          }
+        ]
+      },
+      {
+        "routeShortName": "94",
+        "routeName": "East 260 - Richmond",
+        "snapshots": [
+          {
+            "label": "2016",
+            "year": 2016,
+            "weekdayHeadwayMin": 61
+          },
+          {
+            "label": "Jun-16-2020",
+            "year": 2020,
+            "weekdayHeadwayMin": 60
           }
         ]
       }

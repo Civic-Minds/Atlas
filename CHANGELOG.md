@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **GCRTA history backfill**: Processed 6 historical GCRTA GTFS feeds (2014, 2016, 2018, 2020, 2022, 2024) through the history pipeline. 21 routes now have documented frequency changes — HealthLine, Route 8, Route 26, Route 5, and 17 others. Previously only HealthLine had history (manually seeded). Backfill script: `pipeline/backfill-gcrta-history.ts`.
 - **Derive headway and stop offsets from GTFS pipeline (AI-150)**: Added automatic headway and stop travel-time offset calculation directly from the GTFS datasets during the pipeline execution (`processGtfsBuffer` in `process-core.ts`). The computed metadata is stored as a sidecar JSON file (`atlas/live-polling/{slug}.json`) on Cloudflare R2.
 - **Dynamic live & history headway overrides (AI-150)**: Updated `computeLiveAdherence` and `api/history-adherence` to asynchronously fetch the pipeline-computed sidecars from R2 and use the dynamically computed scheduled headway values with backwards-compatible fallbacks.
 - **Automated history headway aggregation (AI-154)**: Created the `build-history.ts` pipeline script to fetch all historical agency headway snapshots from R2, compile them, and dynamically generate `shared/historyConfig.ts`, replacing hardcoded history configurations.
