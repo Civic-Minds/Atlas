@@ -134,10 +134,23 @@ export default function History({ active, agencies, onInfoOpen, query, searchFoc
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
 
   useEffect(() => {
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json())
-      .then((data: AgencyHistory[]) => setHistoryData(data))
-      .catch(() => setHistoryData([]));
+    const fetchUrl = `${R2_PUBLIC_URL}/atlas/history-config.json`;
+    console.log("Fetching history config from:", fetchUrl);
+    fetch(fetchUrl)
+      .then(r => {
+        if (!r.ok) {
+          throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+      })
+      .then((data: AgencyHistory[]) => {
+        console.log("Successfully loaded history data:", data);
+        setHistoryData(data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch history config from R2:", err);
+        setHistoryData([]);
+      });
   }, []);
 
   useEffect(() => {
