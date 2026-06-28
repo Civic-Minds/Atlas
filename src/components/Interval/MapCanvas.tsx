@@ -499,17 +499,36 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const hasStops = !!map.getLayer('stops-layer');
 
     // Filters routes matching search / active status
+    // Support agency search (by slug or name) so that searching an agency actually
+    // restricts the visible routes on the map (in addition to sidebar stats).
     const filterConditions: any[] = ['all'];
+
+    const ql = (q || '').trim().toLowerCase();
+    let matchedAgencySlug: string | null = null;
+    if (ql && agencies && agencies.length) {
+      for (const a of agencies) {
+        const slug = (a.slug || '').toLowerCase();
+        const name = (a.name || '').toLowerCase();
+        if (slug.startsWith(ql) || (ql.length >= 3 && name.includes(ql))) {
+          matchedAgencySlug = a.slug;
+          break;
+        }
+      }
+    }
 
     if (!showRouteLayers) {
       filterConditions.push(['==', 'agencySlug', '']);
-    } else {
-      // Dynamic filters based on search query
-      if (q) {
+    } else if (ql) {
+      if (matchedAgencySlug) {
+        // Searching for an agency → show exactly that agency's routes on the map
+        filterConditions.push(['==', 'agencySlug', matchedAgencySlug]);
+      } else {
+        // Route number/name search (also allow agency slug partial match)
         filterConditions.push([
           'any',
           ['like', ['get', 'routeShortName'], q],
-          ['like', ['get', 'routeId'], q]
+          ['like', ['get', 'routeId'], q],
+          ['like', ['get', 'agencySlug'], q]
         ]);
       }
     }
