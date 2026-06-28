@@ -62,17 +62,22 @@ function RouteCard({ entry, highlightYear, expanded, onToggle }: { entry: RouteH
     <div className="border-b border-[var(--border-primary)] last:border-0 py-1.5">
       <button
         onClick={onToggle}
-        className="w-full flex items-baseline justify-between py-1.5 hover:bg-[var(--bg-btn-hover)] px-1.5 rounded transition-colors text-left"
+        className="w-full flex items-center justify-between py-1.5 hover:bg-[var(--bg-btn-hover)] px-1.5 rounded transition-colors text-left"
       >
         <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
           <span className="text-xs font-black text-[var(--text-primary)] shrink-0">{entry.routeShortName}</span>
           <span className="text-[10px] text-[var(--text-dim)] truncate">{entry.routeName}</span>
         </div>
-        <div className="flex items-center gap-2 shrink-0 ml-2">
-          <span className={`text-[10px] font-bold ${worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-dim)]'}`}>
-            {first.weekdayHeadwayMin}m → {last.weekdayHeadwayMin}m
+        <div className="flex flex-col items-end shrink-0 ml-2">
+          <div className="flex items-center gap-1.5">
+            <span className={`text-[10px] font-bold ${worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-dim)]'}`}>
+              {first.weekdayHeadwayMin}m → {last.weekdayHeadwayMin}m
+            </span>
+            <span className="text-[9px] text-[var(--text-dim)] font-mono leading-none">{expanded ? '▲' : '▼'}</span>
+          </div>
+          <span className="text-[7.5px] font-bold text-[var(--text-muted)] leading-none mt-1 pr-3.5">
+            {first.label.replace(' Launch', '')} → {last.label}
           </span>
-          <span className="text-[9px] text-[var(--text-dim)] font-mono">{expanded ? '▲' : '▼'}</span>
         </div>
       </button>
 
