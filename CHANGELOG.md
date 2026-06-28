@@ -36,6 +36,7 @@ All notable changes to this project will be documented in this file.
 - **Optimize MapCanvas rendering speed**: Removed unused `layers` and `allLayers` properties from the `MapCanvas` component definition and JSX instantiation, preventing map redraws and component re-renders when panning or zooming triggers GeoJSON data downloads in the background.
 
 ### Changed
+- **Stale schedule warning on route cards (AI-158)**: Route cards now show "Schedule may be outdated" in amber when today's date is past the agency's GTFS `feed_end_date`. Uses `lastFeedExpiry` already stored in `index.json` by the refresh pipeline — no extra fetch required. Per-agency, so only stale feeds show the warning.
 - **CI: `build-history` wired into weekly refresh workflow**: `shared/historyConfig.ts` is now regenerated automatically after each Monday GTFS refresh and committed back to the repo alongside `index.json`, triggering a Vercel redeploy with up-to-date History data.
 - **Pipeline: R2 list pagination**: `r2List` and `r2ListArchive` in `r2.ts` now follow `NextContinuationToken` to page through all results — previously capped at 1000 objects, which would silently truncate large history archives.
 - **Pipeline: batch R2 writes in `writeHistorySnapshot`**: per-route change files are now flushed in chunks of 20 instead of all at once, preventing R2 rate-limit pressure on first run for large agencies like TTC.

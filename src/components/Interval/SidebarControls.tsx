@@ -664,18 +664,32 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 </h3>
                 {(() => {
                   const slug = (currentRoute as any).agencySlug as string | undefined;
-                  const displayName = agencies.find(a => a.slug === slug)?.name ?? slug;
+                  const agency = agencies.find(a => a.slug === slug);
+                  const displayName = agency?.name ?? slug;
                   if (!slug) return null;
+                  const isStale = (() => {
+                    const exp = agency?.lastFeedExpiry;
+                    if (!exp || exp.length !== 8) return false;
+                    const expDate = new Date(`${exp.slice(0, 4)}-${exp.slice(4, 6)}-${exp.slice(6, 8)}`);
+                    return expDate < new Date();
+                  })();
                   return (
-                    <button
-                      onClick={() => setSelectedAgencies(prev => {
-                        if (prev.size === 1 && prev.has(slug)) return new Set();
-                        return new Set([slug]);
-                      })}
-                      className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
-                    >
-                      {displayName}
-                    </button>
+                    <>
+                      <button
+                        onClick={() => setSelectedAgencies(prev => {
+                          if (prev.size === 1 && prev.has(slug)) return new Set();
+                          return new Set([slug]);
+                        })}
+                        className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
+                      >
+                        {displayName}
+                      </button>
+                      {isStale && (
+                        <p className="text-[9px] font-bold text-amber-500 mt-0.5">
+                          Schedule may be outdated
+                        </p>
+                      )}
+                    </>
                   );
                 })()}
               </div>

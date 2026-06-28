@@ -21,6 +21,7 @@ export interface Agency {
   corridorsUrl?: string;
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
+  lastFeedExpiry?: string | null; // YYYYMMDD from feed_info.txt feed_end_date
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
