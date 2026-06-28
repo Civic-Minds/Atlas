@@ -124,8 +124,8 @@ async function main() {
   fs.writeFileSync(stopsPath, JSON.stringify({ type: 'FeatureCollection', features: allStops }));
   fs.writeFileSync(corridorsPath, JSON.stringify({ type: 'FeatureCollection', features: allCorridors }));
 
-  // Build separate pmtiles for each layer.
-  // This avoids memory pressure and command-line issues when combining very large inputs in one tippecanoe invocation.
+  // Build each layer separately (avoids tippecanoe memory pressure on large inputs),
+  // then merge into a single atlas.pmtiles with tile-join.
   const routesPm = path.join(tmpDir, 'routes.pmtiles');
   const stopsPm = path.join(tmpDir, 'stops.pmtiles');
   const corridorsPm = path.join(tmpDir, 'corridors.pmtiles');
@@ -139,21 +139,15 @@ async function main() {
   console.log("Building corridors.pmtiles ...");
   execSync(`tippecanoe -o "${corridorsPm}" -zg --drop-densest-as-needed --extend-zooms-if-still-dropping -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
 
-  const routesSize = fs.statSync(routesPm).size;
-  const stopsSize = fs.statSync(stopsPm).size;
-  const corridorsSize = fs.statSync(corridorsPm).size;
-  console.log(`PMTiles sizes — routes: ${(routesSize/1024/1024).toFixed(1)} MB, stops: ${(stopsSize/1024/1024).toFixed(1)} MB, corridors: ${(corridorsSize/1024/1024).toFixed(1)} MB`);
+  console.log("Merging into atlas.pmtiles via tile-join ...");
+  execSync(`tile-join -o "${pmtilesPath}" --force "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
 
-  console.log("Uploading PMTiles to Cloudflare R2 (streaming)...");
-  await Promise.all([
-    r2PutFile('atlas/routes.pmtiles', routesPm, 'application/octet-stream'),
-    r2PutFile('atlas/stops.pmtiles', stopsPm, 'application/octet-stream'),
-    r2PutFile('atlas/corridors.pmtiles', corridorsPm, 'application/octet-stream'),
-  ]);
-  console.log("PMTiles uploaded successfully!");
-  console.log("  routes:    https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/routes.pmtiles");
-  console.log("  stops:     https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stops.pmtiles");
-  console.log("  corridors: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corridors.pmtiles");
+  const size = fs.statSync(pmtilesPath).size;
+  console.log(`atlas.pmtiles size: ${(size/1024/1024).toFixed(1)} MB`);
+
+  console.log("Uploading atlas.pmtiles to Cloudflare R2 (streaming)...");
+  await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
+  console.log("PMTiles uploaded: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles");
 
   // Cleanup
   console.log(`Cleaning up temporary files...`);

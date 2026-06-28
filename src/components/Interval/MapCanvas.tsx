@@ -80,17 +80,9 @@ const getMapStyle = (lightMode: boolean) => {
         tileSize: 256,
         attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
       },
-      'routes-pm': {
+      'atlas-pmtiles': {
         type: 'vector',
-        url: `pmtiles://${R2_PUBLIC_URL}/atlas/routes.pmtiles`
-      },
-      'stops-pm': {
-        type: 'vector',
-        url: `pmtiles://${R2_PUBLIC_URL}/atlas/stops.pmtiles`
-      },
-      'corridors-pm': {
-        type: 'vector',
-        url: `pmtiles://${R2_PUBLIC_URL}/atlas/corridors.pmtiles`
+        url: `pmtiles://${R2_PUBLIC_URL}/atlas.pmtiles`
       }
     },
     layers: [
@@ -261,7 +253,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       map.addLayer({
         id: 'routes-layer',
         type: 'line',
-        source: 'routes-pm',
+        source: 'atlas-pmtiles',
         'source-layer': 'routes',
         paint: {
           'line-color': '#555555',
@@ -278,7 +270,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       map.addLayer({
         id: 'routes-hit-layer',
         type: 'line',
-        source: 'routes-pm',
+        source: 'atlas-pmtiles',
         'source-layer': 'routes',
         paint: {
           'line-color': '#000000',
@@ -291,7 +283,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       map.addLayer({
         id: 'corridor-shapes-layer',
         type: 'line',
-        source: 'corridors-pm',
+        source: 'atlas-pmtiles',
         'source-layer': 'corridors',
         paint: {
           'line-color': CORRIDOR_BAND_COLOR,
@@ -305,7 +297,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       map.addLayer({
         id: 'stops-layer',
         type: 'circle',
-        source: 'stops-pm',
+        source: 'atlas-pmtiles',
         'source-layer': 'stops',
         paint: {
           'circle-radius': [
