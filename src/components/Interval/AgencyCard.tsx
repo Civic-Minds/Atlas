@@ -54,9 +54,10 @@ interface Props {
   day: 'Weekday' | 'Saturday' | 'Sunday';
   onClose: () => void;
   onRouteSelect: (key: string) => void;
+  className?: string;
 }
 
-export function AgencyCard({ agency, layers, day, onClose, onRouteSelect }: Props) {
+export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, className = "absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)]" }: Props) {
   const routes = useMemo(() => getRoutes(layers, agency.slug, day), [layers, agency.slug, day]);
   const liveRoutes = useMemo(
     () => LIVE_POLLING_ROUTES.filter(r => r.slug === agency.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active)),
@@ -65,7 +66,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect }: Prop
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
 
   return (
-    <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}>
+    <div className={`${className} flex flex-col ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}>
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div>
           <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{agency.name}</p>
