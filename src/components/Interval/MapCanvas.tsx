@@ -1,48 +1,33 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import * as L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { Protocol } from 'pmtiles';
+import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS } from '../../utils/colors';
-import { titleCase, fmtHeadway } from '../../utils/format';
-import { getRegionalView, getSavedView } from '../../utils/regionView';
+import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
+import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
-import { CorridorMapLayers } from '../corridor/CorridorMapLayers';
-import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
-import { HistoryStopMarkers } from '../history/HistoryStopMarkers';
-import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
-import { LiveVehiclesLayer } from '../live/LiveVehiclesLayer';
-import {
-  MapRefCapturer, MapClickHandler, LocateControl, ResetViewControl,
-  RouteZoomer, ViewPersistor, GeolocateOnMount, BoundsReporter,
-} from './MapControls';
+import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
+import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import type { Agency } from '../../App';
-import type { AgencyLayers, ShapeProperties } from '../../hooks/useIntervalStats';
-import type { ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
-import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
+import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
+
+// Register PMTiles protocol once
+let protocolRegistered = false;
+function registerProtocol() {
+  if (!protocolRegistered) {
+    const protocol = new Protocol();
+    maplibregl.addProtocol('pmtiles', protocol.tile);
+    protocolRegistered = true;
+  }
+}
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
-function periodTierColor(p: ShapeProperties, period: TimePeriod): string {
-  if (period !== 'all') {
-    const byPeriod = (p as any).headwayByPeriod as HeadwayByPeriod | undefined;
-    const h = byPeriod?.[period as keyof HeadwayByPeriod];
-    if (h != null) {
-      if (h <= 10) return getTierColor('10');
-      if (h <= 15) return getTierColor('15');
-      if (h <= 20) return getTierColor('20');
-      if (h <= 30) return getTierColor('30');
-      if (h <= 60) return getTierColor('60');
-      return getTierColor('infrequent');
-    }
-  }
-  return getTierColor(p?.tier ?? null);
-}
-
 interface MapCanvasProps {
   agencies: Agency[];
-  layers: AgencyLayers;
-  allLayers?: AgencyLayers;
+  layers?: any;
+  allLayers?: any;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -61,172 +46,123 @@ interface MapCanvasProps {
   showCorridorBand?: boolean;
 }
 
-/**
- * Interpolates a point along a linestring at parameter t ∈ [0,1].
- * Coordinates are [lon, lat] (GeoJSON order).
- */
-function interpolateAt(coords: number[][], t: number): number[] {
-  if (t <= 0) return coords[0];
-  if (t >= 1) return coords[coords.length - 1];
-  // Compute cumulative lengths
-  const lens: number[] = [0];
-  for (let i = 0; i < coords.length - 1; i++) {
-    const dx = coords[i + 1][0] - coords[i][0];
-    const dy = coords[i + 1][1] - coords[i][1];
-    lens.push(lens[i] + Math.sqrt(dx * dx + dy * dy));
-  }
-  const total = lens[lens.length - 1];
-  const target = t * total;
-  for (let i = 0; i < lens.length - 1; i++) {
-    if (target <= lens[i + 1]) {
-      const segLen = lens[i + 1] - lens[i];
-      const frac = segLen > 0 ? (target - lens[i]) / segLen : 0;
-      return [
-        coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
-        coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
-      ];
-    }
-  }
-  return coords[coords.length - 1];
-}
-
-/**
- * Returns the sub-array of coords between parameters tStart and tEnd (0–1),
- * with interpolated endpoints. Returns null if the segment is degenerate.
- */
-function clipLinestring(coords: number[][], tStart: number, tEnd: number): number[][] | null {
-  if (tEnd <= tStart) return null;
-  // Compute cumulative lengths once
-  const lens: number[] = [0];
-  for (let i = 0; i < coords.length - 1; i++) {
-    const dx = coords[i + 1][0] - coords[i][0];
-    const dy = coords[i + 1][1] - coords[i][1];
-    lens.push(lens[i] + Math.sqrt(dx * dx + dy * dy));
-  }
-  const total = lens[lens.length - 1];
-  if (total === 0) return null;
-  const targetStart = tStart * total;
-  const targetEnd = tEnd * total;
-
-  const result: number[][] = [];
-  // Interpolated start point
-  for (let i = 0; i < lens.length - 1; i++) {
-    const segLen = lens[i + 1] - lens[i];
-    if (lens[i + 1] >= targetStart && result.length === 0) {
-      const frac = segLen > 0 ? (targetStart - lens[i]) / segLen : 0;
-      result.push([
-        coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
-        coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
-      ]);
-    }
-    // Interior vertices within the window
-    if (lens[i + 1] > targetStart && lens[i + 1] < targetEnd) {
-      result.push(coords[i + 1]);
-    }
-    // Interpolated end point
-    if (lens[i] < targetEnd && lens[i + 1] >= targetEnd) {
-      const frac = segLen > 0 ? (targetEnd - lens[i]) / segLen : 1;
-      result.push([
-        coords[i][0] + frac * (coords[i + 1][0] - coords[i][0]),
-        coords[i][1] + frac * (coords[i + 1][1] - coords[i][1]),
-      ]);
-      break;
-    }
-  }
-  return result.length >= 2 ? result : null;
-}
-
-/**
- * Given a route feature with stopOrder/stopPositions/stopHeadways, returns the
- * clipped coordinate array covering only the longest contiguous segment where every
- * stop has headway <= maxHeadway. Falls back to the full coords if data is absent.
- */
-function getClippedCoords(feature: GeoJSON.Feature, maxHeadway: number): number[][] {
-  const p = feature.properties as any;
-  const stopOrder: string[] | undefined = p.stopOrder;
-  const stopPositions: number[] | undefined = p.stopPositions;
-  const stopHeadways: Record<string, number> | undefined = p.stopHeadways;
-  const coords = (feature.geometry as GeoJSON.LineString).coordinates;
-
-  if (!stopOrder || !stopPositions || !stopHeadways || stopOrder.length < 2) return coords;
-
-  // Find the longest contiguous run of stops passing the threshold.
-  // A stop "passes" if its headway <= maxHeadway.
-  let bestStart = -1, bestEnd = -1, bestLen = 0;
-  let runStart = -1;
-  for (let i = 0; i < stopOrder.length; i++) {
-    const hw = stopHeadways[stopOrder[i]];
-    const passes = hw != null && hw <= maxHeadway;
-    if (passes) {
-      if (runStart === -1) runStart = i;
-      const len = i - runStart + 1;
-      if (len > bestLen) { bestLen = len; bestStart = runStart; bestEnd = i; }
-    } else {
-      runStart = -1;
-    }
-  }
-
-  if (bestStart === -1 || bestLen < 2) return coords;
-
-  // Add a half-stop buffer at each end so the line doesn't abruptly end mid-block.
-  const tStart = bestStart > 0
-    ? (stopPositions[bestStart] + stopPositions[bestStart - 1]) / 2
-    : stopPositions[bestStart];
-  const tEnd = bestEnd < stopPositions.length - 1
-    ? (stopPositions[bestEnd] + stopPositions[bestEnd + 1]) / 2
-    : stopPositions[bestEnd];
-
-  return clipLinestring(coords, tStart, tEnd) ?? coords;
-}
-
-function findRoutesNearClick(
-  clickLatLng: L.LatLng,
-  map: L.Map,
-  allLayers: AgencyLayers,
-  pixelTolerance: number,
-): string[] {
-  const zoom = map.getZoom();
-  const clickPx = map.project(clickLatLng, zoom);
-  // Deduplicate by agencySlug::shortName so different schedule-period route_ids
-  // for the same visible route (e.g. two HSR "20" feeds) don't each get a row.
-  const seenDisplay = new Set<string>();
-  const found: string[] = [];
-  const t2 = pixelTolerance * pixelTolerance;
-
-  for (const [slug, fc] of Object.entries(allLayers)) {
-    for (const feature of fc.features) {
-      if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') continue;
-      const p = feature.properties as unknown as ShapeProperties;
-      if ((p as any).isCorridor || !(p as any).routeId) continue;
-      const displayKey = `${slug}::${p.routeShortName ?? (p as any).routeId}`;
-      if (seenDisplay.has(displayKey)) continue;
-
-      const coords: number[][] =
-        feature.geometry.type === 'LineString'
-          ? feature.geometry.coordinates
-          : (feature.geometry.coordinates as number[][][]).flat();
-
-      const step = Math.max(1, Math.floor(coords.length / 80));
-      for (let i = 0; i < coords.length; i += step) {
-        const [lng, lat] = coords[i];
-        const px = map.project(L.latLng(lat, lng), zoom);
-        const dx = px.x - clickPx.x;
-        const dy = px.y - clickPx.y;
-        if (dx * dx + dy * dy <= t2) {
-          seenDisplay.add(displayKey);
-          found.push(routeKey({ ...p, agencySlug: slug } as any));
-          break;
-        }
+// Map style specification builder utilizing CARTO raster basemaps
+const getMapStyle = (lightMode: boolean) => {
+  const mode = lightMode ? 'light_all' : 'dark_all';
+  return {
+    version: 8,
+    sources: {
+      'cartodb-basemap': {
+        type: 'raster',
+        tiles: [
+          `https://a.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`,
+          `https://b.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`,
+          `https://c.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`,
+          `https://d.basemaps.cartocdn.com/${mode}/{z}/{x}/{y}.png`
+        ],
+        tileSize: 256,
+        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
+      },
+      'atlas-pmtiles': {
+        type: 'vector',
+        url: 'pmtiles://https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles'
       }
-    }
-  }
-  return found;
+    },
+    layers: [
+      {
+        id: 'basemap-layer',
+        type: 'raster',
+        source: 'cartodb-basemap'
+      }
+    ]
+  } as maplibregl.StyleSpecification;
+};
+
+// Copy HTML builders from Leaflet overlays so UI remains identical
+function formatGap(gap: number | null): string {
+  if (gap === null) return '–';
+  return `${Math.round(gap * 10) / 10}m`;
+}
+
+function formatDelta(delta: number | null): string {
+  if (delta === null) return '–';
+  const abs = Math.round(Math.abs(delta) * 10) / 10;
+  if (Math.abs(delta) < 0.5) return 'on time';
+  return delta > 0 ? `+${abs}m` : `–${abs}m`;
+}
+
+function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
+  const color = STATUS_COLORS[stop.headwayDeltaMin === null ? 'no_data' : stop.headwayDeltaMin <= -1.5 ? 'early' : stop.headwayDeltaMin >= 5.5 ? 'late' : 'on_time'].border;
+  const delta = formatDelta(stop.headwayDeltaMin);
+  const gap = formatGap(stop.avgGap);
+
+  return `
+    <div class="history-stop-card" data-stop-id="${stop.stopId}" style="
+      background: var(--bg-panel, #fff);
+      border: 1.5px solid ${color};
+      border-radius: 12px;
+      padding: 8px 12px;
+      min-width: 120px;
+      max-width: 180px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+      cursor: pointer;
+      pointer-events: auto;
+      font-family: inherit;
+    ">
+      <p style="font-size:9px;font-weight:700;color:var(--text-dim,#6b7280);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${stop.name}</p>
+      <div style="display:flex;align-items:baseline;gap:3px;">
+        <span style="font-size:18px;font-weight:900;color:var(--text-primary,#111);line-height:1;">${gap}</span>
+        <span style="font-size:9px;color:var(--text-dim,#6b7280);">gap</span>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:${color};">${delta}</span>
+      ${expanded ? `
+        <div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border-primary,#e5e7eb);">
+          <p style="font-size:9px;color:var(--text-dim,#6b7280);margin:0;">scheduled every ${stop.scheduledHeadwayMin ?? '?'}m</p>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function VehicleMarkerHtml(vehicle: LiveVehicle): string {
+  const colors = STATUS_COLORS[vehicle.status];
+  return `
+    <div class="live-vehicle-marker" style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: ${colors.bg};
+      border: 2px solid ${colors.border};
+      color: white;
+      font-size: 9px;
+      font-weight: 900;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      position: relative;
+    ">
+      ${vehicle.routeShortName}
+      ${vehicle.bearing !== null ? `
+        <div class="bearing-pointer" style="
+          position: absolute;
+          top: -6px;
+          left: 50%;
+          transform: translateX(-50%) rotate(${vehicle.bearing}deg);
+          transform-origin: 50% 18px;
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-bottom: 7px solid ${colors.border};
+        "></div>
+      ` : ''}
+    </div>
+  `;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
   agencies,
-  layers,
-  allLayers,
   maxHeadway,
   period,
   q,
@@ -236,7 +172,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   setSelectedStop,
   lightMode,
   setDisambiguationRoutes,
-  matchesQuery,
   onBoundsChange,
   resetViewKey,
   onLocate,
@@ -244,332 +179,524 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   showRouteLayers = true,
   showCorridorBand = false,
 }) => {
-  const mapRef = useRef<L.Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [zoom, setZoom] = useState(11);
+
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
-  const corridorSelected = showCorridorBand && (corridorOverlay?.lines.length ?? 0) > 0;
-  const regionalView = getRegionalView(agencies);
-  const hasSavedView = getSavedView() !== null;
-  const [zoom, setZoom] = useState(regionalView.zoom);
-  const tileUrl = lightMode
-    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  // Zoom tiers:
-  // - >=15: all individual stops
-  // - 12–14: rail/subway stations only (bus stops too noisy at city scale)
-  // - <12: none except explicitly selected
-  const showAllStops = zoom >= 15;
-  const showHubsOnly = false;
-  const showRailOnly = zoom >= 12 && zoom < 15;
 
-  // Per ~50m grid cell, keep only the highest-priority stop across all agencies so
-  // shared stations (e.g. GO + TTC at Union) don't render overlapping duplicate pins.
-  // Score: rail stops beat bus stops; within a mode, more routes = higher priority.
-  const primaryStopKeys = useMemo(() => {
-    const cellBest = new Map<string, { compositeId: string; score: number }>();
-    for (const [slug, data] of Object.entries(layers)) {
-      const fc = data as GeoJSON.FeatureCollection;
-      for (const f of fc.features) {
-        if (f.geometry.type !== 'Point') continue;
-        const [lon, lat] = (f.geometry as GeoJSON.Point).coordinates;
-        const locKey = `${Math.round(lat * 2000)}_${Math.round(lon * 2000)}`;
-        const p = f.properties as any;
-        if (!p.stopId) continue;
-        const compositeId = `${slug}::${p.stopId}`;
-        const score = (p.isRail ? 1000 : 0) + (p.routeIds?.length ?? 0);
-        const prev = cellBest.get(locKey);
-        if (!prev || score > prev.score) cellBest.set(locKey, { compositeId, score });
+  const [expandedStop, setExpandedStop] = useState<string | null>(null);
+
+  // Overlay marker references
+  const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const liveMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
+
+  const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
+  const hasSavedView = useMemo(() => getSavedView() !== null, []);
+
+  // Initialize MapLibre Map
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+    registerProtocol();
+
+    const saved = getSavedView();
+    const initialCenter = hasSavedView && saved
+      ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom }
+      : { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
+
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: getMapStyle(lightMode),
+      center: [initialCenter.lon, initialCenter.lat],
+      zoom: initialCenter.zoom,
+      attributionControl: false,
+    });
+
+    mapRef.current = map;
+
+    map.on('load', () => {
+      setMapLoaded(true);
+      setZoom(map.getZoom());
+
+      // Add route shapes (line) layers
+      map.addLayer({
+        id: 'routes-layer',
+        type: 'line',
+        source: 'atlas-pmtiles',
+        'source-layer': 'routes',
+        paint: {
+          'line-color': '#555555',
+          'line-width': 1.5,
+          'line-opacity': 0.85
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
+      // Hit-test overlay (wider lines for clicks/taps)
+      map.addLayer({
+        id: 'routes-hit-layer',
+        type: 'line',
+        source: 'atlas-pmtiles',
+        'source-layer': 'routes',
+        paint: {
+          'line-color': '#000000',
+          'line-width': 18,
+          'line-opacity': 0
+        }
+      });
+
+      // Corridor static shapes layer
+      map.addLayer({
+        id: 'corridor-shapes-layer',
+        type: 'line',
+        source: 'atlas-pmtiles',
+        'source-layer': 'corridors',
+        paint: {
+          'line-color': CORRIDOR_BAND_COLOR,
+          'line-width': 3.5,
+          'line-opacity': 0.75
+        },
+        filter: ['==', 'agencySlug', ''] as any
+      });
+
+      // Stops points layer
+      map.addLayer({
+        id: 'stops-layer',
+        type: 'circle',
+        source: 'atlas-pmtiles',
+        'source-layer': 'stops',
+        paint: {
+          'circle-radius': [
+            'interpolate', ['linear'], ['zoom'],
+            12, 1.5,
+            16, 4.5
+          ],
+          'circle-color': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 'var(--accent)',
+            'var(--text-dim)'
+          ],
+          'circle-stroke-color': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], '#ffffff',
+            'var(--border-primary)'
+          ],
+          'circle-stroke-width': 1,
+          'circle-opacity': 0.75,
+          'circle-stroke-opacity': 0.6
+        }
+      });
+
+      // Corridor dynamic line layer (loaded in Corridors app)
+      map.addSource('corridor-dynamic', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'corridor-dynamic-layer',
+        type: 'line',
+        source: 'corridor-dynamic',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 4,
+          'line-opacity': 0.85
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
+      // Handle hit-test clicks
+      map.on('click', 'routes-hit-layer', (e) => {
+        const features = e.features;
+        if (!features || features.length === 0) return;
+        const props = features[0].properties;
+
+        const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+          [e.point.x - 12, e.point.y - 12],
+          [e.point.x + 12, e.point.y + 12]
+        ];
+        const hitFeatures = map.queryRenderedFeatures(bbox, { layers: ['routes-hit-layer'] });
+        const uniqueRouteKeys = Array.from(new Set(hitFeatures.map(f => {
+          const p = f.properties;
+          return routeKey({ ...p, agencySlug: p.agencySlug } as any);
+        })));
+
+        setSelectedStop(null);
+        if (uniqueRouteKeys.length > 1) {
+          setDisambiguationRoutes(uniqueRouteKeys);
+        } else {
+          const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
+          setSelectedRoute(prev => prev === key ? null : key);
+        }
+        e.preventDefault();
+      });
+
+      // Handle stop clicks
+      map.on('click', 'stops-layer', (e) => {
+        const features = e.features;
+        if (!features || features.length === 0) return;
+        const props = features[0].properties;
+        const compositeId = `${props.agencySlug}::${props.stopId}`;
+
+        setSelectedRoute(null);
+        setDisambiguationRoutes(null);
+        setSelectedStop(prev => prev === compositeId ? null : compositeId);
+        e.preventDefault();
+      });
+    });
+
+    // Sync viewport boundaries
+    const onMove = () => {
+      const c = map.getCenter();
+      saveView(c.lat, c.lng, map.getZoom());
+      setZoom(map.getZoom());
+      
+      const b = map.getBounds();
+      onBoundsChange({
+        s: b.getSouth(),
+        w: b.getWest(),
+        n: b.getNorth(),
+        e: b.getEast()
+      });
+    };
+
+    map.on('moveend', onMove);
+    map.on('click', (e) => {
+      if (e.defaultPrevented) return;
+      setSelectedRoute(null);
+      setSelectedStop(null);
+      setDisambiguationRoutes(null);
+    });
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  // Update light/dark basemap mode
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    map.setStyle(getMapStyle(lightMode));
+  }, [lightMode, mapLoaded]);
+
+  // Handle locating the user
+  const locateUser = () => {
+    const map = mapRef.current;
+    if (!map || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        map.flyTo({ center: [coords.longitude, coords.latitude], zoom: 14, duration: 1200 });
+        onLocate?.(coords.latitude, coords.longitude);
+      },
+      () => {},
+      { timeout: 8000 }
+    );
+  };
+
+  // Handle Reset View
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || resetViewKey === undefined) return;
+    const bounds = getAgencyBounds(agencies);
+    if (bounds) {
+      map.fitBounds([[bounds[0][1], bounds[0][0]], [bounds[1][1], bounds[1][0]]], { padding: 64, maxZoom: 10 });
+    } else {
+      map.flyTo({ center: [regionalView.center[1], regionalView.center[0]], zoom: regionalView.zoom });
+    }
+  }, [resetViewKey, mapLoaded, agencies, regionalView]);
+
+  // Handle route zooming
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !selectedRoute) return;
+
+    // Center on the route coordinate box in the viewport
+    const bboxBigger = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+      .filter(f => routeKey(f.properties as any) === selectedRoute);
+
+    if (bboxBigger.length === 0) return;
+    
+    // Compute bounds for geometries
+    let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+    bboxBigger.forEach(f => {
+      const geom = f.geometry as any;
+      const coords = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+      coords.forEach(([lng, lat]: [number, number]) => {
+        if (lng < minLng) minLng = lng;
+        if (lng > maxLng) maxLng = lng;
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+      });
+    });
+
+    if (minLng < maxLng) {
+      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 80, maxZoom: 13 });
+    }
+  }, [selectedRoute, mapLoaded]);
+
+  // Update Vector Tile Styling & Filters dynamically on parameters change
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    // Filters routes matching search / active status
+    const filterConditions: any[] = ['all'];
+
+    if (!showRouteLayers) {
+      filterConditions.push(['==', 'agencySlug', '']);
+    } else {
+      // Dynamic filters based on search query
+      if (q) {
+        filterConditions.push([
+          'any',
+          ['like', ['get', 'routeShortName'], q],
+          ['like', ['get', 'routeId'], q]
+        ]);
       }
     }
-    return new Set([...cellBest.values()].map(v => v.compositeId));
-  }, [layers]);
 
-  const styleFeature = useCallback(
-    (feature?: GeoJSON.Feature) => {
-      const p = feature?.properties as unknown as ShapeProperties;
+    map.setFilter('routes-layer', filterConditions as any);
+    map.setFilter('routes-hit-layer', filterConditions as any);
 
-      // Stop points: hide at regional zoom, show when zoomed in
-      if (feature?.geometry.type === 'Point') return {};
+    // Apply color paint styling based on headway tier
+    map.setPaintProperty('routes-layer', 'line-color', [
+      'match',
+      ['get', 'tier'],
+      '10', '#2563eb',
+      '15', '#16a34a',
+      '20', '#16a34a',
+      '30', '#ca8a04',
+      '60', '#dc2626',
+      '#6b7280'
+    ]);
 
-      const isCorridor = !!(p as any)?.isCorridor;
+    // Opacity based on route state (focused vs dimmed)
+    if (selectedRoute) {
+      map.setPaintProperty('routes-layer', 'line-opacity', [
+        'case',
+        ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 1.0,
+        0.15
+      ]);
+      map.setPaintProperty('routes-layer', 'line-width', [
+        'case',
+        ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 3.5,
+        0.5
+      ]);
+    } else {
+      map.setPaintProperty('routes-layer', 'line-opacity', 0.85);
+      map.setPaintProperty('routes-layer', 'line-width', 1.8);
+    }
 
-      // Corridors app initial view: show only isCorridor band, hide everything else.
-      // When a corridor selection is active, hide everything (CorridorMapLayers takes over).
-      if (showCorridorBand) {
-        if (corridorSelected) return { opacity: 0, interactive: false };
-        if (!isCorridor) return { opacity: 0, interactive: false };
-        return { color: CORRIDOR_BAND_COLOR, weight: 3.5, opacity: 0.75, lineCap: 'round' as const, lineJoin: 'round' as const, interactive: false };
-      }
+    // Stops visibility
+    const showAll = zoom >= 15;
+    const showRail = zoom >= 12 && zoom < 15;
 
-      // History mode: highlight only the focused route, dim everything else.
-      if (historyOverlay && !isCorridor) {
-        const agSlug = (p as any)?.agencySlug as string | undefined;
-        const rShort = p?.routeShortName;
-        const isFocused = agSlug === historyOverlay.slug && rShort === historyOverlay.routeShortName;
-        if (!isFocused) return { opacity: 0.06, interactive: false };
-        const isRailFocus = p?.routeType === 2;
-        return {
-          color: CORRIDOR_BAND_COLOR,
-          weight: isRailFocus ? 5 : 4,
-          opacity: 0.9,
-          lineCap: 'round' as const,
-          lineJoin: 'round' as const,
-          interactive: false,
-        };
-      }
+    map.setFilter('stops-layer', [
+      'all',
+      showAll 
+        ? ['all'] 
+        : showRail 
+          ? ['==', ['get', 'isRail'], true]
+          : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
+    ] as any);
 
-      // Thickness rules (plain English):
-      // - Rail (routeType=2) always +1 thicker than buses (to distinguish the mode)
-      // - Selected route: thickest (3.5 bus / 4.5 rail)
-      // - Search active + match: boosted (2.5 bus / 3.5 rail)
-      // - Normal visible: base (1.5 bus / 2.5 rail)
-      // - Dimmed/non-match: thin (0.5 bus / 1 rail)
-      // - Corridors: 2 when visible
-      // - Hit layer (invisible): 16 for easy clicking
-      // Frequency info comes ONLY from color. Thickness is for mode + state only.
-      const isRail = p?.routeType === 2;
+  }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers]);
 
-      if (routesForStop) {
-        const featSlug = (p as any)?.agencySlug;
-        const routeId = p?.routeId;
-        const cRouteIds = (p as any)?.routeIds as string[] | undefined;
-        const servesStop = featSlug === routesForStop.slug &&
-          (!routeId || routesForStop.routeIds.has(routeId)) &&
-          (!cRouteIds || cRouteIds.some((rid) => routesForStop.routeIds.has(rid)));
-        if (!servesStop) {
-          return { color: lightMode ? '#cbd5e1' : '#334155', weight: isRail ? 1 : 0.5, opacity: 0.12, interactive: false };
-        }
-      }
+  // Sync corridor static layer visibility
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    map.setFilter('corridor-shapes-layer', (showCorridorBand ? ['all'] : ['==', 'agencySlug', '']) as any);
+  }, [showCorridorBand, mapLoaded]);
 
-      if (selectedRoute !== null) {
-        if (isCorridor) {
-          // When a route is selected, keep its overlapping corridors visible at full combined color; dim others
-          const cRoutes: string[] = (p as any)?.routeIds || [];
-          const cAgencySlug = (p as any)?.agencySlug;
-          const contrib = cRoutes.some((rid) => routeKey({ agencySlug: cAgencySlug, routeId: rid } as any) === selectedRoute);
-          if (contrib) {
-            return { color: periodTierColor(p as ShapeProperties, period), weight: 2.5, opacity: 0.9, interactive: false };
-          }
-          return { color: '#1e293b', weight: 0.5, opacity: 0.15, interactive: false };
-        }
-        const key = p ? routeKey(p) : null;
-        if (key === selectedRoute) {
-          return { color: periodTierColor(p as ShapeProperties, period), weight: isRail ? 4.5 : 3.5, opacity: 1, interactive: false };
-        }
-        // Rail lines stay slightly visible when dimmed so the network structure reads through
-        return { color: '#1e293b', weight: isRail ? 1 : 0.5, opacity: isRail ? 0.25 : 0.2, interactive: false };
-      }
-      const match = matchesQuery(p);
-      if (!match) {
-        if (isCorridor) {
-          return { color: lightMode ? '#cbd5e1' : '#334155', weight: 1, opacity: 0.2, interactive: false };
-        }
-        return { color: lightMode ? '#cbd5e1' : '#334155', weight: isRail ? 1 : 0.5, opacity: 0.12, interactive: false };
-      }
-      if (isCorridor) {
-        return {
-          color: periodTierColor(p as ShapeProperties, period),
-          weight: 2,
-          opacity: 0.9,
-          interactive: false,
-        };
-      }
-      return {
-        color: periodTierColor(p as ShapeProperties, period),
-        weight: q !== '' ? (isRail ? 3.5 : 2.5) : isRail ? 2.5 : 1.5,
-        opacity: p?.tier ? (q !== '' ? 1 : isRail ? 0.9 : 0.8) : 0.3,
-        interactive: false,
-      };
-    },
-    [maxHeadway, period, q, selectedRoute, lightMode, matchesQuery, routesForStop, showCorridorBand, corridorSelected, historyOverlay]
-  );
+  // Dynamic corridor overlays
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
 
-  // Invisible, much wider line drawn under the visible one purely to make routes
-  // easier to click/tap — the visible style above stays thin for legibility.
-  const hitStyle = useCallback((): L.PathOptions => ({
-    color: '#000000',
-    weight: 16,
-    opacity: 0,
-    interactive: true,
-  }), []);
+    const source = map.getSource('corridor-dynamic') as maplibregl.GeoJSONSource;
+    if (!source) return;
 
-  const onEachFeature = useCallback(
-    (feature: GeoJSON.Feature, layer: L.Layer) => {
-      const props = feature.properties as unknown as ShapeProperties;
-
-      if (feature.geometry.type === 'Point') {
-        const { stopName, stopId, routeIds } = props;
-        const agencySlug = (props as any).agencySlug as string | undefined;
-        const compositeStopId = agencySlug && stopId ? `${agencySlug}::${stopId}` : stopId || null;
-        const displayName = stopName ? titleCase(stopName) : stopName;
-        (layer as L.Marker).bindTooltip(
-          `<div class="tooltip-content">
-            <div class="tooltip-name">Station</div>
-            <div class="tooltip-title">${displayName}</div>
-          </div>`,
-          { sticky: true, className: 'atlas-tooltip', opacity: 1 }
-        );
-        layer.on('click', (e: L.LeafletMouseEvent) => {
-          L.DomEvent.stopPropagation(e);
-          setSelectedRoute(null);
-          setDisambiguationRoutes(null);
-          setSelectedStop(prev => prev === compositeStopId ? null : compositeStopId);
-        });
-        return;
-      }
-
-      const isCorridor = !!(props as any)?.isCorridor;
-      if (isCorridor) {
-        const h = (props as any).headway;
-        const n = ((props as any).routeIds?.length || 0);
-        (layer as L.Path).bindTooltip(
-          `<div class="tooltip-content">
-            <div class="tooltip-name">Combined corridor</div>
-            <div class="tooltip-info">${h != null ? `every ${h} min` : ''} • ${n} overlapping routes</div>
-          </div>`,
-          { sticky: true, className: 'atlas-tooltip', opacity: 1 }
-        );
-        // Corridors are viz overlays for combined freq; click clears route selection (no single route to select)
-        (layer as L.Path).on('click', (e: L.LeafletMouseEvent) => {
-          L.DomEvent.stopPropagation(e);
-          setSelectedRoute(null);
-        });
-        return;
-      }
-
-      // Route lines: no map tooltip (hover or click). Click selects and opens the full details
-      // exclusively in the left sidebar panel (sized to match the search bar width).
-      const key = routeKey(props);
-      (layer as L.Path).on('click', (e: L.LeafletMouseEvent) => {
-        L.DomEvent.stopPropagation(e);
-        setSelectedStop(null);
-        const map = mapRef.current;
-        if (map) {
-          const nearby = findRoutesNearClick(e.latlng, map, layers, 10);
-          if (nearby.length > 1) {
-            setDisambiguationRoutes(nearby);
-            return;
-          }
-        }
-        setSelectedRoute(prev => (prev === key ? null : key));
+    if (corridorOverlay && corridorOverlay.lines.length > 0) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: corridorOverlay.lines.map(line => ({
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: line.coordinates },
+          properties: { color: line.color }
+        }))
       });
-    },
-    [selectedRoute, setSelectedRoute, selectedStop, setSelectedStop, setDisambiguationRoutes, layers]
-  );
+      // Pan to fit corridor bounds
+      if (corridorOverlay.fitPoints.length >= 2) {
+        const bounds = corridorOverlay.fitPoints.map(([lat, lon]) => [lon, lat] as [number, number]);
+        let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+        bounds.forEach(([lng, lat]) => {
+          if (lng < minLng) minLng = lng;
+          if (lng > maxLng) maxLng = lng;
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+        });
+        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 120, bottom: 60, left: 240, right: 60 }, maxZoom: 13 });
+      }
+    } else {
+      source.setData({ type: 'FeatureCollection', features: [] });
+    }
+  }, [corridorOverlay, mapLoaded]);
+
+  // History stop markers overlay
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    // Clear old markers
+    historyMarkersRef.current.forEach(m => m.remove());
+    historyMarkersRef.current = [];
+
+    if (!historyOverlay) return;
+
+    if (historyOverlay.stops.length === 0) {
+      if (historyOverlay.agencyCenter) {
+        map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 13 });
+      }
+      return;
+    }
+
+    let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+
+    historyOverlay.stops.forEach(stop => {
+      if (!stop.lat || !stop.lon) return;
+      const isExpanded = expandedStop === stop.stopId;
+      const html = StopCardHtml(stop, isExpanded);
+
+      const el = document.createElement('div');
+      el.className = 'history-stop-marker-wrapper';
+      el.innerHTML = html;
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setExpandedStop(prev => prev === stop.stopId ? null : stop.stopId);
+      });
+
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat([stop.lon, stop.lat])
+        .addTo(map);
+
+      historyMarkersRef.current.push(marker);
+
+      if (stop.lon < minLng) minLng = stop.lon;
+      if (stop.lon > maxLng) maxLng = stop.lon;
+      if (stop.lat < minLat) minLat = stop.lat;
+      if (stop.lat > maxLat) maxLat = stop.lat;
+    });
+
+    // Zoom to fit stop markers
+    if (historyOverlay.stops.length >= 2) {
+      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+    }
+  }, [historyOverlay, mapLoaded, expandedStop]);
+
+  // Live vehicles markers overlay
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    liveMarkersRef.current.forEach(m => m.remove());
+    liveMarkersRef.current = [];
+
+    if (!liveOverlay) return;
+
+    liveOverlay.vehicles.forEach(vehicle => {
+      if (!vehicle.lat || !vehicle.lon) return;
+
+      const html = VehicleMarkerHtml(vehicle);
+      const el = document.createElement('div');
+      el.innerHTML = html;
+
+      const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup' })
+        .setHTML(`
+          <div style="font-family: ui-monospace, monospace; padding: 6px 10px;">
+            <div style="font-size: 8px; font-weight: 800; text-transform: uppercase; color: var(--text-dim, #9ca3af); letter-spacing: 0.5px;">Vehicle Info</div>
+            <div style="font-size: 11px; font-weight: 900; color: var(--text-primary, #111); margin-top: 2px;">
+              Route ${vehicle.routeShortName} • ID ${vehicle.id}
+            </div>
+            <div style="font-size: 10px; color: var(--text-muted, #4b5563); margin-top: 2px;">
+              to ${vehicle.headsign || 'Unknown destination'}
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary); padding-top: 4px; margin-top: 4px; font-size: 10px;">
+              <span style="font-size: 8px; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Status</span>
+              <span style="font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">
+                ${vehicle.delayMin === null
+                  ? 'No schedule data'
+                  : vehicle.delayMin <= -1.5
+                    ? `${Math.abs(vehicle.delayMin)}m early`
+                    : vehicle.delayMin >= 5.5
+                      ? `${vehicle.delayMin}m late`
+                      : 'On time'}
+              </span>
+            </div>
+          </div>
+        `);
+
+      const marker = new maplibregl.Marker({ element: el.firstElementChild as HTMLElement })
+        .setLngLat([vehicle.lon, vehicle.lat])
+        .setPopup(popup)
+        .addTo(map);
+
+      liveMarkersRef.current.push(marker);
+    });
+
+    // Fly on initial network load
+    if (liveOverlay.vehicles.length > 0 && liveOverlay.agencyCenter && liveMarkersRef.current.length === liveOverlay.vehicles.length) {
+      const dist = map.getCenter().distanceTo(new maplibregl.LngLat(liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]));
+      if (dist > 50000) {
+        map.flyTo({ center: [liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]], zoom: 13 });
+      }
+    } else if (liveOverlay.vehicles.length === 0 && liveOverlay.agencyCenter) {
+      map.flyTo({ center: [liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]], zoom: 13 });
+    }
+  }, [liveOverlay, mapLoaded]);
+
+  // Focus vehicle centering
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !liveOverlay?.focusedVehicle) return;
+
+    const { lat, lon } = liveOverlay.focusedVehicle;
+    map.flyTo({ center: [lon, lat], zoom: 14 });
+  }, [liveOverlay?.focusedVehicle, mapLoaded]);
+
+  // Clean overlays on unmount
+  useEffect(() => {
+    return () => {
+      historyMarkersRef.current.forEach(m => m.remove());
+      liveMarkersRef.current.forEach(m => m.remove());
+      corridorMarkersRef.current.forEach(m => m.remove());
+    };
+  }, []);
 
   return (
-    <MapContainer
-      center={regionalView.center}
-      zoom={regionalView.zoom}
-      style={{ height: '100%', width: '100%', background: 'var(--bg-app)' }}
-      zoomControl={false}
-      preferCanvas={true}
-      zoomAnimation={true}
-      zoomSnap={0.25}
-      zoomDelta={1}
-      wheelPxPerZoomLevel={60}
-    >
-      <TileLayer
-        key={tileUrl}
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url={tileUrl}
-      />
-      <MapRefCapturer mapRef={mapRef} />
-      <MapClickHandler onClear={() => { setSelectedRoute(null); setSelectedStop(null); setDisambiguationRoutes(null); }} />
-      <BoundsReporter onBoundsChange={onBoundsChange} onZoomChange={setZoom} />
-      <ViewPersistor />
-      <GeolocateOnMount skip={hasSavedView} />
-      <ResetViewControl resetKey={resetViewKey} agencies={agencies} />
-      <LocateControl onLocate={onLocate} />
-      <RouteZoomer selectedRoute={selectedRoute} layers={allLayers || layers} />
-      {(showCorridorBand || !showRouteLayers) && corridorOverlay && <CorridorMapLayers overlay={corridorOverlay} />}
-      {historyOverlay && <HistoryStopMarkers />}
-      {liveOverlay && <LiveVehiclesLayer />}
-      {showRouteLayers && Object.entries(layers).map(([slug, data]) => {
-        const fc = data as GeoJSON.FeatureCollection;
-        // Split route shapes from stop points — stops mount/unmount on zoom without
-        // triggering expensive remounts of the much larger route layer.
-        const lineFeatures = fc.features.filter(f => f.geometry.type !== 'Point');
-        const pointFeatures = fc.features.filter(f => f.geometry.type === 'Point');
-        const filterActive = maxHeadway !== Infinity;
-        const lineFc = {
-          ...fc,
-          features: lineFeatures.map(f => {
-            const withSlug = { ...f, properties: { ...f.properties, agencySlug: slug } };
-            if (!filterActive || f.geometry.type !== 'LineString') return withSlug;
-            const clipped = getClippedCoords(withSlug, maxHeadway);
-            if (clipped === (f.geometry as GeoJSON.LineString).coordinates) return withSlug;
-            if (clipped.some(c => isNaN(c[0]) || isNaN(c[1]))) return withSlug;
-            return { ...withSlug, geometry: { type: 'LineString' as const, coordinates: clipped } };
-          }),
-        };
-        // Inject agencySlug so onEachFeature can build the composite stopId key
-        const pointFc = { ...fc, features: pointFeatures.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })) };
-        return (
-          <React.Fragment key={slug}>
-            <GeoJSON
-              key={`${slug}-hit-${lineFeatures.length}`}
-              data={lineFc}
-              style={hitStyle}
-              onEachFeature={onEachFeature}
-            />
-            <GeoJSON
-              key={`${slug}-lines-${maxHeadway}-${q}-${lineFeatures.length}`}
-              data={lineFc}
-              style={styleFeature}
-              />
-              {(showAllStops || showHubsOnly || showRailOnly || selectedStop != null) && pointFeatures.length > 0 && (
-              <GeoJSON
-                key={`${slug}-stops-${selectedStop}-${zoom >= 12 ? zoom : 'hidden'}`}
-                data={pointFc}
-                style={styleFeature}
-                onEachFeature={onEachFeature}
-                pointToLayer={(feature, latlng) => {
-                  const props = feature.properties as unknown as ShapeProperties;
-                  const agSlug = (props as any).agencySlug as string | undefined;
-                  const compositeId = agSlug && props.stopId ? `${agSlug}::${props.stopId}` : props.stopId;
-                  const isSelected = selectedStop === compositeId;
-                  const routeCount = (props as any).routeIds?.length ?? 0;
-                  const isHub = (props as any).isHub || routeCount >= 4;
-                  const isRail = (props as any).isRail;
+    <div style={{ height: '100%', width: '100%', position: 'relative', background: 'var(--bg-app)' }}>
+      {/* Map Element */}
+      <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
 
-                  // Visibility logic — prevents terminal clusters from becoming blobs at overview zooms.
-                  // Only "significant" stops (hubs/terminals + rail) are shown until you zoom in.
-                  if (!isSelected) {
-                    // Hide stops that lost the per-location priority race (deduplicates shared stations).
-                    if (compositeId && !primaryStopKeys.has(compositeId)) {
-                      return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
-                    }
-                    if (zoom < 12) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
-                    if (zoom < 15 && !isRail) return L.circleMarker(latlng, { radius: 0, opacity: 0, fillOpacity: 0 });
-                  }
-
-                  // Smaller regular stops + slightly scaled by zoom so terminals read cleanly far out.
-                  // Hubs (terminals) get a bit more presence.
-                  const baseR = isSelected ? 6 : isRail ? 4.5 : isHub ? 4.2 : 2.2;
-                  const zFactor = zoom >= 15 ? 1.05 : zoom >= 14 ? 0.85 : 0.72;
-                  const radius = Math.max(1.2, baseR * zFactor);
-                  const fillColor = isSelected ? 'var(--accent)' : isRail ? (lightMode ? '#fff' : 'var(--accent)') : 'var(--text-dim)';
-                  const color = isSelected ? '#fff' : isRail ? 'var(--accent)' : 'var(--border-primary)';
-                  const weight = isSelected ? 1.5 : isRail ? 2 : 1;
-                  const opacity = isSelected ? 1 : isRail ? 0.9 : 0.55;
-                  const fillOpacity = isSelected ? 1 : isRail ? 1 : isHub ? 0.55 : 0.25;
-
-                  return L.circleMarker(latlng, {
-                    radius,
-                    fillColor,
-                    color,
-                    weight,
-                    opacity,
-                    fillOpacity,
-                  });
-                }}
-              />
-              )}
-              </React.Fragment>
-        );
-      })}
-    </MapContainer>
+      {/* Geolocate Button Control Overlay */}
+      <button
+        onClick={locateUser}
+        aria-label="Go to my location"
+        className="absolute bottom-6 right-3 z-[1000] w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto"
+      >
+        <LocateFixed className="w-4 h-4" />
+      </button>
+    </div>
   );
 };
