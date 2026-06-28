@@ -29,41 +29,55 @@ const onlySlugs = process.argv.slice(2);
 
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
-  const routes: Record<string, { headway: number | null; tier: string | null; routeLongName?: string }> = {};
+  const current: Record<string, { headway: number; tier: string | null; routeLongName?: string }> = {};
   for (const f of fc.features) {
     const p = f.properties;
     if (!p.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
     const sn = String(p.routeShortName);
     const h = p.headway != null ? Number(p.headway) : null;
+    if (h == null) continue;
     const t = p.tier != null ? String(p.tier) : null;
     const ln = p.routeLongName ? String(p.routeLongName) : undefined;
-    if (!routes[sn] || (h != null && (routes[sn].headway == null || h < routes[sn].headway!))) {
-      routes[sn] = { headway: h, tier: t, routeLongName: ln ?? routes[sn]?.routeLongName };
+    if (!current[sn] || h < current[sn].headway) {
+      current[sn] = { headway: h, tier: t, routeLongName: ln ?? current[sn]?.routeLongName };
     }
   }
 
-  // Only write when headways actually changed vs the last recorded snapshot.
-  // Stored in atlas-archive (private) — pipeline diff-detection metadata, not served to users.
+  // Load previous headways from agency-level latest.json (compact baseline for diffing).
   const latestKey = `history/${slug}/latest.json`;
+  let prev: Record<string, { headway: number }> = {};
   try {
-    const prevRaw = await r2GetArchive(latestKey);
-    if (prevRaw) {
-      const prev = JSON.parse(prevRaw) as { routes: unknown };
-      if (JSON.stringify(prev.routes) === JSON.stringify(routes)) {
-        return 'unchanged (headways identical to last snapshot)';
-      }
-    }
-  } catch { /* no previous snapshot exists yet — write the first one */ }
+    const raw = await r2GetArchive(latestKey);
+    if (raw) prev = JSON.parse(raw).routes ?? {};
+  } catch { /* first run for this agency */ }
 
-  // Key by feed_end_date so each snapshot represents a distinct schedule period.
-  // Fall back to feed_version, then processed date if neither is available.
+  // Key by feed_end_date (distinct service period). Fallback to feed_version, then today.
   const periodKey = feedExpiry ?? feedVersion ?? new Date().toISOString().slice(0, 10);
-  const snapshot = JSON.stringify({ period: periodKey, feedExpiry, feedVersion, processedAt: new Date().toISOString(), routes });
-  await Promise.all([
-    r2PutArchiveJson(`history/${slug}/${periodKey}.json`, snapshot),
-    r2PutArchiveJson(latestKey, snapshot),
-  ]);
-  return `snapshot written (expires ${periodKey})`;
+  const processedAt = new Date().toISOString();
+  const changed: string[] = [];
+
+  // Write a per-route file only for routes whose headway changed.
+  const writes: Promise<void>[] = [];
+  for (const [routeShortName, route] of Object.entries(current)) {
+    const prevHeadway = prev[routeShortName]?.headway ?? null;
+    if (prevHeadway !== null && prevHeadway === route.headway) continue;
+    changed.push(routeShortName);
+    writes.push(r2PutArchiveJson(
+      `history/${slug}/${routeShortName}/${periodKey}.json`,
+      JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, processedAt }),
+    ));
+  }
+
+  // Always update latest.json as the baseline for the next diff.
+  writes.push(r2PutArchiveJson(latestKey, JSON.stringify({
+    processedAt,
+    routes: Object.fromEntries(Object.entries(current).map(([sn, r]) => [sn, { headway: r.headway }])),
+  })));
+
+  await Promise.all(writes);
+
+  if (changed.length === 0) return 'unchanged';
+  return `${changed.length} route${changed.length !== 1 ? 's' : ''} changed (${changed.slice(0, 4).join(', ')}${changed.length > 4 ? '…' : ''})`;
 }
 
 async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
