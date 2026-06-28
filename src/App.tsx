@@ -242,6 +242,7 @@ export default function App() {
               hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
+              setSelectedAgencySlug={setSelectedAgencySlug}
               onAgencyCardClose={handleAgencyCardClose}
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}

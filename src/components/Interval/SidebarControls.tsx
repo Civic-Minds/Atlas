@@ -39,6 +39,7 @@ interface SidebarControlsProps {
   setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
+  setSelectedAgencySlug?: (slug: string | null) => void;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -69,6 +70,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setHideSpan,
   livePollingOnly,
   setLivePollingOnly,
+  setSelectedAgencySlug,
 }) => {
   const SPARKLINE_PERIODS: Array<{ key: keyof HeadwayByPeriod; label: string }> = [
     { key: 'amPeak', label: 'AM' },
@@ -684,10 +686,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   return (
                     <>
                       <button
-                        onClick={() => setSelectedAgencies(prev => {
-                          if (prev.size === 1 && prev.has(slug)) return new Set();
-                          return new Set([slug]);
-                        })}
+                        onClick={() => {
+                          if (slug && setSelectedAgencySlug) {
+                            setSelectedAgencySlug(slug);
+                            setSelectedRoute(null);
+                          }
+                        }}
                         className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
                       >
                         {displayName}

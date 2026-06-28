@@ -69,11 +69,14 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect }: Prop
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div>
           <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{agency.name}</p>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {agency.region && (
-              <span className="text-[10px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5">{agency.region}</span>
+              <span className="text-[9px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5">{agency.region}</span>
             )}
-            <span className="text-[10px] text-[var(--text-dim)] font-mono">{agency.slug}</span>
+            <span className="text-[9px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5">
+              {routes.length} route{routes.length !== 1 ? 's' : ''}
+            </span>
+            <span className="text-[9px] text-[var(--text-dim)] font-mono">{agency.slug}</span>
           </div>
         </div>
         <button

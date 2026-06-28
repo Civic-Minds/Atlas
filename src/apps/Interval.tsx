@@ -25,6 +25,7 @@ interface Props {
   showCorridorBand?: boolean;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   selectedAgencySlug?: string | null;
+  setSelectedAgencySlug?: (slug: string | null) => void;
   onAgencyCardClose?: () => void;
   pendingLiveRoute?: { slug: string; routeShortName: string } | null;
   onPendingLiveRouteHandled?: () => void;
@@ -32,7 +33,7 @@ interface Props {
   hideFilterPanel?: boolean;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -266,6 +267,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setHideSpan={setHideSpan}
         livePollingOnly={livePollingOnly}
         setLivePollingOnly={setLivePollingOnly}
+        setSelectedAgencySlug={setSelectedAgencySlug}
       />
       </div>
     </div>
