@@ -105,18 +105,40 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (valids.length === 0) return null;
     const maxFreq = Math.max(...valids.map(v => 1 / v));
     const minFreq = Math.min(...valids.map(v => 1 / v));
-    const H = 18; const BW = 8; const GAP = 3;
+    const H = 26; // Taller bars
     return (
-      <div className="mt-1.5 mb-3">
-        <svg width={SPARKLINE_PERIODS.length * (BW + GAP) - GAP} height={H} className="block">
-          {SPARKLINE_PERIODS.map(({ key, label }, i) => {
+      <div className="mt-2.5 mb-4 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 shadow-sm flex items-center justify-between gap-3">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Service Frequency</span>
+          <span className="text-[8px] text-[var(--text-dim)] leading-snug max-w-[125px]">
+            Taller bars signify more frequent service (shorter headways).
+          </span>
+        </div>
+        <div className="flex gap-1.5 shrink-0">
+          {SPARKLINE_PERIODS.map(({ key, label }) => {
             const h = byPeriod[key];
-            if (!h) return <rect key={key} x={i * (BW + GAP)} y={H - 3} width={BW} height={3} rx={2} fill="var(--border-primary)" opacity={0.4} />;
-            const freq = 1 / h;
-            const barH = maxFreq > minFreq ? Math.max(4, Math.round((freq - minFreq) / (maxFreq - minFreq) * (H - 4) + 4)) : H;
-            return <rect key={key} x={i * (BW + GAP)} y={H - barH} width={BW} height={barH} rx={2} fill={headwayToTierColor(h)} opacity={0.9}><title>{`${label}: ${h} min`}</title></rect>;
+            const hasValue = !!h;
+            const freq = h ? 1 / h : 0;
+            const barH = hasValue
+              ? (maxFreq > minFreq ? Math.max(6, Math.round((freq - minFreq) / (maxFreq - minFreq) * (H - 6) + 6)) : H)
+              : 3;
+            const color = hasValue ? headwayToTierColor(h) : 'var(--border-primary)';
+            return (
+              <div key={key} className="flex flex-col items-center gap-1 shrink-0">
+                <div style={{ height: H }} className="flex items-end justify-center w-[14px]">
+                  <div
+                    style={{ height: barH, background: color }}
+                    className={`w-2.5 rounded-sm transition-all duration-300 ${hasValue ? 'opacity-90' : 'opacity-25'}`}
+                    title={hasValue ? `${label}: ${h} min` : `${label}: No service`}
+                  />
+                </div>
+                <span className="text-[7px] font-bold text-[var(--text-dim)] uppercase tracking-wide">
+                  {label === 'Mid' ? 'MID' : label === 'Eve' ? 'EVE' : label}
+                </span>
+              </div>
+            );
           })}
-        </svg>
+        </div>
       </div>
     );
   }
