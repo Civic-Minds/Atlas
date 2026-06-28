@@ -20,7 +20,7 @@ export const PANEL_ENTER_LEFT = `animate-in fade-in slide-in-from-left-2 ${TRANS
 export const PANEL_ENTER_TOP = `animate-in fade-in zoom-in-95 slide-in-from-top-1 origin-top-right ${TRANSITION_FAST}`;
 
 /** Right-anchored dropdown card — Settings, Info, etc. */
-export const DROPDOWN_PANEL = `absolute top-[4.5rem] right-6 w-[360px] max-h-[calc(100vh-5.5rem)] flex flex-col ${SURFACE} rounded-2xl shadow-2xl overflow-hidden`;
+export const DROPDOWN_PANEL = `absolute top-[4.5rem] right-6 w-[360px] h-[calc(100vh-5.5rem)] flex flex-col ${SURFACE} rounded-2xl shadow-2xl overflow-hidden`;
 
 /** Scale + opacity entrance animation for dropdown panels */
 export const dropdownAnim = (visible: boolean) =>

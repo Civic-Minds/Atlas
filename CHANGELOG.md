@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **InfoPanel: History tab**: Moved history agency coverage list from the About tab into its own dedicated History tab. Also migrated the Live tab search input to SEARCH_PILL/SEARCH_FIELD. Panel now holds a fixed height across all tabs.
 - **Shared UI primitives (AI-163)**: Added `LIST_ROW`, `LIST_ROW_PRIMARY`, `LIST_ROW_DIM`, `SEARCH_PILL`, `SEARCH_FIELD` constants to `styles.ts`. Migrated History route list, SidebarControls suggestion popup + disambiguation + search results, and InfoPanel agencies search to use them. All list rows now share the same `border-b` full-width row design; all panel search inputs are pill-shaped to match the global search bar.
 - **About tab: Service History agency list**: Shows which agencies have documented history data, pulled live from `atlas/history-config.json`. Updates automatically as more agencies are added to the pipeline.
 - **History agency panel: simplified route list**: Flat route list with a colored dot (red/green/grey) as the only change signal. Sort by severity. No labels, no year context — those belong in the route detail card. Added route search box. Year-range filter tabs removed (premature; will live on the route card when implemented).

@@ -53,8 +53,8 @@ export default function App() {
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [infoTab, setInfoTab] = useState<'about' | 'agencies' | 'live'>('about');
-  function openInfo(tab: 'about' | 'agencies' | 'live' = 'about') {
+  const [infoTab, setInfoTab] = useState<'about' | 'agencies' | 'history' | 'live'>('about');
+  function openInfo(tab: 'about' | 'agencies' | 'history' | 'live' = 'about') {
     setInfoTab(tab);
     setInfoOpen(true);
   }
