@@ -31,12 +31,13 @@ interface Props {
   onPendingLiveRouteHandled?: () => void;
   searchFocused?: boolean;
   hideFilterPanel?: boolean;
+  filterToAgencies?: boolean;
   day: 'Weekday' | 'Saturday' | 'Sunday';
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -153,6 +154,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         showRouteLayers={showRouteLayers}
         showCorridorBand={showCorridorBand}
         hideSpan={hideSpan}
+        filterToAgencies={filterToAgencies}
       />
 
       {showUi && isLoading && (

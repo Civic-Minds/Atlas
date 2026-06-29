@@ -260,6 +260,7 @@ export default function App() {
               resetViewKey={resetViewKey}
               showUi={inFrequency}
               showRouteLayers={inFrequency || inCorridors || inHistory}
+              filterToAgencies={inHistory}
               showCorridorBand={inCorridors}
               hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}

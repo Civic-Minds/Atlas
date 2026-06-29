@@ -36,6 +36,7 @@ interface MapCanvasProps {
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
   hideSpan?: boolean;
+  filterToAgencies?: boolean;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -56,6 +57,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   showRouteLayers = true,
   showCorridorBand = false,
   hideSpan = false,
+  filterToAgencies = false,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -450,6 +452,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     }
 
+    if (filterToAgencies && agencies.length > 0) {
+      const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencies.map(a => a.slug)]];
+      routeFilter = routeFilter ? ['all', routeFilter, slugAllowlist] : slugAllowlist;
+    }
+
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
     if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
 
@@ -502,7 +509,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers, hideSpan]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
