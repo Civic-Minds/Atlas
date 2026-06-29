@@ -39,10 +39,10 @@ export interface HeadwayTier {
 }
 
 export const HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#2563eb', label: '≤10m' },
+  { max: 10, color: '#22863a', label: '≤10m' },
   { max: 15, color: '#3da44d', label: '≤15m' },
-  { max: 20, color: '#78c87e', label: '≤20m' },
-  { max: 30, color: '#ca8a04', label: '≤30m' },
-  { max: 60, color: '#dc2626', label: '≤60m' },
+  { max: 20, color: '#f59e0b', label: '≤20m' },
+  { max: 30, color: '#e07b2a', label: '≤30m' },
+  { max: 60, color: '#92400e', label: '≤60m' },
   { max: Infinity, color: '#6b7280', label: 'Infrequent' },
 ];

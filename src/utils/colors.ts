@@ -46,8 +46,8 @@ export function getTimelineHeadwayColor(hw: number | null): { bg: string; fg: st
   if (hw == null) return { bg: 'var(--bg-hover)',  fg: 'var(--text-dim)' };
   if (hw <= 10)   return { bg: '#22863a',          fg: '#fff' };
   if (hw <= 15)   return { bg: '#3da44d',          fg: '#fff' };
-  if (hw <= 20)   return { bg: '#78c87e',          fg: '#1a1a1a' };
-  if (hw <= 30)   return { bg: '#d4a017',          fg: '#fff' };
-  if (hw <= 60)   return { bg: '#d4671e',          fg: '#fff' };
-  return                  { bg: '#c0392b',          fg: '#fff' };
+  if (hw <= 20)   return { bg: '#f59e0b',          fg: '#fff' };
+  if (hw <= 30)   return { bg: '#e07b2a',          fg: '#fff' };
+  if (hw <= 60)   return { bg: '#92400e',          fg: '#fff' };
+  return                  { bg: '#6b7280',          fg: '#fff' };
 }
