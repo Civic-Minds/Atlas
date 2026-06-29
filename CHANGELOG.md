@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 - **Full history backfill via Mobility Database API**: Ran automated backfill for all 3 history agencies (Burlington mdb-724, CDTA mdb-538, GCRTA mdb-406) from 2015 onward. One fall snapshot per year downloaded, processed, and archived. Burlington: 16 routes; CDTA: 43 routes; GCRTA: 36 routes with documented frequency changes.
 - **Automated MDB history backfill script** (`pipeline/backfill-mdb-history.ts`): Generic script to backfill any agency from the Mobility Database API. Fetches all historical datasets for a given feed ID, picks one per year closest to Sep 1 (fall service anchor), downloads each, and writes history snapshots to R2. Requires `MDB_REFRESH_TOKEN` in `.env.local`.
 
+### Removed
+- **One-off Burlington backfill script**: Removed `pipeline/backfill-burlington-history.ts` (hardcoded local paths). Superseded by `backfill-mdb-history.ts`.
+
 ### Added
 - **Staged agency support**: New `staged: true` flag in `index.json` marks agencies as pending — frontend hides them until data is ready. Pipeline auto-clears the flag after a successful first refresh, so the next deploy brings them live with no manual step.
 - **CDTA history backfill (Albany)**: Second History map app pilot city. Processed 5 historical GTFS snapshots (2016, 2018, 2020, 2022, 2024) through the history pipeline. 41 routes now have documented frequency changes. History config updated to 2 agencies.
