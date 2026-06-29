@@ -12,12 +12,15 @@ export interface HeadwayByPeriod {
   lateNight?: number | null;
 }
 
+export type HeadwayByHour = Partial<Record<number, number | null>>;
+
 export interface ShapeProperties {
   routeId: string;
   directionId: number;
   tier: string | null;
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
+  headwayByHour?: HeadwayByHour;
   routeShortName: string | null;
   routeLongName: string | null;
   agencyName?: string;

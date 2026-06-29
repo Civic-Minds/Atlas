@@ -46,6 +46,10 @@ const PERIODS = Object.fromEntries(
 type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'lateNight';
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
+// Hours covered by the hourly sparkline: 5 AM through 2 AM next day (GTFS hour 26)
+const SPARKLINE_HOURS = Array.from({ length: 22 }, (_, i) => i + 5); // [5, 6, ..., 26]
+export type HeadwayByHour = Partial<Record<number, number | null>>;
+
 function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
   // Deduplicate and sort before computing gaps. Agencies that split the same schedule across
   // multiple service_ids (e.g. OC Transpo Mon-Thu + Friday Confederation Line both having
@@ -623,9 +627,10 @@ export async function processGtfsBuffer(
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) continue;
 
-    // Step 1: compute all-day and per-period headways for every stop in the route+dir group.
+    // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
     const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+    const allStopHourHw: Record<string, HeadwayByHour> = {};
     for (const [stopId, times] of stopMap) {
       times.sort((a, b) => a - b);
       const hw = medianHeadwayInWindow(times, 360, 1320);
@@ -636,6 +641,13 @@ export async function processGtfsBuffer(
         if (ph != null) byPeriod[pk] = ph;
       }
       if (Object.keys(byPeriod).length > 0) allStopPeriodHw[stopId] = byPeriod;
+      // Hourly: use a 90-min window [h*60, h*60+90] so 30-min routes show up with ≥3 departures.
+      const byHour: HeadwayByHour = {};
+      for (const h of SPARKLINE_HOURS) {
+        const hh = medianHeadwayInWindow(times, h * 60, h * 60 + 90, 2);
+        byHour[h] = hh;
+      }
+      allStopHourHw[stopId] = byHour;
     }
     if (Object.keys(allStopHw).length === 0) continue;
 
@@ -724,6 +736,12 @@ export async function processGtfsBuffer(
     }
     feature.properties.headwayByPeriod = periodMedians;
     feature.properties.minStopHeadwayByPeriod = periodMins;
+
+    // Hourly headways from terminal stop for the sparkline.
+    const terminalHourHw = terminalStopId ? allStopHourHw[terminalStopId] : undefined;
+    if (terminalHourHw) {
+      feature.properties.headwayByHour = terminalHourHw;
+    }
   }
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)

@@ -4,7 +4,7 @@ import { getTierColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
+import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
@@ -688,21 +688,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             </div>
             {(() => {
-              // Merge headwayByPeriod across all directions — take the best (lowest) non-null
-              // headway per period so bidirectional peak routes (AM one way, PM the other)
-              // show the full service picture rather than just one direction's data.
-              const PERIODS = ['amPeak', 'midday', 'pmPeak', 'evening', 'lateNight'] as const;
-              const merged: HeadwayByPeriod = { amPeak: null, midday: null, pmPeak: null, evening: null, lateNight: null };
+              // Merge headwayByHour across all directions — take the best (lowest) non-null
+              // headway per hour so bidirectional peak routes show the full service picture.
+              const HOURS = Array.from({ length: 22 }, (_, i) => i + 5);
+              const merged: Record<number, number | null> = {};
+              for (const h of HOURS) merged[h] = null;
               for (const d of currentRoute.directions) {
-                const bp = d.headwayByPeriod as HeadwayByPeriod | undefined;
-                if (!bp) continue;
-                for (const p of PERIODS) {
-                  const v = bp[p];
-                  if (v != null && (merged[p] == null || v < merged[p]!)) merged[p] = v;
+                const bh = (d as any).headwayByHour as Record<number, number | null> | undefined;
+                if (!bh) continue;
+                for (const h of HOURS) {
+                  const v = bh[h];
+                  if (v != null && (merged[h] == null || v < merged[h]!)) merged[h] = v;
                 }
               }
-              const hasAny = PERIODS.some(p => merged[p] != null);
-              return hasAny ? <HeadwaySparkline byPeriod={merged} /> : null;
+              const hasAny = HOURS.some(h => merged[h] != null);
+              return hasAny ? <HeadwaySparkline byHour={merged} /> : null;
             })()}
             <div className="space-y-3">
               {directionGroups.map((group, gi) => {

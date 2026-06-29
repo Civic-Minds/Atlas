@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Late period** (AI-181): Added Evening (7 PM–midnight) and Late (midnight–3 AM) periods. Evening extended from prior 10 PM cutoff to midnight; Late covers post-midnight service. Sparkline shows "EVE" and "LATE" bars. Appears in period filter chip. Pipeline computes both periods on refresh. Added `--force` flag to `npm run refresh` to bypass skip-if-unchanged for schema changes.
+- **Late period** (AI-181): Added Evening (7 PM–midnight) and Late (midnight–3 AM) periods. Evening extended from prior 10 PM cutoff to midnight; Late covers post-midnight service. Appears in period filter chip. Pipeline computes both periods on refresh. Added `--force` flag to `npm run refresh` to bypass skip-if-unchanged for schema changes.
+- **Hourly sparkline** (AI-180): Route card sparkline now shows per-hour frequency bars (5 AM–2 AM) instead of named period bars. Pipeline computes `headwayByHour` using a 90-min sliding window per hour; merged across all directions (best headway wins). X-axis labelled at 6a/12p/6p/12a. Agencies with overnight service naturally trail into post-midnight bars; agencies without service just show empty bars.
 
 ### Fixed
 - **Route card: sparkline merges all directions** (AI-180): HeadwaySparkline now picks the best (lowest) non-null headway per period across all directions, so bidirectional peak routes (e.g. GO Route 31 — AM one way, PM the other) show the full service pattern rather than just the first direction's data.
