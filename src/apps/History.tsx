@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, X, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD } from '../styles';
@@ -87,6 +87,7 @@ function RouteHistoryCard({
   onBack: () => void;
 }) {
   const [period, setPeriod] = useState<HistoryPeriod>('midday');
+  const [showChart, setShowChart] = useState(false);
   const snaps = route.snapshots;
 
   // Determine which periods have any data across all snapshots
@@ -166,29 +167,35 @@ function RouteHistoryCard({
             {agencyName} · {region}
           </p>
         </div>
+        {snaps.length >= 2 && (
+          <button
+            onClick={() => setShowChart(v => !v)}
+            className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors shrink-0 ${showChart ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+            aria-label="Toggle chart"
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
 
       {/* Period selector */}
-      <div className="px-4 pb-3 shrink-0">
-        <div className="flex items-center gap-1.5">
-          {availablePeriods.map(p => (
-            <button
-              key={p.key}
-              onClick={() => setPeriod(p.key)}
-              className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${
-                period === p.key
-                  ? 'bg-[var(--accent)] text-white'
-                  : 'bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-        <p className="text-[10px] text-[var(--text-muted)] mt-1.5">{periodInfo.desc}</p>
+      <div className="px-4 pb-3 shrink-0 flex items-center gap-1.5">
+        {availablePeriods.map(p => (
+          <button
+            key={p.key}
+            onClick={() => setPeriod(p.key)}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${
+              period === p.key
+                ? 'bg-[var(--accent)] text-white'
+                : 'bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
       </div>
 
-      {snaps.length >= 2 && (
+      {snaps.length >= 2 && showChart && (
         <div className="px-4 pb-4 shrink-0">
           <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
             <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
