@@ -445,7 +445,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
 
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
-    const agency = historyAgencies.find(a => a.slug === selectedSlug) ?? historyAgencies[0] ?? null;
+    const agency = selectedSlug ? (historyAgencies.find(a => a.slug === selectedSlug) ?? null) : null;
     if (agency?.center) {
       setOverlay({
         slug: agency.slug,

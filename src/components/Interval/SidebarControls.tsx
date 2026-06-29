@@ -408,6 +408,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
       })
       .sort((a, b) => {
+        const agencyCmp = a.agencyName.localeCompare(b.agencyName);
+        if (agencyCmp !== 0) return agencyCmp;
         const nA = parseInt(a.shortName, 10), nB = parseInt(b.shortName, 10);
         if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
         return a.shortName.localeCompare(b.shortName, undefined, { numeric: true });
@@ -501,23 +503,37 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">Multiple routes here</span>
           </div>
           <div>
-            {disambigDetails.map(r => (
-              <button
-                key={r.key}
-                onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
-                className={LIST_ROW}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className={LIST_ROW_PRIMARY}>
-                    {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                  </div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
-                    <span className={LIST_ROW_DIM}>{r.agencyName}</span>
-                  </div>
+            {(() => {
+              const groups: { agencyName: string; routes: typeof disambigDetails }[] = [];
+              for (const r of disambigDetails) {
+                const last = groups[groups.length - 1];
+                if (last && last.agencyName === r.agencyName) last.routes.push(r);
+                else groups.push({ agencyName: r.agencyName, routes: [r] });
+              }
+              return groups.map(g => (
+                <div key={g.agencyName}>
+                  {g.agencyName && (
+                    <div className="px-4 pt-2.5 pb-1">
+                      <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
+                    </div>
+                  )}
+                  {g.routes.map(r => (
+                    <button
+                      key={r.key}
+                      onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
+                      className={LIST_ROW}
+                    >
+                      <div className="min-w-0 flex-1 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
+                        <span className={LIST_ROW_PRIMARY}>
+                          {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              </button>
-            ))}
+              ));
+            })()}
           </div>
         </div>
       )}

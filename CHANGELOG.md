@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Multi-route popup: group routes by agency** (AI-190): Routes in the "Multiple routes here" disambiguation popup are now grouped under agency headers instead of repeating the full agency name on every row. Routes are sorted alphabetically by agency, then numerically by route number within each group.
+- **History: no longer auto-zooms to Burlington on open** (AI-192): Removed the `historyAgencies[0]` fallback that panned the map to the first history agency (Burlington) when no agency was explicitly selected. Map now stays at its current position until the user selects an agency.
+
 ### Added
 - **Late period** (AI-181): Added Evening (7 PM–midnight) and Late (midnight–3 AM) periods. Evening extended from prior 10 PM cutoff to midnight; Late covers post-midnight service. Appears in period filter chip. Pipeline computes both periods on refresh. Added `--force` flag to `npm run refresh` to bypass skip-if-unchanged for schema changes.
 - **Hourly sparkline** (AI-180): Route card sparkline now shows per-hour frequency bars (5 AM–2 AM) instead of named period bars. Pipeline computes `headwayByHour` using a 90-min sliding window per hour; merged across all directions (best headway wins). X-axis labelled at 6a/12p/6p/12a. Agencies with overnight service naturally trail into post-midnight bars; agencies without service just show empty bars.
