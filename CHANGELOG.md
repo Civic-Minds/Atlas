@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Live Vehicles: route-grouped sidebar**: Vehicle list now shows one row per route (grouped) instead of one row per individual vehicle. Shows vehicle count and aggregate delay status (e.g. "3 late"). Eliminates noise for high-frequency networks with many vehicles per route.
+- **Live Vehicles: route selection**: Clicking a route row focuses map to that route's vehicles only; "Show all" footer link resets. Clicking the same route again deselects.
+- **Live Vehicles: styling overhaul**: Sidebar now uses shared `LIST_ROW`/`LIST_ROW_PRIMARY`/`LIST_ROW_DIM` style constants matching the rest of the app. Fixed `select` element font (was defaulting to system font instead of Inter). Removed "Xs ago" timestamp.
+- **Live Vehicles: map popup**: Replaced monospace font with Inter; removed raw vehicle UUID; cleaned up delay label formatting (rounded minutes, no decimals).
+
 ### Fixed
 - **Live Vehicles: status dot reflects actual state**: Green + pulse only when vehicles are loaded; amber + pulse while loading; red (no pulse) on error; gray (no pulse) when idle. Was always green regardless of state.
 - **Live Vehicles: error state redesign**: WifiOff icon, cleaner message copy. Removed "Try again" button (auto-polls every 15s) and agency suggestion list (dropdown already handles switching). Distinguishes between unconfigured agency ("No live feed") vs. feed unreachable ("Feed unavailable") so a network error doesn't look like a missing config.

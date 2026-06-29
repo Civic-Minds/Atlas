@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Info, Moon, Sun, WifiOff } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import type { Agency } from '../App';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../styles';
 import { STATUS_COLORS } from '../utils/colors';
 
 interface Props {
@@ -16,6 +16,16 @@ interface Props {
   query: string;
 }
 
+interface RouteGroup {
+  routeShortName: string;
+  displayName: string;
+  headsigns: string[];
+  vehicles: LiveVehicle[];
+  lateCount: number;
+  earlyCount: number;
+  dominantStatus: LiveVehicle['status'];
+}
+
 const POLL_INTERVAL_MS = 15_000;
 
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query }: Props) {
@@ -23,11 +33,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [vehicles, setVehicles] = useState<LiveVehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [secondsAgo, setSecondsAgo] = useState<number>(0);
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
 
-  // Only show agencies whose feeds don't require an unconfigured API key
   const eligibleSlugs = useMemo(() => {
     const slugs = new Set(
       LIVE_POLLING_ROUTES
@@ -37,9 +45,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return Array.from(slugs);
   }, []);
 
-  const eligibleAgencies = useMemo(() => {
-    return agencies.filter(a => eligibleSlugs.includes(a.slug));
-  }, [agencies, eligibleSlugs]);
+  const eligibleAgencies = useMemo(() => agencies.filter(a => eligibleSlugs.includes(a.slug)), [agencies, eligibleSlugs]);
 
   const [selectedSlug, setSelectedSlug] = useState<string>(() => {
     try {
@@ -50,16 +56,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   });
 
   useEffect(() => {
-    if (selectedSlug) {
-      localStorage.setItem('atlas_pref_live_agency', selectedSlug);
-    }
+    if (selectedSlug) localStorage.setItem('atlas_pref_live_agency', selectedSlug);
   }, [selectedSlug]);
 
-  const selectedAgency = useMemo(() => {
-    return eligibleAgencies.find(a => a.slug === selectedSlug) || null;
-  }, [eligibleAgencies, selectedSlug]);
+  const selectedAgency = useMemo(
+    () => eligibleAgencies.find(a => a.slug === selectedSlug) || null,
+    [eligibleAgencies, selectedSlug]
+  );
 
-  // Fetch function
   const fetchVehicles = useCallback(async (slug: string) => {
     if (!slug) return;
     try {
@@ -71,127 +75,123 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const data = await res.json();
       setVehicles(data.vehicles || []);
       setError(null);
-      setLastUpdated(new Date());
-      setSecondsAgo(0);
     } catch (err: any) {
       console.error('Failed to fetch live vehicles:', err);
       setError(err.message || 'Failed to load vehicle positions');
     }
   }, []);
 
-  // Poll on interval
   useEffect(() => {
     if (!active || !selectedSlug) return;
-
     setLoading(true);
     fetchVehicles(selectedSlug).finally(() => setLoading(false));
-
-    const pollId = setInterval(() => {
-      fetchVehicles(selectedSlug);
-    }, POLL_INTERVAL_MS);
-
+    const pollId = setInterval(() => fetchVehicles(selectedSlug), POLL_INTERVAL_MS);
     return () => clearInterval(pollId);
   }, [active, selectedSlug, fetchVehicles]);
 
-  // Seconds ago timer
+  // Reset on agency switch
   useEffect(() => {
-    if (!lastUpdated) return;
-    const interval = setInterval(() => {
-      setSecondsAgo(Math.floor((Date.now() - lastUpdated.getTime()) / 1000));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [lastUpdated]);
+    setSelectedRoute(null);
+    setFocusedVehicle(null);
+    setVehicles([]);
+  }, [selectedSlug]);
 
-  // Update map overlay context
+  // Filter map overlay to selected route when one is active
+  const overlayVehicles = useMemo(() => {
+    if (!selectedRoute) return vehicles;
+    return vehicles.filter(v => v.routeShortName === selectedRoute);
+  }, [vehicles, selectedRoute]);
+
   useEffect(() => {
     if (!active || !selectedSlug) {
       setOverlay(null);
       return;
     }
-
-    setOverlay({
-      vehicles,
-      agencySlug: selectedSlug,
-      agencyCenter: selectedAgency?.center,
-      focusedVehicle,
-    });
-
+    setOverlay({ vehicles: overlayVehicles, agencySlug: selectedSlug, agencyCenter: selectedAgency?.center, focusedVehicle });
     return () => setOverlay(null);
-  }, [active, vehicles, selectedSlug, selectedAgency, focusedVehicle, setOverlay]);
+  }, [active, overlayVehicles, selectedSlug, selectedAgency, focusedVehicle, setOverlay]);
 
-  // Reset focus when switching agencies
-  useEffect(() => {
-    setFocusedVehicle(null);
-    setVehicles([]);
-    setLastUpdated(null);
-    setSecondsAgo(0);
-  }, [selectedSlug]);
-
-  // Filter vehicles by search query
-  const filteredVehicles = useMemo(() => {
+  // Filter by search query, then group by route
+  const routeGroups = useMemo<RouteGroup[]>(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return vehicles;
-    return vehicles.filter(v =>
-      v.routeShortName.toLowerCase().includes(q) ||
-      (v.displayName && v.displayName.toLowerCase().includes(q)) ||
-      (v.headsign && v.headsign.toLowerCase().includes(q)) ||
-      v.id.toLowerCase().includes(q)
-    );
+    const filtered = q
+      ? vehicles.filter(v =>
+          v.routeShortName.toLowerCase().includes(q) ||
+          (v.displayName && v.displayName.toLowerCase().includes(q)) ||
+          (v.headsign && v.headsign.toLowerCase().includes(q))
+        )
+      : vehicles;
+
+    const groups = new Map<string, LiveVehicle[]>();
+    for (const v of filtered) {
+      if (!groups.has(v.routeShortName)) groups.set(v.routeShortName, []);
+      groups.get(v.routeShortName)!.push(v);
+    }
+
+    return [...groups.entries()]
+      .sort(([a], [b]) => {
+        const numA = parseInt(a), numB = parseInt(b);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return a.localeCompare(b);
+      })
+      .map(([routeShortName, vs]) => {
+        const lateCount = vs.filter(v => v.status === 'late').length;
+        const earlyCount = vs.filter(v => v.status === 'early').length;
+        const dominantStatus: LiveVehicle['status'] =
+          lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
+        const headsigns = [...new Set(vs.map(v => v.headsign).filter(Boolean) as string[])];
+        const displayName = vs[0].displayName || `Route ${routeShortName}`;
+        return { routeShortName, displayName, headsigns, vehicles: vs, lateCount, earlyCount, dominantStatus };
+      });
   }, [vehicles, query]);
 
-  const handleVehicleClick = (v: LiveVehicle) => {
-    setFocusedVehicle({
-      id: v.id,
-      lat: v.lat,
-      lon: v.lon,
-      ts: Date.now(),
-    });
+  const handleRouteClick = (routeShortName: string) => {
+    const next = selectedRoute === routeShortName ? null : routeShortName;
+    setSelectedRoute(next);
+    if (next) {
+      const group = routeGroups.find(g => g.routeShortName === next);
+      if (group?.vehicles[0]) {
+        const v = group.vehicles[0];
+        setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+      }
+    } else {
+      setFocusedVehicle(null);
+    }
   };
 
   if (!active) return null;
 
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none">
-      {/* Sidebar Panel */}
-      <div
-        className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
-      >
+      <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}>
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
+
           {/* Header */}
-          <div className="px-4 pt-3.5 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-2">
-              {/* Status dot: green+pulse when live, amber when loading, red when error, gray when idle */}
-              {vehicles.length > 0 ? (
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-              ) : loading ? (
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                </span>
-              ) : error ? (
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-              ) : (
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)]"></span>
-              )}
-              <h2 className="text-xs font-black text-[var(--text-primary)]">Live Vehicles</h2>
-            </div>
-            {lastUpdated && vehicles.length > 0 && (
-              <span className="text-[9px] font-bold text-[var(--text-muted)]">
-                {secondsAgo === 0 ? 'just now' : `${secondsAgo}s ago`}
+          <div className="px-4 pt-3.5 pb-2.5 border-b border-[var(--border-primary)] flex items-center gap-2 shrink-0">
+            {vehicles.length > 0 ? (
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
               </span>
+            ) : loading ? (
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+              </span>
+            ) : error ? (
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shrink-0" />
+            ) : (
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
             )}
+            <h2 className="text-xs font-black text-[var(--text-primary)]">Live Vehicles</h2>
           </div>
 
-          {/* Agency Dropdown */}
-          <div className="flex flex-col gap-1 px-4 py-2 border-b border-[var(--border-primary)] bg-[var(--bg-active)]/10 shrink-0">
-            <label className="text-[10px] font-bold text-[var(--text-muted)]">Select network</label>
+          {/* Network selector */}
+          <div className="px-4 py-2.5 border-b border-[var(--border-primary)] shrink-0">
             <select
               value={selectedSlug}
               onChange={e => setSelectedSlug(e.target.value)}
-              className="w-full text-[11px] font-bold bg-[var(--bg-btn)] border border-[var(--border-primary)] rounded-lg px-2 py-1.5 focus:outline-none focus:border-[var(--accent)] text-[var(--text-primary)] transition-colors cursor-pointer"
+              className="w-full text-xs font-bold [font-family:inherit] bg-[var(--bg-btn)] border border-[var(--border-primary)] rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[var(--accent)] text-[var(--text-primary)] transition-colors cursor-pointer"
             >
               {eligibleAgencies.map(a => (
                 <option key={a.slug} value={a.slug}>{a.name}</option>
@@ -199,8 +199,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             </select>
           </div>
 
-          {/* Content List */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-2 min-h-0">
+          {/* Route list */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
             {loading && vehicles.length === 0 ? (
               <div className="flex items-center justify-center py-12 gap-2">
                 <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
@@ -215,92 +215,86 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   </p>
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">
                     {error.includes('No live config')
-                      ? 'This network doesn\'t have a real-time feed configured.'
+                      ? "This network doesn't have a real-time feed configured."
                       : 'Unable to reach the live feed. It will retry automatically.'}
                   </p>
                 </div>
               </div>
-            ) : filteredVehicles.length === 0 ? (
+            ) : routeGroups.length === 0 ? (
               <div className="py-10 text-center flex flex-col items-center gap-2">
                 <p className="text-xs font-bold text-[var(--text-primary)]">
-                  {query ? 'No vehicles match' : 'No vehicles right now'}
+                  {query ? 'No routes match' : 'No vehicles right now'}
                 </p>
                 <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
                   {query ? 'Try a different search.' : 'Active vehicles will appear here as they check in.'}
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col">
-                {filteredVehicles.map(v => {
-                  const colors = STATUS_COLORS[v.status];
-                  const isFocused = focusedVehicle?.id === v.id;
-                  const delayLabel = v.delayMin === null
-                    ? null
-                    : v.delayMin <= -1.5
-                      ? `${Math.abs(Math.round(v.delayMin))}m early`
-                      : v.delayMin >= 5.5
-                        ? `${Math.round(v.delayMin)}m late`
-                        : 'on time';
+              routeGroups.map(g => {
+                const colors = STATUS_COLORS[g.dominantStatus];
+                const isSelected = selectedRoute === g.routeShortName;
+                const statusLabel = g.lateCount > 0
+                  ? `${g.lateCount} late`
+                  : g.earlyCount > 0
+                    ? `${g.earlyCount} early`
+                    : null;
 
-                  return (
-                    <button
-                      key={v.id}
-                      onClick={() => handleVehicleClick(v)}
-                      className={`w-full flex items-center gap-2.5 py-2 px-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left ${
-                        isFocused ? 'bg-[var(--bg-active)]' : ''
-                      }`}
+                return (
+                  <button
+                    key={g.routeShortName}
+                    onClick={() => handleRouteClick(g.routeShortName)}
+                    className={`${LIST_ROW} ${isSelected ? 'bg-[var(--accent-bg)]' : ''}`}
+                  >
+                    <span
+                      style={{ background: colors.bg }}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black text-white shrink-0"
                     >
-                      {/* Route badge */}
-                      <span
-                        style={{ backgroundColor: colors.bg }}
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow-sm"
-                      >
-                        {v.routeShortName}
-                      </span>
+                      {g.routeShortName}
+                    </span>
 
-                      {/* Destination */}
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-bold text-[var(--text-primary)] truncate">
-                          {v.headsign ?? (v.displayName || `Route ${v.routeShortName}`)}
-                        </p>
-                        {isFocused && (
-                          <p className="text-[9px] text-[var(--accent)] font-bold mt-0.5">Showing on map</p>
-                        )}
-                      </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={LIST_ROW_PRIMARY}>{g.displayName}</p>
+                      {g.headsigns.length > 0 && (
+                        <p className={`${LIST_ROW_DIM} mt-0.5 truncate`}>{g.headsigns[0]}</p>
+                      )}
+                    </div>
 
-                      {/* Delay pill */}
-                      {delayLabel && (
-                        <span
-                          style={{ backgroundColor: colors.bg + '22', color: colors.text }}
-                          className="shrink-0 text-[9px] font-black px-1.5 py-0.5 rounded-full tabular-nums"
-                        >
-                          {delayLabel}
+                    <div className="flex flex-col items-end gap-0.5 shrink-0">
+                      <span className={LIST_ROW_DIM}>{g.vehicles.length} veh</span>
+                      {statusLabel && (
+                        <span style={{ color: colors.text }} className="text-[9px] font-black">
+                          {statusLabel}
                         </span>
                       )}
-                    </button>
-                  );
-                })}
-              </div>
+                    </div>
+                  </button>
+                );
+              })
             )}
           </div>
+
+          {/* Selected route footer */}
+          {selectedRoute && (
+            <div className="px-4 py-2 border-t border-[var(--border-primary)] shrink-0 flex items-center justify-between">
+              <span className="text-[10px] text-[var(--text-muted)] font-bold">Route {selectedRoute} on map</span>
+              <button
+                onClick={() => { setSelectedRoute(null); setFocusedVehicle(null); }}
+                className="text-[10px] text-[var(--accent)] font-black hover:opacity-70 transition-opacity"
+              >
+                Show all
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Global Toolbar Controls — top-right */}
+      {/* Toolbar */}
       <div className="absolute top-6 right-6 z-[1100] flex items-center gap-1.5 pointer-events-auto">
-        <button
-          onClick={() => setLightMode(!lightMode)}
-          className={ICON_BTN}
-          aria-label="Toggle light mode"
-        >
+        <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label="Toggle light mode">
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
         {onInfoOpen && (
-          <button
-            onClick={onInfoOpen}
-            className={ICON_BTN}
-            aria-label="About Atlas"
-          >
+          <button onClick={onInfoOpen} className={ICON_BTN} aria-label="About Atlas">
             <Info className="w-4 h-4" />
           </button>
         )}

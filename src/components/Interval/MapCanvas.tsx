@@ -719,27 +719,24 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const el = document.createElement('div');
       el.innerHTML = html;
 
+      const delayLabel = vehicle.delayMin === null
+        ? 'No data'
+        : vehicle.delayMin <= -1.5
+          ? `${Math.round(Math.abs(vehicle.delayMin))}m early`
+          : vehicle.delayMin >= 5.5
+            ? `${Math.round(vehicle.delayMin)}m late`
+            : 'On time';
+
       const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup' })
         .setHTML(`
-          <div style="font-family: ui-monospace, monospace; padding: 6px 10px;">
-            <div style="font-size: 8px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.5px;">Vehicle info</div>
-            <div style="font-size: 11px; font-weight: 900; color: var(--text-primary, #111); margin-top: 2px;">
-              Route ${vehicle.routeShortName} • ID ${vehicle.id}
+          <div style="font-family: 'Inter', ui-sans-serif, sans-serif; padding: 8px 10px; min-width: 130px;">
+            <div style="font-size: 9px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.4px;">Route ${vehicle.routeShortName}</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-primary, #111); margin-top: 2px; line-height: 1.3;">
+              ${vehicle.headsign || vehicle.displayName || '—'}
             </div>
-            <div style="font-size: 10px; color: var(--text-muted, #4b5563); margin-top: 2px;">
-              to ${vehicle.headsign || 'Unknown destination'}
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary); padding-top: 4px; margin-top: 4px; font-size: 10px;">
-              <span style="font-size: 8px; color: var(--text-dim); font-weight: 700;">Status</span>
-              <span style="font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">
-                ${vehicle.delayMin === null
-                  ? 'No schedule data'
-                  : vehicle.delayMin <= -1.5
-                    ? `${Math.abs(vehicle.delayMin)}m early`
-                    : vehicle.delayMin >= 5.5
-                      ? `${vehicle.delayMin}m late`
-                      : 'On time'}
-              </span>
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary, rgba(0,0,0,0.1)); padding-top: 5px; margin-top: 6px;">
+              <span style="font-size: 9px; color: var(--text-dim); font-weight: 600;">Status</span>
+              <span style="font-size: 10px; font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">${delayLabel}</span>
             </div>
           </div>
         `);
