@@ -11,6 +11,7 @@ import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling'
 import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel } from '../../utils/format';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
 import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
+import RouteListRow from '../RouteListRow';
 
 interface SidebarControlsProps {
   query: string;
@@ -775,22 +776,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             {searchMatchResults.length > 0 && (
               <div className="max-h-40 overflow-y-auto custom-scrollbar border border-[var(--border-primary)] rounded-xl overflow-hidden">
                 {searchMatchResults.map((r) => (
-                  <button
+                  <RouteListRow
                     key={r.key}
+                    shortName={titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
+                    selected={selectedRoute === r.key}
                     onClick={() => {
                       saveRecentSearch(query);
                       setQuery('');
                       setSelectedRoute(selectedRoute === r.key ? null : r.key);
                     }}
-                    className={`${LIST_ROW} ${selectedRoute === r.key ? 'bg-[var(--accent-bg)]' : ''}`}
-                  >
-                    <span className={`${LIST_ROW_PRIMARY} shrink-0 ${selectedRoute === r.key ? 'text-[var(--accent)]' : ''}`}>
-                      {titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
-                    </span>
-                    <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
-                      {r.agencyName}
-                    </span>
-                  </button>
+                    right={
+                      <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
+                        {r.agencyName}
+                      </span>
+                    }
+                  />
                 ))}
               </div>
             )}

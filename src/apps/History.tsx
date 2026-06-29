@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import RouteListRow from '../components/RouteListRow';
 
 export interface RouteSnapshot {
   label: string;
@@ -270,19 +271,13 @@ function HistoryAgencyPanel({
           </p>
         )}
         {routeRows.map(({ route }) => (
-          <button
+          <RouteListRow
             key={route.routeShortName}
+            shortName={route.routeShortName}
+            name={route.routeName}
             onClick={() => onRouteSelect(route.routeShortName)}
-            className={LIST_ROW}
-          >
-            <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 flex-1`}>
-              <span>{route.routeShortName}</span>
-              {route.routeName && (
-                <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{route.routeName}</span>
-              )}
-            </p>
-            <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />
-          </button>
+            right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />}
+          />
         ))}
       </div>
     </div>

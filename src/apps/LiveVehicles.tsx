@@ -4,7 +4,8 @@ import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import type { Agency } from '../App';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW } from '../styles';
+import RouteListRow from '../components/RouteListRow';
 import { STATUS_COLORS } from '../utils/colors';
 
 interface Props {
@@ -267,28 +268,24 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     : null;
 
                 return (
-                  <button
+                  <RouteListRow
                     key={g.routeShortName}
+                    shortName={g.routeShortName}
+                    name={g.displayName}
+                    selected={isSelected}
                     onClick={() => handleRouteClick(g.routeShortName)}
-                    className={`${LIST_ROW} ${isSelected ? 'bg-[var(--accent-bg)]' : ''}`}
-                  >
-                    <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 flex-1`}>
-                      <span>{g.routeShortName}</span>
-                      {g.displayName && g.displayName !== g.routeShortName && (
-                        <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{g.displayName}</span>
-                      )}
-                    </p>
-
-                    <div className="flex items-center gap-1.5 shrink-0 ml-3">
-                      <span className={LIST_ROW_DIM}>{g.vehicles.length} veh</span>
-                      {statusLabel && (
-                        <span style={{ color: colors.border }} className="text-[9px] font-black">
-                          · {statusLabel}
-                        </span>
-                      )}
-                      <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                    </div>
-                  </button>
+                    right={
+                      <div className="flex items-center gap-1.5 shrink-0 ml-3">
+                        <span className="text-[10px] text-[var(--text-muted)] font-bold">{g.vehicles.length} veh</span>
+                        {statusLabel && (
+                          <span style={{ color: colors.border }} className="text-[9px] font-black">
+                            · {statusLabel}
+                          </span>
+                        )}
+                        <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+                      </div>
+                    }
+                  />
                 );
               })
             )}
