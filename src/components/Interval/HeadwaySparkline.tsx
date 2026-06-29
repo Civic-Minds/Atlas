@@ -41,16 +41,18 @@ export function HeadwaySparkline({ byPeriod }: { byPeriod: HeadwayByPeriod }) {
           const freq = h ? 1 / h : 0;
           const barH = hasValue
             ? (maxFreq > minFreq ? Math.max(6, Math.round((freq - minFreq) / (maxFreq - minFreq) * (H - 6) + 6)) : H)
-            : 3;
-          const color = hasValue ? headwayToTierColor(h) : 'var(--border-primary)';
+            : 0;
+          const color = headwayToTierColor(h);
           return (
             <div key={key} className="flex flex-col items-center gap-1 shrink-0">
               <div style={{ height: H }} className="flex items-end justify-center w-[14px]">
-                <div
-                  style={{ height: barH, background: color }}
-                  className={`w-2.5 rounded-sm transition-all duration-300 ${hasValue ? 'opacity-90' : 'opacity-25'}`}
-                  title={hasValue ? `${label}: ${h} min` : `${label}: No service`}
-                />
+                {hasValue && (
+                  <div
+                    style={{ height: barH, background: color }}
+                    className="w-2.5 rounded-sm transition-all duration-300 opacity-90"
+                    title={`${label}: ${h} min`}
+                  />
+                )}
               </div>
               <span className="text-[7px] font-bold text-[var(--text-dim)] uppercase tracking-wide">
                 {label === 'Mid' ? 'MID' : label === 'Eve' ? 'EVE' : label}

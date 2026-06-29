@@ -688,8 +688,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             </div>
             {(() => {
-              const byPeriod = currentRoute.directions[0]?.headwayByPeriod as HeadwayByPeriod | undefined;
-              return byPeriod ? <HeadwaySparkline byPeriod={byPeriod} /> : null;
+              // Merge headwayByPeriod across all directions — take the best (lowest) non-null
+              // headway per period so bidirectional peak routes (AM one way, PM the other)
+              // show the full service picture rather than just one direction's data.
+              const PERIODS = ['amPeak', 'midday', 'pmPeak', 'evening'] as const;
+              const merged: HeadwayByPeriod = { amPeak: null, midday: null, pmPeak: null, evening: null };
+              for (const d of currentRoute.directions) {
+                const bp = d.headwayByPeriod as HeadwayByPeriod | undefined;
+                if (!bp) continue;
+                for (const p of PERIODS) {
+                  const v = bp[p];
+                  if (v != null && (merged[p] == null || v < merged[p]!)) merged[p] = v;
+                }
+              }
+              const hasAny = PERIODS.some(p => merged[p] != null);
+              return hasAny ? <HeadwaySparkline byPeriod={merged} /> : null;
             })()}
             <div className="space-y-3">
               {directionGroups.map((group, gi) => {
