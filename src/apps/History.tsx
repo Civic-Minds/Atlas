@@ -132,7 +132,7 @@ function RouteHistoryCard({
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
 
   return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
+    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto ${PANEL_ENTER}`}>
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3">
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">
@@ -341,7 +341,7 @@ function HistoryAgencyPanel({
   }, [agencyHistory, routeQuery]);
 
   return (
-    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
+    <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] pointer-events-auto ${PANEL_ENTER}`}>
       {/* Header */}
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="flex items-start justify-between">
@@ -515,7 +515,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
 
   return (
     <div
-      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity pointer-events-none ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0'}`}
     >
       {selectedSlug ? (
         (() => {
@@ -544,7 +544,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
         })()
       ) : (
         <div
-          className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+          className={`${FLOATING_CARD} overflow-hidden pointer-events-auto transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
           {query === '' && recentSearches.length > 0 ? (
