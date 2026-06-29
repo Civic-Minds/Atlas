@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - **Route card: sparkline merges all directions** (AI-180): HeadwaySparkline now picks the best (lowest) non-null headway per period across all directions, so bidirectional peak routes (e.g. GO Route 31 — AM one way, PM the other) show the full service pattern rather than just the first direction's data.
 - **Route card: null-period bars no longer show as ambiguous stubs** (AI-180): Periods with no service (null headway) were rendering as a tiny 3px grey bar, visually similar to very infrequent service. They now render as empty space so absent service is clearly distinct from slow service.
+- **Route card: sparkline redesign** (AI-180): Removed the prose explanation ("Taller bars signify more frequent service"). Headway values (e.g. "10m", "—") now appear below each period label, making the chart self-explanatory. Layout tightened to a single row with "Frequency" label inline.
 
 ### Fixed
 - **Map: span routes ignored headway filter and hide-irregular toggle** (AI-179): Two bugs. (1) `['to-number', null, 9999]` in MapLibre evaluates to 0 (null coerces to 0, fallback never fires), so span routes with null headway passed every headway pill filter and always appeared. Fixed by using `['coalesce', ['get', 'headway'], 9999]` which is null-aware. (2) `hideSpan` was sidebar-only — the map layer ignored it. Fixed by passing `hideSpan` to MapCanvas and adding a `['!=', tier, 'span']` clause when active.
