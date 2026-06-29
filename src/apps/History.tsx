@@ -65,9 +65,14 @@ function formatXLabel(label: string): string {
   if (match) {
     const month = match[1];
     const year = match[2].slice(2);
-    return month ? `${month} '${year}` : `'${year}`;
+    return month ? `${month.slice(0, 3)} '${year}` : `'${year}`;
   }
   return label;
+}
+
+function toTitleCase(s: string): string {
+  if (!s || s !== s.toUpperCase()) return s;
+  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function RouteHistoryCard({
@@ -133,116 +138,106 @@ function RouteHistoryCard({
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
 
+  const lineColor = worse ? '#ef4444' : better ? '#10b981' : '#9ca3af';
+  // x-axis label visibility: always show first and last; intermediate only if they have clearance
+  const labelClearance = 34;
+  const firstLabelEdge = paddingX + labelClearance;
+  const lastLabelEdge = width - paddingX - labelClearance;
+
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
-      <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3">
+      {/* Header: back button left, info right */}
+      <div className="shrink-0 flex items-center gap-2 px-3 pt-3 pb-2">
+        <button
+          onClick={onBack}
+          className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+          aria-label="Back to routes"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">
-            {route.routeShortName}
-            {route.routeName && <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>}
-          </h3>
-          <p className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5">
+          <div className="flex items-baseline gap-1.5 leading-tight">
+            <span className="text-sm font-black text-[var(--text-primary)]">{route.routeShortName}</span>
+            {route.routeName && (
+              <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{toTitleCase(route.routeName)}</span>
+            )}
+          </div>
+          <p className="text-[10px] text-[var(--text-muted)] font-medium mt-0.5">
             {agencyName} · {region}
           </p>
         </div>
-        <button
-          onClick={onBack}
-          className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0 mt-0.5"
-          aria-label="Back to routes"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
       </div>
 
-      <div className="px-4 pb-3 shrink-0 flex items-center gap-1.5">
-        {availablePeriods.map(p => (
-          <button
-            key={p.key}
-            onClick={() => setPeriod(p.key)}
-            className={`px-2.5 py-1 rounded-full text-[10px] font-black transition-colors ${
-              period === p.key
-                ? 'bg-[var(--accent)] text-white'
-                : 'bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
-        <span className="text-[9px] text-[var(--text-dim)] ml-1">{periodInfo.desc}</span>
+      {/* Period selector */}
+      <div className="px-4 pb-3 shrink-0">
+        <div className="flex items-center gap-1.5">
+          {availablePeriods.map(p => (
+            <button
+              key={p.key}
+              onClick={() => setPeriod(p.key)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${
+                period === p.key
+                  ? 'bg-[var(--accent)] text-white'
+                  : 'bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-[var(--text-muted)] mt-1.5">{periodInfo.desc}</p>
       </div>
 
       {snaps.length >= 2 && (
-        <div className="px-4 pb-4 shrink-0 flex flex-col items-center">
-          <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-2.5 flex justify-center">
-            <svg width="220" height="75" className="overflow-visible">
+        <div className="px-4 pb-4 shrink-0">
+          <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
+            <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
               <defs>
                 <linearGradient id={`sparkline-grad-${route.routeShortName}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'} stopOpacity="0.2" />
-                  <stop offset="100%" stopColor={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'} stopOpacity="0.0" />
+                  <stop offset="0%" stopColor={lineColor} stopOpacity="0.18" />
+                  <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
                 </linearGradient>
               </defs>
-              
-              {/* Fill path */}
-              <path
-                d={fillPath}
-                fill={`url(#sparkline-grad-${route.routeShortName})`}
-              />
-              
-              {/* Line path */}
+
+              <path d={fillPath} fill={`url(#sparkline-grad-${route.routeShortName})`} />
+
               <path
                 d={linePath}
                 fill="none"
-                stroke={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'}
-                strokeWidth="2.5"
+                stroke={lineColor}
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-              
-              {/* Baseline guide */}
+
               <line
-                x1={points[0].x}
-                y1={height - 18}
-                x2={points[points.length - 1].x}
-                y2={height - 18}
+                x1={points[0].x} y1={height - 18}
+                x2={points[points.length - 1].x} y2={height - 18}
                 stroke="var(--border-primary)"
                 strokeWidth="1"
-                strokeDasharray="2 2"
+                strokeDasharray="2 3"
               />
-              
-              {/* Data points */}
-              {points.map((p, i) => (
-                <g key={i}>
-                  <circle
-                    cx={p.x}
-                    cy={p.y}
-                    r="3.5"
-                    fill={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'}
-                    stroke="var(--bg-panel)"
-                    strokeWidth="1.5"
-                  />
-                  <text
-                    x={p.x}
-                    y={p.y - 7}
-                    textAnchor="middle"
-                    fontSize="8.5"
-                    fontWeight="900"
-                    fill="var(--text-primary)"
-                    className="tabular-nums"
-                  >
-                    {p.hw}m
-                  </text>
-                  <text
-                    x={p.x}
-                    y={height - 4}
-                    textAnchor="middle"
-                    fontSize="8"
-                    fontWeight="700"
-                    fill="var(--text-dim)"
-                  >
-                    {formatXLabel(p.label)}
-                  </text>
-                </g>
-              ))}
+
+              {points.map((p, i) => {
+                const isFirst = i === 0;
+                const isLast = i === points.length - 1;
+                const showXLabel = isFirst || isLast || (p.x > firstLabelEdge && p.x < lastLabelEdge);
+                const xAnchor = isFirst ? 'start' : isLast ? 'end' : 'middle';
+                const xPos = isFirst ? paddingX : isLast ? (width - paddingX) : p.x;
+                return (
+                  <g key={i}>
+                    <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
+                    <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
+                      {p.hw}m
+                    </text>
+                    {showXLabel && (
+                      <text x={xPos} y={height - 3} textAnchor={xAnchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
+                        {formatXLabel(p.label)}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
             </svg>
           </div>
         </div>

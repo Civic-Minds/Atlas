@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **20 new agencies**: Washington state (King County Metro, Sound Transit, Pierce Transit, Community Transit, Everett Transit, Kitsap Transit, Intercity Transit, Skagit Transit, Whatcom Transportation Authority, Island Transit, Jefferson Transit, Clallam Transit System), Maine (Greater Portland Metro, South Portland Bus Service), upstate New York (HOCTS/Utica-Rome, Greater Glens Falls Transit, Watertown Citibus, Hudson Link).
+- **RouteHistoryCard polish**: back button moved to left side of header; route name title-cased (GTFS data is often all-caps); period description on its own line below buttons; sparkline x-axis uses smart anchor (first=start, last=end) and hides overlapping intermediate labels; SVG switched to `viewBox` for responsive width.
 - **History backfill — Community Transit**: 11 annual snapshots 2016–2026 via MDB.
 - **History backfill — Kingston Transit**: 11 annual snapshots 2016–2026 via MDB.
 - **MDB fallback feed URLs**: 48 agencies now have a `mdbFeedUrl` fallback. If the primary `feedUrl` fails, the pipeline retries via the Mobility Database GCS mirror. Saskatoon's primary URL also swapped to MDB (was 503ing).
