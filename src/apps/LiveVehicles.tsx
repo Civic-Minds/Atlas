@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Info, Moon, Sun, ArrowRight, WifiOff, RefreshCw } from 'lucide-react';
+import { Info, Moon, Sun, WifiOff } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
@@ -211,89 +211,72 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <WifiOff className="w-5 h-5 text-[var(--text-dim)]" />
                 <div>
                   <p className="text-xs font-bold text-[var(--text-primary)]">
-                    {error.includes('404') || error.includes('No live config') ? 'No live feed for this network' : 'Live data unavailable'}
+                    {error.includes('No live config') ? 'No live feed for this network' : 'Feed unavailable'}
                   </p>
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">
-                    {error.includes('404') || error.includes('No live config')
-                      ? 'This network doesn\'t have a real-time feed configured yet.'
-                      : 'Something went wrong fetching the live feed.'}
+                    {error.includes('No live config')
+                      ? 'This network doesn\'t have a real-time feed configured.'
+                      : 'Unable to reach the live feed. It will retry automatically.'}
                   </p>
                 </div>
-                {eligibleAgencies.length > 1 && (
-                  <div className="w-full text-left">
-                    <p className="text-[9px] font-bold text-[var(--text-muted)] mb-1">Try one of these:</p>
-                    {eligibleAgencies.filter(a => a.slug !== selectedSlug).slice(0, 3).map(a => (
-                      <button
-                        key={a.slug}
-                        onClick={() => setSelectedSlug(a.slug)}
-                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-btn-hover)] transition-colors text-left mb-0.5"
-                      >
-                        <span className="text-[10px] text-[var(--text-primary)]">{a.name}</span>
-                        <ArrowRight className="w-3 h-3 text-[var(--text-dim)]" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <button
-                  onClick={() => { setLoading(true); fetchVehicles(selectedSlug).finally(() => setLoading(false)); }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors text-[10px] font-bold text-[var(--text-primary)]"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  Try again
-                </button>
               </div>
             ) : filteredVehicles.length === 0 ? (
-              <div className="py-12 text-center text-xs text-[var(--text-muted)]">
-                {query ? 'No vehicles match your search' : 'No active vehicles tracked on live routes right now.'}
+              <div className="py-10 text-center flex flex-col items-center gap-2">
+                <p className="text-xs font-bold text-[var(--text-primary)]">
+                  {query ? 'No vehicles match' : 'No vehicles right now'}
+                </p>
+                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                  {query ? 'Try a different search.' : 'Active vehicles will appear here as they check in.'}
+                </p>
               </div>
             ) : (
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col">
                 {filteredVehicles.map(v => {
                   const colors = STATUS_COLORS[v.status];
                   const isFocused = focusedVehicle?.id === v.id;
-                  
+                  const delayLabel = v.delayMin === null
+                    ? null
+                    : v.delayMin <= -1.5
+                      ? `${Math.abs(Math.round(v.delayMin))}m early`
+                      : v.delayMin >= 5.5
+                        ? `${Math.round(v.delayMin)}m late`
+                        : 'on time';
+
                   return (
                     <button
                       key={v.id}
                       onClick={() => handleVehicleClick(v)}
-                      className={`w-full flex items-center gap-3 py-2 px-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group ${
+                      className={`w-full flex items-center gap-2.5 py-2 px-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left ${
                         isFocused ? 'bg-[var(--bg-active)]' : ''
                       }`}
                     >
-                      {/* Vehicle Route Code Badge */}
+                      {/* Route badge */}
                       <span
                         style={{ backgroundColor: colors.bg }}
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow-sm"
                       >
                         {v.routeShortName}
                       </span>
-                      
-                      {/* Vehicle destination & trip info */}
+
+                      {/* Destination */}
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-bold text-[var(--text-primary)] truncate">
-                          to {v.headsign || 'Unknown destination'}
+                          {v.headsign ?? (v.displayName || `Route ${v.routeShortName}`)}
                         </p>
-                        <p className="text-[8px] text-[var(--text-dim)] font-medium mt-0.5 truncate">
-                          {v.displayName || 'Route'} · ID {v.id}
-                        </p>
+                        {isFocused && (
+                          <p className="text-[9px] text-[var(--accent)] font-bold mt-0.5">Showing on map</p>
+                        )}
                       </div>
 
-                      {/* Delay/Adherence label */}
-                      <div className="text-right shrink-0 flex items-center gap-1">
+                      {/* Delay pill */}
+                      {delayLabel && (
                         <span
-                          style={{ color: colors.text }}
-                          className="text-[10px] font-black tabular-nums"
+                          style={{ backgroundColor: colors.bg + '22', color: colors.text }}
+                          className="shrink-0 text-[9px] font-black px-1.5 py-0.5 rounded-full tabular-nums"
                         >
-                          {v.delayMin === null
-                            ? '—'
-                            : v.delayMin <= -1.5
-                              ? `${Math.abs(v.delayMin)}m early`
-                              : v.delayMin >= 5.5
-                                ? `${v.delayMin}m late`
-                                : 'on time'}
+                          {delayLabel}
                         </span>
-                        <ArrowRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors opacity-40 group-hover:opacity-100" />
-                      </div>
+                      )}
                     </button>
                   );
                 })}

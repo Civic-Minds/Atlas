@@ -6,8 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Live Vehicles: status dot reflects actual state**: Green + pulse only when vehicles are loaded; amber + pulse while loading; red (no pulse) on error; gray (no pulse) when idle. Was always green regardless of state.
-- **Live Vehicles: error state redesign**: Added WifiOff icon, cleaner message copy, "Try one of these" agency switcher when other networks are available, and a proper button for "Try again" instead of a bare text link.
-- **Live Vehicles: network label**: Changed "Select network" label from 8px tracking-wider to 10px normal weight — less visually cramped.
+- **Live Vehicles: error state redesign**: WifiOff icon, cleaner message copy. Removed "Try again" button (auto-polls every 15s) and agency suggestion list (dropdown already handles switching). Distinguishes between unconfigured agency ("No live feed") vs. feed unreachable ("Feed unavailable") so a network error doesn't look like a missing config.
+- **Live Vehicles: vehicle rows**: Removed internal vehicle ID; headsign as primary label; delay as tinted pill; "Showing on map" indicator on focused row.
+- **Live Vehicles: empty state**: Heading + context message instead of bare one-liner.
+- **Live Vehicles: network label**: 8px tracking-wider → 10px normal weight.
 
 ### Added
 - **Full history backfill via Mobility Database API**: Ran automated backfill for all 3 history agencies (Burlington mdb-724, CDTA mdb-538, GCRTA mdb-406) from 2015 onward. One fall snapshot per year downloaded, processed, and archived. Burlington: 16 routes; CDTA: 43 routes; GCRTA: 36 routes with documented frequency changes.
