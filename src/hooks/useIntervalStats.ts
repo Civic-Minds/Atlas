@@ -125,7 +125,9 @@ function passesRouteFilter(
   // visually restricts the displayed geometry to the qualifying section.
   if (filters.period && filters.period !== 'all') {
     const minStopPeriodHw = (p as any).minStopHeadwayByPeriod?.[filters.period] as number | undefined;
-    const periodHw = minStopPeriodHw
+    // AI-182: use worst direction's period headway so both directions must qualify
+    const worstPeriodHw = (p as any).worstDirectionHeadwayByPeriod?.[filters.period] as number | undefined;
+    const periodHw = minStopPeriodHw ?? worstPeriodHw
       ?? ((p as any).headwayByPeriod?.[filters.period] as number | undefined);
     if (periodHw != null) {
       if (periodHw > filters.maxHeadway) return false;
@@ -133,10 +135,13 @@ function passesRouteFilter(
     }
     // No period data — fall through to all-day check below.
   }
-  // All-day check: use the best stop headway (min) so a route with a high-frequency corridor
-  // isn't excluded even if its route-level median is higher than the filter threshold.
+  // All-day check: use worst-direction headway (AI-182) so both directions must qualify.
+  // Falls back to minStopHeadway for routes without bidirectional data.
+  const worstDirHw = (p as any).worstDirectionHeadway as number | undefined;
   const minStopHw = (p as any).minStopHeadway as number | undefined;
-  if (minStopHw != null) {
+  if (worstDirHw != null) {
+    if (worstDirHw > filters.maxHeadway) return false;
+  } else if (minStopHw != null) {
     if (minStopHw > filters.maxHeadway) return false;
   } else {
     const tierVal = resolveTierVal(p);

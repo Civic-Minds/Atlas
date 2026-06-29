@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Pipeline: worst-direction headway filter** (AI-182): Each route feature now carries `worstDirectionHeadway` and `worstDirectionHeadwayByPeriod` — the max headway across all directions for that route. The map filter now gates on this value so both directions must meet the threshold before a route appears. A route running every 8 min southbound but 20 min northbound no longer passes a ≤15m filter.
+- **Pipeline: bus sub-type detection** (AI-66): Bus features (route_type=3) now carry a `busSubType` field: `brt` (VIVA, Züm, Pulse, BRT-branded), `express` (Express/Xpress routes), `coach` (GO Bus), or `local` (default). UI filter chip is a follow-up.
+- **Pipeline: short-turn variant metadata** (AI-58): Direction-0 features now carry `shortTurnVariants` — an array of `{ headsign, tripShare }` for shape variants carrying ≥15% of a direction's trips that differ from the dominant cluster. Enables the sidebar to show "X% of trips go to [short-turn headsign]" without per-variant headway computation (that requires phase-1 refactor, deferred).
+
 ### Fixed
 - **Live Vehicles: route shapes shown by default** (AI-183): Route shapes now render on the map for all active routes as soon as vehicle data loads, without requiring a click. GeoJSON is fetched proactively for every agency with visible vehicles. Clicking a route still highlights just that route and fits the map bounds to it; deselecting reverts to showing all shapes.
 - **Multi-route popup: group routes by agency** (AI-190): Routes in the "Multiple routes here" disambiguation popup are now grouped under agency headers instead of repeating the full agency name on every row. Routes are sorted alphabetically by agency, then numerically by route number within each group.

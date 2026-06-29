@@ -50,6 +50,22 @@ export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 const SPARKLINE_HOURS = Array.from({ length: 22 }, (_, i) => i + 5); // [5, 6, ..., 26]
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
+// AI-66: detect bus sub-type from route attributes and agency slug
+function detectBusSubType(
+  routeType: string | number | undefined,
+  shortName: string,
+  longName: string | null,
+  agencySlug?: string,
+): 'brt' | 'express' | 'coach' | 'local' | undefined {
+  const rt = parseInt(String(routeType ?? '3'));
+  if (rt !== 3) return undefined; // only tag route_type=3 buses
+  const combined = `${shortName} ${longName ?? ''}`.toLowerCase();
+  if (/\b(brt|bus rapid transit|viva|züm|zum|pulse|b-line|bline)\b/.test(combined)) return 'brt';
+  if (/\b(express|xpress)\b/.test(combined)) return 'express';
+  if (agencySlug === 'go') return 'coach';
+  return 'local';
+}
+
 function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
   // Deduplicate and sort before computing gaps. Agencies that split the same schedule across
   // multiple service_ids (e.g. OC Transpo Mon-Thu + Friday Confederation Line both having
@@ -476,6 +492,7 @@ export async function processGtfsBuffer(
         routeLongName: route?.route_long_name ?? null,
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
+        busSubType: detectBusSubType(result.routeType, shortName, route?.route_long_name ?? null, options?.slug),
         day: result.day,
         headsign: result.headsign
           ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || null
@@ -742,6 +759,82 @@ export async function processGtfsBuffer(
     if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
     }
+  }
+
+  // AI-58: short-turn variant metadata — attach significant shape variants (≥15% of trips)
+  // to each feature as shortTurnVariants. Per-variant headways require phase-1 refactoring;
+  // this pass captures trip share and headsign so the UI can show "X% go to [headsign]".
+  // Only attaches to direction-0 features (the map-visible direction).
+  const dirTripTotals = new Map<string, number>();
+  for (const [key, counts] of shapeCounts) {
+    const total = [...counts.values()].reduce((s, n) => s + n, 0);
+    dirTripTotals.set(key, total);
+  }
+  // Build headsign per shapeId for annotation
+  const headsignByShape = new Map<string, string>(); // shapeId → most common headsign
+  for (const [hKey, hShapeCounts] of headsignShapeCounts) {
+    const parts = hKey.split('::');
+    const headsign = parts.slice(2).join('::'); // headsign may contain '::'
+    for (const [sid] of hShapeCounts) {
+      if (!headsignByShape.has(sid)) headsignByShape.set(sid, headsign);
+    }
+  }
+  for (const feature of features) {
+    const dirId = String(feature.properties.directionId ?? '0');
+    if (dirId !== '0') continue; // only direction-0 features are map-visible
+    const routeId = feature.properties.routeId as string;
+    const key = `${routeId}::${dirId}`;
+    const counts = shapeCounts.get(key);
+    if (!counts) continue;
+    const total = dirTripTotals.get(key) ?? 0;
+    if (total === 0) continue;
+    // Identify the dominant cluster's shape IDs
+    const dominantShapes = routeDirToAnalysisShapes.get(key) ?? new Set<string>();
+    const variants: { headsign: string | null; tripShare: number }[] = [];
+    // Group non-dominant shapes by headsign, sum their trip counts
+    const headsignTripCounts = new Map<string | null, number>();
+    for (const [sid, tripCount] of counts) {
+      if (dominantShapes.has(sid)) continue;
+      const share = tripCount / total;
+      if (share < 0.15) continue; // only variants with ≥15% of trips
+      const hs = headsignByShape.get(sid) ?? null;
+      headsignTripCounts.set(hs, (headsignTripCounts.get(hs) ?? 0) + tripCount);
+    }
+    for (const [hs, tripCount] of headsignTripCounts) {
+      variants.push({ headsign: hs ? cleanHeadsign(hs, feature.properties.routeShortName as string, feature.properties.routeLongName as string | null) : null, tripShare: Math.round(tripCount / total * 100) });
+    }
+    if (variants.length > 0) {
+      feature.properties.shortTurnVariants = variants.sort((a, b) => b.tripShare - a.tripShare);
+    }
+  }
+
+  // AI-182: worst-direction headway — both directions must meet the filter threshold.
+  // Compute the max headway across all directions per route (keyed by routeShortName),
+  // then stamp every feature with that value so the client filter can gate on it.
+  const routeWorstHw = new Map<string, number>();
+  const routeWorstHwByPeriod = new Map<string, HeadwayByPeriod>();
+  for (const f of features) {
+    const sn = f.properties.routeShortName as string;
+    const hw = f.properties.headway as number | null;
+    if (hw != null) {
+      const cur = routeWorstHw.get(sn) ?? 0;
+      if (hw > cur) routeWorstHw.set(sn, hw);
+    }
+    const byPeriod = f.properties.headwayByPeriod as HeadwayByPeriod | undefined;
+    if (byPeriod) {
+      let existing = routeWorstHwByPeriod.get(sn);
+      if (!existing) { existing = {}; routeWorstHwByPeriod.set(sn, existing); }
+      for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null][]) {
+        if (v != null && (existing[pk] == null || v > existing[pk]!)) existing[pk] = v;
+      }
+    }
+  }
+  for (const f of features) {
+    const sn = f.properties.routeShortName as string;
+    const worst = routeWorstHw.get(sn);
+    if (worst != null) f.properties.worstDirectionHeadway = worst;
+    const worstByPeriod = routeWorstHwByPeriod.get(sn);
+    if (worstByPeriod) f.properties.worstDirectionHeadwayByPeriod = worstByPeriod;
   }
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)

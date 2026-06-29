@@ -25,6 +25,9 @@ export interface ShapeProperties {
   routeLongName: string | null;
   agencyName?: string;
   headsign?: string | null;
+  busSubType?: 'brt' | 'express' | 'coach' | 'local';
+  worstDirectionHeadway?: number;
+  worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
 }
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;
