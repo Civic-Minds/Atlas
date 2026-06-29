@@ -121,7 +121,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
 
   if (!open) return null;
 
-  const headerTitle = view === 'agencies' ? 'Agencies' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
+  const headerTitle = view === 'agencies' ? 'Data' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
 
   return (
     <div className="fixed inset-0 z-[1400]" onClick={onClose}>
@@ -159,15 +159,21 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
           {view === 'home' && (
             <div className="px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                A transit atlas covering {agencies.length} agencies across North America.
+                A transit atlas covering agencies across North America.
               </p>
 
               <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Agencies</p>
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                  Browse all {agencies.length} transit agencies, including {totalHistoryAgencies} with historical frequency data and {totalLiveAgencies} with real-time vehicle tracking.{' '}
-                  <button onClick={() => setView('agencies')} className="text-[var(--accent)] hover:underline font-medium">View all →</button>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
+                <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
+                  {agencies.length} agencies — {totalHistoryAgencies} with frequency history, {totalLiveAgencies} with real-time tracking.
                 </p>
+              <button
+                onClick={() => setView('agencies')}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </button>
               </div>
 
               <div>
