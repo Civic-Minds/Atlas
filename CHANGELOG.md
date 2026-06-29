@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Burlington Transit history backfill**: Processed 6 historical GTFS snapshots (2019, 2020, 2021, 2022, 2024, 2025) through the history pipeline. 8 routes now have documented frequency changes. History config updated to 3 agencies.
+- **Full history backfill via Mobility Database API**: Ran automated backfill for all 3 history agencies (Burlington mdb-724, CDTA mdb-538, GCRTA mdb-406) from 2015 onward. One fall snapshot per year downloaded, processed, and archived. Burlington: 16 routes; CDTA: 43 routes; GCRTA: 36 routes with documented frequency changes.
 - **Automated MDB history backfill script** (`pipeline/backfill-mdb-history.ts`): Generic script to backfill any agency from the Mobility Database API. Fetches all historical datasets for a given feed ID, picks one per year closest to Sep 1 (fall service anchor), downloads each, and writes history snapshots to R2. Requires `MDB_REFRESH_TOKEN` in `.env.local`.
 
 ### Added
