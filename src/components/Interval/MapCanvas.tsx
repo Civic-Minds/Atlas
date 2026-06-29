@@ -37,6 +37,7 @@ interface MapCanvasProps {
   showCorridorBand?: boolean;
   hideSpan?: boolean;
   filterToAgencies?: boolean;
+  onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -58,6 +59,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   showCorridorBand = false,
   hideSpan = false,
   filterToAgencies = false,
+  onHistoryRouteClick,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -238,7 +240,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         })));
 
         setSelectedStop(null);
-        if (uniqueRouteKeys.length > 1) {
+        if (onHistoryRouteClick) {
+          const slug = props.agencySlug as string;
+          const rsn = props.routeShortName as string;
+          if (slug && rsn) onHistoryRouteClick(slug, rsn);
+        } else if (uniqueRouteKeys.length > 1) {
           setDisambiguationRoutes(uniqueRouteKeys);
         } else {
           const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);

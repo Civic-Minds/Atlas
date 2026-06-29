@@ -65,8 +65,10 @@ export default function App() {
   }
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
+  const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
+  const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
   const [lightMode, setLightMode] = useState(() => {
@@ -261,6 +263,7 @@ export default function App() {
               showUi={inFrequency}
               showRouteLayers={inFrequency || inCorridors || inHistory}
               filterToAgencies={inHistory}
+              onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
               hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}
@@ -274,7 +277,7 @@ export default function App() {
               setDay={setDay}
               onLayersChange={setLayers}
             />
-            <History active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} />
+            <History active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors

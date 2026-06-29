@@ -41,6 +41,8 @@ interface Props {
   query: string;
   searchFocused: boolean;
   setQuery: (q: string) => void;
+  pendingRouteClick?: { slug: string; routeShortName: string } | null;
+  onPendingRouteHandled?: () => void;
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean } | null {
@@ -399,7 +401,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, onInfoOpen, query, searchFocused, setQuery }: Props) {
+export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [shouldRender, setShouldRender] = useState(active);
@@ -459,6 +461,17 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   }, [active, selectedSlug, selectedRouteShortName, setOverlay, historyAgencies]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
+
+  useEffect(() => {
+    if (!pendingRouteClick || !historyData) return;
+    const { slug, routeShortName } = pendingRouteClick;
+    const agency = historyData.find(a => a.slug === slug);
+    if (agency) {
+      setSelectedSlug(slug);
+      setSelectedRouteShortName(routeShortName);
+    }
+    onPendingRouteHandled?.();
+  }, [pendingRouteClick, historyData, onPendingRouteHandled]);
   useEffect(() => {
     setSelectedSlug(null);
     setSelectedRouteShortName(null);
