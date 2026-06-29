@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **Live Vehicles: map fits all vehicles on initial load**: On first load for each agency, map now `fitBounds` to all vehicle positions (80px padding, maxZoom 14) instead of flying to agency center at zoom 13. Subsequent polls don't re-fit. Tracked in AI-168.
 - **Live Vehicles: route row right-side stats**: Vehicle count and delay label now inline ("7 veh · 1 early") instead of stacked vertically.
 - **Live Vehicles: vehicle markers**: Changed from fixed 28px circle to auto-sizing pill (`min-width:22px`, `height:22px`, `padding:0 6px`). Handles variable-length route names like "blue" without clipping.
 - **Live Vehicles: route dot**: Sidebar row now uses `w-2 h-2` dot matching the search suggestion design pattern instead of a circle badge.

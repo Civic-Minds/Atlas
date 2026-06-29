@@ -68,6 +68,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
   const liveMarkersRef = useRef<maplibregl.Marker[]>([]);
   const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const liveFittedAgencyRef = useRef<string | null>(null);
 
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
   const hasSavedView = useMemo(() => getSavedView() !== null, []);
@@ -599,13 +600,22 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       liveMarkersRef.current.push(marker);
     });
 
-    // Fly on initial network load
-    if (liveOverlay.vehicles.length > 0 && liveOverlay.agencyCenter && liveMarkersRef.current.length === liveOverlay.vehicles.length) {
-      const dist = map.getCenter().distanceTo(new maplibregl.LngLat(liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]));
-      if (dist > 50000) {
-        map.flyTo({ center: [liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]], zoom: 13 });
+    // Fit map to all vehicles on first load for this agency (not on every poll)
+    const agencyKey = liveOverlay.agencySlug;
+    if (liveOverlay.vehicles.length > 0 && liveFittedAgencyRef.current !== agencyKey) {
+      liveFittedAgencyRef.current = agencyKey;
+      const lats = liveOverlay.vehicles.map(v => v.lat);
+      const lons = liveOverlay.vehicles.map(v => v.lon);
+      const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+      const minLon = Math.min(...lons), maxLon = Math.max(...lons);
+      const spread = Math.max(maxLat - minLat, maxLon - minLon);
+      if (spread < 0.005) {
+        map.flyTo({ center: [(minLon + maxLon) / 2, (minLat + maxLat) / 2], zoom: 14 });
+      } else {
+        map.fitBounds([[minLon, minLat], [maxLon, maxLat]], { padding: 80, maxZoom: 14 });
       }
-    } else if (liveOverlay.vehicles.length === 0 && liveOverlay.agencyCenter) {
+    } else if (liveOverlay.vehicles.length === 0 && liveOverlay.agencyCenter && liveFittedAgencyRef.current !== agencyKey) {
+      liveFittedAgencyRef.current = agencyKey;
       map.flyTo({ center: [liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]], zoom: 13 });
     }
   }, [liveOverlay, mapLoaded]);
