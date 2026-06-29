@@ -17,7 +17,7 @@
     "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1071.0",
+    "@aws-sdk/client-s3": "^3.1075.0",
     "@types/leaflet.markercluster": "^1.5.6",
     "dotenv": "^17.4.2",
     "gtfs-realtime-bindings": "^2.0.0",
