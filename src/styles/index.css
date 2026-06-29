@@ -128,3 +128,21 @@ button {
   color: var(--text-dim);
   margin-top: 3px;
 }
+
+/* Custom MapLibre Popup Styling to match the app's premium aesthetic */
+.live-vehicle-popup .maplibregl-popup-content {
+  background: var(--bg-panel) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.live-vehicle-popup .maplibregl-popup-tip {
+  border-top-color: var(--bg-panel) !important;
+  border-bottom-color: var(--bg-panel) !important;
+  border-left-color: var(--bg-panel) !important;
+  border-right-color: var(--bg-panel) !important;
+}

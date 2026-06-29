@@ -52,8 +52,42 @@ export function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
   `;
 }
 
-export function VehicleMarkerHtml(vehicle: LiveVehicle): string {
+export function VehicleMarkerHtml(vehicle: LiveVehicle, hideText: boolean = false): string {
   const colors = STATUS_COLORS[vehicle.status];
+  
+  if (hideText) {
+    return `
+      <div class="live-vehicle-marker" style="
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border-radius: 7px;
+        background: ${colors.bg};
+        border: 1.5px solid ${colors.border};
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        cursor: pointer;
+      ">
+        ${vehicle.bearing !== null ? `
+          <div style="
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%) rotate(${vehicle.bearing}deg);
+            transform-origin: 50% 12px;
+            width: 0;
+            height: 0;
+            border-left: 3.5px solid transparent;
+            border-right: 3.5px solid transparent;
+            border-bottom: 5.5px solid ${colors.border};
+          "></div>
+        ` : ''}
+      </div>
+    `;
+  }
+
   return `
     <div class="live-vehicle-marker" style="
       position: relative;

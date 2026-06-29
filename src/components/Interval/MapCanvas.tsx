@@ -69,6 +69,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const liveMarkersRef = useRef<maplibregl.Marker[]>([]);
   const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
   const liveFittedAgencyRef = useRef<string | null>(null);
+
   const liveFittedRouteRef = useRef<string | null>(null);
 
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
@@ -587,7 +588,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     liveOverlay.vehicles.forEach(vehicle => {
       if (!vehicle.lat || !vehicle.lon) return;
 
-      const html = VehicleMarkerHtml(vehicle);
+      const isRouteSelected = !!liveOverlay.selectedRouteShortName;
+      const html = VehicleMarkerHtml(vehicle, isRouteSelected);
       // Use a block wrapper div (not firstElementChild) so MapLibre's getBoundingClientRect()
       // sees the correct rendered dimensions and computes the center anchor correctly.
       // Passing an inline-flex element directly causes the anchor to compute as [0,0],
@@ -699,13 +701,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded || !liveOverlay?.focusedVehicle) return;
 
-    // Fallback centering on vehicle only if we didn't fit bounds to route features
+    // Do not center on focused vehicle if we are fitting bounds to route features
     if (liveOverlay.routeFeatures && liveOverlay.routeFeatures.length > 0) {
       return;
     }
 
     const { lat, lon } = liveOverlay.focusedVehicle;
-    map.flyTo({ center: [lon, lat], zoom: 14 });
+    const currentZoom = map.getZoom();
+    const targetZoom = Math.max(currentZoom, 14);
+    map.flyTo({ center: [lon, lat], zoom: targetZoom });
   }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded]);
 
   // Clean overlays on unmount

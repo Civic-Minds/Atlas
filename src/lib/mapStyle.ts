@@ -1,6 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import { Protocol } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
+import { agencyGeoWeekVersion } from './agencyGeo';
 
 let protocolRegistered = false;
 export function registerProtocol() {
@@ -44,7 +45,7 @@ export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification =
       },
       'atlas-pmtiles': {
         type: 'vector',
-        url: `pmtiles://${R2_PUBLIC_URL}/atlas.pmtiles`,
+        url: `pmtiles://${R2_PUBLIC_URL}/atlas.pmtiles?v=${agencyGeoWeekVersion()}`,
       },
     },
     layers: [
