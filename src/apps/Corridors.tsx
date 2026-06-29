@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Info, Search, X, Sun, Moon } from 'lucide-react';
 import type { Agency } from '../App';
 import { FLOATING_CARD, ICON_BTN } from '../styles';
-import { getTimelineHeadwayColor } from '../utils/colors';
 import {
   buildStopCatalog,
   normalizeStopName,
@@ -13,7 +12,10 @@ import {
 import { clipBetweenStopIndices, formatRouteColor } from './corridor-geometry';
 import { useCorridorMapOverlay } from '../context/CorridorMapOverlay';
 import { fetchAgencyGeo, getCachedAgencyGeo } from '../lib/agencyGeo';
-import { TIME_PERIODS } from '../../shared/config';
+import { type RouteFeature, type RouteGroup, fmtHeadway } from './corridor-types';
+import { ServiceTimeline } from './ServiceTimeline';
+import { StopInput } from './StopInput';
+import { RouteGroupCard } from './RouteGroupCard';
 
 export type CorridorsFromInputBindings = {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -33,30 +35,6 @@ interface Props {
   onInfoOpen?: () => void;
 }
 
-interface RouteFeature {
-  agencySlug: string;
-  agencyName: string;
-  routeShortName: string;
-  routeLongName: string;
-  headsign: string;
-  headway: number | null;           // route-level (fallback)
-  headwayByPeriod: Record<string, number | null>; // route-level (fallback)
-  fromStopHeadwayByPeriod: Record<string, number | null>; // headway at FROM stop — where the user waits
-  toStopHeadway: number | null;
-  toStopHeadwayByPeriod: Record<string, number | null>;
-  color: string;
-  stopOrder: string[];
-  coordinates?: number[][];
-}
-
-interface RouteGroup {
-  agencySlug: string;
-  agencyName: string;
-  routeShortName: string;
-  color: string;
-  branches: RouteFeature[];
-  bestHeadway: number | null;
-}
 
 interface GeoJsonAgency {
   slug: string;
@@ -87,11 +65,6 @@ const PERIOD_LABELS: Record<string, string> = {
   evening: 'Evening',
 };
 
-function fmtHeadway(hw: number | null | undefined): string {
-  if (hw == null) return '—';
-  if (hw >= 60) return `${Math.round(hw / 60)}h`;
-  return `${Math.round(hw)} min`;
-}
 
 /** Agencies that might serve a direct corridor between two normalized stop names. */
 function agencySlugsForQuery(
@@ -621,223 +594,3 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
   );
 }
 
-// Approximate period durations in hours (used for proportional flex widths)
-const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: number }> = TIME_PERIODS.map(p => {
-  const formatHour = (hr: number) => {
-    const suffix = hr >= 12 ? 'PM' : 'AM';
-    const h12 = hr % 12 === 0 ? 12 : hr % 12;
-    return `${h12} ${suffix}`;
-  };
-  const startStr = formatHour(p.startHour);
-  const endStr = formatHour(p.endHour);
-  const startSuffix = startStr.split(' ')[1];
-  const endSuffix = endStr.split(' ')[1];
-  const timeStr = startSuffix === endSuffix
-    ? `${startStr.split(' ')[0]}–${endStr}`
-    : `${startStr}–${endStr}`;
-  return {
-    key: p.key,
-    label: p.label,
-    time: timeStr,
-    flex: 1
-  };
-});
-
-
-
-const LABEL_W = 136;
-
-function ServiceTimeline({
-  results,
-  fromStop,
-  toStop,
-  day,
-}: {
-  results: RouteGroup[];
-  fromStop: StopEntry | null;
-  toStop: StopEntry | null;
-  day: string;
-}) {
-  if (results.length === 0) {
-    return (
-      <div className="flex items-center justify-center p-8 text-[var(--text-muted)] text-xs text-center">
-        No direct service found between these stations
-      </div>
-    );
-  }
-
-  return (
-    <div className="overflow-y-auto p-5">
-      {/* Summary */}
-      <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3">
-        {results.length} route{results.length !== 1 ? 's' : ''} · {day}
-      </p>
-
-      {/* Period header */}
-      <div className="flex items-end mb-2">
-        <div style={{ width: LABEL_W }} className="shrink-0" />
-        {TIMELINE_PERIODS.map(p => (
-          <div key={p.key} className="flex-1 flex flex-col">
-            <span className="text-[10px] font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
-            <span className="text-[9px] text-[var(--text-dim)] mt-0.5">{p.time}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Route groups */}
-      <div className="flex flex-col gap-4">
-        {results.map((g, gi) => (
-          <div key={gi}>
-            {/* Route badge */}
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <span
-                className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
-                style={{ backgroundColor: g.color || '#555' }}
-              >
-                {g.routeShortName}
-              </span>
-              <span className="text-[10px] text-[var(--text-muted)]">{g.agencyName}</span>
-            </div>
-
-            {/* Branch rows — label | bars | best headway */}
-            <div className="flex flex-col gap-1.5">
-              {g.branches.map((b, bi) => {
-                // Prefer FROM stop headway (where the user waits), fall back to TO stop, then route-level.
-                const hw = Object.values(b.fromStopHeadwayByPeriod).some(v => v != null)
-                  ? b.fromStopHeadwayByPeriod
-                  : Object.values(b.toStopHeadwayByPeriod).some(v => v != null)
-                    ? b.toStopHeadwayByPeriod
-                    : b.headwayByPeriod;
-                return (
-                  <div key={bi} className="flex items-center gap-1">
-                    <div className="shrink-0 pr-2" style={{ width: LABEL_W }}>
-                      <span className="text-[10px] text-[var(--text-muted)] truncate block">
-                        to {b.headsign || b.routeLongName}
-                      </span>
-                    </div>
-                    <div className="flex flex-1 rounded overflow-hidden h-7 gap-px">
-                      {TIMELINE_PERIODS.map(p => {
-                        const val = hw[p.key] ?? null;
-                        const { bg, fg } = getTimelineHeadwayColor(val);
-                        return (
-                          <div
-                            key={p.key}
-                            className="flex flex-1 items-center justify-center"
-                            style={{ backgroundColor: bg }}
-                          >
-                            <span className="text-[10px] font-bold" style={{ color: fg }}>
-                              {fmtHeadway(val)}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Legend */}
-      <div className="mt-6 flex items-center gap-3 flex-wrap">
-        <span className="text-[9px] text-[var(--text-dim)] uppercase tracking-wider font-bold">Frequency</span>
-        {[
-          { label: '≤10 min', hw: 10 },
-          { label: '≤15 min', hw: 15 },
-          { label: '≤20 min', hw: 20 },
-          { label: '≤30 min', hw: 30 },
-          { label: '≤60 min', hw: 60 },
-          { label: '>60 min', hw: 120 },
-        ].map(({ label, hw }) => {
-          const { bg } = getTimelineHeadwayColor(hw);
-          return (
-            <div key={label} className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: bg }} />
-              <span className="text-[9px] text-[var(--text-muted)]">{label}</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-interface StopInputProps {
-  label: string;
-  value: string;
-  selected: boolean;
-  onChange: (v: string) => void;
-  onFocus: () => void;
-  onClear: () => void;
-}
-
-const StopInput = React.forwardRef<HTMLInputElement, StopInputProps>(
-  ({ label, value, selected, onChange, onFocus, onClear }, ref) => {
-    const [focused, setFocused] = React.useState(false);
-    const placeholder = (focused || value) ? 'Search stations…' : label;
-    return (
-      <div className="flex items-center gap-2 h-9 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-lg px-3 focus-within:border-[var(--accent)] transition-colors">
-        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-        <input
-          ref={ref}
-          type="text"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          onFocus={() => { setFocused(true); onFocus(); }}
-          onBlur={() => setFocused(false)}
-          placeholder={placeholder}
-          className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none min-w-0"
-        />
-        {value && (
-          <button onClick={onClear} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
-            <X className="w-3 h-3" />
-          </button>
-        )}
-      </div>
-    );
-  }
-);
-StopInput.displayName = 'StopInput';
-
-function RouteGroupCard({ group }: { group: RouteGroup }) {
-  return (
-    <div className="bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl overflow-hidden">
-      {/* Route header */}
-      <div className="flex items-center gap-2 px-3 pt-3 pb-2">
-        <span
-          className="text-[10px] font-black px-1.5 py-0.5 rounded text-white shrink-0"
-          style={{ backgroundColor: group.color || '#555' }}
-        >
-          {group.routeShortName}
-        </span>
-        <span className="text-[10px] text-[var(--text-muted)]">{group.agencyName}</span>
-        {group.bestHeadway != null && (
-          <span className="ml-auto text-xs font-black text-[var(--text-primary)]">
-            {fmtHeadway(group.bestHeadway)}
-          </span>
-        )}
-      </div>
-
-      {/* Branches */}
-      <div className="divide-y divide-[var(--border-primary)]">
-        {group.branches.map((b, i) => {
-          const hw = b.toStopHeadway ?? b.headway;
-          return (
-            <div key={i} className="px-3 py-2 flex items-center justify-between">
-              <span className="text-[11px] text-[var(--text-muted)]">
-                to {b.headsign || b.routeLongName}
-              </span>
-              {hw != null && (
-                <span className="text-[11px] font-bold text-[var(--text-primary)]">
-                  {fmtHeadway(hw)}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}

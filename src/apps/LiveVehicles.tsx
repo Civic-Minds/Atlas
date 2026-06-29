@@ -246,11 +246,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     className={`${LIST_ROW} ${isSelected ? 'bg-[var(--accent-bg)]' : ''}`}
                   >
                     <span
+                      className="w-2 h-2 rounded-full shrink-0"
                       style={{ background: colors.bg }}
-                      className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black text-white shrink-0"
-                    >
-                      {g.routeShortName}
-                    </span>
+                    />
 
                     <div className="flex-1 min-w-0">
                       <p className={LIST_ROW_PRIMARY}>{g.displayName}</p>

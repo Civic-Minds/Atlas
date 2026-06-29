@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **Live Vehicles: vehicle markers**: Changed from fixed 28px circle to auto-sizing pill (`min-width:22px`, `height:22px`, `padding:0 6px`). Handles variable-length route names like "blue" without clipping.
+- **Live Vehicles: route dot**: Sidebar row now uses `w-2 h-2` dot matching the search suggestion design pattern instead of a circle badge.
+- **Refactor: extract map utilities**: Moved `getMapStyle`/`registerProtocol` → `src/lib/mapStyle.ts`; moved `formatGap`, `formatDelta`, `StopCardHtml`, `VehicleMarkerHtml` → `src/lib/mapHtml.ts`. MapCanvas.tsx: 796 → 646 lines.
+- **Refactor: extract Corridors sub-components**: Moved `ServiceTimeline` → `src/apps/ServiceTimeline.tsx`; `StopInput` → `src/apps/StopInput.tsx`; `RouteGroupCard` → `src/apps/RouteGroupCard.tsx`; shared types + `fmtHeadway` → `src/apps/corridor-types.ts`. Corridors.tsx: 843 → 596 lines.
+- **Refactor: extract HeadwaySparkline**: Moved `HeadwaySparkline`, `headwayToTierColor`, `SPARKLINE_PERIODS` → `src/components/Interval/HeadwaySparkline.tsx`. SidebarControls.tsx: 953 → 893 lines.
 - **Live Vehicles: route-grouped sidebar**: Vehicle list now shows one row per route (grouped) instead of one row per individual vehicle. Shows vehicle count and aggregate delay status (e.g. "3 late"). Eliminates noise for high-frequency networks with many vehicles per route.
 - **Live Vehicles: route selection**: Clicking a route row focuses map to that route's vehicles only; "Show all" footer link resets. Clicking the same route again deselects.
 - **Live Vehicles: styling overhaul**: Sidebar now uses shared `LIST_ROW`/`LIST_ROW_PRIMARY`/`LIST_ROW_DIM` style constants matching the rest of the app. Fixed `select` element font (was defaulting to system font instead of Inter). Removed "Xs ago" timestamp.

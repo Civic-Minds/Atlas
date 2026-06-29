@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Protocol } from 'pmtiles';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
@@ -11,18 +10,8 @@ import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/History
 import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
-import { R2_PUBLIC_URL } from '../../../shared/config';
-
-
-// Register PMTiles protocol once
-let protocolRegistered = false;
-function registerProtocol() {
-  if (!protocolRegistered) {
-    const protocol = new Protocol();
-    maplibregl.addProtocol('pmtiles', protocol.tile);
-    protocolRegistered = true;
-  }
-}
+import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
+import { StopCardHtml, VehicleMarkerHtml, formatGap, formatDelta } from '../../lib/mapHtml';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -44,145 +33,6 @@ interface MapCanvasProps {
   routesForStop?: { slug: string; routeIds: Set<string> } | null;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
-}
-
-// Map style specification builder utilizing CARTO raster basemaps
-// We declare both light and dark sources + layers so we can toggle visibility
-// at runtime without calling setStyle (which would destroy our added vector layers).
-const getMapStyle = (lightMode: boolean) => {
-  const lightTiles = [
-    'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-  ];
-  const darkTiles = [
-    'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-  ];
-  const lightVis = lightMode ? 'visible' : 'none';
-  const darkVis = lightMode ? 'none' : 'visible';
-
-  return {
-    version: 8,
-    sources: {
-      'cartodb-light': {
-        type: 'raster',
-        tiles: lightTiles,
-        tileSize: 256,
-        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
-      },
-      'cartodb-dark': {
-        type: 'raster',
-        tiles: darkTiles,
-        tileSize: 256,
-        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
-      },
-      'atlas-pmtiles': {
-        type: 'vector',
-        url: `pmtiles://${R2_PUBLIC_URL}/atlas.pmtiles`
-      }
-    },
-    layers: [
-      {
-        id: 'basemap-light',
-        type: 'raster',
-        source: 'cartodb-light',
-        layout: { visibility: lightVis }
-      },
-      {
-        id: 'basemap-dark',
-        type: 'raster',
-        source: 'cartodb-dark',
-        layout: { visibility: darkVis }
-      }
-    ]
-  } as maplibregl.StyleSpecification;
-};
-
-// Copy HTML builders from Leaflet overlays so UI remains identical
-function formatGap(gap: number | null): string {
-  if (gap === null) return '–';
-  return `${Math.round(gap * 10) / 10}m`;
-}
-
-function formatDelta(delta: number | null): string {
-  if (delta === null) return '–';
-  const abs = Math.round(Math.abs(delta) * 10) / 10;
-  if (Math.abs(delta) < 0.5) return 'on time';
-  return delta > 0 ? `+${abs}m` : `–${abs}m`;
-}
-
-function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
-  const color = STATUS_COLORS[stop.headwayDeltaMin === null ? 'no_data' : stop.headwayDeltaMin <= -1.5 ? 'early' : stop.headwayDeltaMin >= 5.5 ? 'late' : 'on_time'].border;
-  const delta = formatDelta(stop.headwayDeltaMin);
-  const gap = formatGap(stop.avgGap);
-
-  return `
-    <div class="history-stop-card" data-stop-id="${stop.stopId}" style="
-      background: var(--bg-panel, #fff);
-      border: 1.5px solid ${color};
-      border-radius: 12px;
-      padding: 8px 12px;
-      min-width: 120px;
-      max-width: 180px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.14);
-      cursor: pointer;
-      pointer-events: auto;
-      font-family: inherit;
-    ">
-      <p style="font-size:9px;font-weight:700;color:var(--text-dim,#6b7280);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${stop.name}</p>
-      <div style="display:flex;align-items:baseline;gap:3px;">
-        <span style="font-size:18px;font-weight:900;color:var(--text-primary,#111);line-height:1;">${gap}</span>
-        <span style="font-size:9px;color:var(--text-dim,#6b7280);">gap</span>
-      </div>
-      <span style="font-size:10px;font-weight:700;color:${color};">${delta}</span>
-      ${expanded ? `
-        <div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border-primary,#e5e7eb);">
-          <p style="font-size:9px;color:var(--text-dim,#6b7280);margin:0;">scheduled every ${stop.scheduledHeadwayMin ?? '?'}m</p>
-        </div>
-      ` : ''}
-    </div>
-  `;
-}
-
-function VehicleMarkerHtml(vehicle: LiveVehicle): string {
-  const colors = STATUS_COLORS[vehicle.status];
-  return `
-    <div class="live-vehicle-marker" style="
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: ${colors.bg};
-      border: 2px solid ${colors.border};
-      color: white;
-      font-size: 9px;
-      font-weight: 900;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      position: relative;
-    ">
-      ${vehicle.routeShortName}
-      ${vehicle.bearing !== null ? `
-        <div class="bearing-pointer" style="
-          position: absolute;
-          top: -6px;
-          left: 50%;
-          transform: translateX(-50%) rotate(${vehicle.bearing}deg);
-          transform-origin: 50% 18px;
-          width: 0;
-          height: 0;
-          border-left: 5px solid transparent;
-          border-right: 5px solid transparent;
-          border-bottom: 7px solid ${colors.border};
-        "></div>
-      ` : ''}
-    </div>
-  `;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
