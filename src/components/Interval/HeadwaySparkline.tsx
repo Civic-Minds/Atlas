@@ -7,7 +7,7 @@ const SPARKLINE_PERIODS: Array<{ key: keyof HeadwayByPeriod; label: string }> = 
   { key: 'midday',    label: 'MID' },
   { key: 'pmPeak',    label: 'PM' },
   { key: 'evening',   label: 'EVE' },
-  { key: 'lateNight', label: 'NIGHT' },
+  { key: 'lateNight', label: 'LATE' },
 ];
 
 export function headwayToTierColor(h: number | null | undefined): string {
