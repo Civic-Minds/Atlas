@@ -45,19 +45,20 @@ interface Props {
   onPendingRouteHandled?: () => void;
 }
 
-function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean } | null {
+function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
   const snaps = entry.snapshots;
   if (snaps.length < 2) return null;
   const first = snaps[0];
   const last = snaps[snaps.length - 1];
-  const ratio = last.weekdayHeadwayMin / first.weekdayHeadwayMin;
-  if (Math.abs(ratio - 1) < 0.05) return null;
-  if (ratio > 1) {
-    const x = Math.round(ratio * 10) / 10;
-    return { text: `${x}× less frequent since ${first.label}`, worse: true };
-  }
-  const x = Math.round((1 / ratio) * 10) / 10;
-  return { text: `${x}× more frequent since ${first.label}`, worse: false };
+  const fHw = first.weekdayHeadwayMin;
+  const lHw = last.weekdayHeadwayMin;
+  if (Math.abs(fHw - lHw) < 2) return null;
+  const worse = lHw > fHw;
+  return {
+    text: `Every ${fHw} min → every ${lHw} min`,
+    subtext: `${first.label} to ${last.label}`,
+    worse,
+  };
 }
 
 function formatXLabel(label: string): string {
@@ -86,19 +87,11 @@ function RouteHistoryCard({
   region: string;
   onBack: () => void;
 }) {
-  const [period, setPeriod] = useState<HistoryPeriod>('midday');
   const [showChart, setShowChart] = useState(false);
   const snaps = route.snapshots;
 
-  // Determine which periods have any data across all snapshots
-  const availablePeriods = HISTORY_PERIODS.filter(p =>
-    p.key === 'midday' || snaps.some(s => s.headwayByPeriod?.[p.key] != null)
-  );
-
-  // Get headway for the selected period, falling back to midday
   function snapHeadway(snap: RouteSnapshot): number {
-    if (period === 'midday') return snap.weekdayHeadwayMin;
-    return snap.headwayByPeriod?.[period] ?? snap.weekdayHeadwayMin;
+    return snap.weekdayHeadwayMin;
   }
 
   const first = snaps[0];
@@ -107,8 +100,7 @@ function RouteHistoryCard({
   const lastHw = snapHeadway(last);
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
-  const summary = changeSummary(route);
-  const periodInfo = HISTORY_PERIODS.find(p => p.key === period)!;
+  const summary = changeSummary(route);;
 
   // Sparkline calculations
   const width = 220;
@@ -174,23 +166,6 @@ function RouteHistoryCard({
             </button>
           )}
         </div>
-      </div>
-
-      {/* Period selector */}
-      <div className="px-4 pb-3 shrink-0 flex items-center gap-1.5">
-        {availablePeriods.map(p => (
-          <button
-            key={p.key}
-            onClick={() => setPeriod(p.key)}
-            className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${
-              period === p.key
-                ? 'bg-[var(--accent)] text-white'
-                : 'bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
       </div>
 
       {snaps.length >= 2 && showChart && (
@@ -277,10 +252,8 @@ function RouteHistoryCard({
 
         {summary && (
           <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-            <p className={`text-xs font-black leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
-            <p className="text-[9px] text-[var(--text-muted)] font-medium mt-0.5">
-              Weekday {periodInfo.label.toLowerCase()} headway, {first.label} to {last.label}.
-            </p>
+            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
+            <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
           </div>
         )}
       </div>
