@@ -129,7 +129,8 @@
                   "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt-corridors.json",
                   "lastFeedExpiry": null,
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-durham-region-transit-gtfs-726.zip?alt=media"
             },
             {
                   "slug": "go",
@@ -257,7 +258,8 @@
                   "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london-corridors.json",
                   "lastFeedExpiry": "20260905",
-                  "lastFeedVersion": "2026 Summer_20260615"
+                  "lastFeedVersion": "2026 Summer_20260615",
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-london-transit-commission-gtfs-2.zip?alt=media"
             },
             {
                   "slug": "miway",
@@ -444,7 +446,8 @@
                   "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-corridors.json",
                   "lastFeedExpiry": null,
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media"
             },
             {
                   "slug": "windsor",
@@ -508,7 +511,8 @@
                   "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-corridors.json",
                   "lastFeedExpiry": "20260905",
-                  "lastFeedVersion": "2026.06.28_June_20260611"
+                  "lastFeedVersion": "2026.06.28_June_20260611",
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-york-region-transit-gtfs-728.zip?alt=media"
             },
             {
                   "slug": "linter",
@@ -613,7 +617,8 @@
                   "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-corridors.json",
                   "lastFeedExpiry": "20260823",
-                  "lastFeedVersion": "202606181332"
+                  "lastFeedVersion": "202606181332",
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-longueuil-gtfs-751.zip?alt=media"
             },
             {
                   "slug": "stl",
@@ -634,7 +639,8 @@
                   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl-corridors.json",
                   "lastFeedExpiry": "20260821",
-                  "lastFeedVersion": "20260629044624"
+                  "lastFeedVersion": "20260629044624",
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media"
             },
             {
                   "slug": "stlevis",
@@ -655,7 +661,8 @@
                   "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-corridors.json",
                   "lastFeedExpiry": "20260823",
-                  "lastFeedVersion": "20260615"
+                  "lastFeedVersion": "20260615",
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-levis-gtfs-763.zip?alt=media"
             },
             {
                   "slug": "stm",
@@ -676,7 +683,8 @@
                   "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-corridors.json",
                   "lastFeedExpiry": "20260823",
-                  "lastFeedVersion": "20260602153030_26U"
+                  "lastFeedVersion": "20260602153030_26U",
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media"
             },
             {
                   "slug": "sto",
@@ -697,7 +705,8 @@
                   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-corridors.json",
                   "lastFeedExpiry": null,
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media"
             },
             {
                   "slug": "sjsr",
@@ -782,7 +791,8 @@
                   "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-corridors.json",
                   "lastFeedExpiry": "20260823",
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-la-presquile-gtfs-743.zip?alt=media"
             },
             {
                   "slug": "exo-sudouest",
@@ -803,7 +813,8 @@
                   "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-corridors.json",
                   "lastFeedExpiry": "20260719",
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media"
             },
             {
                   "slug": "exo-lrrs",
@@ -824,7 +835,8 @@
                   "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-corridors.json",
                   "lastFeedExpiry": "20260823",
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media"
             },
             {
                   "slug": "exo-laurentides",
@@ -845,7 +857,8 @@
                   "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-corridors.json",
                   "lastFeedExpiry": "20260823",
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media"
             },
             {
                   "slug": "exo-terrebonne",
@@ -866,7 +879,8 @@
                   "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip",
                   "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-corridors.json",
                   "lastFeedExpiry": "20260823",
-                  "lastFeedVersion": null
+                  "lastFeedVersion": null,
+                  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media"
             },
             {
                   "slug": "bc-fraser-valley",
