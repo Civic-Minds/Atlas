@@ -107,7 +107,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const minFreq = Math.min(...valids.map(v => 1 / v));
     const H = 26; // Taller bars
     return (
-      <div className="mt-2.5 mb-4 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 shadow-sm flex items-center justify-between gap-3">
+      <div className="mt-3 mb-4 pt-3 border-t border-[var(--border-primary)] flex items-center justify-between gap-3">
         <div className="flex flex-col gap-0.5">
           <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Service Frequency</span>
           <span className="text-[8px] text-[var(--text-dim)] leading-snug max-w-[125px]">

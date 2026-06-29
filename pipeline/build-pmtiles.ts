@@ -60,6 +60,7 @@ async function main() {
       const data = await fetchJson(url);
       if (data && data.features) {
         data.features.forEach(f => {
+          if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
           f.properties = f.properties || {};
           f.properties.agencySlug = slug;
           allRoutes.push(f);

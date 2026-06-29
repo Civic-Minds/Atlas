@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Route card service frequency: box-in-a-box**: Removed the inner bordered/shaded container from the `HeadwaySparkline` component; it now renders inline with a top divider, matching the flat card style.
+- **"Agency::Undefined" in disambiguation + new agencies invisible on map**: `build-pmtiles.ts` was including stop Point features in the routes GeoJSON layer (since the main GeoJSON contains both route LineStrings and stop Points for the R2 sidebar). Added a `geometry.type !== 'LineString'` guard so only route shapes reach the `routes` tile layer. Also fixes map rendering for all 29 new agencies, which were missing from the stale PMTiles.
 - **History route card: "2008 Launch" label**: Removed manual label override from HealthLine seed — auto-formats as "Jan 2008".
 - **History route card: duplicate final snapshot**: The 2026 entry no longer appears if it has the same headway as the most recent archive snapshot.
 - **History period data in archive snapshots**: `refresh.ts` now writes `headwayByPeriod` (AM/Mid/PM/Eve) alongside `headway` in each per-route history file; `build-history.ts` passes it through to `history-config.json`.
