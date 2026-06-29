@@ -2025,6 +2025,132 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/clallamtransit-corridors.json",
       "lastFeedExpiry": "20270522",
       "lastFeedVersion": "Updated: Mar 16, 2026, 12:30 PM"
+    },
+    {
+      "slug": "portlandme",
+      "name": "Greater Portland Metro",
+      "center": [
+        43.66,
+        -70.26
+      ],
+      "region": "Maine",
+      "bbox": [
+        43.5,
+        -70.5,
+        43.9,
+        -70
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-greater-portland-metro-bus-gtfs-2642.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/portlandme.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/portlandme-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/portlandme-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "southportlandme",
+      "name": "South Portland Bus Service",
+      "center": [
+        43.63,
+        -70.28
+      ],
+      "region": "Maine",
+      "bbox": [
+        43.55,
+        -70.35,
+        43.7,
+        -70.2
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-south-portland-gtfs-2641.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/southportlandme.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/southportlandme-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/southportlandme-corridors.json",
+      "lastFeedExpiry": "20251005",
+      "lastFeedVersion": "Updated: Aug 25, 2025, 10:00 AM"
+    },
+    {
+      "slug": "hocts",
+      "name": "HOCTS (Utica-Rome)",
+      "center": [
+        43.1,
+        -75.23
+      ],
+      "region": "New York",
+      "bbox": [
+        42.9,
+        -75.6,
+        43.4,
+        -74.9
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-herkimer-oneida-counties-transportation-study-hocts-gtfs-588.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hocts.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hocts-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hocts-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "glensfallstransit",
+      "name": "Greater Glens Falls Transit",
+      "center": [
+        43.31,
+        -73.64
+      ],
+      "region": "New York",
+      "bbox": [
+        43.1,
+        -73.9,
+        43.6,
+        -73.4
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glensfallstransit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glensfallstransit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glensfallstransit-corridors.json",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": ""
+    },
+    {
+      "slug": "watertowncitibus",
+      "name": "Watertown Citibus",
+      "center": [
+        43.97,
+        -75.91
+      ],
+      "region": "New York",
+      "bbox": [
+        43.8,
+        -76.1,
+        44.1,
+        -75.7
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-watertown-citibus-gtfs-2881.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/watertowncitibus.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/watertowncitibus-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/watertowncitibus-corridors.json",
+      "lastFeedExpiry": "20260703",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "hudsonlink",
+      "name": "Hudson Link",
+      "center": [
+        41.73,
+        -73.94
+      ],
+      "region": "New York",
+      "bbox": [
+        41.5,
+        -74.2,
+        41.9,
+        -73.7
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-hudson-link-gtfs-2312.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hudsonlink.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hudsonlink-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hudsonlink-corridors.json",
+      "lastFeedExpiry": "20261001",
+      "lastFeedVersion": "UTC: 25-Mar-2026 23:59"
     }
   ]
 }

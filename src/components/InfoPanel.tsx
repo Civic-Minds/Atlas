@@ -165,7 +165,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
-                  {agencies.length} agencies — {totalHistoryAgencies} with frequency history, {totalLiveAgencies} with real-time tracking.
+                  Covering {agencies.length} transit agencies. See live vehicle positions on {totalLiveAgencies}, or explore years of frequency history on {totalHistoryAgencies}.
                 </p>
               <button
                 onClick={() => setView('agencies')}
