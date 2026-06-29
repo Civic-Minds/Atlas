@@ -71,25 +71,23 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
             return (
               <button
                 key={app.id}
-                disabled={!app.available}
+                disabled={!app.available || isActive}
                 onClick={() => {
-                  if (app.available) {
+                  if (app.available && !isActive) {
                     onSelect(app.id);
                     setOpen(false);
                   }
                 }}
                 className={[
                   'w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors',
-                  app.available
-                    ? isActive
-                      ? 'bg-[var(--bg-active)]'
-                      : 'hover:bg-[var(--bg-hover)]'
-                    : 'opacity-40 cursor-not-allowed',
+                  isActive
+                    ? 'opacity-40 cursor-default'
+                    : app.available
+                      ? 'hover:bg-[var(--bg-hover)]'
+                      : 'opacity-40 cursor-not-allowed',
                 ].join(' ')}
               >
-                <span className={isActive ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}>
-                  {app.icon}
-                </span>
+                <span className="text-[var(--text-dim)]">{app.icon}</span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold text-[var(--text-primary)] truncate">

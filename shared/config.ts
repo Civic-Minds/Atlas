@@ -25,10 +25,11 @@ export interface PeriodConfig {
 }
 
 export const TIME_PERIODS: PeriodConfig[] = [
-  { key: 'amPeak',  label: 'AM Peak', startHour: 6,  endHour: 9  },
-  { key: 'midday',  label: 'Midday',  startHour: 9,  endHour: 15 },
-  { key: 'pmPeak',  label: 'PM Peak', startHour: 15, endHour: 19 },
-  { key: 'evening', label: 'Evening', startHour: 19, endHour: 22 },
+  { key: 'amPeak',    label: 'AM Peak',    startHour: 6,  endHour: 9  },
+  { key: 'midday',    label: 'Midday',     startHour: 9,  endHour: 15 },
+  { key: 'pmPeak',    label: 'PM Peak',    startHour: 15, endHour: 19 },
+  { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 24 },
+  { key: 'lateNight', label: 'Late',       startHour: 24, endHour: 27 },
 ];
 
 export interface HeadwayTier {
@@ -38,10 +39,10 @@ export interface HeadwayTier {
 }
 
 export const HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#2563eb', label: '≤10m' },
-  { max: 15, color: '#16a34a', label: '≤15m' },
-  { max: 20, color: '#16a34a', label: '≤20m' },
-  { max: 30, color: '#ca8a04', label: '≤30m' },
-  { max: 60, color: '#dc2626', label: '≤60m' },
+  { max: 10, color: '#22863a', label: '≤10m' },
+  { max: 15, color: '#3da44d', label: '≤15m' },
+  { max: 20, color: '#f59e0b', label: '≤20m' },
+  { max: 30, color: '#e07b2a', label: '≤30m' },
+  { max: 60, color: '#92400e', label: '≤60m' },
   { max: Infinity, color: '#6b7280', label: 'Infrequent' },
 ];

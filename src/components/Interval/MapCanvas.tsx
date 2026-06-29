@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Protocol } from 'pmtiles';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
@@ -9,20 +8,12 @@ import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
+import { useViewport } from '../../context/ViewportContext';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
-import { R2_PUBLIC_URL } from '../../../shared/config';
-
-
-// Register PMTiles protocol once
-let protocolRegistered = false;
-function registerProtocol() {
-  if (!protocolRegistered) {
-    const protocol = new Protocol();
-    maplibregl.addProtocol('pmtiles', protocol.tile);
-    protocolRegistered = true;
-  }
-}
+import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
+import { StopCardHtml, VehicleMarkerHtml, formatGap, formatDelta } from '../../lib/mapHtml';
+import { cleanRouteShortName } from '../../utils/format';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -44,145 +35,7 @@ interface MapCanvasProps {
   routesForStop?: { slug: string; routeIds: Set<string> } | null;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
-}
-
-// Map style specification builder utilizing CARTO raster basemaps
-// We declare both light and dark sources + layers so we can toggle visibility
-// at runtime without calling setStyle (which would destroy our added vector layers).
-const getMapStyle = (lightMode: boolean) => {
-  const lightTiles = [
-    'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-  ];
-  const darkTiles = [
-    'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-  ];
-  const lightVis = lightMode ? 'visible' : 'none';
-  const darkVis = lightMode ? 'none' : 'visible';
-
-  return {
-    version: 8,
-    sources: {
-      'cartodb-light': {
-        type: 'raster',
-        tiles: lightTiles,
-        tileSize: 256,
-        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
-      },
-      'cartodb-dark': {
-        type: 'raster',
-        tiles: darkTiles,
-        tileSize: 256,
-        attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
-      },
-      'atlas-pmtiles': {
-        type: 'vector',
-        url: `pmtiles://${R2_PUBLIC_URL}/atlas.pmtiles`
-      }
-    },
-    layers: [
-      {
-        id: 'basemap-light',
-        type: 'raster',
-        source: 'cartodb-light',
-        layout: { visibility: lightVis }
-      },
-      {
-        id: 'basemap-dark',
-        type: 'raster',
-        source: 'cartodb-dark',
-        layout: { visibility: darkVis }
-      }
-    ]
-  } as maplibregl.StyleSpecification;
-};
-
-// Copy HTML builders from Leaflet overlays so UI remains identical
-function formatGap(gap: number | null): string {
-  if (gap === null) return '–';
-  return `${Math.round(gap * 10) / 10}m`;
-}
-
-function formatDelta(delta: number | null): string {
-  if (delta === null) return '–';
-  const abs = Math.round(Math.abs(delta) * 10) / 10;
-  if (Math.abs(delta) < 0.5) return 'on time';
-  return delta > 0 ? `+${abs}m` : `–${abs}m`;
-}
-
-function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
-  const color = STATUS_COLORS[stop.headwayDeltaMin === null ? 'no_data' : stop.headwayDeltaMin <= -1.5 ? 'early' : stop.headwayDeltaMin >= 5.5 ? 'late' : 'on_time'].border;
-  const delta = formatDelta(stop.headwayDeltaMin);
-  const gap = formatGap(stop.avgGap);
-
-  return `
-    <div class="history-stop-card" data-stop-id="${stop.stopId}" style="
-      background: var(--bg-panel, #fff);
-      border: 1.5px solid ${color};
-      border-radius: 12px;
-      padding: 8px 12px;
-      min-width: 120px;
-      max-width: 180px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.14);
-      cursor: pointer;
-      pointer-events: auto;
-      font-family: inherit;
-    ">
-      <p style="font-size:9px;font-weight:700;color:var(--text-dim,#6b7280);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${stop.name}</p>
-      <div style="display:flex;align-items:baseline;gap:3px;">
-        <span style="font-size:18px;font-weight:900;color:var(--text-primary,#111);line-height:1;">${gap}</span>
-        <span style="font-size:9px;color:var(--text-dim,#6b7280);">gap</span>
-      </div>
-      <span style="font-size:10px;font-weight:700;color:${color};">${delta}</span>
-      ${expanded ? `
-        <div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border-primary,#e5e7eb);">
-          <p style="font-size:9px;color:var(--text-dim,#6b7280);margin:0;">scheduled every ${stop.scheduledHeadwayMin ?? '?'}m</p>
-        </div>
-      ` : ''}
-    </div>
-  `;
-}
-
-function VehicleMarkerHtml(vehicle: LiveVehicle): string {
-  const colors = STATUS_COLORS[vehicle.status];
-  return `
-    <div class="live-vehicle-marker" style="
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: ${colors.bg};
-      border: 2px solid ${colors.border};
-      color: white;
-      font-size: 9px;
-      font-weight: 900;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      position: relative;
-    ">
-      ${vehicle.routeShortName}
-      ${vehicle.bearing !== null ? `
-        <div class="bearing-pointer" style="
-          position: absolute;
-          top: -6px;
-          left: 50%;
-          transform: translateX(-50%) rotate(${vehicle.bearing}deg);
-          transform-origin: 50% 18px;
-          width: 0;
-          height: 0;
-          border-left: 5px solid transparent;
-          border-right: 5px solid transparent;
-          border-bottom: 7px solid ${colors.border};
-        "></div>
-      ` : ''}
-    </div>
-  `;
+  hideSpan?: boolean;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -202,6 +55,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   routesForStop,
   showRouteLayers = true,
   showCorridorBand = false,
+  hideSpan = false,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -211,6 +65,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
+  const { setBoundsAndZoom } = useViewport();
 
   const [expandedStop, setExpandedStop] = useState<string | null>(null);
 
@@ -218,6 +73,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
   const liveMarkersRef = useRef<maplibregl.Marker[]>([]);
   const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const liveFittedAgencyRef = useRef<string | null>(null);
+
+  const liveFittedRouteRef = useRef<string | null>(null);
 
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
   const hasSavedView = useMemo(() => getSavedView() !== null, []);
@@ -341,6 +199,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         }
       });
 
+      // Live route shape dynamic layer (loaded in Live Vehicles app)
+      map.addSource('live-route-shape', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'live-route-shape-layer',
+        type: 'line',
+        source: 'live-route-shape',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 4.0,
+          'line-opacity': 0.85
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
       // Handle hit-test clicks
       map.on('click', 'routes-hit-layer', (e) => {
         const features = e.features;
@@ -386,17 +264,24 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     // Sync viewport boundaries
     const onMove = () => {
       const c = map.getCenter();
-      saveView(c.lat, c.lng, map.getZoom());
-      setZoom(map.getZoom());
-      
+      const z = map.getZoom();
+      saveView(c.lat, c.lng, z);
+      setZoom(z);
+
       const b = map.getBounds();
-      onBoundsChange({
-        s: b.getSouth(),
-        w: b.getWest(),
-        n: b.getNorth(),
-        e: b.getEast()
-      });
+      const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
+      onBoundsChange(bounds);
+      setBoundsAndZoom(bounds, z);
     };
+
+    // Emit initial bounds so LiveVehicles can poll on first load
+    map.once('idle', () => {
+      const b = map.getBounds();
+      setBoundsAndZoom(
+        { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() },
+        map.getZoom()
+      );
+    });
 
     map.on('moveend', onMove);
     map.on('click', (e) => {
@@ -442,10 +327,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     );
   };
 
-  // Handle Reset View
+  // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || resetViewKey === undefined) return;
+    if (!map || !mapLoaded || resetViewKey === 0) return;
     const bounds = getAgencyBounds(agencies);
     if (bounds) {
       map.fitBounds([[bounds[0][1], bounds[0][0]], [bounds[1][1], bounds[1][0]]], { padding: 64, maxZoom: 10 });
@@ -515,22 +400,54 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
+    // maxHeadway from the headway pill; Infinity means "show all"
+    const capHeadway = maxHeadway === Infinity ? 9999 : maxHeadway;
+
+    // Coalesce so null-headway (span) routes → 9999, failing any finite headway filter.
+    // ['to-number', null, fallback] evaluates to 0 in MapLibre (null coerces to 0),
+    // which would make span routes pass every headway gate. ['coalesce'] is null-aware.
+    const headwayExpr: any = ['coalesce', ['get', 'headway'], 9999];
+
+    // Headway pill filter — applied whenever showRouteLayers is true
+    const headwayPillFilter: any = capHeadway < 9999
+      ? ['<=', headwayExpr, capHeadway]
+      : null;
+
+    // Hide span (irregular) routes from the map when hideSpan is active
+    const spanFilter: any = hideSpan ? ['!=', ['get', 'tier'], 'span'] : null;
+
+    // Zoom-based progressive gate — GPU-evaluated so it responds in real-time as the user zooms
+    // without needing a React re-render. Shows only the most frequent routes when zoomed out.
+    // At zoom 9+ there is no additional zoom constraint; the headway pill alone controls visibility.
+    const zoomGateFilter: any = [
+      '<=',
+      headwayExpr,
+      ['step', ['zoom'],
+        10,     // zoom < 7  → ≤10 min only (blue tier spines)
+        7, 20,  // zoom 7–9  → ≤20 min (main corridors)
+        9, 9999 // zoom 9+   → no additional zoom gate
+      ]
+    ];
+
     let routeFilter: any = null;
     if (!showRouteLayers) {
       routeFilter = ['==', 'agencySlug', ''];
     } else if (ql) {
-      if (matchedAgencySlug) {
-        // Searching for an agency → show exactly that agency's routes on the map
-        routeFilter = ['==', 'agencySlug', matchedAgencySlug];
-      } else {
-        // Route number/name search (also allow agency slug partial match via contains)
-        routeFilter = [
-          'any',
-          ['in', q, ['get', 'routeShortName']],
-          ['in', q, ['get', 'routeId']],
-          ['in', q, ['get', 'agencySlug']]
-        ];
-      }
+      // Search active: match query + respect headway pill, but skip zoom gate
+      // so users can find any route regardless of zoom level.
+      const searchClause = matchedAgencySlug
+        ? ['==', 'agencySlug', matchedAgencySlug]
+        : ['any',
+            ['in', q, ['get', 'routeShortName']],
+            ['in', q, ['get', 'routeId']],
+            ['in', q, ['get', 'agencySlug']]
+          ];
+      const clauses = [searchClause, headwayPillFilter, spanFilter].filter(Boolean);
+      routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
+    } else {
+      // Overview: combine zoom gate + headway pill + span filter
+      const clauses = [zoomGateFilter, headwayPillFilter, spanFilter].filter(Boolean);
+      routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     }
 
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
@@ -568,20 +485,24 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
     // Stops visibility
     if (hasStops) {
-      const showAll = zoom >= 15;
-      const showRail = zoom >= 12 && zoom < 15;
+      if (!showRouteLayers) {
+        map.setFilter('stops-layer', ['==', 'agencySlug', ''] as any);
+      } else {
+        const showAll = zoom >= 15;
+        const showRail = zoom >= 12 && zoom < 15;
 
-      map.setFilter('stops-layer', [
-        'all',
-        showAll 
-          ? ['all'] 
-          : showRail 
-            ? ['==', ['get', 'isRail'], true]
-            : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
-      ] as any);
+        map.setFilter('stops-layer', [
+          'all',
+          showAll 
+            ? ['all'] 
+            : showRail 
+              ? ['==', ['get', 'isRail'], true]
+              : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
+        ] as any);
+      }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers, hideSpan]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
@@ -715,62 +636,100 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     liveOverlay.vehicles.forEach(vehicle => {
       if (!vehicle.lat || !vehicle.lon) return;
 
-      const html = VehicleMarkerHtml(vehicle);
+      const html = VehicleMarkerHtml(vehicle, true);
       const el = document.createElement('div');
+      el.style.cssText = 'display:inline-block;';
       el.innerHTML = html;
 
-      const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup' })
-        .setHTML(`
-          <div style="font-family: ui-monospace, monospace; padding: 6px 10px;">
-            <div style="font-size: 8px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.5px;">Vehicle info</div>
-            <div style="font-size: 11px; font-weight: 900; color: var(--text-primary, #111); margin-top: 2px;">
-              Route ${vehicle.routeShortName} • ID ${vehicle.id}
-            </div>
-            <div style="font-size: 10px; color: var(--text-muted, #4b5563); margin-top: 2px;">
-              to ${vehicle.headsign || 'Unknown destination'}
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary); padding-top: 4px; margin-top: 4px; font-size: 10px;">
-              <span style="font-size: 8px; color: var(--text-dim); font-weight: 700;">Status</span>
-              <span style="font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">
-                ${vehicle.delayMin === null
-                  ? 'No schedule data'
-                  : vehicle.delayMin <= -1.5
-                    ? `${Math.abs(vehicle.delayMin)}m early`
-                    : vehicle.delayMin >= 5.5
-                      ? `${vehicle.delayMin}m late`
-                      : 'On time'}
-              </span>
-            </div>
-          </div>
-        `);
+      // Only show popup when there's something useful to say
+      const hasUsefulInfo = !!vehicle.headsign || vehicle.status !== 'no_data';
+      const marker = new maplibregl.Marker({ element: el }).setLngLat([vehicle.lon, vehicle.lat]);
 
-      const marker = new maplibregl.Marker({ element: el.firstElementChild as HTMLElement })
-        .setLngLat([vehicle.lon, vehicle.lat])
-        .setPopup(popup)
-        .addTo(map);
+      if (hasUsefulInfo) {
+        const label = vehicle.delayMin === null
+          ? 'No data'
+          : vehicle.delayMin <= -1.5
+            ? `${Math.round(Math.abs(vehicle.delayMin))}m early`
+            : vehicle.delayMin >= 5.5
+              ? `${Math.round(vehicle.delayMin)}m late`
+              : 'On time';
 
+        const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup', offset: 10 })
+          .setHTML(`
+            <div style="font-family: 'Inter', ui-sans-serif, sans-serif; padding: 8px 10px; min-width: 130px;">
+              <div style="font-size: 9px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.4px;">Route ${cleanRouteShortName(vehicle.routeShortName)}</div>
+              ${vehicle.headsign ? `<div style="font-size: 11px; font-weight: 700; color: var(--text-primary, #111); margin-top: 2px; line-height: 1.3;">${vehicle.headsign}</div>` : ''}
+              ${vehicle.status !== 'no_data' ? `
+              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary, rgba(0,0,0,0.1)); padding-top: 5px; margin-top: 6px;">
+                <span style="font-size: 9px; color: var(--text-dim); font-weight: 600;">Status</span>
+                <span style="font-size: 10px; font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">${label}</span>
+              </div>` : ''}
+            </div>
+          `);
+        marker.setPopup(popup);
+      }
+
+      marker.addTo(map);
       liveMarkersRef.current.push(marker);
     });
-
-    // Fly on initial network load
-    if (liveOverlay.vehicles.length > 0 && liveOverlay.agencyCenter && liveMarkersRef.current.length === liveOverlay.vehicles.length) {
-      const dist = map.getCenter().distanceTo(new maplibregl.LngLat(liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]));
-      if (dist > 50000) {
-        map.flyTo({ center: [liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]], zoom: 13 });
-      }
-    } else if (liveOverlay.vehicles.length === 0 && liveOverlay.agencyCenter) {
-      map.flyTo({ center: [liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]], zoom: 13 });
-    }
   }, [liveOverlay, mapLoaded]);
 
-  // Focus vehicle centering
+  // Live route dynamic shape overlay
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const source = map.getSource('live-route-shape') as maplibregl.GeoJSONSource;
+    if (!source) return;
+
+    const features = liveOverlay?.routeFeatures ?? [];
+    const routeKey = liveOverlay?.selectedRouteKey ?? null;
+
+    if (features.length > 0) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: features.map(f => ({
+          ...f,
+          properties: {
+            ...f.properties,
+            color: getTierColor((f.properties as any)?.tier ?? null)
+          }
+        }))
+      });
+
+      if (routeKey && liveFittedRouteRef.current !== routeKey) {
+        liveFittedRouteRef.current = routeKey;
+        let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+        features.forEach(f => {
+          const geom = f.geometry as any;
+          const coords = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+          coords.forEach(([lng, lat]: [number, number]) => {
+            if (lng < minLng) minLng = lng;
+            if (lng > maxLng) maxLng = lng;
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+          });
+        });
+        if (minLng < maxLng) {
+          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 120, bottom: 120, left: 320, right: 80 }, maxZoom: 14 });
+        }
+      }
+    } else {
+      source.setData({ type: 'FeatureCollection', features: [] });
+      // Only reset the fit-ref when the route key actually changes/clears, not on every empty render
+      if (!routeKey) liveFittedRouteRef.current = null;
+    }
+  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded]);
+
+  // Focus vehicle centering — skip if route shape fit will handle positioning
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded || !liveOverlay?.focusedVehicle) return;
+    if (liveOverlay.routeFeatures && liveOverlay.routeFeatures.length > 0) return;
 
     const { lat, lon } = liveOverlay.focusedVehicle;
-    map.flyTo({ center: [lon, lat], zoom: 14 });
-  }, [liveOverlay?.focusedVehicle, mapLoaded]);
+    map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 14) });
+  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded]);
 
   // Clean overlays on unmount
   useEffect(() => {

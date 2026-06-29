@@ -9,11 +9,15 @@
       "destination": "/api/live-adherence.ts"
     },
     {
+      "source": "/api/live-vehicles",
+      "destination": "/api/live-vehicles.ts"
+    },
+    {
       "source": "/api/history-adherence",
       "destination": "/api/history-adherence.ts"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|@vite|@react-refresh|node_modules/|src/).*)",
       "destination": "/index.html"
     }
   ]

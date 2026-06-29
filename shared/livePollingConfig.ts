@@ -30,6 +30,18 @@ export interface LiveRouteConfig {
   longPatternScheduleOffsetMin?: Record<string, number>;
 }
 
+// [west, south, east, north] bounding boxes for each live-capable agency.
+// Used by the Live Vehicles app to determine which agencies are in the current viewport.
+// Keep generous — it's better to poll an agency you can almost see than to miss it.
+export const LIVE_AGENCY_BBOXES: Record<string, [number, number, number, number]> = {
+  burlington: [-80.10, 43.25, -79.55, 43.58],
+  ttc:        [-79.68, 43.55, -79.10, 43.88],
+  hamilton:   [-80.10, 43.15, -79.68, 43.42],
+  edmonton:   [-113.90, 53.30, -113.10, 53.78],
+  yrt:        [-79.85, 43.73, -79.00, 44.45],
+  halifax:    [-63.92, 44.48, -63.38, 44.85],
+};
+
 export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
   {
     slug: 'burlington',

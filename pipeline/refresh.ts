@@ -23,7 +23,9 @@ if (!process.env.R2_ACCESS_KEY_ID) {
   process.exit(1);
 }
 
-const onlySlugs = process.argv.slice(2);
+const rawArgs = process.argv.slice(2);
+const forceRefresh = rawArgs.includes('--force');
+const onlySlugs = rawArgs.filter(a => a !== '--force');
 
 // All agencies with a feedUrl get history snapshots — no manual opt-in needed.
 
@@ -125,11 +127,13 @@ interface AgencyEntry {
   stopsUrl: string;
   corridorsUrl?: string;
   feedUrl: string | null;
+  mdbFeedUrl?: string | null;
   supplementalFeedUrls?: string[];
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
+  excludeRouteShortNames?: string[];
   staged?: boolean;
 }
 
@@ -162,7 +166,14 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     return 'skipped (no feedUrl)';
   }
 
-  const buf = await downloadFeed(agency.feedUrl);
+  let buf: Buffer;
+  try {
+    buf = await downloadFeed(agency.feedUrl);
+  } catch (primaryErr) {
+    if (!agency.mdbFeedUrl) throw primaryErr;
+    process.stdout.write(`\n  [warn] primary feed failed (${(primaryErr as Error).message}) — trying MDB fallback\n  `);
+    buf = await downloadFeed(agency.mdbFeedUrl);
+  }
 
   // Sanity: zip magic bytes
   if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
@@ -182,16 +193,19 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     }
   }
 
-  if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
-    return `skipped (same schedule period: ${peekedExpiry})`;
-  }
-  if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
-    return `skipped (same feed version: ${peekedVersion})`;
+  if (!forceRefresh) {
+    if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
+      return `skipped (same schedule period: ${peekedExpiry})`;
+    }
+    if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
+      return `skipped (same feed version: ${peekedVersion})`;
+    }
   }
 
   const primary = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
+    excludeRouteShortNames: agency.excludeRouteShortNames,
     slug: agency.slug,
   });
 

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import RouteListRow from '../components/RouteListRow';
 
 export interface RouteSnapshot {
   label: string;
@@ -57,6 +58,15 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean
   return { text: `${x}× more frequent since ${first.label}`, worse: false };
 }
 
+function formatXLabel(label: string): string {
+  const match = label.match(/^(?:([A-Za-z]+)\s+)?(\d{4})$/);
+  if (match) {
+    const month = match[1];
+    const year = match[2].slice(2);
+    return month ? `${month} '${year}` : `'${year}`;
+  }
+  return label;
+}
 
 function RouteHistoryCard({
   route,
@@ -91,6 +101,35 @@ function RouteHistoryCard({
   const better = lastHw < firstHw;
   const summary = changeSummary(route);
   const periodInfo = HISTORY_PERIODS.find(p => p.key === period)!;
+
+  // Sparkline calculations
+  const width = 220;
+  const height = 75;
+  const paddingX = 20;
+  const paddingY = 22;
+
+  const minYear = first.year;
+  const maxYear = last.year;
+  const yearRange = maxYear - minYear || 1;
+
+  const hws = snaps.map(snapHeadway);
+  const minHw = Math.min(...hws);
+  const maxHw = Math.max(...hws);
+  const hwRange = maxHw - minHw || 1;
+
+  const points = snaps.map((snap, i) => {
+    const hw = hws[i];
+    const pctX = (snap.year - minYear) / yearRange;
+    const x = paddingX + pctX * (width - 2 * paddingX);
+
+    const pctY = maxHw === minHw ? 0.5 : (hw - minHw) / hwRange;
+    const y = height - paddingY - pctY * (height - 2 * paddingY);
+
+    return { x, y, hw, label: snap.label };
+  });
+
+  const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
+  const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
@@ -129,6 +168,83 @@ function RouteHistoryCard({
         ))}
         <span className="text-[9px] text-[var(--text-dim)] ml-1">{periodInfo.desc}</span>
       </div>
+
+      {snaps.length >= 2 && (
+        <div className="px-4 pb-4 shrink-0 flex flex-col items-center">
+          <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-2.5 flex justify-center">
+            <svg width="220" height="75" className="overflow-visible">
+              <defs>
+                <linearGradient id={`sparkline-grad-${route.routeShortName}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'} stopOpacity="0.2" />
+                  <stop offset="100%" stopColor={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'} stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+              
+              {/* Fill path */}
+              <path
+                d={fillPath}
+                fill={`url(#sparkline-grad-${route.routeShortName})`}
+              />
+              
+              {/* Line path */}
+              <path
+                d={linePath}
+                fill="none"
+                stroke={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              
+              {/* Baseline guide */}
+              <line
+                x1={points[0].x}
+                y1={height - 18}
+                x2={points[points.length - 1].x}
+                y2={height - 18}
+                stroke="var(--border-primary)"
+                strokeWidth="1"
+                strokeDasharray="2 2"
+              />
+              
+              {/* Data points */}
+              {points.map((p, i) => (
+                <g key={i}>
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="3.5"
+                    fill={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'}
+                    stroke="var(--bg-panel)"
+                    strokeWidth="1.5"
+                  />
+                  <text
+                    x={p.x}
+                    y={p.y - 7}
+                    textAnchor="middle"
+                    fontSize="8.5"
+                    fontWeight="900"
+                    fill="var(--text-primary)"
+                    className="tabular-nums"
+                  >
+                    {p.hw}m
+                  </text>
+                  <text
+                    x={p.x}
+                    y={height - 4}
+                    textAnchor="middle"
+                    fontSize="8"
+                    fontWeight="700"
+                    fill="var(--text-dim)"
+                  >
+                    {formatXLabel(p.label)}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          </div>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <div className="bg-[var(--bg-app)] border-t border-b border-[var(--border-primary)]">
@@ -270,19 +386,13 @@ function HistoryAgencyPanel({
           </p>
         )}
         {routeRows.map(({ route }) => (
-          <button
+          <RouteListRow
             key={route.routeShortName}
+            shortName={route.routeShortName}
+            name={route.routeName}
             onClick={() => onRouteSelect(route.routeShortName)}
-            className={LIST_ROW}
-          >
-            <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 flex-1`}>
-              <span>{route.routeShortName}</span>
-              {route.routeName && (
-                <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{route.routeName}</span>
-              )}
-            </p>
-            <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />
-          </button>
+            right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />}
+          />
         ))}
       </div>
     </div>
@@ -335,7 +445,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
 
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
-    const agency = historyAgencies.find(a => a.slug === selectedSlug) ?? historyAgencies[0] ?? null;
+    const agency = selectedSlug ? (historyAgencies.find(a => a.slug === selectedSlug) ?? null) : null;
     if (agency?.center) {
       setOverlay({
         slug: agency.slug,

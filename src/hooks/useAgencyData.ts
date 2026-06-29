@@ -9,7 +9,10 @@ export interface HeadwayByPeriod {
   midday?: number | null;
   pmPeak?: number | null;
   evening?: number | null;
+  lateNight?: number | null;
 }
+
+export type HeadwayByHour = Partial<Record<number, number | null>>;
 
 export interface ShapeProperties {
   routeId: string;
@@ -17,10 +20,14 @@ export interface ShapeProperties {
   tier: string | null;
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
+  headwayByHour?: HeadwayByHour;
   routeShortName: string | null;
   routeLongName: string | null;
   agencyName?: string;
   headsign?: string | null;
+  busSubType?: 'brt' | 'express' | 'coach' | 'local';
+  worstDirectionHeadway?: number;
+  worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
 }
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;

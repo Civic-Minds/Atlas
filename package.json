@@ -7,6 +7,7 @@
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "dev": "vite",
+    "dev:api": "npx tsx api-dev-server.ts",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",

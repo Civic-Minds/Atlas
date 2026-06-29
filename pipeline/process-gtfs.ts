@@ -37,17 +37,20 @@ async function main() {
 
   const indexPath = resolve('public/data/index.json');
   let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
+  let excludeRouteShortNames: string[] | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; preprocess?: import('./process-core.js').GtfsPreprocess }>;
+      agencies: Array<{ slug: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[] }>;
     };
-    preprocess = index.agencies.find(a => a.slug === slug)?.preprocess;
+    const entry = index.agencies.find(a => a.slug === slug);
+    preprocess = entry?.preprocess;
+    excludeRouteShortNames = entry?.excludeRouteShortNames;
   }
 
   const buf = readFileSync(zipPath);
   const { geojson, corridorsGeojson, stopsJson, featureCount, center: computedCenter, livePollingSidecar } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { preprocess, slug });
+  }, { preprocess, excludeRouteShortNames, slug });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);

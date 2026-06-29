@@ -10,6 +10,7 @@ import AppDrawer, { type AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
+import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel from './components/InfoPanel';
 
 export interface Agency {
@@ -22,6 +23,7 @@ export interface Agency {
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
   lastFeedExpiry?: string | null; // YYYYMMDD from feed_info.txt feed_end_date
+  excludeRouteShortNames?: string[];
   staged?: boolean;
 }
 
@@ -145,6 +147,7 @@ export default function App() {
   }, [lightMode]);
 
   return (
+    <ViewportProvider>
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
@@ -250,7 +253,7 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inCorridors || inHistory || inLive}
+              showRouteLayers={inFrequency || inCorridors || inHistory}
               showCorridorBand={inCorridors}
               hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}
@@ -290,6 +293,7 @@ export default function App() {
                   active={inLive}
                   onInfoOpen={() => setInfoOpen(true)}
                   query={query}
+                  layers={layers}
                 />
               </div>
             )}
@@ -301,5 +305,6 @@ export default function App() {
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>
+    </ViewportProvider>
   );
 }

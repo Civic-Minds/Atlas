@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { X, ExternalLink, Search, Radio } from 'lucide-react';
+import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
@@ -7,7 +7,8 @@ import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type Tab = 'about' | 'agencies' | 'history' | 'live';
+type View = 'home' | 'agencies' | 'agency-detail';
+export type Tab = 'about' | 'agencies' | 'history' | 'live';
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return r.displayName;
@@ -24,13 +25,16 @@ interface Props {
   onLiveRouteClick?: (slug: string, routeShortName: string) => void;
 }
 
-const TAB_LABELS: Record<Tab, string> = { about: 'About', agencies: 'Agencies', history: 'History', live: 'Live' };
+function tabToView(tab: Tab): View {
+  if (tab === 'about') return 'home';
+  return 'agencies';
+}
 
 export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgencySelect, onLiveRouteClick }: Props) {
-  const [tab, setTab] = useState<Tab>('about');
+  const [view, setView] = useState<View>('home');
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
-  const [liveQuery, setLiveQuery] = useState('');
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
 
@@ -59,9 +63,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
 
   useEffect(() => {
     if (open) {
-      setTab(defaultTab ?? 'about');
+      setView(tabToView(defaultTab ?? 'about'));
+      setSelectedSlug(null);
     } else {
-      setQuery(''); setRegionFilter(null); setLiveQuery('');
+      setQuery(''); setRegionFilter(null); setSelectedSlug(null);
     }
   }, [open, defaultTab]);
 
@@ -90,7 +95,33 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
     return map;
   }, [filtered]);
 
+  // Per-agency feature availability
+  const liveBySlug = useMemo(() => {
+    const map = new Map<string, typeof LIVE_POLLING_ROUTES>();
+    for (const r of LIVE_POLLING_ROUTES) {
+      if ((r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) && !r.active) continue;
+      if (!map.has(r.slug)) map.set(r.slug, []);
+      map.get(r.slug)!.push(r);
+    }
+    return map;
+  }, []);
+
+  const historyBySlug = useMemo(() => {
+    const map = new Map<string, HistoryAgencySummary>();
+    for (const a of historyAgencies ?? []) map.set(a.slug, a);
+    return map;
+  }, [historyAgencies]);
+
+  const totalLiveAgencies = liveBySlug.size;
+  const totalHistoryAgencies = historyBySlug.size;
+
+  const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;
+  const selectedLiveRoutes = selectedSlug ? (liveBySlug.get(selectedSlug) ?? []) : [];
+  const selectedHistory = selectedSlug ? historyBySlug.get(selectedSlug) : null;
+
   if (!open) return null;
+
+  const headerTitle = view === 'agencies' ? 'Data' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
 
   return (
     <div className="fixed inset-0 z-[1400]" onClick={onClose}>
@@ -98,23 +129,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
         className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
         onClick={e => e.stopPropagation()}
       >
-        {/* Tabs + close */}
-        <div className="shrink-0 flex items-center px-5 border-b border-[var(--border-primary)]">
-          <div className="flex flex-1 gap-3">
-            {(['about', 'agencies', 'history', 'live'] as Tab[]).map(t => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`pb-3.5 pt-4 text-xs font-bold border-b-2 transition-colors ${
-                  tab === t
-                    ? 'border-[var(--accent)] text-[var(--accent)]'
-                    : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                {TAB_LABELS[t]}
-              </button>
-            ))}
-          </div>
+        {/* Header */}
+        <div className="shrink-0 flex items-center px-5 border-b border-[var(--border-primary)] h-12">
+          {view !== 'home' ? (
+            <button
+              onClick={() => view === 'agency-detail' ? setView('agencies') : setView('home')}
+              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors mr-3"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span className="text-xs font-bold">{headerTitle}</span>
+            </button>
+          ) : (
+            <p className="mr-4 shrink-0 text-sm font-black text-[var(--text-primary)]">Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></p>
+          )}
+          <div className="flex-1" />
           <button
             onClick={onClose}
             className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0"
@@ -126,27 +154,48 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
 
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto">
-          {tab === 'about' && (
+
+          {/* Home */}
+          {view === 'home' && (
             <div className="px-5 py-4 space-y-5">
-              <div>
-                <p className="text-base font-black text-[var(--text-primary)]">Atlas</p>
-                <p className="text-[11px] text-[var(--text-dim)] mt-0.5">by Civic Minds</p>
-              </div>
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                A frequency map covering {agencies.length} transit agencies across Canada and the US Great Lakes.
+                A transit atlas covering agencies across North America.
               </p>
 
               <div>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
+                <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
+                  {agencies.length} agencies — {totalHistoryAgencies} with frequency history, {totalLiveAgencies} with real-time tracking.
+                </p>
+              <button
+                onClick={() => setView('agencies')}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </button>
+              </div>
+
+              <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
-                <a
-                  href="https://github.com/Civic-Minds/Atlas"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">GitHub</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
+                <div className="space-y-2">
+                  <a
+                    href="https://github.com/Civic-Minds/Atlas"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                  >
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">GitHub</span>
+                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                  </a>
+                  <a
+                    href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                  >
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Send feedback</span>
+                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                  </a>
+                </div>
               </div>
 
               <p className="text-[10px] text-[var(--text-dim)] leading-relaxed">
@@ -155,7 +204,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
             </div>
           )}
 
-          {tab === 'agencies' && (
+          {/* Agencies list */}
+          {view === 'agencies' && (
             <div className="flex flex-col">
               <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className={SEARCH_PILL}>
@@ -166,6 +216,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                     onChange={e => setQuery(e.target.value)}
                     placeholder="Search agencies…"
                     className={SEARCH_FIELD}
+                    autoFocus
                   />
                   {query && (
                     <button onClick={() => setQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
@@ -199,7 +250,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                   ))}
                 </div>
               </div>
-
               {byRegion.size === 0 ? (
                 <p className="px-5 py-6 text-xs text-[var(--text-dim)] text-center">No agencies match.</p>
               ) : (
@@ -208,17 +258,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                     <div key={region}>
                       <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
                       {list.map(a => {
-                        const hasLive = LIVE_POLLING_ROUTES.some(r => r.slug === a.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active));
+                        const hasLive = liveBySlug.has(a.slug);
+                        const hasHistory = historyBySlug.has(a.slug);
                         return (
                           <button
                             key={a.slug}
-                            onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
+                            onClick={() => { setSelectedSlug(a.slug); setView('agency-detail'); }}
                             className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
                           >
                             <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
-                            <div className="flex items-center gap-2 shrink-0 ml-2">
-                              {hasLive && <Radio className="w-3 h-3 text-[var(--accent)]" />}
-                              <span className="text-[10px] text-[var(--text-dim)] font-mono">{a.slug}</span>
+                            <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                              {hasLive && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white">Live</span>}
+                              {hasHistory && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--bg-app)] border border-[var(--border-primary)] text-[var(--text-muted)]">History</span>}
                             </div>
                           </button>
                         );
@@ -230,97 +281,47 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
             </div>
           )}
 
-          {tab === 'history' && (
-            <div className="flex flex-col">
-              <div className="px-5 py-3 border-b border-[var(--border-primary)]">
-                <p className="text-[10px] text-[var(--text-dim)] leading-relaxed">
-                  Historical frequency data is available for a subset of agencies. More are added as GTFS snapshots accumulate.
-                </p>
-              </div>
-              {historyAgencies === null && (
-                <p className="text-[11px] text-[var(--text-dim)] px-5 py-4">Loading…</p>
-              )}
-              {historyAgencies !== null && historyAgencies.length === 0 && (
-                <p className="text-[11px] text-[var(--text-dim)] px-5 py-4">No agencies yet.</p>
-              )}
-              {historyAgencies !== null && historyAgencies.length > 0 && (
-                <div className="py-2">
-                  {historyAgencies.map((a) => (
-                    <div
-                      key={a.slug}
-                      className="flex items-center justify-between px-5 py-2"
-                    >
-                      <div>
-                        <p className="text-xs text-[var(--text-primary)]">{a.name}</p>
-                        <p className="text-[10px] text-[var(--text-dim)]">{a.region}</p>
-                      </div>
-                      <p className="text-[10px] text-[var(--text-dim)] tabular-nums shrink-0 ml-2">{a.routes.length} routes</p>
-                    </div>
-                  ))}
+          {/* Agency detail */}
+          {view === 'agency-detail' && selectedAgency && (
+            <div className="px-5 py-4 space-y-4">
+              <button
+                onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">View on map</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </button>
+
+              {selectedLiveRoutes.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Live routes</p>
+                  <div className="space-y-1">
+                    {selectedLiveRoutes.map(r => (
+                      <button
+                        key={r.displayRouteShortName}
+                        onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                      >
+                        <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                        <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {selectedHistory && (
+                <div>
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">History</p>
+                  <p className="text-xs text-[var(--text-dim)]">Historical frequency data available for this agency.</p>
+                </div>
+              )}
+
+              {selectedLiveRoutes.length === 0 && !selectedHistory && (
+                <p className="text-xs text-[var(--text-dim)]">No live or history data available for this agency yet.</p>
               )}
             </div>
           )}
-
-          {tab === 'live' && (() => {
-            const lq = liveQuery.toLowerCase().trim();
-            const activeRoutes = LIVE_POLLING_ROUTES.filter(r => {
-              if ((r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) && !r.active) return false;
-              if (!lq) return true;
-              const label = liveRouteLabel(r).toLowerCase();
-              const agencyName = (agencies.find(a => a.slug === r.slug)?.name ?? r.slug).toLowerCase();
-              return label.includes(lq) || agencyName.includes(lq);
-            });
-            const byAgency = activeRoutes.reduce<Record<string, { slug: string; name: string; routes: typeof LIVE_POLLING_ROUTES }>>((acc, r) => {
-              if (!acc[r.slug]) {
-                const agencyName = agencies.find(a => a.slug === r.slug)?.name ?? r.slug;
-                acc[r.slug] = { slug: r.slug, name: agencyName, routes: [] };
-              }
-              acc[r.slug].routes.push(r);
-              return acc;
-            }, {});
-            return (
-              <div className="flex flex-col">
-                <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10">
-                  <div className={SEARCH_PILL}>
-                    <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-                    <input
-                      type="text"
-                      value={liveQuery}
-                      onChange={e => setLiveQuery(e.target.value)}
-                      placeholder="Search routes…"
-                      className={SEARCH_FIELD}
-                    />
-                    {liveQuery && (
-                      <button onClick={() => setLiveQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div className="py-2">
-                  {Object.values(byAgency).map(({ slug, name, routes: agRoutes }) => (
-                    <div key={slug}>
-                      <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{name}</p>
-                      {agRoutes.map(r => (
-                        <button
-                          key={r.displayRouteShortName}
-                          onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
-                          className="w-full flex items-center gap-2 px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
-                        >
-                          <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
-                          <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  ))}
-                  {Object.keys(byAgency).length === 0 && (
-                    <p className="px-5 py-4 text-xs text-[var(--text-dim)]">No routes match.</p>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
         </div>
       </div>
     </div>

@@ -61,3 +61,6 @@ public/data/*.json
 workers/**/.wrangler/
 workers/**/burlington/
 workers/gtfs-rt-archiver/*/
+
+# Gemini Agents config
+.agents/

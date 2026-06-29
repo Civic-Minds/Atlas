@@ -4,12 +4,14 @@ import { getTierColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
+import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel } from '../../utils/format';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
+import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
+import RouteListRow from '../RouteListRow';
 
 interface SidebarControlsProps {
   query: string;
@@ -72,13 +74,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setLivePollingOnly,
   setSelectedAgencySlug,
 }) => {
-  const SPARKLINE_PERIODS: Array<{ key: keyof HeadwayByPeriod; label: string }> = [
-    { key: 'amPeak', label: 'AM' },
-    { key: 'midday', label: 'Mid' },
-    { key: 'pmPeak', label: 'PM' },
-    { key: 'evening', label: 'Eve' },
-  ];
-
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
     for (const [slug, fc] of Object.entries(layers)) {
@@ -88,60 +83,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     return result;
   }, [layers]);
-
-  function headwayToTierColor(h: number | null | undefined): string {
-    if (!h) return getTierColor(null);
-    if (h <= 10) return getTierColor('10');
-    if (h <= 15) return getTierColor('15');
-    if (h <= 20) return getTierColor('20');
-    if (h <= 30) return getTierColor('30');
-    if (h <= 60) return getTierColor('60');
-    return getTierColor('infrequent');
-  }
-
-  function HeadwaySparkline({ byPeriod }: { byPeriod: HeadwayByPeriod }) {
-    const values = SPARKLINE_PERIODS.map(p => byPeriod[p.key] ?? null);
-    const valids = values.filter((v): v is number => v != null);
-    if (valids.length === 0) return null;
-    const maxFreq = Math.max(...valids.map(v => 1 / v));
-    const minFreq = Math.min(...valids.map(v => 1 / v));
-    const H = 26; // Taller bars
-    return (
-      <div className="mt-2.5 mb-4 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3 shadow-sm flex items-center justify-between gap-3">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[9px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Service Frequency</span>
-          <span className="text-[8px] text-[var(--text-dim)] leading-snug max-w-[125px]">
-            Taller bars signify more frequent service (shorter headways).
-          </span>
-        </div>
-        <div className="flex gap-1.5 shrink-0">
-          {SPARKLINE_PERIODS.map(({ key, label }) => {
-            const h = byPeriod[key];
-            const hasValue = !!h;
-            const freq = h ? 1 / h : 0;
-            const barH = hasValue
-              ? (maxFreq > minFreq ? Math.max(6, Math.round((freq - minFreq) / (maxFreq - minFreq) * (H - 6) + 6)) : H)
-              : 3;
-            const color = hasValue ? headwayToTierColor(h) : 'var(--border-primary)';
-            return (
-              <div key={key} className="flex flex-col items-center gap-1 shrink-0">
-                <div style={{ height: H }} className="flex items-end justify-center w-[14px]">
-                  <div
-                    style={{ height: barH, background: color }}
-                    className={`w-2.5 rounded-sm transition-all duration-300 ${hasValue ? 'opacity-90' : 'opacity-25'}`}
-                    title={hasValue ? `${label}: ${h} min` : `${label}: No service`}
-                  />
-                </div>
-                <span className="text-[7px] font-bold text-[var(--text-dim)] uppercase tracking-wide">
-                  {label === 'Mid' ? 'MID' : label === 'Eve' ? 'EVE' : label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
@@ -303,6 +244,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       if (d.headway != null) g.realTier.push(d);
       else g.span.push(d);
     }
+    // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
+    // Multiple shape variants can share the same headsign (e.g. different mid-route detours), producing
+    // visually identical rows in the sidebar.
+    for (const g of map.values()) {
+      const seen = new Map<string, ShapeProperties>();
+      for (const d of g.realTier) {
+        const key = d.headsign ?? '';
+        const existing = seen.get(key);
+        if (!existing || (d.headway ?? Infinity) < (existing.headway ?? Infinity)) seen.set(key, d);
+      }
+      g.realTier = Array.from(seen.values());
+    }
     return Array.from(map.values()).sort((a, b) => {
       const aMin = a.realTier[0]?.headway ?? Infinity;
       const bMin = b.realTier[0]?.headway ?? Infinity;
@@ -440,19 +393,27 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
-    return disambiguationRoutes.map(key => {
-      for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-        const f = fc.features.find(feat => {
-          const p = feat.properties as any;
-          return routeKey({ ...p, agencySlug: slug } as any) === key;
-        });
-        if (f) {
-          const p = f.properties as any;
-          return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: p.agencyName ?? '', color: getTierColor(p.tier) };
+    return disambiguationRoutes
+      .map(key => {
+        for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
+          const f = fc.features.find(feat => {
+            const p = feat.properties as any;
+            return routeKey({ ...p, agencySlug: slug } as any) === key;
+          });
+          if (f) {
+            const p = f.properties as any;
+            return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: p.agencyName ?? '', color: getTierColor(p.tier) };
+          }
         }
-      }
-      return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
-    });
+        return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
+      })
+      .sort((a, b) => {
+        const agencyCmp = a.agencyName.localeCompare(b.agencyName);
+        if (agencyCmp !== 0) return agencyCmp;
+        const nA = parseInt(a.shortName, 10), nB = parseInt(b.shortName, 10);
+        if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
+        return a.shortName.localeCompare(b.shortName, undefined, { numeric: true });
+      });
   }, [disambiguationRoutes, nonCorridorLayers]);
 
   const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0;
@@ -538,27 +499,38 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
         <div className={`${FLOATING_CARD} ${PANEL_ENTER} shrink-0 overflow-hidden`}>
-          <div className="px-4 py-2.5 border-b border-[var(--border-primary)]">
-            <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">Multiple routes here</span>
-          </div>
           <div>
-            {disambigDetails.map(r => (
-              <button
-                key={r.key}
-                onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
-                className={LIST_ROW}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className={LIST_ROW_PRIMARY}>
-                    {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                  </div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
-                    <span className={LIST_ROW_DIM}>{r.agencyName}</span>
-                  </div>
+            {(() => {
+              const groups: { agencyName: string; routes: typeof disambigDetails }[] = [];
+              for (const r of disambigDetails) {
+                const last = groups[groups.length - 1];
+                if (last && last.agencyName === r.agencyName) last.routes.push(r);
+                else groups.push({ agencyName: r.agencyName, routes: [r] });
+              }
+              return groups.map(g => (
+                <div key={g.agencyName}>
+                  {g.agencyName && (
+                    <div className="px-4 pt-2.5 pb-1">
+                      <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
+                    </div>
+                  )}
+                  {g.routes.map(r => (
+                    <button
+                      key={r.key}
+                      onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
+                      className={LIST_ROW}
+                    >
+                      <div className="min-w-0 flex-1 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
+                        <span className={LIST_ROW_PRIMARY}>
+                          {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              </button>
-            ))}
+              ));
+            })()}
           </div>
         </div>
       )}
@@ -725,14 +697,37 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           Schedule may be outdated
                         </p>
                       )}
+                      {agency?.excludeRouteShortNames?.length ? (
+                        <a
+                          href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"
+                        >
+                          We corrected this data
+                        </a>
+                      ) : null}
                     </>
                   );
                 })()}
               </div>
             </div>
             {(() => {
-              const byPeriod = currentRoute.directions[0]?.headwayByPeriod as HeadwayByPeriod | undefined;
-              return byPeriod ? <HeadwaySparkline byPeriod={byPeriod} /> : null;
+              // Merge headwayByHour across all directions — take the best (lowest) non-null
+              // headway per hour so bidirectional peak routes show the full service picture.
+              const HOURS = Array.from({ length: 22 }, (_, i) => i + 5);
+              const merged: Record<number, number | null> = {};
+              for (const h of HOURS) merged[h] = null;
+              for (const d of currentRoute.directions) {
+                const bh = (d as any).headwayByHour as Record<number, number | null> | undefined;
+                if (!bh) continue;
+                for (const h of HOURS) {
+                  const v = bh[h];
+                  if (v != null && (merged[h] == null || v < merged[h]!)) merged[h] = v;
+                }
+              }
+              const hasAny = HOURS.some(h => merged[h] != null);
+              return hasAny ? <HeadwaySparkline byHour={merged} /> : null;
             })()}
             <div className="space-y-3">
               {directionGroups.map((group, gi) => {
@@ -792,7 +787,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           </div>
                         );
                       })}
-                      {!hideSpan && group.span.length === 1 && (
+                      {(!hideSpan || group.realTier.length === 0) && group.span.length === 1 && (
                         <div key="s0" className="text-[11px]">
                           <span className="font-bold text-[var(--text-muted)] block break-words">
                             {group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'}
@@ -803,7 +798,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           </span>
                         </div>
                       )}
-                      {!hideSpan && group.span.length > 1 && (
+                      {(!hideSpan || group.realTier.length === 0) && group.span.length > 1 && (
                         <div key="smulti" className="text-[11px]">
                           <span className="font-bold text-[var(--text-muted)] leading-snug block">
                             {spanNames.join(' · ')}
@@ -814,7 +809,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           </span>
                         </div>
                       )}
-                      {hideSpan && spanNames.length > 0 && (
+                      {hideSpan && group.realTier.length > 0 && spanNames.length > 0 && (
                         <p key="span-hint" className="text-[10px] text-[var(--text-dim)] font-bold leading-snug">
                           Also serves: {spanNames.join(' · ')} — infrequent
                         </p>
@@ -835,22 +830,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             {searchMatchResults.length > 0 && (
               <div className="max-h-40 overflow-y-auto custom-scrollbar border border-[var(--border-primary)] rounded-xl overflow-hidden">
                 {searchMatchResults.map((r) => (
-                  <button
+                  <RouteListRow
                     key={r.key}
+                    shortName={titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
+                    selected={selectedRoute === r.key}
                     onClick={() => {
                       saveRecentSearch(query);
                       setQuery('');
                       setSelectedRoute(selectedRoute === r.key ? null : r.key);
                     }}
-                    className={`${LIST_ROW} ${selectedRoute === r.key ? 'bg-[var(--accent-bg)]' : ''}`}
-                  >
-                    <span className={`${LIST_ROW_PRIMARY} shrink-0 ${selectedRoute === r.key ? 'text-[var(--accent)]' : ''}`}>
-                      {titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
-                    </span>
-                    <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
-                      {r.agencyName}
-                    </span>
-                  </button>
+                    right={
+                      <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
+                        {r.agencyName}
+                      </span>
+                    }
+                  />
                 ))}
               </div>
             )}

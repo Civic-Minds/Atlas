@@ -5,6 +5,103 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **MDB fallback feed URLs**: 48 agencies now have a `mdbFeedUrl` fallback. If the primary `feedUrl` fails, the pipeline retries via the Mobility Database GCS mirror. Saskatoon's primary URL also swapped to MDB (was 503ing).
+- **Pipeline: worst-direction headway filter** (AI-182): Each route feature now carries `worstDirectionHeadway` and `worstDirectionHeadwayByPeriod` — the max headway across all directions for that route. The map filter now gates on this value so both directions must meet the threshold before a route appears. A route running every 8 min southbound but 20 min northbound no longer passes a ≤15m filter.
+- **Pipeline: bus sub-type detection** (AI-66): Bus features (route_type=3) now carry a `busSubType` field: `brt` (VIVA, Züm, Pulse, BRT-branded), `express` (Express/Xpress routes), `coach` (GO Bus), or `local` (default). UI filter chip is a follow-up.
+- **Pipeline: short-turn variant metadata** (AI-58): Direction-0 features now carry `shortTurnVariants` — an array of `{ headsign, tripShare }` for shape variants carrying ≥15% of a direction's trips that differ from the dominant cluster. Enables the sidebar to show "X% of trips go to [short-turn headsign]" without per-variant headway computation (that requires phase-1 refactor, deferred).
+
+### Fixed
+- **InfoPanel redesign**: replaced tab bar with home screen + sub-view navigation. Home shows tagline, Data section (agency/history/live counts + Browse button), and Links. Agencies list shows Live/History badges per row; clicking opens an agency detail view with live routes and history note. "Send feedback" mailto added. "Multiple routes here" header removed from disambiguation popup. replaced tab bar with a home screen + sub-view navigation. Home shows blurbs for Agencies, History, and Live with inline "View all →" links. Agencies list now shows Live/History badges per row; clicking an agency opens a detail view with live routes and history availability. "Send feedback" mailto link added alongside GitHub.
+- **Updated tagline**: "A transit atlas covering {n} agencies across North America" — replaces hardcoded region description.
+- **Headway tier colour rework**: replaced the blue/green/red scheme with a green → yellow → orange → brown gradient. ≤10m dark green, ≤15m green, ≤20m amber, ≤30m orange, ≤60m brown, infrequent grey. Avoids red (which implies broken, not just infrequent). Updated both map line colours and filter chip dots.
+- **Live Vehicles: route shapes shown by default** (AI-183): Route shapes now render on the map for all active routes as soon as vehicle data loads, without requiring a click. GeoJSON is fetched proactively for every agency with visible vehicles. Clicking a route still highlights just that route and fits the map bounds to it; deselecting reverts to showing all shapes.
+- **Multi-route popup: group routes by agency** (AI-190): Routes in the "Multiple routes here" disambiguation popup are now grouped under agency headers instead of repeating the full agency name on every row. Routes are sorted alphabetically by agency, then numerically by route number within each group.
+- **History: no longer auto-zooms to Burlington on open** (AI-192): Removed the `historyAgencies[0]` fallback that panned the map to the first history agency (Burlington) when no agency was explicitly selected. Map now stays at its current position until the user selects an agency.
+
+### Added
+- **Late period** (AI-181): Added Evening (7 PM–midnight) and Late (midnight–3 AM) periods. Evening extended from prior 10 PM cutoff to midnight; Late covers post-midnight service. Appears in period filter chip. Pipeline computes both periods on refresh. Added `--force` flag to `npm run refresh` to bypass skip-if-unchanged for schema changes.
+- **Hourly sparkline** (AI-180): Route card sparkline now shows per-hour frequency bars (5 AM–2 AM) instead of named period bars. Pipeline computes `headwayByHour` using a 90-min sliding window per hour; merged across all directions (best headway wins). X-axis labelled at 6a/12p/6p/12a. Agencies with overnight service naturally trail into post-midnight bars; agencies without service just show empty bars.
+
+### Fixed
+- **Live Vehicles: fix route header showing number twice** (e.g. "1  Route 1" → just "1"): display name is now suppressed when it's a generic "Route N" fallback with no meaningful content.
+- **Route card: deduplicate direction entries with same headsign** (AI-181): Multiple shape variants sharing the same headsign produced visually identical rows. Now keeps only the best-headway entry per headsign per direction group.
+- **Route card: sparkline merges all directions** (AI-180): HeadwaySparkline now picks the best (lowest) non-null headway per period across all directions, so bidirectional peak routes (e.g. GO Route 31 — AM one way, PM the other) show the full service pattern rather than just the first direction's data.
+- **Route card: null-period bars no longer show as ambiguous stubs** (AI-180): Periods with no service (null headway) were rendering as a tiny 3px grey bar, visually similar to very infrequent service. They now render as empty space so absent service is clearly distinct from slow service.
+- **Route card: sparkline redesign** (AI-180): Removed the prose explanation ("Taller bars signify more frequent service"). Headway values (e.g. "10m", "—") now appear below each period label, making the chart self-explanatory. Layout tightened to a single row with "Frequency" label inline.
+
+### Fixed
+- **Map: span routes ignored headway filter and hide-irregular toggle** (AI-179): Two bugs. (1) `['to-number', null, 9999]` in MapLibre evaluates to 0 (null coerces to 0, fallback never fires), so span routes with null headway passed every headway pill filter and always appeared. Fixed by using `['coalesce', ['get', 'headway'], 9999]` which is null-aware. (2) `hideSpan` was sidebar-only — the map layer ignored it. Fixed by passing `hideSpan` to MapCanvas and adding a `['!=', tier, 'span']` clause when active.
+
+### Fixed
+- **Route card: span-only directions always visible** (AI-177): When a direction group has no headway entries at all (e.g. GO Route 37's inbound direction to Brampton), it now shows as "to Brampton Term — limited" even with the span filter hidden. Previously hideSpan collapsed it to an "Also serves" footnote, making bidirectional commuter routes appear one-directional.
+
+### Added
+- **DATA_OVERRIDES.md**: Public log of intentional data corrections with per-agency reasoning. Linked from the agency card and route card in the UI via "We corrected this data" when an agency has active overrides.
+
+### Fixed
+- **Pipeline: excludeRouteShortNames support** (AI-176): Added per-agency `excludeRouteShortNames` field to `index.json` / `ProcessOptions`. Routes matching any listed short name are stripped from the GTFS before processing (trips, stop_times, shapes, calendar_dates all cascade). Applied to Stratford: `["LOS"]` excludes "Lights On Stratford", a Dec–Jan seasonal shuttle that Stratford Transit's GTFS incorrectly marks as running Thu–Sun year-round.
+
+### Changed
+- **Frequency map: zoom-based progressive rendering** (AI-178): Routes are now filtered by headway tier based on zoom level using a GPU-evaluated MapLibre step expression (no React re-render on zoom). Below zoom 7 only ≤10 min routes show; zoom 7–9 shows ≤20 min; zoom 9+ applies only the headway pill. Searching a route bypasses the zoom gate so results are always found. Also fixes a pre-existing bug where the headway pill (≤15m etc.) was in the effect dep array but never actually applied to the map layer filter.
+- **Disambiguation popup: sorted numerically** (AI-178): "Multiple routes here" card now sorts entries by route number (numeric, then alpha for non-numeric names like "Lights On Stratford").
+
+### Changed
+- **Live Vehicles: minimum zoom gate** (AI-175): Below zoom 9, Live Vehicles shows "Zoom in to see vehicles" instead of polling. Prevents the useless continent-level view and stops unnecessary API calls when zoomed out.
+- **Live Vehicles: self-fetch agency GeoJSON for route shapes** (AI-175): When a route is selected and Interval's layers haven't loaded the agency yet, LiveVehicles fetches its GeoJSON directly from R2. Fixes "no route shape" on first Live tab visit.
+- **App drawer: active app greyed out** (AI-175): Currently active app is greyed and non-clickable in the app switcher, consistent with settings-style UX.
+
+### Fixed
+- **Map: continent-level zoom on load** (AI-175): `resetViewKey === undefined` guard was never true (resetViewKey is 0 on mount), so the Reset View effect fired on every initial load and fit-bounded all 65 agencies → continent zoom. Changed guard to `resetViewKey === 0`.
+
+### Changed
+- **Live Vehicles: viewport-based multi-agency polling** (AI-174): Removed agency selector dropdown. All eligible agencies whose bounding box overlaps the current map viewport are polled in parallel every 15s. Vehicles from multiple agencies appear simultaneously. Agency label shown above route groups when 2+ agencies visible. Empty state when no covered city is in view.
+- **Live Vehicles: route card on click** (AI-174): Clicking a route now opens a detail card showing individual vehicle rows with headsign and delay status. Back arrow returns to the route list. Replaces the "Route X on map / Show all" footer.
+- **Live Vehicles: no route shapes in overview** (AI-174): Route shapes only draw when a specific route is selected. Overview mode shows only vehicle dots — no more confusing multi-route overlap on screen.
+- **Live Vehicles: popup only when useful** (AI-174): Vehicle popup suppressed when headsign is empty and status is no_data. Headsign and status rows conditionally rendered so popup is never partially empty.
+
+### Fixed
+- **Live Vehicles: random map zoom on every poll** (AI-174): `return () => setOverlay(null)` was running on every data update, briefly nulling the overlay and resetting `liveFittedRouteRef`, triggering a fitBounds on each 15s poll. Split into a dedicated deactivation effect so the main overlay effect has no cleanup.
+
+### Added
+- **Live Vehicles: show all active route shapes automatically** (AI-166): By default, render the route shapes for all routes that have active vehicles, without requiring manual sidebar row selection. Clicking a specific route still filters to just that route.
+- **Live Vehicles: show route shape on map when route is selected** (AI-166): Render route polyline GeoJSON (from standard Frequency layers) as a dynamic map layer when a route is active in the Live Vehicles sidebar. Fits map bounds to the route shape on selection.
+- **History: headway trend sparkline on route cards** (AI-160): Added a dynamic, time-series SVG sparkline in the `RouteHistoryCard` to visualize historical headway trends proportionally across all snapshot years. Recomputes and updates automatically when switching between AM Peak, Midday, PM Peak, and Evening periods.
+
+### Fixed
+- **Live Vehicles: changing selected agency does not zoom map to new routes** (AI-172): Fixed a race condition where the map attempted to zoom/fit to YRT bounds right as the Hamilton selection triggered, preventing the flyTo Hamilton transition. Handled state resets synchronously on render in `LiveVehicles.tsx`.
+- **Live Vehicles: route selection map zoom cuts off top/bottom of route** (AI-169): Increased fitBounds padding to `{ top: 120, bottom: 120, left: 320, right: 80 }` to avoid cutting off route boundaries and offset the view from the left sidebar.
+- **Live Vehicles: map marker popup tip styling looks weird** (AI-170): Hided MapLibre's default popup tip to avoid multi-shaded translucent border artifacts and added a clean `10px` vertical offset to float the popup cards cleanly.
+- **Live Vehicles: map does not fit bounds to vehicles on initial load** (AI-166): Resolved a race condition where the map initially fell back to the agency center while vehicles were loading, which blocked the map from auto-fitting bounds to the actual live vehicles once they populated.
+- **Live Vehicles: static route layers visible in live mode** (AI-166): Hidden the static frequency routes and stops layers in Live Vehicles mode to keep the map clean and make the selected active route shape distinct.
+- **Live Vehicles: map zooming out on interaction** (AI-166): Restored auto-fitting to show the entire route when selecting a route, but added zoom-level protection so the map never zooms out when centering on vehicle updates or locations.
+- **Map: routes disappearing on zoom-in** (AI-165): Built PMTiles vector tiles with `-z14` maximum zoom to prevent route polylines from disappearing at high street-level zoom.
+- **Live Vehicles: vehicle markers appearing at wrong geographic positions** (AI-168): Markers were shifting location when zooming — a bus in Newmarket appeared in Kingston at low zoom. Root cause: `el.firstElementChild` (an `inline-flex position:relative` pill) was passed directly to `maplibregl.Marker`. MapLibre's anchor computation calls `getBoundingClientRect()` on the element, which returns wrong dimensions for `inline-flex` elements in certain rendering contexts, producing a [0,0] anchor offset. At zoom 5, a 17px offset error becomes ~170km of geographic displacement. Fix: pass a plain `inline-block` wrapper div as the marker element, matching the history marker pattern.
+
+### Changed
+- **Live Vehicles: drop leading zeros from route short names** (AI-173): Cleaned up leading zeros from route short names and fallback route display names (e.g. Hamilton's `"01 Route 01"` -> `"1 Route 1"`).
+- **Live Vehicles: textless markers** (AI-166): Always render live vehicles as clean, textless colored dots (14px circles) with bearing pointers to avoid text clutter on the map.
+- **Live Vehicles: premium map popups**: Replaced default MapLibre popup container style with a custom styled card matching the app's glassmorphic design theme (blur backdrop, rounded borders, shadow, Inter font).
+- **Live Vehicles: map fits all vehicles on initial load**: On first load for each agency, map now `fitBounds` to all vehicle positions (80px padding, maxZoom 14) instead of flying to agency center at zoom 13. Subsequent polls don't re-fit. Tracked in AI-168.
+- **Live Vehicles: route row right-side stats**: Vehicle count and delay label now inline ("7 veh · 1 early") instead of stacked vertically.
+- **Live Vehicles: vehicle markers**: Changed from fixed 28px circle to auto-sizing pill (`min-width:22px`, `height:22px`, `padding:0 6px`). Handles variable-length route names like "blue" without clipping.
+- **Live Vehicles: route dot**: Sidebar row now uses `w-2 h-2` dot matching the search suggestion design pattern instead of a circle badge.
+- **Refactor: centralize route list rows** (AI-167): Extracted duplicated route list row rendering logic into a shared [RouteListRow](file:///Users/ryan/Desktop/Mag/Tools/Transit/Atlas/src/components/RouteListRow.tsx) component and replaced inline usages in `History.tsx`, `LiveVehicles.tsx`, and search results in `SidebarControls.tsx`.
+- **Refactor: extract map utilities**: Moved `getMapStyle`/`registerProtocol` → `src/lib/mapStyle.ts`; moved `formatGap`, `formatDelta`, `StopCardHtml`, `VehicleMarkerHtml` → `src/lib/mapHtml.ts`. MapCanvas.tsx: 796 → 646 lines.
+- **Refactor: extract Corridors sub-components**: Moved `ServiceTimeline` → `src/apps/ServiceTimeline.tsx`; `StopInput` → `src/apps/StopInput.tsx`; `RouteGroupCard` → `src/apps/RouteGroupCard.tsx`; shared types + `fmtHeadway` → `src/apps/corridor-types.ts`. Corridors.tsx: 843 → 596 lines.
+- **Refactor: extract HeadwaySparkline**: Moved `HeadwaySparkline`, `headwayToTierColor`, `SPARKLINE_PERIODS` → `src/components/Interval/HeadwaySparkline.tsx`. SidebarControls.tsx: 953 → 893 lines.
+- **Live Vehicles: route-grouped sidebar**: Vehicle list now shows one row per route (grouped) instead of one row per individual vehicle. Shows vehicle count and aggregate delay status (e.g. "3 late"). Eliminates noise for high-frequency networks with many vehicles per route.
+- **Live Vehicles: route selection**: Clicking a route row focuses map to that route's vehicles only; "Show all" footer link resets. Clicking the same route again deselects.
+- **Live Vehicles: styling overhaul**: Sidebar now uses shared `LIST_ROW`/`LIST_ROW_PRIMARY`/`LIST_ROW_DIM` style constants matching the rest of the app. Fixed `select` element font (was defaulting to system font instead of Inter). Removed "Xs ago" timestamp.
+- **Live Vehicles: map popup**: Replaced monospace font with Inter; removed raw vehicle UUID; cleaned up delay label formatting (rounded minutes, no decimals).
+
+### Fixed
+- **Live Vehicles: status dot reflects actual state**: Green + pulse only when vehicles are loaded; amber + pulse while loading; red (no pulse) on error; gray (no pulse) when idle. Was always green regardless of state.
+- **Live Vehicles: error state redesign**: WifiOff icon, cleaner message copy. Removed "Try again" button (auto-polls every 15s) and agency suggestion list (dropdown already handles switching). Distinguishes between unconfigured agency ("No live feed") vs. feed unreachable ("Feed unavailable") so a network error doesn't look like a missing config.
+- **Live Vehicles: vehicle rows**: Removed internal vehicle ID; headsign as primary label; delay as tinted pill; "Showing on map" indicator on focused row.
+- **Live Vehicles: empty state**: Heading + context message instead of bare one-liner.
+- **Live Vehicles: network label**: 8px tracking-wider → 10px normal weight.
+
+### Added
 - **Full history backfill via Mobility Database API**: Ran automated backfill for all 3 history agencies (Burlington mdb-724, CDTA mdb-538, GCRTA mdb-406) from 2015 onward. One fall snapshot per year downloaded, processed, and archived. Burlington: 16 routes; CDTA: 43 routes; GCRTA: 36 routes with documented frequency changes.
 - **Automated MDB history backfill script** (`pipeline/backfill-mdb-history.ts`): Generic script to backfill any agency from the Mobility Database API. Fetches all historical datasets for a given feed ID, picks one per year closest to Sep 1 (fall service anchor), downloads each, and writes history snapshots to R2. Requires `MDB_REFRESH_TOKEN` in `.env.local`.
 
@@ -23,6 +120,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Route card service frequency: box-in-a-box**: Removed the inner bordered/shaded container from the `HeadwaySparkline` component; it now renders inline with a top divider, matching the flat card style.
+- **"Agency::Undefined" in disambiguation + new agencies invisible on map**: `build-pmtiles.ts` was including stop Point features in the routes GeoJSON layer (since the main GeoJSON contains both route LineStrings and stop Points for the R2 sidebar). Added a `geometry.type !== 'LineString'` guard so only route shapes reach the `routes` tile layer. Also fixes map rendering for all 29 new agencies, which were missing from the stale PMTiles.
 - **History route card: "2008 Launch" label**: Removed manual label override from HealthLine seed — auto-formats as "Jan 2008".
 - **History route card: duplicate final snapshot**: The 2026 entry no longer appears if it has the same headway as the most recent archive snapshot.
 - **History period data in archive snapshots**: `refresh.ts` now writes `headwayByPeriod` (AM/Mid/PM/Eve) alongside `headway` in each per-route history file; `build-history.ts` passes it through to `history-config.json`.
