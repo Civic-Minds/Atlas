@@ -7,6 +7,7 @@ import type { Agency } from '../App';
 import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { STATUS_COLORS } from '../utils/colors';
+import { cleanRouteShortName, cleanRouteDisplayName } from '../utils/format';
 
 interface Props {
   agencies: Agency[];
@@ -57,6 +58,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return eligibleSlugs[0] || '';
   });
 
+  const [prevSlug, setPrevSlug] = useState(selectedSlug);
+  if (selectedSlug !== prevSlug) {
+    setPrevSlug(selectedSlug);
+    setVehicles([]);
+    setSelectedRoute(null);
+    setFocusedVehicle(null);
+  }
+
   useEffect(() => {
     if (selectedSlug) localStorage.setItem('atlas_pref_live_agency', selectedSlug);
   }, [selectedSlug]);
@@ -91,12 +100,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return () => clearInterval(pollId);
   }, [active, selectedSlug, fetchVehicles]);
 
-  // Reset on agency switch
-  useEffect(() => {
-    setSelectedRoute(null);
-    setFocusedVehicle(null);
-    setVehicles([]);
-  }, [selectedSlug]);
+  // Reset on agency switch (handled synchronously during render to prevent state updates racing map overlay)
 
   // Filter by search query, then group by route
   const routeGroups = useMemo<RouteGroup[]>(() => {
@@ -127,7 +131,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
         const headsigns = [...new Set(vs.map(v => v.headsign).filter(Boolean) as string[])];
-        const displayName = vs[0].displayName || `Route ${routeShortName}`;
+        const displayName = cleanRouteDisplayName(vs[0].displayName || `Route ${routeShortName}`, routeShortName);
         return { routeShortName, displayName, headsigns, vehicles: vs, lateCount, earlyCount, dominantStatus };
       });
   }, [vehicles, query]);
@@ -270,7 +274,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 return (
                   <RouteListRow
                     key={g.routeShortName}
-                    shortName={g.routeShortName}
+                    shortName={cleanRouteShortName(g.routeShortName)}
                     name={g.displayName}
                     selected={isSelected}
                     onClick={() => handleRouteClick(g.routeShortName)}
@@ -294,7 +298,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {/* Selected route footer */}
           {selectedRoute && (
             <div className="px-4 py-2 border-t border-[var(--border-primary)] shrink-0 flex items-center justify-between">
-              <span className="text-[10px] text-[var(--text-muted)] font-bold">Route {selectedRoute} on map</span>
+              <span className="text-[10px] text-[var(--text-muted)] font-bold">Route {cleanRouteShortName(selectedRoute)} on map</span>
               <button
                 onClick={() => { setSelectedRoute(null); setFocusedVehicle(null); }}
                 className="text-[10px] text-[var(--accent)] font-black hover:opacity-70 transition-opacity"

@@ -12,6 +12,7 @@ import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { StopCardHtml, VehicleMarkerHtml, formatGap, formatDelta } from '../../lib/mapHtml';
+import { cleanRouteShortName } from '../../utils/format';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -71,6 +72,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const liveFittedAgencyRef = useRef<string | null>(null);
 
   const liveFittedRouteRef = useRef<string | null>(null);
+
+  const prevAgencySlugRef = useRef<string | null>(null);
+  if (liveOverlay?.agencySlug && liveOverlay.agencySlug !== prevAgencySlugRef.current) {
+    prevAgencySlugRef.current = liveOverlay.agencySlug;
+    liveFittedAgencyRef.current = null;
+    liveFittedRouteRef.current = null;
+  }
 
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
   const hasSavedView = useMemo(() => getSavedView() !== null, []);
@@ -609,10 +617,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             ? `${Math.round(vehicle.delayMin)}m late`
             : 'On time';
 
-      const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup' })
+      const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup', offset: 10 })
         .setHTML(`
           <div style="font-family: 'Inter', ui-sans-serif, sans-serif; padding: 8px 10px; min-width: 130px;">
-            <div style="font-size: 9px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.4px;">Route ${vehicle.routeShortName}</div>
+            <div style="font-size: 9px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.4px;">Route ${cleanRouteShortName(vehicle.routeShortName)}</div>
             <div style="font-size: 11px; font-weight: 700; color: var(--text-primary, #111); margin-top: 2px; line-height: 1.3;">
               ${vehicle.headsign || vehicle.displayName || '—'}
             </div>
@@ -690,7 +698,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           });
         });
         if (minLng < maxLng) {
-          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 120, bottom: 120, left: 320, right: 80 }, maxZoom: 14 });
         }
       }
     } else {

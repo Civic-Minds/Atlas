@@ -141,8 +141,5 @@ button {
 }
 
 .live-vehicle-popup .maplibregl-popup-tip {
-  border-top-color: var(--bg-panel) !important;
-  border-bottom-color: var(--bg-panel) !important;
-  border-left-color: var(--bg-panel) !important;
-  border-right-color: var(--bg-panel) !important;
+  display: none !important;
 }

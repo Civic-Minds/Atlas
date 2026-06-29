@@ -94,10 +94,15 @@ export function formatRemDisplay(shortName: string | null | undefined, longName:
 export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string): string {
   if (!shortName) return longName || '';
 
-  const rem = formatRemDisplay(shortName, longName);
-  if (rem && rem !== shortName) return rem;
+  // Clean leading zeros from shortName
+  const cleanShort = shortName.length > 1 && shortName.startsWith('0') && /^\d+$/.test(shortName)
+    ? shortName.replace(/^0+/, '')
+    : shortName;
 
-  if (!longName) return shortName;
+  const rem = formatRemDisplay(cleanShort, longName);
+  if (rem && rem !== cleanShort) return rem;
+
+  if (!longName) return cleanShort;
 
   let cleanedLong = longName;
 
@@ -108,15 +113,15 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
 
   // General: strip if longName basically repeats the short or "route X"
   const lowerLong = cleanedLong.toLowerCase();
-  const lowerShort = shortName.toLowerCase();
+  const lowerShort = cleanShort.toLowerCase();
   if (lowerLong === `route ${lowerShort}` || lowerLong === lowerShort || lowerLong.includes(lowerShort + ' ')) {
-    return shortName;
+    return cleanShort;
   }
 
-  if (!cleanedLong) return shortName;
+  if (!cleanedLong) return cleanShort;
 
   // Pure-letter short names (e.g. "LW", "LE", "KI") are acronyms of the long name — redundant to show both.
-  if (/^[A-Za-z]+$/.test(shortName)) return cleanedLong;
+  if (/^[A-Za-z]+$/.test(cleanShort)) return cleanedLong;
 
-  return `${shortName} — ${cleanedLong}`;
+  return `${cleanShort} — ${cleanedLong}`;
 }
