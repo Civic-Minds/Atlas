@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **DATA_OVERRIDES.md**: Public log of intentional data corrections with per-agency reasoning. Linked from the agency card and route card in the UI via "We corrected this data" when an agency has active overrides.
+
 ### Fixed
 - **Pipeline: excludeRouteShortNames support** (AI-176): Added per-agency `excludeRouteShortNames` field to `index.json` / `ProcessOptions`. Routes matching any listed short name are stripped from the GTFS before processing (trips, stop_times, shapes, calendar_dates all cascade). Applied to Stratford: `["LOS"]` excludes "Lights On Stratford", a Dec–Jan seasonal shuttle that Stratford Transit's GTFS incorrectly marks as running Thu–Sun year-round.
 

@@ -381,19 +381,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
-    return disambiguationRoutes.map(key => {
-      for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-        const f = fc.features.find(feat => {
-          const p = feat.properties as any;
-          return routeKey({ ...p, agencySlug: slug } as any) === key;
-        });
-        if (f) {
-          const p = f.properties as any;
-          return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: p.agencyName ?? '', color: getTierColor(p.tier) };
+    return disambiguationRoutes
+      .map(key => {
+        for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
+          const f = fc.features.find(feat => {
+            const p = feat.properties as any;
+            return routeKey({ ...p, agencySlug: slug } as any) === key;
+          });
+          if (f) {
+            const p = f.properties as any;
+            return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: p.agencyName ?? '', color: getTierColor(p.tier) };
+          }
         }
-      }
-      return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
-    });
+        return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
+      })
+      .sort((a, b) => {
+        const nA = parseInt(a.shortName, 10), nB = parseInt(b.shortName, 10);
+        if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
+        return a.shortName.localeCompare(b.shortName, undefined, { numeric: true });
+      });
   }, [disambiguationRoutes, nonCorridorLayers]);
 
   const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0;
@@ -666,6 +672,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           Schedule may be outdated
                         </p>
                       )}
+                      {agency?.excludeRouteShortNames?.length ? (
+                        <a
+                          href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"
+                        >
+                          We corrected this data
+                        </a>
+                      ) : null}
                     </>
                   );
                 })()}
