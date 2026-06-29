@@ -147,35 +147,35 @@ function RouteHistoryCard({
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
-      {/* Header: back button left, info right */}
-      <div className="shrink-0 flex items-center gap-2 px-3 pt-3 pb-2">
-        <button
-          onClick={onBack}
-          className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-          aria-label="Back to routes"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-baseline gap-1.5 leading-tight">
+      {/* Header */}
+      <div className="shrink-0 px-3 pt-3 pb-2">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onBack}
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+            aria-label="Back to routes"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
             <span className="text-sm font-black text-[var(--text-primary)]">{route.routeShortName}</span>
             {route.routeName && (
               <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{toTitleCase(route.routeName)}</span>
             )}
           </div>
-          <p className="text-[10px] text-[var(--text-muted)] font-medium mt-0.5">
-            {agencyName} · {region}
-          </p>
+          {snaps.length >= 2 && (
+            <button
+              onClick={() => setShowChart(v => !v)}
+              className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors shrink-0 ${showChart ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+              aria-label="Toggle chart"
+            >
+              <TrendingUp className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
-        {snaps.length >= 2 && (
-          <button
-            onClick={() => setShowChart(v => !v)}
-            className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors shrink-0 ${showChart ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
-            aria-label="Toggle chart"
-          >
-            <TrendingUp className="w-3.5 h-3.5" />
-          </button>
-        )}
+        <p className="text-[10px] text-[var(--text-muted)] font-medium mt-0.5 pl-9">
+          {agencyName} · {region}
+        </p>
       </div>
 
       {/* Period selector */}
