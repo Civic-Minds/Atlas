@@ -133,7 +133,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                 <p className="text-[11px] text-[var(--text-dim)] mt-0.5">by Civic Minds</p>
               </div>
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                A frequency map covering {agencies.length} transit agencies across Canada and the US Great Lakes.
+                A transit atlas covering {agencies.length} agencies across North America.
               </p>
 
               <div>
