@@ -244,6 +244,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       if (d.headway != null) g.realTier.push(d);
       else g.span.push(d);
     }
+    // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
+    // Multiple shape variants can share the same headsign (e.g. different mid-route detours), producing
+    // visually identical rows in the sidebar.
+    for (const g of map.values()) {
+      const seen = new Map<string, ShapeProperties>();
+      for (const d of g.realTier) {
+        const key = d.headsign ?? '';
+        const existing = seen.get(key);
+        if (!existing || (d.headway ?? Infinity) < (existing.headway ?? Infinity)) seen.set(key, d);
+      }
+      g.realTier = Array.from(seen.values());
+    }
     return Array.from(map.values()).sort((a, b) => {
       const aMin = a.realTier[0]?.headway ?? Infinity;
       const bMin = b.realTier[0]?.headway ?? Infinity;
