@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - **Live Vehicles: show all active route shapes automatically** (AI-166): By default, render the route shapes for all routes that have active vehicles, without requiring manual sidebar row selection. Clicking a specific route still filters to just that route.
 - **Live Vehicles: show route shape on map when route is selected** (AI-166): Render route polyline GeoJSON (from standard Frequency layers) as a dynamic map layer when a route is active in the Live Vehicles sidebar. Fits map bounds to the route shape on selection.
+- **History: headway trend sparkline on route cards** (AI-160): Added a dynamic, time-series SVG sparkline in the `RouteHistoryCard` to visualize historical headway trends proportionally across all snapshot years. Recomputes and updates automatically when switching between AM Peak, Midday, PM Peak, and Evening periods.
 
 ### Fixed
 - **Live Vehicles: map does not fit bounds to vehicles on initial load** (AI-166): Resolved a race condition where the map initially fell back to the agency center while vehicles were loading, which blocked the map from auto-fitting bounds to the actual live vehicles once they populated.
