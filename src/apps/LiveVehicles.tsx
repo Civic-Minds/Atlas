@@ -147,31 +147,49 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const isLoading = Object.values(loadingBySlug).some(Boolean);
   const errors = Object.values(errorBySlug).filter(Boolean) as string[];
 
-  // Fetch agency GeoJSON directly when selected route's agency isn't in the prop layers yet
+  // Fetch GeoJSON for any visible agency that has live vehicles and isn't loaded yet
   useEffect(() => {
-    if (!selectedRoute) return;
-    const [slug] = selectedRoute.split('::');
-    if (!slug || layers[slug] || localLayers[slug]) return;
-    const agency = agencies.find(a => a.slug === slug);
-    if (!agency?.url) return;
-    fetch(agency.url)
-      .then(r => r.json())
-      .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
-      .catch(() => {});
-  }, [selectedRoute, layers, localLayers, agencies]);
+    const slugsNeeded = new Set<string>();
+    if (selectedRoute) {
+      const [slug] = selectedRoute.split('::');
+      if (slug) slugsNeeded.add(slug);
+    }
+    for (const slug of Object.keys(vehiclesBySlug)) slugsNeeded.add(slug);
+    for (const slug of slugsNeeded) {
+      if (layers[slug] || localLayers[slug]) continue;
+      const agency = agencies.find(a => a.slug === slug);
+      if (!agency?.url) continue;
+      fetch(agency.url)
+        .then(r => r.json())
+        .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
+        .catch(() => {});
+    }
+  }, [selectedRoute, vehiclesBySlug, layers, localLayers, agencies]);
 
-  // Route shapes: only load when a route is selected; prefer prop layers, fall back to local fetch
+  // Route shapes: show selected route only, or all active routes by default
   const routeFeatures = useMemo(() => {
-    if (!selectedRoute) return [];
-    const [slug, rsn] = selectedRoute.split('::');
-    if (!slug || !rsn) return [];
-    const fc = layers[slug] ?? localLayers[slug];
-    if (!fc) return [];
-    return fc.features.filter(f => {
-      const p = f.properties as any;
-      return p && p.routeShortName === rsn;
-    });
-  }, [layers, localLayers, selectedRoute]);
+    if (selectedRoute) {
+      const [slug, rsn] = selectedRoute.split('::');
+      if (!slug || !rsn) return [];
+      const fc = layers[slug] ?? localLayers[slug];
+      if (!fc) return [];
+      return fc.features.filter(f => {
+        const p = f.properties as any;
+        return p && p.routeShortName === rsn;
+      });
+    }
+    const result: GeoJSON.Feature[] = [];
+    for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
+      const fc = layers[slug] ?? localLayers[slug];
+      if (!fc) continue;
+      const activeRSNs = new Set(vehicles.map(v => v.routeShortName));
+      fc.features.forEach(f => {
+        const p = f.properties as any;
+        if (p && activeRSNs.has(p.routeShortName)) result.push(f);
+      });
+    }
+    return result;
+  }, [layers, localLayers, selectedRoute, vehiclesBySlug]);
 
   // Filter map overlay to selected route when one is active
   const overlayVehicles = useMemo(() => {

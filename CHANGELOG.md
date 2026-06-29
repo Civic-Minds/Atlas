@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Live Vehicles: route shapes shown by default** (AI-183): Route shapes now render on the map for all active routes as soon as vehicle data loads, without requiring a click. GeoJSON is fetched proactively for every agency with visible vehicles. Clicking a route still highlights just that route and fits the map bounds to it; deselecting reverts to showing all shapes.
 - **Multi-route popup: group routes by agency** (AI-190): Routes in the "Multiple routes here" disambiguation popup are now grouped under agency headers instead of repeating the full agency name on every row. Routes are sorted alphabetically by agency, then numerically by route number within each group.
 - **History: no longer auto-zooms to Burlington on open** (AI-192): Removed the `historyAgencies[0]` fallback that panned the map to the first history agency (Burlington) when no agency was explicitly selected. Map now stays at its current position until the user selects an agency.
 
