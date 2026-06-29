@@ -28,8 +28,8 @@ export const TIME_PERIODS: PeriodConfig[] = [
   { key: 'amPeak',    label: 'AM Peak',    startHour: 6,  endHour: 9  },
   { key: 'midday',    label: 'Midday',     startHour: 9,  endHour: 15 },
   { key: 'pmPeak',    label: 'PM Peak',    startHour: 15, endHour: 19 },
-  { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 22 },
-  { key: 'lateNight', label: 'Late', startHour: 22, endHour: 27 },
+  { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 24 },
+  { key: 'lateNight', label: 'Late',       startHour: 24, endHour: 27 },
 ];
 
 export interface HeadwayTier {

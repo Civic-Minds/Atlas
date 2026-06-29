@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **Late Night period** (AI-181): New time period covering 22:00–03:00 (GTFS hours 22–27). Appears in the sparkline as "NIGHT", in the period filter chip, and in the per-period headway view on the route card. Pipeline now computes late night headways on refresh. Added `--force` flag to `npm run refresh` to bypass skip-if-unchanged for all agencies (used to reprocess all feeds after schema changes). Full force refresh run to populate lateNight data across all agencies.
+- **Late period** (AI-181): Added Evening (7 PM–midnight) and Late (midnight–3 AM) periods. Evening extended from prior 10 PM cutoff to midnight; Late covers post-midnight service. Sparkline shows "EVE" and "LATE" bars. Appears in period filter chip. Pipeline computes both periods on refresh. Added `--force` flag to `npm run refresh` to bypass skip-if-unchanged for schema changes.
 
 ### Fixed
 - **Route card: sparkline merges all directions** (AI-180): HeadwaySparkline now picks the best (lowest) non-null headway per period across all directions, so bidirectional peak routes (e.g. GO Route 31 — AM one way, PM the other) show the full service pattern rather than just the first direction's data.
