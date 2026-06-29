@@ -290,6 +290,7 @@ export default function App() {
                   active={inLive}
                   onInfoOpen={() => setInfoOpen(true)}
                   query={query}
+                  layers={layers}
                 />
               </div>
             )}

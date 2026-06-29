@@ -18,6 +18,8 @@ export interface LiveVehiclesMapOverlay {
   agencySlug: string;
   agencyCenter?: [number, number];
   focusedVehicle?: { id: string; lat: number; lon: number; ts: number } | null;
+  routeFeatures?: GeoJSON.Feature[];
+  selectedRouteShortName?: string | null;
 }
 
 interface ContextValue {

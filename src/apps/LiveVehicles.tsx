@@ -14,6 +14,7 @@ interface Props {
   active: boolean;
   onInfoOpen?: () => void;
   query: string;
+  layers?: Record<string, GeoJSON.FeatureCollection>;
 }
 
 interface RouteGroup {
@@ -28,7 +29,7 @@ interface RouteGroup {
 
 const POLL_INTERVAL_MS = 15_000;
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {} }: Props) {
   const { setOverlay } = useLiveVehiclesMapOverlay();
   const [vehicles, setVehicles] = useState<LiveVehicle[]>([]);
   const [loading, setLoading] = useState(false);
@@ -102,14 +103,29 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return vehicles.filter(v => v.routeShortName === selectedRoute);
   }, [vehicles, selectedRoute]);
 
+  const routeFeatures = useMemo(() => {
+    if (!selectedRoute || !selectedSlug || !layers[selectedSlug]) return [];
+    return layers[selectedSlug].features.filter(f => {
+      const p = f.properties as any;
+      return p && p.routeShortName === selectedRoute;
+    });
+  }, [layers, selectedRoute, selectedSlug]);
+
   useEffect(() => {
     if (!active || !selectedSlug) {
       setOverlay(null);
       return;
     }
-    setOverlay({ vehicles: overlayVehicles, agencySlug: selectedSlug, agencyCenter: selectedAgency?.center, focusedVehicle });
+    setOverlay({
+      vehicles: overlayVehicles,
+      agencySlug: selectedSlug,
+      agencyCenter: selectedAgency?.center,
+      focusedVehicle,
+      routeFeatures,
+      selectedRouteShortName: selectedRoute
+    });
     return () => setOverlay(null);
-  }, [active, overlayVehicles, selectedSlug, selectedAgency, focusedVehicle, setOverlay]);
+  }, [active, overlayVehicles, selectedSlug, selectedAgency, focusedVehicle, routeFeatures, selectedRoute, setOverlay]);
 
   // Filter by search query, then group by route
   const routeGroups = useMemo<RouteGroup[]>(() => {

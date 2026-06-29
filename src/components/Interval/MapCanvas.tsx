@@ -69,6 +69,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const liveMarkersRef = useRef<maplibregl.Marker[]>([]);
   const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
   const liveFittedAgencyRef = useRef<string | null>(null);
+  const liveFittedRouteRef = useRef<string | null>(null);
 
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
   const hasSavedView = useMemo(() => getSavedView() !== null, []);
@@ -184,6 +185,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         paint: {
           'line-color': ['get', 'color'],
           'line-width': 4,
+          'line-opacity': 0.85
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
+      // Live route shape dynamic layer (loaded in Live Vehicles app)
+      map.addSource('live-route-shape', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'live-route-shape-layer',
+        type: 'line',
+        source: 'live-route-shape',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 4.0,
           'line-opacity': 0.85
         },
         layout: {
@@ -567,7 +588,12 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       if (!vehicle.lat || !vehicle.lon) return;
 
       const html = VehicleMarkerHtml(vehicle);
+      // Use a block wrapper div (not firstElementChild) so MapLibre's getBoundingClientRect()
+      // sees the correct rendered dimensions and computes the center anchor correctly.
+      // Passing an inline-flex element directly causes the anchor to compute as [0,0],
+      // displacing markers by hundreds of km at low zoom levels.
       const el = document.createElement('div');
+      el.style.cssText = 'display:inline-block;';
       el.innerHTML = html;
 
       const delayLabel = vehicle.delayMin === null
@@ -592,7 +618,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           </div>
         `);
 
-      const marker = new maplibregl.Marker({ element: el.firstElementChild as HTMLElement })
+      const marker = new maplibregl.Marker({ element: el })
         .setLngLat([vehicle.lon, vehicle.lat])
         .setPopup(popup)
         .addTo(map);
@@ -620,14 +646,67 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [liveOverlay, mapLoaded]);
 
+  // Live route dynamic shape overlay
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const source = map.getSource('live-route-shape') as maplibregl.GeoJSONSource;
+    if (!source) return;
+
+    if (liveOverlay && liveOverlay.routeFeatures && liveOverlay.routeFeatures.length > 0) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: liveOverlay.routeFeatures.map(f => ({
+          ...f,
+          properties: {
+            ...f.properties,
+            color: getTierColor((f.properties as any)?.tier ?? null)
+          }
+        }))
+      });
+
+      // Zoom to fit route shape
+      const selectedRouteKey = liveOverlay.selectedRouteShortName
+        ? `${liveOverlay.agencySlug}::${liveOverlay.selectedRouteShortName}`
+        : null;
+
+      if (selectedRouteKey && liveFittedRouteRef.current !== selectedRouteKey) {
+        liveFittedRouteRef.current = selectedRouteKey;
+        let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+        liveOverlay.routeFeatures.forEach(f => {
+          const geom = f.geometry as any;
+          const coords = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+          coords.forEach(([lng, lat]: [number, number]) => {
+            if (lng < minLng) minLng = lng;
+            if (lng > maxLng) maxLng = lng;
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+          });
+        });
+        if (minLng < maxLng) {
+          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+        }
+      }
+    } else {
+      source.setData({ type: 'FeatureCollection', features: [] });
+      liveFittedRouteRef.current = null;
+    }
+  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteShortName, liveOverlay?.agencySlug, mapLoaded]);
+
   // Focus vehicle centering
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded || !liveOverlay?.focusedVehicle) return;
 
+    // Fallback centering on vehicle only if we didn't fit bounds to route features
+    if (liveOverlay.routeFeatures && liveOverlay.routeFeatures.length > 0) {
+      return;
+    }
+
     const { lat, lon } = liveOverlay.focusedVehicle;
     map.flyTo({ center: [lon, lat], zoom: 14 });
-  }, [liveOverlay?.focusedVehicle, mapLoaded]);
+  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded]);
 
   // Clean overlays on unmount
   useEffect(() => {
