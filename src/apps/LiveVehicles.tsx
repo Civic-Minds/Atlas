@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Info, Moon, Sun, ArrowRight } from 'lucide-react';
+import { Info, Moon, Sun, ArrowRight, WifiOff, RefreshCw } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
@@ -160,13 +160,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {/* Header */}
           <div className="px-4 pt-3.5 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
+              {/* Status dot: green+pulse when live, amber when loading, red when error, gray when idle */}
+              {vehicles.length > 0 ? (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+              ) : loading ? (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+              ) : error ? (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              ) : (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)]"></span>
+              )}
               <h2 className="text-xs font-black text-[var(--text-primary)]">Live Vehicles</h2>
             </div>
-            {lastUpdated && (
+            {lastUpdated && vehicles.length > 0 && (
               <span className="text-[9px] font-bold text-[var(--text-muted)]">
                 {secondsAgo === 0 ? 'just now' : `${secondsAgo}s ago`}
               </span>
@@ -175,7 +187,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
           {/* Agency Dropdown */}
           <div className="flex flex-col gap-1 px-4 py-2 border-b border-[var(--border-primary)] bg-[var(--bg-active)]/10 shrink-0">
-            <label className="text-[8px] font-black text-[var(--text-dim)] tracking-wider">Select network</label>
+            <label className="text-[10px] font-bold text-[var(--text-muted)]">Select network</label>
             <select
               value={selectedSlug}
               onChange={e => setSelectedSlug(e.target.value)}
@@ -195,17 +207,38 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <span className="text-xs text-[var(--text-muted)]">Loading feed…</span>
               </div>
             ) : error && vehicles.length === 0 ? (
-              <div className="py-8 text-center px-4">
-                <p className="text-xs font-bold text-[var(--text-primary)]">
-                  {error.includes('404') ? 'Live tracking not available for this network' : 'Live data unavailable right now'}
-                </p>
-                <p className="text-[10px] text-[var(--text-muted)] mt-1">
-                  {error.includes('404') ? 'This agency may not have a real-time feed configured.' : 'Something went wrong fetching the live feed. Try again in a moment.'}
-                </p>
+              <div className="py-6 text-center px-4 flex flex-col items-center gap-3">
+                <WifiOff className="w-5 h-5 text-[var(--text-dim)]" />
+                <div>
+                  <p className="text-xs font-bold text-[var(--text-primary)]">
+                    {error.includes('404') || error.includes('No live config') ? 'No live feed for this network' : 'Live data unavailable'}
+                  </p>
+                  <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">
+                    {error.includes('404') || error.includes('No live config')
+                      ? 'This network doesn\'t have a real-time feed configured yet.'
+                      : 'Something went wrong fetching the live feed.'}
+                  </p>
+                </div>
+                {eligibleAgencies.length > 1 && (
+                  <div className="w-full text-left">
+                    <p className="text-[9px] font-bold text-[var(--text-muted)] mb-1">Try one of these:</p>
+                    {eligibleAgencies.filter(a => a.slug !== selectedSlug).slice(0, 3).map(a => (
+                      <button
+                        key={a.slug}
+                        onClick={() => setSelectedSlug(a.slug)}
+                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-btn-hover)] transition-colors text-left mb-0.5"
+                      >
+                        <span className="text-[10px] text-[var(--text-primary)]">{a.name}</span>
+                        <ArrowRight className="w-3 h-3 text-[var(--text-dim)]" />
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <button
                   onClick={() => { setLoading(true); fetchVehicles(selectedSlug).finally(() => setLoading(false)); }}
-                  className="mt-3 text-[10px] font-bold text-[var(--accent)] hover:underline"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-btn)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors text-[10px] font-bold text-[var(--text-primary)]"
                 >
+                  <RefreshCw className="w-3 h-3" />
                   Try again
                 </button>
               </div>
