@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Burlington Transit history backfill**: Processed 6 historical GTFS snapshots (2019, 2020, 2021, 2022, 2024, 2025) through the history pipeline. 8 routes now have documented frequency changes. History config updated to 3 agencies.
+- **Automated MDB history backfill script** (`pipeline/backfill-mdb-history.ts`): Generic script to backfill any agency from the Mobility Database API. Fetches all historical datasets for a given feed ID, picks one per year closest to Sep 1 (fall service anchor), downloads each, and writes history snapshots to R2. Requires `MDB_REFRESH_TOKEN` in `.env.local`.
+
+### Added
 - **Staged agency support**: New `staged: true` flag in `index.json` marks agencies as pending — frontend hides them until data is ready. Pipeline auto-clears the flag after a successful first refresh, so the next deploy brings them live with no manual step.
 - **CDTA history backfill (Albany)**: Second History map app pilot city. Processed 5 historical GTFS snapshots (2016, 2018, 2020, 2022, 2024) through the history pipeline. 41 routes now have documented frequency changes. History config updated to 2 agencies.
 - **29 new agencies live**: RGRTA, CDTA, Centro, TCAT, Broome County (NY); EMTA (PA); Akron Metro, SARTA, Laketran (OH); MTA Flint, CATA Lansing, The Rapid (MI); MBTA, PVTA, WRTA (MA); CTtransit (CT); Red Deer, Lethbridge (AB); Moose Jaw, Prince Albert (SK); Kamloops, South Okanagan-Similkameen, Nanaimo, Cowichan Valley, Comox Valley, Campbell River, Squamish, Pemberton Valley, Whistler (BC). Atlas now covers 94 agencies.
@@ -15,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - **LOD route visibility by frequency tier (AI-165)**: Routes now appear progressively as you zoom in based on their headway tier. Frequent rapid routes (≤10 min) visible from zoom 0; frequent (≤15 min) from zoom 7; moderate (≤30 min) from zoom 9; infrequent from zoom 11. Implemented via `tippecanoe:minzoom` property on each GeoJSON feature before encoding in `build-pmtiles.ts`.
 
 ### Fixed
+- **Route card service frequency: box-in-a-box**: Removed the inner bordered/shaded container from the `HeadwaySparkline` component; it now renders inline with a top divider, matching the flat card style.
 - **History route card: "2008 Launch" label**: Removed manual label override from HealthLine seed — auto-formats as "Jan 2008".
 - **History route card: duplicate final snapshot**: The 2026 entry no longer appears if it has the same headway as the most recent archive snapshot.
 - **History period data in archive snapshots**: `refresh.ts` now writes `headwayByPeriod` (AM/Mid/PM/Eve) alongside `headway` in each per-route history file; `build-history.ts` passes it through to `history-config.json`.
