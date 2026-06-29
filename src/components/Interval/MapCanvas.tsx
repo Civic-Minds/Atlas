@@ -592,8 +592,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     liveOverlay.vehicles.forEach(vehicle => {
       if (!vehicle.lat || !vehicle.lon) return;
 
-      const isRouteSelected = !!liveOverlay.selectedRouteShortName;
-      const html = VehicleMarkerHtml(vehicle, isRouteSelected);
+      const html = VehicleMarkerHtml(vehicle, true);
       // Use a block wrapper div (not firstElementChild) so MapLibre's getBoundingClientRect()
       // sees the correct rendered dimensions and computes the center anchor correctly.
       // Passing an inline-flex element directly causes the anchor to compute as [0,0],

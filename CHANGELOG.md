@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Live Vehicles: show all active route shapes automatically** (AI-166): By default, render the route shapes for all routes that have active vehicles, without requiring manual sidebar row selection. Clicking a specific route still filters to just that route.
 - **Live Vehicles: show route shape on map when route is selected** (AI-166): Render route polyline GeoJSON (from standard Frequency layers) as a dynamic map layer when a route is active in the Live Vehicles sidebar. Fits map bounds to the route shape on selection.
 
 ### Fixed
@@ -15,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - **Live Vehicles: vehicle markers appearing at wrong geographic positions** (AI-168): Markers were shifting location when zooming — a bus in Newmarket appeared in Kingston at low zoom. Root cause: `el.firstElementChild` (an `inline-flex position:relative` pill) was passed directly to `maplibregl.Marker`. MapLibre's anchor computation calls `getBoundingClientRect()` on the element, which returns wrong dimensions for `inline-flex` elements in certain rendering contexts, producing a [0,0] anchor offset. At zoom 5, a 17px offset error becomes ~170km of geographic displacement. Fix: pass a plain `inline-block` wrapper div as the marker element, matching the history marker pattern.
 
 ### Changed
+- **Live Vehicles: textless markers** (AI-166): Always render live vehicles as clean, textless colored dots (14px circles) with bearing pointers to avoid text clutter on the map.
 - **Live Vehicles: premium map popups**: Replaced default MapLibre popup container style with a custom styled card matching the app's glassmorphic design theme (blur backdrop, rounded borders, shadow, Inter font).
 - **Live Vehicles: map fits all vehicles on initial load**: On first load for each agency, map now `fitBounds` to all vehicle positions (80px padding, maxZoom 14) instead of flying to agency center at zoom 13. Subsequent polls don't re-fit. Tracked in AI-168.
 - **Live Vehicles: route row right-side stats**: Vehicle count and delay label now inline ("7 veh · 1 early") instead of stacked vertically.

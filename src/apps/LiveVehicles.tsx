@@ -97,36 +97,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     setVehicles([]);
   }, [selectedSlug]);
 
-  // Filter map overlay to selected route when one is active
-  const overlayVehicles = useMemo(() => {
-    if (!selectedRoute) return vehicles;
-    return vehicles.filter(v => v.routeShortName === selectedRoute);
-  }, [vehicles, selectedRoute]);
-
-  const routeFeatures = useMemo(() => {
-    if (!selectedRoute || !selectedSlug || !layers[selectedSlug]) return [];
-    return layers[selectedSlug].features.filter(f => {
-      const p = f.properties as any;
-      return p && p.routeShortName === selectedRoute;
-    });
-  }, [layers, selectedRoute, selectedSlug]);
-
-  useEffect(() => {
-    if (!active || !selectedSlug) {
-      setOverlay(null);
-      return;
-    }
-    setOverlay({
-      vehicles: overlayVehicles,
-      agencySlug: selectedSlug,
-      agencyCenter: selectedAgency?.center,
-      focusedVehicle,
-      routeFeatures,
-      selectedRouteShortName: selectedRoute
-    });
-    return () => setOverlay(null);
-  }, [active, overlayVehicles, selectedSlug, selectedAgency, focusedVehicle, routeFeatures, selectedRoute, setOverlay]);
-
   // Filter by search query, then group by route
   const routeGroups = useMemo<RouteGroup[]>(() => {
     const q = query.toLowerCase().trim();
@@ -160,6 +130,47 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         return { routeShortName, displayName, headsigns, vehicles: vs, lateCount, earlyCount, dominantStatus };
       });
   }, [vehicles, query]);
+
+  // Filter map overlay to selected route when one is active
+  const overlayVehicles = useMemo(() => {
+    if (!selectedRoute) return vehicles;
+    return vehicles.filter(v => v.routeShortName === selectedRoute);
+  }, [vehicles, selectedRoute]);
+
+  const routeFeatures = useMemo(() => {
+    if (!selectedSlug || !layers[selectedSlug]) return [];
+    const fc = layers[selectedSlug];
+    if (selectedRoute) {
+      return fc.features.filter(f => {
+        const p = f.properties as any;
+        return p && p.routeShortName === selectedRoute;
+      });
+    }
+    // No route selected: show all routes that have active vehicles
+    const activeRouteNames = new Set(routeGroups.map(g => g.routeShortName));
+    return fc.features.filter(f => {
+      const p = f.properties as any;
+      return p && p.routeShortName && activeRouteNames.has(p.routeShortName);
+    });
+  }, [layers, selectedRoute, selectedSlug, routeGroups]);
+
+  useEffect(() => {
+    if (!active || !selectedSlug) {
+      setOverlay(null);
+      return;
+    }
+    setOverlay({
+      vehicles: overlayVehicles,
+      agencySlug: selectedSlug,
+      agencyCenter: selectedAgency?.center,
+      focusedVehicle,
+      routeFeatures,
+      selectedRouteShortName: selectedRoute
+    });
+    return () => setOverlay(null);
+  }, [active, overlayVehicles, selectedSlug, selectedAgency, focusedVehicle, routeFeatures, selectedRoute, setOverlay]);
+
+
 
   const handleRouteClick = (routeShortName: string) => {
     const next = selectedRoute === routeShortName ? null : routeShortName;
