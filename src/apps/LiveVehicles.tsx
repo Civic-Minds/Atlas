@@ -257,11 +257,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       )}
                     </div>
 
-                    <div className="flex flex-col items-end gap-0.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <span className={LIST_ROW_DIM}>{g.vehicles.length} veh</span>
                       {statusLabel && (
                         <span style={{ color: colors.text }} className="text-[9px] font-black">
-                          {statusLabel}
+                          · {statusLabel}
                         </span>
                       )}
                     </div>

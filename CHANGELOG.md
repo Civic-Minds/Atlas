@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **Live Vehicles: route row right-side stats**: Vehicle count and delay label now inline ("7 veh · 1 early") instead of stacked vertically.
 - **Live Vehicles: vehicle markers**: Changed from fixed 28px circle to auto-sizing pill (`min-width:22px`, `height:22px`, `padding:0 6px`). Handles variable-length route names like "blue" without clipping.
 - **Live Vehicles: route dot**: Sidebar row now uses `w-2 h-2` dot matching the search suggestion design pattern instead of a circle badge.
 - **Refactor: extract map utilities**: Moved `getMapStyle`/`registerProtocol` → `src/lib/mapStyle.ts`; moved `formatGap`, `formatDelta`, `StopCardHtml`, `VehicleMarkerHtml` → `src/lib/mapHtml.ts`. MapCanvas.tsx: 796 → 646 lines.
