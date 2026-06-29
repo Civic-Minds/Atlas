@@ -749,7 +749,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           </div>
                         );
                       })}
-                      {!hideSpan && group.span.length === 1 && (
+                      {(!hideSpan || group.realTier.length === 0) && group.span.length === 1 && (
                         <div key="s0" className="text-[11px]">
                           <span className="font-bold text-[var(--text-muted)] block break-words">
                             {group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'}
@@ -760,7 +760,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           </span>
                         </div>
                       )}
-                      {!hideSpan && group.span.length > 1 && (
+                      {(!hideSpan || group.realTier.length === 0) && group.span.length > 1 && (
                         <div key="smulti" className="text-[11px]">
                           <span className="font-bold text-[var(--text-muted)] leading-snug block">
                             {spanNames.join(' · ')}
@@ -771,7 +771,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                           </span>
                         </div>
                       )}
-                      {hideSpan && spanNames.length > 0 && (
+                      {hideSpan && group.realTier.length > 0 && spanNames.length > 0 && (
                         <p key="span-hint" className="text-[10px] text-[var(--text-dim)] font-bold leading-snug">
                           Also serves: {spanNames.join(' · ')} — infrequent
                         </p>

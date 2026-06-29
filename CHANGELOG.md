@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Route card: span-only directions always visible** (AI-177): When a direction group has no headway entries at all (e.g. GO Route 37's inbound direction to Brampton), it now shows as "to Brampton Term — limited" even with the span filter hidden. Previously hideSpan collapsed it to an "Also serves" footnote, making bidirectional commuter routes appear one-directional.
+
 ### Added
 - **DATA_OVERRIDES.md**: Public log of intentional data corrections with per-agency reasoning. Linked from the agency card and route card in the UI via "We corrected this data" when an agency has active overrides.
 
