@@ -152,6 +152,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onLocate={onLocate}
         showRouteLayers={showRouteLayers}
         showCorridorBand={showCorridorBand}
+        hideSpan={hideSpan}
       />
 
       {showUi && isLoading && (
