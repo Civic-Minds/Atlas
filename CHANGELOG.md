@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - **Hourly sparkline** (AI-180): Route card sparkline now shows per-hour frequency bars (5 AM–2 AM) instead of named period bars. Pipeline computes `headwayByHour` using a 90-min sliding window per hour; merged across all directions (best headway wins). X-axis labelled at 6a/12p/6p/12a. Agencies with overnight service naturally trail into post-midnight bars; agencies without service just show empty bars.
 
 ### Fixed
+- **Live Vehicles: fix route header showing number twice** (e.g. "1  Route 1" → just "1"): display name is now suppressed when it's a generic "Route N" fallback with no meaningful content.
 - **Route card: deduplicate direction entries with same headsign** (AI-181): Multiple shape variants sharing the same headsign produced visually identical rows. Now keeps only the best-headway entry per headsign per direction group.
 - **Route card: sparkline merges all directions** (AI-180): HeadwaySparkline now picks the best (lowest) non-null headway per period across all directions, so bidirectional peak routes (e.g. GO Route 31 — AM one way, PM the other) show the full service pattern rather than just the first direction's data.
 - **Route card: null-period bars no longer show as ambiguous stubs** (AI-180): Periods with no service (null headway) were rendering as a tiny 3px grey bar, visually similar to very infrequent service. They now render as empty space so absent service is clearly distinct from slow service.

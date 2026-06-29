@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Info, Moon, Sun, WifiOff, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollingConfig';
+import { useViewport } from '../context/ViewportContext';
 import type { Agency } from '../App';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { STATUS_COLORS } from '../utils/colors';
 import { cleanRouteShortName, cleanRouteDisplayName } from '../utils/format';
@@ -20,9 +21,9 @@ interface Props {
 }
 
 interface RouteGroup {
+  agencySlug: string;
   routeShortName: string;
   displayName: string;
-  headsigns: string[];
   vehicles: LiveVehicle[];
   lateCount: number;
   earlyCount: number;
@@ -31,52 +32,55 @@ interface RouteGroup {
 
 const POLL_INTERVAL_MS = 15_000;
 
+// Eligible slugs: no API key required, or explicitly marked active
+const ELIGIBLE_SLUGS = new Set(
+  LIVE_POLLING_ROUTES
+    .filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active)
+    .map(r => r.slug)
+);
+
+function delayLabel(v: LiveVehicle): string {
+  if (v.delayMin === null) return 'No data';
+  if (v.delayMin <= -1.5) return `${Math.round(Math.abs(v.delayMin))}m early`;
+  if (v.delayMin >= 5.5) return `${Math.round(v.delayMin)}m late`;
+  return 'On time';
+}
+
+const MIN_LIVE_ZOOM = 9;
+
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {} }: Props) {
   const { setOverlay } = useLiveVehiclesMapOverlay();
-  const [vehicles, setVehicles] = useState<LiveVehicle[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { bounds, zoom } = useViewport();
+
+  // Per-agency vehicle state
+  const [vehiclesBySlug, setVehiclesBySlug] = useState<Record<string, LiveVehicle[]>>({});
+  const [loadingBySlug, setLoadingBySlug] = useState<Record<string, boolean>>({});
+  const [errorBySlug, setErrorBySlug] = useState<Record<string, string | null>>({});
+
+  // Locally-fetched agency GeoJSON (fallback when Interval layers haven't loaded yet)
+  const [localLayers, setLocalLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+
+  // selectedRoute is a composite "slug::routeShortName" key
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
 
-  const eligibleSlugs = useMemo(() => {
-    const slugs = new Set(
-      LIVE_POLLING_ROUTES
-        .filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active)
-        .map(r => r.slug)
-    );
-    return Array.from(slugs);
-  }, []);
+  const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
 
-  const eligibleAgencies = useMemo(() => agencies.filter(a => eligibleSlugs.includes(a.slug)), [agencies, eligibleSlugs]);
+  // Which agency slugs are currently in the viewport
+  const visibleSlugs = useMemo(() => {
+    if (!bounds || !isZoomedIn) return [];
+    return Object.entries(LIVE_AGENCY_BBOXES)
+      .filter(([slug, [w, s, e, n]]) =>
+        ELIGIBLE_SLUGS.has(slug) &&
+        bounds.e > w && bounds.w < e &&
+        bounds.n > s && bounds.s < n
+      )
+      .map(([slug]) => slug);
+  }, [bounds]);
 
-  const [selectedSlug, setSelectedSlug] = useState<string>(() => {
-    try {
-      const saved = localStorage.getItem('atlas_pref_live_agency');
-      if (saved && eligibleSlugs.includes(saved)) return saved;
-    } catch {}
-    return eligibleSlugs[0] || '';
-  });
+  const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
 
-  const [prevSlug, setPrevSlug] = useState(selectedSlug);
-  if (selectedSlug !== prevSlug) {
-    setPrevSlug(selectedSlug);
-    setVehicles([]);
-    setSelectedRoute(null);
-    setFocusedVehicle(null);
-  }
-
-  useEffect(() => {
-    if (selectedSlug) localStorage.setItem('atlas_pref_live_agency', selectedSlug);
-  }, [selectedSlug]);
-
-  const selectedAgency = useMemo(
-    () => eligibleAgencies.find(a => a.slug === selectedSlug) || null,
-    [eligibleAgencies, selectedSlug]
-  );
-
-  const fetchVehicles = useCallback(async (slug: string) => {
-    if (!slug) return;
+  const fetchForSlug = useCallback(async (slug: string) => {
     try {
       const res = await fetch(`/api/live-vehicles?agency=${slug}`);
       if (!res.ok) {
@@ -84,114 +88,179 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         throw new Error(errData.error || `HTTP ${res.status}`);
       }
       const data = await res.json();
-      setVehicles(data.vehicles || []);
-      setError(null);
+      const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
+      setVehiclesBySlug(prev => ({ ...prev, [slug]: tagged }));
+      setErrorBySlug(prev => ({ ...prev, [slug]: null }));
     } catch (err: any) {
-      console.error('Failed to fetch live vehicles:', err);
-      setError(err.message || 'Failed to load vehicle positions');
+      setErrorBySlug(prev => ({ ...prev, [slug]: err.message || 'Feed unavailable' }));
     }
   }, []);
 
+  // Start/stop polling when visible slugs change
   useEffect(() => {
-    if (!active || !selectedSlug) return;
-    setLoading(true);
-    fetchVehicles(selectedSlug).finally(() => setLoading(false));
-    const pollId = setInterval(() => fetchVehicles(selectedSlug), POLL_INTERVAL_MS);
-    return () => clearInterval(pollId);
-  }, [active, selectedSlug, fetchVehicles]);
+    if (!active || visibleSlugs.length === 0) {
+      setVehiclesBySlug({});
+      setLoadingBySlug({});
+      setErrorBySlug({});
+      return;
+    }
 
-  // Reset on agency switch (handled synchronously during render to prevent state updates racing map overlay)
+    // Initial fetch
+    const loading: Record<string, boolean> = {};
+    visibleSlugs.forEach(s => (loading[s] = true));
+    setLoadingBySlug(loading);
+    Promise.all(visibleSlugs.map(s => fetchForSlug(s))).finally(() =>
+      setLoadingBySlug(prev => {
+        const next = { ...prev };
+        visibleSlugs.forEach(s => (next[s] = false));
+        return next;
+      })
+    );
 
-  // Filter by search query, then group by route
+    const pollId = setInterval(() => visibleSlugs.forEach(fetchForSlug), POLL_INTERVAL_MS);
+    return () => {
+      clearInterval(pollId);
+      // Clear stale data for slugs that left the viewport
+      setVehiclesBySlug(prev => {
+        const keep = new Set(visibleSlugs);
+        const next: typeof prev = {};
+        for (const [s, v] of Object.entries(prev)) {
+          if (keep.has(s)) next[s] = v;
+        }
+        return next;
+      });
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, visibleSlugKey, fetchForSlug]);
+
+  // Clear selected route when it's no longer in view
+  useEffect(() => {
+    if (!selectedRoute) return;
+    const [slug] = selectedRoute.split('::');
+    if (!visibleSlugs.includes(slug)) {
+      setSelectedRoute(null);
+      setFocusedVehicle(null);
+    }
+  }, [visibleSlugs, selectedRoute]);
+
+  const allVehicles = useMemo(() => Object.values(vehiclesBySlug).flat(), [vehiclesBySlug]);
+  const isLoading = Object.values(loadingBySlug).some(Boolean);
+  const errors = Object.values(errorBySlug).filter(Boolean) as string[];
+
+  // Fetch agency GeoJSON directly when selected route's agency isn't in the prop layers yet
+  useEffect(() => {
+    if (!selectedRoute) return;
+    const [slug] = selectedRoute.split('::');
+    if (!slug || layers[slug] || localLayers[slug]) return;
+    const agency = agencies.find(a => a.slug === slug);
+    if (!agency?.url) return;
+    fetch(agency.url)
+      .then(r => r.json())
+      .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
+      .catch(() => {});
+  }, [selectedRoute, layers, localLayers, agencies]);
+
+  // Route shapes: only load when a route is selected; prefer prop layers, fall back to local fetch
+  const routeFeatures = useMemo(() => {
+    if (!selectedRoute) return [];
+    const [slug, rsn] = selectedRoute.split('::');
+    if (!slug || !rsn) return [];
+    const fc = layers[slug] ?? localLayers[slug];
+    if (!fc) return [];
+    return fc.features.filter(f => {
+      const p = f.properties as any;
+      return p && p.routeShortName === rsn;
+    });
+  }, [layers, localLayers, selectedRoute]);
+
+  // Filter map overlay to selected route when one is active
+  const overlayVehicles = useMemo(() => {
+    if (!selectedRoute) return allVehicles;
+    return allVehicles.filter(v => `${v.agencySlug}::${v.routeShortName}` === selectedRoute);
+  }, [allVehicles, selectedRoute]);
+
+  // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll)
+  useEffect(() => {
+    if (!active) return;
+    setOverlay({ vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute });
+  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, setOverlay]);
+
+  // Clear overlay when deactivating or unmounting
+  useEffect(() => {
+    if (!active) setOverlay(null);
+  }, [active, setOverlay]);
+  useEffect(() => {
+    return () => setOverlay(null);
+  }, [setOverlay]);
+
+  // Filter + group by (agencySlug, routeShortName)
   const routeGroups = useMemo<RouteGroup[]>(() => {
     const q = query.toLowerCase().trim();
     const filtered = q
-      ? vehicles.filter(v =>
+      ? allVehicles.filter(v =>
           v.routeShortName.toLowerCase().includes(q) ||
           (v.displayName && v.displayName.toLowerCase().includes(q)) ||
           (v.headsign && v.headsign.toLowerCase().includes(q))
         )
-      : vehicles;
+      : allVehicles;
 
-    const groups = new Map<string, LiveVehicle[]>();
+    const map = new Map<string, LiveVehicle[]>();
     for (const v of filtered) {
-      if (!groups.has(v.routeShortName)) groups.set(v.routeShortName, []);
-      groups.get(v.routeShortName)!.push(v);
+      const key = `${v.agencySlug}::${v.routeShortName}`;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(v);
     }
 
-    return [...groups.entries()]
-      .sort(([a], [b]) => {
-        const numA = parseInt(a), numB = parseInt(b);
+    return [...map.entries()]
+      .sort(([keyA], [keyB]) => {
+        const [slugA, rsnA] = keyA.split('::');
+        const [slugB, rsnB] = keyB.split('::');
+        if (slugA !== slugB) return slugA.localeCompare(slugB);
+        const numA = parseInt(rsnA), numB = parseInt(rsnB);
         if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-        return a.localeCompare(b);
+        return rsnA.localeCompare(rsnB);
       })
-      .map(([routeShortName, vs]) => {
+      .map(([key, vs]) => {
+        const [agencySlug, routeShortName] = key.split('::');
         const lateCount = vs.filter(v => v.status === 'late').length;
         const earlyCount = vs.filter(v => v.status === 'early').length;
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
-        const headsigns = [...new Set(vs.map(v => v.headsign).filter(Boolean) as string[])];
         const displayName = cleanRouteDisplayName(vs[0].displayName || `Route ${routeShortName}`, routeShortName);
-        return { routeShortName, displayName, headsigns, vehicles: vs, lateCount, earlyCount, dominantStatus };
+        return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
       });
-  }, [vehicles, query]);
+  }, [allVehicles, query]);
 
-  // Filter map overlay to selected route when one is active
-  const overlayVehicles = useMemo(() => {
-    if (!selectedRoute) return vehicles;
-    return vehicles.filter(v => v.routeShortName === selectedRoute);
-  }, [vehicles, selectedRoute]);
+  const multipleAgencies = useMemo(() => {
+    const slugs = new Set(routeGroups.map(g => g.agencySlug));
+    return slugs.size > 1;
+  }, [routeGroups]);
 
-  const routeFeatures = useMemo(() => {
-    if (!selectedSlug || !layers[selectedSlug]) return [];
-    const fc = layers[selectedSlug];
-    if (selectedRoute) {
-      return fc.features.filter(f => {
-        const p = f.properties as any;
-        return p && p.routeShortName === selectedRoute;
-      });
-    }
-    // No route selected: show all routes that have active vehicles
-    const activeRouteNames = new Set(routeGroups.map(g => g.routeShortName));
-    return fc.features.filter(f => {
-      const p = f.properties as any;
-      return p && p.routeShortName && activeRouteNames.has(p.routeShortName);
-    });
-  }, [layers, selectedRoute, selectedSlug, routeGroups]);
-
-  useEffect(() => {
-    if (!active || !selectedSlug) {
-      setOverlay(null);
-      return;
-    }
-    setOverlay({
-      vehicles: overlayVehicles,
-      agencySlug: selectedSlug,
-      agencyCenter: selectedAgency?.center,
-      focusedVehicle,
-      routeFeatures,
-      selectedRouteShortName: selectedRoute
-    });
-    return () => setOverlay(null);
-  }, [active, overlayVehicles, selectedSlug, selectedAgency, focusedVehicle, routeFeatures, selectedRoute, setOverlay]);
-
-
-
-  const handleRouteClick = (routeShortName: string) => {
-    const next = selectedRoute === routeShortName ? null : routeShortName;
-    setSelectedRoute(next);
-    if (next) {
-      const group = routeGroups.find(g => g.routeShortName === next);
-      if (group?.vehicles[0]) {
-        const v = group.vehicles[0];
-        setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+  const handleRouteClick = useCallback((key: string) => {
+    setSelectedRoute(prev => {
+      if (prev === key) {
+        setFocusedVehicle(null);
+        return null;
       }
-    } else {
-      setFocusedVehicle(null);
-    }
-  };
+      const vehicles = vehiclesBySlug[key.split('::')[0]] ?? [];
+      const v = vehicles.find(v => `${v.agencySlug}::${v.routeShortName}` === key);
+      if (v) setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+      return key;
+    });
+  }, [vehiclesBySlug]);
+
+  // Data for route card view
+  const selectedGroup = selectedRoute
+    ? routeGroups.find(g => `${g.agencySlug}::${g.routeShortName}` === selectedRoute) ?? null
+    : null;
+  const selectedAgencyName = selectedGroup
+    ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
+    : null;
 
   if (!active) return null;
+
+  const totalVehicles = allVehicles.length;
+  const hasAnyError = errors.length > 0 && totalVehicles === 0;
 
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none">
@@ -200,55 +269,113 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
           {/* Header */}
           <div className="px-4 pt-3.5 pb-2.5 border-b border-[var(--border-primary)] flex items-center gap-2 shrink-0">
-            {vehicles.length > 0 ? (
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-              </span>
-            ) : loading ? (
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
-              </span>
-            ) : error ? (
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shrink-0" />
+            {selectedGroup ? (
+              // Route card header
+              <>
+                <button
+                  onClick={() => { setSelectedRoute(null); setFocusedVehicle(null); }}
+                  className="p-0.5 -ml-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+                  aria-label="Back to route list"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </button>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black text-[var(--text-primary)] truncate">
+                    {cleanRouteShortName(selectedGroup.routeShortName)}
+                    {(() => {
+                      const cleaned = cleanRouteShortName(selectedGroup.routeShortName);
+                      const isGeneric = selectedGroup.displayName === selectedGroup.routeShortName
+                        || selectedGroup.displayName.toLowerCase() === `route ${cleaned.toLowerCase()}`;
+                      return !isGeneric
+                        ? <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{selectedGroup.displayName}</span>
+                        : null;
+                    })()}
+                  </p>
+                  {selectedAgencyName && (
+                    <p className={`text-[10px] ${LIST_ROW_DIM} truncate`}>{selectedAgencyName}</p>
+                  )}
+                </div>
+              </>
             ) : (
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
+              // List header
+              <>
+                {!isZoomedIn ? (
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
+                ) : totalVehicles > 0 ? (
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                  </span>
+                ) : isLoading ? (
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+                  </span>
+                ) : hasAnyError ? (
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shrink-0" />
+                ) : (
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
+                )}
+                <h2 className="text-xs font-black text-[var(--text-primary)]">Live Vehicles</h2>
+              </>
             )}
-            <h2 className="text-xs font-black text-[var(--text-primary)]">Live Vehicles</h2>
           </div>
 
-          {/* Network selector */}
-          <div className="px-4 py-2.5 border-b border-[var(--border-primary)] shrink-0">
-            <select
-              value={selectedSlug}
-              onChange={e => setSelectedSlug(e.target.value)}
-              className="w-full text-xs font-bold [font-family:inherit] bg-[var(--bg-btn)] border border-[var(--border-primary)] rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[var(--accent)] text-[var(--text-primary)] transition-colors cursor-pointer"
-            >
-              {eligibleAgencies.map(a => (
-                <option key={a.slug} value={a.slug}>{a.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Route list */}
+          {/* Content */}
           <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
-            {loading && vehicles.length === 0 ? (
+            {selectedGroup ? (
+              // Route card: individual vehicle list
+              selectedGroup.vehicles.length === 0 ? (
+                <div className="py-10 text-center">
+                  <p className="text-xs text-[var(--text-muted)]">No vehicles on this route</p>
+                </div>
+              ) : (
+                selectedGroup.vehicles.map(v => {
+                  const label = delayLabel(v);
+                  const colors = STATUS_COLORS[v.status];
+                  return (
+                    <div key={v.id} className="px-4 py-2.5 border-b border-[var(--border-primary)] flex items-center gap-3">
+                      <p className="text-xs font-bold text-[var(--text-primary)] flex-1 min-w-0 truncate">
+                        {v.headsign || '—'}
+                      </p>
+                      <span
+                        style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                        className={`text-[10px] font-black shrink-0 ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
+                      >
+                        {label}
+                      </span>
+                    </div>
+                  );
+                })
+              )
+            ) : !isZoomedIn ? (
+              // Too zoomed out
+              <div className="py-10 text-center px-4 flex flex-col items-center gap-2">
+                <p className="text-xs font-bold text-[var(--text-primary)]">Zoom in to see vehicles</p>
+                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                  Zoom into a city to start tracking live vehicles.
+                </p>
+              </div>
+            ) : visibleSlugs.length === 0 && !isLoading ? (
+              // No live agencies in viewport
+              <div className="py-10 text-center px-4 flex flex-col items-center gap-2">
+                <p className="text-xs font-bold text-[var(--text-primary)]">No live coverage here</p>
+                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                  Pan to Burlington, Hamilton, Toronto, York Region, Edmonton, or Halifax to see live vehicles.
+                </p>
+              </div>
+            ) : isLoading && totalVehicles === 0 ? (
               <div className="flex items-center justify-center py-12 gap-2">
                 <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
                 <span className="text-xs text-[var(--text-muted)]">Loading feed…</span>
               </div>
-            ) : error && vehicles.length === 0 ? (
+            ) : hasAnyError ? (
               <div className="py-6 text-center px-4 flex flex-col items-center gap-3">
                 <WifiOff className="w-5 h-5 text-[var(--text-dim)]" />
                 <div>
-                  <p className="text-xs font-bold text-[var(--text-primary)]">
-                    {error.includes('No live config') ? 'No live feed for this network' : 'Feed unavailable'}
-                  </p>
+                  <p className="text-xs font-bold text-[var(--text-primary)]">Feed unavailable</p>
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">
-                    {error.includes('No live config')
-                      ? "This network doesn't have a real-time feed configured."
-                      : 'Unable to reach the live feed. It will retry automatically.'}
+                    Unable to reach the live feed. It will retry automatically.
                   </p>
                 </div>
               </div>
@@ -262,51 +389,53 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 </p>
               </div>
             ) : (
-              routeGroups.map(g => {
-                const colors = STATUS_COLORS[g.dominantStatus];
-                const isSelected = selectedRoute === g.routeShortName;
-                const statusLabel = g.lateCount > 0
-                  ? `${g.lateCount} late`
-                  : g.earlyCount > 0
-                    ? `${g.earlyCount} early`
-                    : null;
+              // Route list, grouped by agency when multiple are visible
+              (() => {
+                let lastSlug = '';
+                return routeGroups.map(g => {
+                  const key = `${g.agencySlug}::${g.routeShortName}`;
+                  const isSelected = selectedRoute === key;
+                  const colors = STATUS_COLORS[g.dominantStatus];
+                  const statusLabel = g.lateCount > 0
+                    ? `${g.lateCount} late`
+                    : g.earlyCount > 0
+                      ? `${g.earlyCount} early`
+                      : null;
 
-                return (
-                  <RouteListRow
-                    key={g.routeShortName}
-                    shortName={cleanRouteShortName(g.routeShortName)}
-                    name={g.displayName}
-                    selected={isSelected}
-                    onClick={() => handleRouteClick(g.routeShortName)}
-                    right={
-                      <div className="flex items-center gap-1.5 shrink-0 ml-3">
-                        <span className="text-[10px] text-[var(--text-muted)] font-bold">{g.vehicles.length} veh</span>
-                        {statusLabel && (
-                          <span style={{ color: colors.border }} className="text-[9px] font-black">
-                            · {statusLabel}
-                          </span>
-                        )}
-                        <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                      </div>
-                    }
-                  />
-                );
-              })
+                  const showAgencyHeader = multipleAgencies && g.agencySlug !== lastSlug;
+                  lastSlug = g.agencySlug;
+                  const agencyName = agencies.find(a => a.slug === g.agencySlug)?.name ?? g.agencySlug;
+
+                  return (
+                    <React.Fragment key={key}>
+                      {showAgencyHeader && (
+                        <div className="px-4 pt-3 pb-1 text-[9px] font-black tracking-wider text-[var(--text-dim)]">
+                          {agencyName}
+                        </div>
+                      )}
+                      <RouteListRow
+                        shortName={cleanRouteShortName(g.routeShortName)}
+                        name={g.displayName}
+                        selected={isSelected}
+                        onClick={() => handleRouteClick(key)}
+                        right={
+                          <div className="flex items-center gap-1.5 shrink-0 ml-3">
+                            <span className="text-[10px] text-[var(--text-muted)] font-bold">{g.vehicles.length} veh</span>
+                            {statusLabel && (
+                              <span style={{ color: colors.border }} className="text-[9px] font-black">
+                                · {statusLabel}
+                              </span>
+                            )}
+                            <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+                          </div>
+                        }
+                      />
+                    </React.Fragment>
+                  );
+                });
+              })()
             )}
           </div>
-
-          {/* Selected route footer */}
-          {selectedRoute && (
-            <div className="px-4 py-2 border-t border-[var(--border-primary)] shrink-0 flex items-center justify-between">
-              <span className="text-[10px] text-[var(--text-muted)] font-bold">Route {cleanRouteShortName(selectedRoute)} on map</span>
-              <button
-                onClick={() => { setSelectedRoute(null); setFocusedVehicle(null); }}
-                className="text-[10px] text-[var(--accent)] font-black hover:opacity-70 transition-opacity"
-              >
-                Show all
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
