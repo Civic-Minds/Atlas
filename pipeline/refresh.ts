@@ -127,6 +127,7 @@ interface AgencyEntry {
   stopsUrl: string;
   corridorsUrl?: string;
   feedUrl: string | null;
+  mdbFeedUrl?: string | null;
   supplementalFeedUrls?: string[];
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
@@ -165,7 +166,14 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     return 'skipped (no feedUrl)';
   }
 
-  const buf = await downloadFeed(agency.feedUrl);
+  let buf: Buffer;
+  try {
+    buf = await downloadFeed(agency.feedUrl);
+  } catch (primaryErr) {
+    if (!agency.mdbFeedUrl) throw primaryErr;
+    process.stdout.write(`\n  [warn] primary feed failed (${(primaryErr as Error).message}) — trying MDB fallback\n  `);
+    buf = await downloadFeed(agency.mdbFeedUrl);
+  }
 
   // Sanity: zip magic bytes
   if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
