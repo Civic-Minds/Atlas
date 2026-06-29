@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Pipeline: excludeRouteShortNames support** (AI-176): Added per-agency `excludeRouteShortNames` field to `index.json` / `ProcessOptions`. Routes matching any listed short name are stripped from the GTFS before processing (trips, stop_times, shapes, calendar_dates all cascade). Applied to Stratford: `["LOS"]` excludes "Lights On Stratford", a Dec–Jan seasonal shuttle that Stratford Transit's GTFS incorrectly marks as running Thu–Sun year-round.
+
+### Changed
+- **Frequency map: zoom-based progressive rendering** (AI-178): Routes are now filtered by headway tier based on zoom level using a GPU-evaluated MapLibre step expression (no React re-render on zoom). Below zoom 7 only ≤10 min routes show; zoom 7–9 shows ≤20 min; zoom 9+ applies only the headway pill. Searching a route bypasses the zoom gate so results are always found. Also fixes a pre-existing bug where the headway pill (≤15m etc.) was in the effect dep array but never actually applied to the map layer filter.
+- **Disambiguation popup: sorted numerically** (AI-178): "Multiple routes here" card now sorts entries by route number (numeric, then alpha for non-numeric names like "Lights On Stratford").
+
+### Changed
+- **Live Vehicles: minimum zoom gate** (AI-175): Below zoom 9, Live Vehicles shows "Zoom in to see vehicles" instead of polling. Prevents the useless continent-level view and stops unnecessary API calls when zoomed out.
+- **Live Vehicles: self-fetch agency GeoJSON for route shapes** (AI-175): When a route is selected and Interval's layers haven't loaded the agency yet, LiveVehicles fetches its GeoJSON directly from R2. Fixes "no route shape" on first Live tab visit.
+- **App drawer: active app greyed out** (AI-175): Currently active app is greyed and non-clickable in the app switcher, consistent with settings-style UX.
+
+### Fixed
+- **Map: continent-level zoom on load** (AI-175): `resetViewKey === undefined` guard was never true (resetViewKey is 0 on mount), so the Reset View effect fired on every initial load and fit-bounded all 65 agencies → continent zoom. Changed guard to `resetViewKey === 0`.
+
+### Changed
+- **Live Vehicles: viewport-based multi-agency polling** (AI-174): Removed agency selector dropdown. All eligible agencies whose bounding box overlaps the current map viewport are polled in parallel every 15s. Vehicles from multiple agencies appear simultaneously. Agency label shown above route groups when 2+ agencies visible. Empty state when no covered city is in view.
+- **Live Vehicles: route card on click** (AI-174): Clicking a route now opens a detail card showing individual vehicle rows with headsign and delay status. Back arrow returns to the route list. Replaces the "Route X on map / Show all" footer.
+- **Live Vehicles: no route shapes in overview** (AI-174): Route shapes only draw when a specific route is selected. Overview mode shows only vehicle dots — no more confusing multi-route overlap on screen.
+- **Live Vehicles: popup only when useful** (AI-174): Vehicle popup suppressed when headsign is empty and status is no_data. Headsign and status rows conditionally rendered so popup is never partially empty.
+
+### Fixed
+- **Live Vehicles: random map zoom on every poll** (AI-174): `return () => setOverlay(null)` was running on every data update, briefly nulling the overlay and resetting `liveFittedRouteRef`, triggering a fitBounds on each 15s poll. Split into a dedicated deactivation effect so the main overlay effect has no cleanup.
+
 ### Added
 - **Live Vehicles: show all active route shapes automatically** (AI-166): By default, render the route shapes for all routes that have active vehicles, without requiring manual sidebar row selection. Clicking a specific route still filters to just that route.
 - **Live Vehicles: show route shape on map when route is selected** (AI-166): Render route polyline GeoJSON (from standard Frequency layers) as a dynamic map layer when a route is active in the Live Vehicles sidebar. Fits map bounds to the route shape on selection.

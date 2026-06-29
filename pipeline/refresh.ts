@@ -130,6 +130,7 @@ interface AgencyEntry {
   lastFeedVersion?: string | null;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
+  excludeRouteShortNames?: string[];
   staged?: boolean;
 }
 
@@ -192,6 +193,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   const primary = await processGtfsBuffer(buf, undefined, {
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
+    excludeRouteShortNames: agency.excludeRouteShortNames,
     slug: agency.slug,
   });
 

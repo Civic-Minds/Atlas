@@ -8,7 +8,7 @@ import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { filterGtfsByRouteTypes } from './filterGtfs.js';
+import { filterGtfsByRouteTypes, filterGtfsByExcludedShortNames } from './filterGtfs.js';
 import { mergeNrtDayNightRoutes } from './transforms/nrt-day-night.js';
 import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
@@ -142,6 +142,7 @@ function projectStopsOntoShape(
 export interface ProcessOptions {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
+  excludeRouteShortNames?: string[];
   slug?: string;
 }
 
@@ -176,6 +177,9 @@ export async function processGtfsBuffer(
   let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus);
   if (options?.routeTypes?.length) {
     gtfs = filterGtfsByRouteTypes(gtfs, options.routeTypes);
+  }
+  if (options?.excludeRouteShortNames?.length) {
+    gtfs = filterGtfsByExcludedShortNames(gtfs, options.excludeRouteShortNames);
   }
   if (options?.preprocess === 'nrt-day-night') {
     const { gtfs: merged, result } = mergeNrtDayNightRoutes(gtfs);
