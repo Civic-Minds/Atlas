@@ -441,17 +441,21 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
     // Stops visibility
     if (hasStops) {
-      const showAll = zoom >= 15;
-      const showRail = zoom >= 12 && zoom < 15;
+      if (!showRouteLayers) {
+        map.setFilter('stops-layer', ['==', 'agencySlug', ''] as any);
+      } else {
+        const showAll = zoom >= 15;
+        const showRail = zoom >= 12 && zoom < 15;
 
-      map.setFilter('stops-layer', [
-        'all',
-        showAll 
-          ? ['all'] 
-          : showRail 
-            ? ['==', ['get', 'isRail'], true]
-            : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
-      ] as any);
+        map.setFilter('stops-layer', [
+          'all',
+          showAll 
+            ? ['all'] 
+            : showRail 
+              ? ['==', ['get', 'isRail'], true]
+              : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
+        ] as any);
+      }
     }
 
   }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers]);
@@ -642,8 +646,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       } else {
         map.fitBounds([[minLon, minLat], [maxLon, maxLat]], { padding: 80, maxZoom: 14 });
       }
-    } else if (liveOverlay.vehicles.length === 0 && liveOverlay.agencyCenter && liveFittedAgencyRef.current !== agencyKey) {
-      liveFittedAgencyRef.current = agencyKey;
+    } else if (liveOverlay.vehicles.length === 0 && liveOverlay.agencyCenter && liveFittedAgencyRef.current !== agencyKey && liveFittedAgencyRef.current !== agencyKey + '-center') {
+      liveFittedAgencyRef.current = agencyKey + '-center';
       map.flyTo({ center: [liveOverlay.agencyCenter[1], liveOverlay.agencyCenter[0]], zoom: 13 });
     }
   }, [liveOverlay, mapLoaded]);

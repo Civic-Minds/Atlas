@@ -250,7 +250,7 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inCorridors || inHistory || inLive}
+              showRouteLayers={inFrequency || inCorridors || inHistory}
               showCorridorBand={inCorridors}
               hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}
