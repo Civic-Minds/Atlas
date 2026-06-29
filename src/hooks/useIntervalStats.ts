@@ -37,7 +37,7 @@ function effectiveMode(p: ShapeProperties): number {
   return p.routeType ?? 3;
 }
 
-export type TimePeriod = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
+export type TimePeriod = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'lateNight';
 
 export const PERIOD_LABELS: Record<TimePeriod, string> = {
   all: 'All day',

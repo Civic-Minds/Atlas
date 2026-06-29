@@ -33,7 +33,7 @@ const MODES = [
 ];
 
 
-const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening', 'lateNight'];
 
 export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
   const d = new Date().getDay();

@@ -691,8 +691,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               // Merge headwayByPeriod across all directions — take the best (lowest) non-null
               // headway per period so bidirectional peak routes (AM one way, PM the other)
               // show the full service picture rather than just one direction's data.
-              const PERIODS = ['amPeak', 'midday', 'pmPeak', 'evening'] as const;
-              const merged: HeadwayByPeriod = { amPeak: null, midday: null, pmPeak: null, evening: null };
+              const PERIODS = ['amPeak', 'midday', 'pmPeak', 'evening', 'lateNight'] as const;
+              const merged: HeadwayByPeriod = { amPeak: null, midday: null, pmPeak: null, evening: null, lateNight: null };
               for (const d of currentRoute.directions) {
                 const bp = d.headwayByPeriod as HeadwayByPeriod | undefined;
                 if (!bp) continue;

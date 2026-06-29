@@ -3,10 +3,11 @@ import { getTierColor } from '../../utils/colors';
 import type { HeadwayByPeriod } from '../../hooks/useAgencyData';
 
 const SPARKLINE_PERIODS: Array<{ key: keyof HeadwayByPeriod; label: string }> = [
-  { key: 'amPeak', label: 'AM' },
-  { key: 'midday', label: 'MID' },
-  { key: 'pmPeak', label: 'PM' },
-  { key: 'evening', label: 'EVE' },
+  { key: 'amPeak',    label: 'AM' },
+  { key: 'midday',    label: 'MID' },
+  { key: 'pmPeak',    label: 'PM' },
+  { key: 'evening',   label: 'EVE' },
+  { key: 'lateNight', label: 'NIGHT' },
 ];
 
 export function headwayToTierColor(h: number | null | undefined): string {

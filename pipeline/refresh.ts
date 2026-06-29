@@ -23,7 +23,9 @@ if (!process.env.R2_ACCESS_KEY_ID) {
   process.exit(1);
 }
 
-const onlySlugs = process.argv.slice(2);
+const rawArgs = process.argv.slice(2);
+const forceRefresh = rawArgs.includes('--force');
+const onlySlugs = rawArgs.filter(a => a !== '--force');
 
 // All agencies with a feedUrl get history snapshots — no manual opt-in needed.
 
@@ -183,11 +185,13 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     }
   }
 
-  if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
-    return `skipped (same schedule period: ${peekedExpiry})`;
-  }
-  if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
-    return `skipped (same feed version: ${peekedVersion})`;
+  if (!forceRefresh) {
+    if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
+      return `skipped (same schedule period: ${peekedExpiry})`;
+    }
+    if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
+      return `skipped (same feed version: ${peekedVersion})`;
+    }
   }
 
   const primary = await processGtfsBuffer(buf, undefined, {

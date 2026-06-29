@@ -9,6 +9,7 @@ export interface HeadwayByPeriod {
   midday?: number | null;
   pmPeak?: number | null;
   evening?: number | null;
+  lateNight?: number | null;
 }
 
 export interface ShapeProperties {

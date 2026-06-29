@@ -43,7 +43,7 @@ const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }])
 ) as Record<string, { start: number; end: number }>;
 
-type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening';
+type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'lateNight';
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
 function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
