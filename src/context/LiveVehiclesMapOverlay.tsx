@@ -11,15 +11,15 @@ export interface LiveVehicle {
   delayMin: number | null;
   headsign: string | null;
   status: 'no_data' | 'early' | 'late' | 'on_time';
+  agencySlug: string; // tagged on frontend after fetch
 }
 
 export interface LiveVehiclesMapOverlay {
   vehicles: LiveVehicle[];
-  agencySlug: string;
-  agencyCenter?: [number, number];
   focusedVehicle?: { id: string; lat: number; lon: number; ts: number } | null;
   routeFeatures?: GeoJSON.Feature[];
-  selectedRouteShortName?: string | null;
+  // Composite key "slug::routeShortName" — used for route shape fit-bounds tracking
+  selectedRouteKey?: string | null;
 }
 
 interface ContextValue {
