@@ -226,9 +226,9 @@ async function main() {
       changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
 
       // Build snapshot list from archived change events
-      const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null } }> = changes.map(c => {
+      const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null }; geometry?: number[][] }> = changes.map(c => {
         const { year, label } = parsePeriodKey(c.periodKey);
-        return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod };
+        return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, geometry: c.geometry };
       });
 
       // Deduplicate: collapse consecutive identical headways (keep first occurrence)

@@ -203,6 +203,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         }
       });
 
+      // History route shape dynamic layer (for historical period shapes, AI-162/AI-161)
+      map.addSource('history-route-shape', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'history-route-shape-layer',
+        type: 'line',
+        source: 'history-route-shape',
+        paint: {
+          'line-color': '#3b82f6',
+          'line-width': 3.5,
+          'line-opacity': 0.9
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
       // Live route shape dynamic layer (loaded in Live Vehicles app)
       map.addSource('live-route-shape', {
         type: 'geojson',
@@ -570,6 +590,28 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [corridorOverlay, mapLoaded]);
 
+  // History route shape (historical geometry for selected period, AI-162/AI-161)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const source = map.getSource('history-route-shape') as maplibregl.GeoJSONSource;
+    if (!source) return;
+
+    if (historyOverlay && historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: historyOverlay.routeGeometry },
+          properties: { color: '#3b82f6' }
+        }]
+      });
+    } else {
+      source.setData({ type: 'FeatureCollection', features: [] });
+    }
+  }, [historyOverlay, mapLoaded]);
+
   // History stop markers overlay
   useEffect(() => {
     const map = mapRef.current;
@@ -580,6 +622,19 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     historyMarkersRef.current = [];
 
     if (!historyOverlay) return;
+
+    // If we have historical route geometry (from per-period snapshot), fit to it (supports discontinued routes)
+    if (historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
+      const coords = historyOverlay.routeGeometry;
+      let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+      coords.forEach(([lng, lat]: [number, number]) => {
+        if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
+        if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
+      });
+      if (minLng < maxLng) {
+        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+      }
+    }
 
     if (historyOverlay.stops.length === 0) {
       if (historyOverlay.agencyCenter) {

@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - **Pipeline: short-turn variant metadata** (AI-58): Direction-0 features now carry `shortTurnVariants` — an array of `{ headsign, tripShare }` for shape variants carrying ≥15% of a direction's trips that differ from the dominant cluster. Enables the sidebar to show "X% of trips go to [short-turn headsign]" without per-variant headway computation (that requires phase-1 refactor, deferred).
 
 ### Fixed
+- **History historical route shapes** (AI-162, AI-161): Archive per-period route geometries in history snapshots (written at refresh time alongside headways). In History mode, draw using archived shape via dynamic layer instead of always-current PMTiles; fit bounds to historical geo (supports discontinued routes). Map no longer shows wrong alignment for past periods.
 - **Corridors click handling** (AI-189): Added click listeners on corridor-dynamic-layer and corridor-shapes-layer so map features respond (no more silent clicks; foundation for showing RouteGroupCard / FROM→TO selector on corridor segments and route cards on regular shapes).
 - **Corridors background routes** (AI-188): Regular route layers now hidden in Corridors mode (only the blue corridor features are drawn, no clutter from full orange/green routes underneath).
 - **Corridors long chord geometry** (AI-187): Skip straight-line stop-pair chords longer than ~5km during pipeline (avoids misleading diagonals across water for long-distance routes like GO; use actual shapes or shorter segments).

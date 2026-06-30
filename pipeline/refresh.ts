@@ -77,7 +77,16 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     if (prevHeadway !== null && prevHeadway === route.headway) continue;
     changed.push(routeShortName);
     const key = `history/${slug}/${routeShortName}/${periodKey}.json`;
-    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, processedAt });
+    // Capture the route's geometry at this historical period for map rendering in History app (AI-162, AI-161)
+    let geometry: number[][] | null = null;
+    for (const f of fc.features) {
+      const p = f.properties;
+      if (p.routeShortName === routeShortName && p.day === 'Weekday' && (p.directionId === 0 || p.directionId === '0')) {
+        geometry = (f.geometry as any)?.coordinates || null;
+        break;
+      }
+    }
+    const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, geometry, processedAt });
     routeWrites.push(() => r2PutArchiveJson(key, body));
   }
 

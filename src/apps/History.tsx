@@ -10,6 +10,7 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
+  geometry?: number[][];
   note?: string;
 }
 
@@ -142,7 +143,7 @@ function RouteHistoryCard({
       {/* Header */}
       <div className="shrink-0 px-4 pt-3 pb-2">
         <button
-          onClick={onBack}
+          onClick={(e) => { e.stopPropagation(); onBack(); }}
           className="flex items-center gap-0.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-1.5"
           aria-label="Back to routes"
         >
@@ -422,11 +423,20 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
     if (!active) { setOverlay(null); return; }
     const agency = selectedSlug ? (historyAgencies.find(a => a.slug === selectedSlug) ?? null) : null;
     if (agency?.center) {
+      let routeGeometry: number[][] | undefined;
+      if (selectedRouteShortName) {
+        const rt = agency.routes.find(r => r.routeShortName === selectedRouteShortName);
+        if (rt && rt.snapshots.length > 0) {
+          // use geometry from most recent snapshot for this route (historical shape)
+          routeGeometry = rt.snapshots[rt.snapshots.length - 1]?.geometry;
+        }
+      }
       setOverlay({
         slug: agency.slug,
         routeShortName: selectedRouteShortName ?? '',
         stops: [],
-        agencyCenter: agency.center
+        agencyCenter: agency.center,
+        routeGeometry
       });
     } else {
       setOverlay(null);
