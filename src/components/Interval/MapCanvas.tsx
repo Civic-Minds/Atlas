@@ -7,7 +7,6 @@ import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
-import { getTierColor } from '../../utils/colors';
 import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { useViewport } from '../../context/ViewportContext';
 import type { Agency } from '../../App';
@@ -668,7 +667,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     if (historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
       const coords = historyOverlay.routeGeometry;
       let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-      coords.forEach(([lng, lat]: [number, number]) => {
+      coords.forEach((coord) => {
+        const [lng, lat] = coord;
         if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
         if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
       });
