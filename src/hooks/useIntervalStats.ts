@@ -214,9 +214,37 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     });
 
     if (!stopFeature) return null;
+    const props = stopFeature.properties as any;
+    const stopName = props.stopName;
+    const slug = props.agencySlug;
+
+    // Collect all sibling stop IDs sharing the same stopName under this agency
+    const siblingIds = new Set<string>();
+    const allRouteIds = new Set<string>();
+    
+    if (stopName) {
+      for (const f of allFeatures) {
+        const p = f.properties as any;
+        if (p.stopId && p.agencySlug === slug && p.stopName === stopName) {
+          siblingIds.add(p.stopId);
+          const rIds = p.routeIds as string[] | undefined;
+          if (rIds) {
+            for (const rId of rIds) allRouteIds.add(rId);
+          }
+        }
+      }
+    } else {
+      siblingIds.add(stopId);
+      if (props.routeIds) {
+        for (const rId of props.routeIds) allRouteIds.add(rId);
+      }
+    }
+
     return {
-      slug: (stopFeature.properties as any).agencySlug,
-      routeIds: new Set((stopFeature.properties as any).routeIds as string[])
+      slug,
+      routeIds: allRouteIds,
+      stopName,
+      siblingIds
     };
   }, [allFeatures, selectedStop]);
 

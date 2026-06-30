@@ -32,7 +32,12 @@ interface MapCanvasProps {
   onBoundsChange: (b: ViewportBounds) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
-  routesForStop?: { slug: string; routeIds: Set<string> } | null;
+  routesForStop?: {
+    slug: string;
+    routeIds: Set<string>;
+    stopName?: string | null;
+    siblingIds?: Set<string>;
+  } | null;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
   hideSpan?: boolean;
@@ -559,12 +564,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             ? ['all'] 
             : showRail 
               ? ['==', ['get', 'isRail'], true]
-              : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
+              : (selectedStop && routesForStop?.stopName)
+                ? [
+                    'all',
+                    ['==', ['get', 'agencySlug'], selectedStop.split('::')[0]],
+                    ['==', ['get', 'stopName'], routesForStop.stopName]
+                  ]
+                : ['==', ['get', 'stopId'], '']
         ] as any);
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies]);
 
   // Sync corridor static layer visibility
   useEffect(() => {

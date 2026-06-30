@@ -295,13 +295,49 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const compositeId = p.agencySlug && p.stopId ? `${p.agencySlug}::${p.stopId}` : p.stopId;
       return compositeId === selectedStop;
     });
-    return stop ? (stop.properties as any) : null;
+    if (!stop) return null;
+    const props = stop.properties as any;
+
+    // Find all sibling stop IDs under the same agency slug that share the same stopName
+    const siblingIds = new Set<string>();
+    const stopName = props.stopName;
+    if (stopName) {
+      for (const f of allFeatures) {
+        const p = f.properties as any;
+        if (p.stopId && p.agencySlug === props.agencySlug && p.stopName === stopName) {
+          siblingIds.add(p.stopId);
+        }
+      }
+    } else {
+      siblingIds.add(props.stopId);
+    }
+
+    return {
+      ...props,
+      siblingIds
+    };
   }, [selectedStop, nonCorridorLayers]);
 
   const stopRoutes = useMemo(() => {
-    if (!currentStop?.routeIds) return [];
-    const routeIds = new Set<string>(currentStop.routeIds);
+    if (!currentStop) return [];
+    const siblingIds = currentStop.siblingIds || new Set([currentStop.stopId]);
     const stopAgencySlug = currentStop.agencySlug as string | undefined;
+
+    // Collect all routeIds served by any sibling stop
+    const routeIds = new Set<string>();
+    const allFeatures = Object.entries(nonCorridorLayers).flatMap(([slug, fc]) =>
+      fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } }))
+    );
+    for (const f of allFeatures) {
+      const p = f.properties as any;
+      if (p.stopId && p.agencySlug === stopAgencySlug && siblingIds.has(p.stopId)) {
+        const rIds = p.routeIds as string[] | undefined;
+        if (rIds) {
+          for (const rId of rIds) routeIds.add(rId);
+        }
+      }
+    }
+
     // One branch per headsign per direction — each terminal destination gets its own row.
     // headway = stop-specific all-day headway (falls back to feature headway for sorting/color).
     // stopPeriodHw = per-period headways at this specific stop (used when a period filter is active).
@@ -313,9 +349,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
-        // Only include features whose shape actually covers this stop.
-        const stopHw: number | undefined = (p as any).stopHeadways?.[currentStop.stopId];
-        if (stopHw == null) continue;
+        
+        // Only include features whose shape actually covers any of the sibling stops.
+        let stopHw: number | undefined = undefined;
+        let matchingStopId: string | undefined = undefined;
+        for (const sId of siblingIds) {
+          const hw = (p as any).stopHeadways?.[sId];
+          if (hw != null) {
+            stopHw = hw;
+            matchingStopId = sId;
+            break; // Use the first matching sibling stop ID that this route serves
+          }
+        }
+        if (stopHw == null || !matchingStopId) continue;
 
         const shortName = p.routeShortName || p.routeId;
         const dirId = (p as any).directionId ?? 0;
@@ -337,7 +383,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             rKey: routeKey({ ...p, agencySlug: slug } as any),
             headsign: p.headsign ?? null,
             headway: newHeadway,
-            stopPeriodHw: (p as any).stopPeriodHeadways?.[currentStop.stopId] as Partial<Record<string, number>> | undefined,
+            stopPeriodHw: (p as any).stopPeriodHeadways?.[matchingStopId] as Partial<Record<string, number>> | undefined,
             directionId: dirId,
           });
         }
@@ -368,16 +414,42 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const debugRows = useMemo(() => {
     if (!currentStop) return [];
-    const rows: { routeId: string; shortName: string; dir: number; headsign: string; stopHw: number | null; routeHw: number | null }[] = [];
+    const siblingIds = currentStop.siblingIds || new Set([currentStop.stopId]);
     const stopAgencySlug = currentStop.agencySlug as string | undefined;
-    const routeIds = new Set<string>(currentStop.routeIds ?? []);
+    const rows: { routeId: string; shortName: string; dir: number; headsign: string; stopHw: number | null; routeHw: number | null }[] = [];
+
+    // Collect all routeIds served by any sibling stop
+    const routeIds = new Set<string>();
+    const allFeatures = Object.entries(nonCorridorLayers).flatMap(([slug, fc]) =>
+      fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } }))
+    );
+    for (const f of allFeatures) {
+      const p = f.properties as any;
+      if (p.stopId && p.agencySlug === stopAgencySlug && siblingIds.has(p.stopId)) {
+        const rIds = p.routeIds as string[] | undefined;
+        if (rIds) {
+          for (const rId of rIds) routeIds.add(rId);
+        }
+      }
+    }
+
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
-        const stopHw = (p as any).stopHeadways?.[currentStop.stopId] ?? null;
+
+        let stopHw: number | null = null;
+        for (const sId of siblingIds) {
+          const hw = (p as any).stopHeadways?.[sId];
+          if (hw != null) {
+            stopHw = hw;
+            break;
+          }
+        }
+        if (stopHw == null) continue;
+
         rows.push({
           routeId: p.routeId,
           shortName: p.routeShortName || p.routeId,
