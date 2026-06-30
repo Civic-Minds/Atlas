@@ -548,9 +548,9 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
       className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
     >
       {showScrubber && (
-        <div className={`${FLOATING_CARD} mx-2 px-3 py-2 text-[9px]`}>
+        <div className={`${FLOATING_CARD} px-4 py-2 text-[10px]`}>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Time scrubber</span>
+            <span className="text-[10px] font-bold text-[var(--text-muted)]">Time scrubber</span>
             <span className="font-mono text-xs font-bold text-[var(--text-primary)]">{selectedYear}</span>
           </div>
           <input
@@ -562,7 +562,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
             onChange={e => setSelectedYear(parseInt(e.target.value))}
             className="time-scrubber-range w-full accent-[var(--accent)]"
           />
-          <div className="flex justify-between text-[8px] text-[var(--text-muted)] mt-1 font-mono">
+          <div className="flex justify-between text-[9px] text-[var(--text-muted)] mt-1">
             {availableYears.map(y => <span key={y}>{y}</span>)}
           </div>
         </div>
