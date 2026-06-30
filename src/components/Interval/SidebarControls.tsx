@@ -843,7 +843,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       rel="noopener noreferrer"
                       className="text-[8px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold block mt-0.5"
                     >
-                      Learn more about this feed →
+                      Learn more →
                     </a>
                   )}
                 </div>
