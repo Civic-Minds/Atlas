@@ -143,3 +143,51 @@ button {
 .live-vehicle-popup .maplibregl-popup-tip {
   display: none !important;
 }
+
+/* Time scrubber range — match app's subtle rounded aesthetic (light/dark via vars) */
+.time-scrubber-range {
+  appearance: none;
+  height: 3px;
+  background: var(--border-primary);
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+
+.time-scrubber-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.time-scrubber-range::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.time-scrubber-range::-moz-range-track {
+  height: 3px;
+  background: var(--border-primary);
+  border-radius: 9999px;
+}
+
+.time-scrubber-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.time-scrubber-range::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
