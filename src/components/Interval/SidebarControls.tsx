@@ -13,6 +13,13 @@ import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW
 import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
 import RouteListRow from '../RouteListRow';
 
+function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const latMid = (lat1 + lat2) * Math.PI / 360;
+  const dy = (lat2 - lat1) * 111320;
+  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 interface SidebarControlsProps {
   query: string;
   setQuery: (q: string) => void;
@@ -295,56 +302,66 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const compositeId = p.agencySlug && p.stopId ? `${p.agencySlug}::${p.stopId}` : p.stopId;
       return compositeId === selectedStop;
     });
-    if (!stop) return null;
+    if (!stop || stop.geometry.type !== 'Point') return null;
     const props = stop.properties as any;
 
-    // Find all sibling stop IDs under the same agency slug that share the same stopName
-    const siblingIds = new Set<string>();
+    // Find all sibling stop IDs sharing the same stopName under this agency
+    // OR physically close (within 120 meters) across any agency to support transit hubs
+    const siblingIdsByAgency: Record<string, Set<string>> = {};
     const stopName = props.stopName;
-    if (stopName) {
-      for (const f of allFeatures) {
-        const p = f.properties as any;
-        if (p.stopId && p.agencySlug === props.agencySlug && p.stopName === stopName) {
-          siblingIds.add(p.stopId);
-        }
+    const slug = props.agencySlug;
+    const [clickLon, clickLat] = stop.geometry.coordinates;
+
+    for (const f of allFeatures) {
+      const p = f.properties as any;
+      if (!p.stopId || f.geometry.type !== 'Point') continue;
+      
+      const isExactNameSibling = p.agencySlug === slug && stopName && p.stopName === stopName;
+      
+      let isProximitySibling = false;
+      if (!isExactNameSibling) {
+        const [lon, lat] = f.geometry.coordinates;
+        const dist = getDistanceMeters(clickLat, clickLon, lat, lon);
+        isProximitySibling = dist <= 120;
       }
-    } else {
-      siblingIds.add(props.stopId);
+      
+      if (isExactNameSibling || isProximitySibling) {
+        if (!siblingIdsByAgency[p.agencySlug]) {
+          siblingIdsByAgency[p.agencySlug] = new Set();
+        }
+        siblingIdsByAgency[p.agencySlug].add(p.stopId);
+      }
     }
 
     return {
       ...props,
-      siblingIds
+      siblingIdsByAgency
     };
   }, [selectedStop, nonCorridorLayers]);
 
   const stopRoutes = useMemo(() => {
     if (!currentStop) return [];
-    const siblingIds = currentStop.siblingIds || new Set([currentStop.stopId]);
-    const stopAgencySlug = currentStop.agencySlug as string | undefined;
+    const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
 
-    // Collect all routeIds served by any sibling stop
-    const routeIds = new Set<string>();
-    const allFeatures = Object.entries(nonCorridorLayers).flatMap(([slug, fc]) =>
-      fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } }))
-    );
-    for (const f of allFeatures) {
-      const p = f.properties as any;
-      if (p.stopId && p.agencySlug === stopAgencySlug && siblingIds.has(p.stopId)) {
-        const rIds = p.routeIds as string[] | undefined;
-        if (rIds) {
-          for (const rId of rIds) routeIds.add(rId);
+    const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
+    type Branch = { rKey: string; headsign: string | null; headway: number | null; stopPeriodHw: Partial<Record<string, number>> | undefined; directionId: number };
+
+    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
+      const siblingIds = siblingIdsByAgency[slug] || new Set<string>();
+      if (siblingIds.size === 0) continue;
+
+      // Collect all routeIds served by any sibling stop in this agency
+      const routeIds = new Set<string>();
+      for (const f of fc.features) {
+        const p = f.properties as any;
+        if (p.stopId && siblingIds.has(p.stopId)) {
+          const rIds = p.routeIds as string[] | undefined;
+          if (rIds) {
+            for (const rId of rIds) routeIds.add(rId);
+          }
         }
       }
-    }
 
-    // One branch per headsign per direction — each terminal destination gets its own row.
-    // headway = stop-specific all-day headway (falls back to feature headway for sorting/color).
-    // stopPeriodHw = per-period headways at this specific stop (used when a period filter is active).
-    type Branch = { rKey: string; headsign: string | null; headway: number | null; stopPeriodHw: Partial<Record<string, number>> | undefined; directionId: number };
-    const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
-    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
@@ -414,27 +431,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const debugRows = useMemo(() => {
     if (!currentStop) return [];
-    const siblingIds = currentStop.siblingIds || new Set([currentStop.stopId]);
-    const stopAgencySlug = currentStop.agencySlug as string | undefined;
+    const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
     const rows: { routeId: string; shortName: string; dir: number; headsign: string; stopHw: number | null; routeHw: number | null }[] = [];
 
-    // Collect all routeIds served by any sibling stop
-    const routeIds = new Set<string>();
-    const allFeatures = Object.entries(nonCorridorLayers).flatMap(([slug, fc]) =>
-      fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } }))
-    );
-    for (const f of allFeatures) {
-      const p = f.properties as any;
-      if (p.stopId && p.agencySlug === stopAgencySlug && siblingIds.has(p.stopId)) {
-        const rIds = p.routeIds as string[] | undefined;
-        if (rIds) {
-          for (const rId of rIds) routeIds.add(rId);
+    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
+      const siblingIds = siblingIdsByAgency[slug] || new Set<string>();
+      if (siblingIds.size === 0) continue;
+
+      // Collect all routeIds served by any sibling stop in this agency
+      const routeIds = new Set<string>();
+      for (const f of fc.features) {
+        const p = f.properties as any;
+        if (p.stopId && siblingIds.has(p.stopId)) {
+          const rIds = p.routeIds as string[] | undefined;
+          if (rIds) {
+            for (const rId of rIds) routeIds.add(rId);
+          }
         }
       }
-    }
 
-    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      if (stopAgencySlug && slug !== stopAgencySlug) continue;
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;

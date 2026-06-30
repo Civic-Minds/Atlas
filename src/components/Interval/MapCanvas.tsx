@@ -36,7 +36,7 @@ interface MapCanvasProps {
     slug: string;
     routeIds: Set<string>;
     stopName?: string | null;
-    siblingIds?: Set<string>;
+    siblingIdsByAgency?: Record<string, Set<string>>;
   } | null;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
@@ -558,17 +558,21 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         const showAll = zoom >= 15;
         const showRail = zoom >= 12 && zoom < 15;
 
+        const allSiblingStopIds = routesForStop?.siblingIdsByAgency
+          ? Object.values(routesForStop.siblingIdsByAgency).flatMap(set => Array.from(set))
+          : [];
+
         map.setFilter('stops-layer', [
           'all',
           showAll 
             ? ['all'] 
             : showRail 
-              ? ['==', ['get', 'isRail'], true]
-              : (selectedStop && routesForStop?.stopName)
+              ? ['any', ['==', ['get', 'isRail'], true], ['==', ['get', 'isHub'], true]]
+              : (selectedStop && allSiblingStopIds.length > 0)
                 ? [
                     'all',
-                    ['==', ['get', 'agencySlug'], selectedStop.split('::')[0]],
-                    ['==', ['get', 'stopName'], routesForStop.stopName]
+                    ['in', ['get', 'agencySlug'], ['literal', Object.keys(routesForStop?.siblingIdsByAgency || {})]],
+                    ['in', ['get', 'stopId'], ['literal', allSiblingStopIds]]
                   ]
                 : ['==', ['get', 'stopId'], '']
         ] as any);
