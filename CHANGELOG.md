@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **History time-scrubber** (AI-198): Year slider in History view to replay service changes on the map. Selects snapshot year, updates route shapes (from per-period archive) and colors by historical headway. Network-level visual replay of frequency evolution.
 - **20 new agencies**: Washington state (King County Metro, Sound Transit, Pierce Transit, Community Transit, Everett Transit, Kitsap Transit, Intercity Transit, Skagit Transit, Whatcom Transportation Authority, Island Transit, Jefferson Transit, Clallam Transit System), Maine (Greater Portland Metro, South Portland Bus Service), upstate New York (HOCTS/Utica-Rome, Greater Glens Falls Transit, Watertown Citibus, Hudson Link).
 - **RouteHistoryCard polish**: back button moved to left side of header; route name title-cased (GTFS data is often all-caps); period description on its own line below buttons; sparkline x-axis uses smart anchor (first=start, last=end) and hides overlapping intermediate labels; SVG switched to `viewBox` for responsive width.
 - **History backfill — Community Transit**: 11 annual snapshots 2016–2026 via MDB.

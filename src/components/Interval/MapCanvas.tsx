@@ -7,6 +7,7 @@ import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
+import { getTierColor } from '../../utils/colors';
 import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { useViewport } from '../../context/ViewportContext';
 import type { Agency } from '../../App';
@@ -216,6 +217,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           'line-color': '#3b82f6',
           'line-width': 3.5,
           'line-opacity': 0.9
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
+      // History scrubber routes layer (AI-198) - multiple historical routes
+      map.addSource('history-routes', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'history-routes-layer',
+        type: 'line',
+        source: 'history-routes',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2.5,
+          'line-opacity': 0.85
         },
         layout: {
           'line-cap': 'round',
@@ -607,6 +628,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           properties: { color: '#3b82f6' }
         }]
       });
+    } else {
+      source.setData({ type: 'FeatureCollection', features: [] });
+    }
+  }, [historyOverlay, mapLoaded]);
+
+  // History time-scrubber routes (AI-198)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const source = map.getSource('history-routes') as maplibregl.GeoJSONSource;
+    if (!source) return;
+
+    if (historyOverlay?.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
+      const features = historyOverlay.historicalRouteGeometries.map(r => ({
+        type: 'Feature' as const,
+        geometry: { type: 'LineString' as const, coordinates: r.coordinates },
+        properties: { color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5))) || '#3b82f6' }
+      }));
+      source.setData({ type: 'FeatureCollection', features });
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
     }

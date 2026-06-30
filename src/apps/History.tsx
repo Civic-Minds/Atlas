@@ -378,6 +378,7 @@ function HistoryAgencyPanel({
 export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(0);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
@@ -424,10 +425,22 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
     const agency = selectedSlug ? (historyAgencies.find(a => a.slug === selectedSlug) ?? null) : null;
     if (agency?.center) {
       let routeGeometry: number[][] | undefined;
-      if (selectedRouteShortName) {
+      let historicalRouteGeometries: Array<{routeShortName: string, coordinates: number[][], headway: number}> | undefined;
+      if (selectedYear > 0) {
+        historicalRouteGeometries = [];
+        agency.routes.forEach(route => {
+          const snap = route.snapshots.find(s => s.year === selectedYear) || route.snapshots[route.snapshots.length - 1];
+          if (snap && snap.geometry) {
+            historicalRouteGeometries!.push({
+              routeShortName: route.routeShortName,
+              coordinates: snap.geometry,
+              headway: snap.weekdayHeadwayMin
+            });
+          }
+        });
+      } else if (selectedRouteShortName) {
         const rt = agency.routes.find(r => r.routeShortName === selectedRouteShortName);
         if (rt && rt.snapshots.length > 0) {
-          // use geometry from most recent snapshot for this route (historical shape)
           routeGeometry = rt.snapshots[rt.snapshots.length - 1]?.geometry;
         }
       }
@@ -436,12 +449,14 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
         routeShortName: selectedRouteShortName ?? '',
         stops: [],
         agencyCenter: agency.center,
-        routeGeometry
+        routeGeometry,
+        selectedYear: selectedYear > 0 ? selectedYear : undefined,
+        historicalRouteGeometries
       });
     } else {
       setOverlay(null);
     }
-  }, [active, selectedSlug, selectedRouteShortName, setOverlay, historyAgencies]);
+  }, [active, selectedSlug, selectedRouteShortName, setOverlay, historyAgencies, selectedYear]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 
@@ -506,13 +521,52 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
     );
   }, [query, historyAgencies]);
 
+  const availableYears = useMemo(() => {
+    if (!selectedSlug) return [];
+    const agency = historyAgencies.find(a => a.slug === selectedSlug);
+    if (!agency) return [];
+    const years = new Set<number>();
+    agency.routes.forEach(r => r.snapshots.forEach(s => years.add(s.year)));
+    return Array.from(years).sort((a,b) => a-b);
+  }, [historyAgencies, selectedSlug]);
+
+  useEffect(() => {
+    if (selectedSlug && availableYears.length > 0) {
+      setSelectedYear(availableYears[availableYears.length - 1]);
+    } else {
+      setSelectedYear(0);
+    }
+  }, [selectedSlug, availableYears]);
+
 
   if (!shouldRender) return null;
+
+  const showScrubber = selectedSlug && availableYears.length > 1;
 
   return (
     <div
       className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
     >
+      {showScrubber && (
+        <div className="mx-2 px-2 py-1 bg-[var(--bg-panel)] rounded border border-[var(--border-primary)] text-[9px]">
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="font-bold text-[var(--text-muted)]">Time scrubber</span>
+            <span>{selectedYear}</span>
+          </div>
+          <input
+            type="range"
+            min={availableYears[0]}
+            max={availableYears[availableYears.length-1]}
+            step="1"
+            value={selectedYear}
+            onChange={e => setSelectedYear(parseInt(e.target.value))}
+            className="w-full accent-[var(--accent)]"
+          />
+          <div className="flex justify-between text-[7px] text-[var(--text-muted)] mt-0.5">
+            {availableYears.map(y => <span key={y}>{y}</span>)}
+          </div>
+        </div>
+      )}
       {selectedSlug ? (
         (() => {
           const agencyHistory = historyData?.find(a => a.slug === selectedSlug) ?? null;
