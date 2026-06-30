@@ -603,7 +603,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         </div>
       )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
-        <div className={`${FLOATING_CARD} ${PANEL_ENTER} shrink-0 overflow-hidden`}>
+        <div className={`${FLOATING_CARD} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
           <div>
             {(() => {
               const groups: { agencyName: string; routes: typeof disambigDetails }[] = [];

@@ -294,6 +294,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           const rsn = props.routeShortName as string;
           if (slug && rsn) onHistoryRouteClick(slug, rsn);
         } else if (uniqueRouteKeys.length > 1) {
+          if (map.getZoom() < 13) {
+            // Don't show the long "multiple routes" card when zoomed out
+            setDisambiguationRoutes(null);
+            return;
+          }
           setDisambiguationRoutes(uniqueRouteKeys);
         } else {
           const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
@@ -311,6 +316,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
         setSelectedRoute(null);
         setDisambiguationRoutes(null);
+
+        if (map.getZoom() < 13) {
+          // At low zoom, avoid popping the full multi-route stop card for a "city" click.
+          // User can zoom in first for precise stop details.
+          e.preventDefault();
+          return;
+        }
+
         setSelectedStop(prev => prev === compositeId ? null : compositeId);
         e.preventDefault();
       });
