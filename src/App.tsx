@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, ArrowLeft, Info } from 'lucide-react';
 import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from './styles';
+import { R2_PUBLIC_URL } from '../shared/config';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
@@ -52,6 +53,7 @@ export default function App() {
   }
 
   const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [query, setQuery] = useState('');
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
@@ -63,8 +65,10 @@ export default function App() {
   }
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
+  const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
+  const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
   const [lightMode, setLightMode] = useState(() => {
@@ -139,6 +143,10 @@ export default function App() {
       .then(r => r.json())
       .then(data => setAgencies(data.agencies.filter((a: Agency) => !a.staged)))
       .catch(() => {});
+    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
+      .then(r => r.json())
+      .then((data: Array<{ slug: string }>) => setHistoryAgencySlugs(new Set(data.map(a => a.slug))))
+      .catch(() => setHistoryAgencySlugs(new Set()));
   }, []);
 
   useEffect(() => {
@@ -245,7 +253,7 @@ export default function App() {
         ) : (
           <>
             <Interval
-              agencies={agencies}
+              agencies={inHistory && historyAgencySlugs ? agencies.filter(a => historyAgencySlugs.has(a.slug)) : agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
               query={query}
@@ -253,7 +261,9 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inCorridors || inHistory}
+              showRouteLayers={inFrequency || inHistory}
+              filterToAgencies={inHistory}
+              onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
               hideFilterPanel={inCorridors || inLive}
               onInfoOpen={openInfo}
@@ -267,7 +277,7 @@ export default function App() {
               setDay={setDay}
               onLayersChange={setLayers}
             />
-            <History active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} />
+            <History active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors

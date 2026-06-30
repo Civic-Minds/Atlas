@@ -92,6 +92,10 @@ export function formatRemDisplay(shortName: string | null | undefined, longName:
 }
 
 export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string): string {
+  if (agencyName && /smart/i.test(agencyName) && longName && /Main Line/i.test(longName)) {
+    return 'SMART Train';
+  }
+
   if (!shortName) return longName || '';
 
   // Clean leading zeros from shortName

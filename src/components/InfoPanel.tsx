@@ -37,6 +37,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
@@ -69,6 +70,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
       setQuery(''); setRegionFilter(null); setSelectedSlug(null);
     }
   }, [open, defaultTab]);
+
+  useEffect(() => {
+    if (view === 'agencies') {
+      const id = setTimeout(() => searchInputRef.current?.focus(), 150);
+      return () => clearTimeout(id);
+    }
+  }, [view]);
 
   const regions = useMemo(() => {
     const seen = new Set<string>();
@@ -119,6 +127,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
   const selectedLiveRoutes = selectedSlug ? (liveBySlug.get(selectedSlug) ?? []) : [];
   const selectedHistory = selectedSlug ? historyBySlug.get(selectedSlug) : null;
 
+  const historyYearsText = useMemo(() => {
+    if (!selectedHistory?.routes) return '';
+    const yearsSet = new Set<number>();
+    for (const r of selectedHistory.routes as any[]) {
+      for (const s of r.snapshots ?? []) {
+        if (s.year) yearsSet.add(s.year);
+      }
+    }
+    const years = [...yearsSet].sort((a, b) => a - b);
+    if (years.length === 0) return '';
+    if (years.length === 1) return `in ${years[0]}`;
+    return `from ${years[0]} to ${years[years.length - 1]}`;
+  }, [selectedHistory]);
+
   if (!open) return null;
 
   const headerTitle = view === 'agencies' ? 'Data' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
@@ -130,34 +152,47 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="shrink-0 flex items-center px-5 border-b border-[var(--border-primary)] h-12">
-          {view !== 'home' ? (
+        <div className="shrink-0 flex items-center px-5 border-b border-[var(--border-primary)] h-12 relative overflow-hidden">
+          {/* Home title */}
+          <div 
+            className={`absolute inset-y-0 left-5 right-12 flex items-center transition-all duration-300 ease-out ${
+              view === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
+            }`}
+          >
+            <p className="text-sm font-black text-[var(--text-primary)]">
+              Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span>
+            </p>
+          </div>
+
+          {/* Back button and dynamic title */}
+          <div 
+            className={`absolute inset-y-0 left-5 right-12 flex items-center transition-all duration-300 ease-out ${
+              view !== 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
+            }`}
+          >
             <button
               onClick={() => view === 'agency-detail' ? setView('agencies') : setView('home')}
-              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors mr-3"
+              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors text-left"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="text-xs font-bold">{headerTitle}</span>
+              <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-xs font-bold truncate max-w-[240px]">{headerTitle}</span>
             </button>
-          ) : (
-            <p className="mr-4 shrink-0 text-sm font-black text-[var(--text-primary)]">Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></p>
-          )}
+          </div>
+
           <div className="flex-1" />
           <button
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0"
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0 z-10"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto">
-
-          {/* Home */}
+        {/* Content View Container */}
+        <div className="flex-1 overflow-hidden relative">
           {view === 'home' && (
-            <div className="px-5 py-4 space-y-5">
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A transit atlas covering agencies across North America.
               </p>
@@ -165,15 +200,15 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
-                  {agencies.length} agencies — {totalHistoryAgencies} with frequency history, {totalLiveAgencies} with real-time tracking.
+                  Covering {agencies.length} transit agencies. See live vehicle positions on {totalLiveAgencies}, or explore years of frequency history on {totalHistoryAgencies}.
                 </p>
-              <button
-                onClick={() => setView('agencies')}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-              >
-                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-              </button>
+                <button
+                  onClick={() => setView('agencies')}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </button>
               </div>
 
               <div>
@@ -204,19 +239,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
             </div>
           )}
 
-          {/* Agencies list */}
           {view === 'agencies' && (
-            <div className="flex flex-col">
+            <div className="flex flex-col h-full overflow-y-auto">
               <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className={SEARCH_PILL}>
                   <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
                   <input
+                    ref={searchInputRef}
                     type="text"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                     placeholder="Search agencies…"
                     className={SEARCH_FIELD}
-                    autoFocus
                   />
                   {query && (
                     <button onClick={() => setQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
@@ -268,8 +302,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                           >
                             <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
                             <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                              {hasLive && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white">Live</span>}
-                              {hasHistory && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--bg-app)] border border-[var(--border-primary)] text-[var(--text-muted)]">History</span>}
+                              {hasLive && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live</span>}
+                              {hasHistory && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>}
                             </div>
                           </button>
                         );
@@ -281,44 +315,53 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
             </div>
           )}
 
-          {/* Agency detail */}
-          {view === 'agency-detail' && selectedAgency && (
-            <div className="px-5 py-4 space-y-4">
-              <button
-                onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-              >
-                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">View on map</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-              </button>
+          {view === 'agency-detail' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              {selectedAgency && (
+                <>
+                  <button
+                    onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                  >
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">View on map</span>
+                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                  </button>
 
-              {selectedLiveRoutes.length > 0 && (
-                <div>
-                  <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Live routes</p>
-                  <div className="space-y-1">
-                    {selectedLiveRoutes.map(r => (
-                      <button
-                        key={r.displayRouteShortName}
-                        onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
-                      >
-                        <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
-                        <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+                  {selectedLiveRoutes.length > 0 && (
+                    <div>
+                      <div className="mb-2">
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live ({selectedLiveRoutes.length})</span>
+                      </div>
+                      <div className="space-y-1">
+                        {selectedLiveRoutes.map(r => (
+                          <button
+                            key={r.displayRouteShortName}
+                            onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                          >
+                            <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                            <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-              {selectedHistory && (
-                <div>
-                  <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">History</p>
-                  <p className="text-xs text-[var(--text-dim)]">Historical frequency data available for this agency.</p>
-                </div>
-              )}
+                  {selectedHistory && (
+                    <div>
+                      <div className="mb-2">
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>
+                      </div>
+                      <p className="text-xs text-[var(--text-dim)]">
+                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
+                      </p>
+                    </div>
+                  )}
 
-              {selectedLiveRoutes.length === 0 && !selectedHistory && (
-                <p className="text-xs text-[var(--text-dim)]">No live or history data available for this agency yet.</p>
+                  {selectedLiveRoutes.length === 0 && !selectedHistory && (
+                    <p className="text-xs text-[var(--text-dim)]">No live or history data available for this agency yet.</p>
+                  )}
+                </>
               )}
             </div>
           )}

@@ -183,6 +183,13 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
   return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
 }
 
+function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const latMid = (lat1 + lat2) * Math.PI / 360;
+  const dy = (lat2 - lat1) * 111320;
+  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
   const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors, showCorridorBand } = filters;
   const q = query.trim().toLowerCase();
@@ -213,10 +220,48 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       return p.stopId === stopId;
     });
 
-    if (!stopFeature) return null;
+    if (!stopFeature || stopFeature.geometry.type !== 'Point') return null;
+    const props = stopFeature.properties as any;
+    const stopName = props.stopName;
+    const slug = props.agencySlug;
+    const [clickLon, clickLat] = stopFeature.geometry.coordinates;
+
+    // Collect all sibling stop IDs sharing the same stopName under this agency
+    // OR physically close (within 120 meters) across any agency to support transit hubs
+    const siblingIdsByAgency: Record<string, Set<string>> = {};
+    const allRouteIds = new Set<string>();
+    
+    for (const f of allFeatures) {
+      const p = f.properties as any;
+      if (!p.stopId || f.geometry.type !== 'Point') continue;
+      
+      const isExactNameSibling = p.agencySlug === slug && stopName && p.stopName === stopName;
+      
+      let isProximitySibling = false;
+      if (!isExactNameSibling) {
+        const [lon, lat] = f.geometry.coordinates;
+        const dist = getDistanceMeters(clickLat, clickLon, lat, lon);
+        isProximitySibling = dist <= 120;
+      }
+      
+      if (isExactNameSibling || isProximitySibling) {
+        if (!siblingIdsByAgency[p.agencySlug]) {
+          siblingIdsByAgency[p.agencySlug] = new Set();
+        }
+        siblingIdsByAgency[p.agencySlug].add(p.stopId);
+        
+        const rIds = p.routeIds as string[] | undefined;
+        if (rIds) {
+          for (const rId of rIds) allRouteIds.add(rId);
+        }
+      }
+    }
+
     return {
-      slug: (stopFeature.properties as any).agencySlug,
-      routeIds: new Set((stopFeature.properties as any).routeIds as string[])
+      slug,
+      routeIds: allRouteIds,
+      stopName,
+      siblingIdsByAgency
     };
   }, [allFeatures, selectedStop]);
 

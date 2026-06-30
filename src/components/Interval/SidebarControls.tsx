@@ -8,10 +8,17 @@ import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
-import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel } from '../../utils/format';
+import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel, shortenAgencyName } from '../../utils/format';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
 import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
 import RouteListRow from '../RouteListRow';
+
+function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const latMid = (lat1 + lat2) * Math.PI / 360;
+  const dy = (lat2 - lat1) * 111320;
+  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
+  return Math.sqrt(dx * dx + dy * dy);
+}
 
 interface SidebarControlsProps {
   query: string;
@@ -149,7 +156,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const p = feat.properties as any;
       const shortName = p.routeShortName || p.routeId || '';
       const longName = p.routeLongName || '';
-      const agencyName = p.agencyName || slug;
+      const agencyName = shortenAgencyName(p.agencyName || slug);
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
@@ -178,7 +185,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const headway = p.headway ?? 999;
         const shortName = p.routeShortName || p.routeId;
         const longName = p.routeLongName || '';
-        const agencyName = p.agencyName || slug;
+        const agencyName = shortenAgencyName(p.agencyName || slug);
         routes.push({ key, shortName, longName, agencyName, headway });
       }
     }
@@ -295,27 +302,83 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const compositeId = p.agencySlug && p.stopId ? `${p.agencySlug}::${p.stopId}` : p.stopId;
       return compositeId === selectedStop;
     });
-    return stop ? (stop.properties as any) : null;
+    if (!stop || stop.geometry.type !== 'Point') return null;
+    const props = stop.properties as any;
+
+    // Find all sibling stop IDs sharing the same stopName under this agency
+    // OR physically close (within 120 meters) across any agency to support transit hubs
+    const siblingIdsByAgency: Record<string, Set<string>> = {};
+    const stopName = props.stopName;
+    const slug = props.agencySlug;
+    const [clickLon, clickLat] = stop.geometry.coordinates;
+
+    for (const f of allFeatures) {
+      const p = f.properties as any;
+      if (!p.stopId || f.geometry.type !== 'Point') continue;
+      
+      const isExactNameSibling = p.agencySlug === slug && stopName && p.stopName === stopName;
+      
+      let isProximitySibling = false;
+      if (!isExactNameSibling) {
+        const [lon, lat] = f.geometry.coordinates;
+        const dist = getDistanceMeters(clickLat, clickLon, lat, lon);
+        isProximitySibling = dist <= 120;
+      }
+      
+      if (isExactNameSibling || isProximitySibling) {
+        if (!siblingIdsByAgency[p.agencySlug]) {
+          siblingIdsByAgency[p.agencySlug] = new Set();
+        }
+        siblingIdsByAgency[p.agencySlug].add(p.stopId);
+      }
+    }
+
+    return {
+      ...props,
+      siblingIdsByAgency
+    };
   }, [selectedStop, nonCorridorLayers]);
 
   const stopRoutes = useMemo(() => {
-    if (!currentStop?.routeIds) return [];
-    const routeIds = new Set<string>(currentStop.routeIds);
-    const stopAgencySlug = currentStop.agencySlug as string | undefined;
-    // One branch per headsign per direction — each terminal destination gets its own row.
-    // headway = stop-specific all-day headway (falls back to feature headway for sorting/color).
-    // stopPeriodHw = per-period headways at this specific stop (used when a period filter is active).
-    type Branch = { rKey: string; headsign: string | null; headway: number | null; stopPeriodHw: Partial<Record<string, number>> | undefined; directionId: number };
+    if (!currentStop) return [];
+    const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
+
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
+    type Branch = { rKey: string; headsign: string | null; headway: number | null; stopPeriodHw: Partial<Record<string, number>> | undefined; directionId: number };
+
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      if (stopAgencySlug && slug !== stopAgencySlug) continue;
+      const siblingIds = siblingIdsByAgency[slug] || new Set<string>();
+      if (siblingIds.size === 0) continue;
+
+      // Collect all routeIds served by any sibling stop in this agency
+      const routeIds = new Set<string>();
+      for (const f of fc.features) {
+        const p = f.properties as any;
+        if (p.stopId && siblingIds.has(p.stopId)) {
+          const rIds = p.routeIds as string[] | undefined;
+          if (rIds) {
+            for (const rId of rIds) routeIds.add(rId);
+          }
+        }
+      }
+
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
-        // Only include features whose shape actually covers this stop.
-        const stopHw: number | undefined = (p as any).stopHeadways?.[currentStop.stopId];
-        if (stopHw == null) continue;
+        
+        // Only include features whose shape actually covers any of the sibling stops.
+        let stopHw: number | undefined = undefined;
+        let matchingStopId: string | undefined = undefined;
+        for (const sId of siblingIds) {
+          const hw = (p as any).stopHeadways?.[sId];
+          if (hw != null) {
+            stopHw = hw;
+            matchingStopId = sId;
+            break; // Use the first matching sibling stop ID that this route serves
+          }
+        }
+        if (stopHw == null || !matchingStopId) continue;
 
         const shortName = p.routeShortName || p.routeId;
         const dirId = (p as any).directionId ?? 0;
@@ -323,7 +386,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           routeMap.set(shortName, {
             shortName,
             longName: p.routeLongName || '',
-            agencyName: p.agencyName || slug,
+            agencyName: shortenAgencyName(p.agencyName || slug),
             branches: new Map(),
           });
         }
@@ -337,7 +400,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             rKey: routeKey({ ...p, agencySlug: slug } as any),
             headsign: p.headsign ?? null,
             headway: newHeadway,
-            stopPeriodHw: (p as any).stopPeriodHeadways?.[currentStop.stopId] as Partial<Record<string, number>> | undefined,
+            stopPeriodHw: (p as any).stopPeriodHeadways?.[matchingStopId] as Partial<Record<string, number>> | undefined,
             directionId: dirId,
           });
         }
@@ -368,16 +431,40 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const debugRows = useMemo(() => {
     if (!currentStop) return [];
+    const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
     const rows: { routeId: string; shortName: string; dir: number; headsign: string; stopHw: number | null; routeHw: number | null }[] = [];
-    const stopAgencySlug = currentStop.agencySlug as string | undefined;
-    const routeIds = new Set<string>(currentStop.routeIds ?? []);
+
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      if (stopAgencySlug && slug !== stopAgencySlug) continue;
+      const siblingIds = siblingIdsByAgency[slug] || new Set<string>();
+      if (siblingIds.size === 0) continue;
+
+      // Collect all routeIds served by any sibling stop in this agency
+      const routeIds = new Set<string>();
+      for (const f of fc.features) {
+        const p = f.properties as any;
+        if (p.stopId && siblingIds.has(p.stopId)) {
+          const rIds = p.routeIds as string[] | undefined;
+          if (rIds) {
+            for (const rId of rIds) routeIds.add(rId);
+          }
+        }
+      }
+
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
-        const stopHw = (p as any).stopHeadways?.[currentStop.stopId] ?? null;
+
+        let stopHw: number | null = null;
+        for (const sId of siblingIds) {
+          const hw = (p as any).stopHeadways?.[sId];
+          if (hw != null) {
+            stopHw = hw;
+            break;
+          }
+        }
+        if (stopHw == null) continue;
+
         rows.push({
           routeId: p.routeId,
           shortName: p.routeShortName || p.routeId,
@@ -402,7 +489,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           });
           if (f) {
             const p = f.properties as any;
-            return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: p.agencyName ?? '', color: getTierColor(p.tier) };
+            return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: shortenAgencyName(p.agencyName || slug), color: getTierColor(p.tier) };
           }
         }
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
@@ -432,6 +519,24 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return () => clearTimeout(id);
     }
   }, [hasContent]);
+
+  const routeSlug = currentRoute ? (currentRoute as any).agencySlug as string | undefined : undefined;
+  const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
+  const routeIsStale = (() => {
+    const exp = routeAgency?.lastFeedExpiry;
+    if (!exp || exp.length !== 8) return false;
+    const expDate = new Date(`${exp.slice(0, 4)}-${exp.slice(4, 6)}-${exp.slice(6, 8)}`);
+    return expDate < new Date();
+  })();
+  const expDateStr = (() => {
+    const exp = routeAgency?.lastFeedExpiry;
+    if (!exp || exp.length !== 8) return '';
+    const y = exp.slice(0, 4);
+    const m = exp.slice(4, 6);
+    const d = exp.slice(6, 8);
+    const date = new Date(Date.UTC(parseInt(y), parseInt(m) - 1, parseInt(d)));
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  })();
 
   if (!panelShouldRender) return null;
 
@@ -541,8 +646,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       >
         {currentStop && !query.trim() && (
           <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
-            <div className="flex items-center justify-between mb-2 -mt-2 -mr-2">
-              <span className="text-[10px] font-black tracking-wide text-[var(--accent)]">Station View</span>
+            <div className="flex items-center justify-end mb-2 -mt-2 -mr-2">
               <button onClick={() => setSelectedStop(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -581,25 +685,28 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         const cleaned = headsign && !/^A[0-9]/.test(shortName)
                           ? titleCase(cleanHeadsign(headsign.trim(), shortName, longName))
                           : null;
-                        const label = cleaned
-                          ? (/^to\s/i.test(cleaned) ? cleaned : `→ ${cleaned}`)
-                          : `→ dir ${directionId}`;
+                        const isTo = cleaned && /^to\s/i.test(cleaned);
+                        const displayPrefix = isTo ? 'to' : '→';
+                        const displayBody = cleaned
+                          ? (isTo ? cleaned.replace(/^to\s+/i, '') : cleaned)
+                          : `dir ${directionId}`;
                         const showDivider = hasMultipleDirections && lastDir !== null && directionId !== lastDir;
                         lastDir = directionId;
                         // Use period-specific stop headway when a filter is active, fall back to all-day stop headway.
                         const displayHw = (period !== 'all' ? stopPeriodHw?.[period] : undefined) ?? headway;
                         const showPeriodLabel = period !== 'all' && stopPeriodHw?.[period] != null;
                         return (
-                          <React.Fragment key={`${rKey}::${directionId}::${headsign ?? ''}`}>
+                           <React.Fragment key={`${rKey}::${directionId}::${headsign ?? ''}`}>
                             {showDivider && (
                               <div className="my-1 border-t border-[var(--border-primary)] opacity-50" />
                             )}
                             <div className="flex items-center justify-between">
                               <button
                                 onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
-                                className="font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
+                                className="flex items-start gap-1.5 font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
                               >
-                                {label}
+                                <span className="shrink-0 min-w-[14px] text-center opacity-75">{displayPrefix}</span>
+                                <span>{displayBody}</span>
                               </button>
                               {displayHw != null && (
                                 <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">
@@ -692,11 +799,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       >
                         {displayName}
                       </button>
-                      {isStale && (
-                        <p className="text-[9px] font-bold text-amber-500 mt-0.5">
-                          Schedule may be outdated
-                        </p>
-                      )}
                       {agency?.excludeRouteShortNames?.length ? (
                         <a
                           href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${slug}`}
@@ -818,6 +920,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   </React.Fragment>
                 );
               })}
+              {routeIsStale && (
+                <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 text-right">
+                  <p className="text-[9px] font-bold text-amber-500">
+                    Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}
+                  </p>
+                  {routeSlug && (
+                    <a
+                      href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[8px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold block mt-0.5"
+                    >
+                      Learn more →
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}

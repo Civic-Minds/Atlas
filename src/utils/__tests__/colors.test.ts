@@ -3,13 +3,13 @@ import { describe, it, expect } from 'vitest';
 
 describe('getTierColor', () => {
   it('should return correct color for headway <= 10', () => {
-    expect(getTierColor('10')).toBe('#2563eb');
-    expect(getTierColor('5')).toBe('#2563eb');
+    expect(getTierColor('10')).toBe('#22863a');
+    expect(getTierColor('5')).toBe('#22863a');
   });
 
   it('should return correct color for headway between 10 and 15', () => {
-    expect(getTierColor('15')).toBe('#16a34a');
-    expect(getTierColor('11')).toBe('#16a34a');
+    expect(getTierColor('15')).toBe('#3da44d');
+    expect(getTierColor('11')).toBe('#3da44d');
   });
 
   it('should return correct color for infrequent service', () => {

@@ -32,10 +32,18 @@ interface MapCanvasProps {
   onBoundsChange: (b: ViewportBounds) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
-  routesForStop?: { slug: string; routeIds: Set<string> } | null;
+  routesForStop?: {
+    slug: string;
+    routeIds: Set<string>;
+    stopName?: string | null;
+    siblingIdsByAgency?: Record<string, Set<string>>;
+  } | null;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
   hideSpan?: boolean;
+  filterToAgencies?: boolean;
+  onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
+  selectedModes?: Set<number>;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -56,6 +64,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   showRouteLayers = true,
   showCorridorBand = false,
   hideSpan = false,
+  filterToAgencies = false,
+  onHistoryRouteClick,
+  selectedModes,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -199,6 +210,46 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         }
       });
 
+      // History route shape dynamic layer (for historical period shapes, AI-162/AI-161)
+      map.addSource('history-route-shape', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'history-route-shape-layer',
+        type: 'line',
+        source: 'history-route-shape',
+        paint: {
+          'line-color': '#3b82f6',
+          'line-width': 3.5,
+          'line-opacity': 0.9
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
+      // History scrubber routes layer (AI-198) - multiple historical routes
+      map.addSource('history-routes', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'history-routes-layer',
+        type: 'line',
+        source: 'history-routes',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2.5,
+          'line-opacity': 0.85
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      });
+
       // Live route shape dynamic layer (loaded in Live Vehicles app)
       map.addSource('live-route-shape', {
         type: 'geojson',
@@ -236,7 +287,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         })));
 
         setSelectedStop(null);
-        if (uniqueRouteKeys.length > 1) {
+        if (onHistoryRouteClick) {
+          const slug = props.agencySlug as string;
+          const rsn = props.routeShortName as string;
+          if (slug && rsn) onHistoryRouteClick(slug, rsn);
+        } else if (uniqueRouteKeys.length > 1) {
           setDisambiguationRoutes(uniqueRouteKeys);
         } else {
           const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
@@ -255,6 +310,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         setSelectedRoute(null);
         setDisambiguationRoutes(null);
         setSelectedStop(prev => prev === compositeId ? null : compositeId);
+        e.preventDefault();
+      });
+
+      // Corridor clicks (for Corridors app to respond to blue lines and corridor routes)
+      map.on('click', 'corridor-dynamic-layer', (e) => {
+        e.preventDefault();
+        // TODO: integrate with Corridors to show RouteGroupCard or set from/to
+      });
+      map.on('click', 'corridor-shapes-layer', (e) => {
         e.preventDefault();
       });
 
@@ -416,6 +480,31 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     // Hide span (irregular) routes from the map when hideSpan is active
     const spanFilter: any = hideSpan ? ['!=', ['get', 'tier'], 'span'] : null;
 
+    // MapLibre expression to compute the effective mode of a feature (matches useIntervalStats.ts effectiveMode)
+    const VIRTUAL_LRT_MODE = 900;
+    const modeExpr: any = [
+      'coalesce',
+      [
+        'case',
+        // 1. OCTranspo routeType 0 -> LRT (900)
+        ['all', ['==', ['get', 'routeType'], 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
+        VIRTUAL_LRT_MODE,
+        // 2. LRT Line 1/2/3/4 (routeType 0 and routeLongName starts with "Line ")
+        ['all', ['==', ['get', 'routeType'], 0], ['==', ['slice', ['coalesce', ['get', 'routeLongName'], ''], 0, 5], 'Line ']],
+        VIRTUAL_LRT_MODE,
+        // 3. ION Light Rail (routeType 2 and routeLongName containing "ION")
+        ['all', ['==', ['get', 'routeType'], 2], ['in', 'ION', ['coalesce', ['get', 'routeLongName'], '']]],
+        VIRTUAL_LRT_MODE,
+        // Default: use routeType (or fallback to 3 - Bus)
+        ['get', 'routeType']
+      ],
+      3
+    ];
+
+    const modeFilter: any = selectedModes && selectedModes.size > 0
+      ? ['any', ...Array.from(selectedModes).map(m => ['==', modeExpr, m])]
+      : null;
+
     // Zoom-based progressive gate — GPU-evaluated so it responds in real-time as the user zooms
     // without needing a React re-render. Shows only the most frequent routes when zoomed out.
     // At zoom 9+ there is no additional zoom constraint; the headway pill alone controls visibility.
@@ -442,12 +531,17 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             ['in', q, ['get', 'routeId']],
             ['in', q, ['get', 'agencySlug']]
           ];
-      const clauses = [searchClause, headwayPillFilter, spanFilter].filter(Boolean);
+      const clauses = [searchClause, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     } else {
       // Overview: combine zoom gate + headway pill + span filter
-      const clauses = [zoomGateFilter, headwayPillFilter, spanFilter].filter(Boolean);
+      const clauses = [zoomGateFilter, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
+    }
+
+    if (filterToAgencies && agencies.length > 0) {
+      const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencies.map(a => a.slug)]];
+      routeFilter = routeFilter ? ['all', routeFilter, slugAllowlist] : slugAllowlist;
     }
 
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
@@ -491,18 +585,28 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         const showAll = zoom >= 15;
         const showRail = zoom >= 12 && zoom < 15;
 
+        const allSiblingStopIds = routesForStop?.siblingIdsByAgency
+          ? Object.values(routesForStop.siblingIdsByAgency).flatMap(set => Array.from(set))
+          : [];
+
         map.setFilter('stops-layer', [
           'all',
           showAll 
             ? ['all'] 
             : showRail 
-              ? ['==', ['get', 'isRail'], true]
-              : ['==', ['get', 'stopId'], selectedStop ? selectedStop.split('::')[1] : '']
+              ? ['any', ['==', ['get', 'isRail'], true], ['==', ['get', 'isHub'], true]]
+              : (selectedStop && allSiblingStopIds.length > 0)
+                ? [
+                    'all',
+                    ['in', ['get', 'agencySlug'], ['literal', Object.keys(routesForStop?.siblingIdsByAgency || {})]],
+                    ['in', ['get', 'stopId'], ['literal', allSiblingStopIds]]
+                  ]
+                : ['==', ['get', 'stopId'], '']
         ] as any);
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, maxHeadway, zoom, showRouteLayers, hideSpan]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
@@ -548,6 +652,48 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [corridorOverlay, mapLoaded]);
 
+  // History route shape (historical geometry for selected period, AI-162/AI-161)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const source = map.getSource('history-route-shape') as maplibregl.GeoJSONSource;
+    if (!source) return;
+
+    if (historyOverlay && historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: historyOverlay.routeGeometry },
+          properties: { color: '#3b82f6' }
+        }]
+      });
+    } else {
+      source.setData({ type: 'FeatureCollection', features: [] });
+    }
+  }, [historyOverlay, mapLoaded]);
+
+  // History time-scrubber routes (AI-198)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const source = map.getSource('history-routes') as maplibregl.GeoJSONSource;
+    if (!source) return;
+
+    if (historyOverlay?.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
+      const features = historyOverlay.historicalRouteGeometries.map(r => ({
+        type: 'Feature' as const,
+        geometry: { type: 'LineString' as const, coordinates: r.coordinates },
+        properties: { color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5))) || '#3b82f6' }
+      }));
+      source.setData({ type: 'FeatureCollection', features });
+    } else {
+      source.setData({ type: 'FeatureCollection', features: [] });
+    }
+  }, [historyOverlay, mapLoaded]);
+
   // History stop markers overlay
   useEffect(() => {
     const map = mapRef.current;
@@ -558,6 +704,20 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     historyMarkersRef.current = [];
 
     if (!historyOverlay) return;
+
+    // If we have historical route geometry (from per-period snapshot), fit to it (supports discontinued routes)
+    if (historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
+      const coords = historyOverlay.routeGeometry;
+      let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+      coords.forEach((coord) => {
+        const [lng, lat] = coord;
+        if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
+        if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
+      });
+      if (minLng < maxLng) {
+        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+      }
+    }
 
     if (historyOverlay.stops.length === 0) {
       if (historyOverlay.agencyCenter) {

@@ -20,6 +20,20 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Br: 'BR',
   St: 'ST',
   Rh: 'RH',
+  // Bay Area / Staged expansion acronyms
+  Bart: 'BART',
+  Weta: 'WETA',
+  Sfmta: 'SFMTA',
+  Ac: 'AC',
+  Vta: 'VTA',
+  Samtrans: 'SamTrans',
+  Calitp: 'CalITP',
+  Sacrt: 'SacRT',
+  Rt: 'RT',
+  Ltd: 'LTD',
+  Ctran: 'C-TRAN',
+  Wsf: 'WSF',
+  Owl: 'OWL',
 };
 
 // Articles/prepositions that stay lowercase unless they open the string
@@ -38,6 +52,29 @@ export function fmtHeadwayRange(low: number, high: number): string {
 }
 
 export function titleCase(s: string): string {
+  if (!s) return s;
+
+  // Clean backslashes into standard slashes
+  s = s.replace(/\\/g, '/');
+
+  // If there is an em-dash divider, keep the shortName (before divider) untouched
+  const parts = s.split(' — ');
+  if (parts.length > 1) {
+    const short = parts[0].trim();
+    const long = parts.slice(1).join(' — ').trim();
+    return `${short} — ${titleCase(long)}`;
+  }
+
+  // If it's a short string (<= 4 chars) and contains only letters/numbers,
+  // preserve it as uppercase (e.g. short name alone: "1T", "51A", "BART")
+  if (s.length <= 4 && /^[A-Z0-9a-z]+$/i.test(s)) {
+    return s.toUpperCase();
+  }
+
+  // Build the acronym matching regex dynamically from the keys of TRANSIT_ACRONYMS
+  const acronymKeys = Object.keys(TRANSIT_ACRONYMS).join('|');
+  const acronymRegex = new RegExp(`\\b(${acronymKeys})\\b`, 'g');
+
   return s
     .toLowerCase()
     .replace(/\b(\p{L}+)/gu, (fullWord, word, offset, str) => {
@@ -49,7 +86,7 @@ export function titleCase(s: string): string {
       }
       return word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
     })
-    .replace(/\b(Go|Dc|Yrt|Ttc|Hsr|Grt|Brt|Lrt|Nfta|Ltc|Ktc|Lw|Le|Ki|Mi|Br|St|Rh)\b/g, m => TRANSIT_ACRONYMS[m] ?? m)
+    .replace(acronymRegex, m => TRANSIT_ACRONYMS[m] ?? m)
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
@@ -75,4 +112,30 @@ export function cleanRouteDisplayName(displayName: string, shortName: string): s
     return name;
   }
   return displayName;
+}
+
+export function shortenAgencyName(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.includes('ac transit')) return 'AC Transit';
+  if (lower.includes('sfmta') || lower.includes('muni')) return 'SFMTA';
+  if (lower.includes('bart')) return 'BART';
+  if (lower.includes('caltrain')) return 'Caltrain';
+  if (lower.includes('samtrans')) return 'SamTrans';
+  if (lower.includes('vta')) return 'VTA';
+  if (lower.includes('weta')) return 'WETA';
+  if (lower.includes('county connection')) return 'County Connection';
+  if (lower.includes('westcat')) return 'WestCAT';
+  if (lower.includes('soltrans')) return 'SolTrans';
+  if (lower.includes('marin transit')) return 'Marin Transit';
+  if (lower.includes('golden gate')) return 'Golden Gate Transit';
+  if (lower.includes('smart') && lower.includes('sonoma')) return 'SMART';
+  
+  // General fallback: if there is a parenthetical abbreviation, use it
+  const match = name.match(/\(([^)]+)\)/);
+  if (match) {
+    const abbrev = match[1];
+    if (abbrev.length <= 10) return abbrev;
+  }
+  
+  return name;
 }

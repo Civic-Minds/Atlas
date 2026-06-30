@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, X, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD } from '../styles';
@@ -10,6 +10,7 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
+  geometry?: number[][];
   note?: string;
 }
 
@@ -41,21 +42,24 @@ interface Props {
   query: string;
   searchFocused: boolean;
   setQuery: (q: string) => void;
+  pendingRouteClick?: { slug: string; routeShortName: string } | null;
+  onPendingRouteHandled?: () => void;
 }
 
-function changeSummary(entry: RouteHistoryEntry): { text: string; worse: boolean } | null {
+function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
   const snaps = entry.snapshots;
   if (snaps.length < 2) return null;
   const first = snaps[0];
   const last = snaps[snaps.length - 1];
-  const ratio = last.weekdayHeadwayMin / first.weekdayHeadwayMin;
-  if (Math.abs(ratio - 1) < 0.05) return null;
-  if (ratio > 1) {
-    const x = Math.round(ratio * 10) / 10;
-    return { text: `${x}× less frequent since ${first.label}`, worse: true };
-  }
-  const x = Math.round((1 / ratio) * 10) / 10;
-  return { text: `${x}× more frequent since ${first.label}`, worse: false };
+  const fHw = first.weekdayHeadwayMin;
+  const lHw = last.weekdayHeadwayMin;
+  if (Math.abs(fHw - lHw) < 2) return null;
+  const worse = lHw > fHw;
+  return {
+    text: `Every ${fHw} min → every ${lHw} min`,
+    subtext: `${first.label} to ${last.label}`,
+    worse,
+  };
 }
 
 function formatXLabel(label: string): string {
@@ -63,9 +67,14 @@ function formatXLabel(label: string): string {
   if (match) {
     const month = match[1];
     const year = match[2].slice(2);
-    return month ? `${month} '${year}` : `'${year}`;
+    return month ? `${month.slice(0, 3)} '${year}` : `'${year}`;
   }
   return label;
+}
+
+function toTitleCase(s: string): string {
+  if (!s || s !== s.toUpperCase()) return s;
+  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function RouteHistoryCard({
@@ -79,18 +88,11 @@ function RouteHistoryCard({
   region: string;
   onBack: () => void;
 }) {
-  const [period, setPeriod] = useState<HistoryPeriod>('midday');
+  const [showChart, setShowChart] = useState(false);
   const snaps = route.snapshots;
 
-  // Determine which periods have any data across all snapshots
-  const availablePeriods = HISTORY_PERIODS.filter(p =>
-    p.key === 'midday' || snaps.some(s => s.headwayByPeriod?.[p.key] != null)
-  );
-
-  // Get headway for the selected period, falling back to midday
   function snapHeadway(snap: RouteSnapshot): number {
-    if (period === 'midday') return snap.weekdayHeadwayMin;
-    return snap.headwayByPeriod?.[period] ?? snap.weekdayHeadwayMin;
+    return snap.weekdayHeadwayMin;
   }
 
   const first = snaps[0];
@@ -99,8 +101,7 @@ function RouteHistoryCard({
   const lastHw = snapHeadway(last);
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
-  const summary = changeSummary(route);
-  const periodInfo = HISTORY_PERIODS.find(p => p.key === period)!;
+  const summary = changeSummary(route);;
 
   // Sparkline calculations
   const width = 220;
@@ -131,116 +132,93 @@ function RouteHistoryCard({
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
 
+  const lineColor = worse ? '#ef4444' : better ? '#10b981' : '#9ca3af';
+  // x-axis label visibility: always show first and last; intermediate only if they have clearance
+  const labelClearance = 34;
+  const firstLabelEdge = paddingX + labelClearance;
+  const lastLabelEdge = width - paddingX - labelClearance;
+
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
-      <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3">
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">
-            {route.routeShortName}
-            {route.routeName && <span className="font-normal text-[var(--text-dim)] ml-1.5">{route.routeName}</span>}
-          </h3>
-          <p className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5">
-            {agencyName} · {region}
-          </p>
-        </div>
+      {/* Header */}
+      <div className="shrink-0 px-4 pt-3 pb-2">
         <button
-          onClick={onBack}
-          className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0 mt-0.5"
+          onClick={(e) => { e.stopPropagation(); onBack(); }}
+          className="flex items-center gap-0.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-1.5"
           aria-label="Back to routes"
         >
-          <ChevronLeft className="w-3.5 h-3.5" />
+          <ChevronLeft className="w-3 h-3 shrink-0" />
+          <span className="text-[10px] font-medium">{agencyName}</span>
         </button>
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 flex items-baseline gap-1.5">
+            <span className="text-sm font-black text-[var(--text-primary)]">{route.routeShortName}</span>
+            {route.routeName && (
+              <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{toTitleCase(route.routeName)}</span>
+            )}
+          </div>
+          {snaps.length >= 2 && (
+            <button
+              onClick={() => setShowChart(v => !v)}
+              className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors shrink-0 ${showChart ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+              aria-label="Toggle chart"
+            >
+              <TrendingUp className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="px-4 pb-3 shrink-0 flex items-center gap-1.5">
-        {availablePeriods.map(p => (
-          <button
-            key={p.key}
-            onClick={() => setPeriod(p.key)}
-            className={`px-2.5 py-1 rounded-full text-[10px] font-black transition-colors ${
-              period === p.key
-                ? 'bg-[var(--accent)] text-white'
-                : 'bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
-        <span className="text-[9px] text-[var(--text-dim)] ml-1">{periodInfo.desc}</span>
-      </div>
-
-      {snaps.length >= 2 && (
-        <div className="px-4 pb-4 shrink-0 flex flex-col items-center">
-          <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-2.5 flex justify-center">
-            <svg width="220" height="75" className="overflow-visible">
+      {snaps.length >= 2 && showChart && (
+        <div className="px-4 pb-4 shrink-0">
+          <div className="w-full bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-xl p-3">
+            <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
               <defs>
                 <linearGradient id={`sparkline-grad-${route.routeShortName}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'} stopOpacity="0.2" />
-                  <stop offset="100%" stopColor={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'} stopOpacity="0.0" />
+                  <stop offset="0%" stopColor={lineColor} stopOpacity="0.18" />
+                  <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
                 </linearGradient>
               </defs>
-              
-              {/* Fill path */}
-              <path
-                d={fillPath}
-                fill={`url(#sparkline-grad-${route.routeShortName})`}
-              />
-              
-              {/* Line path */}
+
+              <path d={fillPath} fill={`url(#sparkline-grad-${route.routeShortName})`} />
+
               <path
                 d={linePath}
                 fill="none"
-                stroke={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'}
-                strokeWidth="2.5"
+                stroke={lineColor}
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-              
-              {/* Baseline guide */}
+
               <line
-                x1={points[0].x}
-                y1={height - 18}
-                x2={points[points.length - 1].x}
-                y2={height - 18}
+                x1={points[0].x} y1={height - 18}
+                x2={points[points.length - 1].x} y2={height - 18}
                 stroke="var(--border-primary)"
                 strokeWidth="1"
-                strokeDasharray="2 2"
+                strokeDasharray="2 3"
               />
-              
-              {/* Data points */}
-              {points.map((p, i) => (
-                <g key={i}>
-                  <circle
-                    cx={p.x}
-                    cy={p.y}
-                    r="3.5"
-                    fill={worse ? '#ef4444' : better ? '#10b981' : '#9ca3af'}
-                    stroke="var(--bg-panel)"
-                    strokeWidth="1.5"
-                  />
-                  <text
-                    x={p.x}
-                    y={p.y - 7}
-                    textAnchor="middle"
-                    fontSize="8.5"
-                    fontWeight="900"
-                    fill="var(--text-primary)"
-                    className="tabular-nums"
-                  >
-                    {p.hw}m
-                  </text>
-                  <text
-                    x={p.x}
-                    y={height - 4}
-                    textAnchor="middle"
-                    fontSize="8"
-                    fontWeight="700"
-                    fill="var(--text-dim)"
-                  >
-                    {formatXLabel(p.label)}
-                  </text>
-                </g>
-              ))}
+
+              {points.map((p, i) => {
+                const isFirst = i === 0;
+                const isLast = i === points.length - 1;
+                const showXLabel = isFirst || isLast || (p.x > firstLabelEdge && p.x < lastLabelEdge);
+                const xAnchor = isFirst ? 'start' : isLast ? 'end' : 'middle';
+                const xPos = isFirst ? paddingX : isLast ? (width - paddingX) : p.x;
+                return (
+                  <g key={i}>
+                    <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
+                    <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
+                      {p.hw}m
+                    </text>
+                    {showXLabel && (
+                      <text x={xPos} y={height - 3} textAnchor={xAnchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
+                        {formatXLabel(p.label)}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
             </svg>
           </div>
         </div>
@@ -275,10 +253,8 @@ function RouteHistoryCard({
 
         {summary && (
           <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-            <p className={`text-xs font-black leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
-            <p className="text-[9px] text-[var(--text-muted)] font-medium mt-0.5">
-              Weekday {periodInfo.label.toLowerCase()} headway, {first.label} to {last.label}.
-            </p>
+            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
+            <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
           </div>
         )}
       </div>
@@ -399,9 +375,10 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, onInfoOpen, query, searchFocused, setQuery }: Props) {
+export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(0);
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
@@ -447,18 +424,52 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
     if (!active) { setOverlay(null); return; }
     const agency = selectedSlug ? (historyAgencies.find(a => a.slug === selectedSlug) ?? null) : null;
     if (agency?.center) {
+      let routeGeometry: number[][] | undefined;
+      let historicalRouteGeometries: Array<{routeShortName: string, coordinates: number[][], headway: number}> | undefined;
+      if (selectedYear > 0) {
+        historicalRouteGeometries = [];
+        agency.routes.forEach(route => {
+          const snap = route.snapshots.find(s => s.year === selectedYear) || route.snapshots[route.snapshots.length - 1];
+          if (snap && snap.geometry) {
+            historicalRouteGeometries!.push({
+              routeShortName: route.routeShortName,
+              coordinates: snap.geometry,
+              headway: snap.weekdayHeadwayMin
+            });
+          }
+        });
+      } else if (selectedRouteShortName) {
+        const rt = agency.routes.find(r => r.routeShortName === selectedRouteShortName);
+        if (rt && rt.snapshots.length > 0) {
+          routeGeometry = rt.snapshots[rt.snapshots.length - 1]?.geometry;
+        }
+      }
       setOverlay({
         slug: agency.slug,
         routeShortName: selectedRouteShortName ?? '',
         stops: [],
-        agencyCenter: agency.center
+        agencyCenter: agency.center,
+        routeGeometry,
+        selectedYear: selectedYear > 0 ? selectedYear : undefined,
+        historicalRouteGeometries
       });
     } else {
       setOverlay(null);
     }
-  }, [active, selectedSlug, selectedRouteShortName, setOverlay, historyAgencies]);
+  }, [active, selectedSlug, selectedRouteShortName, setOverlay, historyAgencies, selectedYear]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
+
+  useEffect(() => {
+    if (!pendingRouteClick || !historyData) return;
+    const { slug, routeShortName } = pendingRouteClick;
+    const agency = historyData.find(a => a.slug === slug);
+    if (agency) {
+      setSelectedSlug(slug);
+      setSelectedRouteShortName(routeShortName);
+    }
+    onPendingRouteHandled?.();
+  }, [pendingRouteClick, historyData, onPendingRouteHandled]);
   useEffect(() => {
     setSelectedSlug(null);
     setSelectedRouteShortName(null);
@@ -510,13 +521,52 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
     );
   }, [query, historyAgencies]);
 
+  const availableYears = useMemo(() => {
+    if (!selectedSlug) return [];
+    const agency = historyAgencies.find(a => a.slug === selectedSlug);
+    if (!agency) return [];
+    const years = new Set<number>();
+    agency.routes.forEach(r => r.snapshots.forEach(s => years.add(s.year)));
+    return Array.from(years).sort((a,b) => a-b);
+  }, [historyAgencies, selectedSlug]);
+
+  useEffect(() => {
+    if (selectedSlug && availableYears.length > 0) {
+      setSelectedYear(availableYears[availableYears.length - 1]);
+    } else {
+      setSelectedYear(0);
+    }
+  }, [selectedSlug, availableYears]);
+
 
   if (!shouldRender) return null;
 
+  const showScrubber = selectedSlug && availableYears.length > 1;
+
   return (
     <div
-      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
     >
+      {showScrubber && (
+        <div className="mx-2 px-2 py-1 bg-[var(--bg-panel)] rounded border border-[var(--border-primary)] text-[9px]">
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="font-bold text-[var(--text-muted)]">Time scrubber</span>
+            <span>{selectedYear}</span>
+          </div>
+          <input
+            type="range"
+            min={availableYears[0]}
+            max={availableYears[availableYears.length-1]}
+            step="1"
+            value={selectedYear}
+            onChange={e => setSelectedYear(parseInt(e.target.value))}
+            className="w-full accent-[var(--accent)]"
+          />
+          <div className="flex justify-between text-[7px] text-[var(--text-muted)] mt-0.5">
+            {availableYears.map(y => <span key={y}>{y}</span>)}
+          </div>
+        </div>
+      )}
       {selectedSlug ? (
         (() => {
           const agencyHistory = historyData?.find(a => a.slug === selectedSlug) ?? null;

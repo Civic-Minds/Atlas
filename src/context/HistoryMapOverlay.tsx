@@ -15,6 +15,9 @@ export interface HistoryMapOverlay {
   routeShortName: string;
   stops: HistoryMapStop[];
   agencyCenter?: [number, number];
+  routeGeometry?: number[][];  // historical shape for the selected period (AI-162, AI-161)
+  selectedYear?: number;
+  historicalRouteGeometries?: Array<{routeShortName: string, coordinates: number[][], headway: number}>;
 }
 
 interface ContextValue {

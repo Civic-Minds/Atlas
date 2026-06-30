@@ -31,12 +31,14 @@ interface Props {
   onPendingLiveRouteHandled?: () => void;
   searchFocused?: boolean;
   hideFilterPanel?: boolean;
+  filterToAgencies?: boolean;
+  onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   day: 'Weekday' | 'Saturday' | 'Sunday';
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -105,10 +107,11 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const prevPendingRoute = useRef<typeof pendingLiveRoute>(null);
   useEffect(() => {
-    if (!pendingLiveRoute || pendingLiveRoute === prevPendingRoute.current) return;
-    prevPendingRoute.current = pendingLiveRoute;
+    if (!pendingLiveRoute) return;
     const fc = layers[pendingLiveRoute.slug];
-    if (!fc) { onPendingLiveRouteHandled?.(); return; }
+    if (!fc) return; // wait for agency layer to load (from bounds/viewport); do not consume pending yet
+    if (pendingLiveRoute === prevPendingRoute.current) return;
+    prevPendingRoute.current = pendingLiveRoute;
     let found = fc.features.find(f => {
       const p = f.properties as any;
       return p.routeShortName === pendingLiveRoute.routeShortName && p.day === day;
@@ -153,6 +156,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         showRouteLayers={showRouteLayers}
         showCorridorBand={showCorridorBand}
         hideSpan={hideSpan}
+        filterToAgencies={filterToAgencies}
+        onHistoryRouteClick={onHistoryRouteClick}
+        selectedModes={selectedModes}
       />
 
       {showUi && isLoading && (
