@@ -2187,11 +2187,12 @@
         45.48,
         -71.82
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-sherbrooke-sts-gtfs-1996.zip?alt=media",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-sherbrooke-gtfs-1996.zip?alt=media",
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "trimet",
@@ -2406,11 +2407,12 @@
         -121.89
       ],
       "feedUrl": "https://api.actransit.org/transit/gtfs/download",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-alameda-contra-costa-transit-district-ac-transit-gtfs-2455.zip?alt=media",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-alameda-contra-costa-transit-district-ac-transit-gtfs-1244.zip?alt=media",
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20240302",
+      "lastFeedVersion": "S1000222"
     },
     {
       "slug": "vta",
@@ -2783,7 +2785,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "petaluma",

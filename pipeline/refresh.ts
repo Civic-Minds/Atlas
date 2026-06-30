@@ -178,13 +178,16 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
   let buf: Buffer;
   try {
     buf = await downloadFeed(agency.feedUrl);
+    if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
+      throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
+    }
   } catch (primaryErr) {
     if (!agency.mdbFeedUrl) throw primaryErr;
     process.stdout.write(`\n  [warn] primary feed failed (${(primaryErr as Error).message}) — trying MDB fallback\n  `);
     buf = await downloadFeed(agency.mdbFeedUrl);
   }
 
-  // Sanity: zip magic bytes
+  // Sanity check the final buffer (either primary or fallback)
   if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
     throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
   }
