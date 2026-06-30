@@ -144,50 +144,55 @@ button {
   display: none !important;
 }
 
-/* Time scrubber range — match app's subtle rounded aesthetic (light/dark via vars) */
+/* Time scrubber — styled to match the app's rounded, subtle aesthetic (uses CSS vars for light/dark) */
 .time-scrubber-range {
   appearance: none;
-  height: 3px;
+  height: 4px;
   background: var(--border-primary);
-  border-radius: 9999px;
+  border-radius: 9999px; /* fully rounded track */
   outline: none;
   cursor: pointer;
+  /* Let accent color the "filled" portion up to thumb */
+  accent-color: var(--accent);
 }
 
+/* Thumb (the knob) — small, rounded, bordered like other accent elements */
 .time-scrubber-range::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background: var(--bg-panel);
   border: 2px solid var(--accent);
-  border-radius: 50%;
+  border-radius: 50%; /* perfectly round */
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   transition: transform 0.1s ease, box-shadow 0.1s ease;
+  margin-top: -6px; /* centers on thin track */
 }
 
 .time-scrubber-range::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
 .time-scrubber-range::-moz-range-track {
-  height: 3px;
+  height: 4px;
   background: var(--border-primary);
   border-radius: 9999px;
 }
 
 .time-scrubber-range::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background: var(--bg-panel);
   border: 2px solid var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .time-scrubber-range::-moz-range-thumb:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
