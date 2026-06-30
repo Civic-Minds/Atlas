@@ -2151,6 +2151,1096 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hudsonlink-corridors.json",
       "lastFeedExpiry": "20261001",
       "lastFeedVersion": "UTC: 25-Mar-2026 23:59"
+    },
+    {
+      "slug": "wsf",
+      "name": "Washington State Ferries",
+      "center": [
+        47.9248,
+        -122.5928
+      ],
+      "region": "Washington",
+      "bbox": [
+        47.31,
+        -123.01,
+        48.6,
+        -122.3
+      ],
+      "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "sherbrooke",
+      "name": "Société de transport de Sherbrooke",
+      "center": [
+        45.398,
+        -71.9181
+      ],
+      "region": "Quebec",
+      "bbox": [
+        45.31,
+        -72.08,
+        45.48,
+        -71.82
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-sherbrooke-sts-gtfs-1996.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "trimet",
+      "name": "TriMet",
+      "center": [
+        45.494,
+        -122.6593
+      ],
+      "region": "Oregon",
+      "bbox": [
+        45.29,
+        -123.12,
+        45.64,
+        -122.33
+      ],
+      "feedUrl": "http://developer.trimet.org/schedule/gtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-trimet-portland-streetcar-gtfs-247.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "ctran",
+      "name": "C-TRAN",
+      "center": [
+        45.6513,
+        -122.5972
+      ],
+      "region": "Washington",
+      "bbox": [
+        45.5,
+        -122.71,
+        45.87,
+        -122.32
+      ],
+      "feedUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-c-tran-gtfs-258.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "spokane",
+      "name": "Spokane Transit Authority",
+      "center": [
+        47.6645,
+        -117.3797
+      ],
+      "region": "Washington",
+      "bbox": [
+        47.48,
+        -117.71,
+        47.77,
+        -117.08
+      ],
+      "feedUrl": "https://www.spokanetransit.com/gtfs",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-spokane-transit-authority-sta-gtfs-290.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "eugene-ltd",
+      "name": "Lane Transit District",
+      "center": [
+        44.0588,
+        -123.0456
+      ],
+      "region": "Oregon",
+      "bbox": [
+        43.78,
+        -123.36,
+        44.22,
+        -122.12
+      ],
+      "feedUrl": "https://www.ltd.org/files/library/ltdgtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "cherriots",
+      "name": "Cherriots",
+      "center": [
+        44.9377,
+        -123.0187
+      ],
+      "region": "Oregon",
+      "bbox": [
+        44.75,
+        -123.32,
+        45.31,
+        -122.42
+      ],
+      "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "corvallis",
+      "name": "Corvallis Transit System",
+      "center": [
+        44.5746,
+        -123.2746
+      ],
+      "region": "Oregon",
+      "bbox": [
+        44.53,
+        -123.32,
+        44.61,
+        -123.23
+      ],
+      "feedUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-city-of-corvallis-gtfs-2283.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "sfmta",
+      "name": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+      "center": [
+        37.7584,
+        -122.4354
+      ],
+      "region": "California",
+      "bbox": [
+        37.71,
+        -122.51,
+        37.83,
+        -122.37
+      ],
+      "feedUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-san-francisco-san-francisco-m-gtfs-2886.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "bart",
+      "name": "Bay Area Rapid Transit (BART)",
+      "center": [
+        37.768,
+        -122.2314
+      ],
+      "region": "California",
+      "bbox": [
+        37.37,
+        -122.47,
+        38.02,
+        -121.78
+      ],
+      "feedUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-bay-area-rapid-transit-bart-gtfs-53.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "caltrain",
+      "name": "Caltrain",
+      "center": [
+        37.4573,
+        -122.1339
+      ],
+      "region": "California",
+      "bbox": [
+        37,
+        -122.41,
+        37.78,
+        -121.57
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-caltrain-gtfs-54.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "actransit",
+      "name": "Alameda-Contra Costa Transit District (AC Transit)",
+      "center": [
+        37.7688,
+        -122.1937
+      ],
+      "region": "California",
+      "bbox": [
+        37.41,
+        -122.42,
+        38.02,
+        -121.89
+      ],
+      "feedUrl": "https://api.actransit.org/transit/gtfs/download",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-alameda-contra-costa-transit-district-ac-transit-gtfs-2455.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "vta",
+      "name": "Santa Clara Valley Transportation Authority (VTA)",
+      "center": [
+        37.3241,
+        -121.9208
+      ],
+      "region": "California",
+      "bbox": [
+        36.97,
+        -122.17,
+        37.46,
+        -121.55
+      ],
+      "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-clara-valley-transportation-authority-vta-gtfs-57.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "samtrans",
+      "name": "San Mateo County Transit District (samTrans)",
+      "center": [
+        37.5672,
+        -122.3439
+      ],
+      "region": "California",
+      "bbox": [
+        37.37,
+        -122.52,
+        37.79,
+        -122.13
+      ],
+      "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-mateo-county-transit-district-samtrans-gtfs-49.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "goldengate",
+      "name": "Golden Gate Transit",
+      "center": [
+        37.9841,
+        -122.5174
+      ],
+      "region": "California",
+      "bbox": [
+        37.78,
+        -122.74,
+        38.47,
+        -122.32
+      ],
+      "feedUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-golden-gate-transit-gtfs-67.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "weta",
+      "name": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+      "center": [
+        37.8167,
+        -122.3506
+      ],
+      "region": "California",
+      "bbox": [
+        37.66,
+        -122.41,
+        38.1,
+        -122.26
+      ],
+      "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-francisco-bay-area-water-emergency-transportation-authority-gtfs-3143.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "countyconnection",
+      "name": "County Connection (CCCTA)",
+      "center": [
+        37.9068,
+        -122.0383
+      ],
+      "region": "California",
+      "bbox": [
+        37.66,
+        -122.19,
+        38.02,
+        -121.78
+      ],
+      "feedUrl": "https://countyconnection.com/GTFS/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-county-connection-gtfs-2421.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "westcat",
+      "name": "WestCAT",
+      "center": [
+        38.0027,
+        -122.2636
+      ],
+      "region": "California",
+      "bbox": [
+        37.79,
+        -122.4,
+        38.06,
+        -122.11
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-westcat-gtfs-78.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "soltrans",
+      "name": "SolTrans",
+      "center": [
+        38.1087,
+        -122.2233
+      ],
+      "region": "California",
+      "bbox": [
+        37.8,
+        -122.4,
+        38.53,
+        -121.75
+      ],
+      "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-soltrans-gtfs-80.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "marintransit",
+      "name": "Marin Transit",
+      "center": [
+        37.9841,
+        -122.545
+      ],
+      "region": "California",
+      "bbox": [
+        37.86,
+        -122.85,
+        38.12,
+        -122.46
+      ],
+      "feedUrl": "https://marintransit.gov/data/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-marin-transit-gtfs-2937.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "smart-ca",
+      "name": "Sonoma-Marin Area Rail Transit (SMART)",
+      "center": [
+        38.2384,
+        -122.6407
+      ],
+      "region": "California",
+      "bbox": [
+        37.95,
+        -122.82,
+        38.55,
+        -122.51
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-marin-area-rail-transit-smart-gtfs-815.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "sonoma-county",
+      "name": "Sonoma County Transit (SCT)",
+      "center": [
+        38.4307,
+        -122.742
+      ],
+      "region": "California",
+      "bbox": [
+        37.97,
+        -123.13,
+        38.81,
+        -122.46
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-county-transit-sct-gtfs-70.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "vine",
+      "name": "VINE Transit",
+      "center": [
+        38.3079,
+        -122.3118
+      ],
+      "region": "California",
+      "bbox": [
+        37.93,
+        -122.58,
+        38.58,
+        -122.04
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-vine-transit-gtfs-1288.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "emerygoround",
+      "name": "Emery Go-Round",
+      "center": [
+        37.8371,
+        -122.29
+      ],
+      "region": "California",
+      "bbox": [
+        37.83,
+        -122.31,
+        37.85,
+        -122.27
+      ],
+      "feedUrl": "https://emerygoround.com/data/emerygoround-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-emery-go-round-gtfs-2224.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "stanford",
+      "name": "Stanford Marguerite Shuttle (SMS)",
+      "center": [
+        37.4331,
+        -122.1561
+      ],
+      "region": "California",
+      "bbox": [
+        37.39,
+        -122.23,
+        37.57,
+        -121.98
+      ],
+      "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-stanford-marguerite-shuttle-sms-gtfs-59.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "tridelta",
+      "name": "Tri Delta Transit",
+      "center": [
+        37.9967,
+        -121.8336
+      ],
+      "region": "California",
+      "bbox": [
+        37.92,
+        -122.14,
+        38.04,
+        -121.69
+      ],
+      "feedUrl": "https://transitfeeds.com/p/tri-delta-transit/1148/latest/download",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-tri-delta-transit-gtfs-1323.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "lavta",
+      "name": "Livermore Amador Valley Transit Authority",
+      "center": [
+        37.6916,
+        -121.8495
+      ],
+      "region": "California",
+      "bbox": [
+        37.63,
+        -122.07,
+        37.93,
+        -121.7
+      ],
+      "feedUrl": "http://webwatch.lavta.org/TMGTFSRealTimeWebService/GTFS-Static/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "unioncity",
+      "name": "Union City Transit",
+      "center": [
+        37.5929,
+        -122.05
+      ],
+      "region": "California",
+      "bbox": [
+        37.57,
+        -122.08,
+        37.61,
+        -122
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/unioncity-ca-us/unioncity-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "westberkeley",
+      "name": "West Berkeley Shuttle",
+      "center": [
+        37.8553,
+        -122.291
+      ],
+      "region": "California",
+      "bbox": [
+        37.85,
+        -122.3,
+        37.86,
+        -122.27
+      ],
+      "feedUrl": "https://gtfs.calitp.org/production/WestBerkeleyShuttleGTFS.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-west-berkeley-shuttle-gtfs-2238.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "petaluma",
+      "name": "Petaluma Transit",
+      "center": [
+        38.247,
+        -122.629
+      ],
+      "region": "California",
+      "bbox": [
+        38.22,
+        -122.67,
+        38.28,
+        -122.59
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/petalumatransit-petaluma-ca-us/petalumatransit-petaluma-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-petaluma-transit-gtfs-72.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "santarosa",
+      "name": "Santa Rosa CityBus",
+      "center": [
+        38.4456,
+        -122.7182
+      ],
+      "region": "California",
+      "bbox": [
+        38.4,
+        -122.77,
+        38.49,
+        -122.65
+      ],
+      "feedUrl": "https://srcity.org/DocumentCenter/View/21635/google_transit",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-rosa-citybus-gtfs-73.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "fast-ca",
+      "name": "Fairfield and Suisun Transit (FAST Transit)",
+      "center": [
+        38.2564,
+        -122.0281
+      ],
+      "region": "California",
+      "bbox": [
+        37.91,
+        -122.32,
+        38.58,
+        -121.5
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-fairfield-and-suisun-transit-fast-transit-gtfs-76.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "vacaville",
+      "name": "City Coach",
+      "center": [
+        38.3568,
+        -121.9708
+      ],
+      "region": "California",
+      "bbox": [
+        38.33,
+        -122.01,
+        38.4,
+        -121.93
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "riovista",
+      "name": "Rio Vista Delta Breeze",
+      "center": [
+        38.1861,
+        -121.8006
+      ],
+      "region": "California",
+      "bbox": [
+        38,
+        -122.08,
+        38.26,
+        -121.61
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-rio-vista-delta-breeze-gtfs-81.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "ace",
+      "name": "Altamont Corridor Express",
+      "center": [
+        37.2902,
+        -121.0684
+      ],
+      "region": "California",
+      "bbox": [
+        34.06,
+        -122.35,
+        38.58,
+        -118.24
+      ],
+      "feedUrl": "https://transitfeeds.com/p/altamont-corridor-express/823/latest/download",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-altamont-corridor-express-gtfs-1133.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "rvtd",
+      "name": "Rogue Valley Transportation District (RVTD)",
+      "center": [
+        42.328,
+        -122.8424
+      ],
+      "region": "Oregon",
+      "bbox": [
+        42.18,
+        -122.97,
+        42.48,
+        -122.66
+      ],
+      "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-rogue-valley-transportation-district-rvtd-gtfs-3219.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "bts-or",
+      "name": "Basin Transit Service (BTS)",
+      "center": [
+        42.2598,
+        -121.7542
+      ],
+      "region": "Oregon",
+      "bbox": [
+        42.01,
+        -122.21,
+        44.06,
+        -121.04
+      ],
+      "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-basin-transit-service-bts-gtfs-125.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "rct",
+      "name": "Redwood Coast Transit (RCT)",
+      "center": [
+        41.6724,
+        -124.1549
+      ],
+      "region": "California",
+      "bbox": [
+        40.78,
+        -124.22,
+        41.96,
+        -123.97
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redwood-coast-transit-rct-gtfs-20.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "humboldt",
+      "name": "Humboldt Transit Authority",
+      "center": [
+        40.7249,
+        -124.0976
+      ],
+      "region": "California",
+      "bbox": [
+        39.15,
+        -124.22,
+        41.06,
+        -123.2
+      ],
+      "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-humboldt-county-gtfs-3032.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "mendocino",
+      "name": "Mendocino Transit Authority",
+      "center": [
+        39.1417,
+        -123.3321
+      ],
+      "region": "California",
+      "bbox": [
+        38.32,
+        -123.82,
+        39.45,
+        -122.71
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-mendocino-transit-authority-gtfs-69.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "raba",
+      "name": "Redding Area Bus Authority",
+      "center": [
+        40.5695,
+        -122.3429
+      ],
+      "region": "California",
+      "bbox": [
+        39.72,
+        -122.41,
+        40.94,
+        -121.61
+      ],
+      "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redding-redding-area-bu-gtfs-3031.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "siskiyou",
+      "name": "Siskiyou County",
+      "center": [
+        41.5121,
+        -122.5664
+      ],
+      "region": "California",
+      "bbox": [
+        41.15,
+        -123.55,
+        41.91,
+        -122.13
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-siskiyou-county-gtfs-117.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "trinity",
+      "name": "Trinity Transit",
+      "center": [
+        40.7172,
+        -123.0823
+      ],
+      "region": "California",
+      "bbox": [
+        40.55,
+        -123.63,
+        40.94,
+        -122.32
+      ],
+      "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-trinity-transit-gtfs-2709.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "lassen",
+      "name": "Lassen Rural Bus (LRB)",
+      "center": [
+        40.3588,
+        -120.6344
+      ],
+      "region": "California",
+      "bbox": [
+        40.03,
+        -121.34,
+        40.44,
+        -120.1
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-lassen-rural-bus-lrb-gtfs-118.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "sacrt",
+      "name": "Sacramento Regional Transit (SacRT)",
+      "center": [
+        38.5827,
+        -121.4066
+      ],
+      "region": "California",
+      "bbox": [
+        38.39,
+        -121.76,
+        38.72,
+        -121.09
+      ],
+      "feedUrl": "https://www.sacrt.com/wp-content/uploads/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sacramento-regional-transit-gtfs-2137.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "yolobus",
+      "name": "Yolo County Transportation District (Yolobus)",
+      "center": [
+        38.603,
+        -121.6672
+      ],
+      "region": "California",
+      "bbox": [
+        38.53,
+        -122.14,
+        38.74,
+        -121.45
+      ],
+      "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "unitrans",
+      "name": "Unitrans",
+      "center": [
+        38.5529,
+        -121.7393
+      ],
+      "region": "California",
+      "bbox": [
+        38.53,
+        -121.79,
+        38.69,
+        -121.59
+      ],
+      "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-unitrans-gtfs-82.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "roseville",
+      "name": "Roseville Transit",
+      "center": [
+        38.745,
+        -121.3033
+      ],
+      "region": "California",
+      "bbox": [
+        38.57,
+        -121.5,
+        38.81,
+        -121.21
+      ],
+      "feedUrl": "https://iportal.sacrt.com/gtfs/Roseville/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-roseville-transit-gtfs-1067.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "smart-or",
+      "name": "South Metro Area Regional Transit (SMART)",
+      "center": [
+        45.2868,
+        -122.7794
+      ],
+      "region": "Oregon",
+      "bbox": [
+        44.94,
+        -123.04,
+        45.39,
+        -122.69
+      ],
+      "feedUrl": "https://mysmartbus.com/gtfs",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-south-metro-area-regional-transit-smart-gtfs-2706.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "sam",
+      "name": "Sandy Area Metro (SAM)",
+      "center": [
+        45.3855,
+        -122.2992
+      ],
+      "region": "Oregon",
+      "bbox": [
+        45.29,
+        -122.57,
+        45.5,
+        -121.71
+      ],
+      "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-sandy-area-metro-sam-gtfs-261.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "cat-or",
+      "name": "Canby Area Transit (CAT)",
+      "center": [
+        45.2591,
+        -122.7019
+      ],
+      "region": "Oregon",
+      "bbox": [
+        45.15,
+        -122.83,
+        45.36,
+        -122.6
+      ],
+      "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-canby-area-transit-cat-gtfs-252.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or-corridors.json",
+      "staged": true
+    },
+    {
+      "slug": "yamhill",
+      "name": "Yamhill County Transit Area",
+      "center": [
+        45.2276,
+        -123.1747
+      ],
+      "region": "Oregon",
+      "bbox": [
+        44.95,
+        -123.62,
+        45.52,
+        -122.77
+      ],
+      "feedUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-yamhill-county-transit-area-gtfs-250.zip?alt=media",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill-corridors.json",
+      "staged": true
     }
   ]
 }
