@@ -433,6 +433,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
   }, [hasContent]);
 
+  const routeSlug = currentRoute ? (currentRoute as any).agencySlug as string | undefined : undefined;
+  const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
+  const routeIsStale = (() => {
+    const exp = routeAgency?.lastFeedExpiry;
+    if (!exp || exp.length !== 8) return false;
+    const expDate = new Date(`${exp.slice(0, 4)}-${exp.slice(4, 6)}-${exp.slice(6, 8)}`);
+    return expDate < new Date();
+  })();
+
   if (!panelShouldRender) return null;
 
   return (
@@ -692,11 +701,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       >
                         {displayName}
                       </button>
-                      {isStale && (
-                        <p className="text-[9px] font-bold text-amber-500 mt-0.5">
-                          Schedule may be outdated
-                        </p>
-                      )}
                       {agency?.excludeRouteShortNames?.length ? (
                         <a
                           href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${slug}`}
@@ -818,6 +822,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   </React.Fragment>
                 );
               })}
+              {routeIsStale && (
+                <p className="text-[9px] font-bold text-amber-500 mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 text-right">
+                  Schedule may be outdated
+                </p>
+              )}
             </div>
           </div>
         )}

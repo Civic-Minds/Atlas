@@ -46,7 +46,7 @@ export function HeadwaySparkline({ byHour }: HourlySparklineProps) {
                     : H)
                 : 0;
               return (
-                <div key={h} className="flex flex-col items-center shrink-0" style={{ width: 10 }}>
+                <div key={h} className="flex-1 min-w-0 flex flex-col items-center">
                   <div style={{ height: H }} className="flex items-end justify-center w-full">
                     {hasValue && (
                       <div
@@ -62,7 +62,7 @@ export function HeadwaySparkline({ byHour }: HourlySparklineProps) {
           </div>
           <div className="flex gap-px mt-0.5">
             {HOURS.map(h => (
-              <div key={h} className="shrink-0 text-center" style={{ width: 10 }}>
+              <div key={h} className="flex-1 min-w-0 text-center">
                 {HOUR_LABELS[h] && (
                   <span className="text-[6px] text-[var(--text-dim)]">{HOUR_LABELS[h]}</span>
                 )}

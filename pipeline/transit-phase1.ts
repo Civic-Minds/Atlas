@@ -55,9 +55,18 @@ function buildTripDepartures(
     const tripFirstDep = new Map<string, number>();
     const tripFirstSeq = new Map<string, number>();
 
+    // Pre-index the last stop of each trip to serve as fallback trip_headsign
+    const lastStopByTrip = new Map<string, string>(); // tripId -> stop_id
+    const maxSeqByTrip = new Map<string, number>();   // tripId -> max stop_sequence
     for (const st of stopTimes) {
         const seq = parseInt(st.stop_sequence);
         if (Number.isNaN(seq)) continue;
+        const currentMax = maxSeqByTrip.get(st.trip_id) ?? -1;
+        if (seq > currentMax) {
+            maxSeqByTrip.set(st.trip_id, seq);
+            lastStopByTrip.set(st.trip_id, st.stop_id);
+        }
+
         const existing = tripFirstSeq.get(st.trip_id);
         if (existing === undefined || seq < existing) {
             const dep = t2m(st.departure_time) ?? t2m(st.arrival_time);
@@ -68,17 +77,28 @@ function buildTripDepartures(
         }
     }
 
+    // Map stopId to stop_name
+    const stopNameById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
+
     const freqExpanded = expandFrequencies(gtfs.frequencies);
 
     const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null }>();
     for (const trip of trips) {
+        let headsign = trip.trip_headsign?.trim() || null;
+        if (!headsign) {
+            const lastStopId = lastStopByTrip.get(trip.trip_id);
+            if (lastStopId) {
+                headsign = stopNameById.get(lastStopId) ?? null;
+            }
+        }
+
         const tripMeta = {
             routeId: trip.route_id,
             dirId: trip.direction_id?.trim() || '0',
             serviceId: trip.service_id,
             missingDir: !trip.direction_id?.trim(),
             shapeId: trip.shape_id ?? null,
-            headsign: trip.trip_headsign ?? null,
+            headsign: headsign,
         };
 
         const freqDeps = freqExpanded.get(trip.trip_id);

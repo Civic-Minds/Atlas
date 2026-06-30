@@ -241,6 +241,22 @@ export async function processGtfsBuffer(
     ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Sunday', refDate),
   ]);
 
+  // Pre-index the last stop of each trip to serve as fallback trip_headsign
+  const lastStopByTrip = new Map<string, string>(); // tripId -> stop_id
+  const maxSeqByTrip = new Map<string, number>();   // tripId -> max stop_sequence
+  for (const st of gtfs.stopTimes ?? []) {
+    const seq = parseInt(st.stop_sequence);
+    if (Number.isNaN(seq)) continue;
+    const currentMax = maxSeqByTrip.get(st.trip_id) ?? -1;
+    if (seq > currentMax) {
+      maxSeqByTrip.set(st.trip_id, seq);
+      lastStopByTrip.set(st.trip_id, st.stop_id);
+    }
+  }
+
+  // Map stopId to stop_name
+  const stopNameById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
+
   const shapeCounts = new Map<string, Map<string, number>>();
   const headsignCounts = new Map<string, Map<string, number>>();
   // shape counts per (routeId, dir, headsign) so each direction/terminus gets its own shape
@@ -248,22 +264,31 @@ export async function processGtfsBuffer(
   for (const trip of gtfs.trips ?? []) {
     if (!activeForShapes.has(trip.service_id)) continue;
     const key = `${trip.route_id}::${trip.direction_id ?? '0'}`;
+
+    let headsign = trip.trip_headsign?.trim() || null;
+    if (!headsign) {
+      const lastStopId = lastStopByTrip.get(trip.trip_id);
+      if (lastStopId) {
+        headsign = stopNameById.get(lastStopId) ?? null;
+      }
+    }
+
     if (trip.shape_id) {
       if (!shapeCounts.has(key)) shapeCounts.set(key, new Map());
       const m = shapeCounts.get(key)!;
       m.set(trip.shape_id, (m.get(trip.shape_id) ?? 0) + 1);
       
-      if (trip.trip_headsign) {
-        const hKey = `${key}::${trip.trip_headsign}`;
+      if (headsign) {
+        const hKey = `${key}::${headsign}`;
         if (!headsignShapeCounts.has(hKey)) headsignShapeCounts.set(hKey, new Map());
         const hm = headsignShapeCounts.get(hKey)!;
         hm.set(trip.shape_id, (hm.get(trip.shape_id) ?? 0) + 1);
       }
     }
-    if (trip.trip_headsign) {
+    if (headsign) {
       if (!headsignCounts.has(key)) headsignCounts.set(key, new Map());
       const hm = headsignCounts.get(key)!;
-      hm.set(trip.trip_headsign, (hm.get(trip.trip_headsign) ?? 0) + 1);
+      hm.set(headsign, (hm.get(headsign) ?? 0) + 1);
     }
   }
 
