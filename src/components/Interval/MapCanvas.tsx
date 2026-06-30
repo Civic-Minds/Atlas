@@ -43,6 +43,7 @@ interface MapCanvasProps {
   hideSpan?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
+  selectedModes?: Set<number>;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -65,6 +66,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   hideSpan = false,
   filterToAgencies = false,
   onHistoryRouteClick,
+  selectedModes,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -478,6 +480,31 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     // Hide span (irregular) routes from the map when hideSpan is active
     const spanFilter: any = hideSpan ? ['!=', ['get', 'tier'], 'span'] : null;
 
+    // MapLibre expression to compute the effective mode of a feature (matches useIntervalStats.ts effectiveMode)
+    const VIRTUAL_LRT_MODE = 900;
+    const modeExpr: any = [
+      'coalesce',
+      [
+        'case',
+        // 1. OCTranspo routeType 0 -> LRT (900)
+        ['all', ['==', ['get', 'routeType'], 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
+        VIRTUAL_LRT_MODE,
+        // 2. LRT Line 1/2/3/4 (routeType 0 and routeLongName starts with "Line ")
+        ['all', ['==', ['get', 'routeType'], 0], ['==', ['slice', ['coalesce', ['get', 'routeLongName'], ''], 0, 5], 'Line ']],
+        VIRTUAL_LRT_MODE,
+        // 3. ION Light Rail (routeType 2 and routeLongName containing "ION")
+        ['all', ['==', ['get', 'routeType'], 2], ['in', 'ION', ['coalesce', ['get', 'routeLongName'], '']]],
+        VIRTUAL_LRT_MODE,
+        // Default: use routeType (or fallback to 3 - Bus)
+        ['get', 'routeType']
+      ],
+      3
+    ];
+
+    const modeFilter: any = selectedModes && selectedModes.size > 0
+      ? ['any', ...Array.from(selectedModes).map(m => ['==', modeExpr, m])]
+      : null;
+
     // Zoom-based progressive gate — GPU-evaluated so it responds in real-time as the user zooms
     // without needing a React re-render. Shows only the most frequent routes when zoomed out.
     // At zoom 9+ there is no additional zoom constraint; the headway pill alone controls visibility.
@@ -504,11 +531,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             ['in', q, ['get', 'routeId']],
             ['in', q, ['get', 'agencySlug']]
           ];
-      const clauses = [searchClause, headwayPillFilter, spanFilter].filter(Boolean);
+      const clauses = [searchClause, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     } else {
       // Overview: combine zoom gate + headway pill + span filter
-      const clauses = [zoomGateFilter, headwayPillFilter, spanFilter].filter(Boolean);
+      const clauses = [zoomGateFilter, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     }
 
@@ -579,7 +606,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes]);
 
   // Sync corridor static layer visibility
   useEffect(() => {

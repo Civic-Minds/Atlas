@@ -590,8 +590,9 @@ export async function processGtfsBuffer(
             let arr = stopMap.get(st.stop_id);
             if (!arr) { arr = []; stopMap.set(st.stop_id, arr); }
             arr.push(mins);
-            // Propagate to parent station so it also gets headways
-            if (parentId) {
+            // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
+            if (parentId && !visitSet.has(parentId)) {
+              visitSet.add(parentId);
               let parentArr = stopMap.get(parentId);
               if (!parentArr) { parentArr = []; stopMap.set(parentId, parentArr); }
               parentArr.push(mins);

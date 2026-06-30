@@ -127,6 +127,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
   const selectedLiveRoutes = selectedSlug ? (liveBySlug.get(selectedSlug) ?? []) : [];
   const selectedHistory = selectedSlug ? historyBySlug.get(selectedSlug) : null;
 
+  const historyYearsText = useMemo(() => {
+    if (!selectedHistory?.routes) return '';
+    const yearsSet = new Set<number>();
+    for (const r of selectedHistory.routes as any[]) {
+      for (const s of r.snapshots ?? []) {
+        if (s.year) yearsSet.add(s.year);
+      }
+    }
+    const years = [...yearsSet].sort((a, b) => a - b);
+    if (years.length === 0) return '';
+    if (years.length === 1) return `in ${years[0]}`;
+    return `from ${years[0]} to ${years[years.length - 1]}`;
+  }, [selectedHistory]);
+
   if (!open) return null;
 
   const headerTitle = view === 'agencies' ? 'Data' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
@@ -288,8 +302,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                           >
                             <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
                             <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                              {hasLive && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white">Live</span>}
-                              {hasHistory && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--bg-app)] border border-[var(--border-primary)] text-[var(--text-muted)]">History</span>}
+                              {hasLive && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live</span>}
+                              {hasHistory && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>}
                             </div>
                           </button>
                         );
@@ -315,7 +329,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
 
                   {selectedLiveRoutes.length > 0 && (
                     <div>
-                      <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Live routes</p>
+                      <div className="mb-2">
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live ({selectedLiveRoutes.length})</span>
+                      </div>
                       <div className="space-y-1">
                         {selectedLiveRoutes.map(r => (
                           <button
@@ -333,8 +349,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
 
                   {selectedHistory && (
                     <div>
-                      <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">History</p>
-                      <p className="text-xs text-[var(--text-dim)]">Historical frequency data available for this agency.</p>
+                      <div className="mb-2">
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>
+                      </div>
+                      <p className="text-xs text-[var(--text-dim)]">
+                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
+                      </p>
                     </div>
                   )}
 
