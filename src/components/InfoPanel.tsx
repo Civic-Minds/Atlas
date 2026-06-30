@@ -175,17 +175,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
           </button>
         </div>
 
-        {/* Slide transition container */}
+        {/* Content View Container */}
         <div className="flex-1 overflow-hidden relative">
-          <div
-            className="flex h-full transition-transform duration-300 ease-out"
-            style={{
-              width: '100%',
-              transform: `translateX(${view === 'home' ? '0%' : view === 'agencies' ? '-100%' : '-200%'})`
-            }}
-          >
-            {/* Home view */}
-            <div className="w-full h-full overflow-y-auto shrink-0 px-5 py-4 space-y-5">
+          {view === 'home' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A transit atlas covering agencies across North America.
               </p>
@@ -230,11 +223,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                 Schedule data from official GTFS feeds, refreshed every Monday. © 2026 Civic Minds.
               </p>
             </div>
+          )}
 
-            {/* Agencies list view */}
-            <div className="w-full h-full shrink-0 relative overflow-hidden">
-              <div className="flex flex-col w-full h-full overflow-y-auto">
-                <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
+          {view === 'agencies' && (
+            <div className="flex flex-col h-full overflow-y-auto">
+              <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className={SEARCH_PILL}>
                   <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
                   <input
@@ -305,11 +298,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                   ))}
                 </div>
               )}
-              </div>
             </div>
+          )}
 
-            {/* Agency detail view */}
-            <div className="w-full h-full overflow-y-auto shrink-0 px-5 py-4 space-y-4">
+          {view === 'agency-detail' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {selectedAgency && (
                 <>
                   <button
@@ -351,7 +344,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                 </>
               )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
