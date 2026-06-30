@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file.
 - **Pipeline: short-turn variant metadata** (AI-58): Direction-0 features now carry `shortTurnVariants` — an array of `{ headsign, tripShare }` for shape variants carrying ≥15% of a direction's trips that differ from the dominant cluster. Enables the sidebar to show "X% of trips go to [short-turn headsign]" without per-variant headway computation (that requires phase-1 refactor, deferred).
 
 ### Fixed
+- **Sparkline Freq label removal**: Removed the redundant `"Freq"` label from `HeadwaySparkline` to simplify the card interface and allow the chart to occupy the full card width.
+- **Outdated schedule warning details**: Enhanced the outdated schedule warning block with the feed's actual expiration date (e.g., `ended Jun 24, 2026`) and added a `Learn more about this feed →` link to the repository's `DATA_OVERRIDES.md` documentation page for improved user visibility.
 - **FilterChips layout overflow**: Swapped `whitespace-nowrap` for `min-w-0` on agency selection buttons and wrapped labels in a `truncate flex-1` span to prevent long agency names from clipping at the container border.
 - **SMART commuter route label**: Overrode generic `"Main Line"` route name for SMART (`smart-ca`) commuter rail with `"SMART Train"` to keep the route card header clear and meaningful.
 - **WETA Commuter Ferries direction names**: Reconfigured the GTFS processing pipeline to resolve the destination stop name as a fallback headsign when `trip_headsign` is missing. Fixes WETA displaying generic `"Direction 1"` and `"Direction 2"`, rendering `"to Vallejo Ferry Terminal"` and `"to San Francisco Ferry Building"` instead.

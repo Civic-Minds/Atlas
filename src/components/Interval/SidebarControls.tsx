@@ -441,6 +441,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const expDate = new Date(`${exp.slice(0, 4)}-${exp.slice(4, 6)}-${exp.slice(6, 8)}`);
     return expDate < new Date();
   })();
+  const expDateStr = (() => {
+    const exp = routeAgency?.lastFeedExpiry;
+    if (!exp || exp.length !== 8) return '';
+    const y = exp.slice(0, 4);
+    const m = exp.slice(4, 6);
+    const d = exp.slice(6, 8);
+    const date = new Date(Date.UTC(parseInt(y), parseInt(m) - 1, parseInt(d)));
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  })();
 
   if (!panelShouldRender) return null;
 
@@ -823,9 +832,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 );
               })}
               {routeIsStale && (
-                <p className="text-[9px] font-bold text-amber-500 mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 text-right">
-                  Schedule may be outdated
-                </p>
+                <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 text-right">
+                  <p className="text-[9px] font-bold text-amber-500">
+                    Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}
+                  </p>
+                  {routeSlug && (
+                    <a
+                      href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${routeSlug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[8px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold block mt-0.5"
+                    >
+                      Learn more about this feed →
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           </div>
