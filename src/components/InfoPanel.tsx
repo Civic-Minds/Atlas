@@ -232,8 +232,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
             </div>
 
             {/* Agencies list view */}
-            <div className="w-full h-full overflow-y-auto shrink-0 flex flex-col">
-              <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
+            <div className="w-full h-full shrink-0 relative overflow-hidden">
+              <div className="flex flex-col w-full h-full overflow-y-auto">
+                <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className={SEARCH_PILL}>
                   <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
                   <input
@@ -304,6 +305,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                   ))}
                 </div>
               )}
+              </div>
             </div>
 
             {/* Agency detail view */}
