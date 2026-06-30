@@ -53,7 +53,7 @@ type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
 const rowBtn = (active: boolean) =>
-  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left whitespace-nowrap ${
+  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
     active
       ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
       : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
@@ -144,9 +144,12 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
                   className={rowBtn(active)}
                   aria-label={g.name}
                 >
-                  {g.name}
+                  <span className="truncate flex-1">{g.name}</span>
                   {active && !loaded && (
                     <span className="ml-auto w-2 h-2 rounded-full border border-current opacity-40 shrink-0" />
+                  )}
+                  {active && loaded && (
+                    <span className="ml-auto w-2 h-2 rounded-full bg-current shrink-0" />
                   )}
                 </button>
               );
