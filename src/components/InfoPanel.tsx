@@ -180,12 +180,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
           <div
             className="flex h-full transition-transform duration-300 ease-out"
             style={{
-              width: '300%',
-              transform: `translateX(${view === 'home' ? '0%' : view === 'agencies' ? '-33.333%' : '-66.666%'})`
+              width: '100%',
+              transform: `translateX(${view === 'home' ? '0%' : view === 'agencies' ? '-100%' : '-200%'})`
             }}
           >
             {/* Home view */}
-            <div className="w-1/3 h-full overflow-y-auto shrink-0 px-5 py-4 space-y-5">
+            <div className="w-full h-full overflow-y-auto shrink-0 px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A transit atlas covering agencies across North America.
               </p>
@@ -232,7 +232,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
             </div>
 
             {/* Agencies list view */}
-            <div className="w-1/3 h-full overflow-y-auto shrink-0 flex flex-col">
+            <div className="w-full h-full overflow-y-auto shrink-0 flex flex-col">
               <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
                 <div className={SEARCH_PILL}>
                   <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
@@ -307,7 +307,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
             </div>
 
             {/* Agency detail view */}
-            <div className="w-1/3 h-full overflow-y-auto shrink-0 px-5 py-4 space-y-4">
+            <div className="w-full h-full overflow-y-auto shrink-0 px-5 py-4 space-y-4">
               {selectedAgency && (
                 <>
                   <button

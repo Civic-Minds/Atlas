@@ -8,7 +8,7 @@ import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
-import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel } from '../../utils/format';
+import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel, shortenAgencyName } from '../../utils/format';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
 import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
 import RouteListRow from '../RouteListRow';
@@ -156,7 +156,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const p = feat.properties as any;
       const shortName = p.routeShortName || p.routeId || '';
       const longName = p.routeLongName || '';
-      const agencyName = p.agencyName || slug;
+      const agencyName = shortenAgencyName(p.agencyName || slug);
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
@@ -185,7 +185,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const headway = p.headway ?? 999;
         const shortName = p.routeShortName || p.routeId;
         const longName = p.routeLongName || '';
-        const agencyName = p.agencyName || slug;
+        const agencyName = shortenAgencyName(p.agencyName || slug);
         routes.push({ key, shortName, longName, agencyName, headway });
       }
     }
@@ -386,7 +386,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           routeMap.set(shortName, {
             shortName,
             longName: p.routeLongName || '',
-            agencyName: p.agencyName || slug,
+            agencyName: shortenAgencyName(p.agencyName || slug),
             branches: new Map(),
           });
         }
@@ -489,7 +489,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           });
           if (f) {
             const p = f.properties as any;
-            return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: p.agencyName ?? '', color: getTierColor(p.tier) };
+            return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: shortenAgencyName(p.agencyName || slug), color: getTierColor(p.tier) };
           }
         }
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
@@ -646,8 +646,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       >
         {currentStop && !query.trim() && (
           <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
-            <div className="flex items-center justify-between mb-2 -mt-2 -mr-2">
-              <span className="text-[10px] font-black tracking-wide text-[var(--accent)]">Station View</span>
+            <div className="flex items-center justify-end mb-2 -mt-2 -mr-2">
               <button onClick={() => setSelectedStop(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -686,25 +685,28 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         const cleaned = headsign && !/^A[0-9]/.test(shortName)
                           ? titleCase(cleanHeadsign(headsign.trim(), shortName, longName))
                           : null;
-                        const label = cleaned
-                          ? (/^to\s/i.test(cleaned) ? cleaned : `→ ${cleaned}`)
-                          : `→ dir ${directionId}`;
+                        const isTo = cleaned && /^to\s/i.test(cleaned);
+                        const displayPrefix = isTo ? 'to' : '→';
+                        const displayBody = cleaned
+                          ? (isTo ? cleaned.replace(/^to\s+/i, '') : cleaned)
+                          : `dir ${directionId}`;
                         const showDivider = hasMultipleDirections && lastDir !== null && directionId !== lastDir;
                         lastDir = directionId;
                         // Use period-specific stop headway when a filter is active, fall back to all-day stop headway.
                         const displayHw = (period !== 'all' ? stopPeriodHw?.[period] : undefined) ?? headway;
                         const showPeriodLabel = period !== 'all' && stopPeriodHw?.[period] != null;
                         return (
-                          <React.Fragment key={`${rKey}::${directionId}::${headsign ?? ''}`}>
+                           <React.Fragment key={`${rKey}::${directionId}::${headsign ?? ''}`}>
                             {showDivider && (
                               <div className="my-1 border-t border-[var(--border-primary)] opacity-50" />
                             )}
                             <div className="flex items-center justify-between">
                               <button
                                 onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
-                                className="font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
+                                className="flex items-start gap-1.5 font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
                               >
-                                {label}
+                                <span className="shrink-0 min-w-[14px] text-center opacity-75">{displayPrefix}</span>
+                                <span>{displayBody}</span>
                               </button>
                               {displayHw != null && (
                                 <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">

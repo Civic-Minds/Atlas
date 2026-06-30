@@ -113,3 +113,29 @@ export function cleanRouteDisplayName(displayName: string, shortName: string): s
   }
   return displayName;
 }
+
+export function shortenAgencyName(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.includes('ac transit')) return 'AC Transit';
+  if (lower.includes('sfmta') || lower.includes('muni')) return 'SFMTA';
+  if (lower.includes('bart')) return 'BART';
+  if (lower.includes('caltrain')) return 'Caltrain';
+  if (lower.includes('samtrans')) return 'SamTrans';
+  if (lower.includes('vta')) return 'VTA';
+  if (lower.includes('weta')) return 'WETA';
+  if (lower.includes('county connection')) return 'County Connection';
+  if (lower.includes('westcat')) return 'WestCAT';
+  if (lower.includes('soltrans')) return 'SolTrans';
+  if (lower.includes('marin transit')) return 'Marin Transit';
+  if (lower.includes('golden gate')) return 'Golden Gate Transit';
+  if (lower.includes('smart') && lower.includes('sonoma')) return 'SMART';
+  
+  // General fallback: if there is a parenthetical abbreviation, use it
+  const match = name.match(/\(([^)]+)\)/);
+  if (match) {
+    const abbrev = match[1];
+    if (abbrev.length <= 10) return abbrev;
+  }
+  
+  return name;
+}
