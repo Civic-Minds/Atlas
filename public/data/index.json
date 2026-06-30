@@ -401,7 +401,7 @@
       "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe-corridors.json",
       "lastFeedExpiry": "20270528",
-      "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00"
+      "lastFeedVersion": "1/20260629 22:00:00/20260630 00:00:00"
     },
     {
       "slug": "stratford",

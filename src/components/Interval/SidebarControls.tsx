@@ -801,7 +801,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       </button>
                       {agency?.excludeRouteShortNames?.length ? (
                         <a
-                          href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${slug}`}
+                          href={agency.issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"

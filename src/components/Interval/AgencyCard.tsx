@@ -81,7 +81,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, classN
           </div>
           {agency.excludeRouteShortNames?.length ? (
             <a
-              href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${agency.slug}`}
+              href={agency.issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${agency.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-1 block"

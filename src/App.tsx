@@ -26,6 +26,7 @@ export interface Agency {
   lastFeedExpiry?: string | null; // YYYYMMDD from feed_info.txt feed_end_date
   excludeRouteShortNames?: string[];
   staged?: boolean;
+  issueUrl?: string;
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
