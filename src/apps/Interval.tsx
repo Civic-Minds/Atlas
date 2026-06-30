@@ -159,6 +159,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         filterToAgencies={filterToAgencies}
         onHistoryRouteClick={onHistoryRouteClick}
         selectedModes={selectedModes}
+        selectedAgencySlug={selectedAgencySlug}
       />
 
       {showUi && isLoading && (

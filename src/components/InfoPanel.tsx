@@ -297,7 +297,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                         return (
                           <button
                             key={a.slug}
-                            onClick={() => { setSelectedSlug(a.slug); setView('agency-detail'); }}
+                            onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                             className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
                           >
                             <span className="text-xs text-[var(--text-primary)]">{a.name}</span>

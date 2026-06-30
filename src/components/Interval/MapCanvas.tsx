@@ -44,6 +44,7 @@ interface MapCanvasProps {
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   selectedModes?: Set<number>;
+  selectedAgencySlug?: string | null;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -67,6 +68,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   filterToAgencies = false,
   onHistoryRouteClick,
   selectedModes,
+  selectedAgencySlug,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -390,6 +392,22 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       { timeout: 8000 }
     );
   };
+
+  // Fly to selected agency when chosen from lists/panels (e.g. Data list in InfoPanel)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !selectedAgencySlug) return;
+    const agency = agencies.find(a => a.slug === selectedAgencySlug);
+    if (agency?.center) {
+      const [lat, lon] = agency.center;
+      map.flyTo({
+        center: [lon, lat],
+        zoom: 12,
+        duration: 900,
+        essential: true,
+      });
+    }
+  }, [selectedAgencySlug, agencies, mapLoaded]);
 
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
