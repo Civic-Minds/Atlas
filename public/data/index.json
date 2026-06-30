@@ -2170,7 +2170,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": "PDT: 05-Jun-2026 11:08"
     },
     {
       "slug": "sherbrooke",
@@ -2211,7 +2212,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261128",
+      "lastFeedVersion": "20260531-20260624-2100"
     },
     {
       "slug": "ctran",
@@ -2232,7 +2234,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260912",
+      "lastFeedVersion": "20260510-20260912"
     },
     {
       "slug": "spokane",
@@ -2253,7 +2256,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260919",
+      "lastFeedVersion": "MAY2026v3_20260521"
     },
     {
       "slug": "eugene-ltd",
@@ -2274,7 +2278,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260131",
+      "lastFeedVersion": ""
     },
     {
       "slug": "cherriots",
@@ -2295,7 +2300,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "corvallis",
@@ -2316,7 +2322,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260625"
     },
     {
       "slug": "sfmta",
@@ -2337,7 +2344,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "bart",
@@ -2358,7 +2366,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "72"
     },
     {
       "slug": "caltrain",
@@ -2379,7 +2388,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20270131",
+      "lastFeedVersion": "UTC: 10-Jun-2026 22:25"
     },
     {
       "slug": "actransit",
@@ -2421,7 +2431,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260809",
+      "lastFeedVersion": "2026-06-01_10:34"
     },
     {
       "slug": "samtrans",
@@ -2442,7 +2453,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "Initial"
     },
     {
       "slug": "goldengate",
@@ -2463,7 +2475,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "weta",
@@ -2484,7 +2497,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261101",
+      "lastFeedVersion": "UTC: 24-Jun-2026 19:51"
     },
     {
       "slug": "countyconnection",
@@ -2505,7 +2519,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "westcat",
@@ -2526,7 +2541,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "UTC: 25-Jun-2026 20:50"
     },
     {
       "slug": "soltrans",
@@ -2547,7 +2563,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260612"
     },
     {
       "slug": "marintransit",
@@ -2568,7 +2585,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20270109",
+      "lastFeedVersion": "UTC: 04-Feb-2026 00:08"
     },
     {
       "slug": "smart-ca",
@@ -2589,7 +2607,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20270110",
+      "lastFeedVersion": "UTC: 14-Apr-2026 15:07"
     },
     {
       "slug": "sonoma-county",
@@ -2610,7 +2629,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260630",
+      "lastFeedVersion": "UTC: 12-Jun-2026 19:42"
     },
     {
       "slug": "vine",
@@ -2631,7 +2651,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261031",
+      "lastFeedVersion": "UTC: 26-Jun-2026 20:52"
     },
     {
       "slug": "emerygoround",
@@ -2652,7 +2673,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "stanford",
@@ -2673,7 +2695,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20270618",
+      "lastFeedVersion": "2026-06-16T21:38:12Z"
     },
     {
       "slug": "tridelta",
@@ -2694,7 +2717,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "lavta",
@@ -2715,7 +2739,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260430",
+      "lastFeedVersion": "January_26_01_20260327"
     },
     {
       "slug": "unioncity",
@@ -2736,7 +2761,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20230927",
+      "lastFeedVersion": "UTC: 14-Mar-2023 23:56"
     },
     {
       "slug": "westberkeley",
@@ -2778,7 +2804,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20230630",
+      "lastFeedVersion": "UTC: 01-Dec-2022 01:48"
     },
     {
       "slug": "santarosa",
@@ -2799,7 +2826,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "fast-ca",
@@ -2820,7 +2848,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260630",
+      "lastFeedVersion": "UTC: 14-Nov-2025 10:07"
     },
     {
       "slug": "vacaville",
@@ -2841,7 +2870,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260630",
+      "lastFeedVersion": "2.2.26"
     },
     {
       "slug": "riovista",
@@ -2862,7 +2892,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20250131",
+      "lastFeedVersion": "UTC: 23-Feb-2024 22:27"
     },
     {
       "slug": "ace",
@@ -2883,7 +2914,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20241231",
+      "lastFeedVersion": "20231226"
     },
     {
       "slug": "rvtd",
@@ -2904,7 +2936,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261122",
+      "lastFeedVersion": "06-29-26  02:35"
     },
     {
       "slug": "bts-or",
@@ -2925,7 +2958,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "UTC: 30-Apr-2026 20:28"
     },
     {
       "slug": "rct",
@@ -2946,7 +2980,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260523",
+      "lastFeedVersion": "UTC: 20-Jan-2026 15:30"
     },
     {
       "slug": "humboldt",
@@ -2967,7 +3002,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "UTC: 04-Jun-2026 22:50"
     },
     {
       "slug": "mendocino",
@@ -2988,7 +3024,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "UTC: 16-Jun-2026 17:58"
     },
     {
       "slug": "raba",
@@ -3009,7 +3046,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Jun 25, 2026, 7:10 PM"
     },
     {
       "slug": "siskiyou",
@@ -3030,7 +3068,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 10-Jun-2026 19:20"
     },
     {
       "slug": "trinity",
@@ -3051,7 +3090,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Feb 3, 2026, 1:10 PM"
     },
     {
       "slug": "lassen",
@@ -3072,7 +3112,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261130",
+      "lastFeedVersion": "UTC: 22-May-2026 15:35"
     },
     {
       "slug": "sacrt",
@@ -3093,7 +3134,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20250405",
+      "lastFeedVersion": "January_2025"
     },
     {
       "slug": "yolobus",
@@ -3114,7 +3156,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus-corridors.json",
-      "staged": true
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "unitrans",
@@ -3135,7 +3178,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20260922",
+      "lastFeedVersion": "SS1-SS2_2026_V1"
     },
     {
       "slug": "roseville",
@@ -3156,7 +3200,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Roseville_April_2025-26"
     },
     {
       "slug": "smart-or",
@@ -3177,7 +3222,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "FY26 Q4 Effective 5/28/2026"
     },
     {
       "slug": "sam",
@@ -3198,7 +3244,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20261201",
+      "lastFeedVersion": "UTC: 17-Jun-2026 18:57"
     },
     {
       "slug": "cat-or",
@@ -3219,7 +3266,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 09-Jun-2026 21:37"
     },
     {
       "slug": "yamhill",
@@ -3240,7 +3288,8 @@
       "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill.json",
       "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill-stops.json",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill-corridors.json",
-      "staged": true
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260619"
     }
   ]
 }
