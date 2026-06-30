@@ -2,44 +2,23 @@
 
 Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflare R2, rendered by a React + Leaflet frontend. Coverage extends outward from the Greater Golden Horseshoe — Buffalo, London, Kingston, Montreal, and more on one continuous map.
 
+- **[Vision](docs/VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
+- **[Features](./README.md#features)**: Headway tiers, filtering, search, station view, corridors, live adherence, history, agency browser.
+- **[Agencies](docs/AGENCIES.md)**: Current coverage, regions, and feed metadata.
 
-## Now
+### Strategy & Direction
+- **[Research](docs/RESEARCH.md)**: Agency pain points and problem statements (broken metrics, data silos, evidence gaps for planning).
+- **[Strategy](docs/STRATEGY.md)**: Competitive landscape and long-term product positioning.
+- **[Factbook (proposed)](docs/ROADMAP_FACTBOOK.md)**: Atlas Factbook — surfacing data-driven findings, service change stories, frequency realities, corridors, and AI-assisted narratives.
 
-- **Corridors app** (v2.3.0): station-to-station lookup, live.
-- Grow agency coverage outward from the core, one continuous regional map.
-- Bug fixes and UX polish tracked in Linear (AI team → Atlas project).
+### Product & Platform
+- **[Product](docs/ROADMAP_PRODUCT.md)**: Map apps (Frequency Map, Corridors, History, Factbook/Insights), live data layer, filters, design principles.
+- **[Technical](docs/ROADMAP_TECHNICAL.md)**: Infrastructure stack, GTFS-RT archiving, live data infrastructure (workers, databases, trip matching).
+- **[Platform](docs/ROADMAP_PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).
 
-## Live data (shipped)
-
-**GTFS-RT archiver Worker** (`workers/gtfs-rt-archiver/`) polls Burlington and Hamilton TripUpdates on a cron and writes raw `.pb` snapshots to the **`atlas-live`** R2 bucket at `{slug}/{YYYY-MM-DD}/{unix-seconds}.pb`. No parsing at capture time — storage for later analysis. Separate bucket from the main `atlas` GeoJSON bucket.
-
-The in-app **live adherence panel** (Burlington 1/10, Hamilton 01/10) still fetches TripUpdates on demand when a covered route is selected.
-
-## Schedule adherence (next)
-
-Per-stop comparison of scheduled vs. actual headway — e.g. "scheduled every 10 minutes but actually running every 15–20 here."
-
-- **Scope**: start with Hamilton B-Line and Burlington Route 1.
-- **Approach**: combine on-demand TripUpdates (live panel) with archived snapshots from `atlas-live` for historical drift analysis.
-- **Next step**: add Neon Postgres for structured adherence events so pattern queries work (e.g. "always late on Tuesdays at this stop").
-
-## Later
-
-- Expand schedule adherence to more routes/agencies once the first pass proves useful.
-- History app UI once enough schedule snapshots have accumulated.
-- Live vehicle map across more agencies.
-
----
-
-## Docs
-
-- [Vision](docs/VISION.md)
-- [Research](docs/RESEARCH.md)
-- [Strategy](docs/STRATEGY.md)
-- [Product Roadmap](docs/ROADMAP_PRODUCT.md)
-- [Technical Roadmap](docs/ROADMAP_TECHNICAL.md)
-- [Platform Roadmap](docs/ROADMAP_PLATFORM.md)
-- [Agencies](docs/AGENCIES.md)
+### Operations & Documentation
+- **[Pipeline](./PIPELINE.md)**: GTFS processing, weekly refresh, history builds, and supporting scripts.
+- **[Changelog](./CHANGELOG.md)**: Detailed release notes and all notable changes.
 
 ---
 
