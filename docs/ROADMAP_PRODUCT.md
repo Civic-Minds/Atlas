@@ -9,7 +9,7 @@ User experience and the workflow of a transit professional using Atlas.
 | App | Status | Question it answers |
 |-----|--------|---------------------|
 | **Frequency Map** | Live | Where is service frequent or infrequent? |
-| **Corridors** | Live (v2.3.0) | What runs directly between these two stations? |
+| **Corridors** | Live | What runs directly between these two stations? |
 | **History** | Planned | How did service change across schedule periods? |
 | **Factbook / Insights** | Proposed | What surprising or useful stories does the data contain? |
 
