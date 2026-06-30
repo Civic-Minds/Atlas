@@ -266,6 +266,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         e.preventDefault();
       });
 
+      // Corridor clicks (for Corridors app to respond to blue lines and corridor routes)
+      map.on('click', 'corridor-dynamic-layer', (e) => {
+        e.preventDefault();
+        // TODO: integrate with Corridors to show RouteGroupCard or set from/to
+      });
+      map.on('click', 'corridor-shapes-layer', (e) => {
+        e.preventDefault();
+      });
+
       setMapLoaded(true);
     });
 

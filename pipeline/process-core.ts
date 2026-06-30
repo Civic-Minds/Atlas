@@ -860,6 +860,10 @@ export async function processGtfsBuffer(
       const a = stopCoords.get(c.stopA);
       const b = stopCoords.get(c.stopB);
       if (!a || !b) continue;
+      // Skip long straight-line chords (cross water, look wrong for long-distance)
+      const dx = a[0] - b[0];
+      const dy = a[1] - b[1];
+      if (Math.sqrt(dx * dx + dy * dy) > 0.05) continue; // ~5km+ at this lat
       const h = Math.round(c.avgHeadway);
       const shortNames = c.routeIds
         .map((rid: string) => routeById.get(rid)?.route_short_name ?? rid)

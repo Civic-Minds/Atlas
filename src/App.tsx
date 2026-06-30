@@ -261,7 +261,7 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inCorridors || inHistory}
+              showRouteLayers={inFrequency || inHistory}
               filterToAgencies={inHistory}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
