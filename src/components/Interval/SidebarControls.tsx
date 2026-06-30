@@ -927,7 +927,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   </p>
                   {routeSlug && (
                     <a
-                      href={`https://github.com/Civic-Minds/Atlas/blob/main/DATA_OVERRIDES.md#${routeSlug}`}
+                      href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[8px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold block mt-0.5"
