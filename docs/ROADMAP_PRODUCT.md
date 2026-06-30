@@ -11,8 +11,11 @@ User experience and the workflow of a transit professional using Atlas.
 | **Frequency Map** | Live | Where is service frequent or infrequent? |
 | **Corridors** | Live (v2.3.0) | What runs directly between these two stations? |
 | **History** | Planned | How did service change across schedule periods? |
+| **Factbook / Insights** | Proposed | What surprising or useful stories does the data contain? |
 
 **Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or filter.
+
+See [Atlas Factbook roadmap](ROADMAP_FACTBOOK.md) for details on computation, AI-assisted narratives, and surfacing.
 
 ---
 

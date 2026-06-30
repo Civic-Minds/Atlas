@@ -6,6 +6,8 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 - **[Features](./README.md#features)**: Headway tiers, filtering, search, station view, corridors, live adherence, history, agency browser.
 - **[Agencies](docs/AGENCIES.md)**: Current coverage, regions, and feed metadata.
 
+**Current focus:** Corridors app live (v2.3.0). History and live data layers expanding. Exploring the new Factbook for data-driven insights and stories.
+
 ### Strategy & Direction
 - **[Research](docs/RESEARCH.md)**: Agency pain points and problem statements (broken metrics, data silos, evidence gaps for planning).
 - **[Strategy](docs/STRATEGY.md)**: Competitive landscape and long-term product positioning.
