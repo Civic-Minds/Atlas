@@ -107,10 +107,11 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const prevPendingRoute = useRef<typeof pendingLiveRoute>(null);
   useEffect(() => {
-    if (!pendingLiveRoute || pendingLiveRoute === prevPendingRoute.current) return;
-    prevPendingRoute.current = pendingLiveRoute;
+    if (!pendingLiveRoute) return;
     const fc = layers[pendingLiveRoute.slug];
-    if (!fc) { onPendingLiveRouteHandled?.(); return; }
+    if (!fc) return; // wait for agency layer to load (from bounds/viewport); do not consume pending yet
+    if (pendingLiveRoute === prevPendingRoute.current) return;
+    prevPendingRoute.current = pendingLiveRoute;
     let found = fc.features.find(f => {
       const p = f.properties as any;
       return p.routeShortName === pendingLiveRoute.routeShortName && p.day === day;
