@@ -544,30 +544,11 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   const showScrubber = selectedSlug && availableYears.length > 1;
 
   return (
-    <div
-      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
-    >
-      {showScrubber && (
-        <div className={`${FLOATING_CARD} px-4 py-2 text-[10px]`}>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-bold text-[var(--text-muted)]">Time scrubber</span>
-            <span className="font-mono text-xs font-bold text-[var(--text-primary)]">{selectedYear}</span>
-          </div>
-          <input
-            type="range"
-            min={availableYears[0]}
-            max={availableYears[availableYears.length - 1]}
-            step="1"
-            value={selectedYear}
-            onChange={e => setSelectedYear(parseInt(e.target.value))}
-            className="time-scrubber-range w-full accent-[var(--accent)]"
-          />
-          <div className="flex justify-between text-[9px] text-[var(--text-muted)] mt-1">
-            {availableYears.map(y => <span key={y}>{y}</span>)}
-          </div>
-        </div>
-      )}
-      {selectedSlug ? (
+    <>
+      <div
+        className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
+      >
+        {selectedSlug ? (
         (() => {
           const agencyHistory = historyData?.find(a => a.slug === selectedSlug) ?? null;
           if (!agencyHistory) return null;
@@ -654,6 +635,28 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
           )}
         </div>
       )}
-    </div>
+      </div>
+
+      {showScrubber && (
+        <div className={`absolute bottom-6 right-14 z-[1000] w-[300px] ${FLOATING_CARD} px-3 py-1.5 text-[9px]`}>
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-[9px] font-bold text-[var(--text-muted)]">Time scrubber</span>
+            <span className="font-mono text-xs font-bold text-[var(--text-primary)]">{selectedYear}</span>
+          </div>
+          <input
+            type="range"
+            min={availableYears[0]}
+            max={availableYears[availableYears.length - 1]}
+            step="1"
+            value={selectedYear}
+            onChange={e => setSelectedYear(parseInt(e.target.value))}
+            className="time-scrubber-range w-full accent-[var(--accent)]"
+          />
+          <div className="flex justify-between text-[8px] text-[var(--text-muted)] mt-0.5">
+            {availableYears.map(y => <span key={y}>{y}</span>)}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
