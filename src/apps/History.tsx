@@ -638,10 +638,10 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
       </div>
 
       {showScrubber && (
-        <div className={`absolute bottom-6 right-14 z-[1000] w-[300px] ${FLOATING_CARD} px-3 py-1.5 text-[9px]`}>
+        <div className={`absolute bottom-6 right-14 z-[1000] w-[300px] ${FLOATING_CARD} px-3 py-1.5 text-[10px]`}>
           <div className="flex items-center justify-between mb-0.5">
-            <span className="text-[9px] font-bold text-[var(--text-muted)]">Time scrubber</span>
-            <span className="font-mono text-xs font-bold text-[var(--text-primary)]">{selectedYear}</span>
+            <span className="text-[10px] font-bold text-[var(--text-muted)]">Time scrubber</span>
+            <span className="text-xs font-bold text-[var(--text-primary)]">{selectedYear}</span>
           </div>
           <input
             type="range"
@@ -652,7 +652,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
             onChange={e => setSelectedYear(parseInt(e.target.value))}
             className="time-scrubber-range w-full accent-[var(--accent)]"
           />
-          <div className="flex justify-between text-[8px] text-[var(--text-muted)] mt-0.5">
+          <div className="flex justify-between text-[9px] text-[var(--text-muted)] mt-0.5">
             {availableYears.map(y => <span key={y}>{y}</span>)}
           </div>
         </div>
