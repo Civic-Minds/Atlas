@@ -144,30 +144,28 @@ button {
   display: none !important;
 }
 
-/* Time scrubber — styled to match the app's rounded, subtle aesthetic (uses CSS vars for light/dark) */
+/* Time scrubber — compact pill matching locate button height (h-9), rounded, theme colors */
 .time-scrubber-range {
   appearance: none;
-  height: 4px;
+  height: 3px;
   background: var(--border-primary);
-  border-radius: 9999px; /* fully rounded track */
+  border-radius: 9999px;
   outline: none;
   cursor: pointer;
-  /* Let accent color the "filled" portion up to thumb */
   accent-color: var(--accent);
+  vertical-align: middle;
 }
 
-/* Thumb (the knob) — small, rounded, bordered like other accent elements */
 .time-scrubber-range::-webkit-slider-thumb {
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   background: var(--bg-panel);
   border: 2px solid var(--accent);
-  border-radius: 50%; /* perfectly round */
+  border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   transition: transform 0.1s ease, box-shadow 0.1s ease;
-  margin-top: -6px; /* centers on thin track */
 }
 
 .time-scrubber-range::-webkit-slider-thumb:hover {
@@ -176,14 +174,14 @@ button {
 }
 
 .time-scrubber-range::-moz-range-track {
-  height: 4px;
+  height: 3px;
   background: var(--border-primary);
   border-radius: 9999px;
 }
 
 .time-scrubber-range::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   background: var(--bg-panel);
   border: 2px solid var(--accent);
   border-radius: 50%;
