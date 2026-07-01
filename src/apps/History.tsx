@@ -638,7 +638,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
       </div>
 
       {showScrubber && (
-        <div className={`absolute bottom-6 right-14 z-[1000] w-[300px] ${FLOATING_CARD} px-3 py-1.5 text-[10px]`}>
+        <div className={`absolute bottom-6 right-14 z-[1000] w-[300px] ${FLOATING_CARD} px-3 py-1.5 text-[10px] !bg-[var(--bg-panel)]/55 backdrop-blur-xl`}>
           <div className="flex justify-end mb-0.5">
             <span className="text-xs font-bold text-[var(--text-primary)]">{selectedYear}</span>
           </div>
