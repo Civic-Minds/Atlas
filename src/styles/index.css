@@ -147,13 +147,19 @@ button {
 /* Time scrubber — compact pill matching locate button height (h-9), rounded, theme colors */
 .time-scrubber-range {
   appearance: none;
-  height: 3px;
-  background: var(--border-primary);
-  border-radius: 9999px;
+  height: 16px; /* enough to contain thumb without expanding the h-9 container */
+  background: transparent; /* track drawn inside */
   outline: none;
   cursor: pointer;
   accent-color: var(--accent);
   vertical-align: middle;
+}
+
+.time-scrubber-range::-webkit-slider-runnable-track {
+  height: 3px;
+  background: var(--border-primary);
+  border-radius: 9999px;
+  margin: 6.5px 0; /* center the 3px track in 16px */
 }
 
 .time-scrubber-range::-webkit-slider-thumb {
@@ -177,6 +183,7 @@ button {
   height: 3px;
   background: var(--border-primary);
   border-radius: 9999px;
+  margin: 6.5px 0;
 }
 
 .time-scrubber-range::-moz-range-thumb {
