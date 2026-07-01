@@ -274,7 +274,7 @@ export default function App() {
               filterToAgencies={inHistory}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
-              hideFilterPanel={inCorridors || inLive}
+              hideFilterPanel={inCorridors || inLive || inHistory}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
