@@ -129,6 +129,14 @@ export default function App() {
     if (activeApp === 'live') setLiveMounted(true);
   }, [activeApp]);
 
+  // Clear history-specific pending state when leaving history mode
+  // (prevents lingering state after idle + exit, e.g. back arrow or panels)
+  useEffect(() => {
+    if (!inHistory) {
+      setPendingHistoryRoute(null);
+    }
+  }, [inHistory]);
+
   useEffect(() => {
     if (searchPlaceholder === shownPlaceholder) return;
     setPlaceholderVisible(false);
@@ -278,7 +286,7 @@ export default function App() {
               setDay={setDay}
               onLayersChange={setLayers}
             />
-            <History active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
+            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
             {corridorsMounted && (
               <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
