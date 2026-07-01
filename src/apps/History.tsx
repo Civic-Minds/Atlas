@@ -639,8 +639,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
 
       {showScrubber && (
         <div className={`absolute bottom-6 right-14 z-[1000] w-[300px] ${FLOATING_CARD} px-3 py-1.5 text-[10px]`}>
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="text-[10px] font-bold text-[var(--text-muted)]">Time scrubber</span>
+          <div className="flex justify-end mb-0.5">
             <span className="text-xs font-bold text-[var(--text-primary)]">{selectedYear}</span>
           </div>
           <input
