@@ -290,7 +290,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </div>
 
       {/* Mode */}
-      <div className="relative">
+      <div className="relative hidden lg:block">
         {(() => {
           const modeLabel = selectedModes.size === 0
             ? 'Mode'

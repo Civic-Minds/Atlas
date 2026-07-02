@@ -196,7 +196,7 @@ export default function App() {
 
         {/* Search bar — doubles as Corridors From input and History agency search */}
         <div>
-        <div className={`w-64 relative ${PILL_SURFACE} pl-1 pr-3`}>
+        <div className={`w-40 lg:w-52 xl:w-64 relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             ref={corridorsFromRef}
@@ -239,7 +239,7 @@ export default function App() {
         </div>
 
         {stats && (
-          <div className={`flex gap-2 transition-all ${TRANSITION_SLOW} origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
+          <div className={`hidden xl:flex gap-2 transition-all ${TRANSITION_SLOW} origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
             <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
               <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
               <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
