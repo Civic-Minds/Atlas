@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency } from '../types/gtfs';
+import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule } from '../types/gtfs';
 
 /**
  * Parse a CSV string into an array of typed objects.
@@ -58,7 +58,9 @@ const GTFS_FILES = {
     calendarDates: 'calendar_dates.txt',
     shapes: 'shapes.txt',
     feedInfo: 'feed_info.txt',
-    frequencies: 'frequencies.txt'
+    frequencies: 'frequencies.txt',
+    fareAttributes: 'fare_attributes.txt',
+    fareRules: 'fare_rules.txt'
 } as const;
 
 /**
@@ -67,7 +69,7 @@ const GTFS_FILES = {
  * calendar_dates.txt for exception-based scheduling.
  * agency.txt is technically required by the spec but some feeds omit it.
  */
-const OPTIONAL_FILES = new Set(['feedInfo', 'shapes', 'calendar', 'calendarDates', 'agencies', 'frequencies']);
+const OPTIONAL_FILES = new Set(['feedInfo', 'shapes', 'calendar', 'calendarDates', 'agencies', 'frequencies', 'fareAttributes', 'fareRules']);
 
 /**
  * Synthesize GtfsCalendar entries from calendar_dates.txt when calendar.txt
@@ -170,7 +172,9 @@ export const parseGtfsZip = async (
         agencies: [],     // Default to empty array
         shapes: [],       // Default to empty array
         calendarDates: [], // Default to empty array
-        frequencies: []   // Default to empty array
+        frequencies: [],   // Default to empty array
+        fareAttributes: [],
+        fareRules: []
     };
 
     for (const [key, filename] of Object.entries(GTFS_FILES)) {

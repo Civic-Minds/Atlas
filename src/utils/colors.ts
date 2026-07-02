@@ -51,3 +51,26 @@ export function getTimelineHeadwayColor(hw: number | null): { bg: string; fg: st
   if (hw <= 60)   return { bg: '#92400e',          fg: '#fff' };
   return                  { bg: '#6b7280',          fg: '#fff' };
 }
+
+export interface FareTier {
+  max: number;
+  label: string;
+  color: string;
+}
+
+export const FARE_TIERS: FareTier[] = [
+  { max: 0, label: 'Free', color: '#14b8a6' },   // teal
+  { max: 2, label: '< $2', color: '#4ade80' },   // light green
+  { max: 4, label: '$2–4', color: '#facc15' },   // yellow
+  { max: 8, label: '$4–8', color: '#fb923c' },   // orange
+  { max: Infinity, label: '$8+', color: '#f87171' }, // red
+];
+
+export function getFareColor(fare: number | null | undefined): string {
+  if (fare == null) return '#6b7280'; // unknown / no data
+  if (fare === 0) return '#14b8a6';
+  if (fare < 2) return '#4ade80';
+  if (fare < 4) return '#facc15';
+  if (fare < 8) return '#fb923c';
+  return '#f87171';
+}

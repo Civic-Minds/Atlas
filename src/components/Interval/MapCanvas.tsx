@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
+import { HEADWAY_TIERS, STATUS_COLORS, FARE_TIERS, getFareColor } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
@@ -45,6 +45,7 @@ interface MapCanvasProps {
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   selectedModes?: Set<number>;
   selectedAgencySlug?: string | null;
+  fareView?: boolean;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -69,6 +70,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onHistoryRouteClick,
   selectedModes,
   selectedAgencySlug,
+  fareView = false,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -553,6 +555,20 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     let routeFilter: any = null;
     if (!showRouteLayers) {
       routeFilter = ['==', 'agencySlug', ''];
+    } else if (fareView) {
+      // In fares view show all matching routes (ignore headway/span/zoom gates)
+      const searchClause = ql
+        ? (matchedAgencySlug
+            ? ['==', 'agencySlug', matchedAgencySlug]
+            : ['any',
+                ['in', q, ['get', 'routeShortName']],
+                ['in', q, ['get', 'routeId']],
+                ['in', q, ['get', 'agencySlug']]
+              ])
+        : null;
+      const modeOnly = modeFilter;
+      const clauses = [searchClause, modeOnly].filter(Boolean);
+      routeFilter = clauses.length === 0 ? null : (clauses.length === 1 ? clauses[0] : ['all', ...clauses]);
     } else if (ql) {
       // Search active: match query + respect headway pill, but skip zoom gate
       // so users can find any route regardless of zoom level.
@@ -580,16 +596,36 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
 
     if (hasRoutes) {
-      // Apply color paint styling based on headway tier
-      const lineColorMatch: any[] = ['match', ['get', 'tier']];
-      HEADWAY_TIERS.forEach(({ max, color }) => {
-        if (max !== Infinity) {
-          lineColorMatch.push(String(max), color);
-        }
-      });
-      lineColorMatch.push('#6b7280'); // fallback/default
+      // Apply color paint styling — fare view if requested and baseFare present, else tier
+      let lineColorExpr: any;
+      if (fareView) {
+        // Use match on numeric baseFare with tier buckets. Unknown/ null falls to gray.
+        const expr: any[] = ['case'];
+        // Free (0)
+        expr.push(['==', ['coalesce', ['get', 'baseFare'], -1], 0], '#14b8a6');
+        // Low <2
+        expr.push(['all', ['>', ['coalesce', ['get', 'baseFare'], 999], 0], ['<', ['coalesce', ['get', 'baseFare'], 999], 2]], '#4ade80');
+        // Mid <4
+        expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 2], ['<', ['coalesce', ['get', 'baseFare'], 999], 4]], '#facc15');
+        // High <8
+        expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 4], ['<', ['coalesce', ['get', 'baseFare'], 999], 8]], '#fb923c');
+        // Premium >=8
+        expr.push(['>=', ['coalesce', ['get', 'baseFare'], 999], 8], '#f87171');
+        // Unknown / no data
+        expr.push('#6b7280');
+        lineColorExpr = expr;
+      } else {
+        const lineColorMatch: any[] = ['match', ['get', 'tier']];
+        HEADWAY_TIERS.forEach(({ max, color }) => {
+          if (max !== Infinity) {
+            lineColorMatch.push(String(max), color);
+          }
+        });
+        lineColorMatch.push('#6b7280'); // fallback/default
+        lineColorExpr = lineColorMatch;
+      }
 
-      map.setPaintProperty('routes-layer', 'line-color', lineColorMatch);
+      map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
 
       // Opacity based on route state (focused vs dimmed)
       if (selectedRoute) {
@@ -649,7 +685,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes, fareView]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
@@ -956,6 +992,25 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       >
         <LocateFixed className="w-4 h-4" />
       </button>
+
+      {/* Minimal fare legend (AI-205) */}
+      {fareView && (
+        <div className="absolute bottom-6 left-3 z-[1000] px-2.5 py-1.5 rounded-md bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[10px] shadow-lg backdrop-blur-md pointer-events-auto">
+          <div className="font-bold mb-1 text-[var(--text-primary)]">Base fare (adult)</div>
+          <div className="flex flex-col gap-y-0.5">
+            {FARE_TIERS.map(t => (
+              <div key={t.label} className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: t.color }} />
+                <span className="text-[var(--text-primary)]">{t.label}</span>
+              </div>
+            ))}
+            <div className="flex items-center gap-1.5 mt-0.5 pt-0.5 border-t border-[var(--border-primary)] opacity-70">
+              <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[#6b7280]" />
+              <span className="text-[var(--text-dim)]">unknown</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

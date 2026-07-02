@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeftRight, Clock, Radio } from 'lucide-react';
+import { ArrowLeftRight, Clock, Radio, DollarSign } from 'lucide-react';
 import { FLOATING_CARD } from '../styles';
 
-export type AppId = 'frequency' | 'corridors' | 'history' | 'live';
+export type AppId = 'frequency' | 'corridors' | 'history' | 'live' | 'fares';
 
 interface AppEntry {
   id: AppId;
@@ -18,6 +18,13 @@ const APPS: AppEntry[] = [
     label: 'Corridors',
     description: 'Routes connecting two stations',
     icon: <ArrowLeftRight className="w-5 h-5" />,
+    available: true,
+  },
+  {
+    id: 'fares',
+    label: 'Fares',
+    description: 'Routes colored by base fare',
+    icon: <DollarSign className="w-5 h-5" />,
     available: true,
   },
   {

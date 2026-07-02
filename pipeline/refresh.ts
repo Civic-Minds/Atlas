@@ -144,6 +144,7 @@ interface AgencyEntry {
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   staged?: boolean;
+  fare?: number;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -219,6 +220,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
     slug: agency.slug,
+    manualBaseFare: agency.fare,
   });
 
   let { geojson, corridorsGeojson, stopsJson, featureCount } = primary;

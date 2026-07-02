@@ -89,6 +89,24 @@ export interface GtfsFrequency {
     exact_times?: string; // '0' (default) or '1'
 }
 
+export interface GtfsFareAttribute {
+    fare_id: string;
+    price: string;
+    currency_type: string;
+    payment_method: string;
+    transfers?: string;
+    agency_id?: string;
+    transfer_duration?: string;
+}
+
+export interface GtfsFareRule {
+    fare_id: string;
+    route_id?: string;
+    origin_id?: string;
+    destination_id?: string;
+    contains_id?: string;
+}
+
 export interface GtfsFeedInfo {
     feed_publisher_name?: string;
     feed_publisher_url?: string;
@@ -111,6 +129,8 @@ export interface GtfsData {
     shapes: GtfsShape[];
     feedInfo?: GtfsFeedInfo[];
     frequencies?: GtfsFrequency[];
+    fareAttributes?: GtfsFareAttribute[];
+    fareRules?: GtfsFareRule[];
 }
 
 // ---------------------------------------------------------------------------

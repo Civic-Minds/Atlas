@@ -27,12 +27,14 @@ export interface Agency {
   excludeRouteShortNames?: string[];
   staged?: boolean;
   issueUrl?: string;
+  fare?: number; // manual base adult fare fallback (dollars) for Fares map (AI-205)
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
   '/apps/frequency': 'frequency',
   '/apps/corridors': 'corridors',
+  '/apps/fares': 'fares',
   '/apps/history': 'history',
   '/apps/live': 'live',
 };
@@ -40,6 +42,7 @@ const PATH_TO_APP: Record<string, AppId> = {
 const APP_TO_PATH: Record<AppId, string> = {
   frequency: '/apps/frequency',
   corridors: '/apps/corridors',
+  fares: '/apps/fares',
   history: '/apps/history',
   live: '/apps/live',
 };
@@ -107,8 +110,9 @@ export default function App() {
   const inHistory = activeApp === 'history';
   const inCorridors = activeApp === 'corridors';
   const inLive = activeApp === 'live';
-  const searchValue = inFrequency || inHistory || inLive ? query : corridorsFrom;
-  const searchPlaceholder = inFrequency
+  const inFares = activeApp === 'fares';
+  const searchValue = inFrequency || inHistory || inLive || inFares ? query : corridorsFrom;
+  const searchPlaceholder = inFrequency || inFares
     ? 'Search routes'
     : inHistory ? 'Find an agency…'
     : inLive ? 'Search vehicles…'
@@ -117,12 +121,12 @@ export default function App() {
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
 
   function handleSearchChange(v: string) {
-    if (inFrequency || inHistory || inLive) setQuery(v);
+    if (inFrequency || inHistory || inLive || inFares) setQuery(v);
     else setCorridorsFrom(v);
   }
 
   function handleSearchClear() {
-    if (inFrequency || inHistory || inLive) setQuery('');
+    if (inFrequency || inHistory || inLive || inFares) setQuery('');
     else setCorridorsFrom('');
   }
 
@@ -263,11 +267,11 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inHistory}
+              showRouteLayers={inFrequency || inHistory || inFares}
               filterToAgencies={inHistory}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
-              hideFilterPanel={inCorridors || inLive || inHistory}
+              hideFilterPanel={inCorridors || inLive || inHistory || inFares}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -279,6 +283,7 @@ export default function App() {
               setDay={setDay}
               onLayersChange={setLayers}
               headerPortalContainer={headerPortalEl}
+              fareView={inFares}
             />
             <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
             {corridorsMounted && (

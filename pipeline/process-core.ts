@@ -3,6 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
+import type { GtfsData, GtfsFareAttribute, GtfsFareRule } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
@@ -64,6 +65,55 @@ function detectBusSubType(
   if (/\b(express|xpress)\b/.test(combined)) return 'express';
   if (agencySlug === 'go') return 'coach';
   return 'local';
+}
+
+/**
+ * Build route_id -> base fare (in dollars). Uses GTFS fare_attributes + fare_rules.
+ * Picks lowest non-zero price per route. Explicit $0 fares mark free routes (0).
+ * If no GTFS fare data for a route, returns null (caller may fallback to manual).
+ */
+function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): Map<string, number | null> {
+  const routeIdToFare = new Map<string, number | null>();
+  const farePriceById = new Map<string, number>();
+
+  for (const fa of gtfs.fareAttributes ?? []) {
+    const price = parseFloat(fa.price);
+    if (!Number.isNaN(price) && price >= 0) {
+      farePriceById.set(fa.fare_id, price);
+    }
+  }
+
+  // Prefer explicit route_id rules. For a route, take min positive; 0 wins as "free".
+  for (const rule of gtfs.fareRules ?? []) {
+    if (!rule.route_id) continue;
+    const price = farePriceById.get(rule.fare_id);
+    if (price === undefined) continue;
+
+    const prev = routeIdToFare.get(rule.route_id);
+    if (prev === undefined) {
+      routeIdToFare.set(rule.route_id, price);
+    } else if (price === 0 || (prev !== 0 && price < prev)) {
+      routeIdToFare.set(rule.route_id, price);
+    }
+  }
+
+  // Fill remaining routes as null (GTFS had no fare linkage)
+  for (const route of gtfs.routes ?? []) {
+    if (!routeIdToFare.has(route.route_id)) {
+      routeIdToFare.set(route.route_id, null);
+    }
+  }
+
+  // Apply manual fallback only where still null
+  if (manualBaseFare != null && manualBaseFare >= 0) {
+    for (const [rid, val] of routeIdToFare) {
+      if (val === null) {
+        routeIdToFare.set(rid, manualBaseFare);
+      }
+    }
+  }
+
+  return routeIdToFare;
 }
 
 function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
@@ -164,6 +214,8 @@ export interface ProcessOptions {
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   slug?: string;
+  /** Manual per-agency base fare fallback (dollars) when GTFS fares missing */
+  manualBaseFare?: number;
 }
 
 export interface GeoJsonFeature {
@@ -216,6 +268,8 @@ export async function processGtfsBuffer(
 
   // Synthesize direction_id if missing from feed (resolves headway/frequency understatements, AI-200)
   gtfs = synthesizeMissingDirections(gtfs);
+
+  const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
@@ -521,6 +575,7 @@ export async function processGtfsBuffer(
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         busSubType: detectBusSubType(result.routeType, shortName, route?.route_long_name ?? null, options?.slug),
+        baseFare: routeBaseFares.get(result.route) ?? null,
         day: result.day,
         headsign: result.headsign
           ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || null
