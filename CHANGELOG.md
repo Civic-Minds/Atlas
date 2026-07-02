@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file.
 - **Consolidated header icon buttons**: the standalone light/dark toggle (🌙) and About (ℹ️) buttons have been moved inside the Settings panel. The right side of the header now shows a single ⚙️ button instead of three separate icon buttons — saves ~80px of horizontal space and reduces clutter. The Settings panel gains a Dark mode toggle row at the top and an "About Atlas" link at the bottom.
 - **Stats pills relocated to map overlay**: routes/coverage stats moved from the header's left section to a `bottom-6 right-14` overlay in the Frequency map (beside the geolocate button). Header left section is now logo + search only — cleaner and never competes with the right-side chips for horizontal space.
 
+### Fixed
+- **Fares legend restyled to match app design language**: replaced circle dots with horizontal line swatches (matching how routes render on the map), shortened title to "Base fare", tightened spacing and font sizes to match the rest of the UI.
+
 ### Added
 - **URL-based map state**: Map position (`?lat=`, `?lon=`, `?z=`) and selected route (`?route=agencySlug::routeId`) are reflected in the URL. Shared links open the exact same view — same location, same zoom, same route highlighted. On load, URL params take priority over localStorage; localStorage remains the fallback for returning visitors with no URL params. Route highlights instantly via PMTiles before GeoJSON finishes loading.
 - **GTFS Fares V2 support** (AI-211): Pipeline now parses Fares V2 files (fare_products, rider_categories, fare_leg_rules) in addition to legacy V1. computeRouteBaseFares prefers V2 adult products when present for more accurate baseFare. Keeps full backward compat with V1.
