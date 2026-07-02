@@ -578,7 +578,8 @@
       "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem-corridors.json",
       "lastFeedExpiry": "20261231",
-      "lastFeedVersion": "20260520"
+      "lastFeedVersion": "20260520",
+      "gtfsFares": true
     },
     {
       "slug": "rtc",
@@ -621,7 +622,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "202606181332",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-longueuil-gtfs-751.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-longueuil-gtfs-751.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "stl",
@@ -773,7 +775,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-presquile",
@@ -795,7 +798,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-la-presquile-gtfs-743.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-la-presquile-gtfs-743.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-sudouest",
@@ -817,7 +821,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-corridors.json",
       "lastFeedExpiry": "20260719",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-lrrs",
@@ -839,7 +844,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-laurentides",
@@ -861,7 +867,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-terrebonne",
@@ -883,7 +890,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "bc-fraser-valley",

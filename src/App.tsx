@@ -28,6 +28,7 @@ export interface Agency {
   staged?: boolean;
   issueUrl?: string;
   fare?: number; // manual base adult fare fallback (dollars) for Fares map (AI-205)
+  gtfsFares?: boolean; // true if this agency's GTFS feed provides real fare_attributes + fare_rules data
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
@@ -259,7 +260,13 @@ export default function App() {
         ) : (
           <>
             <Interval
-              agencies={inHistory && historyAgencySlugs ? agencies.filter(a => historyAgencySlugs.has(a.slug)) : agencies}
+              agencies={
+                inHistory && historyAgencySlugs 
+                  ? agencies.filter(a => historyAgencySlugs.has(a.slug)) 
+                  : inFares 
+                    ? agencies.filter(a => a.gtfsFares) 
+                    : agencies
+              }
               lightMode={lightMode}
               setLightMode={setLightMode}
               query={query}
@@ -268,7 +275,7 @@ export default function App() {
               resetViewKey={resetViewKey}
               showUi={inFrequency}
               showRouteLayers={inFrequency || inHistory || inFares}
-              filterToAgencies={inHistory}
+              filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
               hideFilterPanel={inCorridors || inLive || inHistory || inFares}
