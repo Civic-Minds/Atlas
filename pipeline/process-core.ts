@@ -3,7 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
-import type { GtfsData, GtfsFareAttribute, GtfsFareRule } from '../types/gtfs.js';
+import type { GtfsData, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
@@ -68,12 +68,51 @@ function detectBusSubType(
 }
 
 /**
- * Build route_id -> base fare (in dollars). Uses GTFS fare_attributes + fare_rules.
- * Picks lowest non-zero price per route. Explicit $0 fares mark free routes (0).
+ * Build route_id -> base fare (in dollars).
+ * Prefers GTFS-Fares V2 if present (fare_products + rider categories), falls back to legacy V1.
+ * For V2: picks lowest price among adult (or un-categorized) products.
+ * For V1: uses fare_attributes + fare_rules, lowest non-zero per route.
+ * Explicit $0 fares mark free routes (0).
  * If no GTFS fare data for a route, returns null (caller may fallback to manual).
  */
 function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): Map<string, number | null> {
   const routeIdToFare = new Map<string, number | null>();
+
+  // Try V2 first
+  if (gtfs.fareProducts && gtfs.fareProducts.length > 0) {
+    const adultPrices: number[] = [];
+    const riderCatById = new Map((gtfs.riderCategories ?? []).map(c => [c.rider_category_id, c]));
+
+    for (const prod of gtfs.fareProducts) {
+      const price = parseFloat(prod.price);
+      if (Number.isNaN(price) || price < 0) continue;
+
+      let isAdult = true;
+      if (prod.rider_category_id) {
+        const cat = riderCatById.get(prod.rider_category_id);
+        const name = (cat?.rider_category_name || '').toLowerCase();
+        // Consider it non-adult if explicitly youth/senior/child/disabled etc.
+        if (name && /(youth|child|senior|elder|disabled|student|concession)/.test(name)) {
+          isAdult = false;
+        }
+      }
+      if (isAdult) {
+        adultPrices.push(price);
+      }
+    }
+
+    if (adultPrices.length > 0) {
+      const base = Math.min(...adultPrices);
+      // For V2 we apply the base price to all routes (per-route rules are complex; improve later)
+      for (const route of gtfs.routes ?? []) {
+        routeIdToFare.set(route.route_id, base);
+      }
+      // Apply manual only for missing (none here)
+      return routeIdToFare;
+    }
+  }
+
+  // Fallback to legacy V1
   const farePriceById = new Map<string, number>();
 
   for (const fa of gtfs.fareAttributes ?? []) {
@@ -214,7 +253,7 @@ export interface ProcessOptions {
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   slug?: string;
-  /** Manual per-agency base fare fallback (dollars) when GTFS fares missing */
+  /** Manual per-agency base fare fallback (dollars) when GTFS fares (V1/V2) missing */
   manualBaseFare?: number;
 }
 

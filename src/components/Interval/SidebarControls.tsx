@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { X } from 'lucide-react';
-import { getTierColor } from '../../utils/colors';
+import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
@@ -49,6 +49,7 @@ interface SidebarControlsProps {
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
+  fareView?: boolean;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -80,6 +81,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   livePollingOnly,
   setLivePollingOnly,
   setSelectedAgencySlug,
+  fareView = false,
 }) => {
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
@@ -191,6 +193,42 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     return routes.sort((a, b) => a.headway - b.headway).slice(0, 5);
   }, [nonCorridorLayers]);
+
+  const suggestedFareAgencies = useMemo(() => {
+    if (!fareView) return [];
+    const seen = new Set<string>();
+    const result: Array<{ slug: string; name: string }> = [];
+
+    // Use the agencies passed in (filtered to gtfsFares ones in Fares mode)
+    for (const agency of agencies) {
+      if (agency.gtfsFares && !seen.has(agency.slug)) {
+        seen.add(agency.slug);
+        result.push({ slug: agency.slug, name: agency.name });
+      }
+    }
+
+    // To mimic "in this area" like notable routes, only include agencies that have fare data in current layers
+    if (Object.keys(nonCorridorLayers).length > 0) {
+      const agenciesWithDataInView = new Set(
+        Object.entries(nonCorridorLayers)
+          .filter(([, fc]) => (fc?.features || []).some(f => (f.properties as any)?.baseFare != null))
+          .map(([slug]) => slug)
+      );
+      if (agenciesWithDataInView.size > 0) {
+        return result.filter(a => agenciesWithDataInView.has(a.slug));
+      }
+    }
+
+    return result;
+  }, [agencies, fareView, nonCorridorLayers]);
+
+  const isFareSuggestions = fareView && suggestedFareAgencies.length > 0 && recentSearches.length === 0;
+  const suggestionsTitle = recentSearches.length > 0 
+    ? 'Recent searches' 
+    : fareView ? 'Suggested agencies' : 'Suggested routes';
+  const suggestionsList = recentSearches.length > 0 
+    ? null 
+    : (fareView ? suggestedFareAgencies : (recentlyViewed.length > 0 ? recentlyViewed : notableRoutes));
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -584,7 +622,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       });
   }, [disambiguationRoutes, nonCorridorLayers]);
 
-  const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0;
+  const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0 || (fareView && suggestedFareAgencies.length > 0);
   const hasContent = !!(currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
 
   const [panelShouldRender, setPanelShouldRender] = useState(false);
@@ -627,7 +665,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-primary)]">
             <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">
-              {recentSearches.length > 0 ? 'Recent searches' : 'Suggested routes'}
+              {suggestionsTitle}
             </span>
             {recentSearches.length > 0 && (
               <button
@@ -651,6 +689,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
                 </button>
               ))}
+            </div>
+          ) : isFareSuggestions ? (
+            <div>
+              {suggestedFareAgencies.map((a) => (
+                <button
+                  key={a.slug}
+                  onClick={() => setQuery(a.name)}
+                  className={LIST_ROW}
+                >
+                  <span className={LIST_ROW_PRIMARY}>{a.name}</span>
+                </button>
+              ))}
+              {suggestedFareAgencies.length === 0 && (
+                <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No agencies with fare data in this area.</p>
+              )}
             </div>
           ) : (
             <div>

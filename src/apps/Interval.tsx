@@ -68,6 +68,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
   const [showCorridors, setShowCorridors] = useState(false);
+
+  const showSidebar = showUi || fareView;
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
@@ -265,7 +267,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         headerPortalContainer
       )}
 
-      <div className={`transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`transition-opacity ${TRANSITION_BASE} ${showSidebar ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <SidebarControls
         query={query}
         setQuery={setQuery}
@@ -295,6 +297,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         livePollingOnly={livePollingOnly}
         setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
+        fareView={fareView}
       />
       </div>
     </div>

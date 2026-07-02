@@ -3,7 +3,8 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, STATUS_COLORS, FARE_TIERS, getFareColor } from '../../utils/colors';
+import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
+import FareLegend from './FareLegend';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
@@ -994,23 +995,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         <LocateFixed className="w-4 h-4" />
       </button>
 
-      {/* Minimal fare legend (AI-205) */}
+      {/* Fare legend (AI-205) */}
       {fareView && (
-        <div className="absolute bottom-6 left-3 z-[1000] px-2.5 py-1.5 rounded-md bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[10px] shadow-lg backdrop-blur-md pointer-events-auto">
-          <div className="font-bold mb-1 text-[var(--text-primary)]">Base fare (adult)</div>
-          <div className="flex flex-col gap-y-0.5">
-            {FARE_TIERS.map(t => (
-              <div key={t.label} className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: t.color }} />
-                <span className="text-[var(--text-primary)]">{t.label}</span>
-              </div>
-            ))}
-            <div className="flex items-center gap-1.5 mt-0.5 pt-0.5 border-t border-[var(--border-primary)] opacity-70">
-              <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[#6b7280]" />
-              <span className="text-[var(--text-dim)]">unknown</span>
-            </div>
-          </div>
-        </div>
+        <FareLegend className="absolute bottom-6 left-3 z-[1000]" />
       )}
     </div>
   );

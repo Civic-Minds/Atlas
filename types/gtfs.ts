@@ -107,6 +107,31 @@ export interface GtfsFareRule {
     contains_id?: string;
 }
 
+// GTFS-Fares V2 (modern)
+export interface GtfsFareProduct {
+    fare_product_id: string;
+    price: string;
+    currency_type: string;
+    rider_category_id?: string;
+    fare_media_id?: string;
+}
+
+export interface GtfsRiderCategory {
+    rider_category_id: string;
+    rider_category_name?: string;
+}
+
+export interface GtfsFareLegRule {
+    leg_group_id?: string;
+    network_id?: string;
+    from_area_id?: string;
+    to_area_id?: string;
+    from_timeframe_id?: string;
+    to_timeframe_id?: string;
+    fare_product_id: string;
+    rule_priority?: string;
+}
+
 export interface GtfsFeedInfo {
     feed_publisher_name?: string;
     feed_publisher_url?: string;
@@ -131,6 +156,11 @@ export interface GtfsData {
     frequencies?: GtfsFrequency[];
     fareAttributes?: GtfsFareAttribute[];
     fareRules?: GtfsFareRule[];
+
+    // Fares V2
+    fareProducts?: GtfsFareProduct[];
+    riderCategories?: GtfsRiderCategory[];
+    fareLegRules?: GtfsFareLegRule[];
 }
 
 // ---------------------------------------------------------------------------
