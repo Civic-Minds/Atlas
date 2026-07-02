@@ -113,6 +113,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       center: [initialCenter.lon, initialCenter.lat],
       zoom: initialCenter.zoom,
       attributionControl: false,
+      antialias: true,
     });
 
     mapRef.current = map;
@@ -128,8 +129,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         'source-layer': 'routes',
         paint: {
           'line-color': '#555555',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.9, 10, 1.2, 13, 2.0, 16, 2.5],
-          'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.55, 10, 0.65, 13, 0.85, 16, 0.95],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+          'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
         },
         layout: {
           'line-cap': 'round',
@@ -603,23 +604,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           0.5
         ]);
       } else {
-        // Zoom-interpolated width/opacity: thinner + more transparent at zoom 9-11
-        // where tippecanoe minzoom transitions dump many routes into the tiles at once,
-        // causing dense overlapping lines to look muddy. Thicken back as you zoom in
-        // and individual routes become distinguishable.
         map.setPaintProperty('routes-layer', 'line-width', [
           'interpolate', ['linear'], ['zoom'],
-          8, 0.9,
-          10, 1.2,
-          13, 2.0,
-          16, 2.5,
+          8, 1.5,
+          11, 2.0,
+          14, 2.5,
+          17, 3.5,
         ]);
         map.setPaintProperty('routes-layer', 'line-opacity', [
           'interpolate', ['linear'], ['zoom'],
-          8, 0.55,
-          10, 0.65,
-          13, 0.85,
-          16, 0.95,
+          8, 0.7,
+          11, 0.8,
+          14, 0.9,
         ]);
       }
     }

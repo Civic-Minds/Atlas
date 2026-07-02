@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
-- **Route lines no longer look dark/blurry at intermediate zoom (AI-208)**: tippecanoe `minzoom` thresholds (0 / 7 / 9 / 11) cause many routes to enter tiles simultaneously at zoom 9–11. Fixed overlapping semi-transparent lines on dense corridors by switching from fixed `line-width: 1.8 / line-opacity: 0.85` to zoom-interpolated values — thinner and lighter at low-density zoom levels (zoom 8: 0.9px / 55%), progressively thicker and more opaque as routes spread apart (zoom 13: 2.0px / 85%, zoom 16: 2.5px / 95%). Initial layer paint also uses the interpolated expression to eliminate a flash on first load.
+- **Route lines no longer look dark/blurry at intermediate zoom (AI-208)**: enabled `antialias: true` on the MapLibre map constructor (enables MSAA, the single largest line quality improvement). Switched from fixed `line-width: 1.8 / line-opacity: 0.85` to zoom-interpolated values so routes stay at or above 1.5px at all zoom levels (anti-aliasing is proportionally smaller on wider lines) and thicken as you zoom in (zoom 8: 1.5px / 70%, zoom 11: 2.0px / 80%, zoom 14: 2.5px / 90%, zoom 17: 3.5px / 90%).
 - **Stats pills now hidden while loading new viewport data**: pills showing "0 routes / 0%" during a pan to an unloaded area were misleading — the GeoJSON fetch takes a moment while the vector tiles render instantly. Pills now suppress until either loading completes or non-zero stats appear, so the counter only shows when it's meaningful.
 
 ### Changed
