@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
-- **Global UI scale reduced**: root font-size set to 13px (down from browser default 16px). All rem-based Tailwind spacing and typography scales proportionally — fixes header overlap on standard laptop viewports and eliminates the need to zoom out in Chrome.
+- **Global UI scale reduced**: root font-size set to 14px (down from browser default 16px). All rem-based Tailwind spacing and typography scales proportionally — fixes header overlap on standard laptop viewports without making text feel too small at normal zoom.
 
 ### Added
 - **Connection explorer** (AI-204): Stop card now shows a "Within 10 min walk" section listing routes reachable on foot from the selected stop. Searches all loaded agency layers for stops 120m–800m away, cross-references headways from route features, and renders each connecting route with walk time and frequency. Cross-agency connections (e.g. TTC stop showing nearby MiWay routes) appear automatically when both agencies are loaded.
