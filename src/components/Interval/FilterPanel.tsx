@@ -94,34 +94,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setLightMode((v) => !v)}
-          className={ICON_BTN}
-          aria-label="Toggle light mode"
-        >
-          {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-        </button>
-        <button
-          onClick={() => setOpen(v => !v)}
-          className={`relative ${ICON_BTN}`}
-          aria-label="Settings"
-        >
-          <Settings className="w-4 h-4" />
-          {hasActiveFilters && (
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
-          )}
-        </button>
-        {onInfoOpen && (
-          <button
-            onClick={() => onInfoOpen()}
-            className={ICON_BTN}
-            aria-label="About Atlas"
-          >
-            <Info className="w-4 h-4" />
-          </button>
+      <button
+        onClick={() => setOpen(v => !v)}
+        className={`relative ${ICON_BTN}`}
+        aria-label="Settings"
+      >
+        <Settings className="w-4 h-4" />
+        {hasActiveFilters && (
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
         )}
-      </div>
+      </button>
 
       {open && (
         <div
@@ -144,6 +126,23 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             </div>
 
             <div className="overflow-y-auto px-5 py-2 flex flex-col divide-y divide-[var(--border-primary)]">
+              {/* Theme toggle */}
+              <div className="flex items-center justify-between py-4 first:pt-3">
+                <div className="flex items-start gap-3 min-w-0">
+                  {lightMode ? <Moon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" /> : <Sun className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />}
+                  <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">
+                    {lightMode ? 'Dark mode' : 'Light mode'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setLightMode(v => !v)}
+                  aria-label="Toggle light/dark mode"
+                  className="mt-0.5 shrink-0"
+                >
+                  <Toggle on={!lightMode} />
+                </button>
+              </div>
+
               {!inFrequency && (
                 <p className="text-[10px] text-[var(--text-muted)] pt-3 pb-1">These settings apply to the Frequency map.</p>
               )}
@@ -173,6 +172,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </button>
                 </div>
               ))}
+
+              {/* About link */}
+              {onInfoOpen && (
+                <div className="py-4 last:pb-3">
+                  <button
+                    onClick={() => { onInfoOpen(); close(); }}
+                    className="flex items-center gap-2 text-[11px] font-bold text-[var(--accent)] hover:underline"
+                  >
+                    <Info className="w-3.5 h-3.5 shrink-0" />
+                    About Atlas
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
