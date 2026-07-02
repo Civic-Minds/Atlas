@@ -116,7 +116,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       center: [initialCenter.lon, initialCenter.lat],
       zoom: initialCenter.zoom,
       attributionControl: false,
-      antialias: true,
+      canvasContextAttributes: { antialias: true },
     });
 
     mapRef.current = map;

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { useIntervalStats } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod } from '../hooks/useIntervalStats';
@@ -42,11 +43,12 @@ interface Props {
 }
 
 export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false }: Props) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
   });
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
 
@@ -139,6 +141,16 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
+
+  // Sync selected route to URL so links are shareable and back/forward works
+  useEffect(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (selectedRoute) next.set('route', selectedRoute);
+      else next.delete('route');
+      return next;
+    }, { replace: true });
+  }, [selectedRoute, setSearchParams]);
 
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
