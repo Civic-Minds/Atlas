@@ -47,6 +47,8 @@ interface MapCanvasProps {
   selectedModes?: Set<number>;
   selectedAgencySlug?: string | null;
   fareView?: boolean;
+  initialMapCenter?: { lat: number; lon: number; zoom: number };
+  onViewChange?: (lat: number, lon: number, zoom: number) => void;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -72,6 +74,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   selectedModes,
   selectedAgencySlug,
   fareView = false,
+  initialMapCenter,
+  onViewChange,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -106,9 +110,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
 
     const saved = getSavedView();
-    const initialCenter = hasSavedView && saved
-      ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom }
-      : { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
+    const initialCenter = initialMapCenter
+      ?? (hasSavedView && saved ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom } : null)
+      ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
@@ -350,6 +354,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const z = map.getZoom();
       saveView(c.lat, c.lng, z);
       setZoom(z);
+      onViewChange?.(c.lat, c.lng, z);
 
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };

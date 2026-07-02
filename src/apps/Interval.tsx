@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAgencyData } from '../hooks/useAgencyData';
@@ -44,6 +44,25 @@ interface Props {
 
 export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false }: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialMapCenter = useMemo(() => {
+    const lat = parseFloat(searchParams.get('lat') ?? '');
+    const lon = parseFloat(searchParams.get('lon') ?? '');
+    const zoom = parseFloat(searchParams.get('z') ?? '');
+    if (isFinite(lat) && isFinite(lon) && isFinite(zoom)) return { lat, lon, zoom };
+    return undefined;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleViewChange = useCallback((lat: number, lon: number, zoom: number) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('lat', lat.toFixed(5));
+      next.set('lon', lon.toFixed(5));
+      next.set('z', zoom.toFixed(2));
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -178,6 +197,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedModes={selectedModes}
         selectedAgencySlug={selectedAgencySlug}
         fareView={fareView}
+        initialMapCenter={initialMapCenter}
+        onViewChange={handleViewChange}
       />
 
       {showUi && stats && (stats.total > 0 || !isLoading) && (
