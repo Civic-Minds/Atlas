@@ -67,6 +67,8 @@ export default function App() {
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
+  const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
+  const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
@@ -169,7 +171,9 @@ export default function App() {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
-      <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
+      {/* Unified header row — left and right sections share one flex container so they can never overlap */}
+      <div className="absolute top-6 left-6 right-6 z-[1100] flex items-center justify-between pointer-events-none">
+      <div className="flex items-center gap-2 pointer-events-auto">
         <button
           onClick={() => {
             if (activeApp !== 'frequency') {
@@ -253,6 +257,9 @@ export default function App() {
           </div>
         )}
       </div>
+      {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
+      <div ref={headerPortalRef} className="flex items-center gap-2 pointer-events-auto" />
+      </div>
 
       <main className="absolute inset-0 overflow-hidden">
         {agencies.length === 0 ? (
@@ -285,6 +292,7 @@ export default function App() {
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}
+              headerPortalContainer={headerPortalEl}
             />
             <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
             {corridorsMounted && (

@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useAgencyData } from '../hooks/useAgencyData';
 import { useIntervalStats } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod } from '../hooks/useIntervalStats';
@@ -36,9 +37,10 @@ interface Props {
   day: 'Weekday' | 'Saturday' | 'Sunday';
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
+  headerPortalContainer?: Element | null;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer }: Props) {
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -192,56 +194,59 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         />
       )}
 
-      <div className={`absolute top-6 right-6 z-[1000] flex items-center gap-2 ${!showUi && hideFilterPanel ? 'pointer-events-none' : ''}`}>
-        <div className={`flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <FilterChips
-            maxHeadway={maxHeadway}
-            setMaxHeadway={setMaxHeadway}
-            selectedModes={selectedModes}
-            setSelectedModes={setSelectedModes}
-            day={day}
-            setDay={setDay}
-            period={period}
-            setPeriod={setPeriod}
-            agencies={agencies}
-            selectedAgencies={selectedAgencies}
-            setSelectedAgencies={setSelectedAgencies}
-            layers={layers}
-          />
-          {(() => {
-            const nowDay = getNowDay();
-            const nowPeriod = getNowPeriod();
-            const isNow = day === nowDay && period === nowPeriod;
-            return (
-              <button
-                onClick={() => { setDay(nowDay); setPeriod(nowPeriod); }}
-                aria-label="Jump to current time of day"
-                className={`h-8 px-3 rounded-full text-xs font-bold transition-all border ${
-                  isNow
-                    ? 'bg-[var(--accent)] text-white border-transparent shadow-md'
-                    : 'bg-[var(--accent-bg)] text-[var(--accent)] border-[var(--accent-border)] hover:bg-[var(--accent)] hover:text-white hover:border-transparent'
-                }`}
-              >
-                Now
-              </button>
-            );
-          })()}
-        </div>
-        {!hideFilterPanel && (
-          <FilterPanel
-            lightMode={lightMode}
-            setLightMode={setLightMode}
-            hideSpan={hideSpan}
-            setHideSpan={setHideSpan}
-            livePollingOnly={livePollingOnly}
-            setLivePollingOnly={setLivePollingOnly}
-            showCorridors={showCorridors}
-            setShowCorridors={setShowCorridors}
-            onInfoOpen={onInfoOpen}
-            inFrequency={showUi}
-          />
-        )}
-      </div>
+      {headerPortalContainer && createPortal(
+        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel ? 'pointer-events-none' : ''}`}>
+          <div className={`flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <FilterChips
+              maxHeadway={maxHeadway}
+              setMaxHeadway={setMaxHeadway}
+              selectedModes={selectedModes}
+              setSelectedModes={setSelectedModes}
+              day={day}
+              setDay={setDay}
+              period={period}
+              setPeriod={setPeriod}
+              agencies={agencies}
+              selectedAgencies={selectedAgencies}
+              setSelectedAgencies={setSelectedAgencies}
+              layers={layers}
+            />
+            {(() => {
+              const nowDay = getNowDay();
+              const nowPeriod = getNowPeriod();
+              const isNow = day === nowDay && period === nowPeriod;
+              return (
+                <button
+                  onClick={() => { setDay(nowDay); setPeriod(nowPeriod); }}
+                  aria-label="Jump to current time of day"
+                  className={`h-8 px-3 rounded-full text-xs font-bold transition-all border ${
+                    isNow
+                      ? 'bg-[var(--accent)] text-white border-transparent shadow-md'
+                      : 'bg-[var(--accent-bg)] text-[var(--accent)] border-[var(--accent-border)] hover:bg-[var(--accent)] hover:text-white hover:border-transparent'
+                  }`}
+                >
+                  Now
+                </button>
+              );
+            })()}
+          </div>
+          {!hideFilterPanel && (
+            <FilterPanel
+              lightMode={lightMode}
+              setLightMode={setLightMode}
+              hideSpan={hideSpan}
+              setHideSpan={setHideSpan}
+              livePollingOnly={livePollingOnly}
+              setLivePollingOnly={setLivePollingOnly}
+              showCorridors={showCorridors}
+              setShowCorridors={setShowCorridors}
+              onInfoOpen={onInfoOpen}
+              inFrequency={showUi}
+            />
+          )}
+        </div>,
+        headerPortalContainer
+      )}
 
       <div className={`transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <SidebarControls
