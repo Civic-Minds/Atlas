@@ -556,7 +556,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     if (!showRouteLayers) {
       routeFilter = ['==', 'agencySlug', ''];
     } else if (fareView) {
-      // In fares view show all matching routes (ignore headway/span/zoom gates)
+      // In fares view only show routes from GTFS-fare agencies that actually have a baseFare value
+      const hasFare = ['has', 'baseFare'];
       const searchClause = ql
         ? (matchedAgencySlug
             ? ['==', 'agencySlug', matchedAgencySlug]
@@ -567,7 +568,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               ])
         : null;
       const modeOnly = modeFilter;
-      const clauses = [searchClause, modeOnly].filter(Boolean);
+      const clauses = [hasFare, searchClause, modeOnly].filter(Boolean);
       routeFilter = clauses.length === 0 ? null : (clauses.length === 1 ? clauses[0] : ['all', ...clauses]);
     } else if (ql) {
       // Search active: match query + respect headway pill, but skip zoom gate
