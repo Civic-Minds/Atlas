@@ -48,9 +48,16 @@ export function getNowPeriod(): TimePeriod {
   return (matched?.key as TimePeriod) || 'all';
 }
 
-type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
+type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
+
+const compactOptBtn = (active: boolean) =>
+  `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
+    active
+      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+      : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+  }`;
 
 const rowBtn = (active: boolean) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
@@ -217,11 +224,73 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
+  const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
+
   return (
     <div ref={rowRef} className="flex items-center gap-2">
 
+      {/* Compact "More filters" panel — only below lg */}
+      <div className="relative lg:hidden">
+        <button onClick={() => toggle('compact')} className={chipClass(hasActiveCoreFilter)}>
+          More filters
+          <Dot show={hasActiveCoreFilter} />
+        </button>
+        {openChip === 'compact' && (
+          <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
+            {/* Frequency */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Frequency</p>
+              <div className="flex flex-wrap gap-1">
+                {HEADWAY_TIERS.map(({ max, label }) => {
+                  const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+                  return (
+                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max)}>
+                      <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
+                      {label === 'Infrequent' ? 'All routes' : label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Day */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Day</p>
+              <div className="flex gap-1">
+                {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
+                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d)}>
+                    {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* Time */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Time</p>
+              <div className="flex flex-wrap gap-1">
+                {PERIODS.map(p => (
+                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p)}>
+                    {PERIOD_LABELS[p]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* Mode */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Mode</p>
+              <div className="flex flex-wrap gap-1">
+                {MODES.map(m => (
+                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(selectedModes.has(m.id))}>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Frequency */}
-      <div className="relative">
+      <div className="relative hidden lg:block">
         <button onClick={() => toggle('frequency')} className={chipClass(true)}>
           {maxHeadway === Infinity ? 'Frequency' : (HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? 'Frequency')}
           <Dot show={true} />
@@ -248,7 +317,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </div>
 
       {/* Day */}
-      <div className="relative">
+      <div className="relative hidden lg:block">
         <button onClick={() => toggle('day')} className={chipClass(true)}>
           {day}
           <Dot show={true} />
@@ -269,7 +338,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </div>
 
       {/* Period */}
-      <div className="relative">
+      <div className="relative hidden lg:block">
         <button onClick={() => toggle('period')} className={chipClass(period !== 'all')}>
           {PERIOD_LABELS[period]}
           <Dot show={period !== 'all'} />
