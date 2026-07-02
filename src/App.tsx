@@ -239,7 +239,7 @@ export default function App() {
         </div>
 
         {stats && (
-          <div className={`hidden xl:flex gap-2 transition-all ${TRANSITION_SLOW} origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
+          <div className={`hidden min-[1400px]:flex gap-2 transition-all ${TRANSITION_SLOW} origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
             <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
               <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
               <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>

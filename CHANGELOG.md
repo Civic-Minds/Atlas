@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - **Global UI scale reduced**: root font-size set to 14px (down from browser default 16px). All rem-based Tailwind spacing and typography scales proportionally — fixes header overlap on standard laptop viewports without making text feel too small at normal zoom.
-- **Responsive header**: stats pills (routes/coverage) hidden below 1280px; search bar shrinks from 256px → 208px → 160px at lg/md breakpoints. Below 1024px, individual Frequency/Day/Period/Mode chips collapse into a single "More filters" panel (inline pill buttons per section) while Agencies chip stays always visible. Prevents header overlap at common laptop widths (960px–1440px).
+- **Responsive header**: stats pills (routes/coverage) hidden below 1400px (custom breakpoint); search bar shrinks from 256px → 208px → 160px at lg/md breakpoints. Below 1024px, individual Frequency/Day/Period/Mode chips collapse into a single "More filters" panel (inline pill buttons per section) while Agencies chip stays always visible. Prevents header overlap at common laptop widths (960px–1440px).
 
 ### Added
 - **Connection explorer** (AI-204): Stop card now shows a "Within 10 min walk" section listing routes reachable on foot from the selected stop. Searches all loaded agency layers for stops 120m–800m away, cross-references headways from route features, and renders each connecting route with walk time and frequency. Cross-agency connections (e.g. TTC stop showing nearby MiWay routes) appear automatically when both agencies are loaded.
