@@ -151,7 +151,8 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go-corridors.json",
       "lastFeedExpiry": "20260904",
-      "lastFeedVersion": "20260529182459"
+      "lastFeedVersion": "20260529182459",
+      "fare": 5.00
     },
     {
       "slug": "grt",
@@ -281,7 +282,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway-corridors.json",
       "lastFeedExpiry": "20260802",
       "lastFeedVersion": "1",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-miway-gtfs-730.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-miway-gtfs-730.zip?alt=media",
+      "fare": 3.75
     },
     {
       "slug": "milton",
@@ -447,7 +449,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
+      "fare": 3.30
     },
     {
       "slug": "windsor",
