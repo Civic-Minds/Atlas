@@ -4,6 +4,10 @@
   --color-brand: #4f46e5;
 }
 
+html {
+  font-size: 13px;
+}
+
 :root {
   --bg-app: #f0f0f0;
   --bg-header: #ffffff;

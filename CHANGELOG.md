@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Global UI scale reduced**: root font-size set to 13px (down from browser default 16px). All rem-based Tailwind spacing and typography scales proportionally — fixes header overlap on standard laptop viewports and eliminates the need to zoom out in Chrome.
+
 ### Added
 - **Connection explorer** (AI-204): Stop card now shows a "Within 10 min walk" section listing routes reachable on foot from the selected stop. Searches all loaded agency layers for stops 120m–800m away, cross-references headways from route features, and renders each connecting route with walk time and frequency. Cross-agency connections (e.g. TTC stop showing nearby MiWay routes) appear automatically when both agencies are loaded.
 - **GitHub Issues data overrides documentation pattern** (AI-202): Transitioned from monolithic `DATA_OVERRIDES.md` documentation to dynamic, decentralized GitHub Issues links in the UI. Added support for `issueUrl` in agency configuration metadata, falling back to a search query for open issues tagged with the agency's slug (`is:issue + {slug}`) when absent.
