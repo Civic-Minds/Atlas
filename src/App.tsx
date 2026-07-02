@@ -7,7 +7,6 @@ import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
 import LiveVehicles from './apps/LiveVehicles';
-import Fares from './apps/Fares';
 import AppDrawer, { type AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
@@ -95,7 +94,6 @@ export default function App() {
   const [fromInputBindings, setFromInputBindings] = useState<CorridorsFromInputBindings | null>(null);
   const [corridorsMounted, setCorridorsMounted] = useState(false);
   const [liveMounted, setLiveMounted] = useState(false);
-  const [faresMounted, setFaresMounted] = useState(false);
   const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>(() => {
     try {
       const s = localStorage.getItem('atlas_pref_day');
@@ -136,7 +134,6 @@ export default function App() {
   useEffect(() => {
     if (activeApp === 'corridors') setCorridorsMounted(true);
     if (activeApp === 'live') setLiveMounted(true);
-    if (activeApp === 'fares') setFaresMounted(true);
   }, [activeApp]);
 
   // Clear history-specific pending state when leaving history mode
@@ -277,7 +274,8 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inHistory}
+              showRouteLayers={inFrequency || inHistory || inFares}
+              fareView={inFares}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
@@ -321,27 +319,6 @@ export default function App() {
                   onInfoOpen={() => setInfoOpen(true)}
                   query={query}
                   layers={layers}
-                />
-              </div>
-            )}
-            {faresMounted && (
-              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inFares ? 'opacity-100' : 'opacity-0'}`}>
-                <Fares
-                  agencies={
-                    agencies.filter(a => a.gtfsFares)
-                  }
-                  lightMode={lightMode}
-                  setLightMode={setLightMode}
-                  active={inFares}
-                  onInfoOpen={() => setInfoOpen(true)}
-                  query={query}
-                  setQuery={setQuery}
-                  searchFocused={searchFocused}
-                  layers={layers}
-                  onLayersChange={setLayers}
-                  headerPortalContainer={headerPortalEl}
-                  day={day}
-                  setDay={setDay}
                 />
               </div>
             )}
