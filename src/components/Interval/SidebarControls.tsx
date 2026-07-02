@@ -335,7 +335,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     return {
       ...props,
-      siblingIdsByAgency
+      siblingIdsByAgency,
+      lat: clickLat,
+      lon: clickLon,
     };
   }, [selectedStop, nonCorridorLayers]);
 
@@ -428,6 +430,85 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const filteredStopRoutes = useMemo(() =>
     stopAgencyFilter ? stopRoutes.filter(r => r.agencyName === stopAgencyFilter) : stopRoutes,
   [stopRoutes, stopAgencyFilter]);
+
+  const nearbyConnections = useMemo(() => {
+    if (!currentStop) return [];
+    const { lat, lon } = currentStop as any;
+    if (lat == null || lon == null) return [];
+
+    const TRANSFER_MAX_M = 800;
+    const SIBLING_MAX_M = 120;
+
+    type TransferEntry = {
+      rKey: string;
+      routeShortName: string;
+      routeLongName: string;
+      agencyName: string;
+      headway: number | null;
+      nearestStopName: string;
+      distanceMeters: number;
+    };
+
+    const seen = new Map<string, TransferEntry>();
+
+    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
+      // Find stops in the transfer band (beyond sibling radius, within walking radius)
+      const routeIdToClosest = new Map<string, { stopName: string; dist: number }>();
+      for (const f of fc.features) {
+        if (f.geometry.type !== 'Point') continue;
+        const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
+        const d = getDistanceMeters(lat, lon, flat, flon);
+        if (d <= SIBLING_MAX_M || d > TRANSFER_MAX_M) continue;
+        const p = f.properties as any;
+        if (!p.stopId || !p.routeIds?.length) continue;
+        for (const rid of p.routeIds as string[]) {
+          const existing = routeIdToClosest.get(rid);
+          if (!existing || d < existing.dist) {
+            routeIdToClosest.set(rid, { stopName: p.stopName ?? '', dist: d });
+          }
+        }
+      }
+      if (routeIdToClosest.size === 0) continue;
+
+      for (const f of fc.features) {
+        if (f.geometry.type === 'Point') continue;
+        const p = f.properties as unknown as ShapeProperties;
+        if (!p.routeId || !routeIdToClosest.has(p.routeId)) continue;
+        if (p.day !== undefined && p.day !== currentDay) continue;
+
+        const shortName = p.routeShortName || p.routeId;
+        const mapKey = `${slug}::${shortName}`;
+        const closest = routeIdToClosest.get(p.routeId)!;
+        const existing = seen.get(mapKey);
+        if (!existing) {
+          seen.set(mapKey, {
+            rKey: routeKey({ ...p, agencySlug: slug } as any),
+            routeShortName: shortName,
+            routeLongName: p.routeLongName || '',
+            agencyName: shortenAgencyName(p.agencyName || slug),
+            headway: p.headway ?? null,
+            nearestStopName: closest.stopName,
+            distanceMeters: closest.dist,
+          });
+        } else {
+          if (p.headway != null && (existing.headway === null || p.headway < existing.headway)) {
+            existing.headway = p.headway;
+          }
+          if (closest.dist < existing.distanceMeters) {
+            existing.distanceMeters = closest.dist;
+            existing.nearestStopName = closest.stopName;
+          }
+        }
+      }
+    }
+
+    return Array.from(seen.values()).sort((a, b) => {
+      if (a.headway !== null && b.headway !== null) return a.headway - b.headway;
+      if (a.headway !== null) return -1;
+      if (b.headway !== null) return 1;
+      return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
+    });
+  }, [currentStop, nonCorridorLayers, currentDay]);
 
   const debugRows = useMemo(() => {
     if (!currentStop) return [];
@@ -732,6 +813,34 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 </div>
               ))}
             </div>
+
+            {nearbyConnections.length > 0 && (
+              <div className="mt-3 pt-2 border-t border-[var(--border-primary)]">
+                <div className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Within 10 min walk</div>
+                <div className="space-y-1.5">
+                  {nearbyConnections.map(({ rKey, routeShortName, routeLongName, agencyName, headway, nearestStopName, distanceMeters }) => {
+                    const walkMin = Math.max(1, Math.round(distanceMeters / 80));
+                    return (
+                      <div key={rKey} className="flex items-start justify-between gap-2">
+                        <button
+                          onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
+                          className="flex flex-col items-start font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left min-w-0"
+                        >
+                          <span className="text-[11px] leading-tight">{titleCase(getRouteLabel(routeShortName, routeLongName, agencyName))}</span>
+                          <span className="text-[9px] text-[var(--text-dim)] font-normal truncate max-w-full">{nearestStopName} · {walkMin} min walk</span>
+                        </button>
+                        {headway != null && (
+                          <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] text-[11px] shrink-0 mt-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: headwayToTierColor(headway) }} />
+                            {fmtHeadway(headway)}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="mt-3 border-t border-[var(--border-primary)] pt-2">
               <button
