@@ -242,20 +242,6 @@ export default function App() {
         </div>
         </div>
 
-        {stats && (
-          <div className={`hidden min-[1400px]:flex gap-2 transition-all ${TRANSITION_SLOW} origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
-            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-              <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
-              <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
-            </div>
-            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-              <span className="text-xs font-black text-[var(--text-primary)]">
-                {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
-              </span>
-              <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
-            </div>
-          </div>
-        )}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div ref={headerPortalRef} className="flex items-center gap-2 pointer-events-auto" />

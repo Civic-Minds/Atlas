@@ -10,7 +10,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowDay, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { SURFACE, TRANSITION_BASE } from '../styles';
+import { SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from '../styles';
 import type { Agency } from '../App';
 
 interface Props {
@@ -163,6 +163,21 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedModes={selectedModes}
         selectedAgencySlug={selectedAgencySlug}
       />
+
+      {showUi && stats && (
+        <div className={`absolute bottom-6 right-14 z-[1000] flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+            <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
+            <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
+          </div>
+          <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+            <span className="text-xs font-black text-[var(--text-primary)]">
+              {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
+            </span>
+            <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
+          </div>
+        </div>
+      )}
 
       {showUi && isLoading && (
         <div className={`absolute bottom-6 left-6 z-[1000] flex items-center gap-2 ${SURFACE} backdrop-blur-md px-4 py-2 rounded-xl`}>
