@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Stats pills now hidden while loading new viewport data**: pills showing "0 routes / 0%" during a pan to an unloaded area were misleading — the GeoJSON fetch takes a moment while the vector tiles render instantly. Pills now suppress until either loading completes or non-zero stats appear, so the counter only shows when it's meaningful.
+
 ### Changed
 - **Global UI scale reduced**: root font-size set to 14px (down from browser default 16px). All rem-based Tailwind spacing and typography scales proportionally — fixes header overlap on standard laptop viewports without making text feel too small at normal zoom.
 - **Responsive header — unified flex layout**: The left and right header sections are now a single `flex justify-between` container anchored `left-6 right-6`. The right section (FilterChips + Now + FilterPanel) renders into the unified header via a React portal, eliminating any possibility of the two sections overlapping at any viewport width. Previously both were independent `absolute` elements with no mutual awareness.

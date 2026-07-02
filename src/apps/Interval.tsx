@@ -164,7 +164,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedAgencySlug={selectedAgencySlug}
       />
 
-      {showUi && stats && (
+      {showUi && stats && (stats.total > 0 || !isLoading) && (
         <div className={`absolute bottom-6 right-14 z-[1000] flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
             <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
