@@ -458,7 +458,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
   function clearTo() { setToStop(null); setToQuery(''); setToActive(true); toRef.current?.focus(); }
 
   return (
-    <div className="relative h-full w-full overflow-hidden pointer-events-none">
+    <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       {/* From autocomplete — fixed below the App.tsx search bar */}
       {showFromDropdown && (
         <div

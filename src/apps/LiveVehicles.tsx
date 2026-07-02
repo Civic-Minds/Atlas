@@ -281,7 +281,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const hasAnyError = errors.length > 0 && totalVehicles === 0;
 
   return (
-    <div className="relative h-full w-full overflow-hidden pointer-events-none">
+    <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}>
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
 
