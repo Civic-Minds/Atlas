@@ -340,7 +340,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       {/* Period */}
       <div className="relative hidden lg:block">
         <button onClick={() => toggle('period')} className={chipClass(period !== 'all')}>
-          Period
+          Time
           <Dot show={period !== 'all'} />
         </button>
         {openChip === 'period' && (
