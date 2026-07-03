@@ -46,6 +46,7 @@ interface MapCanvasProps {
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   selectedModes?: Set<number>;
   selectedAgencySlug?: string | null;
+  setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
 }
@@ -72,6 +73,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onHistoryRouteClick,
   selectedModes,
   selectedAgencySlug,
+  setSelectedAgencySlug,
   fareView = false,
   initialMapCenter,
 }) => {
@@ -300,6 +302,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           const slug = props.agencySlug as string;
           const rsn = props.routeShortName as string;
           if (slug && rsn) onHistoryRouteClick(slug, rsn);
+        } else if (fareView && setSelectedAgencySlug) {
+          // In Fares mode fares are per agency — promote any route click to the agency card
+          const slug = props.agencySlug as string;
+          if (slug) setSelectedAgencySlug(slug);
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 13) {
             // Don't show the long "multiple routes" card when zoomed out

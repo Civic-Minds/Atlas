@@ -6,6 +6,7 @@ import { liveRouteLabel } from '../InfoPanel';
 import type { Agency } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { getFareColor } from '../../utils/colors';
 
 interface RouteRow {
   routeId: string;
@@ -55,10 +56,23 @@ interface Props {
   onClose: () => void;
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
+  fareView?: boolean;
 }
 
-export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sidebarLeft }: Props) {
+export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sidebarLeft, fareView }: Props) {
   const routes = useMemo(() => getRoutes(layers, agency.slug, day), [layers, agency.slug, day]);
+
+  const baseFare = useMemo(() => {
+    if (!fareView) return null;
+    const fc = layers[agency.slug];
+    if (fc) {
+      for (const f of fc.features) {
+        const bf = (f.properties as any).baseFare;
+        if (typeof bf === 'number') return bf as number;
+      }
+    }
+    return agency.fare ?? null;
+  }, [fareView, layers, agency]);
   const liveRoutes = useMemo(
     () => LIVE_POLLING_ROUTES.filter(r => r.slug === agency.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active)),
     [agency.slug]
@@ -71,8 +85,23 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
       style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
     >
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{agency.name}</p>
+          {fareView ? (
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
+              {baseFare != null ? (
+                <span
+                  className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
+                  style={{ background: getFareColor(baseFare) }}
+                >
+                  ${baseFare.toFixed(2)}
+                </span>
+              ) : (
+                <span className="text-xs text-[var(--text-dim)]">fare varies</span>
+              )}
+            </div>
+          ) : (
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {agency.region && (
               <span className="text-[9px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5">{agency.region}</span>
@@ -82,6 +111,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
             </span>
             <span className="text-[9px] text-[var(--text-dim)] font-mono">{agency.slug}</span>
           </div>
+          )}
           {agency.excludeRouteShortNames?.length ? (
             <a
               href={agency.issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${agency.slug}`}

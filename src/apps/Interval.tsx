@@ -202,6 +202,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onHistoryRouteClick={onHistoryRouteClick}
         selectedModes={selectedModes}
         selectedAgencySlug={selectedAgencySlug}
+        setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
         initialMapCenter={initialMapCenter}
       />
@@ -230,7 +231,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {showUi && selectedAgencySlug && !selectedRoute && !selectedStop && (() => {
+      {(showUi || fareView) && selectedAgencySlug && !selectedRoute && !selectedStop && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard
@@ -240,6 +241,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             onClose={onAgencyCardClose ?? (() => {})}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}
+            fareView={fareView}
           />
         ) : null;
       })()}

@@ -961,11 +961,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <div className="flex items-start justify-between -mt-2 -mr-2 mb-3">
                   <div className="flex-1 mt-2">
                     <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
-                      {titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, currentRoute.agencyName || (currentRoute as any).agencySlug))}
-                    </h3>
-                    <span className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 block">
                       {routeAgency?.name ?? routeSlug}
-                    </span>
+                    </h3>
+                    {routeAgency?.region && (
+                      <span className="text-[9px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5 mt-1 inline-block">
+                        {routeAgency.region}
+                      </span>
+                    )}
                   </div>
                   <button
                     onClick={() => setSelectedRoute(null)}
