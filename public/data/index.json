@@ -4076,6 +4076,62 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvpta-corridors.json",
       "lastFeedExpiry": "20260723",
       "lastFeedVersion": "UTC: 02-Jul-2026 21:43"
+    },
+    {
+      "slug": "gtrans",
+      "name": "GTrans (Gardena Municipal Bus Lines)",
+      "center": [
+        33.89,
+        -118.31
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2270/mdb-2270-202606300031/mdb-2270-202606300031.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gtrans.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gtrans-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gtrans-corridors.json",
+      "lastFeedExpiry": "20260718",
+      "lastFeedVersion": "S1000131"
+    },
+    {
+      "slug": "vvta",
+      "name": "Victor Valley Transit Authority (VVTA)",
+      "center": [
+        34.54,
+        -117.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-99/mdb-99-202410070003/mdb-99-202410070003.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vvta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vvta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vvta-corridors.json",
+      "lastFeedExpiry": "20250329",
+      "lastFeedVersion": "2024.09"
+    },
+    {
+      "slug": "vctc",
+      "name": "Ventura County Transportation Commission (VCTC Intercity)",
+      "center": [
+        34.27,
+        -119.23
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-31/mdb-31-202507150038/mdb-31-202507150038.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vctc.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vctc-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vctc-corridors.json",
+      "lastFeedExpiry": "20250815",
+      "lastFeedVersion": "UTC: 07-May-2025 21:06"
+    },
+    {
+      "slug": "elmonte",
+      "name": "El Monte Transit",
+      "center": [
+        34.07,
+        -118.03
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-103/mdb-103-202403040057/mdb-103-202403040057.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/elmonte.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/elmonte-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/elmonte-corridors.json",
+      "lastFeedExpiry": "20251031",
+      "lastFeedVersion": "UTC: 29-Feb-2024 18:42"
     }
   ]
 }
