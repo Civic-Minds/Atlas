@@ -1176,7 +1176,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       <button
                         key={stop.stopId}
                         className="text-[11px] w-full text-left hover:opacity-70 transition-opacity"
-                        onClick={() => { setSelectedRoute(null); setSelectedStop(stop.stopId); }}
+                        onClick={() => { setSelectedRoute(null); setSelectedStop(`${liveRouteInfo.agencySlug}::${stop.stopId}`); }}
                       >
                         <span className="font-bold text-[var(--text-muted)] block truncate">
                           {stop.name}
