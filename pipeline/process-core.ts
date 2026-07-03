@@ -293,6 +293,7 @@ export interface ProcessResult {
   geojson: string;
   corridorsGeojson: string; // isCorridor features only, served separately
   stopsJson: string; // JSON: Record<stopId, StopEntry> — for Corridors stop search
+  tripsJson: string; // JSON: Record<tripId, {d: directionId, h: headsign|null}> for live vehicle enrichment
   featureCount: number;
   center: [number, number] | null;
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
@@ -1115,10 +1116,18 @@ export async function processGtfsBuffer(
     }
   }
 
+  // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign)
+  const tripsLookup: Record<string, { d: number; h: string | null }> = {};
+  for (const trip of gtfs.trips ?? []) {
+    const h = trip.trip_headsign?.trim() || null;
+    tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h };
+  }
+
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: mainFeatures }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
+    tripsJson: JSON.stringify(tripsLookup),
     featureCount: mainFeatures.length,
     center,
     feedExpiry: feedInfo?.feed_end_date ?? null,

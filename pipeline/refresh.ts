@@ -223,7 +223,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
     manualBaseFare: manualBaseFareOverride,
   });
 
-  let { geojson, corridorsGeojson, stopsJson, featureCount } = primary;
+  let { geojson, corridorsGeojson, stopsJson, tripsJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
 
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
@@ -232,6 +232,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
     const mainFeatures = (JSON.parse(geojson) as GeoJsonFc).features;
     const corridorFeatures = (JSON.parse(corridorsGeojson) as GeoJsonFc).features;
     const stopsIndex = JSON.parse(stopsJson) as Record<string, unknown>;
+    const tripsIndex = JSON.parse(tripsJson) as Record<string, unknown>;
 
     for (const suppUrl of agency.supplementalFeedUrls) {
       const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
@@ -244,6 +245,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
       mainFeatures.push(...(JSON.parse(supp.geojson) as GeoJsonFc).features);
       corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as GeoJsonFc).features);
       Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
+      Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
       featureCount += supp.featureCount;
       process.stdout.write(`+${supp.featureCount} features`);
     }
@@ -252,6 +254,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
     geojson = JSON.stringify({ type: 'FeatureCollection', features: mainFeatures });
     corridorsGeojson = JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures });
     stopsJson = JSON.stringify(stopsIndex);
+    tripsJson = JSON.stringify(tripsIndex);
   }
 
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
@@ -260,6 +263,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
     r2Put(`atlas/${agency.slug}.json`, geojson),
     r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
     r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
+    r2Put(`atlas/${agency.slug}-trips.json`, tripsJson),
   ];
   if (primary.livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));

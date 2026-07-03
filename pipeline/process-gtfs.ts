@@ -61,7 +61,7 @@ async function main() {
   }
 
   const buf = readFileSync(zipPath);
-  const { geojson, corridorsGeojson, stopsJson, featureCount, center: computedCenter, livePollingSidecar } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, featureCount, center: computedCenter, livePollingSidecar } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { preprocess, excludeRouteShortNames, slug, manualBaseFare });
   const center = argCenter ?? computedCenter ?? [0, 0];
@@ -71,6 +71,7 @@ async function main() {
     r2Put(`atlas/${slug}.json`, geojson),
     r2Put(`atlas/${slug}-stops.json`, stopsJson),
     r2Put(`atlas/${slug}-corridors.json`, corridorsGeojson),
+    r2Put(`atlas/${slug}-trips.json`, tripsJson),
   ];
   if (livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${slug}.json`, JSON.stringify(livePollingSidecar, null, 2)));

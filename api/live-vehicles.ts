@@ -83,10 +83,15 @@ export default async function handler(req: Request) {
   const fetchOpts = { apiKeyParam, apiKeyHeader };
 
   try {
-    // Fetch positions and updates feeds in parallel
-    const [positionsFeed, updatesFeed] = await Promise.all([
+    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+
+    // Fetch positions, trip updates, and static trips lookup in parallel
+    const [positionsFeed, updatesFeed, tripsLookup] = await Promise.all([
       fetchProtoFeed(vehiclePositionsUrl, fetchOpts),
       fetchProtoFeed(tripUpdatesUrl, fetchOpts),
+      fetch(`${R2_PUBLIC_URL}/atlas/${agencySlug}-trips.json`)
+        .then(r => r.ok ? r.json() as Promise<Record<string, { d: number; h: string | null }>> : null)
+        .catch(() => null),
     ]);
 
     if (!positionsFeed) {
@@ -163,7 +168,15 @@ export default async function handler(req: Request) {
 
         const delayInfo = tripId ? tripDelays.get(tripId) : null;
         const delayMin = delayInfo?.delay ?? null;
-        const headsign = delayInfo?.headsign ?? null;
+
+        // Prefer real-time headsign; fall back to static trips lookup
+        const rtHeadsign = delayInfo?.headsign ?? null;
+        const staticTrip = tripId && tripsLookup ? tripsLookup[tripId] : null;
+        const headsign = rtHeadsign ?? staticTrip?.h ?? null;
+
+        // Prefer real-time directionId; fall back to static trips lookup
+        const rtDirectionId = vp.trip?.directionId != null ? Number(vp.trip.directionId) : null;
+        const directionId = rtDirectionId ?? (staticTrip ? staticTrip.d : null);
 
         let status = 'no_data';
         if (delayMin != null) {
@@ -182,7 +195,7 @@ export default async function handler(req: Request) {
           bearing: vp.position?.bearing != null ? Number(vp.position.bearing) : null,
           delayMin,
           headsign,
-          directionId: vp.trip?.directionId != null ? Number(vp.trip.directionId) : null,
+          directionId,
           status,
         });
       }
