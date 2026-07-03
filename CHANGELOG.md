@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Headsign display: all-caps not title-cased (AI-235)**: US GTFS feeds often store headsigns in all-caps (e.g. "LOOP", "VALLEY STATION"). `titleCase` had a ≤4-char preservation rule that treated 4-letter words as acronyms and left them uppercase. Reduced threshold to ≤3 — real 4-char acronyms (BART, etc.) are already in the `TRANSIT_ACRONYMS` table and survive the change. "LOOP" now displays as "Loop".
+- **Headsign display: leading dash after branch prefix strip (AI-235)**: `cleanHeadsign` stripped route-name prefixes like "Gold Line - " but left a dangling "- " on the remainder (e.g. "- 8th & K Only"). Added rule to strip orphaned leading "- ".
+- **Route card: removed back button from frequency map route card (AI-235)**: the ← button was inconsistent with the interaction model (clicking the map deselects). The Fares route card retains ← since it's a distinct app mode.
+
+### Added
+- **Static agency expansion — 53 new US agencies**: added major transit operators across California, Nevada, Arizona, Colorado, New Mexico, Texas, Oklahoma, Arkansas, Tennessee, Louisiana, Ohio, Kentucky, Wisconsin, Missouri, and Nebraska. Brings total from 164 to 217 agencies.
+  - **LA Metro region**: LA Metro (LACMTA full bus+rail, mdb-29), Metrolink, Big Blue Bus, Long Beach Transit, OCTA, Foothill Transit, AVTA (Antelope Valley), LADOT/DASH, Culver City Bus, Santa Clarita Transit, Montebello Bus Lines, BurbankBus, Glendale Beeline, Pasadena Transit
+  - **San Diego region**: San Diego MTS, NCTD (North County)
+  - **Inland Empire**: Riverside Transit Agency, OmniTrans (San Bernardino)
+  - **Central Valley**: Fresno Area Express (FAX), Golden Empire Transit (Bakersfield), San Joaquin RTD (Stockton), Merced County Transit, Stanislaus Regional Transit (StaRT / Modesto)
+  - **Central Coast**: Monterey-Salinas Transit (MST), Santa Barbara MTD, City of San Luis Obispo Transit, SLORTA, Santa Maria Area Transit
+  - **Desert**: SunLine (Coachella Valley / Palm Springs)
+  - **Nevada**: RTC Southern Nevada (Las Vegas), RTC Washoe (Reno)
+  - **Arizona**: Valley Metro (Phoenix), Mountain Line (Flagstaff)
+  - **Colorado**: Mountain Metropolitan Transit (Colorado Springs), RTD Denver
+  - **New Mexico**: ABQ RIDE (Albuquerque), Santa Fe Trails
+  - **Texas**: Capital Metro (Austin), DART (Dallas), Trinity Metro (Fort Worth), METRO Houston, VIA Metropolitan Transit (San Antonio)
+  - **Oklahoma**: Embark (OKC)
+  - **Arkansas**: Rock Region Metro (Little Rock)
+  - **Tennessee**: Nashville MTA WeGo, Memphis Area Transit Authority
+  - **Louisiana**: NORTA (New Orleans)
+  - **Ohio**: Cincinnati Metro (SORTA)
+  - **Kentucky**: TARC (Louisville)
+  - **Wisconsin**: MCTS (Milwaukee)
+  - **Missouri**: Metro St. Louis, KCATA (Kansas City)
+  - **Nebraska**: Omaha Metro
+- **Oregon**: Corvallis Transit System
+
+### Fixed
 - **Live Vehicles / Frequency Map: route card header consistency**: both the static frequency map route card and the live vehicles route card now use the same `←` back button on the left + `RouteCardTitle` pattern. The static card previously had no back button; the fares card had an X button on the right. Live Vehicles "Live Vehicles" heading fixed from `text-xs` to `text-sm` to match the route title size. Header uses `items-start pt-[14px]` so the primary text always anchors at the same vertical position in both the list and route card states.
 - **Pipeline: fix garbled feed expiry date warning for agencies with quoted CSV values in feed_info.txt**: `peekFeedInfo` now strips surrounding quotes from header and value fields before parsing. Hamilton's `feed_info.txt` uses quoted values (`"20260905"`), which caused the expiry to be read as `"20260905"` (with leading `"`) and displayed as `"202-60-90` — a cosmetic bug that also broke the skip-if-unchanged check for Hamilton.
 - **Live Vehicles: pipeline now generates static trips lookup for direction/headsign enrichment (AI-226)**: pipeline (`process-core.ts`) now produces a `{tripId → {d: directionId, h: headsign|null}}` lookup from static GTFS `trips.txt`. Both `process-gtfs.ts` and `refresh.ts` upload it as `atlas/{slug}-trips.json` to R2. The live-vehicles API fetches this file in parallel with GTFS-RT feeds and uses it to fill missing `directionId` and `headsign` for vehicles when the agency's GTFS-RT feed omits them (e.g. HSR, Burlington Transit). Real-time values take precedence over static fallbacks.

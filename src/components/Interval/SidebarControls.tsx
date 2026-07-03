@@ -992,20 +992,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <span className="text-[10px] font-black text-[var(--text-dim)]">Scheduled</span>
               </div>
             )}
-            <div className="flex items-start gap-2 mb-1">
-              <button
-                onClick={() => setSelectedRoute(null)}
-                className="p-0.5 -ml-0.5 mt-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-                aria-label="Back to route list"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-              </button>
+            <div className="mb-1">
               {(() => {
                 const slug = (currentRoute as any).agencySlug as string | undefined;
                 const agency = agencies.find(a => a.slug === slug);
                 const agencyDisplayName = agency?.name ?? slug;
                 return (
-                  <div className="flex-1 mt-2">
+                  <div>
                     <RouteCardTitle
                       routeShortName={currentRoute.routeShortName}
                       routeLongName={currentRoute.routeLongName}

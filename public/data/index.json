@@ -3306,6 +3306,748 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20260619"
+    },
+    {
+      "slug": "lacmta",
+      "name": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+      "center": [
+        34.05,
+        -118.24
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202606070210/mdb-29-202606070210.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lacmta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lacmta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lacmta-corridors.json",
+      "lastFeedExpiry": "20261212",
+      "lastFeedVersion": ""
+    },
+    {
+      "slug": "metrolink",
+      "name": "Metrolink",
+      "center": [
+        34.05,
+        -118.24
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-96/mdb-96-202605230122/mdb-96-202605230122.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrolink.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrolink-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrolink-corridors.json",
+      "lastFeedExpiry": "20360501",
+      "lastFeedVersion": "20260505"
+    },
+    {
+      "slug": "bigbluebus",
+      "name": "Big Blue Bus",
+      "center": [
+        34.01,
+        -118.49
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-37/mdb-37-202604070127/mdb-37-202604070127.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bigbluebus.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bigbluebus-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bigbluebus-corridors.json",
+      "lastFeedExpiry": "20260808",
+      "lastFeedVersion": "2026-04 (Apr)_20260319"
+    },
+    {
+      "slug": "longbeach",
+      "name": "Long Beach Transit",
+      "center": [
+        33.77,
+        -118.19
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/mdb-1198-202606170039/mdb-1198-202606170039.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/longbeach.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/longbeach-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/longbeach-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "octa",
+      "name": "Orange County Transportation Authority (OCTA)",
+      "center": [
+        33.84,
+        -117.91
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-15/mdb-15-202605100002/mdb-15-202605100002.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octa.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octa-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octa-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "foothill",
+      "name": "Foothill Transit",
+      "center": [
+        34.06,
+        -117.75
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-101/mdb-101-202607020124/mdb-101-202607020124.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/foothill.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/foothill-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/foothill-corridors.json",
+      "lastFeedExpiry": "20261031",
+      "lastFeedVersion": "20260701"
+    },
+    {
+      "slug": "avta",
+      "name": "Antelope Valley Transit Authority (AVTA)",
+      "center": [
+        34.58,
+        -118.12
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-214/mdb-214-202406071534/mdb-214-202406071534.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/avta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/avta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/avta-corridors.json",
+      "lastFeedExpiry": "20210801",
+      "lastFeedVersion": "20210503"
+    },
+    {
+      "slug": "sdmts",
+      "name": "Metropolitan Transit System (San Diego MTS)",
+      "center": [
+        32.72,
+        -117.16
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-13/mdb-13-202605270056/mdb-13-202605270056.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sdmts.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sdmts-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sdmts-corridors.json",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142"
+    },
+    {
+      "slug": "nctd",
+      "name": "North County Transit District (NCTD)",
+      "center": [
+        33.2,
+        -117.39
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nctd.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nctd-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nctd-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": "Version_20250205"
+    },
+    {
+      "slug": "riverside",
+      "name": "Riverside Transit Agency",
+      "center": [
+        33.98,
+        -117.37
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-98/mdb-98-202605110136/mdb-98-202605110136.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riverside.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riverside-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riverside-corridors.json",
+      "lastFeedExpiry": "20260912",
+      "lastFeedVersion": "S1000245"
+    },
+    {
+      "slug": "omnitrans",
+      "name": "OmniTrans",
+      "center": [
+        34.11,
+        -117.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-97/mdb-97-202604290039/mdb-97-202604290039.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/omnitrans.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/omnitrans-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/omnitrans-corridors.json",
+      "lastFeedExpiry": "20260809",
+      "lastFeedVersion": "20260504_20260428a"
+    },
+    {
+      "slug": "fax",
+      "name": "Fresno Area Express (FAX)",
+      "center": [
+        36.74,
+        -119.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202605220140/mdb-90-202605220140.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fax.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fax-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fax-corridors.json",
+      "lastFeedExpiry": "20260809",
+      "lastFeedVersion": "6.1.26 Production_20260515"
+    },
+    {
+      "slug": "get",
+      "name": "Golden Empire Transit District (GET)",
+      "center": [
+        35.37,
+        -119.02
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-46/mdb-46-202606130139/mdb-46-202606130139.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/get.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/get-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/get-corridors.json",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260612"
+    },
+    {
+      "slug": "sjrtd",
+      "name": "San Joaquin Regional Transit District",
+      "center": [
+        37.96,
+        -121.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-886/mdb-886-202606020047/mdb-886-202606020047.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjrtd.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjrtd-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjrtd-corridors.json",
+      "lastFeedExpiry": "20260725",
+      "lastFeedVersion": "20260531-20260725"
+    },
+    {
+      "slug": "merced",
+      "name": "Merced County Transit (The Bus)",
+      "center": [
+        37.3,
+        -120.48
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/mdb-3117-202607030020/mdb-3117-202607030020.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/merced.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/merced-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/merced-corridors.json",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "PASAT 8 Route Update"
+    },
+    {
+      "slug": "start",
+      "name": "Stanislaus Regional Transit (StaRT)",
+      "center": [
+        37.64,
+        -120.99
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2273/mdb-2273-202606030124/mdb-2273-202606030124.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/start.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/start-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/start-corridors.json",
+      "lastFeedExpiry": "20270630",
+      "lastFeedVersion": "20260602"
+    },
+    {
+      "slug": "mst",
+      "name": "Monterey-Salinas Transit (MST)",
+      "center": [
+        36.6,
+        -121.89
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-56/mdb-56-202606240122/mdb-56-202606240122.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mst.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mst-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mst-corridors.json",
+      "lastFeedExpiry": "20260828",
+      "lastFeedVersion": "202602v33"
+    },
+    {
+      "slug": "sbmtd",
+      "name": "Santa Barbara Metropolitan Transit District (MTD)",
+      "center": [
+        34.42,
+        -119.7
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/mdb-1246-202606300054/mdb-1246-202606300054.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sbmtd.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sbmtd-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sbmtd-corridors.json",
+      "lastFeedExpiry": "20260816",
+      "lastFeedVersion": "S1000258"
+    },
+    {
+      "slug": "slotransit",
+      "name": "City of San Luis Obispo Transit",
+      "center": [
+        35.28,
+        -120.66
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-44/mdb-44-202603280107/mdb-44-202603280107.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/slotransit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/slotransit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/slotransit-corridors.json",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "2026-03-27T18:13:21Z"
+    },
+    {
+      "slug": "slorta",
+      "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
+      "center": [
+        35.28,
+        -120.66
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-43/mdb-43-202606120140/mdb-43-202606120140.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/slorta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/slorta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/slorta-corridors.json",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260611"
+    },
+    {
+      "slug": "sunline",
+      "name": "SunLine Transit Agency",
+      "center": [
+        33.87,
+        -116.54
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-461/tld-461-202606060105/tld-461-202606060105.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sunline.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sunline-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sunline-corridors.json",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "6/5/2026"
+    },
+    {
+      "slug": "rtcsnv",
+      "name": "Regional Transportation Commission of Southern Nevada (RTC)",
+      "center": [
+        36.17,
+        -115.14
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/mdb-2351-202606300119/mdb-2351-202606300119.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtcsnv.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtcsnv-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtcsnv-corridors.json",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "October 2025_20260302"
+    },
+    {
+      "slug": "rtcwashoe",
+      "name": "Regional Transportation Commission of Washoe County (RTC Washoe)",
+      "center": [
+        39.53,
+        -119.81
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-120/mdb-120-202605290123/mdb-120-202605290123.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtcwashoe.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtcwashoe-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtcwashoe-corridors.json",
+      "lastFeedExpiry": "20260904",
+      "lastFeedVersion": "1"
+    },
+    {
+      "slug": "smat",
+      "name": "Santa Maria Area Transit",
+      "center": [
+        34.95,
+        -120.44
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2272/mdb-2272-202607030002/mdb-2272-202607030002.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smat.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smat-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smat-corridors.json",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": ""
+    },
+    {
+      "slug": "valleymetro",
+      "name": "Valley Metro (Phoenix)",
+      "center": [
+        33.45,
+        -112.07
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-147/mdb-147-202606300020/mdb-147-202606300020.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/valleymetro.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/valleymetro-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/valleymetro-corridors.json",
+      "lastFeedExpiry": "20261025",
+      "lastFeedVersion": "GTFS_v4.5_20260616"
+    },
+    {
+      "slug": "mountainline",
+      "name": "Mountain Line (Flagstaff)",
+      "center": [
+        35.2,
+        -111.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/mdb-1979-202607030141/mdb-1979-202607030141.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mountainline.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mountainline-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mountainline-corridors.json",
+      "lastFeedExpiry": "20261230",
+      "lastFeedVersion": "No deviations"
+    },
+    {
+      "slug": "mountainmetro",
+      "name": "Mountain Metropolitan Transit (Colorado Springs)",
+      "center": [
+        38.83,
+        -104.82
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2356/mdb-2356-202504260208/mdb-2356-202504260208.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mountainmetro.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mountainmetro-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mountainmetro-corridors.json",
+      "lastFeedExpiry": "20250927",
+      "lastFeedVersion": "2025 (1) Spring_20250421"
+    },
+    {
+      "slug": "rtd-denver",
+      "name": "Regional Transportation District (RTD Denver)",
+      "center": [
+        39.74,
+        -104.98
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/mdb-2280-202607020143/mdb-2280-202607020143.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtd-denver.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtd-denver-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtd-denver-corridors.json",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "Jun26-36807-13-20-20260701-040207"
+    },
+    {
+      "slug": "abqride",
+      "name": "ABQ RIDE (Albuquerque)",
+      "center": [
+        35.09,
+        -106.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-166/mdb-166-202606060001/mdb-166-202606060001.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/abqride.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/abqride-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/abqride-corridors.json",
+      "lastFeedExpiry": "20260904",
+      "lastFeedVersion": "2026-05_20260605"
+    },
+    {
+      "slug": "santafetrails",
+      "name": "Santa Fe Trails",
+      "center": [
+        35.69,
+        -105.94
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-839/mdb-839-202412160115/mdb-839-202412160115.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santafetrails.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santafetrails-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santafetrails-corridors.json",
+      "lastFeedExpiry": "20260330",
+      "lastFeedVersion": "2024-12-14T14:31:44Z"
+    },
+    {
+      "slug": "capmetro",
+      "name": "Capital Metro (Austin)",
+      "center": [
+        30.27,
+        -97.74
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-150/mdb-150-202607020147/mdb-150-202607020147.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/capmetro.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/capmetro-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/capmetro-corridors.json",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "260630_1449"
+    },
+    {
+      "slug": "dart",
+      "name": "Dallas Area Rapid Transit (DART)",
+      "center": [
+        32.78,
+        -96.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202606120106/mdb-152-202606120106.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/dart.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/dart-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/dart-corridors.json",
+      "lastFeedExpiry": "20260719",
+      "lastFeedVersion": "V702-215-214-20260608"
+    },
+    {
+      "slug": "trinitymetro",
+      "name": "Trinity Metro (Fort Worth)",
+      "center": [
+        32.73,
+        -97.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinitymetro.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinitymetro-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinitymetro-corridors.json",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "MAY 26_20260526"
+    },
+    {
+      "slug": "metrohouston",
+      "name": "METRO Houston",
+      "center": [
+        29.76,
+        -95.37
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202606160113/mdb-2060-202606160113.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrohouston.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrohouston-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrohouston-corridors.json",
+      "lastFeedExpiry": "20260711",
+      "lastFeedVersion": "FIFA2026IVOMS_20260612"
+    },
+    {
+      "slug": "via",
+      "name": "VIA Metropolitan Transit (San Antonio)",
+      "center": [
+        29.42,
+        -98.49
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-217/tld-217-202607030139/tld-217-202607030139.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/via.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/via-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/via-corridors.json",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "May 2026_20260701"
+    },
+    {
+      "slug": "embark",
+      "name": "Embark (Oklahoma City)",
+      "center": [
+        35.47,
+        -97.52
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/mdb-2062-202607030109/mdb-2062-202607030109.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/embark.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/embark-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/embark-corridors.json",
+      "lastFeedExpiry": "20270702",
+      "lastFeedVersion": "01/07/2026-22:30"
+    },
+    {
+      "slug": "rockregion",
+      "name": "Rock Region Metro (Little Rock)",
+      "center": [
+        34.75,
+        -92.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2264/mdb-2264-202507280407/mdb-2264-202507280407.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rockregion.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rockregion-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rockregion-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "nashvillemta",
+      "name": "Nashville MTA WeGo Public Transit",
+      "center": [
+        36.16,
+        -86.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202606200107/mdb-360-202606200107.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nashvillemta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nashvillemta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nashvillemta-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "mata",
+      "name": "Memphis Area Transit Authority",
+      "center": [
+        35.15,
+        -90.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2352/mdb-2352-202502100036/mdb-2352-202502100036.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mata.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mata-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mata-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "norta",
+      "name": "New Orleans Regional Transit Authority (NORTA)",
+      "center": [
+        29.95,
+        -90.07
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60032/ntd-60032-202605140120/ntd-60032-202605140120.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/norta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/norta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/norta-corridors.json",
+      "lastFeedExpiry": "20270124",
+      "lastFeedVersion": "S1000253"
+    },
+    {
+      "slug": "cincinnatimetro",
+      "name": "Cincinnati Metro (SORTA)",
+      "center": [
+        39.1,
+        -84.51
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-307/mdb-307-202607010002/mdb-307-202607010002.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cincinnatimetro.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cincinnatimetro-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cincinnatimetro-corridors.json",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "gtfs_20260531-20260815_20260626"
+    },
+    {
+      "slug": "tarc",
+      "name": "Transit Authority of River City (Louisville)",
+      "center": [
+        38.25,
+        -85.76
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202604170127/mdb-2662-202604170127.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarc.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarc-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarc-corridors.json",
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "20260416"
+    },
+    {
+      "slug": "mcts",
+      "name": "Milwaukee County Transit System (MCTS)",
+      "center": [
+        43.04,
+        -87.91
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/mdb-2127-202505080016/mdb-2127-202505080016.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mcts.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mcts-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mcts-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "metrostlouis",
+      "name": "Metro St. Louis",
+      "center": [
+        38.63,
+        -90.2
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrostlouis.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrostlouis-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrostlouis-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "kcata",
+      "name": "Kansas City Area Transportation Authority (KCATA)",
+      "center": [
+        39.1,
+        -94.58
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-187/mdb-187-202607020106/mdb-187-202607020106.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kcata.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kcata-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kcata-corridors.json",
+      "lastFeedExpiry": "20260711",
+      "lastFeedVersion": "June 2026_20260630"
+    },
+    {
+      "slug": "omahametro",
+      "name": "Omaha Metro",
+      "center": [
+        41.26,
+        -96
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2261/mdb-2261-202604230118/mdb-2261-202604230118.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/omahametro.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/omahametro-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/omahametro-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "OMAHA 2604 V1"
+    },
+    {
+      "slug": "ladot",
+      "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+      "center": [
+        34.05,
+        -118.24
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1210/mdb-1210-202607030056/mdb-1210-202607030056.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ladot.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ladot-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ladot-corridors.json",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-CE 423 Changes v3,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026"
+    },
+    {
+      "slug": "culvercitybus",
+      "name": "Culver City Bus",
+      "center": [
+        34,
+        -118.4
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-38/mdb-38-202605300008/mdb-38-202605300008.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/culvercitybus.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/culvercitybus-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/culvercitybus-corridors.json",
+      "lastFeedExpiry": "20260712",
+      "lastFeedVersion": "S1000250_2026.01.09"
+    },
+    {
+      "slug": "santaclarita",
+      "name": "Santa Clarita Transit",
+      "center": [
+        34.41,
+        -118.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-1256/tld-1256-202606250025/tld-1256-202606250025.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santaclarita.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santaclarita-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santaclarita-corridors.json",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260624"
+    },
+    {
+      "slug": "montebello",
+      "name": "Montebello Bus Lines",
+      "center": [
+        34.01,
+        -118.11
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2201/mdb-2201-202606270133/mdb-2201-202606270133.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/montebello.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/montebello-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/montebello-corridors.json",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "20260626"
+    },
+    {
+      "slug": "burbankbus",
+      "name": "BurbankBus",
+      "center": [
+        34.18,
+        -118.31
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/mdb-2149-202607030052/mdb-2149-202607030052.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burbankbus.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burbankbus-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burbankbus-corridors.json",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "1/12/2024"
+    },
+    {
+      "slug": "glendalebeeline",
+      "name": "Glendale Beeline",
+      "center": [
+        34.14,
+        -118.26
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glendalebeeline.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glendalebeeline-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glendalebeeline-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "pasadenatransit",
+      "name": "Pasadena Transit",
+      "center": [
+        34.15,
+        -118.13
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-41/mdb-41-202606270117/mdb-41-202606270117.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pasadenatransit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pasadenatransit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pasadenatransit-corridors.json",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260626"
     }
   ]
 }

@@ -26,6 +26,10 @@ export function cleanHeadsign(
   // Generic branch/direction prefix (DRT "A - ", GO "KI - ", TTC "East - ")
   h = h.replace(/^(?:[A-Za-z0-9]{1,5}|East|West|North|South)\s*-\s*/i, '');
 
+  // Strip orphaned leading dash left after branch/route-name prefix was stripped
+  // e.g. "Gold Line - 8th & K Only" → after stripping "Gold Line " → "- 8th & K Only"
+  h = h.replace(/^-\s+/, '');
+
   // TTC subway pattern: "Line 1 (Yonge-University) towards …"
   h = h.replace(/^Line\s+\d+\s*\([^)]+\)\s+towards\s+/i, '');
 
