@@ -88,19 +88,31 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
         <div className="flex-1 min-w-0">
           <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{agency.name}</p>
           {fareView ? (
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
-              {baseFare != null ? (
-                <span
-                  className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                  style={{ background: getFareColor(baseFare) }}
+            <>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
+                {baseFare != null ? (
+                  <span
+                    className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
+                    style={{ background: getFareColor(baseFare) }}
+                  >
+                    ${baseFare.toFixed(2)}
+                  </span>
+                ) : (
+                  <span className="text-xs text-[var(--text-dim)]">fare varies</span>
+                )}
+              </div>
+              {agency.fareUrl && (
+                <a
+                  href={agency.fareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] text-[var(--accent)] hover:underline mt-1.5 block"
                 >
-                  ${baseFare.toFixed(2)}
-                </span>
-              ) : (
-                <span className="text-xs text-[var(--text-dim)]">fare varies</span>
+                  View all fares →
+                </a>
               )}
-            </div>
+            </>
           ) : (
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {agency.region && (

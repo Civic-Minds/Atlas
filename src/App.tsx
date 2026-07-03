@@ -29,6 +29,7 @@ export interface Agency {
   issueUrl?: string;
   fare?: number; // manual base adult fare fallback (dollars) for Fares map (AI-205)
   gtfsFares?: boolean; // true if this agency's GTFS feed provides real fare data (V1 or V2)
+  fareUrl?: string; // link to agency's public fare page
 }
 
 const PATH_TO_APP: Record<string, AppId> = {

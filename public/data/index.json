@@ -687,7 +687,8 @@
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "20260602153030_26U",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media",
-      "gtfsFares": true
+      "gtfsFares": true,
+      "fareUrl": "https://www.stm.info/en/info/fares"
     },
     {
       "slug": "sto",
