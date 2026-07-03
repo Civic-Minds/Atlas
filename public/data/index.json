@@ -4132,6 +4132,132 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/elmonte-corridors.json",
       "lastFeedExpiry": "20251031",
       "lastFeedVersion": "UTC: 29-Feb-2024 18:42"
+    },
+    {
+      "slug": "cta",
+      "name": "Chicago Transit Authority (CTA)",
+      "center": [
+        41.8781,
+        -87.6298
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-389/mdb-389-202605300003/mdb-389-202605300003.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cta-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "metra",
+      "name": "Metra",
+      "center": [
+        41.8781,
+        -87.6298
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2854/mdb-2854-202606280011/mdb-2854-202606280011.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metra.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metra-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metra-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "pace-bus",
+      "name": "Pace Bus",
+      "center": [
+        41.9,
+        -87.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2347/mdb-2347-202605290102/mdb-2347-202605290102.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pace-bus.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pace-bus-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pace-bus-corridors.json",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "20260531"
+    },
+    {
+      "slug": "marta",
+      "name": "MARTA",
+      "center": [
+        33.749,
+        -84.388
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-368/mdb-368-202604190110/mdb-368-202604190110.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marta-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "cobblinc",
+      "name": "CobbLinc",
+      "center": [
+        33.9,
+        -84.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/mdb-3193-202607020158/mdb-3193-202607020158.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cobblinc.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cobblinc-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cobblinc-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260701"
+    },
+    {
+      "slug": "gwinnett-transit",
+      "name": "Gwinnett County Transit",
+      "center": [
+        33.96,
+        -84.02
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2241/mdb-2241-202607030045/mdb-2241-202607030045.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gwinnett-transit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gwinnett-transit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gwinnett-transit-corridors.json",
+      "lastFeedExpiry": "20261226",
+      "lastFeedVersion": "20260702"
+    },
+    {
+      "slug": "miami-dade-transit",
+      "name": "Miami-Dade Transit",
+      "center": [
+        25.7617,
+        -80.1918
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miami-dade-transit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miami-dade-transit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miami-dade-transit-corridors.json",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "broward-transit",
+      "name": "Broward County Transit",
+      "center": [
+        26.1224,
+        -80.1373
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-330/mdb-330-202606300003/mdb-330-202606300003.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broward-transit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broward-transit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broward-transit-corridors.json",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "S20260621_E20260926_TS20260626144559"
+    },
+    {
+      "slug": "transfort",
+      "name": "Transfort (Fort Collins)",
+      "center": [
+        40.5853,
+        -105.0844
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/transfort.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/transfort-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/transfort-corridors.json",
+      "lastFeedExpiry": "20240511",
+      "lastFeedVersion": "S1000201"
     }
   ]
 }

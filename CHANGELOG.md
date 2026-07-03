@@ -33,6 +33,11 @@ All notable changes to this project will be documented in this file.
   - **Nebraska**: Omaha Metro
 - **Oregon**: Corvallis Transit System
 - **LA area (additional)**: Norwalk Transit System, Palos Verdes Peninsula Transit Authority (PVPTA), GTrans (Gardena), Victor Valley Transit Authority (VVTA), Ventura County Transportation Commission (VCTC Intercity), El Monte Transit. Torrance Transit has no publicly accessible GTFS feed. Note: VVTA, VCTC, and El Monte feeds are stale (expired 2024–2025) — update feedUrls when fresher data is available.
+- **Static agency expansion — 9 more agencies**: Chicago, Atlanta, Miami, and Fort Collins metro areas.
+  - **Chicago**: Chicago Transit Authority (CTA), Metra, Pace Bus
+  - **Atlanta**: MARTA, CobbLinc, Gwinnett County Transit
+  - **Miami**: Miami-Dade Transit, Broward County Transit
+  - **Colorado**: Transfort (Fort Collins) — note: feed is 2024-vintage, update when fresher data available
 
 ### Fixed
 - **Live Vehicles / Frequency Map: route card header consistency**: both the static frequency map route card and the live vehicles route card now use the same `←` back button on the left + `RouteCardTitle` pattern. The static card previously had no back button; the fares card had an X button on the right. Live Vehicles "Live Vehicles" heading fixed from `text-xs` to `text-sm` to match the route title size. Header uses `items-start pt-[14px]` so the primary text always anchors at the same vertical position in both the list and route card states.
