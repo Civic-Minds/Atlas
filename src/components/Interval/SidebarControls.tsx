@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { X } from 'lucide-react';
-import { R2_PUBLIC_URL } from '../../shared/config';
+import { R2_PUBLIC_URL } from '../../../shared/config';
 import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';

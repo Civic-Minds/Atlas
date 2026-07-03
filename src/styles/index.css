@@ -50,6 +50,10 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* Leaflet attribution — required by license, but styled to be unobtrusive */
 .leaflet-control-attribution {
   font-size: 9px !important;

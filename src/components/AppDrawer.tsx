@@ -72,7 +72,7 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
       </button>
 
       {open && (
-        <div className={`absolute top-10 left-0 w-56 ${FLOATING_CARD} overflow-hidden z-[1200] py-1.5`}>
+        <div className={`absolute top-10 left-0 w-56 ${FLOATING_CARD} overflow-hidden z-[1200] py-1.5 cursor-default`}>
           {APPS.map(app => {
             const isActive = app.id === activeApp;
             return (

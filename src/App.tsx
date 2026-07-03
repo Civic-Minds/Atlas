@@ -73,6 +73,23 @@ export default function App() {
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
+
+  // Measure the From search bar's actual screen position so Corridors can
+  // align the To bar to it precisely, regardless of header layout changes.
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const [fromBarAnchor, setFromBarAnchor] = useState<{ left: number; bottom: number; width: number } | null>(null);
+  useEffect(() => {
+    const el = searchBarRef.current;
+    if (!el) return;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      setFromBarAnchor({ left: r.left, bottom: r.bottom, width: r.width });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, []);
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
@@ -205,7 +222,7 @@ export default function App() {
         <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
         {/* Search bar — doubles as Corridors From input and History agency search */}
-        <div>
+        <div ref={searchBarRef}>
         <div className={`w-40 lg:w-52 xl:w-64 relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
@@ -307,6 +324,7 @@ export default function App() {
                   onBindFromInput={setFromInputBindings}
                   active={inCorridors}
                   onInfoOpen={() => setInfoOpen(true)}
+                  fromBarAnchor={fromBarAnchor ?? undefined}
                 />
               </div>
             )}
