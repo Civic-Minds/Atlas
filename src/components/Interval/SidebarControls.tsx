@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, ArrowLeft } from 'lucide-react';
 import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
@@ -951,7 +951,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
             {fareView ? (
               <>
-                <div className="flex items-start justify-between -mt-2 -mr-2 mb-3">
+                <div className="flex items-start gap-2 mb-3">
+                  <button
+                    onClick={() => setSelectedRoute(null)}
+                    className="p-0.5 -ml-0.5 mt-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+                    aria-label="Back to route list"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </button>
                   <div className="flex-1 mt-2">
                     <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
                       {routeAgency?.name ?? routeSlug}
@@ -962,12 +969,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       </span>
                     )}
                   </div>
-                  <button
-                    onClick={() => setSelectedRoute(null)}
-                    className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
                 </div>
                 <div className="flex items-center justify-between px-3 py-2.5 bg-[var(--bg-app)] rounded-xl">
                   <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
@@ -991,7 +992,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 <span className="text-[10px] font-black text-[var(--text-dim)]">Scheduled</span>
               </div>
             )}
-            <div className="flex items-start justify-between -mt-2 -mr-2 mb-1">
+            <div className="flex items-start gap-2 mb-1">
+              <button
+                onClick={() => setSelectedRoute(null)}
+                className="p-0.5 -ml-0.5 mt-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+                aria-label="Back to route list"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </button>
               {(() => {
                 const slug = (currentRoute as any).agencySlug as string | undefined;
                 const agency = agencies.find(a => a.slug === slug);

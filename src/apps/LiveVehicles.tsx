@@ -366,7 +366,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
 
           {/* Header — fixed height so it never reflows between list and route views */}
-          <div className="px-4 border-b border-[var(--border-primary)] flex items-center gap-2 shrink-0 h-[52px]">
+          <div className="px-4 border-b border-[var(--border-primary)] flex items-start pt-[14px] gap-2 shrink-0 h-[52px]">
             {selectedGroup ? (
               // Route card header
               <>
@@ -405,7 +405,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 ) : (
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
                 )}
-                <h2 className="text-xs font-black text-[var(--text-primary)]">Live Vehicles</h2>
+                <h2 className="text-sm font-black text-[var(--text-primary)]">Live Vehicles</h2>
               </>
             )}
           </div>
