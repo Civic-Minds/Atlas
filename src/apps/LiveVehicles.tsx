@@ -320,12 +320,26 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     for (const v of selectedGroup.vehicles) {
       const key = useHeadsign
         ? (v.headsign ?? 'Unknown')
-        : v.directionId != null ? String(v.directionId) : 'Unknown';
+        : v.directionId != null ? String(v.directionId) : 'unknown';
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(v);
     }
     return map;
   }, [selectedGroup]);
+
+  // True when we can actually show meaningful direction groups (more than one, or one with a real label)
+  const canGroupByDirection = useMemo(() => {
+    if (!vehiclesByDirection) return false;
+    if (vehiclesByDirection.size > 1) return true;
+    const [soleKey] = [...vehiclesByDirection.keys()];
+    if (soleKey === 'unknown') return false;
+    const useHeadsign = selectedGroup?.vehicles.some(v => v.headsign) ?? false;
+    if (!useHeadsign) {
+      const label = directionLabels.get(parseInt(soleKey));
+      if (!label) return false; // no label from GeoJSON either — not useful
+    }
+    return true;
+  }, [vehiclesByDirection, directionLabels, selectedGroup]);
 
   const useHeadsignGrouping = useMemo(
     () => selectedGroup?.vehicles.some(v => v.headsign) ?? false,
@@ -335,7 +349,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const getDirectionLabel = (key: string): string => {
     if (useHeadsignGrouping) return key;
     const dirId = parseInt(key);
-    return directionLabels.get(dirId) ?? (dirId === 0 ? 'Direction A' : 'Direction B');
+    return directionLabels.get(dirId) ?? (dirId === 0 ? 'Outbound' : 'Inbound');
   };
 
   if (!active) return null;
@@ -404,7 +418,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <div className="py-10 text-center">
                   <p className="text-xs text-[var(--text-muted)]">No vehicles on this route</p>
                 </div>
-              ) : !selectedDirection ? (
+              ) : canGroupByDirection && !selectedDirection ? (
                 // Direction groups — headsign if available, directionId otherwise
                 [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
                   const label = getDirectionLabel(dirKey);
@@ -441,8 +455,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   );
                 })
               ) : (
-                // Individual vehicle rows within a direction
-                (vehiclesByDirection?.get(selectedDirection) ?? []).map(v => {
+                // Individual vehicle rows — direction drill-down or no grouping possible
+                (selectedDirection
+                  ? (vehiclesByDirection?.get(selectedDirection) ?? [])
+                  : selectedGroup.vehicles
+                ).map(v => {
                   const label = delayLabel(v);
                   const colors = STATUS_COLORS[v.status];
                   // Clean up garbage UUID-style IDs — take the last numeric segment
