@@ -49,3 +49,15 @@ export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-app)] border bord
 
 /** Search input text field (inside SEARCH_PILL) */
 export const SEARCH_FIELD = 'flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none';
+
+// Z-index stack — use these everywhere instead of inline z-[NNN] magic numbers
+export const Z_MAP_OVERLAY = 'z-[500]';   // App-level opacity wrappers (Corridors, Live mounts)
+export const Z_PANEL     = 'z-[1000]';    // Sidebars, panels, map overlays
+export const Z_HEADER    = 'z-[1100]';    // Header row, in-app right-side button bars
+export const Z_DROPDOWN  = 'z-[1200]';    // Autocomplete dropdowns, app drawer panel
+export const Z_MODAL_BG  = 'z-[1400]';    // InfoPanel backdrop
+export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPanel)
+export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
+
+/** Fallback sidebar left offset (px) — used until ResizeObserver measures the real position */
+export const SIDEBAR_LEFT_FALLBACK = 182;

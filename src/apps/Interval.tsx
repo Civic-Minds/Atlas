@@ -11,7 +11,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowDay, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from '../styles';
+import { SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL } from '../styles';
 import type { Agency } from '../App';
 
 interface Props {
@@ -40,9 +40,10 @@ interface Props {
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
   headerPortalContainer?: Element | null;
   fareView?: boolean;
+  sidebarLeft?: number;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft }: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -173,7 +174,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
       {isLoading && (
-        <div className="absolute top-0 left-0 right-0 z-[1000] h-[3px] pointer-events-none">
+        <div className={`absolute top-0 left-0 right-0 ${Z_PANEL} h-[3px] pointer-events-none`}>
           <div
             className="h-full bg-[var(--accent)] transition-[width] duration-500 ease-out"
             style={{ width: `${Math.max(5, Math.round((loadedCount / requestedCount) * 100))}%` }}
@@ -208,7 +209,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       />
 
       {showUi && stats && (stats.total > 0 || !isLoading) && (
-        <div className={`absolute bottom-6 right-14 z-[1000] flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
             <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
             <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
@@ -223,7 +224,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       )}
 
       {showUi && isLoading && (
-        <div className={`absolute bottom-6 left-6 z-[1000] flex items-center gap-2 ${SURFACE} backdrop-blur-md px-4 py-2 rounded-xl`}>
+        <div className={`absolute bottom-6 left-6 ${Z_PANEL} flex items-center gap-2 ${SURFACE} backdrop-blur-md px-4 py-2 rounded-xl`}>
           <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
           <span className="text-[10px] font-bold text-[var(--text-muted)]">
             {loadedCount}/{requestedCount} networks
@@ -240,6 +241,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             day={day}
             onClose={onAgencyCardClose ?? (() => {})}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
+            sidebarLeft={sidebarLeft}
           />
         ) : null;
       })()}
@@ -337,6 +339,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
+        sidebarLeft={sidebarLeft}
       />
       </div>
     </div>

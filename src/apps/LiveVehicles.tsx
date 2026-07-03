@@ -5,7 +5,7 @@ import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { Agency } from '../App';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { STATUS_COLORS } from '../utils/colors';
 import { cleanRouteShortName, cleanRouteDisplayName } from '../utils/format';
@@ -18,6 +18,7 @@ interface Props {
   onInfoOpen?: () => void;
   query: string;
   layers?: Record<string, GeoJSON.FeatureCollection>;
+  sidebarLeft?: number;
 }
 
 interface RouteGroup {
@@ -48,7 +49,7 @@ function delayLabel(v: LiveVehicle): string {
 
 const MIN_LIVE_ZOOM = 9;
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {} }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft }: Props) {
   const { setOverlay } = useLiveVehiclesMapOverlay();
   const { bounds, zoom } = useViewport();
 
@@ -282,7 +283,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
-      <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}>
+      <div
+        className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
+        style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+      >
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
 
           {/* Header */}
@@ -458,7 +462,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       </div>
 
       {/* Toolbar */}
-      <div className="absolute top-6 right-6 z-[1100] flex items-center gap-1.5 pointer-events-auto">
+      <div className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
         <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label="Toggle light mode">
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>

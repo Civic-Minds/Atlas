@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 
 export interface RouteSnapshot {
@@ -44,6 +44,7 @@ interface Props {
   setQuery: (q: string) => void;
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
+  sidebarLeft?: number;
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
@@ -375,7 +376,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled }: Props) {
+export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(0);
@@ -546,7 +547,8 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   return (
     <>
       <div
-        className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
+        className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
+        style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
       >
         {selectedSlug ? (
         (() => {
@@ -638,7 +640,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
       </div>
 
       {showScrubber && (
-        <div className={`absolute bottom-6 right-14 z-[1000] h-9 w-[280px] flex items-center gap-2 px-2 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`}>
+        <div className={`absolute bottom-6 right-14 ${Z_PANEL} h-9 w-[280px] flex items-center gap-2 px-2 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`}>
           <div
             className="flex-1 relative h-1.5 bg-[var(--border-primary)] rounded-full cursor-pointer"
             onMouseDown={(e) => {

@@ -3,7 +3,7 @@ import { X, LocateFixed } from 'lucide-react';
 import { getTierColor } from '../../utils/colors';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { FLOATING_CARD, PANEL_ENTER } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX } from '../../styles';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -22,7 +22,7 @@ export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
 }) => {
   return (
     <div
-      style={{ position: 'absolute', bottom: 72, right: 12, zIndex: 1000 }}
+      style={{ position: 'absolute', bottom: 72, right: 12, zIndex: PANEL_Z_INDEX }}
       className={`w-56 max-h-72 flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
     >
       <div className="flex items-center justify-between px-4 pt-3.5 pb-2 shrink-0">

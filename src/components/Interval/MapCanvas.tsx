@@ -14,6 +14,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/us
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { StopCardHtml, VehicleMarkerHtml, formatGap, formatDelta } from '../../lib/mapHtml';
 import { cleanRouteShortName } from '../../utils/format';
+import { Z_PANEL } from '../../styles';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -1014,7 +1015,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <button
         onClick={locateUser}
         aria-label="Go to my location"
-        className="absolute bottom-6 right-3 z-[1000] w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto"
+        className={`absolute bottom-6 right-3 ${Z_PANEL} w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
       >
         <LocateFixed className="w-4 h-4" />
       </button>

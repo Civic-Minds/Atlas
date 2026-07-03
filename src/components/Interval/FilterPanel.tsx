@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, X, Radio, Sun, Moon, Zap, Info } from 'lucide-react';
-import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -107,7 +107,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
       {open && (
         <div
-          className="fixed inset-0 z-[1500]"
+          className={`fixed inset-0 ${Z_MODAL_TOP}`}
           onClick={close}
         >
           <div

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, ArrowLeft, Info } from 'lucide-react';
-import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from './styles';
+import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER } from './styles';
 import { R2_PUBLIC_URL } from '../shared/config';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
@@ -90,6 +90,7 @@ export default function App() {
     ro.observe(document.documentElement);
     return () => ro.disconnect();
   }, []);
+  const sidebarLeft = fromBarAnchor?.left;
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
@@ -195,7 +196,7 @@ export default function App() {
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
-      <div className="absolute top-6 left-6 right-6 z-[1100] flex items-center justify-between pointer-events-none">
+      <div className={`absolute top-6 left-6 right-6 ${Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div className="flex items-center gap-2 pointer-events-auto">
         <button
           onClick={() => {
@@ -309,10 +310,11 @@ export default function App() {
               setDay={setDay}
               onLayersChange={setLayers}
               headerPortalContainer={headerPortalEl}
+              sidebarLeft={sidebarLeft}
             />
-            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
+            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
             {corridorsMounted && (
-              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
                   agencies={agencies}
                   lightMode={lightMode}
@@ -329,7 +331,7 @@ export default function App() {
               </div>
             )}
             {liveMounted && (
-              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <LiveVehicles
                   agencies={agencies}
                   lightMode={lightMode}
@@ -338,6 +340,7 @@ export default function App() {
                   onInfoOpen={() => setInfoOpen(true)}
                   query={query}
                   layers={layers}
+                  sidebarLeft={sidebarLeft}
                 />
               </div>
             )}

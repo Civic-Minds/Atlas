@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import type { Agency } from '../App';
@@ -146,7 +146,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
   const headerTitle = view === 'agencies' ? 'Data' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
 
   return (
-    <div className="fixed inset-0 z-[1400]" onClick={onClose}>
+    <div className={`fixed inset-0 ${Z_MODAL_BG}`} onClick={onClose}>
       <div
         className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
         onClick={e => e.stopPropagation()}

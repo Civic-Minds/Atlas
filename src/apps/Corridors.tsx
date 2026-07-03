@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Info, Search, X, Sun, Moon } from 'lucide-react';
 import type { Agency } from '../App';
-import { FLOATING_CARD, ICON_BTN } from '../styles';
+import { FLOATING_CARD, ICON_BTN, Z_PANEL, Z_HEADER, Z_DROPDOWN } from '../styles';
 import {
   buildStopCatalog,
   normalizeStopName,
@@ -92,9 +92,16 @@ function agencySlugsForQuery(
 export default function Corridors({ agencies, lightMode, setLightMode, fromQuery, setFromQuery, fromFocused, fromInputRef, onBindFromInput, active = true, onInfoOpen, fromBarAnchor }: Props) {
   // Derived positions from the measured From search bar. Fallbacks are for the
   // very first render before ResizeObserver fires (sub-frame, visually invisible).
-  const anchorLeft = fromBarAnchor?.left ?? 182;
+  const anchorLeft   = fromBarAnchor?.left   ?? 182;
   const anchorBottom = fromBarAnchor?.bottom ?? 56;
-  const anchorWidth = fromBarAnchor?.width ?? 160;
+  const anchorWidth  = fromBarAnchor?.width  ?? 160;
+
+  // Vertical positions of each floating panel, relative to the header bottom
+  const FROM_AC_TOP   = anchorBottom + 4;   // From autocomplete
+  const TO_PANEL_TOP  = anchorBottom + 8;   // To panel wrapper
+  const TO_AC_TOP     = anchorBottom + 44;  // To autocomplete
+  const RESULTS_TOP   = anchorBottom + 48;  // Results list
+  const RESULTS_MAX_H = anchorBottom + 64;  // max-height budget for results
 
   const { setOverlay } = useCorridorMapOverlay();
   const [stopsIndexes, setStopsIndexes] = useState<Record<string, Record<string, { name: string; lat: number; lon: number }>>>({});
@@ -468,8 +475,8 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
       {showFromDropdown && (
         <div
           ref={fromDropdownRef}
-          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
-          style={{ top: anchorBottom + 4, left: anchorLeft, width: anchorWidth }}
+          className={`fixed ${Z_DROPDOWN} bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto`}
+          style={{ top: FROM_AC_TOP, left: anchorLeft, width: anchorWidth }}
         >
           {fromSuggestions.length === 0 ? (
             <div className="px-3 py-2 text-xs text-[var(--text-muted)]">
@@ -491,7 +498,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
       )}
 
       {/* To pill — same style as From (App.tsx search bar), stacked below it */}
-      <div ref={toPanelRef} className="absolute z-[1100] pointer-events-auto" style={{ top: anchorBottom + 8, left: anchorLeft, width: anchorWidth }}>
+      <div ref={toPanelRef} className={`absolute ${Z_HEADER} pointer-events-auto`} style={{ top: TO_PANEL_TOP, left: anchorLeft, width: anchorWidth }}>
         <div className="h-8 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-2 pr-3">
           <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
           <input
@@ -520,8 +527,8 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
       {showToDropdown && (
         <div
           ref={toDropdownRef}
-          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
-          style={{ top: anchorBottom + 44, left: anchorLeft, width: anchorWidth }}
+          className={`fixed ${Z_DROPDOWN} bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto`}
+          style={{ top: TO_AC_TOP, left: anchorLeft, width: anchorWidth }}
         >
           {toSuggestions.length === 0 ? (
             <div className="px-3 py-2 text-xs text-[var(--text-muted)]">
@@ -545,8 +552,8 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
       {/* Single combined panel */}
       {fromStop && toStop && (
         <div
-          className={`absolute z-[1100] pointer-events-auto ${FLOATING_CARD} overflow-hidden`}
-          style={{ top: anchorBottom + 48, left: anchorLeft, width: 500, maxHeight: `calc(100vh - ${anchorBottom + 64}px)` }}
+          className={`absolute ${Z_HEADER} pointer-events-auto ${FLOATING_CARD} overflow-hidden`}
+          style={{ top: RESULTS_TOP, left: anchorLeft, width: 500, maxHeight: `calc(100vh - ${RESULTS_MAX_H}px)` }}
         >
           {geoLoading ? (
             <div className="flex items-center justify-center h-24 text-[var(--text-muted)] text-xs px-4 text-center">
@@ -563,7 +570,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
       )}
 
       {/* Day picker + info — top-right */}
-      <div className="absolute top-6 right-6 z-[1100] flex items-center gap-1.5 pointer-events-auto">
+      <div className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
         {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
           <button
             key={d}

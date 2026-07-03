@@ -10,7 +10,7 @@ import type { Agency } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel, shortenAgencyName } from '../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
 import RouteListRow from '../RouteListRow';
 
@@ -51,6 +51,7 @@ interface SidebarControlsProps {
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
+  sidebarLeft?: number;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -83,6 +84,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setLivePollingOnly,
   setSelectedAgencySlug,
   fareView = false,
+  sidebarLeft,
 }) => {
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
@@ -678,7 +680,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   if (!panelShouldRender) return null;
 
   return (
-    <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
+    <div
+      className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+      style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+    >
       {searchFocused && query === '' && (
         <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-primary)]">
