@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **AI-217 — Route 330 stop card showing "every 10 min" green dot for Scotia Sq direction**: Halifax Transit route 330 is a peak-only regional express — 9 AM inbound trips in a 105-minute window plus one afternoon trip. The all-day (6am–10pm) window median of the 9 gaps = 10 min, a mathematically correct but practically wrong answer. Stop card headways now prefer midday (9–15h) then PM peak (15–19h); if neither has ≥3 trips, the route is excluded from the stop card for that stop. For direction 1 (AM peak only): no midday or PM service → not shown in stop card. For direction 0 (PM peak only): PM peak headway ~29 min correctly shown.
+
 ### Changed
 - **Fare data moved from `index.json` to R2 `fare-overrides.json`**: manual base fare overrides (e.g. STM $3.75) are now stored at `atlas/fare-overrides.json` on R2 (public bucket) rather than hardcoded in the GitHub repo. Pipeline scripts (`process-gtfs.ts`, `refresh.ts`) fetch from R2 first and fall back to the legacy `fare` field in index.json. The frontend fetches `fare-overrides.json` directly from R2 when the Fares view is open, so the fare card stays accurate without repo changes. Removed `fare: 3.75` from STM's index.json entry.
 

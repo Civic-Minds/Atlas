@@ -786,7 +786,13 @@ export async function processGtfsBuffer(
     const allStopHourHw: Record<string, HeadwayByHour> = {};
     for (const [stopId, times] of stopMap) {
       times.sort((a, b) => a - b);
-      const hw = medianHeadwayInWindow(times, 360, 1320);
+      // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
+      // An all-day median is skewed by peak clusters: Halifax 330 inbound has 9 AM trips
+      // in a 105-min window → all-day median gap = 10 min despite no off-peak service.
+      // Midday ?? PM peak correctly returns null for AM-peak-only routes, preventing them
+      // from appearing with a misleading green dot in the stop card.
+      const hw = medianHeadwayInWindow(times, 540, 900, 3)   // midday 9–15h
+              ?? medianHeadwayInWindow(times, 900, 1140, 3);  // PM peak 15–19h
       if (hw != null) allStopHw[stopId] = hw;
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
