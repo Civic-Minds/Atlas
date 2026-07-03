@@ -1166,25 +1166,29 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       : '#4ade80';
                     const deltaLabel = stop.delta == null ? null
                       : absDelta! < 2 ? 'on time'
-                      : stop.delta > 0 ? `+${stop.delta} min`
-                      : `${stop.delta} min`;
+                      : stop.delta > 0 ? `+${Math.round(stop.delta)} min`
+                      : `${Math.round(stop.delta)} min`;
                     const deltaColor = absDelta == null ? ''
                       : absDelta >= 5 ? 'text-red-400'
                       : absDelta >= 2 ? 'text-amber-400'
                       : 'text-green-400';
                     return (
-                      <div key={stop.stopId} className="text-[11px]">
+                      <button
+                        key={stop.stopId}
+                        className="text-[11px] w-full text-left hover:opacity-70 transition-opacity"
+                        onClick={() => { setSelectedRoute(null); setSelectedStop(stop.stopId); }}
+                      >
                         <span className="font-bold text-[var(--text-muted)] block truncate">
                           {stop.name}
                         </span>
                         <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
                           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-                          {stop.avgGap != null ? `${stop.avgGap} min` : '—'}
+                          {stop.avgGap != null ? `${Math.round(stop.avgGap)} min` : '—'}
                           {deltaLabel != null && (
                             <span className={`text-[10px] font-bold tabular-nums ${deltaColor}`}>{deltaLabel}</span>
                           )}
                         </span>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>

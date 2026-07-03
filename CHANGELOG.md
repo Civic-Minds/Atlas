@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file.
 - **Stats pills relocated to map overlay**: routes/coverage stats moved from the header's left section to a `bottom-6 right-14` overlay in the Frequency map (beside the geolocate button). Header left section is now logo + search only — cleaner and never competes with the right-side chips for horizontal space.
 
 ### Changed
+- **Live adherence card: stop rows are now clickable** — clicking a stop opens its stop card (sets selected stop, clears route selection), consistent with clicking stops on the map.
+- **Live adherence card: deviation labels now rounded to whole minutes** — "+9.8 min" → "+10 min"; fractional minutes are not meaningful to display.
 - **Live adherence card: stops now sorted by worst deviation first** (highest absolute delta at top, late before early on ties). Previously ordered by GTFS-RT insertion order, which was effectively random.
 
 ### Fixed
