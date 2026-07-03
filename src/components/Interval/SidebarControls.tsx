@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { X } from 'lucide-react';
+import { R2_PUBLIC_URL } from '../../shared/config';
 import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
@@ -100,6 +101,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
+  const [fareOverrides, setFareOverrides] = useState<Record<string, { adult?: number }>>({});
+
+  useEffect(() => {
+    if (!fareView) return;
+    fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`)
+      .then(r => r.ok ? r.json() : {})
+      .then(data => setFareOverrides(data as Record<string, { adult?: number }>))
+      .catch(() => {});
+  }, [fareView]);
 
   const loadRecents = useCallback(() => {
     try {
@@ -1119,7 +1129,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {query !== '' && fareView && fareViewMatchedAgencies.length > 0 && (
           <div className="mb-4 flex flex-col gap-2">
             {fareViewMatchedAgencies.map(({ slug, name, agencyData }) => {
-              const baseFare = agencyData?.fare ?? null;
+              const baseFare = fareOverrides[slug]?.adult ?? agencyData?.fare ?? null;
               return (
                 <div key={slug} className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-3">

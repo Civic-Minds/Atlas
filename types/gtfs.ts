@@ -110,7 +110,7 @@ export interface GtfsFareRule {
 // GTFS-Fares V2 (modern)
 export interface GtfsFareProduct {
     fare_product_id: string;
-    price: string;
+    amount: string;   // note: "amount" in V2 spec (not "price")
     currency_type: string;
     rider_category_id?: string;
     fare_media_id?: string;

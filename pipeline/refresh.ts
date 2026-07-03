@@ -171,7 +171,7 @@ async function downloadFeed(url: string): Promise<Buffer> {
   }
 }
 
-async function refreshAgency(agency: AgencyEntry): Promise<string> {
+async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: number): Promise<string> {
   if (!agency.feedUrl) {
     return 'skipped (no feedUrl)';
   }
@@ -220,7 +220,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
     slug: agency.slug,
-    manualBaseFare: agency.fare,
+    manualBaseFare: manualBaseFareOverride,
   });
 
   let { geojson, corridorsGeojson, stopsJson, featureCount } = primary;
@@ -291,6 +291,16 @@ async function main() {
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: AgencyEntry[] } = JSON.parse(readFileSync(indexPath, 'utf8'));
 
+  // Load fare overrides from R2 — takes precedence over legacy fare field in index.json
+  let fareOverrides: Record<string, { adult?: number }> = {};
+  try {
+    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`);
+    if (res.ok) fareOverrides = await res.json() as Record<string, { adult?: number }>;
+  } catch {
+    // not yet uploaded; fall back to legacy fare field
+  }
+
   const targets = onlySlugs.length > 0
     ? index.agencies.filter(a => onlySlugs.includes(a.slug))
     : index.agencies;
@@ -304,7 +314,7 @@ async function main() {
   for (const agency of targets) {
     process.stdout.write(`  ${agency.slug.padEnd(12)} ... `);
     try {
-      const summary = await refreshAgency(agency);
+      const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare);
       console.log(summary);
       // Clear staged flag once data is live so the next deploy shows the agency.
       if (agency.staged) delete agency.staged;

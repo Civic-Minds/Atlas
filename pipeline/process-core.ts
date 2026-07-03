@@ -69,11 +69,17 @@ function detectBusSubType(
 
 /**
  * Build route_id -> base fare (in dollars).
- * Prefers GTFS-Fares V2 if present (fare_products + rider categories), falls back to legacy V1.
- * For V2: picks lowest price among adult (or un-categorized) products.
- * For V1: uses fare_attributes + fare_rules, lowest non-zero per route.
- * Explicit $0 fares mark free routes (0).
- * If no GTFS fare data for a route, returns null (caller may fallback to manual).
+ * Prefers GTFS-Fares V2 if present, falls back to legacy V1.
+ *
+ * V2 path:
+ *   - Collect prices from adult (or uncategorized) fare products.
+ *   - If any positive prices: base = min(positive)
+ *   - Else (all 0 or only 0s): base = 0  → supports entirely fare-free agencies
+ *   - Apply that base to every route (simple global for now).
+ *
+ * V1 path: per-route via rules, min non-zero (0 explicitly means free).
+ *
+ * If nothing, base=null (later manual fallback or skipped in Fares view).
  */
 function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): Map<string, number | null> {
   const routeIdToFare = new Map<string, number | null>();
@@ -84,7 +90,7 @@ function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): Map<str
     const riderCatById = new Map((gtfs.riderCategories ?? []).map(c => [c.rider_category_id, c]));
 
     for (const prod of gtfs.fareProducts) {
-      const price = parseFloat(prod.price);
+      const price = parseFloat(prod.amount);
       if (Number.isNaN(price) || price < 0) continue;
 
       let isAdult = true;
@@ -102,8 +108,15 @@ function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): Map<str
     }
 
     if (adultPrices.length > 0) {
-      const base = Math.min(...adultPrices);
-      // For V2 we apply the base price to all routes (per-route rules are complex; improve later)
+      const positive = adultPrices.filter(p => p > 0);
+      // If there are any positive adult fares, use the lowest paid price as base.
+      // This avoids misclassifying paid systems that happen to have some $0 products
+      // (e.g. certain media, promotions, or special services).
+      // If *all* adult products are $0 (or only $0), treat the whole thing as free (base=0).
+      // This correctly supports entirely fare-free agencies without skipping them.
+      const base = positive.length > 0 ? Math.min(...positive) : 0;
+      // For V2 we apply the base price to all routes for now (per-route/network rules
+      // via fare_leg_rules + networks are more complex; can refine later).
       for (const route of gtfs.routes ?? []) {
         routeIdToFare.set(route.route_id, base);
       }

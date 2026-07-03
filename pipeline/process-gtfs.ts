@@ -46,7 +46,18 @@ async function main() {
     const entry = index.agencies.find(a => a.slug === slug);
     preprocess = entry?.preprocess;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
-    manualBaseFare = entry?.fare;
+    if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
+  }
+  // fare-overrides.json on R2 takes precedence over legacy index.json fare field
+  try {
+    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`);
+    if (res.ok) {
+      const overrides = await res.json() as Record<string, { adult?: number }>;
+      if (overrides[slug]?.adult != null) manualBaseFare = overrides[slug].adult;
+    }
+  } catch {
+    // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
   const buf = readFileSync(zipPath);

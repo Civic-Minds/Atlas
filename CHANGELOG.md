@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Fare data moved from `index.json` to R2 `fare-overrides.json`**: manual base fare overrides (e.g. STM $3.75) are now stored at `atlas/fare-overrides.json` on R2 (public bucket) rather than hardcoded in the GitHub repo. Pipeline scripts (`process-gtfs.ts`, `refresh.ts`) fetch from R2 first and fall back to the legacy `fare` field in index.json. The frontend fetches `fare-overrides.json` directly from R2 when the Fares view is open, so the fare card stays accurate without repo changes. Removed `fare: 3.75` from STM's index.json entry.
+
 ### Added
 - **STM added to Fares map**: STM's GTFS feed doesn't include fare files, so a manual `fare: 3.75` override was added in index.json and the feed was reprocessed. STM routes now appear in the Fares map colored by the $2–4 tier. Rebuilt and re-uploaded `atlas.pmtiles` so the baseFare property is present in the vector tile source (the per-agency GeoJSON on R2 had it, but the PMTiles hadn't been regenerated).
 
