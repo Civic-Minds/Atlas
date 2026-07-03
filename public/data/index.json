@@ -4048,6 +4048,34 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pasadenatransit-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20260626"
+    },
+    {
+      "slug": "norwalktransit",
+      "name": "Norwalk Transit System",
+      "center": [
+        33.9,
+        -118.08
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-881/tld-881-202511280046/tld-881-202511280046.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/norwalktransit.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/norwalktransit-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/norwalktransit-corridors.json",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20251126"
+    },
+    {
+      "slug": "pvpta",
+      "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+      "center": [
+        33.74,
+        -118.39
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-35/mdb-35-202607030136/mdb-35-202607030136.zip",
+      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvpta.json",
+      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvpta-stops.json",
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvpta-corridors.json",
+      "lastFeedExpiry": "20260723",
+      "lastFeedVersion": "UTC: 02-Jul-2026 21:43"
     }
   ]
 }
