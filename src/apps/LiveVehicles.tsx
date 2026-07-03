@@ -294,25 +294,49 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return (feature?.properties as any)?.routeLongName ?? null;
   }, [selectedGroup, layers, localLayers]);
 
-  // Destination drill-down within a route
-  const [selectedHeadsign, setSelectedHeadsign] = useState<string | null>(null);
-  useEffect(() => { setSelectedHeadsign(null); }, [selectedRoute]);
+  // Direction label lookup from GeoJSON features (headsign per directionId)
+  const directionLabels = useMemo(() => {
+    if (!selectedGroup) return new Map<number, string>();
+    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    if (!fc) return new Map<number, string>();
+    const map = new Map<number, string>();
+    for (const f of fc.features) {
+      const p = f.properties as any;
+      if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
+      if (p.directionId != null && p.headsign) map.set(Number(p.directionId), String(p.headsign));
+    }
+    return map;
+  }, [selectedGroup, layers, localLayers]);
 
-  // Group vehicles by headsign for the route detail view
-  const vehiclesByHeadsign = useMemo(() => {
+  // Direction drill-down within a route
+  const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
+  useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
+
+  // Group vehicles by headsign if available, else by directionId
+  const vehiclesByDirection = useMemo(() => {
     if (!selectedGroup) return null;
+    const useHeadsign = selectedGroup.vehicles.some(v => v.headsign);
     const map = new Map<string, LiveVehicle[]>();
     for (const v of selectedGroup.vehicles) {
-      const key = v.headsign ?? '';
+      const key = useHeadsign
+        ? (v.headsign ?? 'Unknown')
+        : v.directionId != null ? String(v.directionId) : 'Unknown';
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(v);
     }
     return map;
   }, [selectedGroup]);
-  const hasHeadsigns = useMemo(
-    () => vehiclesByHeadsign ? [...vehiclesByHeadsign.keys()].some(k => k !== '') : false,
-    [vehiclesByHeadsign]
+
+  const useHeadsignGrouping = useMemo(
+    () => selectedGroup?.vehicles.some(v => v.headsign) ?? false,
+    [selectedGroup]
   );
+
+  const getDirectionLabel = (key: string): string => {
+    if (useHeadsignGrouping) return key;
+    const dirId = parseInt(key);
+    return directionLabels.get(dirId) ?? (dirId === 0 ? 'Direction A' : 'Direction B');
+  };
 
   if (!active) return null;
 
@@ -327,17 +351,17 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       >
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
 
-          {/* Header */}
-          <div className="px-4 pt-3.5 pb-2.5 border-b border-[var(--border-primary)] flex items-center gap-2 shrink-0">
+          {/* Header — fixed height so it never reflows between list and route views */}
+          <div className="px-4 border-b border-[var(--border-primary)] flex items-center gap-2 shrink-0 h-[52px]">
             {selectedGroup ? (
               // Route card header
               <>
                 <button
-                  onClick={selectedHeadsign
-                    ? () => setSelectedHeadsign(null)
+                  onClick={selectedDirection
+                    ? () => setSelectedDirection(null)
                     : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
                   className="p-0.5 -ml-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-                  aria-label={selectedHeadsign ? 'Back to destinations' : 'Back to route list'}
+                  aria-label={selectedDirection ? 'Back to directions' : 'Back to route list'}
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                 </button>
@@ -380,21 +404,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <div className="py-10 text-center">
                   <p className="text-xs text-[var(--text-muted)]">No vehicles on this route</p>
                 </div>
-              ) : hasHeadsigns && !selectedHeadsign ? (
-                // Destination groups
-                [...(vehiclesByHeadsign ?? [])].map(([headsign, vehicles]) => {
+              ) : !selectedDirection ? (
+                // Direction groups — headsign if available, directionId otherwise
+                [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
+                  const label = getDirectionLabel(dirKey);
                   const preview = vehicles.slice(0, 3);
                   const extra = vehicles.length - preview.length;
                   return (
                     <button
-                      key={headsign || '__none__'}
-                      onClick={() => setSelectedHeadsign(headsign)}
+                      key={dirKey}
+                      onClick={() => setSelectedDirection(dirKey)}
                       className="w-full px-4 py-3 border-b border-[var(--border-primary)] text-left hover:bg-[var(--bg-hover)] transition-colors group"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs font-bold text-[var(--text-primary)] truncate flex-1">
-                          {headsign || 'Unknown destination'}
-                        </p>
+                        <p className="text-xs font-bold text-[var(--text-primary)] truncate flex-1">{label}</p>
                         <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] shrink-0 transition-colors" />
                       </div>
                       <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
@@ -418,18 +441,16 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   );
                 })
               ) : (
-                // Individual vehicle rows (headsign drill-down, or no headsigns available)
-                (selectedHeadsign !== null
-                  ? (vehiclesByHeadsign?.get(selectedHeadsign) ?? [])
-                  : selectedGroup.vehicles
-                ).map(v => {
+                // Individual vehicle rows within a direction
+                (vehiclesByDirection?.get(selectedDirection) ?? []).map(v => {
                   const label = delayLabel(v);
                   const colors = STATUS_COLORS[v.status];
-                  const identifier = v.id.replace(/^.+[-_]/, '');
+                  // Clean up garbage UUID-style IDs — take the last numeric segment
+                  const cleanId = (v.id.match(/\d{4,}$/)?.[0]) ?? (v.id.replace(/^[a-f0-9]{8,}$/, '').trim() || v.id);
                   return (
                     <div key={v.id} className="px-4 py-2.5 border-b border-[var(--border-primary)] flex items-center gap-3">
                       <p className="text-xs font-bold text-[var(--text-primary)] flex-1 min-w-0 truncate">
-                        {v.headsign || (identifier ? `Bus ${identifier}` : v.id)}
+                        {v.headsign || `Bus ${cleanId || v.id}`}
                       </p>
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}

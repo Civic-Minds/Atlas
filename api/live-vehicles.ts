@@ -182,6 +182,7 @@ export default async function handler(req: Request) {
           bearing: vp.position?.bearing != null ? Number(vp.position.bearing) : null,
           delayMin,
           headsign,
+          directionId: vp.trip?.directionId != null ? Number(vp.trip.directionId) : null,
           status,
         });
       }
