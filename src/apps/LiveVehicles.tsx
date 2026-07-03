@@ -371,20 +371,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 })
               )
             ) : !isZoomedIn ? (
-              // Too zoomed out
-              <div className="py-10 text-center px-4 flex flex-col items-center gap-2">
-                <p className="text-xs font-bold text-[var(--text-primary)]">Zoom in to see vehicles</p>
-                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                  Zoom into a city to start tracking live vehicles.
-                </p>
+              <div className="py-8 px-4 flex flex-col items-center gap-3">
+                <p className="text-[10px] text-[var(--text-dim)]">Zoom in to start tracking</p>
               </div>
             ) : visibleSlugs.length === 0 && !isLoading ? (
-              // No live agencies in viewport
-              <div className="py-10 text-center px-4 flex flex-col items-center gap-2">
-                <p className="text-xs font-bold text-[var(--text-primary)]">No live coverage here</p>
-                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                  Pan to Burlington, Hamilton, Toronto, York Region, Edmonton, or Halifax to see live vehicles.
-                </p>
+              <div className="py-8 px-4 flex flex-col items-center gap-3">
+                <p className="text-[10px] font-bold text-[var(--text-dim)]">Live coverage</p>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {(['Burlington', 'Hamilton', 'Toronto', 'York Region', 'Edmonton', 'Halifax'] as const).map(city => (
+                    <span key={city} className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1">
+                      {city}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-[10px] text-[var(--text-dim)]">Pan to a covered city</p>
               </div>
             ) : isLoading && totalVehicles === 0 ? (
               <div className="flex items-center justify-center py-12 gap-2">

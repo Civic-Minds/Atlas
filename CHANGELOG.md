@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **Live Vehicles: cleaner empty states**: replaced the "No live coverage here / Pan to Burlington, Hamilton..." wall of text with a compact city-chips layout (Burlington · Hamilton · Toronto · York Region · Edmonton · Halifax) under a "Live coverage" label and a single "Pan to a covered city" line. "Zoom in" state similarly trimmed to one short line.
 - **Fares app hidden**: set `available: false` in AppDrawer — button is disabled/greyed out until the fare card UX is ready to ship.
 
 ### Fixed
