@@ -661,6 +661,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const routeSlug = currentRoute ? (currentRoute as any).agencySlug as string | undefined : undefined;
   const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
+  const routeBaseFare = fareView && routeSlug
+    ? (((currentRoute as any).baseFare as number | undefined) ?? fareOverrides[routeSlug]?.adult ?? routeAgency?.fare ?? null)
+    : null;
   const routeIsStale = (() => {
     const exp = routeAgency?.lastFeedExpiry;
     if (!exp || exp.length !== 8) return false;
@@ -953,6 +956,40 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
         {currentRoute && !query.trim() && (
           <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
+            {fareView ? (
+              <>
+                <div className="flex items-start justify-between -mt-2 -mr-2 mb-3">
+                  <div className="flex-1 mt-2">
+                    <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
+                      {titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, currentRoute.agencyName || (currentRoute as any).agencySlug))}
+                    </h3>
+                    <span className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 block">
+                      {routeAgency?.name ?? routeSlug}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setSelectedRoute(null)}
+                    className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2.5 bg-[var(--bg-app)] rounded-xl">
+                  <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
+                  {routeBaseFare != null ? (
+                    <span
+                      className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
+                      style={{ background: getFareColor(routeBaseFare) }}
+                    >
+                      ${routeBaseFare.toFixed(2)}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-[var(--text-dim)]">fare varies</span>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
             {liveRouteInfo && liveStatus !== 'noData' && (
               <div className="flex items-center gap-1.5 -mt-1 mb-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
@@ -1128,6 +1165,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 </div>
               )}
             </div>
+              </>
+            )}
           </div>
         )}
 
