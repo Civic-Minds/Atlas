@@ -81,7 +81,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
 
   return (
     <div
-      className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+      className={`absolute top-20 ${Z_PANEL} w-64 ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
       style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
     >
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
@@ -132,7 +132,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
         {routes.length === 0 ? (
           <p className="px-4 py-4 text-xs text-[var(--text-dim)]">No routes loaded yet.</p>
         ) : (
@@ -163,7 +163,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
             })}
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }
