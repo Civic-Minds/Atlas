@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **AI-220 — Step 4 could promote infrequent routes to a frequency tier via peak-cluster terminal headways**: route tier is now owned exclusively by phase 2. Step 4 (terminal stop headway override) can only degrade a tier (branch less frequent than trunk — e.g. GO Niagara Falls), never improve one. A `TIER_RANK` map derived from `HEADWAY_TIERS` enforces this: if the terminal-computed tier rank ≤ current rank, the tier is left unchanged. Prevents classes of promotion bugs where AM-peak clusters at a terminal inflate the all-day median to a sub-30-min headway that Step 4 would then apply as a tier upgrade.
 - **AI-217 — Route 330 stop card showing "every 10 min" green dot for Scotia Sq direction**: Halifax Transit route 330 is a peak-only regional express — 9 AM inbound trips in a 105-minute window plus one afternoon trip. The all-day (6am–10pm) window median of the 9 gaps = 10 min, a mathematically correct but practically wrong answer. Stop card headways now prefer midday (9–15h) then PM peak (15–19h); if neither has ≥3 trips, the route is excluded from the stop card for that stop. For direction 1 (AM peak only): no midday or PM service → not shown in stop card. For direction 0 (PM peak only): PM peak headway ~29 min correctly shown.
 
 ### Changed

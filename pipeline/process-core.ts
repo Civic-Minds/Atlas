@@ -15,6 +15,13 @@ import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { TIME_PERIODS, HEADWAY_TIERS } from '../shared/config.js';
 
+// Tier ordering from best to worst. Step 4 uses this to ensure it can only degrade
+// a route's tier (branch less frequent than trunk), never improve it.
+const TIER_RANK: Record<string, number> = Object.fromEntries([
+  ...HEADWAY_TIERS.map(({ max }, i) => [max === Infinity ? 'infrequent' : String(max), i]),
+  ['span', HEADWAY_TIERS.length],
+]);
+
 export type GtfsPreprocess = 'nrt-day-night';
 
 // Douglas-Peucker line simplification. Tolerance in degrees (~0.0001 ≈ 11m).
@@ -859,14 +866,20 @@ export async function processGtfsBuffer(
       const headway = terminalMiddayHw ?? terminalHw ?? allStopMedian;
       feature.properties.headway = headway;
 
-      let tier = 'infrequent';
+      // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
+      // never improve one. Route tier is owned by phase 2; Step 4 only refines it downward.
+      // This prevents AM/PM peak clusters from promoting infrequent routes (e.g. Halifax 330).
+      let newTier = 'infrequent';
       for (const { max } of HEADWAY_TIERS) {
         if (headway <= max) {
-          tier = max === Infinity ? 'infrequent' : String(max);
+          newTier = max === Infinity ? 'infrequent' : String(max);
           break;
         }
       }
-      feature.properties.tier = tier;
+      const currentRank = TIER_RANK[feature.properties.tier as string] ?? -1;
+      if ((TIER_RANK[newTier] ?? -1) > currentRank) {
+        feature.properties.tier = newTier;
+      }
 
       // Minimum stop headway — the best frequency available anywhere on this route.
       // Used by passesRouteFilter so routes with high-frequency sections aren't excluded
