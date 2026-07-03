@@ -173,18 +173,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               ))}
 
-              {/* About link */}
-              {onInfoOpen && (
-                <div className="py-4 last:pb-3">
-                  <button
-                    onClick={() => { onInfoOpen(); close(); }}
-                    className="flex items-center gap-2 text-[11px] font-bold text-[var(--accent)] hover:underline"
-                  >
-                    <Info className="w-3.5 h-3.5 shrink-0" />
-                    About Atlas
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>

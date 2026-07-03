@@ -280,7 +280,16 @@ export default function App() {
 
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
-      <div ref={headerPortalRef} className="flex items-center gap-2 pointer-events-auto" />
+      <div className="flex items-center gap-2 pointer-events-auto">
+        <div ref={headerPortalRef} className="flex items-center gap-2" />
+        <button
+          onClick={() => openInfo('about')}
+          aria-label="About Atlas"
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
+        >
+          <Info className="w-4 h-4" />
+        </button>
+      </div>
       </div>
 
       <main className="absolute inset-0 overflow-hidden">
