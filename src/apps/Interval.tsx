@@ -11,7 +11,6 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowDay, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import FareLegend from '../components/Interval/FareLegend';
 import { SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from '../styles';
 import type { Agency } from '../App';
 
@@ -262,10 +261,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
           onClose={() => setUserLocation(null)}
           setSelectedRoute={setSelectedRoute}
         />
-      )}
-
-      {fareView && (
-        <FareLegend className="absolute bottom-6 left-3 z-[1000]" />
       )}
 
       {headerPortalContainer && createPortal(
