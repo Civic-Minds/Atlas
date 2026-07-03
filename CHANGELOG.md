@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Fares app hidden**: set `available: false` in AppDrawer — button is disabled/greyed out until the fare card UX is ready to ship.
+
 ### Fixed
 - **Fares: agency fare card shows richer fare info**: card now shows label (OPUS / Compass / PRESTO), "from" prefix for zone-based agencies, cash fare row when card/cash differ, and "FREE" badge for free agencies. "View all fares →" link sourced from `fareOverride.fareUrl` (falling back to `agency.fareUrl`). `fare-overrides.json` on R2 extended with `label`, `zones`, `adultCash`, `free`, `fareUrl` fields; populated for all 12 `gtfsFares` agencies (MTL region = ARTM zone system / OPUS; TransLink = Compass zones with $2.85 card / $3.50 cash; MBTA = fare-per-route from GTFS, just fareUrl; PVTA = free). `FareOverride` type exported from `App.tsx`. Fetch moved from `SidebarControls` to `Interval.tsx` so both `SidebarControls` and `AgencyCard` share one fetch.
 - **Fares: clicking on a route/network now opens the agency fare card**: in Fares mode, clicking any route promotes to the agency card instead of a per-route card — fares are per agency. Route list suppressed in Fares mode. Fixed stale closure: the click handler in MapCanvas is registered once on map load; `fareView` and `setSelectedAgencySlug` are now kept current via `fareViewRef`/`setSelectedAgencySlugRef` (same `useLayoutEffect` ref pattern as `onBoundsChangeRef`).
