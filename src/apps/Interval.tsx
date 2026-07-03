@@ -12,7 +12,8 @@ import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowDay, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
 import { SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL } from '../styles';
-import type { Agency } from '../App';
+import type { Agency, FareOverride } from '../App';
+import { R2_PUBLIC_URL } from '../../shared/config';
 
 interface Props {
   agencies: Agency[];
@@ -82,6 +83,15 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [showCorridors, setShowCorridors] = useState(false);
 
   const showSidebar = showUi || fareView;
+  const [fareOverrides, setFareOverrides] = useState<Record<string, FareOverride>>({});
+  useEffect(() => {
+    if (!fareView) return;
+    fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`)
+      .then(r => r.ok ? r.json() : {})
+      .then(data => setFareOverrides(data as Record<string, FareOverride>))
+      .catch(() => {});
+  }, [fareView]);
+
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
@@ -242,6 +252,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}
             fareView={fareView}
+            fareOverride={fareOverrides[agency.slug]}
           />
         ) : null;
       })()}
@@ -339,6 +350,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
+        fareOverrides={fareOverrides}
         sidebarLeft={sidebarLeft}
       />
       </div>

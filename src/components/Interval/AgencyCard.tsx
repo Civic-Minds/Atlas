@@ -3,7 +3,7 @@ import { X, Radio } from 'lucide-react';
 import { getTierColor } from '../../utils/colors';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { liveRouteLabel } from '../InfoPanel';
-import type { Agency } from '../../App';
+import type { Agency, FareOverride } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import { getFareColor } from '../../utils/colors';
@@ -57,13 +57,15 @@ interface Props {
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
   fareView?: boolean;
+  fareOverride?: FareOverride;
 }
 
-export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sidebarLeft, fareView }: Props) {
+export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sidebarLeft, fareView, fareOverride }: Props) {
   const routes = useMemo(() => getRoutes(layers, agency.slug, day), [layers, agency.slug, day]);
 
   const baseFare = useMemo(() => {
     if (!fareView) return null;
+    if (fareOverride?.free) return 0;
     const fc = layers[agency.slug];
     if (fc) {
       for (const f of fc.features) {
@@ -71,8 +73,8 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
         if (typeof bf === 'number') return bf as number;
       }
     }
-    return agency.fare ?? null;
-  }, [fareView, layers, agency]);
+    return fareOverride?.adult ?? agency.fare ?? null;
+  }, [fareView, fareOverride, layers, agency]);
   const liveRoutes = useMemo(
     () => LIVE_POLLING_ROUTES.filter(r => r.slug === agency.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active)),
     [agency.slug]
@@ -89,22 +91,39 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
           <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{agency.name}</p>
           {fareView ? (
             <>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-[10px] font-bold text-[var(--text-dim)]">Base adult fare</span>
-                {baseFare != null ? (
-                  <span
-                    className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                    style={{ background: getFareColor(baseFare) }}
-                  >
-                    ${baseFare.toFixed(2)}
-                  </span>
-                ) : (
-                  <span className="text-xs text-[var(--text-dim)]">fare varies</span>
-                )}
-              </div>
-              {agency.fareUrl && (
+              {fareOverride?.free ? (
+                <div className="mt-2">
+                  <span className="text-sm font-black px-2.5 py-0.5 rounded-full text-white bg-emerald-500">FREE</span>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-[10px] font-bold text-[var(--text-dim)]">
+                      {fareOverride?.label ? `Adult (${fareOverride.label})` : 'Base adult fare'}
+                      {fareOverride?.zones ? ' · from' : ''}
+                    </span>
+                    {baseFare != null ? (
+                      <span
+                        className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
+                        style={{ background: getFareColor(baseFare) }}
+                      >
+                        ${baseFare.toFixed(2)}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-[var(--text-dim)]">fare varies</span>
+                    )}
+                  </div>
+                  {fareOverride?.adultCash != null && fareOverride.adultCash !== baseFare && (
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[10px] text-[var(--text-dim)]">Cash</span>
+                      <span className="text-xs font-bold text-[var(--text-muted)]">${fareOverride.adultCash.toFixed(2)}</span>
+                    </div>
+                  )}
+                </>
+              )}
+              {(fareOverride?.fareUrl ?? agency.fareUrl) && (
                 <a
-                  href={agency.fareUrl}
+                  href={fareOverride?.fareUrl ?? agency.fareUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[10px] text-[var(--accent)] hover:underline mt-1.5 block"

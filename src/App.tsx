@@ -14,6 +14,17 @@ import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel from './components/InfoPanel';
 
+export interface FareOverride {
+  adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
+  adultCash?: number;  // cash fare if different from card fare
+  zones?: boolean;     // true if fare varies by zone (display "from $X")
+  free?: boolean;      // service is currently free
+  label?: string;      // payment method name shown in UI (e.g. "OPUS", "Compass", "PRESTO")
+  currency?: 'CAD' | 'USD';
+  fareUrl?: string;    // link to full public fare page
+  source?: string;     // URL where data was sourced (internal reference)
+}
+
 export interface Agency {
   slug: string;
   name: string;

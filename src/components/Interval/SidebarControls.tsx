@@ -1,12 +1,11 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { X } from 'lucide-react';
-import { R2_PUBLIC_URL } from '../../../shared/config';
 import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
-import type { Agency } from '../../App';
+import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel, shortenAgencyName } from '../../utils/format';
@@ -51,6 +50,7 @@ interface SidebarControlsProps {
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
+  fareOverrides?: Record<string, FareOverride>;
   sidebarLeft?: number;
 }
 
@@ -84,6 +84,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setLivePollingOnly,
   setSelectedAgencySlug,
   fareView = false,
+  fareOverrides = {},
   sidebarLeft,
 }) => {
   const nonCorridorLayers = useMemo(() => {
@@ -103,15 +104,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
-  const [fareOverrides, setFareOverrides] = useState<Record<string, { adult?: number }>>({});
-
-  useEffect(() => {
-    if (!fareView) return;
-    fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`)
-      .then(r => r.ok ? r.json() : {})
-      .then(data => setFareOverrides(data as Record<string, { adult?: number }>))
-      .catch(() => {});
-  }, [fareView]);
 
   const loadRecents = useCallback(() => {
     try {
