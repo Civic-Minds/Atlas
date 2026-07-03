@@ -82,12 +82,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const [zoom, setZoom] = useState(11);
 
   // Keep a ref to onViewChange so the moveend closure (registered once) always
-  // calls the latest version. Without this, stale closures call setSearchParams
-  // with the pathname from the render when the map was first initialized,
-  // causing navigation back to Frequency to be overwritten with the Fares path.
-  const onViewChangeRef = useRef(onViewChange);
-  useEffect(() => { onViewChangeRef.current = onViewChange; });
-
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
@@ -354,20 +348,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       setMapLoaded(true);
     });
 
-    // Sync viewport boundaries
-    const onMove = () => {
-      const c = map.getCenter();
-      const z = map.getZoom();
-      saveView(c.lat, c.lng, z);
-      setZoom(z);
-      onViewChangeRef.current?.(c.lat, c.lng, z);
-
-      const b = map.getBounds();
-      const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
-      onBoundsChange(bounds);
-      setBoundsAndZoom(bounds, z);
-    };
-
     // Emit initial bounds so LiveVehicles can poll on first load
     map.once('idle', () => {
       const b = map.getBounds();
@@ -377,7 +357,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       );
     });
 
-    map.on('moveend', onMove);
     map.on('click', (e) => {
       if (e.defaultPrevented) return;
       setSelectedRoute(null);
@@ -390,6 +369,29 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       mapRef.current = null;
     };
   }, []);
+
+  // moveend is registered in its own effect so it always captures the latest
+  // onViewChange and onBoundsChange. Putting it inside the map-init effect
+  // (empty deps) would freeze the closure at first-render values — any prop
+  // that changes after that (e.g. onViewChange after a navigation) would be
+  // silently stale.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onMove = () => {
+      const c = map.getCenter();
+      const z = map.getZoom();
+      saveView(c.lat, c.lng, z);
+      setZoom(z);
+      onViewChange?.(c.lat, c.lng, z);
+      const b = map.getBounds();
+      const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
+      onBoundsChange(bounds);
+      setBoundsAndZoom(bounds, z);
+    };
+    map.on('moveend', onMove);
+    return () => { map.off('moveend', onMove); };
+  }, [mapLoaded, onViewChange, onBoundsChange]);
 
   // Toggle light/dark basemap without setStyle (setStyle would drop all the
   // programmatically added vector layers like routes-layer, stops-layer, etc.)
