@@ -624,12 +624,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0 || (fareView && suggestedFareAgencies.length > 0);
 
-  // In Fares mode, search matches agencies by name, not individual routes
-  const fareViewSearchAgencies = fareView && query !== ''
-    ? suggestedFareAgencies.filter(a => a.name.toLowerCase().includes(query.toLowerCase()))
+  // In Fares mode: show fare info card for matched agencies
+  const fareViewMatchedAgencies = fareView && query !== ''
+    ? suggestedFareAgencies
+        .map(a => ({ ...a, agencyData: agencies.find(ag => ag.slug === a.slug) }))
+        .filter(a => a.name.toLowerCase().includes(query.toLowerCase()))
     : [];
 
-  const hasContent = !!(currentStop || currentRoute || (query !== '' && (fareView ? fareViewSearchAgencies.length > 0 : searchMatchResults !== null)) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
+  const hasContent = !!(currentStop || currentRoute || (query !== '' && (fareView ? fareViewMatchedAgencies.length > 0 : searchMatchResults !== null)) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
 
   const [panelShouldRender, setPanelShouldRender] = useState(false);
   const [panelVisible, setPanelVisible] = useState(false);
@@ -1114,23 +1116,32 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           </div>
         )}
 
-        {query !== '' && fareView ? (
-          fareViewSearchAgencies.length > 0 && (
-            <div className="mb-4">
-              <div className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
-                {fareViewSearchAgencies.map((a) => (
-                  <button
-                    key={a.slug}
-                    onClick={() => setQuery(a.name)}
-                    className={LIST_ROW}
-                  >
-                    <span className={LIST_ROW_PRIMARY}>{a.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )
-        ) : query !== '' && searchMatchResults !== null && (
+        {query !== '' && fareView && fareViewMatchedAgencies.length > 0 && (
+          <div className="mb-4 flex flex-col gap-2">
+            {fareViewMatchedAgencies.map(({ slug, name, agencyData }) => {
+              const baseFare = agencyData?.fare ?? null;
+              return (
+                <div key={slug} className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <span className="text-sm font-bold text-[var(--text-primary)]">{name}</span>
+                    {baseFare != null ? (
+                      <span
+                        className="text-sm font-black px-2 py-0.5 rounded-full text-white"
+                        style={{ background: getFareColor(baseFare) }}
+                      >
+                        ${baseFare.toFixed(2)}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-[var(--text-dim)]">fare varies</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {query !== '' && !fareView && searchMatchResults !== null && (
           <div className="mb-4">
             <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
               {searchMatches} route{searchMatches === 1 ? '' : 's'} match
