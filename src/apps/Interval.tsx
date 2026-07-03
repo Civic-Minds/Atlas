@@ -68,7 +68,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     return 60;
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
-  const [selectedStop, setSelectedStop] = useState<string | null>(null);
+  const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
 
   // Advanced Filter State
@@ -161,7 +161,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
 
-  // Sync selected route to URL so links are shareable and back/forward works
+  // Sync selected route and stop to URL so links are shareable and back/forward works
   useEffect(() => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
@@ -170,6 +170,15 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       return next;
     }, { replace: true });
   }, [selectedRoute, setSearchParams]);
+
+  useEffect(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (selectedStop) next.set('stop', selectedStop);
+      else next.delete('stop');
+      return next;
+    }, { replace: true });
+  }, [selectedStop, setSearchParams]);
 
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
