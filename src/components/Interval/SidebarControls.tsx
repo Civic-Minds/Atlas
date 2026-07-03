@@ -995,9 +995,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             })()}
             <div className="space-y-3">
               {directionGroups.map((group, gi) => {
-                const fmtH = (d: ShapeProperties) => {
+                const fmtH = (d: ShapeProperties): string => {
                   const cleaned = cleanHeadsign((d.headsign ?? '').trim(), currentRoute.routeShortName, currentRoute.routeLongName);
-                  if (!cleaned) return `Direction ${gi + 1}`;
+                  if (!cleaned) return '';
                   const h = titleCase(cleaned);
                   return /^to\s/i.test(h) || / to /i.test(h) ? h : `to ${h}`;
                 };
@@ -1015,11 +1015,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         const dimmed = maxHeadway !== Infinity && (minStopHw ?? d.headway ?? Infinity) > maxHeadway;
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
-                            {(d.headsign || directionGroups.length > 1) && (
-                              <span className="font-bold text-[var(--text-muted)] block break-words">
-                                {d.headsign ? fmtH(d) : `Direction ${gi + 1}`}
-                              </span>
-                            )}
+                            {(() => {
+                              const label = d.headsign ? fmtH(d) : (directionGroups.length > 1 ? `Direction ${gi + 1}` : '');
+                              return label ? (
+                                <span className="font-bold text-[var(--text-muted)] block break-words">{label}</span>
+                              ) : null;
+                            })()}
                             <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
                               {(() => {
                                 const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;

@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file.
 - **Consolidated header icon buttons**: the standalone light/dark toggle (🌙) and About (ℹ️) buttons have been moved inside the Settings panel. The right side of the header now shows a single ⚙️ button instead of three separate icon buttons — saves ~80px of horizontal space and reduces clutter. The Settings panel gains a Dark mode toggle row at the top and an "About Atlas" link at the bottom.
 - **Stats pills relocated to map overlay**: routes/coverage stats moved from the header's left section to a `bottom-6 right-14` overlay in the Frequency map (beside the geolocate button). Header left section is now logo + search only — cleaner and never competes with the right-side chips for horizontal space.
 
+### Fixed
+- **Route card: headsigns matching the route long name no longer show as "to [service descriptor]"**: `cleanHeadsign` was stripping `Express` globally (meant for TTC patterns like "Steeles West Express Towards Finch"), which corrupted route names like "All Day Express" into "All Day" — preventing the redundancy check from firing. Now only strips `Express` when immediately followed by "Towards/To". Routes whose headsign matches the long name suppress the headsign row entirely instead of falling back to "Direction 1".
+
 ### Added
 - **Loading progress bar**: Thin accent-colored bar at the top of the map shows while agency GeoJSON is fetching from R2 — grows from 5% to 100% as each network loads. Replaces the easy-to-miss bottom-left spinner as the primary loading indicator; spinner remains for exact count.
 

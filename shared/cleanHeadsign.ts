@@ -33,7 +33,8 @@ export function cleanHeadsign(
 
   // TTC express headsigns like "960b Steeles West Express Towards Finch Station Via Pioneer Village Station"
   // -> "Finch via Pioneer Village"
-  h = h.replace(/\bExpress\b/gi, '');
+  // Only strip Express when it immediately precedes "Towards/To" so we don't corrupt route names like "All Day Express".
+  h = h.replace(/\bExpress\b\s+(?=(?:towards|to)\s)/gi, '');
   const ttcMatch = h.match(/(?:Towards|To)\s+(.+?)(?:\s+Via\s+(.+))?$/i);
   if (ttcMatch) {
     let dest = ttcMatch[1].trim().replace(/\s+Station\b/gi, '');
