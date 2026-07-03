@@ -90,7 +90,7 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
                   isActive
                     ? 'opacity-40 cursor-default'
                     : app.available
-                      ? 'hover:bg-[var(--bg-hover)]'
+                      ? 'hover:bg-[var(--bg-hover)] cursor-pointer'
                       : 'opacity-40 cursor-not-allowed',
                 ].join(' ')}
               >

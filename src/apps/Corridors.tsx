@@ -486,7 +486,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
       )}
 
       {/* To pill — same style as From (App.tsx search bar), stacked below it */}
-      <div ref={toPanelRef} className="absolute z-[1100] pointer-events-auto" style={{ top: 64, left: SEARCH_LEFT, width: 256 }}>
+      <div ref={toPanelRef} className="absolute z-[1100] pointer-events-auto w-40 lg:w-52 xl:w-64" style={{ top: 64, left: SEARCH_LEFT }}>
         <div className="h-8 relative flex items-center bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl pl-2 pr-3">
           <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
           <input
@@ -515,8 +515,8 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
       {showToDropdown && (
         <div
           ref={toDropdownRef}
-          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto"
-          style={{ top: 100, left: SEARCH_LEFT, width: 256 }}
+          className="fixed z-[1200] bg-[var(--bg-panel)] border border-[var(--border-primary)] rounded-xl shadow-2xl overflow-hidden pointer-events-auto w-40 lg:w-52 xl:w-64"
+          style={{ top: 100, left: SEARCH_LEFT }}
         >
           {toSuggestions.length === 0 ? (
             <div className="px-3 py-2 text-xs text-[var(--text-muted)]">
