@@ -623,7 +623,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [disambiguationRoutes, nonCorridorLayers]);
 
   const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0 || (fareView && suggestedFareAgencies.length > 0);
-  const hasContent = !!(currentStop || currentRoute || (query !== '' && searchMatchResults !== null) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
+
+  // In Fares mode, search matches agencies by name, not individual routes
+  const fareViewSearchAgencies = fareView && query !== ''
+    ? suggestedFareAgencies.filter(a => a.name.toLowerCase().includes(query.toLowerCase()))
+    : [];
+
+  const hasContent = !!(currentStop || currentRoute || (query !== '' && (fareView ? fareViewSearchAgencies.length > 0 : searchMatchResults !== null)) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
 
   const [panelShouldRender, setPanelShouldRender] = useState(false);
   const [panelVisible, setPanelVisible] = useState(false);
@@ -1108,7 +1114,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           </div>
         )}
 
-        {query !== '' && searchMatchResults !== null && (
+        {query !== '' && fareView ? (
+          fareViewSearchAgencies.length > 0 && (
+            <div className="mb-4">
+              <div className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                {fareViewSearchAgencies.map((a) => (
+                  <button
+                    key={a.slug}
+                    onClick={() => setQuery(a.name)}
+                    className={LIST_ROW}
+                  >
+                    <span className={LIST_ROW_PRIMARY}>{a.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        ) : query !== '' && searchMatchResults !== null && (
           <div className="mb-4">
             <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
               {searchMatches} route{searchMatches === 1 ? '' : 's'} match
