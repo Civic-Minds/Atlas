@@ -53,16 +53,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     return undefined;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleViewChange = useCallback((lat: number, lon: number, zoom: number) => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.set('lat', lat.toFixed(5));
-      next.set('lon', lon.toFixed(5));
-      next.set('z', zoom.toFixed(2));
-      return next;
-    }, { replace: true });
-  }, [setSearchParams]);
-
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
@@ -215,7 +205,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedAgencySlug={selectedAgencySlug}
         fareView={fareView}
         initialMapCenter={initialMapCenter}
-        onViewChange={handleViewChange}
       />
 
       {showUi && stats && (stats.total > 0 || !isLoading) && (
