@@ -81,6 +81,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
 
+  // Keep a ref to onViewChange so the moveend closure (registered once) always
+  // calls the latest version. Without this, stale closures call setSearchParams
+  // with the pathname from the render when the map was first initialized,
+  // causing navigation back to Frequency to be overwritten with the Fares path.
+  const onViewChangeRef = useRef(onViewChange);
+  useEffect(() => { onViewChangeRef.current = onViewChange; });
+
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
@@ -353,7 +360,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const z = map.getZoom();
       saveView(c.lat, c.lng, z);
       setZoom(z);
-      onViewChange?.(c.lat, c.lng, z);
+      onViewChangeRef.current?.(c.lat, c.lng, z);
 
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
