@@ -291,9 +291,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Frequency */}
       <div className="relative hidden lg:block">
-        <button onClick={() => toggle('frequency')} className={chipClass(true)}>
-          {maxHeadway === Infinity ? 'Frequency' : (HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? 'Frequency')}
-          <Dot show={true} />
+        <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
+          Frequency
+          <Dot show={maxHeadway !== Infinity} />
         </button>
         {openChip === 'frequency' && (
           <div className={`${PANEL} w-36`}>
@@ -318,9 +318,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Day */}
       <div className="relative hidden lg:block">
-        <button onClick={() => toggle('day')} className={chipClass(true)}>
-          {day}
-          <Dot show={true} />
+        <button onClick={() => toggle('day')} className={chipClass(day !== 'Weekday')}>
+          Day
+          <Dot show={day !== 'Weekday'} />
         </button>
         {openChip === 'day' && (
           <div className={`${PANEL} w-36`}>
@@ -340,7 +340,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       {/* Period */}
       <div className="relative hidden lg:block">
         <button onClick={() => toggle('period')} className={chipClass(period !== 'all')}>
-          {PERIOD_LABELS[period]}
+          Period
           <Dot show={period !== 'all'} />
         </button>
         {openChip === 'period' && (
@@ -360,19 +360,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Mode */}
       <div className="relative hidden lg:block">
-        {(() => {
-          const modeLabel = selectedModes.size === 0
-            ? 'Mode'
-            : selectedModes.size === 1
-              ? (MODES.find(m => selectedModes.has(m.id))?.label ?? 'Mode')
-              : `${selectedModes.size} modes`;
-          return (
-            <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
-              {modeLabel}
-              <Dot show={selectedModes.size > 0} />
-            </button>
-          );
-        })()}
+        <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
+          Mode
+          <Dot show={selectedModes.size > 0} />
+        </button>
         {openChip === 'mode' && (
           <div className={`${PANEL} w-36`}>
             {MODES.map((m) => (
@@ -392,16 +383,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       <div className="relative">
         {(() => {
           const allOn = selectedAgencies.size >= agencies.length;
-          const hiddenCount = agencies.length - selectedAgencies.size;
-          const label = allOn
-            ? 'Agencies'
-            : hiddenCount === agencies.length - 1
-              ? (agencies.find(a => selectedAgencies.has(a.slug))?.name ?? '1 agency')
-              : `${selectedAgencies.size} agencies`;
           return (
             <button onClick={() => toggle('agencies')} className={chipClass(!allOn)}>
-              {label}
-              <Dot show={allOn} />
+              Agencies
+              <Dot show={!allOn} />
             </button>
           );
         })()}
