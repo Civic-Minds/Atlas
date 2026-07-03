@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map as MapIcon, Search, X, ArrowLeft, Info } from 'lucide-react';
+import { Map as MapIcon, Search, X, ArrowLeft, Info, Radio } from 'lucide-react';
 import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER } from './styles';
 import { R2_PUBLIC_URL } from '../shared/config';
 import Interval from './apps/Interval';
@@ -277,6 +277,14 @@ export default function App() {
           )}
         </div>
         </div>
+
+        <button
+          onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
+          aria-label="Live vehicles"
+          className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${inLive ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)]'}`}
+        >
+          <Radio className="w-4 h-4" />
+        </button>
 
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **Live Vehicles moved out of app drawer to standalone header button**: Radio icon button sits right of the search bar — accent-filled when active, toggles back to frequency map on second press. Removed from AppDrawer entries entirely.
 - **About Atlas moved back to standalone header button**: removed from the Settings panel (where it didn't belong) and restored as a standalone ℹ button in the header, always visible. Dark mode toggle remains in Settings.
 - **Live Vehicles: cleaner empty states**: replaced the "No live coverage here / Pan to Burlington, Hamilton..." wall of text with a compact city-chips layout (Burlington · Hamilton · Toronto · York Region · Edmonton · Halifax) under a "Live coverage" label and a single "Pan to a covered city" line. "Zoom in" state similarly trimmed to one short line.
 - **Fares app hidden**: set `available: false` in AppDrawer — button is disabled/greyed out until the fare card UX is ready to ship.

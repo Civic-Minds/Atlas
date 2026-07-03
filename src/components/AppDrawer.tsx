@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeftRight, Clock, Radio, DollarSign } from 'lucide-react';
+import { ArrowLeftRight, Clock, DollarSign } from 'lucide-react';
 import { FLOATING_CARD, Z_DROPDOWN } from '../styles';
 
 export type AppId = 'frequency' | 'corridors' | 'history' | 'live' | 'fares';
@@ -26,13 +26,6 @@ const APPS: AppEntry[] = [
     description: 'Routes colored by base fare',
     icon: <DollarSign className="w-5 h-5" />,
     available: false,
-  },
-  {
-    id: 'live',
-    label: 'Live Vehicles',
-    description: 'Real-time vehicle tracking',
-    icon: <Radio className="w-5 h-5" />,
-    available: true,
   },
   {
     id: 'history',
