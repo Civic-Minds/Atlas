@@ -116,8 +116,8 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
     const text = await entry.async('text');
     const lines = text.trim().split(/\r?\n/);
     if (lines.length < 2) return { feedExpiry: null, feedVersion: null };
-    const headers = lines[0].split(',').map(h => h.trim());
-    const values = lines[1].split(',').map(v => v.trim());
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const values = lines[1].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
     const get = (col: string) => {
       const i = headers.indexOf(col);
       return i >= 0 ? (values[i] || null) : null;
