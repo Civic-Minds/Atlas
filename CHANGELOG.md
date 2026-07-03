@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **STM added to Fares map**: STM's GTFS feed doesn't include fare files, so a manual `fare: 3.75` override was added in index.json and the feed was reprocessed. STM routes now appear in the Fares map colored by the $2–4 tier.
+
 ### Fixed
 - **AI-212 — Fares legend lingers after navigating back to Frequency map**: `FareLegend` was rendered inside `MapCanvas`, where the `fareView` prop could lose sync with the active app during navigation. Moved `FareLegend` out of `MapCanvas` and into `Interval`'s render tree alongside other conditional overlays (AgencyCard, NearbyRoutesPanel), so it responds directly to `fareView` without an intermediate prop hop.
 

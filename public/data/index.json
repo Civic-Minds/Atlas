@@ -686,7 +686,9 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "20260602153030_26U",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media",
+      "fare": 3.75,
+      "gtfsFares": true
     },
     {
       "slug": "sto",
@@ -954,7 +956,8 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-translink-vancouver-gtfs-1222.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-corridors.json"
+      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-corridors.json",
+      "gtfsFares": true
     },
     {
       "slug": "calgary",
@@ -1531,7 +1534,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mbta-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "Summer 2026, 2026-06-26T19:57:52+00:00, version D",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "pvta",
@@ -1547,7 +1551,8 @@
       "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvta-corridors.json",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-pioneer-valley-transit-authority-pvta-gtfs-1234.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-pioneer-valley-transit-authority-pvta-gtfs-1234.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "wrta",
