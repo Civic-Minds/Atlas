@@ -44,7 +44,7 @@ interface Props {
 }
 
 export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft }: Props) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
     const lat = parseFloat(searchParams.get('lat') ?? '');
@@ -152,24 +152,22 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
 
-  // Sync selected route and stop to URL so links are shareable and back/forward works
+  // Sync selected route and stop to URL — use replaceState directly (not React
+  // Router's setSearchParams) to avoid the stale-closure bug where a closure
+  // captured during the Fares render resolves the URL relative to /apps/fares.
   useEffect(() => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      if (selectedRoute) next.set('route', selectedRoute);
-      else next.delete('route');
-      return next;
-    }, { replace: true });
-  }, [selectedRoute, setSearchParams]);
+    const sp = new URLSearchParams(window.location.search);
+    if (selectedRoute) sp.set('route', selectedRoute);
+    else sp.delete('route');
+    window.history.replaceState(null, '', window.location.pathname + '?' + sp.toString());
+  }, [selectedRoute]);
 
   useEffect(() => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      if (selectedStop) next.set('stop', selectedStop);
-      else next.delete('stop');
-      return next;
-    }, { replace: true });
-  }, [selectedStop, setSearchParams]);
+    const sp = new URLSearchParams(window.location.search);
+    if (selectedStop) sp.set('stop', selectedStop);
+    else sp.delete('stop');
+    window.history.replaceState(null, '', window.location.pathname + '?' + sp.toString());
+  }, [selectedStop]);
 
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
