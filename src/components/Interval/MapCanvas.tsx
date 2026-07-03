@@ -302,10 +302,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           const slug = props.agencySlug as string;
           const rsn = props.routeShortName as string;
           if (slug && rsn) onHistoryRouteClick(slug, rsn);
-        } else if (fareView && setSelectedAgencySlug) {
+        } else if (fareViewRef.current && setSelectedAgencySlugRef.current) {
           // In Fares mode fares are per agency — promote any route click to the agency card
           const slug = props.agencySlug as string;
-          if (slug) setSelectedAgencySlug(slug);
+          if (slug) setSelectedAgencySlugRef.current(slug);
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 13) {
             // Don't show the long "multiple routes" card when zoomed out
@@ -375,12 +375,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     };
   }, []);
 
-  // Refs keep the moveend closure from going stale across navigations.
-  //
-  // onBoundsChange ref — keeps the closure registered once on mapLoaded always current.
+  // Refs keep event-handler closures (registered once on map load) from going stale
+  // when props change across app navigations.
   const onBoundsChangeRef = useRef(onBoundsChange);
+  const fareViewRef = useRef(fareView);
+  const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
   useLayoutEffect(() => {
     onBoundsChangeRef.current = onBoundsChange;
+    fareViewRef.current = fareView;
+    setSelectedAgencySlugRef.current = setSelectedAgencySlug;
   });
 
   useEffect(() => {
