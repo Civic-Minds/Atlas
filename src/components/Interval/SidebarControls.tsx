@@ -314,12 +314,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!agencySlug || !isLivePollingRoute(agencySlug, currentRoute.routeShortName)) return null;
     const cfg = getLiveRouteConfig(agencySlug, currentRoute.routeShortName);
     const stopRows = cfg && liveData
-      ? liveData.arrivals.map(a => ({
-          stopId: a.stopId,
-          name: cfg.targetStops[a.stopId] ?? a.stopId,
-          avgGap: a.avgGap,
-          delta: a.headwayDeltaMin,
-        }))
+      ? liveData.arrivals
+          .map(a => ({
+            stopId: a.stopId,
+            name: cfg.targetStops[a.stopId] ?? a.stopId,
+            avgGap: a.avgGap,
+            delta: a.headwayDeltaMin,
+          }))
+          .sort((a, b) => {
+            const absDiff = Math.abs(b.delta ?? 0) - Math.abs(a.delta ?? 0);
+            if (absDiff !== 0) return absDiff;
+            return (b.delta ?? 0) - (a.delta ?? 0); // late before early on tie
+          })
       : [];
     return {
       agencySlug,
