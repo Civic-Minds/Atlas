@@ -113,8 +113,9 @@ export default function App() {
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
   const searchValue = inFrequency || inHistory || inLive || inFares ? query : corridorsFrom;
-  const searchPlaceholder = inFrequency || inFares
+  const searchPlaceholder = inFrequency
     ? 'Search routes'
+    : inFares ? 'Search agencies'
     : inHistory ? 'Find an agency…'
     : inLive ? 'Search vehicles…'
     : (corridorsFromFocused || corridorsFrom) ? 'Search stations…' : 'From';

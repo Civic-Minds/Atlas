@@ -196,27 +196,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const suggestedFareAgencies = useMemo(() => {
     if (!fareView) return [];
-    const seen = new Set<string>();
+
+    // Only show agencies loaded for the current viewport — never fall back to the
+    // global list. REM/RTL/exo have baseFare:null, so a "has baseFare" filter
+    // would drop them all and trigger the global fallback, surfacing TransLink, MBTA, etc.
+    // Dedup by name: exo has 6 sub-agencies all named "exo" — show just one entry.
+    const loadedInView = new Set(Object.keys(nonCorridorLayers));
+    const seenNames = new Set<string>();
     const result: Array<{ slug: string; name: string }> = [];
 
-    // Use the agencies passed in (filtered to gtfsFares ones in Fares mode)
     for (const agency of agencies) {
-      if (agency.gtfsFares && !seen.has(agency.slug)) {
-        seen.add(agency.slug);
-        result.push({ slug: agency.slug, name: agency.name });
-      }
-    }
-
-    // To mimic "in this area" like notable routes, only include agencies that have fare data in current layers
-    if (Object.keys(nonCorridorLayers).length > 0) {
-      const agenciesWithDataInView = new Set(
-        Object.entries(nonCorridorLayers)
-          .filter(([, fc]) => (fc?.features || []).some(f => (f.properties as any)?.baseFare != null))
-          .map(([slug]) => slug)
-      );
-      if (agenciesWithDataInView.size > 0) {
-        return result.filter(a => agenciesWithDataInView.has(a.slug));
-      }
+      if (!agency.gtfsFares) continue;
+      if (!loadedInView.has(agency.slug)) continue;
+      if (seenNames.has(agency.name)) continue;
+      seenNames.add(agency.name);
+      result.push({ slug: agency.slug, name: agency.name });
     }
 
     return result;
