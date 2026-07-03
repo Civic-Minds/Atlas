@@ -21,10 +21,11 @@ All notable changes to this project will be documented in this file.
 - **Live adherence card: stops now sorted by worst deviation first** (highest absolute delta at top, late before early on ties). Previously ordered by GTFS-RT insertion order, which was effectively random.
 
 ### Fixed
+- **Headsign title-casing: "ST." (Saint abbreviation) no longer rendered as "ST."**: The `St` → `ST` acronym entry (GO Transit line code) was incorrectly converting "St. Marys" to "ST. Marys". Acronym replacement now skips `St` when immediately followed by `.`.
 - **Route card: headsigns matching the route long name no longer show as "to [service descriptor]"**: `cleanHeadsign` was stripping `Express` globally (meant for TTC patterns like "Steeles West Express Towards Finch"), which corrupted route names like "All Day Express" into "All Day" — preventing the redundancy check from firing. Now only strips `Express` when immediately followed by "Towards/To". Routes whose headsign matches the long name suppress the headsign row entirely instead of falling back to "Direction 1".
 
 ### Added
-- **Loading progress bar**: Thin accent-colored bar at the top of the map shows while agency GeoJSON is fetching from R2 — grows from 5% to 100% as each network loads. Replaces the easy-to-miss bottom-left spinner as the primary loading indicator; spinner remains for exact count.
+- **Loading progress bar**: Accent-colored bar at the top of the map shows while agency GeoJSON is fetching from R2 — grows from 5% to 100% as each network loads. Replaces the easy-to-miss bottom-left spinner as the primary loading indicator; spinner remains for exact count.
 
 ### Fixed
 - **Corridors/Live Vehicles: back button and app switching blocked after visiting then leaving those apps**: `Corridors` and `LiveVehicles` stay mounted once visited (to preserve state). Their internal elements use `pointer-events-auto` to override the parent wrapper's `pointer-events-none`, which kept them capturing events even when invisible (`opacity-0`). Fixed by adding `inert={!active}` to the root div of each component — `inert` suppresses all descendant pointer and keyboard events unconditionally, including children with explicit `pointer-events-auto`.

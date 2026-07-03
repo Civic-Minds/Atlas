@@ -86,7 +86,11 @@ export function titleCase(s: string): string {
       }
       return word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
     })
-    .replace(acronymRegex, m => TRANSIT_ACRONYMS[m] ?? m)
+    .replace(acronymRegex, (m, _g1, offset, str) => {
+      // Don't convert "St." (Saint abbreviation) — only the standalone GO line-code "ST"
+      if (m === 'St' && str[offset + m.length] === '.') return m;
+      return TRANSIT_ACRONYMS[m] ?? m;
+    })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");

@@ -183,7 +183,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
       {isLoading && (
-        <div className="absolute top-0 left-0 right-0 z-[1000] h-0.5 pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 z-[1000] h-[3px] pointer-events-none">
           <div
             className="h-full bg-[var(--accent)] transition-[width] duration-500 ease-out"
             style={{ width: `${Math.max(5, Math.round((loadedCount / requestedCount) * 100))}%` }}
