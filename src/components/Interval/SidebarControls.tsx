@@ -795,19 +795,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               {titleCase(currentStop.stopName)}
             </h3>
             {stopAgencies.length > 1 && (
-              <div className="flex flex-wrap gap-1 mb-2">
-                {stopAgencies.map(name => (
-                  <button
-                    key={name}
-                    onClick={() => setStopAgencyFilter(stopAgencyFilter === name ? null : name)}
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
-                      stopAgencyFilter === name
-                        ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                        : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
-                    }`}
-                  >
-                    {name}
-                  </button>
+              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 mb-2">
+                {stopAgencies.map((name, i) => (
+                  <React.Fragment key={name}>
+                    <button
+                      onClick={() => setStopAgencyFilter(stopAgencyFilter === name ? null : name)}
+                      className={`text-[10px] font-bold transition-colors ${
+                        stopAgencyFilter === name
+                          ? 'text-[var(--accent)]'
+                          : 'text-[var(--text-dim)] hover:text-[var(--text-muted)]'
+                      }`}
+                    >
+                      {name}
+                    </button>
+                    {i < stopAgencies.length - 1 && (
+                      <span className="text-[10px] text-[var(--border-primary)] select-none">·</span>
+                    )}
+                  </React.Fragment>
                 ))}
               </div>
             )}
@@ -874,7 +878,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             </div>
 
             {nearbyConnections.length > 0 && (
-              <div className="mt-3 pt-2 border-t border-[var(--border-primary)]">
+              <div className="mt-3 -mx-4 px-4 pt-3 pb-2 border-t-4 border-[var(--border-primary)] bg-[var(--bg-hover)]">
                 <div className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Within 10 min walk</div>
                 <div className="space-y-1.5">
                   {nearbyConnections.map(({ rKey, routeShortName, routeLongName, agencyName, headway, nearestStopName, distanceMeters }) => {

@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **AI-212 — Fares legend lingers after navigating back to Frequency map**: `FareLegend` was rendered inside `MapCanvas`, where the `fareView` prop could lose sync with the active app during navigation. Moved `FareLegend` out of `MapCanvas` and into `Interval`'s render tree alongside other conditional overlays (AgencyCard, NearbyRoutesPanel), so it responds directly to `fareView` without an intermediate prop hop.
+
+### Changed
+- **Stop card: agency names shown as plain text instead of pill buttons**: multiple-agency stops displayed agency names as bordered pill buttons, which looked cluttered. Now shown as plain text labels separated by `·`, with click-to-filter behaviour preserved (clicking an agency name filters the route list to that agency).
+- **Stop card: "Within X min walk" section visually separated**: the nearby connections section now has a distinct background and thick top border, making it read as a separate unit from the at-stop routes above it.
+
+### Fixed
 - **Route lines no longer look dark/blurry at intermediate zoom (AI-208)**: enabled `antialias: true` on the MapLibre map constructor (enables MSAA, the single largest line quality improvement). Switched from fixed `line-width: 1.8 / line-opacity: 0.85` to zoom-interpolated values so routes stay at or above 1.5px at all zoom levels (anti-aliasing is proportionally smaller on wider lines) and thicken as you zoom in (zoom 8: 1.5px / 70%, zoom 11: 2.0px / 80%, zoom 14: 2.5px / 90%, zoom 17: 3.5px / 90%).
 - **Stats pills now hidden while loading new viewport data**: pills showing "0 routes / 0%" during a pan to an unloaded area were misleading — the GeoJSON fetch takes a moment while the vector tiles render instantly. Pills now suppress until either loading completes or non-zero stats appear, so the counter only shows when it's meaningful.
 

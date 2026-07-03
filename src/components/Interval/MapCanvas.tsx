@@ -4,7 +4,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
-import FareLegend from './FareLegend';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
@@ -1000,10 +999,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         <LocateFixed className="w-4 h-4" />
       </button>
 
-      {/* Fare legend (AI-205) */}
-      {fareView && (
-        <FareLegend className="absolute bottom-6 left-3 z-[1000]" />
-      )}
     </div>
   );
 };
