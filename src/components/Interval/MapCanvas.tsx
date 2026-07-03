@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { LocateFixed } from 'lucide-react';
@@ -370,11 +370,22 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     };
   }, []);
 
-  // moveend is registered in its own effect so it always captures the latest
-  // onViewChange and onBoundsChange. Putting it inside the map-init effect
-  // (empty deps) would freeze the closure at first-render values — any prop
-  // that changes after that (e.g. onViewChange after a navigation) would be
-  // silently stale.
+  // Refs keep the moveend closure from going stale across navigations.
+  //
+  // React Router v7's navigate() captures locationPathname in its closure, so a
+  // stale onViewChange from a Fares render will resolve "?lat=..." relative to
+  // /apps/fares — overwriting the /apps/frequency entry with replace:true.
+  //
+  // useLayoutEffect runs synchronously during React's commit phase, BEFORE the
+  // browser can fire MapLibre events. This guarantees the refs are always current
+  // by the time moveend fires, regardless of when React schedules its next paint.
+  const onViewChangeRef = useRef(onViewChange);
+  const onBoundsChangeRef = useRef(onBoundsChange);
+  useLayoutEffect(() => {
+    onViewChangeRef.current = onViewChange;
+    onBoundsChangeRef.current = onBoundsChange;
+  });
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
@@ -383,15 +394,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const z = map.getZoom();
       saveView(c.lat, c.lng, z);
       setZoom(z);
-      onViewChange?.(c.lat, c.lng, z);
+      onViewChangeRef.current?.(c.lat, c.lng, z);
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
-      onBoundsChange(bounds);
+      onBoundsChangeRef.current(bounds);
       setBoundsAndZoom(bounds, z);
     };
     map.on('moveend', onMove);
     return () => { map.off('moveend', onMove); };
-  }, [mapLoaded, onViewChange, onBoundsChange]);
+  }, [mapLoaded]);
 
   // Toggle light/dark basemap without setStyle (setStyle would drop all the
   // programmatically added vector layers like routes-layer, stops-layer, etc.)
