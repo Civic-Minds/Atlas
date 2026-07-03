@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Live Vehicles: route card header inconsistent with frequency map card (AI-221)**: extracted shared `RouteCardTitle` component used by both `SidebarControls` and `LiveVehicles`. Both now use `text-sm font-black`, `getRouteLabel()` for the route title, and the same agency subtitle style. LiveVehicles now also looks up `routeLongName` from the loaded GeoJSON layer so "18" correctly becomes "18 — Waterdown Mountaineer".
+- **Live Vehicles: vehicle detail rows showed "—" with no identifying info (AI-222)**: vehicle detail panel now groups by headsign (destination) when the feed provides them — each destination shows the first 3 delay-status chips and a count, clickable to drill into all buses for that direction. When headsigns are unavailable (Burlington/HSR), falls back to showing a cleaned vehicle ID per row.
+- **Live Vehicles: sidebar showed agencies outside current viewport (AI-223)**: route list now filtered to only groups where at least one vehicle falls within the current map bounds. TTC routes no longer appear when viewing Hamilton/Burlington.
 - **Live Vehicles: vehicle dots and route line too large at low zoom**: compact vehicle markers shrunk from 14×14 px to 9×9 px; bearing arrow scaled proportionally. Live route shape line-width now zoom-interpolated (1.5 px at z8 → 5.0 px at z17) instead of a flat 4.0 px.
 
 ### Changed

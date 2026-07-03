@@ -1,0 +1,31 @@
+import React from 'react';
+import { titleCase, getRouteLabel } from '../utils/format';
+
+interface Props {
+  routeShortName: string | null | undefined;
+  routeLongName?: string | null;
+  agencyName?: string | null;
+  onAgencyClick?: () => void;
+}
+
+export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, onAgencyClick }: Props) {
+  const title = titleCase(getRouteLabel(routeShortName, routeLongName));
+  return (
+    <div className="flex-1 min-w-0">
+      <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{title}</h3>
+      {agencyName && (
+        onAgencyClick
+          ? (
+            <button
+              onClick={onAgencyClick}
+              className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
+            >
+              {agencyName}
+            </button>
+          ) : (
+            <p className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">{agencyName}</p>
+          )
+      )}
+    </div>
+  );
+}

@@ -12,6 +12,7 @@ import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
 import RouteListRow from '../RouteListRow';
+import RouteCardTitle from '../RouteCardTitle';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -991,48 +992,31 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </div>
             )}
             <div className="flex items-start justify-between -mt-2 -mr-2 mb-1">
-              <div className="flex-1 mt-2">
-                <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight">
-                  {titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, currentRoute.agencyName || (currentRoute as any).agencySlug))}
-                </h3>
-                {(() => {
-                  const slug = (currentRoute as any).agencySlug as string | undefined;
-                  const agency = agencies.find(a => a.slug === slug);
-                  const displayName = agency?.name ?? slug;
-                  if (!slug) return null;
-                  const isStale = (() => {
-                    const exp = agency?.lastFeedExpiry;
-                    if (!exp || exp.length !== 8) return false;
-                    const expDate = new Date(`${exp.slice(0, 4)}-${exp.slice(4, 6)}-${exp.slice(6, 8)}`);
-                    return expDate < new Date();
-                  })();
-                  return (
-                    <>
-                      <button
-                        onClick={() => {
-                          if (slug && setSelectedAgencySlug) {
-                            setSelectedAgencySlug(slug);
-                            setSelectedRoute(null);
-                          }
-                        }}
-                        className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
+              {(() => {
+                const slug = (currentRoute as any).agencySlug as string | undefined;
+                const agency = agencies.find(a => a.slug === slug);
+                const agencyDisplayName = agency?.name ?? slug;
+                return (
+                  <div className="flex-1 mt-2">
+                    <RouteCardTitle
+                      routeShortName={currentRoute.routeShortName}
+                      routeLongName={currentRoute.routeLongName}
+                      agencyName={agencyDisplayName}
+                      onAgencyClick={slug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(slug); setSelectedRoute(null); } : undefined}
+                    />
+                    {agency?.excludeRouteShortNames?.length ? (
+                      <a
+                        href={agency.issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"
                       >
-                        {displayName}
-                      </button>
-                      {agency?.excludeRouteShortNames?.length ? (
-                        <a
-                          href={agency.issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"
-                        >
-                          We corrected this data
-                        </a>
-                      ) : null}
-                    </>
-                  );
-                })()}
-              </div>
+                        We corrected this data
+                      </a>
+                    ) : null}
+                  </div>
+                );
+              })()}
             </div>
             {(() => {
               // Merge headwayByHour across all directions — take the best (lowest) non-null
