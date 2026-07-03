@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **STM added to Fares map**: STM's GTFS feed doesn't include fare files, so a manual `fare: 3.75` override was added in index.json and the feed was reprocessed. STM routes now appear in the Fares map colored by the $2–4 tier.
+- **STM added to Fares map**: STM's GTFS feed doesn't include fare files, so a manual `fare: 3.75` override was added in index.json and the feed was reprocessed. STM routes now appear in the Fares map colored by the $2–4 tier. Rebuilt and re-uploaded `atlas.pmtiles` so the baseFare property is present in the vector tile source (the per-agency GeoJSON on R2 had it, but the PMTiles hadn't been regenerated).
 
 ### Fixed
 - **Back button stuck showing after leaving Fares app; app remains in Fares state despite URL showing `/apps/frequency`**: the `moveend` handler in `MapCanvas` was registered once (empty deps `useEffect`) and captured `onViewChange` from the first render. After navigating to Fares, `handleViewChange` in `Interval` was recreated with a `setSearchParams`/`navigate` function that knew the pathname as `/apps/fares`. Every subsequent map pan fired the stale handler, which called `setSearchParams("?lat=...", {replace:true})` — resolving relative to the stale `/apps/fares` pathname and replacing the `/apps/frequency` history entry. Fixed architecturally: `moveend` registration moved out of the map-init `useEffect([], [])` into its own `useEffect([mapLoaded, onViewChange, onBoundsChange])`. React re-registers the handler whenever the callbacks change, so the closure is always fresh — no ref hack needed.
