@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Live Vehicles: vehicle dots and route line too large at low zoom**: compact vehicle markers shrunk from 14×14 px to 9×9 px; bearing arrow scaled proportionally. Live route shape line-width now zoom-interpolated (1.5 px at z8 → 5.0 px at z17) instead of a flat 4.0 px.
+
 ### Changed
 - **"Now" button removed**: set Day+Time simultaneously — didn't fully belong in either chip. Removed from the filter row.
 - **Filter chip "Period" renamed to "Time"**: clearer for non-expert users; the options (AM peak, Midday, Evening, etc.) are all times of day.

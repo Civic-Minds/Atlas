@@ -272,7 +272,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         source: 'live-route-shape',
         paint: {
           'line-color': ['get', 'color'],
-          'line-width': 4.0,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.5, 14, 3.5, 17, 5.0],
           'line-opacity': 0.85
         },
         layout: {
