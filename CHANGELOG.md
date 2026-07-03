@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **"Now" button removed**: set Day+Time simultaneously — didn't fully belong in either chip. Removed from the filter row.
 - **Filter chip "Period" renamed to "Time"**: clearer for non-expert users; the options (AM peak, Midday, Evening, etc.) are all times of day.
 - **Filter chips: static labels, dot-only active state**: chip labels no longer change when a filter is set. All chips show static labels always — Frequency, Day, Period, Mode, Agencies. Accent dot is the only active indicator. Dot logic corrected: Frequency dot only when headway filtered; Day dot only when not Weekday; Agencies dot corrected (was inverted).
 - **Live Vehicles moved out of app drawer to standalone header button**: Radio icon button sits right of the search bar — accent-filled when active, toggles back to frequency map on second press. Removed from AppDrawer entries entirely.
