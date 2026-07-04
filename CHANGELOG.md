@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Time filter: remove "All Day" option; make periods toggleable**: "All Day" was not a time period — it was the absence of a filter. Removed it from the list. Period chips are now toggles: clicking an active period deactivates it (returns to all-day). Each period option now shows its hour range (e.g. "6a–9a") so users know exactly what window they're filtering to.
 - **Route label: strip trailing "Via [location]" routing qualifiers from long names**: GTFS long names often include routing notes like "Royal Oak Exch / Downtown Via Royal Oak". The "Via X" suffix is routing detail, not the route name. Stripped to produce "Royal Oak Exch / Downtown", which is shorter and reads cleanly in the card title.
 - **Route card: "Also serves" span hint redesigned**: replaced the verbose sentence ("Also serves: Downtown Only — infrequent") with a visual row matching the direction rows — grey dot, destination name, small "limited" badge. Cleaner and consistent with the surrounding frequency data.
 - **Agency card: slug shown as monospaced debug text; pills replaced with clean text line**: the agency slug (e.g. "victoria") was rendering as `font-mono` text below the chips — a debug artifact. Removed it. The region and route count chips are now a single muted text line ("British Columbia · 63 routes") instead of two separate outlined pills.

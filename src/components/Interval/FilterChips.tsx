@@ -33,7 +33,20 @@ const MODES = [
 ];
 
 
-const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening', 'lateNight'];
+const PERIODS: TimePeriod[] = ['amPeak', 'midday', 'pmPeak', 'evening', 'lateNight'];
+
+function fmtHour(h: number): string {
+  const h12 = h % 24;
+  if (h12 === 0 || h12 === 24) return '12a';
+  if (h12 === 12) return '12p';
+  return h12 < 12 ? `${h12}a` : `${h12 - 12}p`;
+}
+
+function periodRange(key: string): string {
+  const p = TIME_PERIODS.find(t => t.key === key);
+  if (!p) return '';
+  return `${fmtHour(p.startHour)}–${fmtHour(p.endHour)}`;
+}
 
 export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
   const d = new Date().getDay();
@@ -280,7 +293,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
                 {PERIODS.map(p => (
-                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p)}>
+                  <button key={p} onClick={() => setPeriod(period === p ? 'all' : p)} className={compactOptBtn(period === p)}>
                     {PERIOD_LABELS[p]}
                   </button>
                 ))}
@@ -360,10 +373,11 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {PERIODS.map((p) => (
               <button
                 key={p}
-                onClick={() => { setPeriod(p); setOpenChip(null); }}
-                className={rowBtn(period === p)}
+                onClick={() => { setPeriod(period === p ? 'all' : p); setOpenChip(null); }}
+                className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
               >
-                {PERIOD_LABELS[p]}
+                <span>{PERIOD_LABELS[p]}</span>
+                <span className="text-[9px] font-mono text-[var(--text-dim)] shrink-0">{periodRange(p)}</span>
               </button>
             ))}
           </div>
