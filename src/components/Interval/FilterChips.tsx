@@ -33,7 +33,7 @@ const MODES = [
 ];
 
 
-const PERIODS: TimePeriod[] = ['amPeak', 'midday', 'pmPeak', 'evening', 'lateNight'];
+const PERIODS: TimePeriod[] = ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'];
 
 function fmtHour(h: number): string {
   const h12 = h % 24;
@@ -57,7 +57,9 @@ export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
 
 export function getNowPeriod(): TimePeriod {
   const h = new Date().getHours();
-  const matched = TIME_PERIODS.find(p => h >= p.startHour && h < p.endHour);
+  // Hours 0–5 (early morning) map to GTFS 24–29 so they match late/overnight periods
+  const gtfsH = h < 6 ? h + 24 : h;
+  const matched = TIME_PERIODS.find(p => gtfsH >= p.startHour && gtfsH < p.endHour);
   return (matched?.key as TimePeriod) || 'all';
 }
 
