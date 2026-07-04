@@ -48,6 +48,7 @@ interface MapCanvasProps {
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   selectedModes?: Set<number>;
+  selectedAgencies?: Set<string>;
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
@@ -76,6 +77,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   filterToAgencies = false,
   onHistoryRouteClick,
   selectedModes,
+  selectedAgencies,
   selectedAgencySlug,
   setSelectedAgencySlug,
   fareView = false,
@@ -689,6 +691,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       routeFilter = routeFilter ? ['all', routeFilter, slugAllowlist] : slugAllowlist;
     }
 
+    if (selectedAgencies && selectedAgencies.size < agencies.length) {
+      const allowlist: any = selectedAgencies.size === 0
+        ? ['==', 'agencySlug', '']
+        : ['in', ['get', 'agencySlug'], ['literal', Array.from(selectedAgencies)]];
+      routeFilter = routeFilter ? ['all', routeFilter, allowlist] : allowlist;
+    }
+
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
     if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
 
@@ -782,7 +791,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes, fareView]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes, selectedAgencies, fareView]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
