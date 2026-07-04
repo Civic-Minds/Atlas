@@ -3769,7 +3769,7 @@
         41.8147,
         -72.9218
       ],
-      "feedUrl": "http://rrgtfsfeeds.s3.amazonaws.com/gtfsmnr.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-524/mdb-524-202607030002/mdb-524-202607030002.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },

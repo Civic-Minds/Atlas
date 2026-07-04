@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **DC metro surrounding agencies**: Added VRE, MARC, Ride On, Fairfax Connector, ART, DASH (w/ WMATA). Total 240.
-- **NYC metro**: Added NYCT Subway, LIRR, Metro-North (MNR), NJ Transit Rail for suburban coverage.
+- **NYC metro**: Added NYCT Subway, LIRR, Metro-North (MNR - MDB), NJ Transit Rail for full suburban coverage.
 
 ### Changed
 - **index.json refactor**: R2 artifact URLs now derived (via `getAgencyArtifactUrls`). Added JSON Schema (`public/data/index.schema.json`) + `npm run validate-index` (enforces no stored artifacts, required fields, structure). Pipeline/find-mdb updated for cleaner output. Shrinks file, easier maintenance.
