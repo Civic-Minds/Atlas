@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - **Live Vehicles header: dot misaligned with text**: the 8px status dot was `items-start` top-aligned against the larger "Live Vehicles" text, making it appear too high. Wrapped list header in `flex items-center` so dot centers on the text midline.
 
 ### Changed
+- **Live vehicles: GPU-rendered markers via Deck.gl**: replaced DOM-based `maplibregl.Marker` elements with a Deck.gl `ScatterplotLayer` + `TextLayer` overlay. Vehicle dots and route labels now render on the GPU — no DOM overhead, scales to thousands of vehicles, consistent with the MapLibre rendering pipeline. Status colours (green/blue/red/grey) and focus highlight ring preserved.
 - **Live button redesign**: replaced the dim radio-wave icon with a pill showing a green dot + "Live" label. Inactive state has a visible border; active state fills with accent colour and pulses the dot.
 
 ### Added

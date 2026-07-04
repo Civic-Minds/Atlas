@@ -24,7 +24,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1075.0",
+    "@deck.gl/mapbox": "^9.3.6",
     "@types/leaflet.markercluster": "^1.5.6",
+    "deck.gl": "^9.3.6",
     "dotenv": "^17.4.2",
     "gtfs-realtime-bindings": "^2.0.0",
     "jszip": "^3.10.1",

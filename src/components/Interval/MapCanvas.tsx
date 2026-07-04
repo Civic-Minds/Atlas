@@ -1,6 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { MapboxOverlay } from '@deck.gl/mapbox';
+import { ScatterplotLayer, TextLayer } from 'deck.gl';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
@@ -12,7 +14,7 @@ import { useViewport } from '../../context/ViewportContext';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
-import { StopCardHtml, VehicleMarkerHtml, formatGap, formatDelta } from '../../lib/mapHtml';
+import { StopCardHtml, formatGap, formatDelta } from '../../lib/mapHtml';
 import { cleanRouteShortName } from '../../utils/format';
 import { Z_PANEL } from '../../styles';
 
@@ -92,8 +94,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   // Overlay marker references
   const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
-  const liveMarkersRef = useRef<maplibregl.Marker[]>([]);
   const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
+  // Deck.gl overlay for GPU-rendered vehicle markers
+  const deckOverlayRef = useRef<MapboxOverlay | null>(null);
   const liveFittedAgencyRef = useRef<string | null>(null);
 
   const liveFittedRouteRef = useRef<string | null>(null);
@@ -280,6 +283,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           'line-join': 'round'
         }
       });
+
+      // Deck.gl overlay for GPU-rendered vehicle markers
+      const deckOverlay = new MapboxOverlay({ interleaved: false, layers: [] });
+      map.addControl(deckOverlay as any);
+      deckOverlayRef.current = deckOverlay;
 
       // Handle hit-test clicks
       map.on('click', 'routes-hit-layer', (e) => {
@@ -898,54 +906,64 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [historyOverlay, mapLoaded, expandedStop]);
 
-  // Live vehicles markers overlay
+  // Live vehicles — GPU-rendered via Deck.gl
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
+    const deck = deckOverlayRef.current;
+    if (!deck || !mapLoaded) return;
 
-    liveMarkersRef.current.forEach(m => m.remove());
-    liveMarkersRef.current = [];
+    const vehicles = (liveOverlay?.vehicles ?? []).filter(v => v.lat && v.lon);
+    const focusedId = liveOverlay?.focusedVehicle?.id ?? null;
 
-    if (!liveOverlay) return;
+    const statusRgb: Record<string, [number, number, number]> = {
+      on_time: [56, 161, 105],
+      early:   [49, 130, 206],
+      late:    [229,  62,  62],
+      no_data: [113, 128, 150],
+    };
 
-    liveOverlay.vehicles.forEach(vehicle => {
-      if (!vehicle.lat || !vehicle.lon) return;
-
-      const html = VehicleMarkerHtml(vehicle, true);
-      const el = document.createElement('div');
-      el.style.cssText = 'display:inline-block;';
-      el.innerHTML = html;
-
-      // Only show popup when there's something useful to say
-      const hasUsefulInfo = !!vehicle.headsign || vehicle.status !== 'no_data';
-      const marker = new maplibregl.Marker({ element: el }).setLngLat([vehicle.lon, vehicle.lat]);
-
-      if (hasUsefulInfo) {
-        const label = vehicle.delayMin === null
-          ? 'No data'
-          : vehicle.delayMin <= -1.5
-            ? `${Math.round(Math.abs(vehicle.delayMin))}m early`
-            : vehicle.delayMin >= 5.5
-              ? `${Math.round(vehicle.delayMin)}m late`
-              : 'On time';
-
-        const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup', offset: 10 })
-          .setHTML(`
-            <div style="font-family: 'Inter', ui-sans-serif, sans-serif; padding: 8px 10px; min-width: 130px;">
-              <div style="font-size: 9px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.4px;">Route ${cleanRouteShortName(vehicle.routeShortName)}</div>
-              ${vehicle.headsign ? `<div style="font-size: 11px; font-weight: 700; color: var(--text-primary, #111); margin-top: 2px; line-height: 1.3;">${vehicle.headsign}</div>` : ''}
-              ${vehicle.status !== 'no_data' ? `
-              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary, rgba(0,0,0,0.1)); padding-top: 5px; margin-top: 6px;">
-                <span style="font-size: 9px; color: var(--text-dim); font-weight: 600;">Status</span>
-                <span style="font-size: 10px; font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">${label}</span>
-              </div>` : ''}
-            </div>
-          `);
-        marker.setPopup(popup);
-      }
-
-      marker.addTo(map);
-      liveMarkersRef.current.push(marker);
+    deck.setProps({
+      layers: [
+        // Outer ring (focus highlight)
+        new ScatterplotLayer({
+          id: 'vehicles-focus-ring',
+          data: vehicles.filter(v => v.id === focusedId),
+          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
+          getRadius: 14,
+          getFillColor: [255, 255, 255, 80],
+          stroked: false,
+          radiusUnits: 'pixels',
+        }),
+        // Vehicle dots
+        new ScatterplotLayer({
+          id: 'vehicles-dots',
+          data: vehicles,
+          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
+          getRadius: (v: typeof vehicles[0]) => v.id === focusedId ? 11 : 9,
+          getFillColor: (v: typeof vehicles[0]) => statusRgb[v.status] ?? statusRgb.no_data,
+          stroked: true,
+          getLineColor: [255, 255, 255, 200],
+          getLineWidth: 2,
+          lineWidthUnits: 'pixels',
+          radiusUnits: 'pixels',
+          pickable: true,
+          autoHighlight: true,
+          highlightColor: [255, 255, 255, 60],
+        }),
+        // Route short name labels
+        new TextLayer({
+          id: 'vehicles-labels',
+          data: vehicles,
+          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
+          getText: (v: typeof vehicles[0]) => cleanRouteShortName(v.routeShortName) ?? '',
+          getSize: 9,
+          getColor: [255, 255, 255, 230],
+          fontWeight: 800,
+          fontFamily: '"Inter", ui-sans-serif, sans-serif',
+          getTextAnchor: 'middle',
+          getAlignmentBaseline: 'center',
+          billboard: true,
+        }),
+      ],
     });
   }, [liveOverlay, mapLoaded]);
 
@@ -1010,8 +1028,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     return () => {
       historyMarkersRef.current.forEach(m => m.remove());
-      liveMarkersRef.current.forEach(m => m.remove());
       corridorMarkersRef.current.forEach(m => m.remove());
+      deckOverlayRef.current?.finalize();
     };
   }, []);
 
