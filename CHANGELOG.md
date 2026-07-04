@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Route label: BRT brand names suppressed as bare terminus words**: the 1–2 word long name suppression for numeric routes was hiding BRT brand names like "Blink" (BC Transit) alongside the route number. Added BRT brand names (Blink, Zum, Viva, Flash, Bolt, Wave, Pulse, Boost, RapidRide) to the transit keywords list so they are never treated as bare place-name terminuses.
 - **Route card: long route titles truncated with ellipsis**: replaced `truncate` (single-line clamp) with `line-clamp-2` so long names like "95 — Langford / Downtown Victoria" wrap to a second line instead of being cut off.
 - **Route card: collapse identical no-headsign directions**: when a route has multiple directions with no headsign data and the same headway (e.g. "24 — every 30 min / every 30 min"), it now collapses to a single bullet instead of repeating identically. When directions genuinely differ in frequency but still lack headsigns, numbered fallback labels ("Direction 1 / Direction 2") are restored so they remain distinguishable.
 - **Route card: "Schedule may be outdated" left-aligned and "Learn more" inline**: the stale-schedule notice was right-justified and "Learn more →" was on its own line below. Now left-aligned (consistent with "Also serves") and "Learn more →" is inline at the end of the same sentence.

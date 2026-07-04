@@ -137,7 +137,7 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
   // Suppress if: purely numeric short name + long name is 1–2 words + no transit keywords.
   if (/^\d+$/.test(cleanShort)) {
     const words = cleanedLong.trim().split(/\s+/);
-    const hasTransitKeyword = /\b(line|route|express|rapid|local|limited|shuttle|bus|rail|train|metro|sky|link|station|center|centre|transit|loop|connector|crosstown)\b/i.test(cleanedLong);
+    const hasTransitKeyword = /\b(line|route|express|rapid|rapidride|local|limited|shuttle|bus|rail|train|metro|sky|link|station|center|centre|transit|loop|connector|crosstown|blink|zum|viva|flash|bolt|wave|pulse|boost)\b/i.test(cleanedLong);
     if (words.length <= 2 && !hasTransitKeyword) return cleanShort;
   }
 
