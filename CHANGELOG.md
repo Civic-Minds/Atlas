@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Blank map for all new US metros**: all ~116 US agencies added in this session were in R2 as individual GeoJSON files, but `atlas.pmtiles` (the combined vector tile file) had not been rebuilt. Routes were invisible for DC/WMATA, Chicago, Atlanta, Miami, and all other newly added metros. Rebuilt from all 280 agencies.
 - **Live vehicles: vehicle tooltip uses app design system**: tooltip was rendering with browser-default styling (white box). Now uses `var(--bg-panel)` background with `backdrop-blur`, `var(--border-primary)` border, and `var(--text-primary)`/`var(--text-dim)` text — matching the floating card style used elsewhere in the UI.
 - **Header: back arrow showing when not on frequency map**: the home button swapped to a ← icon on non-frequency apps. Now always shows the map icon — behaviour unchanged (resets view on frequency, navigates home otherwise).
 - **Live Vehicles header: dot misaligned with text**: the 8px status dot was `items-start` top-aligned against the larger "Live Vehicles" text, making it appear too high. Wrapped list header in `flex items-center` so dot centers on the text midline.
