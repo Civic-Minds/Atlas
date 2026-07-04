@@ -303,17 +303,19 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           return {
             html: `
               <div style="font-family:'Inter',ui-sans-serif,sans-serif;padding:8px 10px;min-width:130px;line-height:1.4;">
-                <div style="font-size:9px;font-weight:800;color:#9ca3af;letter-spacing:0.4px;text-transform:uppercase;">Route ${cleanRouteShortName(object.routeShortName)}</div>
-                ${object.headsign ? `<div style="font-size:11px;font-weight:700;color:#111;margin-top:2px;">${object.headsign}</div>` : ''}
-                ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,0,0,0.1);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:#9ca3af;font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${label}</span></div>` : ''}
+                <div style="font-size:9px;font-weight:800;color:var(--text-dim);letter-spacing:0.4px;text-transform:uppercase;">Route ${cleanRouteShortName(object.routeShortName)}</div>
+                ${object.headsign ? `<div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${object.headsign}</div>` : ''}
+                ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-primary);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${label}</span></div>` : ''}
               </div>`,
             style: {
-              background: '#fff',
-              borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              background: 'var(--bg-panel)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              borderRadius: '1rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid var(--border-primary)',
               padding: '0',
-              border: 'none',
-              color: '#111',
+              color: 'var(--text-primary)',
             },
           };
         },
