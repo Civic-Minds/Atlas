@@ -3,9 +3,8 @@ import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP } from '../../styles';
 import type { Agency } from '../../App';
-import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { VIRTUAL_LRT_MODE, PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import type { TimePeriod } from '../../hooks/useIntervalStats';
+import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { TIME_PERIODS } from '../../../shared/config';
 
 interface FilterChipsProps {
@@ -20,7 +19,7 @@ interface FilterChipsProps {
   agencies: Agency[];
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
-  layers: AgencyLayers;
+  bounds: ViewportBounds | null;
 }
 
 const MODES = [
@@ -85,26 +84,41 @@ interface AgenciesPanelProps {
   agencies: Agency[];
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
-  layers: AgencyLayers;
+  bounds: ViewportBounds | null;
   agencyQuery: string;
   setAgencyQuery: (q: string) => void;
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
 }
 
-function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
+function bboxInViewport(agency: { bbox?: [number, number, number, number]; center?: [number, number] }, bounds: ViewportBounds | null): boolean {
+  if (!bounds) return false;
+  if (agency.bbox) {
+    const [s, w, n, e] = agency.bbox;
+    return s <= bounds.n && n >= bounds.s && w <= bounds.e && e >= bounds.w;
+  }
+  if (agency.center) {
+    const [lat, lon] = agency.center;
+    const pad = 0.5;
+    return lat - pad <= bounds.n && lat + pad >= bounds.s && lon - pad <= bounds.e && lon + pad >= bounds.w;
+  }
+  return false;
+}
+
+function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
   const [showAll, setShowAll] = useState(false);
 
-  // Build deduplicated groups, tagging each with whether it's loaded in the current viewport
+  // Build deduplicated groups, tagging each with whether it overlaps the current viewport
   const allGroups = useMemo(() => {
     const groups: { name: string; slugs: string[]; region: string; loaded: boolean }[] = [];
     for (const a of agencies) {
       const region = a.region ?? 'Other';
+      const inView = bboxInViewport(a, bounds);
       const g = groups.find(x => x.name === a.name && x.region === region);
-      if (g) { g.slugs.push(a.slug); if (a.slug in layers) g.loaded = true; }
-      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: a.slug in layers });
+      if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
+      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: inView });
     }
     return groups;
-  }, [agencies, layers]);
+  }, [agencies, bounds]);
 
   const byRegion = useMemo(() => {
     const q = agencyQuery.toLowerCase();
@@ -145,7 +159,11 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
           All
         </button>
         <button
-          onClick={() => setSelectedAgencies(new Set())}
+          onClick={() => {
+            const next = new Set(selectedAgencies);
+            scopedSlugs.forEach(s => next.delete(s));
+            setSelectedAgencies(next);
+          }}
           disabled={allOff}
           className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
         >
@@ -174,9 +192,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1">{g.name}</span>
-                  {active && (
-                    <span className="ml-auto w-2 h-2 rounded-full bg-current shrink-0" />
-                  )}
+                  <span className={`ml-auto w-2 h-2 rounded-full shrink-0 ${active ? 'bg-current' : 'border border-current opacity-30'}`} />
                 </button>
               );
             })}
@@ -207,7 +223,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   agencies,
   selectedAgencies,
   setSelectedAgencies,
-  layers,
+  bounds,
 }) => {
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
@@ -423,7 +439,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             agencies={agencies}
             selectedAgencies={selectedAgencies}
             setSelectedAgencies={setSelectedAgencies}
-            layers={layers}
+            bounds={bounds}
             agencyQuery={agencyQuery}
             setAgencyQuery={setAgencyQuery}
             agencySearchRef={agencySearchRef}

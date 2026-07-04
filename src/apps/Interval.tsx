@@ -282,7 +282,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
               agencies={agencies}
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
-              layers={layers}
+              bounds={bounds}
             />
           </div>
           {!hideFilterPanel && (
