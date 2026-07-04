@@ -1174,34 +1174,57 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           </div>
         )}
 
-        {query !== '' && !fareView && searchMatchResults !== null && (
-          <div className="mb-4">
-            <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
-              {searchMatches} route{searchMatches === 1 ? '' : 's'} match
+        {query !== '' && !fareView && searchMatchResults !== null && (() => {
+          const qLower = query.toLowerCase();
+          const matchedAgencies = agencies.filter(a =>
+            a.name.toLowerCase().includes(qLower) || a.slug.startsWith(qLower)
+          );
+          return (
+            <div className="mb-4 space-y-3">
+              {matchedAgencies.length > 0 && setSelectedAgencySlug && (
+                <div>
+                  <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
+                    {matchedAgencies.length} agenc{matchedAgencies.length === 1 ? 'y' : 'ies'} match
+                  </div>
+                  {matchedAgencies.map(a => (
+                    <button
+                      key={a.slug}
+                      onClick={() => { setSelectedAgencySlug(a.slug); setQuery(''); }}
+                      className={LIST_ROW}
+                    >
+                      <span className={`${LIST_ROW_PRIMARY} flex-1 min-w-0 truncate`}>{a.name}</span>
+                      {a.region && <span className={`${LIST_ROW_DIM} shrink-0`}>{a.region}</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {searchMatchResults.length > 0 && (
+                <div>
+                  <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
+                    {searchMatches} route{searchMatches === 1 ? '' : 's'} match
+                  </div>
+                  {searchMatchResults.map((r) => (
+                    <RouteListRow
+                      key={r.key}
+                      shortName={titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
+                      selected={selectedRoute === r.key}
+                      onClick={() => {
+                        saveRecentSearch(query);
+                        setQuery('');
+                        setSelectedRoute(selectedRoute === r.key ? null : r.key);
+                      }}
+                      right={
+                        <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
+                          {r.agencyName}
+                        </span>
+                      }
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-            {searchMatchResults.length > 0 && (
-              <div className="max-h-40 overflow-y-auto custom-scrollbar border border-[var(--border-primary)] rounded-xl overflow-hidden">
-                {searchMatchResults.map((r) => (
-                  <RouteListRow
-                    key={r.key}
-                    shortName={titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
-                    selected={selectedRoute === r.key}
-                    onClick={() => {
-                      saveRecentSearch(query);
-                      setQuery('');
-                      setSelectedRoute(selectedRoute === r.key ? null : r.key);
-                    }}
-                    right={
-                      <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
-                        {r.agencyName}
-                      </span>
-                    }
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+          );
+        })()}
 
 
         {canScrollMore && (

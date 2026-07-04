@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Search: agency name results now open the agency card**: typing an agency name (e.g. "Community Transit") now shows a matching agency section above route results. Clicking the agency opens its card directly instead of dumping 38 individual routes with no way to navigate to the agency.
+- **Search: inner card border removed from route results**: the route results list had a `border rounded-xl` wrapper inside the outer floating card, creating a card-within-a-card. Removed — rows now sit flush in the panel.
 - **Header: Live and Info buttons appear transparent against map**: both buttons lacked a background, making them invisible in light mode and odd-looking against map tiles. Added `bg-[var(--bg-panel)]` to both.
 - **Agency card: service type summary**: shows a derived one-line blurb below the chips when an agency operates notable service types (BRT corridors, express routes, rail, ferry, etc.). Derived from `routeType` and `busSubType` already stored in GeoJSON features — no pipeline changes needed.
 - **Blank map for all new US metros**: all ~116 US agencies added in this session were in R2 as individual GeoJSON files, but `atlas.pmtiles` (the combined vector tile file) had not been rebuilt. Routes were invisible for DC/WMATA, Chicago, Atlanta, Miami, and all other newly added metros. Rebuilt from all 280 agencies.
