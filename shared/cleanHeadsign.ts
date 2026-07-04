@@ -120,6 +120,10 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
     cleanedLong = longName.replace(/^Ligne\s+\d+\s*-\s*/i, '').trim();
   }
 
+  // Strip trailing " Via [location]" routing qualifiers — not part of the route name.
+  // "Royal Oak Exch / Downtown Via Royal Oak" → "Royal Oak Exch / Downtown"
+  cleanedLong = cleanedLong.replace(/\s+via\s+.+$/i, '').trim();
+
   // General: strip if longName basically repeats the short or "route X"
   const lowerLong = cleanedLong.toLowerCase();
   const lowerShort = cleanShort.toLowerCase();

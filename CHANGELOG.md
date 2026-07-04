@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Route label: strip trailing "Via [location]" routing qualifiers from long names**: GTFS long names often include routing notes like "Royal Oak Exch / Downtown Via Royal Oak". The "Via X" suffix is routing detail, not the route name. Stripped to produce "Royal Oak Exch / Downtown", which is shorter and reads cleanly in the card title.
 - **Route card: "Also serves" span hint redesigned**: replaced the verbose sentence ("Also serves: Downtown Only — infrequent") with a visual row matching the direction rows — grey dot, destination name, small "limited" badge. Cleaner and consistent with the surrounding frequency data.
 - **Agency card: slug shown as monospaced debug text; pills replaced with clean text line**: the agency slug (e.g. "victoria") was rendering as `font-mono` text below the chips — a debug artifact. Removed it. The region and route count chips are now a single muted text line ("British Columbia · 63 routes") instead of two separate outlined pills.
 - **Route label: BRT brand names suppressed as bare terminus words**: the 1–2 word long name suppression for numeric routes was hiding BRT brand names like "Blink" (BC Transit) alongside the route number. Added BRT brand names (Blink, Zum, Viva, Flash, Bolt, Wave, Pulse, Boost, RapidRide) to the transit keywords list so they are never treated as bare place-name terminuses.
