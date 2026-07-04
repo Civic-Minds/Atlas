@@ -520,30 +520,31 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded || !selectedRoute) return;
 
-    // Compute full-route bounds from GeoJSON layer data (not just rendered tiles)
+    // Compute full-route bounds from GeoJSON layer data.
+    // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
+    // so match by slug (from selectedRoute key) + routeId separately.
+    const [routeSlug, routeId] = selectedRoute.split('::');
     let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
     let found = false;
 
-    if (layers) {
-      for (const fc of Object.values(layers)) {
-        for (const f of fc.features) {
-          if (routeKey(f.properties as any) !== selectedRoute) continue;
-          const geom = f.geometry as any;
-          if (!geom?.coordinates) continue;
-          const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
-          for (const [lng, lat] of coords) {
-            if (lng < minLng) minLng = lng;
-            if (lng > maxLng) maxLng = lng;
-            if (lat < minLat) minLat = lat;
-            if (lat > maxLat) maxLat = lat;
-            found = true;
-          }
+    const fc = layers?.[routeSlug];
+    if (fc) {
+      for (const f of fc.features) {
+        if ((f.properties as any)?.routeId !== routeId) continue;
+        const geom = f.geometry as any;
+        if (!geom?.coordinates) continue;
+        const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+        for (const [lng, lat] of coords) {
+          if (lng < minLng) minLng = lng;
+          if (lng > maxLng) maxLng = lng;
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+          found = true;
         }
       }
     }
 
     if (!found && map.getLayer('routes-layer')) {
-      // Fallback to rendered features if layers not available
       const rendered = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
         .filter(f => routeKey(f.properties as any) === selectedRoute);
       for (const f of rendered) {
