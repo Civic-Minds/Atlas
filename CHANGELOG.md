@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Header: Live and Info buttons appear transparent against map**: both buttons lacked a background, making them invisible in light mode and odd-looking against map tiles. Added `bg-[var(--bg-panel)]` to both.
+- **Agency card: service type summary**: shows a derived one-line blurb below the chips when an agency operates notable service types (BRT corridors, express routes, rail, ferry, etc.). Derived from `routeType` and `busSubType` already stored in GeoJSON features — no pipeline changes needed.
 - **Blank map for all new US metros**: all ~116 US agencies added in this session were in R2 as individual GeoJSON files, but `atlas.pmtiles` (the combined vector tile file) had not been rebuilt. Routes were invisible for DC/WMATA, Chicago, Atlanta, Miami, and all other newly added metros. Rebuilt from all 280 agencies.
 - **Live vehicles: vehicle tooltip uses app design system**: tooltip was rendering with browser-default styling (white box). Now uses `var(--bg-panel)` background with `backdrop-blur`, `var(--border-primary)` border, and `var(--text-primary)`/`var(--text-dim)` text — matching the floating card style used elsewhere in the UI.
 - **Header: back arrow showing when not on frequency map**: the home button swapped to a ← icon on non-frequency apps. Now always shows the map icon — behaviour unchanged (resets view on frequency, navigates home otherwise).

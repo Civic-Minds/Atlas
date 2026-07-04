@@ -15,6 +15,8 @@ interface RouteRow {
   longName: string | null;
   headway: number | null;
   tier: string | null;
+  routeType: number;
+  busSubType: string | undefined;
 }
 
 function getRoutes(layers: AgencyLayers, slug: string, day: string): RouteRow[] {
@@ -38,6 +40,8 @@ function getRoutes(layers: AgencyLayers, slug: string, day: string): RouteRow[] 
         longName: p.routeLongName ?? null,
         headway: h,
         tier: p.tier ?? null,
+        routeType: typeof p.routeType === 'number' ? p.routeType : 3,
+        busSubType: p.busSubType ?? undefined,
       });
     }
   }
@@ -47,6 +51,20 @@ function getRoutes(layers: AgencyLayers, slug: string, day: string): RouteRow[] 
     if (b.headway === null) return -1;
     return a.headway - b.headway;
   });
+}
+
+function getAgencyBlurb(routes: RouteRow[]): string | null {
+  const rtLabels: Record<number, string> = { 0: 'light rail', 1: 'subway', 2: 'commuter rail', 4: 'ferry', 5: 'cable car', 6: 'gondola', 7: 'funicular', 11: 'trolleybus', 12: 'monorail' };
+  const rail = routes.filter(r => r.routeType in rtLabels);
+  const brt = routes.filter(r => r.busSubType === 'brt');
+  const express = routes.filter(r => r.busSubType === 'express');
+  const parts: string[] = [];
+  const railTypes = [...new Set(rail.map(r => rtLabels[r.routeType]))];
+  if (railTypes.length) parts.push(railTypes.join(' and '));
+  if (brt.length) parts.push(`${brt.length} BRT corridor${brt.length !== 1 ? 's' : ''}`);
+  if (express.length) parts.push(`${express.length} express route${express.length !== 1 ? 's' : ''}`);
+  if (parts.length === 0) return null;
+  return parts.join(', ');
 }
 
 interface Props {
@@ -62,6 +80,7 @@ interface Props {
 
 export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sidebarLeft, fareView, fareOverride }: Props) {
   const routes = useMemo(() => getRoutes(layers, agency.slug, day), [layers, agency.slug, day]);
+  const agencyBlurb = useMemo(() => getAgencyBlurb(routes), [routes]);
 
   const baseFare = useMemo(() => {
     if (!fareView) return null;
@@ -133,6 +152,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
               )}
             </>
           ) : (
+          <>
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {agency.region && (
               <span className="text-[9px] font-bold text-[var(--text-dim)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2 py-0.5">{agency.region}</span>
@@ -142,6 +162,10 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
             </span>
             <span className="text-[9px] text-[var(--text-dim)] font-mono">{agency.slug}</span>
           </div>
+          {agencyBlurb && (
+            <p className="text-[10px] text-[var(--text-muted)] mt-1.5 leading-snug">{agencyBlurb}</p>
+          )}
+          </>
           )}
           {agency.excludeRouteShortNames?.length ? (
             <a
