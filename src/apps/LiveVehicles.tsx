@@ -389,8 +389,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 />
               </>
             ) : (
-              // List header
-              <>
+              // List header — wrap in items-center so the 8px dot aligns with the text midline
+              <span className="flex items-center gap-2">
                 {!isZoomedIn ? (
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
                 ) : totalVehicles > 0 ? (
@@ -409,7 +409,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
                 )}
                 <h2 className="text-sm font-black text-[var(--text-primary)]">Live Vehicles</h2>
-              </>
+              </span>
             )}
           </div>
 

@@ -4,7 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Live Vehicles header: dot misaligned with text**: the 8px status dot was `items-start` top-aligned against the larger "Live Vehicles" text, making it appear too high. Wrapped list header in `flex items-center` so dot centers on the text midline.
+
 ### Added
+- **Static agency expansion — 15 more metros**: Minneapolis, Pittsburgh, Salt Lake City, Jacksonville, Columbus, Charlotte, Raleigh/Durham, Indianapolis, Baltimore, Tampa, Orlando, Honolulu, Providence, Boise.
+  - **Minnesota**: Metro Transit (Minneapolis)
+  - **Pennsylvania**: Port Authority of Allegheny County (Pittsburgh)
+  - **Utah**: Utah Transit Authority (UTA)
+  - **Florida**: Jacksonville Transportation Authority (JTA), HART (Tampa), LYNX (Orlando)
+  - **Ohio**: Central Ohio Transit Authority (COTA)
+  - **North Carolina**: CATS (Charlotte), GoRaleigh, GoTriangle (Durham/Triangle)
+  - **Indiana**: IndyGo (Indianapolis)
+  - **Maryland**: Maryland Transit Administration — Baltimore bus/rail network
+  - **Hawaii**: TheBus (Honolulu)
+  - **Rhode Island**: RIPTA (Providence)
+  - **Idaho**: Valley Regional Transit (Boise)
 - **DC metro surrounding agencies**: Added VRE, MARC, Ride On, Fairfax Connector, ART, DASH (w/ WMATA). Total 240.
 - **NYC metro suburbs**: Added BeeLine (Westchester), NICE (Nassau), TOR (Rockland), SCT (Suffolk), PART (Putnam), Dutchess + previous (LIRR, MNR MDB, NJT Rail/Bus MDB, PATH).
 
