@@ -6,11 +6,13 @@ Reference for Atlas agency coverage across static data, live polling, and histor
 
 ## Static Coverage
 
-240 agencies as of July 2026. Canada-first, expanding into the US. DC metro area now includes WMATA + key surrounding agencies (VRE, MARC, Ride On, Fairfax Connector, ART, DASH) for better regional coverage.
+296 agencies as of July 4, 2026. Coast-to-coast coverage across Canada and the US, with broad regional expansion in progress.
 
 Source of truth: [`public/data/index.json`](../public/data/index.json)
 
-Current regions: Ontario, Quebec, BC, Alberta, Saskatchewan, Manitoba, Nova Scotia, New Brunswick, PEI, Newfoundland, Washington, Oregon, California, Connecticut, Massachusetts, Maine, Michigan, New York, Ohio, Pennsylvania, Washington DC (plus surrounding Maryland and Virginia agencies for full metro coverage: VRE, MARC, Ride On, Fairfax Connector, ART, DASH).
+Canada: Ontario, Quebec, British Columbia, Alberta, Saskatchewan, Manitoba, Nova Scotia, New Brunswick, Prince Edward Island, Newfoundland
+
+US: Washington, Oregon, California, Arizona, Nevada, Idaho, Utah, Colorado, New Mexico, Texas, Arkansas, Nebraska, Missouri, Kansas, Minnesota, Wisconsin, Illinois, Indiana, Michigan, Ohio, Kentucky, Tennessee, Louisiana, Alabama, Georgia, Florida, North Carolina, South Carolina, Virginia, Maryland, Washington DC, Pennsylvania, New Jersey, New York, Connecticut, Rhode Island, Massachusetts, Maine, Delaware, Hawaii
 
 ---
 

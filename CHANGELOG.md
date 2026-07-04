@@ -51,6 +51,16 @@ All notable changes to this project will be documented in this file.
 - **Live button redesign**: replaced the dim radio-wave icon with a pill showing a green dot + "Live" label. Inactive state has a visible border; active state fills with accent colour and pulses the dot.
 
 ### Added
+- **Static agency expansion — 16 agencies (total: 296)**: NYC borough bus splits, Hampton Roads, Wilmington (DE + NC), Tallahassee, Birmingham, Montgomery, Charleston SC, Savannah, Tulsa.
+  - **New York**: MTA NYCT Bus split by borough — Manhattan (mdb-513), Brooklyn (mdb-512), Queens (mdb-520), Bronx (mdb-528), Staten Island (mdb-514)
+  - **Virginia**: Hampton Roads Transit / HRT (mdb-473), Bay Transit (mdb-224), Williamsburg Area Transit Authority / WATA (mdb-474)
+  - **Delaware**: DART First State (mdb-1235)
+  - **North Carolina**: Wave Transit / Wilmington (mdb-1862)
+  - **Florida**: StarMetro / Tallahassee (mdb-344)
+  - **Alabama**: MAX Transit / Birmingham (mdb-2263), Montgomery Transit / The M (Trillium)
+  - **South Carolina**: CARTA / Charleston (mdb-352)
+  - **Georgia**: Chatham Area Transit / CAT / Savannah (mdb-2080)
+  - **Oklahoma**: Tulsa Transit / MTTA (mdb-184)
 - **index.json: backfill `region` field for 96 US agencies**: all agencies added during the US expansion were missing `region`, causing them to appear under "Other" in FilterChips. Added correct US state regions for all.
 - **Static agency expansion — DC/Virginia additional agencies**: Prince George's County Bus, DC Streetcar, Fredericksburg Regional Transit. (DC Circulator discontinued 2023; Alexandria DOT feed has no shapes.)
 - **Static agency expansion — 10 neighbouring agencies**: surrounding transit authorities for recently-added metros.
