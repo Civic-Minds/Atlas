@@ -9,7 +9,7 @@ import { MapCanvas } from '../components/Interval/MapCanvas';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
-import { FilterChips } from '../components/Interval/FilterChips';
+import { FilterChips, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
 import { SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL } from '../styles';
 import type { Agency, FareOverride } from '../App';
@@ -77,7 +77,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     return allSlugs;
   });
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
-  const [period, setPeriod] = useState<TimePeriod>('all');
+  const [period, setPeriod] = useState<TimePeriod>(getNowPeriod);
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
   const [showCorridors, setShowCorridors] = useState(false);

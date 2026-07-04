@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Time filter: default to current time period**: the map now opens showing the headway for the current time of day (AM Peak if it's 6–9am, Midday if it's 9am–3pm, etc.) instead of always defaulting to best-case all-day headway. `getNowPeriod()` was already implemented but never wired as the initial state.
 - **Time filter: remove "All Day" option; make periods toggleable**: "All Day" was not a time period — it was the absence of a filter. Removed it from the list. Period chips are now toggles: clicking an active period deactivates it (returns to all-day). Each period option now shows its hour range (e.g. "6a–9a") so users know exactly what window they're filtering to.
 - **Route label: strip trailing "Via [location]" routing qualifiers from long names**: GTFS long names often include routing notes like "Royal Oak Exch / Downtown Via Royal Oak". The "Via X" suffix is routing detail, not the route name. Stripped to produce "Royal Oak Exch / Downtown", which is shorter and reads cleanly in the card title.
 - **Route card: "Also serves" span hint redesigned**: replaced the verbose sentence ("Also serves: Downtown Only — infrequent") with a visual row matching the direction rows — grey dot, destination name, small "limited" badge. Cleaner and consistent with the surrounding frequency data.
