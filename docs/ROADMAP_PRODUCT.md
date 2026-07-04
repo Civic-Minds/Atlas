@@ -29,6 +29,7 @@ See [Atlas Factbook roadmap](ROADMAP_FACTBOOK.md) for details on computation, AI
 
 ## Map & Filter Improvements
 
+- [ ] **Customizable time period hour ranges**: TIME_PERIODS drives both the pipeline and frontend filter. Per-user hour overrides would work as a display preference via the headwayByHour fallback path — e.g. letting someone define "my commute is 7:30–9am" and see headways for exactly that window. Would not affect baked tile colors but would work for card display and route filtering.
 - [ ] **Bus sub-type filter**: distinguish Express, BRT, and Long-distance bus from local bus in the Mode filter
 - [ ] **On-demand transit zones**: show flex/microtransit service areas on the map alongside fixed routes, using GTFS-Flex zone geometry and service hours (no booking rules needed)
 - [ ] **Ferries**: Toronto Island Ferry and Montreal navettes fluviales — contingent on GTFS feed availability
