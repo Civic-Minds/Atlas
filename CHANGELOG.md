@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- **DC metro surrounding agencies**: Added VRE (Virginia Railway Express), MARC Train (MTA Maryland), Ride On (Montgomery County), Fairfax Connector, Arlington Transit (ART), and DASH (Alexandria) for complete Washington DC area coverage alongside WMATA. Total agencies: 240. All processed via Mobility Database / official feeds and available in the map.
+- **DC metro surrounding agencies**: Added VRE, MARC, Ride On, Fairfax Connector, ART, DASH (w/ WMATA). Total 240.
+- **NYC metro (partial)**: Added MTA NYCT Subway + LIRR as start for full surrounding coverage (buses, NJT, Metro-North next).
 
 ### Changed
 - **index.json refactor**: R2 artifact URLs (`url`, `stopsUrl`, `corridorsUrl`) are now derived at runtime via `getAgencyArtifactUrls(slug)` in `shared/config.ts` instead of being redundantly stored per agency entry. Pipeline (`process-gtfs.ts`, `refresh.ts`) no longer writes them. Reduces duplication, shrinks the registry file (~40%), and simplifies adding new agencies. Full backward compatibility maintained for any lingering stored values. Frontend, `agencyGeo`, build scripts, etc. updated to derive.
