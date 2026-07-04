@@ -377,7 +377,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                 className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
               >
                 <span>{PERIOD_LABELS[p]}</span>
-                <span className="text-[9px] font-mono text-[var(--text-dim)] shrink-0">{periodRange(p)}</span>
+                <span className="text-[9px] text-[var(--text-dim)] shrink-0">{periodRange(p)}</span>
               </button>
             ))}
           </div>
