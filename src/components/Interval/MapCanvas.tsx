@@ -22,6 +22,7 @@ const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
 interface MapCanvasProps {
   agencies: Agency[];
+  layers?: Record<string, GeoJSON.FeatureCollection>;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -55,6 +56,7 @@ interface MapCanvasProps {
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
   agencies,
+  layers,
   maxHeadway,
   period,
   q,
@@ -518,32 +520,49 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded || !selectedRoute) return;
 
-    // Center on the route coordinate box in the viewport
-    let bboxBigger: any[] = [];
-    if (map.getLayer('routes-layer')) {
-      bboxBigger = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-        .filter(f => routeKey(f.properties as any) === selectedRoute);
-    }
-
-    if (bboxBigger.length === 0) return;
-    
-    // Compute bounds for geometries
+    // Compute full-route bounds from GeoJSON layer data (not just rendered tiles)
     let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-    bboxBigger.forEach(f => {
-      const geom = f.geometry as any;
-      const coords = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
-      coords.forEach(([lng, lat]: [number, number]) => {
-        if (lng < minLng) minLng = lng;
-        if (lng > maxLng) maxLng = lng;
-        if (lat < minLat) minLat = lat;
-        if (lat > maxLat) maxLat = lat;
-      });
-    });
+    let found = false;
 
-    if (minLng < maxLng) {
-      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 80, maxZoom: 13 });
+    if (layers) {
+      for (const fc of Object.values(layers)) {
+        for (const f of fc.features) {
+          if (routeKey(f.properties as any) !== selectedRoute) continue;
+          const geom = f.geometry as any;
+          if (!geom?.coordinates) continue;
+          const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+          for (const [lng, lat] of coords) {
+            if (lng < minLng) minLng = lng;
+            if (lng > maxLng) maxLng = lng;
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+            found = true;
+          }
+        }
+      }
     }
-  }, [selectedRoute, mapLoaded]);
+
+    if (!found && map.getLayer('routes-layer')) {
+      // Fallback to rendered features if layers not available
+      const rendered = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+        .filter(f => routeKey(f.properties as any) === selectedRoute);
+      for (const f of rendered) {
+        const geom = f.geometry as any;
+        const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+        for (const [lng, lat] of coords) {
+          if (lng < minLng) minLng = lng;
+          if (lng > maxLng) maxLng = lng;
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+          found = true;
+        }
+      }
+    }
+
+    if (found && minLng < maxLng) {
+      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 80, maxZoom: 14 });
+    }
+  }, [selectedRoute, mapLoaded, layers]);
 
   // Update Vector Tile Styling & Filters dynamically on parameters change
   useEffect(() => {

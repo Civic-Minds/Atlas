@@ -191,6 +191,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       )}
       <MapCanvas
         agencies={agencies}
+        layers={layers}
         maxHeadway={maxHeadway}
         period={period}
         q={q}
