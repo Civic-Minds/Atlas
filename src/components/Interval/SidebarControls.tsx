@@ -1060,7 +1060,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
                             {(() => {
-                              const label = d.headsign ? fmtH(d) : (directionGroups.length > 1 ? `Direction ${gi + 1}` : '');
+                              const label = d.headsign ? fmtH(d) : '';
                               return label ? (
                                 <span className="font-bold text-[var(--text-legend)] block break-words">{label}</span>
                               ) : null;

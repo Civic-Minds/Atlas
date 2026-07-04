@@ -132,6 +132,15 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
 
   if (!cleanedLong) return cleanShort;
 
+  // Numeric-only short names (e.g. "24") with a short place-name long name (e.g. "Shane Park")
+  // are just using the terminus as the route name — not a useful descriptor to show alongside the number.
+  // Suppress if: purely numeric short name + long name is 1–2 words + no transit keywords.
+  if (/^\d+$/.test(cleanShort)) {
+    const words = cleanedLong.trim().split(/\s+/);
+    const hasTransitKeyword = /\b(line|route|express|rapid|local|limited|shuttle|bus|rail|train|metro|sky|link|station|center|centre|transit|loop|connector|crosstown)\b/i.test(cleanedLong);
+    if (words.length <= 2 && !hasTransitKeyword) return cleanShort;
+  }
+
   // Pure-letter short names (e.g. "LW", "LE", "KI") are acronyms of the long name — redundant to show both.
   if (/^[A-Za-z]+$/.test(cleanShort)) return cleanedLong;
 
