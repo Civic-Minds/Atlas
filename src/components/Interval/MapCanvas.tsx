@@ -285,7 +285,39 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       });
 
       // Deck.gl overlay for GPU-rendered vehicle markers
-      const deckOverlay = new MapboxOverlay({ interleaved: false, layers: [] });
+      const deckOverlay = new MapboxOverlay({
+        interleaved: false,
+        layers: [],
+        getTooltip: (info: any) => {
+          const object = info.object;
+          if (!object || (!object.headsign && object.status === 'no_data')) return null;
+          const delayMin: number | null = object.delayMin;
+          const label = delayMin === null ? null
+            : delayMin <= -1.5 ? `${Math.round(Math.abs(delayMin))}m early`
+            : delayMin >= 5.5  ? `${Math.round(delayMin)}m late`
+            : 'On time';
+          const statusColor: Record<string, string> = {
+            on_time: '#38a169', early: '#3182ce', late: '#e53e3e', no_data: '#718096',
+          };
+          const color = statusColor[object.status] ?? statusColor.no_data;
+          return {
+            html: `
+              <div style="font-family:'Inter',ui-sans-serif,sans-serif;padding:8px 10px;min-width:130px;line-height:1.4;">
+                <div style="font-size:9px;font-weight:800;color:#9ca3af;letter-spacing:0.4px;text-transform:uppercase;">Route ${cleanRouteShortName(object.routeShortName)}</div>
+                ${object.headsign ? `<div style="font-size:11px;font-weight:700;color:#111;margin-top:2px;">${object.headsign}</div>` : ''}
+                ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,0,0,0.1);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:#9ca3af;font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${label}</span></div>` : ''}
+              </div>`,
+            style: {
+              background: '#fff',
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              padding: '0',
+              border: 'none',
+              color: '#111',
+            },
+          };
+        },
+      });
       map.addControl(deckOverlay as any);
       deckOverlayRef.current = deckOverlay;
 
