@@ -1038,7 +1038,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             })()}
             <div className="border-t border-[var(--border-primary)] mt-2 mb-3" />
             <div className="space-y-3">
-              {directionGroups.map((group, gi) => {
+              {(() => {
+                // If every direction group has no headsigns, decide whether to collapse or number them.
+                const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
+                const groupHeadway = (g: typeof directionGroups[number]) => g.realTier[0]?.headway ?? null;
+                const collapseGroups = allLackHeadsigns && directionGroups.length > 1 &&
+                  directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
+                const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
+                const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
+                return displayGroups.map((group, gi) => {
                 const fmtH = (d: ShapeProperties): string => {
                   const cleaned = cleanHeadsign((d.headsign ?? '').trim(), currentRoute.routeShortName, currentRoute.routeLongName);
                   if (!cleaned) return '';
@@ -1050,7 +1058,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   .filter(Boolean);
                 return (
                   <React.Fragment key={group.dirId}>
-                    {gi > 0 && directionGroups.length > 1 && (
+                    {gi > 0 && displayGroups.length > 1 && (
                       <div className="border-t border-[var(--border-primary)] opacity-30" />
                     )}
                     <div className="space-y-2">
@@ -1060,7 +1068,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         return (
                           <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
                             {(() => {
-                              const label = d.headsign ? fmtH(d) : '';
+                              const label = d.headsign ? fmtH(d) : needsNumbered ? `Direction ${gi + 1}` : '';
                               return label ? (
                                 <span className="font-bold text-[var(--text-legend)] block break-words">{label}</span>
                               ) : null;
@@ -1126,22 +1134,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     </div>
                   </React.Fragment>
                 );
-              })}
+                });
+              })()}
               {routeIsStale && (
-                <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 text-right">
+                <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
                   <p className="text-[9px] font-bold text-amber-500">
-                    Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}
+                    Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}{routeSlug && (
+                      <>{' '}<a
+                        href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
+                      >Learn more →</a></>
+                    )}
                   </p>
-                  {routeSlug && (
-                    <a
-                      href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[8px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold block mt-0.5"
-                    >
-                      Learn more →
-                    </a>
-                  )}
                 </div>
               )}
             </div>
