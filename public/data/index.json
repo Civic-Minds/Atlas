@@ -3787,7 +3787,25 @@
         41.4887,
         -73.9883
       ],
-      "feedUrl": "https://content.njtransit.com/sites/default/files/developers-resources/rail_data.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-509/mdb-509-202607010038/mdb-509-202607010038.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "njt-bus",
+      "name": "NJ Transit Bus",
+      "region": "New Jersey",
+      "center": [
+        40.72,
+        -74.1
+      ],
+      "bbox": [
+        38.9331,
+        -75.5212,
+        41.2563,
+        -73.9391
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-508/mdb-508-202607010134/mdb-508-202607010134.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     }
