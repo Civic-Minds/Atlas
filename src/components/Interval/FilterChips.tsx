@@ -77,29 +77,37 @@ interface AgenciesPanelProps {
 }
 
 function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
-  // Merge same-named agencies (e.g. NFTA bus + rail) then group by region
-  const byRegion = useMemo(() => {
-    const q = agencyQuery.toLowerCase();
-    // Dedupe by name within each region
-    const groups: { name: string; slugs: string[]; region: string }[] = [];
+  const [showAll, setShowAll] = useState(false);
+
+  // Build deduplicated groups, tagging each with whether it's loaded in the current viewport
+  const allGroups = useMemo(() => {
+    const groups: { name: string; slugs: string[]; region: string; loaded: boolean }[] = [];
     for (const a of agencies) {
       const region = a.region ?? 'Other';
       const g = groups.find(x => x.name === a.name && x.region === region);
-      if (g) g.slugs.push(a.slug);
-      else groups.push({ name: a.name, slugs: [a.slug], region });
+      if (g) { g.slugs.push(a.slug); if (a.slug in layers) g.loaded = true; }
+      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: a.slug in layers });
     }
-    const filtered = q ? groups.filter(g => g.name.toLowerCase().includes(q) || g.region.toLowerCase().includes(q)) : groups;
-    const map = new Map<string, typeof groups>();
+    return groups;
+  }, [agencies, layers]);
+
+  const byRegion = useMemo(() => {
+    const q = agencyQuery.toLowerCase();
+    const source = (showAll || q) ? allGroups : allGroups.filter(g => g.loaded);
+    const filtered = q ? source.filter(g => g.name.toLowerCase().includes(q) || g.region.toLowerCase().includes(q)) : source;
+    const map = new Map<string, typeof allGroups>();
     for (const g of filtered) {
       if (!map.has(g.region)) map.set(g.region, []);
       map.get(g.region)!.push(g);
     }
     return map;
-  }, [agencies, agencyQuery]);
+  }, [allGroups, agencyQuery, showAll]);
 
+  const loadedSlugs = useMemo(() => allGroups.filter(g => g.loaded).flatMap(g => g.slugs), [allGroups]);
   const allSlugs = useMemo(() => agencies.map(a => a.slug), [agencies]);
-  const allOn = allSlugs.every(s => selectedAgencies.has(s));
-  const allOff = allSlugs.every(s => !selectedAgencies.has(s));
+  const scopedSlugs = (showAll || agencyQuery) ? allSlugs : loadedSlugs;
+  const allOn = scopedSlugs.every(s => selectedAgencies.has(s));
+  const allOff = scopedSlugs.every(s => !selectedAgencies.has(s));
 
   return (
     <div className={`${PANEL} w-56`}>
@@ -115,7 +123,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
       </div>
       <div className="flex gap-1 px-1 pt-1">
         <button
-          onClick={() => setSelectedAgencies(new Set(allSlugs))}
+          onClick={() => setSelectedAgencies(new Set(scopedSlugs))}
           disabled={allOn}
           className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
         >
@@ -131,14 +139,13 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
-          <p className="px-2 py-2 text-[10px] text-[var(--text-dim)]">No matches.</p>
+          <p className="px-2 py-2 text-[10px] text-[var(--text-dim)]">No agencies in view.</p>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
             <p className="px-2 pt-2 pb-0.5 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const loaded = g.slugs.some(s => s in layers);
               return (
                 <button
                   key={g.name}
@@ -152,10 +159,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1">{g.name}</span>
-                  {active && !loaded && (
-                    <span className="ml-auto w-2 h-2 rounded-full border border-current opacity-40 shrink-0" />
-                  )}
-                  {active && loaded && (
+                  {active && (
                     <span className="ml-auto w-2 h-2 rounded-full bg-current shrink-0" />
                   )}
                 </button>
@@ -163,6 +167,14 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
             })}
           </div>
         ))}
+        {!agencyQuery && (
+          <button
+            onClick={() => setShowAll(v => !v)}
+            className="mt-1 mb-0.5 mx-2 text-[10px] font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
+          >
+            {showAll ? '← In view only' : `All agencies (${allGroups.length}) →`}
+          </button>
+        )}
       </div>
     </div>
   );
