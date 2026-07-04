@@ -4209,6 +4209,39 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2885/mdb-2885-202511251947/mdb-2885-202511251947.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
+    },
+    {
+      "slug": "pgc-the-bus",
+      "name": "Prince George's County (The Bus)",
+      "center": [
+        38.85,
+        -76.85
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-477/mdb-477-202605010139/mdb-477-202605010139.zip",
+      "lastFeedExpiry": "20260901",
+      "lastFeedVersion": "UTC: 30-Apr-2026 18:15"
+    },
+    {
+      "slug": "dc-streetcar",
+      "name": "DC Streetcar",
+      "center": [
+        38.9,
+        -77
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2223/mdb-2223-202411271818/mdb-2223-202411271818.zip",
+      "lastFeedExpiry": "20250630",
+      "lastFeedVersion": "20230718"
+    },
+    {
+      "slug": "fred-transit",
+      "name": "Fredericksburg Regional Transit",
+      "center": [
+        38.3,
+        -77.46
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     }
   ]
 }
