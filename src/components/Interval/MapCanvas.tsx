@@ -599,10 +599,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     // maxHeadway from the headway pill; Infinity means "show all"
     const capHeadway = maxHeadway === Infinity ? 9999 : maxHeadway;
 
-    // Coalesce so null-headway (span) routes → 9999, failing any finite headway filter.
-    // ['to-number', null, fallback] evaluates to 0 in MapLibre (null coerces to 0),
-    // which would make span routes pass every headway gate. ['coalesce'] is null-aware.
-    const headwayExpr: any = ['coalesce', ['get', 'headway'], 9999];
+    // Headway expression for filters.
+    // Treat tier==='infrequent' (and missing/null) as 9999 so they fail finite headway gates.
+    // This makes map filtering match the JS passesRouteFilter / resolveTierVal logic.
+    const headwayExpr: any = ['case',
+      ['==', ['get', 'tier'], 'infrequent'], 9999,
+      ['coalesce', ['get', 'headway'], 9999]
+    ];
 
     // Headway pill filter — applied whenever showRouteLayers is true
     const headwayPillFilter: any = capHeadway < 9999

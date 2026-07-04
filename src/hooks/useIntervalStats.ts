@@ -378,9 +378,14 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
     // Note: mode filter is handled in MapCanvas (has special virtual-mode expression for OCTranspo/ION)
 
-    // Headway pill
+    // Headway pill - treat tier==='infrequent' (and missing/null headway) as 9999 so they are filtered out under any finite maxHeadway.
+    // This aligns the MapLibre expression with passesRouteFilter + resolveTierVal (infrequent → Infinity).
     if (maxHeadway !== Infinity) {
-      clauses.push(['any', ['!has', 'headway'], ['<=', ['get', 'headway'], maxHeadway]]);
+      const effHw = ['case',
+        ['==', ['get', 'tier'], 'infrequent'], 9999,
+        ['coalesce', ['get', 'headway'], 9999]
+      ];
+      clauses.push(['<=', effHw, maxHeadway]);
     }
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
