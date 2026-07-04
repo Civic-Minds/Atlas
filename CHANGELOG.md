@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Route card: "Also serves" span hint redesigned**: replaced the verbose sentence ("Also serves: Downtown Only — infrequent") with a visual row matching the direction rows — grey dot, destination name, small "limited" badge. Cleaner and consistent with the surrounding frequency data.
 - **Agency card: slug shown as monospaced debug text; pills replaced with clean text line**: the agency slug (e.g. "victoria") was rendering as `font-mono` text below the chips — a debug artifact. Removed it. The region and route count chips are now a single muted text line ("British Columbia · 63 routes") instead of two separate outlined pills.
 - **Route label: BRT brand names suppressed as bare terminus words**: the 1–2 word long name suppression for numeric routes was hiding BRT brand names like "Blink" (BC Transit) alongside the route number. Added BRT brand names (Blink, Zum, Viva, Flash, Bolt, Wave, Pulse, Boost, RapidRide) to the transit keywords list so they are never treated as bare place-name terminuses.
 - **Route card: long route titles truncated with ellipsis**: replaced `truncate` (single-line clamp) with `line-clamp-2` so long names like "95 — Langford / Downtown Victoria" wrap to a second line instead of being cut off.

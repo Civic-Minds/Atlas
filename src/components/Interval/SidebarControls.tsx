@@ -1127,9 +1127,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         </div>
                       )}
                       {hideSpan && group.realTier.length > 0 && spanNames.length > 0 && (
-                        <p key="span-hint" className="text-[10px] text-[var(--text-dim)] font-bold leading-snug">
-                          Also serves: {spanNames.join(' · ')} — infrequent
-                        </p>
+                        <div key="span-hint" className="flex items-start gap-1.5 text-[10px]">
+                          <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: getTierColor(null) }} />
+                          <span className="text-[var(--text-dim)] font-bold leading-snug">
+                            {spanNames.join(' · ')}
+                            <span className="ml-1.5 text-[8px] font-bold text-[var(--text-legend)] border border-[var(--border-primary)] rounded-full px-1.5 py-px whitespace-nowrap">limited</span>
+                          </span>
+                        </div>
                       )}
                     </div>
                   </React.Fragment>
