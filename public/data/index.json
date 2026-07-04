@@ -3754,6 +3754,42 @@
       "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
       "lastFeedExpiry": "20260816",
       "lastFeedVersion": "2026-07-02T12:06:00"
+    },
+    {
+      "slug": "mnr",
+      "name": "Metro-North Railroad (MNR)",
+      "region": "New York",
+      "center": [
+        40.8,
+        -73.9
+      ],
+      "bbox": [
+        40.753,
+        -73.9856,
+        41.8147,
+        -72.9218
+      ],
+      "feedUrl": "http://rrgtfsfeeds.s3.amazonaws.com/gtfsmnr.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "njt-rail",
+      "name": "NJ Transit Rail",
+      "region": "New Jersey",
+      "center": [
+        40.7,
+        -74.2
+      ],
+      "bbox": [
+        39.3633,
+        -75.198,
+        41.4887,
+        -73.9883
+      ],
+      "feedUrl": "https://content.njtransit.com/sites/default/files/developers-resources/rail_data.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     }
   ]
 }
