@@ -51,7 +51,7 @@ const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }])
 ) as Record<string, { start: number; end: number }>;
 
-type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'lateNight';
+type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight';
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
 // Hours covered by the hourly sparkline: 5 AM through 2 AM next day (GTFS hour 26)

@@ -10,9 +10,28 @@ import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../h
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel, shortenAgencyName } from '../../utils/format';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { TIME_PERIODS } from '../../../shared/config';
 import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
 import RouteListRow from '../RouteListRow';
 import RouteCardTitle from '../RouteCardTitle';
+
+// Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet
+// (e.g. for newly added periods before a pipeline rebuild). Takes the best (lowest) non-null
+// headway across the period's hours.
+function periodHeadwayFromByHour(
+  byHour: Record<number, number | null> | undefined,
+  periodKey: string,
+): number | null {
+  if (!byHour) return null;
+  const p = TIME_PERIODS.find(t => t.key === periodKey);
+  if (!p) return null;
+  let best: number | null = null;
+  for (let h = p.startHour; h < p.endHour; h++) {
+    const v = byHour[h];
+    if (v != null && (best === null || v < best)) best = v;
+  }
+  return best;
+}
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -1076,7 +1095,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                             <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
                               {(() => {
                                 const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
-                                const ph = period !== 'all' ? byPeriod?.[period as keyof HeadwayByPeriod] : undefined;
+                                const byHour = (d as any).headwayByHour as Record<number, number | null> | undefined;
+                                const ph = period !== 'all'
+                                  ? (byPeriod?.[period as keyof HeadwayByPeriod] ?? periodHeadwayFromByHour(byHour, period))
+                                  : undefined;
                                 const displayH = ph ?? d.headway;
                                 // When a period filter is active, check if trunk stops have
                                 // meaningfully better frequency than the terminal — if so show a
