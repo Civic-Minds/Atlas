@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Header: back arrow showing when not on frequency map**: the home button swapped to a ← icon on non-frequency apps. Now always shows the map icon — behaviour unchanged (resets view on frequency, navigates home otherwise).
 - **Live Vehicles header: dot misaligned with text**: the 8px status dot was `items-start` top-aligned against the larger "Live Vehicles" text, making it appear too high. Wrapped list header in `flex items-center` so dot centers on the text midline.
+
+### Changed
+- **Live button redesign**: replaced the dim radio-wave icon with a pill showing a green dot + "Live" label. Inactive state has a visible border; active state fills with accent colour and pulses the dot.
 
 ### Added
 - **index.json: backfill `region` field for 96 US agencies**: all agencies added during the US expansion were missing `region`, causing them to appear under "Other" in FilterChips. Added correct US state regions for all.

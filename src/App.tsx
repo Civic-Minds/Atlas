@@ -239,10 +239,7 @@ export default function App() {
           aria-label={activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
-          {inFrequency
-            ? <MapIcon className="w-3.5 h-3.5 text-white" />
-            : <ArrowLeft className="w-3.5 h-3.5 text-white" />
-          }
+          <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
         <div className="flex flex-col leading-tight">
@@ -299,9 +296,10 @@ export default function App() {
         <button
           onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
           aria-label="Live vehicles"
-          className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${inLive ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)]'}`}
+          className={`h-8 px-3 flex items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent)] text-white' : 'border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
-          <Radio className="w-4 h-4" />
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-white animate-pulse' : 'bg-green-400'}`} />
+          Live
         </button>
 
       </div>
