@@ -123,7 +123,10 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
   // General: strip if longName basically repeats the short or "route X"
   const lowerLong = cleanedLong.toLowerCase();
   const lowerShort = cleanShort.toLowerCase();
-  if (lowerLong === `route ${lowerShort}` || lowerLong === lowerShort || lowerLong.includes(lowerShort + ' ')) {
+  // Normalize dashes to spaces so "G Line" matches "G-Line Rapid Ride"
+  const normLong = lowerLong.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+  const normShort = lowerShort.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+  if (lowerLong === `route ${lowerShort}` || lowerLong === lowerShort || normLong.startsWith(normShort + ' ') || lowerLong.includes(lowerShort + ' ')) {
     return cleanShort;
   }
 

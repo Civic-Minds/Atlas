@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Route card: headsign/agency visual hierarchy**: agency name was same weight and color as the direction headsign, making the card hard to scan. Agency is now `text-dim` uppercase 9px (clearly a metadata label); headsign uses `text-legend` (darker, reads as content).
+- **Route label: "G Line — G-Line Rapid Ride" redundancy**: long names that start with the short name (after normalizing dashes to spaces) are now suppressed. "G-Line Rapid Ride" with short name "G Line" now shows as just "G Line".
 - **Search: agency name results now open the agency card**: typing an agency name (e.g. "Community Transit") now shows a matching agency section above route results. Clicking the agency opens its card directly instead of dumping 38 individual routes with no way to navigate to the agency.
 - **Search: inner card border removed from route results**: the route results list had a `border rounded-xl` wrapper inside the outer floating card, creating a card-within-a-card. Removed — rows now sit flush in the panel.
 - **Header: Live and Info buttons appear transparent against map**: both buttons lacked a background, making them invisible in light mode and odd-looking against map tiles. Added `bg-[var(--bg-panel)]` to both.

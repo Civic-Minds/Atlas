@@ -1061,7 +1061,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                             {(() => {
                               const label = d.headsign ? fmtH(d) : (directionGroups.length > 1 ? `Direction ${gi + 1}` : '');
                               return label ? (
-                                <span className="font-bold text-[var(--text-muted)] block break-words">{label}</span>
+                                <span className="font-bold text-[var(--text-legend)] block break-words">{label}</span>
                               ) : null;
                             })()}
                             <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">

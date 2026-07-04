@@ -18,12 +18,12 @@ export default function RouteCardTitle({ routeShortName, routeLongName, agencyNa
           ? (
             <button
               onClick={onAgencyClick}
-              className="text-[10px] text-[var(--text-muted)] font-bold tracking-wide mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
+              className="text-[9px] text-[var(--text-dim)] font-bold tracking-wide uppercase mt-0.5 hover:text-[var(--accent)] transition-colors text-left"
             >
               {agencyName}
             </button>
           ) : (
-            <p className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">{agencyName}</p>
+            <p className="text-[9px] text-[var(--text-dim)] font-bold tracking-wide uppercase truncate mt-0.5">{agencyName}</p>
           )
       )}
     </div>
