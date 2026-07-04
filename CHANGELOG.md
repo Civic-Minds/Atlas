@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **DC metro surrounding agencies**: Added VRE, MARC, Ride On, Fairfax Connector, ART, DASH (w/ WMATA). Total 240.
-- **NYC metro suburbs**: Added BeeLine (Westchester), NICE Bus (Nassau), TOR (Rockland) + previous (LIRR, MNR MDB, NJT Rail/Bus MDB, PATH).
+- **NYC metro suburbs**: Added BeeLine (Westchester), NICE (Nassau), TOR (Rockland), SCT (Suffolk), PART (Putnam), Dutchess + previous (LIRR, MNR MDB, NJT Rail/Bus MDB, PATH).
 
 ### Changed
 - **index.json refactor**: R2 artifact URLs now derived (via `getAgencyArtifactUrls`). Added JSON Schema (`public/data/index.schema.json`) + `npm run validate-index` (enforces no stored artifacts, required fields, structure). Pipeline/find-mdb updated for cleaner output. Shrinks file, easier maintenance.
