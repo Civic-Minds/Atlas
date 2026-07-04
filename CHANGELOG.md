@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - **NYC metro (partial)**: Added MTA NYCT Subway + LIRR as start for full surrounding coverage (buses, NJT, Metro-North next).
 
 ### Changed
-- **index.json refactor**: R2 artifact URLs (`url`, `stopsUrl`, `corridorsUrl`) are now derived at runtime via `getAgencyArtifactUrls(slug)` in `shared/config.ts` instead of being redundantly stored per agency entry. Pipeline (`process-gtfs.ts`, `refresh.ts`) no longer writes them. Reduces duplication, shrinks the registry file (~40%), and simplifies adding new agencies. Full backward compatibility maintained for any lingering stored values. Frontend, `agencyGeo`, build scripts, etc. updated to derive.
+- **index.json refactor**: R2 artifact URLs now derived (via `getAgencyArtifactUrls`). Added JSON Schema (`public/data/index.schema.json`) + `npm run validate-index` (enforces no stored artifacts, required fields, structure). Pipeline/find-mdb updated for cleaner output. Shrinks file, easier maintenance.
 - **process-gtfs.ts**: Now supports remote `https://...` GTFS URLs directly (auto-downloads to `tmp/` before processing).
 - **New `find-mdb` tool**: Added `npm run find-mdb -- "search term" slug "lat,lon"` (and `pipeline/find-mdb-feed.ts`) to query the Mobility Database catalog, surface current hosted feeds, and emit ready-to-paste `index.json` snippets.
 - **audit-feed-urls.ts**: Updated filter to recognize modern Mobility Database URLs (`files.mobilitydatabase.org`) in addition to legacy `mdb-latest` GCS mirrors.
