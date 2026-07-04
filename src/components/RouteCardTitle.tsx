@@ -12,7 +12,7 @@ export default function RouteCardTitle({ routeShortName, routeLongName, agencyNa
   const title = titleCase(getRouteLabel(routeShortName, routeLongName));
   return (
     <div className="flex-1 min-w-0">
-      <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{title}</h3>
+      <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight line-clamp-2">{title}</h3>
       {agencyName && (
         onAgencyClick
           ? (

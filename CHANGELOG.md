@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Route card: long route titles truncated with ellipsis**: replaced `truncate` (single-line clamp) with `line-clamp-2` so long names like "95 — Langford / Downtown Victoria" wrap to a second line instead of being cut off.
 - **Route card: collapse identical no-headsign directions**: when a route has multiple directions with no headsign data and the same headway (e.g. "24 — every 30 min / every 30 min"), it now collapses to a single bullet instead of repeating identically. When directions genuinely differ in frequency but still lack headsigns, numbered fallback labels ("Direction 1 / Direction 2") are restored so they remain distinguishable.
 - **Route card: "Schedule may be outdated" left-aligned and "Learn more" inline**: the stale-schedule notice was right-justified and "Learn more →" was on its own line below. Now left-aligned (consistent with "Also serves") and "Learn more →" is inline at the end of the same sentence.
 - **Map: selecting a route fits the full route extent**: previously used `queryRenderedFeatures` which only saw tiles already loaded in the viewport, so long routes only fit the visible segment. Now scans the in-memory GeoJSON layer data for the correct agency. Fixed a key mismatch: `agencySlug` is only added to features during `build-pmtiles` (not in the raw R2 GeoJSON), so the match now splits `selectedRoute` into slug + routeId and looks up `layers[slug]` directly instead of using `routeKey`.
