@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Info button: dimmed icon at rest**: the ⓘ button used `text-dim` (the faintest color) at rest, making it look disabled. Changed to `text-muted` with hover to `text-primary`.
+- **Live button: green dot shown when Live is off**: the dot was `bg-green-400` regardless of state, implying Live was always active. Now uses a neutral `text-dim` dot when off; pulses white when on.
+
 ### Changed
 - **MapCanvas: remove dead `selectedAgencies` prop and `hideSpan` effect dependency**: after the tile filter centralization, `selectedAgencies` was no longer wired to anything in MapCanvas (covered by `tileFilter`) and `hideSpan` was still in the effect dep array despite not being referenced in filter construction (also covered by `tileFilter`). Removed the unused prop and cleaned the dep array.
 - **Agency filter: "None" now deselects only in-viewport agencies**: previously "None" globally emptied `selectedAgencies` regardless of viewport, hiding all agencies everywhere (e.g. deselecting Seattle would also hide Denver). It now only removes in-viewport agencies from the selected set, matching the scoped behavior of "All".
