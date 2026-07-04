@@ -500,7 +500,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -557,7 +557,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -1852,7 +1852,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -2827,7 +2827,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202606070210/mdb-29-202606070210.zip",
       "lastFeedExpiry": "20261212",
-      "lastFeedVersion": ""
+      "lastFeedVersion": "",
+      "region": "California"
     },
     {
       "slug": "metrolink",
@@ -2838,7 +2839,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-96/mdb-96-202605230122/mdb-96-202605230122.zip",
       "lastFeedExpiry": "20360501",
-      "lastFeedVersion": "20260505"
+      "lastFeedVersion": "20260505",
+      "region": "California"
     },
     {
       "slug": "bigbluebus",
@@ -2849,7 +2851,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-37/mdb-37-202604070127/mdb-37-202604070127.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "2026-04 (Apr)_20260319"
+      "lastFeedVersion": "2026-04 (Apr)_20260319",
+      "region": "California"
     },
     {
       "slug": "longbeach",
@@ -2860,7 +2863,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/mdb-1198-202606170039/mdb-1198-202606170039.zip",
       "lastFeedExpiry": "20260823",
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "California"
     },
     {
       "slug": "octa",
@@ -2871,7 +2875,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-15/mdb-15-202605100002/mdb-15-202605100002.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "California"
     },
     {
       "slug": "foothill",
@@ -2882,7 +2887,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-101/mdb-101-202607020124/mdb-101-202607020124.zip",
       "lastFeedExpiry": "20261031",
-      "lastFeedVersion": "20260701"
+      "lastFeedVersion": "20260701",
+      "region": "California"
     },
     {
       "slug": "avta",
@@ -2893,7 +2899,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-214/mdb-214-202406071534/mdb-214-202406071534.zip",
       "lastFeedExpiry": "20210801",
-      "lastFeedVersion": "20210503"
+      "lastFeedVersion": "20210503",
+      "region": "California"
     },
     {
       "slug": "sdmts",
@@ -2904,7 +2911,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-13/mdb-13-202605270056/mdb-13-202605270056.zip",
       "lastFeedExpiry": "20260905",
-      "lastFeedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142"
+      "lastFeedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142",
+      "region": "California"
     },
     {
       "slug": "nctd",
@@ -2915,7 +2923,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": "Version_20250205"
+      "lastFeedVersion": "Version_20250205",
+      "region": "California"
     },
     {
       "slug": "riverside",
@@ -2926,7 +2935,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-98/mdb-98-202605110136/mdb-98-202605110136.zip",
       "lastFeedExpiry": "20260912",
-      "lastFeedVersion": "S1000245"
+      "lastFeedVersion": "S1000245",
+      "region": "California"
     },
     {
       "slug": "omnitrans",
@@ -2937,7 +2947,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-97/mdb-97-202604290039/mdb-97-202604290039.zip",
       "lastFeedExpiry": "20260809",
-      "lastFeedVersion": "20260504_20260428a"
+      "lastFeedVersion": "20260504_20260428a",
+      "region": "California"
     },
     {
       "slug": "fax",
@@ -2948,7 +2959,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202605220140/mdb-90-202605220140.zip",
       "lastFeedExpiry": "20260809",
-      "lastFeedVersion": "6.1.26 Production_20260515"
+      "lastFeedVersion": "6.1.26 Production_20260515",
+      "region": "California"
     },
     {
       "slug": "get",
@@ -2959,7 +2971,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-46/mdb-46-202606130139/mdb-46-202606130139.zip",
       "lastFeedExpiry": "20271231",
-      "lastFeedVersion": "20260612"
+      "lastFeedVersion": "20260612",
+      "region": "California"
     },
     {
       "slug": "sjrtd",
@@ -2970,7 +2983,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-886/mdb-886-202606020047/mdb-886-202606020047.zip",
       "lastFeedExpiry": "20260725",
-      "lastFeedVersion": "20260531-20260725"
+      "lastFeedVersion": "20260531-20260725",
+      "region": "California"
     },
     {
       "slug": "merced",
@@ -2981,7 +2995,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/mdb-3117-202607030020/mdb-3117-202607030020.zip",
       "lastFeedExpiry": "",
-      "lastFeedVersion": "PASAT 8 Route Update"
+      "lastFeedVersion": "PASAT 8 Route Update",
+      "region": "California"
     },
     {
       "slug": "start",
@@ -2992,7 +3007,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2273/mdb-2273-202606030124/mdb-2273-202606030124.zip",
       "lastFeedExpiry": "20270630",
-      "lastFeedVersion": "20260602"
+      "lastFeedVersion": "20260602",
+      "region": "California"
     },
     {
       "slug": "mst",
@@ -3003,7 +3019,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-56/mdb-56-202606240122/mdb-56-202606240122.zip",
       "lastFeedExpiry": "20260828",
-      "lastFeedVersion": "202602v33"
+      "lastFeedVersion": "202602v33",
+      "region": "California"
     },
     {
       "slug": "sbmtd",
@@ -3014,7 +3031,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/mdb-1246-202606300054/mdb-1246-202606300054.zip",
       "lastFeedExpiry": "20260816",
-      "lastFeedVersion": "S1000258"
+      "lastFeedVersion": "S1000258",
+      "region": "California"
     },
     {
       "slug": "slotransit",
@@ -3025,7 +3043,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-44/mdb-44-202603280107/mdb-44-202603280107.zip",
       "lastFeedExpiry": "20270101",
-      "lastFeedVersion": "2026-03-27T18:13:21Z"
+      "lastFeedVersion": "2026-03-27T18:13:21Z",
+      "region": "California"
     },
     {
       "slug": "slorta",
@@ -3036,7 +3055,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-43/mdb-43-202606120140/mdb-43-202606120140.zip",
       "lastFeedExpiry": "20271231",
-      "lastFeedVersion": "20260611"
+      "lastFeedVersion": "20260611",
+      "region": "California"
     },
     {
       "slug": "sunline",
@@ -3047,7 +3067,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-461/tld-461-202606060105/tld-461-202606060105.zip",
       "lastFeedExpiry": "",
-      "lastFeedVersion": "6/5/2026"
+      "lastFeedVersion": "6/5/2026",
+      "region": "California"
     },
     {
       "slug": "rtcsnv",
@@ -3058,7 +3079,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/mdb-2351-202606300119/mdb-2351-202606300119.zip",
       "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "October 2025_20260302"
+      "lastFeedVersion": "October 2025_20260302",
+      "region": "Nevada"
     },
     {
       "slug": "rtcwashoe",
@@ -3069,7 +3091,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-120/mdb-120-202605290123/mdb-120-202605290123.zip",
       "lastFeedExpiry": "20260904",
-      "lastFeedVersion": "1"
+      "lastFeedVersion": "1",
+      "region": "Nevada"
     },
     {
       "slug": "smat",
@@ -3080,7 +3103,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2272/mdb-2272-202607030002/mdb-2272-202607030002.zip",
       "lastFeedExpiry": "",
-      "lastFeedVersion": ""
+      "lastFeedVersion": "",
+      "region": "California"
     },
     {
       "slug": "valleymetro",
@@ -3091,7 +3115,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-147/mdb-147-202606300020/mdb-147-202606300020.zip",
       "lastFeedExpiry": "20261025",
-      "lastFeedVersion": "GTFS_v4.5_20260616"
+      "lastFeedVersion": "GTFS_v4.5_20260616",
+      "region": "Arizona"
     },
     {
       "slug": "mountainline",
@@ -3102,7 +3127,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/mdb-1979-202607030141/mdb-1979-202607030141.zip",
       "lastFeedExpiry": "20261230",
-      "lastFeedVersion": "No deviations"
+      "lastFeedVersion": "No deviations",
+      "region": "Arizona"
     },
     {
       "slug": "mountainmetro",
@@ -3113,7 +3139,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2356/mdb-2356-202504260208/mdb-2356-202504260208.zip",
       "lastFeedExpiry": "20250927",
-      "lastFeedVersion": "2025 (1) Spring_20250421"
+      "lastFeedVersion": "2025 (1) Spring_20250421",
+      "region": "Colorado"
     },
     {
       "slug": "rtd-denver",
@@ -3124,7 +3151,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/mdb-2280-202607020143/mdb-2280-202607020143.zip",
       "lastFeedExpiry": "20260926",
-      "lastFeedVersion": "Jun26-36807-13-20-20260701-040207"
+      "lastFeedVersion": "Jun26-36807-13-20-20260701-040207",
+      "region": "Colorado"
     },
     {
       "slug": "abqride",
@@ -3135,7 +3163,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-166/mdb-166-202606060001/mdb-166-202606060001.zip",
       "lastFeedExpiry": "20260904",
-      "lastFeedVersion": "2026-05_20260605"
+      "lastFeedVersion": "2026-05_20260605",
+      "region": "New Mexico"
     },
     {
       "slug": "santafetrails",
@@ -3146,7 +3175,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-839/mdb-839-202412160115/mdb-839-202412160115.zip",
       "lastFeedExpiry": "20260330",
-      "lastFeedVersion": "2024-12-14T14:31:44Z"
+      "lastFeedVersion": "2024-12-14T14:31:44Z",
+      "region": "New Mexico"
     },
     {
       "slug": "capmetro",
@@ -3157,7 +3187,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-150/mdb-150-202607020147/mdb-150-202607020147.zip",
       "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "260630_1449"
+      "lastFeedVersion": "260630_1449",
+      "region": "Texas"
     },
     {
       "slug": "dart",
@@ -3168,7 +3199,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202606120106/mdb-152-202606120106.zip",
       "lastFeedExpiry": "20260719",
-      "lastFeedVersion": "V702-215-214-20260608"
+      "lastFeedVersion": "V702-215-214-20260608",
+      "region": "Texas"
     },
     {
       "slug": "trinitymetro",
@@ -3179,7 +3211,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
       "lastFeedExpiry": "20260926",
-      "lastFeedVersion": "MAY 26_20260526"
+      "lastFeedVersion": "MAY 26_20260526",
+      "region": "Texas"
     },
     {
       "slug": "metrohouston",
@@ -3190,7 +3223,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202606160113/mdb-2060-202606160113.zip",
       "lastFeedExpiry": "20260711",
-      "lastFeedVersion": "FIFA2026IVOMS_20260612"
+      "lastFeedVersion": "FIFA2026IVOMS_20260612",
+      "region": "Texas"
     },
     {
       "slug": "via",
@@ -3201,7 +3235,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-217/tld-217-202607030139/tld-217-202607030139.zip",
       "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "May 2026_20260701"
+      "lastFeedVersion": "May 2026_20260701",
+      "region": "Texas"
     },
     {
       "slug": "embark",
@@ -3212,7 +3247,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/mdb-2062-202607030109/mdb-2062-202607030109.zip",
       "lastFeedExpiry": "20270702",
-      "lastFeedVersion": "01/07/2026-22:30"
+      "lastFeedVersion": "01/07/2026-22:30",
+      "region": "Oklahoma"
     },
     {
       "slug": "rockregion",
@@ -3223,7 +3259,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2264/mdb-2264-202507280407/mdb-2264-202507280407.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Arkansas"
     },
     {
       "slug": "nashvillemta",
@@ -3234,7 +3271,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202606200107/mdb-360-202606200107.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Tennessee"
     },
     {
       "slug": "mata",
@@ -3245,7 +3283,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2352/mdb-2352-202502100036/mdb-2352-202502100036.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Tennessee"
     },
     {
       "slug": "norta",
@@ -3256,7 +3295,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/ntd-60032/ntd-60032-202605140120/ntd-60032-202605140120.zip",
       "lastFeedExpiry": "20270124",
-      "lastFeedVersion": "S1000253"
+      "lastFeedVersion": "S1000253",
+      "region": "Louisiana"
     },
     {
       "slug": "cincinnatimetro",
@@ -3267,7 +3307,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-307/mdb-307-202607010002/mdb-307-202607010002.zip",
       "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "gtfs_20260531-20260815_20260626"
+      "lastFeedVersion": "gtfs_20260531-20260815_20260626",
+      "region": "Ohio"
     },
     {
       "slug": "tarc",
@@ -3278,7 +3319,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202604170127/mdb-2662-202604170127.zip",
       "lastFeedExpiry": "20260801",
-      "lastFeedVersion": "20260416"
+      "lastFeedVersion": "20260416",
+      "region": "Kentucky"
     },
     {
       "slug": "mcts",
@@ -3289,7 +3331,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/mdb-2127-202505080016/mdb-2127-202505080016.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Wisconsin"
     },
     {
       "slug": "metrostlouis",
@@ -3300,7 +3343,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Missouri"
     },
     {
       "slug": "kcata",
@@ -3311,7 +3355,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-187/mdb-187-202607020106/mdb-187-202607020106.zip",
       "lastFeedExpiry": "20260711",
-      "lastFeedVersion": "June 2026_20260630"
+      "lastFeedVersion": "June 2026_20260630",
+      "region": "Missouri"
     },
     {
       "slug": "omahametro",
@@ -3322,7 +3367,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2261/mdb-2261-202604230118/mdb-2261-202604230118.zip",
       "lastFeedExpiry": "20260829",
-      "lastFeedVersion": "OMAHA 2604 V1"
+      "lastFeedVersion": "OMAHA 2604 V1",
+      "region": "Nebraska"
     },
     {
       "slug": "ladot",
@@ -3333,7 +3379,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1210/mdb-1210-202607030056/mdb-1210-202607030056.zip",
       "lastFeedExpiry": "20271231",
-      "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-CE 423 Changes v3,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026"
+      "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-CE 423 Changes v3,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026",
+      "region": "California"
     },
     {
       "slug": "culvercitybus",
@@ -3344,7 +3391,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-38/mdb-38-202605300008/mdb-38-202605300008.zip",
       "lastFeedExpiry": "20260712",
-      "lastFeedVersion": "S1000250_2026.01.09"
+      "lastFeedVersion": "S1000250_2026.01.09",
+      "region": "California"
     },
     {
       "slug": "santaclarita",
@@ -3355,7 +3403,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-1256/tld-1256-202606250025/tld-1256-202606250025.zip",
       "lastFeedExpiry": "20271231",
-      "lastFeedVersion": "20260624"
+      "lastFeedVersion": "20260624",
+      "region": "California"
     },
     {
       "slug": "montebello",
@@ -3366,7 +3415,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2201/mdb-2201-202606270133/mdb-2201-202606270133.zip",
       "lastFeedExpiry": "20260906",
-      "lastFeedVersion": "20260626"
+      "lastFeedVersion": "20260626",
+      "region": "California"
     },
     {
       "slug": "burbankbus",
@@ -3377,7 +3427,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/mdb-2149-202607030052/mdb-2149-202607030052.zip",
       "lastFeedExpiry": "",
-      "lastFeedVersion": "1/12/2024"
+      "lastFeedVersion": "1/12/2024",
+      "region": "California"
     },
     {
       "slug": "glendalebeeline",
@@ -3388,7 +3439,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "California"
     },
     {
       "slug": "pasadenatransit",
@@ -3399,7 +3451,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-41/mdb-41-202606270117/mdb-41-202606270117.zip",
       "lastFeedExpiry": "20271231",
-      "lastFeedVersion": "20260626"
+      "lastFeedVersion": "20260626",
+      "region": "California"
     },
     {
       "slug": "norwalktransit",
@@ -3410,7 +3463,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-881/tld-881-202511280046/tld-881-202511280046.zip",
       "lastFeedExpiry": "20261231",
-      "lastFeedVersion": "20251126"
+      "lastFeedVersion": "20251126",
+      "region": "California"
     },
     {
       "slug": "pvpta",
@@ -3421,7 +3475,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-35/mdb-35-202607030136/mdb-35-202607030136.zip",
       "lastFeedExpiry": "20260723",
-      "lastFeedVersion": "UTC: 02-Jul-2026 21:43"
+      "lastFeedVersion": "UTC: 02-Jul-2026 21:43",
+      "region": "California"
     },
     {
       "slug": "gtrans",
@@ -3432,7 +3487,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2270/mdb-2270-202606300031/mdb-2270-202606300031.zip",
       "lastFeedExpiry": "20260718",
-      "lastFeedVersion": "S1000131"
+      "lastFeedVersion": "S1000131",
+      "region": "California"
     },
     {
       "slug": "vvta",
@@ -3443,7 +3499,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-99/mdb-99-202410070003/mdb-99-202410070003.zip",
       "lastFeedExpiry": "20250329",
-      "lastFeedVersion": "2024.09"
+      "lastFeedVersion": "2024.09",
+      "region": "California"
     },
     {
       "slug": "vctc",
@@ -3454,7 +3511,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-31/mdb-31-202507150038/mdb-31-202507150038.zip",
       "lastFeedExpiry": "20250815",
-      "lastFeedVersion": "UTC: 07-May-2025 21:06"
+      "lastFeedVersion": "UTC: 07-May-2025 21:06",
+      "region": "California"
     },
     {
       "slug": "elmonte",
@@ -3465,7 +3523,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-103/mdb-103-202403040057/mdb-103-202403040057.zip",
       "lastFeedExpiry": "20251031",
-      "lastFeedVersion": "UTC: 29-Feb-2024 18:42"
+      "lastFeedVersion": "UTC: 29-Feb-2024 18:42",
+      "region": "California"
     },
     {
       "slug": "cta",
@@ -3476,7 +3535,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-389/mdb-389-202605300003/mdb-389-202605300003.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Illinois"
     },
     {
       "slug": "metra",
@@ -3487,7 +3547,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2854/mdb-2854-202606280011/mdb-2854-202606280011.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Illinois"
     },
     {
       "slug": "pace-bus",
@@ -3498,7 +3559,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2347/mdb-2347-202605290102/mdb-2347-202605290102.zip",
       "lastFeedExpiry": "20260829",
-      "lastFeedVersion": "20260531"
+      "lastFeedVersion": "20260531",
+      "region": "Illinois"
     },
     {
       "slug": "marta",
@@ -3509,7 +3571,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-368/mdb-368-202604190110/mdb-368-202604190110.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Georgia"
     },
     {
       "slug": "cobblinc",
@@ -3520,7 +3583,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/mdb-3193-202607020158/mdb-3193-202607020158.zip",
       "lastFeedExpiry": "20261231",
-      "lastFeedVersion": "20260701"
+      "lastFeedVersion": "20260701",
+      "region": "Georgia"
     },
     {
       "slug": "gwinnett-transit",
@@ -3531,7 +3595,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2241/mdb-2241-202607030045/mdb-2241-202607030045.zip",
       "lastFeedExpiry": "20261226",
-      "lastFeedVersion": "20260702"
+      "lastFeedVersion": "20260702",
+      "region": "Georgia"
     },
     {
       "slug": "miami-dade-transit",
@@ -3542,7 +3607,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Florida"
     },
     {
       "slug": "broward-transit",
@@ -3553,7 +3619,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-330/mdb-330-202606300003/mdb-330-202606300003.zip",
       "lastFeedExpiry": "20260926",
-      "lastFeedVersion": "S20260621_E20260926_TS20260626144559"
+      "lastFeedVersion": "S20260621_E20260926_TS20260626144559",
+      "region": "Florida"
     },
     {
       "slug": "transfort",
@@ -3564,7 +3631,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
       "lastFeedExpiry": "20240511",
-      "lastFeedVersion": "S1000201"
+      "lastFeedVersion": "S1000201",
+      "region": "Colorado"
     },
     {
       "slug": "septa",
@@ -3944,7 +4012,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-205/mdb-205-202606280024/mdb-205-202606280024.zip",
       "lastFeedExpiry": "20260821",
-      "lastFeedVersion": "1782334167"
+      "lastFeedVersion": "1782334167",
+      "region": "Minnesota"
     },
     {
       "slug": "port-authority-pa",
@@ -3955,7 +4024,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-409/mdb-409-202606280112/mdb-409-202606280112.zip",
       "lastFeedExpiry": "20261024",
-      "lastFeedVersion": "2606-Merged_Clever_2606"
+      "lastFeedVersion": "2606-Merged_Clever_2606",
+      "region": "Pennsylvania"
     },
     {
       "slug": "uta",
@@ -3966,7 +4036,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-170/mdb-170-202606250127/mdb-170-202606250127.zip",
       "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "2026 April SGR After_20260624"
+      "lastFeedVersion": "2026 April SGR After_20260624",
+      "region": "Utah"
     },
     {
       "slug": "jta",
@@ -3977,7 +4048,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-764/tld-764-202606200015/tld-764-202606200015.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Florida"
     },
     {
       "slug": "cota",
@@ -3988,7 +4060,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-404/mdb-404-202607010029/mdb-404-202607010029.zip",
       "lastFeedExpiry": "20260906",
-      "lastFeedVersion": "2026-MAY-04-BB_20260630"
+      "lastFeedVersion": "2026-MAY-04-BB_20260630",
+      "region": "Ohio"
     },
     {
       "slug": "cats",
@@ -3999,7 +4072,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2265/mdb-2265-202606120001/mdb-2265-202606120001.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "North Carolina"
     },
     {
       "slug": "goraleigh",
@@ -4010,7 +4084,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2074/mdb-2074-202607010046/mdb-2074-202607010046.zip",
       "lastFeedExpiry": "20260831",
-      "lastFeedVersion": "S1000094"
+      "lastFeedVersion": "S1000094",
+      "region": "North Carolina"
     },
     {
       "slug": "gotriangle",
@@ -4021,7 +4096,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-3183/mdb-3183-202605281945/mdb-3183-202605281945.zip",
       "lastFeedExpiry": "20260801",
-      "lastFeedVersion": "2026-03 service V1"
+      "lastFeedVersion": "2026-03 service V1",
+      "region": "North Carolina"
     },
     {
       "slug": "indygo",
@@ -4032,7 +4108,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/ntd-50050/ntd-50050-202503060058/ntd-50050-202503060058.zip",
       "lastFeedExpiry": "20250607",
-      "lastFeedVersion": "20250305"
+      "lastFeedVersion": "20250305",
+      "region": "Indiana"
     },
     {
       "slug": "mta-maryland",
@@ -4043,7 +4120,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-466/mdb-466-202607030053/mdb-466-202607030053.zip",
       "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "20260701"
+      "lastFeedVersion": "20260701",
+      "region": "Maryland"
     },
     {
       "slug": "hart",
@@ -4054,7 +4132,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
       "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "2606.2"
+      "lastFeedVersion": "2606.2",
+      "region": "Florida"
     },
     {
       "slug": "lynx",
@@ -4065,7 +4144,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-347/mdb-347-202606060124/mdb-347-202606060124.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Florida"
     },
     {
       "slug": "thebus",
@@ -4076,7 +4156,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/mdb-2350-202605210014/mdb-2350-202605210014.zip",
       "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "(2605_v5_BusRail_MERGED_Landlines)"
+      "lastFeedVersion": "(2605_v5_BusRail_MERGED_Landlines)",
+      "region": "Hawaii"
     },
     {
       "slug": "ripta",
@@ -4087,7 +4168,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-624/mdb-624-202606210030/mdb-624-202606210030.zip",
       "lastFeedExpiry": "20260828",
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Rhode Island"
     },
     {
       "slug": "valley-regional-transit",
@@ -4098,7 +4180,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-142/mdb-142-202606100102/mdb-142-202606100102.zip",
       "lastFeedExpiry": "20270609",
-      "lastFeedVersion": "457"
+      "lastFeedVersion": "457",
+      "region": "Idaho"
     },
     {
       "slug": "psta",
@@ -4109,7 +4192,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-326/mdb-326-202511300039/mdb-326-202511300039.zip",
       "lastFeedExpiry": "20260606",
-      "lastFeedVersion": "S1000242"
+      "lastFeedVersion": "S1000242",
+      "region": "Florida"
     },
     {
       "slug": "palm-tran",
@@ -4120,7 +4204,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-332/mdb-332-202605190002/mdb-332-202605190002.zip",
       "lastFeedExpiry": "20260919",
-      "lastFeedVersion": "20260511"
+      "lastFeedVersion": "20260511",
+      "region": "Florida"
     },
     {
       "slug": "sunrail",
@@ -4131,7 +4216,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-626/mdb-626-202512170136/mdb-626-202512170136.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Florida"
     },
     {
       "slug": "votran",
@@ -4142,7 +4228,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-349/mdb-349-202605300114/mdb-349-202605300114.zip",
       "lastFeedExpiry": "20220115",
-      "lastFeedVersion": "20210223"
+      "lastFeedVersion": "20210223",
+      "region": "Florida"
     },
     {
       "slug": "chapel-hill-transit",
@@ -4153,7 +4240,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-89/tld-89-202607040106/tld-89-202607040106.zip",
       "lastFeedExpiry": "",
-      "lastFeedVersion": "Summer 2026"
+      "lastFeedVersion": "Summer 2026",
+      "region": "North Carolina"
     },
     {
       "slug": "mvta",
@@ -4164,7 +4252,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202606230010/mdb-206-202606230010.zip",
       "lastFeedExpiry": "20260809",
-      "lastFeedVersion": "20260622"
+      "lastFeedVersion": "20260622",
+      "region": "Minnesota"
     },
     {
       "slug": "xpress-ga",
@@ -4175,7 +4264,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip",
       "lastFeedExpiry": "20250705",
-      "lastFeedVersion": "S1000101"
+      "lastFeedVersion": "S1000101",
+      "region": "Georgia"
     },
     {
       "slug": "omniride",
@@ -4186,7 +4276,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1156/mdb-1156-202604020037/mdb-1156-202604020037.zip",
       "lastFeedExpiry": "20260725",
-      "lastFeedVersion": "2026 March_20260326"
+      "lastFeedVersion": "2026 March_20260326",
+      "region": "Virginia"
     },
     {
       "slug": "loudoun-transit",
@@ -4197,7 +4288,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1053/mdb-1053-202604210103/mdb-1053-202604210103.zip",
       "lastFeedExpiry": "20260926",
-      "lastFeedVersion": "S1000079"
+      "lastFeedVersion": "S1000079",
+      "region": "Virginia"
     },
     {
       "slug": "cue-bus",
@@ -4208,7 +4300,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2885/mdb-2885-202511251947/mdb-2885-202511251947.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Virginia"
     },
     {
       "slug": "pgc-the-bus",
@@ -4219,7 +4312,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-477/mdb-477-202605010139/mdb-477-202605010139.zip",
       "lastFeedExpiry": "20260901",
-      "lastFeedVersion": "UTC: 30-Apr-2026 18:15"
+      "lastFeedVersion": "UTC: 30-Apr-2026 18:15",
+      "region": "Maryland"
     },
     {
       "slug": "dc-streetcar",
@@ -4230,7 +4324,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2223/mdb-2223-202411271818/mdb-2223-202411271818.zip",
       "lastFeedExpiry": "20250630",
-      "lastFeedVersion": "20230718"
+      "lastFeedVersion": "20230718",
+      "region": "Washington DC"
     },
     {
       "slug": "fred-transit",
@@ -4241,7 +4336,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null
+      "lastFeedVersion": null,
+      "region": "Virginia"
     }
   ]
 }

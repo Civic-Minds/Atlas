@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - **Live Vehicles header: dot misaligned with text**: the 8px status dot was `items-start` top-aligned against the larger "Live Vehicles" text, making it appear too high. Wrapped list header in `flex items-center` so dot centers on the text midline.
 
 ### Added
+- **index.json: backfill `region` field for 96 US agencies**: all agencies added during the US expansion were missing `region`, causing them to appear under "Other" in FilterChips. Added correct US state regions for all.
 - **Static agency expansion — DC/Virginia additional agencies**: Prince George's County Bus, DC Streetcar, Fredericksburg Regional Transit. (DC Circulator discontinued 2023; Alexandria DOT feed has no shapes.)
 - **Static agency expansion — 10 neighbouring agencies**: surrounding transit authorities for recently-added metros.
   - **Florida (Tampa area)**: Pinellas Suncoast Transit Authority (PSTA / St. Pete)
