@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Loading indicator: remove redundant top progress bar**: the thin 3px bar at the top of the map duplicated the bottom-left spinner. Removed in favour of the existing pill indicator which is more visible and shows the network count.
+- **PMTiles rebuild and upload**: rebuilt PMTiles to include all recently-added agencies (Denver RTD and others). Upload script now uses rclone for large file reliability; updated `upload-pmtiles.ts` to use 32 MB parts with sequential queue to reduce TLS timeout risk.
 - **Info button: dimmed icon at rest**: the ⓘ button used `text-dim` (the faintest color) at rest, making it look disabled. Changed to `text-muted` with hover to `text-primary`.
 - **Live button: green dot shown when Live is off**: the dot was `bg-green-400` regardless of state, implying Live was always active. Now uses a neutral `text-dim` dot when off; pulses white when on.
 

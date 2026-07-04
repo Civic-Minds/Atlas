@@ -52,8 +52,9 @@ async function main() {
       ContentType: 'application/octet-stream',
       ContentLength: size,
     },
-    // 64 MB parts — R2 supports up to 10,000 parts
-    partSize: 64 * 1024 * 1024,
+    // 32 MB parts, sequential — reduces TLS timeout risk on long uploads
+    partSize: 32 * 1024 * 1024,
+    queueSize: 1,
     leavePartsOnError: false,
   });
 
