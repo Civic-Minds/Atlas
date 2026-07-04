@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **MapCanvas: remove dead `selectedAgencies` prop and `hideSpan` effect dependency**: after the tile filter centralization, `selectedAgencies` was no longer wired to anything in MapCanvas (covered by `tileFilter`) and `hideSpan` was still in the effect dep array despite not being referenced in filter construction (also covered by `tileFilter`). Removed the unused prop and cleaned the dep array.
+
 ### Fixed
 - **Centralize map tile filter in useIntervalStats**: `MapCanvas` was rebuilding agency, day, direction, span, and headway filter expressions independently from the `passesRouteFilter` logic in `useIntervalStats`, causing filters to silently diverge (the agency filter bug being the latest example). `useIntervalStats` now returns a `tileFilter` MapLibre expression derived from the same inputs. `MapCanvas` consumes it directly and only adds map-state-specific clauses (zoom gate, search, complex mode expression for virtual modes).
 - **Agency filter: deselecting agencies had no effect on the map**: `selectedAgencies` was only passed to `useIntervalStats` (stats/sidebar) but never to `MapCanvas`. The PMTiles tile filter had no agency clause, so all routes rendered regardless of the agency picker. Now adds a MapLibre `in agencySlug allowlist` filter when the selected set is smaller than the full list, and hides all routes when None is selected.

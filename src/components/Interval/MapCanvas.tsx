@@ -49,7 +49,6 @@ interface MapCanvasProps {
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   tileFilter?: any;
   selectedModes?: Set<number>;
-  selectedAgencies?: Set<string>;
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
@@ -79,7 +78,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onHistoryRouteClick,
   tileFilter,
   selectedModes,
-  selectedAgencies,
   selectedAgencySlug,
   setSelectedAgencySlug,
   fareView = false,
@@ -773,7 +771,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes, tileFilter, fareView]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, selectedModes, tileFilter, fareView]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
