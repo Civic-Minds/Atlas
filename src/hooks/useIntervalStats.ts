@@ -354,5 +354,38 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const searchMatches = searchMatchResults?.length ?? null;
 
-  return { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop };
+  // MapLibre tile filter derived from the same inputs as passesRouteFilter.
+  // MapCanvas combines this with map-state-specific clauses (zoom gate, search).
+  const tileFilter = useMemo((): any => {
+    const clauses: any[] = [];
+
+    // Agency allowlist
+    if (agencies.size === 0) {
+      return ['==', ['get', 'agencySlug'], '']; // hide everything
+    }
+    clauses.push(['in', ['get', 'agencySlug'], ['literal', Array.from(agencies)]]);
+
+    // Day: only show features for the selected day (or features with no day set, e.g. corridors)
+    clauses.push(['any', ['!has', 'day'], ['==', ['get', 'day'], day]]);
+
+    // Direction 0 only (direction 1 traces same streets in reverse)
+    clauses.push(['any', ['!has', 'directionId'], ['==', ['get', 'directionId'], 0]]);
+
+    // Span filter
+    if (hideSpan) {
+      clauses.push(['any', ['!has', 'tier'], ['!=', ['get', 'tier'], 'span']]);
+    }
+
+    // Note: mode filter is handled in MapCanvas (has special virtual-mode expression for OCTranspo/ION)
+
+    // Headway pill
+    if (maxHeadway !== Infinity) {
+      clauses.push(['any', ['!has', 'headway'], ['<=', ['get', 'headway'], maxHeadway]]);
+    }
+
+    return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agencies, day, hideSpan, modes, maxHeadway]);
+
+  return { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
 }

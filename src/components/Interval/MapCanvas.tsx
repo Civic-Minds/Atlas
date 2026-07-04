@@ -47,6 +47,7 @@ interface MapCanvasProps {
   hideSpan?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
+  tileFilter?: any;
   selectedModes?: Set<number>;
   selectedAgencies?: Set<string>;
   selectedAgencySlug?: string | null;
@@ -76,6 +77,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   hideSpan = false,
   filterToAgencies = false,
   onHistoryRouteClick,
+  tileFilter,
   selectedModes,
   selectedAgencies,
   selectedAgencySlug,
@@ -610,8 +612,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       : null;
 
     // Hide span (irregular) routes from the map when hideSpan is active
-    const spanFilter: any = hideSpan ? ['!=', ['get', 'tier'], 'span'] : null;
-
     // MapLibre expression to compute the effective mode of a feature (matches useIntervalStats.ts effectiveMode)
     const VIRTUAL_LRT_MODE = 900;
     const modeExpr: any = [
@@ -650,52 +650,34 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       ]
     ];
 
+    // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
+    // MapCanvas only adds map-state-specific clauses on top.
     let routeFilter: any = null;
     if (!showRouteLayers) {
       routeFilter = ['==', 'agencySlug', ''];
     } else if (fareView) {
-      // In fares view only show routes from GTFS-fare agencies that actually have a baseFare value
       const hasFare = ['has', 'baseFare'];
       const searchClause = ql
         ? (matchedAgencySlug
             ? ['==', 'agencySlug', matchedAgencySlug]
-            : ['any',
-                ['in', q, ['get', 'routeShortName']],
-                ['in', q, ['get', 'routeId']],
-                ['in', q, ['get', 'agencySlug']]
-              ])
+            : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]])
         : null;
-      const modeOnly = modeFilter;
-      const clauses = [hasFare, searchClause, modeOnly].filter(Boolean);
+      const clauses = [hasFare, searchClause, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 0 ? null : (clauses.length === 1 ? clauses[0] : ['all', ...clauses]);
     } else if (ql) {
-      // Search active: match query + respect headway pill, but skip zoom gate
-      // so users can find any route regardless of zoom level.
       const searchClause = matchedAgencySlug
         ? ['==', 'agencySlug', matchedAgencySlug]
-        : ['any',
-            ['in', q, ['get', 'routeShortName']],
-            ['in', q, ['get', 'routeId']],
-            ['in', q, ['get', 'agencySlug']]
-          ];
-      const clauses = [searchClause, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
+        : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]];
+      const clauses = [tileFilter, searchClause, headwayPillFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     } else {
-      // Overview: combine zoom gate + headway pill + span filter
-      const clauses = [zoomGateFilter, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
+      const clauses = [tileFilter, zoomGateFilter, headwayPillFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     }
 
     if (filterToAgencies && agencies.length > 0) {
       const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencies.map(a => a.slug)]];
       routeFilter = routeFilter ? ['all', routeFilter, slugAllowlist] : slugAllowlist;
-    }
-
-    if (selectedAgencies && selectedAgencies.size < agencies.length) {
-      const allowlist: any = selectedAgencies.size === 0
-        ? ['==', 'agencySlug', '']
-        : ['in', ['get', 'agencySlug'], ['literal', Array.from(selectedAgencies)]];
-      routeFilter = routeFilter ? ['all', routeFilter, allowlist] : allowlist;
     }
 
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
@@ -791,7 +773,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes, selectedAgencies, fareView]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes, tileFilter, fareView]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
