@@ -1016,7 +1016,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               {(() => {
                 const slug = (currentRoute as any).agencySlug as string | undefined;
                 const agency = agencies.find(a => a.slug === slug);
-                const agencyDisplayName = agency?.name ?? slug;
+                const agencyDisplayName = shortenAgencyName(agency?.name ?? slug);
                 return (
                   <div>
                     <RouteCardTitle
@@ -1248,8 +1248,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         setSelectedRoute(selectedRoute === r.key ? null : r.key);
                       }}
                       right={
-                        <span className={`truncate ${LIST_ROW_DIM} flex-1 text-right ml-2`}>
-                          {r.agencyName}
+                        <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
+                          {shortenAgencyName(r.agencyName || '')}
                         </span>
                       }
                     />

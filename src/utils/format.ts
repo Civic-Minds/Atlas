@@ -135,12 +135,15 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('marin transit')) return 'Marin Transit';
   if (lower.includes('golden gate')) return 'Golden Gate Transit';
   if (lower.includes('smart') && lower.includes('sonoma')) return 'SMART';
+  if (lower.includes('mountain metropolitan')) return 'Mountain Metro';
   
-  // General fallback: if there is a parenthetical abbreviation, use it
+  // General fallback: use parenthetical if short abbrev; otherwise strip long (City/Region) parens for compact display
   const match = name.match(/\(([^)]+)\)/);
   if (match) {
-    const abbrev = match[1];
+    const abbrev = match[1].trim();
     if (abbrev.length <= 10) return abbrev;
+    // Strip long locator parens (e.g. "(Colorado Springs)", "(Mississauga)")
+    return name.replace(/\s*\([^)]+\)\s*$/, '').trim();
   }
   
   return name;
