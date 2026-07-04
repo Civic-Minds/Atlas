@@ -349,8 +349,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           const slug = props.agencySlug as string;
           if (slug) setSelectedAgencySlugRef.current(slug);
         } else if (uniqueRouteKeys.length > 1) {
-          if (map.getZoom() < 13) {
-            // Don't show the long "multiple routes" card when zoomed out
+          if (map.getZoom() < 11) {
             setDisambiguationRoutes(null);
             return;
           }

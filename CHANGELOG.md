@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Map: clicking overlapping routes now shows disambiguation at zoom 11+**: the threshold was zoom 13, which silently swallowed clicks on dense shared corridors (e.g. I-90 bridge with 8+ overlapping routes) at normal city zoom levels. Lowered to 11 — still suppresses ambiguous clicks when zoomed far out.
 - **Agency filter: scope to viewport by default**: the agency dropdown was listing all 280 agencies, including ones on the opposite side of the continent. Now shows only agencies loaded in the current viewport. A toggle at the bottom expands to the full list when needed. Search always searches all agencies regardless.
 - **Route card: separator between header and directions**: a `border-t` divider now sits between the route/agency header block and the direction rows, giving clear visual separation without tightening the per-direction spacing (which needs room for multi-short-turn routes like GO Transit).
 - **Route card: headsign/agency visual hierarchy**: agency name was same weight and color as the direction headsign, making the card hard to scan. Agency is now `text-dim` uppercase 9px (clearly a metadata label); headsign uses `text-legend` (darker, reads as content).
