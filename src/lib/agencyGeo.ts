@@ -1,5 +1,6 @@
 /** Shared in-memory cache for agency route GeoJSON (Frequency + Corridors). */
 import { idbGet, idbSet, idbPruneStale } from './idbCache';
+import { getAgencyArtifactUrls } from '../../shared/config';
 
 export interface AgencyGeoSource {
   slug: string;
@@ -86,6 +87,8 @@ export function getCachedAgencyCorridors(slug: string): GeoJSON.FeatureCollectio
 
 /** Fetch agency GeoJSON, reusing memory cache and in-flight requests. */
 export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.FeatureCollection> {
+  const arts = getAgencyArtifactUrls(agency.slug);
+  const fetchUrl = agency.url || arts.url;
   pruneOnce();
 
   const hit = lruGet(cache, agency.slug);
@@ -112,7 +115,7 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
         w.postMessage({
           type: 'geo',
           slug: agency.slug,
-          url: agency.url,
+          url: fetchUrl,
           name: agency.name,
           weekVer,
         });
@@ -126,7 +129,7 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
           lruSet(cache, agency.slug, cached);
           return cached;
         }
-        const r = await fetch(`${agency.url}?v=${weekVer}`, { cache: 'default' });
+        const r = await fetch(`${fetchUrl}?v=${weekVer}`, { cache: 'default' });
         if (!r.ok) throw new Error(`${agency.slug} geo ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {

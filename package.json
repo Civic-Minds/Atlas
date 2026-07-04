@@ -18,7 +18,8 @@
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
     "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
-    "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts"
+    "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts",
+    "find-mdb": "npx tsx pipeline/find-mdb-feed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1075.0",

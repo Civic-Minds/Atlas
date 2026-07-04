@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, ArrowLeft, Info, Radio } from 'lucide-react';
 import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER } from './styles';
-import { R2_PUBLIC_URL } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
@@ -29,18 +29,23 @@ export interface Agency {
   slug: string;
   name: string;
   center: [number, number];
+  /** Artifact URL on R2. Derived at load time from slug if absent (see getAgencyArtifactUrls). */
   url: string;
   stopsUrl?: string;
   corridorsUrl?: string;
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
-  lastFeedExpiry?: string | null; // YYYYMMDD from feed_info.txt feed_end_date
+  lastFeedExpiry?: string | null;
   excludeRouteShortNames?: string[];
   staged?: boolean;
   issueUrl?: string;
-  fare?: number; // manual base adult fare fallback (dollars) for Fares map (AI-205)
-  gtfsFares?: boolean; // true if this agency's GTFS feed provides real fare data (V1 or V2)
-  fareUrl?: string; // link to agency's public fare page
+  fare?: number;
+  gtfsFares?: boolean;
+  fareUrl?: string;
+  // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
+  feedUrl?: string | null;
+  mdbFeedUrl?: string;
+  supplementalFeedUrls?: string[];
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
@@ -188,7 +193,20 @@ export default function App() {
   useEffect(() => {
     fetch('/data/index.json')
       .then(r => r.json())
-      .then(data => setAgencies(data.agencies.filter((a: Agency) => !a.staged)))
+      .then((data: { agencies: Agency[] }) => {
+        const enriched = data.agencies
+          .filter((a: Agency) => !a.staged)
+          .map((a: Agency) => {
+            // Derive artifact URLs from slug when not explicitly stored.
+            // This allows us to stop duplicating the repetitive R2 paths in index.json.
+            if (!a.url) {
+              const arts = getAgencyArtifactUrls(a.slug);
+              return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
+            }
+            return a;
+          });
+        setAgencies(enriched);
+      })
       .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())

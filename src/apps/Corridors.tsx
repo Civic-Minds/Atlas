@@ -148,7 +148,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
 
   // Stops indexes on mount (powers autocomplete); route GeoJSON loads when From+To are set.
   useEffect(() => {
-    const eligible = agencies.filter(a => a.stopsUrl && a.url);
+    const eligible = agencies.filter(a => a.slug); // all processed agencies support stops + geo; urls derived on demand
     if (eligible.length === 0) { setStopsReady(true); return; }
 
     let cancelled = false;

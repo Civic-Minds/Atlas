@@ -3,6 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { r2PutFile } from './r2';
+import { getAgencyArtifactUrls } from '../shared/config.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -51,7 +52,11 @@ async function main() {
   const allCorridors: Feature[] = [];
 
   for (const agency of agencies) {
-    const { slug, url, stopsUrl, corridorsUrl } = agency;
+    const slug = agency.slug;
+    const arts = getAgencyArtifactUrls(slug);
+    const url = agency.url || arts.url;
+    const stopsUrl = agency.stopsUrl || arts.stopsUrl;
+    const corridorsUrl = agency.corridorsUrl || arts.corridorsUrl;
     console.log(`Processing agency: ${slug}...`);
 
     // 1. Routes

@@ -17,6 +17,25 @@ const getR2PublicUrl = (): string => {
 
 export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
 
+/**
+ * Derive the public URLs for an agency's processed artifacts.
+ * This removes the need to store repetitive full R2 URLs in index.json.
+ */
+export function getAgencyArtifactUrls(slug: string) {
+  const base = R2_PUBLIC_URL;
+  return {
+    url: `${base}/atlas/${slug}.json`,
+    stopsUrl: `${base}/atlas/${slug}-stops.json`,
+    corridorsUrl: `${base}/atlas/${slug}-corridors.json`,
+    tripsUrl: `${base}/atlas/${slug}-trips.json`,
+    livePollingUrl: `${base}/atlas/live-polling/${slug}.json`,
+  };
+}
+
+export function getAgencyDataUrl(slug: string, variant: '' | '-stops' | '-corridors' | '-trips' = '') {
+  return `${R2_PUBLIC_URL}/atlas/${slug}${variant}.json`;
+}
+
 export interface PeriodConfig {
   key: string;
   label: string;

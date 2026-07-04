@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **DC metro surrounding agencies**: Added VRE (Virginia Railway Express), MARC Train (MTA Maryland), Ride On (Montgomery County), Fairfax Connector, Arlington Transit (ART), and DASH (Alexandria) for complete Washington DC area coverage alongside WMATA. Total agencies: 240. All processed via Mobility Database / official feeds and available in the map.
+
+### Changed
+- **index.json refactor**: R2 artifact URLs (`url`, `stopsUrl`, `corridorsUrl`) are now derived at runtime via `getAgencyArtifactUrls(slug)` in `shared/config.ts` instead of being redundantly stored per agency entry. Pipeline (`process-gtfs.ts`, `refresh.ts`) no longer writes them. Reduces duplication, shrinks the registry file (~40%), and simplifies adding new agencies. Full backward compatibility maintained for any lingering stored values. Frontend, `agencyGeo`, build scripts, etc. updated to derive.
+- **process-gtfs.ts**: Now supports remote `https://...` GTFS URLs directly (auto-downloads to `tmp/` before processing).
+- **New `find-mdb` tool**: Added `npm run find-mdb -- "search term" slug "lat,lon"` (and `pipeline/find-mdb-feed.ts`) to query the Mobility Database catalog, surface current hosted feeds, and emit ready-to-paste `index.json` snippets.
+- **audit-feed-urls.ts**: Updated filter to recognize modern Mobility Database URLs (`files.mobilitydatabase.org`) in addition to legacy `mdb-latest` GCS mirrors.
+
 ### Fixed
 - **Headsign display: all-caps not title-cased (AI-235)**: US GTFS feeds often store headsigns in all-caps (e.g. "LOOP", "VALLEY STATION"). `titleCase` had a ≤4-char preservation rule that treated 4-letter words as acronyms and left them uppercase. Reduced threshold to ≤3 — real 4-char acronyms (BART, etc.) are already in the `TRANSIT_ACRONYMS` table and survive the change. "LOOP" now displays as "Loop".
 - **Headsign display: leading dash after branch prefix strip (AI-235)**: `cleanHeadsign` stripped route-name prefixes like "Gold Line - " but left a dangling "- " on the remainder (e.g. "- 8th & K Only"). Added rule to strip orphaned leading "- ".

@@ -1,25 +1,27 @@
 #!/usr/bin/env npx tsx
 /**
- * process-gtfs.ts — add or update one agency from a local GTFS zip.
- * Usage: npm run process -- <path/to/feed.zip> <slug> [Display Name] [lat,lon]
- * Uploads GeoJSON to Vercel Blob, updates public/data/index.json with the URL.
- * Requires BLOB_READ_WRITE_TOKEN in environment (run `vercel env pull` first).
+ * process-gtfs.ts — add or update one agency from a local GTFS zip or remote URL.
+ * Usage: npm run process -- <path/to/feed.zip | https://.../feed.zip> <slug> [Display Name] [lat,lon]
+ * Uploads the processed GeoJSON artifacts to R2.
+ * Updates public/data/index.json with name/center + preserves feed source config.
+ * Artifact URLs are derived (no longer stored per-agency in the index).
+ * Requires R2_* creds in .env.local.
  */
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { resolve } from 'path';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { resolve, dirname } from 'path';
 import { config } from 'dotenv';
 import { processGtfsBuffer } from './process-core.js';
 import { r2Put } from './r2.js';
 
 config({ path: resolve('.env.local') });
 
-const zipPath = process.argv[2];
+const input = process.argv[2];
 const slug = process.argv[3];
 const agencyName = process.argv[4] || slug;
 const centerArg = process.argv[5];
 
-if (!zipPath || !slug) {
-  console.error('Usage: npm run process -- <gtfs.zip> <slug> [name] [lat,lon]');
+if (!input || !slug) {
+  console.error('Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon]');
   process.exit(1);
 }
 
@@ -32,7 +34,44 @@ const argCenter = centerArg
   ? (centerArg.split(',').map(Number) as [number, number])
   : null;
 
+async function downloadToBuffer(url: string): Promise<Buffer> {
+  console.log(`  Downloading ${url} ...`);
+  try {
+    const res = await fetch(url, {
+      redirect: 'follow',
+      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
+      signal: AbortSignal.timeout(180_000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return Buffer.from(await res.arrayBuffer());
+  } catch (fetchErr) {
+    // Fallback to curl for tricky TLS
+    const { execFileSync } = await import('child_process');
+    try {
+      return execFileSync('curl', ['-fsSL', url], { maxBuffer: 128 * 1024 * 1024, timeout: 180_000 });
+    } catch {
+      throw fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
+    }
+  }
+}
+
 async function main() {
+  let zipPath = input;
+  let buf: Buffer;
+
+  if (/^https?:\/\//i.test(input)) {
+    buf = await downloadToBuffer(input);
+    // Save a copy to tmp/ for reference / re-runs
+    const tmpDir = resolve('tmp');
+    if (!existsSync(tmpDir)) mkdirSync(tmpDir, { recursive: true });
+    const tmpZip = resolve(tmpDir, `${slug}.zip`);
+    writeFileSync(tmpZip, buf);
+    zipPath = tmpZip;
+    console.log(`  Saved to ${tmpZip}`);
+  } else {
+    buf = readFileSync(input);
+  }
+
   console.log(`\nAtlas — processing ${zipPath}`);
 
   const indexPath = resolve('public/data/index.json');
@@ -60,7 +99,6 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const buf = readFileSync(zipPath);
   const { geojson, corridorsGeojson, stopsJson, tripsJson, featureCount, center: computedCenter, livePollingSidecar } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { preprocess, excludeRouteShortNames, slug, manualBaseFare });
@@ -84,10 +122,12 @@ async function main() {
     index = JSON.parse(readFileSync(indexPath, 'utf8'));
   }
   const existing = index.agencies.findIndex(a => a.slug === slug);
+  // Artifact URLs are now derived (see shared/config.ts getAgencyArtifactUrls).
+  // Only persist name, center, and source config.
   if (existing >= 0) {
-    index.agencies[existing] = { ...index.agencies[existing], name: agencyName, center, url, stopsUrl, corridorsUrl };
+    index.agencies[existing] = { ...index.agencies[existing], name: agencyName, center };
   } else {
-    index.agencies.push({ slug, name: agencyName, center, url, stopsUrl, corridorsUrl, feedUrl: null });
+    index.agencies.push({ slug, name: agencyName, center, feedUrl: null });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   console.log(`  index.json updated\n`);

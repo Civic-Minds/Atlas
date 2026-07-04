@@ -5,6 +5,7 @@ import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { Agency } from '../App';
+import { getAgencyArtifactUrls } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
@@ -160,8 +161,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     for (const slug of slugsNeeded) {
       if (layers[slug] || localLayers[slug]) continue;
       const agency = agencies.find(a => a.slug === slug);
-      if (!agency?.url) continue;
-      fetch(agency.url)
+      if (!agency) continue;
+      const arts = getAgencyArtifactUrls(agency.slug);
+      const geoUrl = agency.url || arts.url;
+      fetch(geoUrl)
         .then(r => r.json())
         .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
         .catch(() => {});

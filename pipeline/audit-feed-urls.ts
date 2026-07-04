@@ -1,7 +1,7 @@
 /**
- * Audits non-MDB feedUrls in index.json against the Mobility Database catalog.
- * For each agency using a direct URL, checks if MDB has a mirror and prints
- * the replacement URL if so.
+ * Audits agencies whose feedUrl is *not* from Mobility Database.
+ * Recognizes both legacy GCS mdb-latest mirrors and current files.mobilitydatabase.org.
+ * Suggests stable mdb-latest mirrors for true direct/official feeds.
  *
  * Run: npx tsx pipeline/audit-feed-urls.ts
  */
@@ -80,7 +80,7 @@ async function main() {
   const agencies: Agency[] = Array.isArray(raw) ? raw : raw.agencies ?? [];
 
   const nonMdb = agencies.filter(
-    a => a.feedUrl && !a.feedUrl.includes('mdb-latest')
+    a => a.feedUrl && !a.feedUrl.includes('mdb-latest') && !a.feedUrl.includes('mobilitydatabase.org')
   );
 
   console.log(`\nAuditing ${nonMdb.length} agencies on direct feed URLs...\n`);

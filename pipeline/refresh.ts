@@ -1,12 +1,11 @@
 #!/usr/bin/env npx tsx
 /**
- * refresh.ts — re-download every agency feed and rebuild its Blob data.
+ * refresh.ts — re-download every agency feed and rebuild its artifacts on R2.
  * Usage:
  *   npm run refresh              → all agencies with a feedUrl
  *   npm run refresh -- ttc yrt   → specific slugs only
  *
- * Requires BLOB_READ_WRITE_TOKEN (local: vercel env pull; CI: repo secret).
- * Exits non-zero if any agency fails, but always processes the full list.
+ * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
 import { readFileSync, writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
@@ -268,10 +267,9 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
   if (primary.livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));
   }
-  const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
-  agency.url = url;
-  agency.stopsUrl = stopsUrl;
-  agency.corridorsUrl = corridorsUrl;
+  // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
+  // The uploads still happen so the files exist on R2.
+  await Promise.all(uploads);
 
   // Archive the raw zip to the private atlas-archive bucket, keyed by service end date.
   const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;
