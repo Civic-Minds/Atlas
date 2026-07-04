@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Route card: separator between header and directions**: a `border-t` divider now sits between the route/agency header block and the direction rows, giving clear visual separation without tightening the per-direction spacing (which needs room for multi-short-turn routes like GO Transit).
 - **Route card: headsign/agency visual hierarchy**: agency name was same weight and color as the direction headsign, making the card hard to scan. Agency is now `text-dim` uppercase 9px (clearly a metadata label); headsign uses `text-legend` (darker, reads as content).
 - **Route label: "G Line — G-Line Rapid Ride" redundancy**: long names that start with the short name (after normalizing dashes to spaces) are now suppressed. "G-Line Rapid Ride" with short name "G Line" now shows as just "G Line".
 - **Search: agency name results now open the agency card**: typing an agency name (e.g. "Community Transit") now shows a matching agency section above route results. Clicking the agency opens its card directly instead of dumping 38 individual routes with no way to navigate to the agency.

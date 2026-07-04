@@ -1036,6 +1036,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               const hasAny = HOURS.some(h => merged[h] != null);
               return hasAny ? <HeadwaySparkline byHour={merged} /> : null;
             })()}
+            <div className="border-t border-[var(--border-primary)] mt-2 mb-3" />
             <div className="space-y-3">
               {directionGroups.map((group, gi) => {
                 const fmtH = (d: ShapeProperties): string => {
