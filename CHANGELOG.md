@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 - **Live Vehicles header: dot misaligned with text**: the 8px status dot was `items-start` top-aligned against the larger "Live Vehicles" text, making it appear too high. Wrapped list header in `flex items-center` so dot centers on the text midline.
 
 ### Added
+- **Static agency expansion — 10 neighbouring agencies**: surrounding transit authorities for recently-added metros.
+  - **Florida (Tampa area)**: Pinellas Suncoast Transit Authority (PSTA / St. Pete)
+  - **Florida (Miami area)**: Palm Tran (Palm Beach County)
+  - **Florida (Orlando area)**: SunRail, Votran (Volusia County) — note: Votran feed is 2022-vintage
+  - **North Carolina**: Chapel Hill Transit
+  - **Minnesota**: Minnesota Valley Transit Authority (MVTA)
+  - **Georgia**: Xpress (Atlanta regional express) — note: feed expired 2025-07-05
+  - **Virginia / DC area**: OmniRide (PRTC / Prince William County), Loudoun County Transit, CUE Bus (Fairfax City)
 - **Static agency expansion — 15 more metros**: Minneapolis, Pittsburgh, Salt Lake City, Jacksonville, Columbus, Charlotte, Raleigh/Durham, Indianapolis, Baltimore, Tampa, Orlando, Honolulu, Providence, Boise.
   - **Minnesota**: Metro Transit (Minneapolis)
   - **Pennsylvania**: Port Authority of Allegheny County (Pittsburgh)

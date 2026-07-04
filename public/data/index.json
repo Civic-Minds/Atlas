@@ -4099,6 +4099,116 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-142/mdb-142-202606100102/mdb-142-202606100102.zip",
       "lastFeedExpiry": "20270609",
       "lastFeedVersion": "457"
+    },
+    {
+      "slug": "psta",
+      "name": "Pinellas Suncoast Transit Authority (PSTA)",
+      "center": [
+        27.9,
+        -82.7
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-326/mdb-326-202511300039/mdb-326-202511300039.zip",
+      "lastFeedExpiry": "20260606",
+      "lastFeedVersion": "S1000242"
+    },
+    {
+      "slug": "palm-tran",
+      "name": "Palm Tran",
+      "center": [
+        26.7,
+        -80.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-332/mdb-332-202605190002/mdb-332-202605190002.zip",
+      "lastFeedExpiry": "20260919",
+      "lastFeedVersion": "20260511"
+    },
+    {
+      "slug": "sunrail",
+      "name": "SunRail",
+      "center": [
+        28.5,
+        -81.4
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-626/mdb-626-202512170136/mdb-626-202512170136.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "votran",
+      "name": "Votran (Volusia County)",
+      "center": [
+        29,
+        -81
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-349/mdb-349-202605300114/mdb-349-202605300114.zip",
+      "lastFeedExpiry": "20220115",
+      "lastFeedVersion": "20210223"
+    },
+    {
+      "slug": "chapel-hill-transit",
+      "name": "Chapel Hill Transit",
+      "center": [
+        35.91,
+        -79.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-89/tld-89-202607040106/tld-89-202607040106.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Summer 2026"
+    },
+    {
+      "slug": "mvta",
+      "name": "Minnesota Valley Transit Authority (MVTA)",
+      "center": [
+        44.6,
+        -93.3
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202606230010/mdb-206-202606230010.zip",
+      "lastFeedExpiry": "20260809",
+      "lastFeedVersion": "20260622"
+    },
+    {
+      "slug": "xpress-ga",
+      "name": "Xpress (Georgia Regional)",
+      "center": [
+        33.7,
+        -84.4
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip",
+      "lastFeedExpiry": "20250705",
+      "lastFeedVersion": "S1000101"
+    },
+    {
+      "slug": "omniride",
+      "name": "OmniRide (PRTC)",
+      "center": [
+        38.5,
+        -77.3
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1156/mdb-1156-202604020037/mdb-1156-202604020037.zip",
+      "lastFeedExpiry": "20260725",
+      "lastFeedVersion": "2026 March_20260326"
+    },
+    {
+      "slug": "loudoun-transit",
+      "name": "Loudoun County Transit",
+      "center": [
+        39.08,
+        -77.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1053/mdb-1053-202604210103/mdb-1053-202604210103.zip",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "S1000079"
+    },
+    {
+      "slug": "cue-bus",
+      "name": "CUE Bus (Fairfax)",
+      "center": [
+        38.85,
+        -77.35
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2885/mdb-2885-202511251947/mdb-2885-202511251947.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     }
   ]
 }
