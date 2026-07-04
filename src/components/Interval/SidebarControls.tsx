@@ -313,7 +313,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     for (const g of map.values()) {
       const seen = new Map<string, ShapeProperties>();
       for (const d of g.realTier) {
-        const key = d.headsign ?? '';
+        // Normalize for dedup (post-clean from data) to handle any remaining variants
+        const key = (d.headsign ?? '').trim().toLowerCase();
         const existing = seen.get(key);
         if (!existing || (d.headway ?? Infinity) < (existing.headway ?? Infinity)) seen.set(key, d);
       }

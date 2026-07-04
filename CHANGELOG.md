@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Duplicate destination rows in route cards (AI-261)**: "to Hancock" and "to Airport" (and similar) were listed twice for mountainmetro route 37. Pipeline now dedups on cleaned headsign (matching UI display); SidebarControls normalizes dedup key. Fixes duplicate per-destination rows in selected route cards.
 - **Frequency filter for infrequent routes (AI-260)**: map headway expressions now treat `tier==='infrequent'` (and missing/null headway) as 9999, matching `passesRouteFilter` + `resolveTierVal` in JS. Fixes cases (e.g. Colorado Springs / mountainmetro) where selecting ≤15m still rendered the full brown network on the map while stats showed only matching routes.
 - **Loading indicator: remove redundant top progress bar**: the thin 3px bar at the top of the map duplicated the bottom-left spinner. Removed in favour of the existing pill indicator which is more visible and shows the network count.
 - **PMTiles rebuild and upload**: rebuilt PMTiles to include all recently-added agencies (Denver RTD and others). Upload script now uses rclone for large file reliability; updated `upload-pmtiles.ts` to use 32 MB parts with sequential queue to reduce TLS timeout risk.

@@ -595,10 +595,15 @@ export async function processGtfsBuffer(
 
     const route = routeById.get(result.route);
     const shortName = route?.route_short_name ?? result.route;
+    // Normalize headsign for dedup using the same clean function as display.
+    // This collapses raw variants (e.g. "Hancock", "To Hancock Plaza") that clean to the same label.
+    const cleanedForDedup = result.headsign
+      ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || result.headsign
+      : null;
     // Deduplicate by (shortName, dir, day, headsign) so separate directions and terminuses
     // aren't collapsed together.
-    const dedupeKey = result.headsign
-      ? `${shortName}::${result.dir}::${result.day}::${result.headsign}`
+    const dedupeKey = cleanedForDedup
+      ? `${shortName}::${result.dir}::${result.day}::${cleanedForDedup}`
       : `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
