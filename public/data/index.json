@@ -3156,11 +3156,17 @@
       "slug": "bustang",
       "name": "Bustang (CDOT)",
       "center": [
-        39.55,
-        -105.78
+        39.71,
+        -106.68
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "bbox": [
+        38.8,
+        -108.6,
+        40.6,
+        -104.8
+      ]
     },
     {
       "slug": "abqride",
@@ -5141,11 +5147,17 @@
       "slug": "bustang-outrider",
       "name": "Bustang Outrider",
       "center": [
-        38.85,
-        -105.3
+        37.72,
+        -104.67
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "bbox": [
+        37.1,
+        -105.0,
+        38.3,
+        -104.4
+      ]
     },
     {
       "slug": "rfta",

@@ -9,14 +9,17 @@ export interface AgencyGeoSource {
   corridorsUrl?: string;
 }
 
-/** Rotates weekly so browsers re-fetch after the Monday refresh pipeline. */
+// Increment this when pushing mid-week data fixes that need to bust the browser IDB cache.
+const CACHE_BUILD = 1;
+
+/** Rotates weekly (+ CACHE_BUILD for mid-week fixes) so browsers re-fetch after data updates. */
 export function agencyGeoWeekVersion(): string {
   const d = new Date();
   const thu = new Date(d);
   thu.setDate(d.getDate() - d.getDay() + 4);
   const yearStart = new Date(thu.getFullYear(), 0, 1);
   const week = Math.ceil(((thu.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-  return `${thu.getFullYear()}${String(week).padStart(2, '0')}`;
+  return `${thu.getFullYear()}${String(week).padStart(2, '0')}-${CACHE_BUILD}`;
 }
 
 // LRU cache: Map preserves insertion order; delete+re-insert on access moves to front.

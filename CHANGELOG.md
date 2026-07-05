@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- **IDB cache build version**: added `CACHE_BUILD` counter to `agencyGeoWeekVersion()` — increment this whenever mid-week data fixes are pushed so browsers re-fetch instead of serving stale IDB data
 - **Static agency expansion — Colorado, Midwest, California (15 agencies)**: fixed RTD Denver / Bustang slug collision (mdb-2280 is Bustang; RTD is mdb-178); added Bustang (mdb-2280), Bustang Outrider (mdb-2330), RFTA/Roaring Fork (mdb-2278), Grand Valley Transit (mdb-161), Durango Transit (mdb-2290), Pueblo Transit (mdb-2232), ECO Transit/Eagle County (mdb-173), All Points Transit/Montrose (mdb-212), KART/Kings Area Rural (mdb-2204), Tulare County Area Transit, Madison Metro (mdb-294), MCTS/Milwaukee (mdb-2127), Waukesha Metro, Pace Suburban Bus, Mountain Line/Morgantown WV (mdb-407)
 - **Sparkline click-to-period**: clicking a zone on the headway sparkline sets the period filter to that time of day; clicking again resets to All
 - **Sparkline hover**: hovering a period zone highlights it with a background band and previews inactive bars in their tier color; uses `getBoundingClientRect` for reliable hit detection across child elements
@@ -11,6 +12,8 @@
 - **Settings panel split**: Dark mode moved into a labeled "Appearance" section; filter toggles grouped under a labeled "Filters" section with a divider between them
 
 ### Fixed
+- **Route card missing for stale-cached agencies**: IDB cache preserved old agency GeoJSON within the same week even after mid-week data fixes; adding `CACHE_BUILD` to the cache key forces a re-fetch
+- **Bustang/Outrider cards missing in Denver**: Bustang's derived bbox from center didn't reach Denver; added explicit bboxes covering actual route extents
 - RTD Denver showing no routes (slug pointed at Bustang feed); re-processed from correct mdb-178 feed
 - Parse error in SidebarControls: `return ({(() => {` is invalid JSX outside a parent element; fixed to `return (() => {`
 - Sparkline hover position used `nativeEvent.offsetX` which breaks when mouse is over a child bar; switched to `getBoundingClientRect` + `clientX`
