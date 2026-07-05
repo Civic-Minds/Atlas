@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring
+
 ## [3.0.0] — 2026-07-05
 
 ### Added

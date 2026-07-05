@@ -59,6 +59,7 @@ interface HourlySparklineProps {
 
 export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySparklineProps) {
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
+  const [hoveredTooltip, setHoveredTooltip] = useState<{ hour: number; x: number } | null>(null);
 
   const H = 28;
   const valids = HOURS.map(h => byHour[h]).filter((v): v is number => v != null);
@@ -78,7 +79,12 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySpark
   };
 
   const handleMouseMove = interactive ? (e: React.MouseEvent<HTMLDivElement>) => {
-    setHoveredPeriod(HOUR_TO_PERIOD[HOURS[posFromEvent(e)]] ?? null);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const idx = Math.min(Math.floor(fraction * HOURS.length), HOURS.length - 1);
+    const hour = HOURS[idx];
+    setHoveredPeriod(HOUR_TO_PERIOD[hour] ?? null);
+    setHoveredTooltip({ hour, x: fraction });
   } : undefined;
 
   const handleClick = interactive ? (e: React.MouseEvent<HTMLDivElement>) => {
@@ -86,15 +92,29 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySpark
     if (clicked) onPeriodChange(period === clicked ? 'all' : clicked);
   } : undefined;
 
+  const handleMouseLeave = interactive ? () => {
+    setHoveredPeriod(null);
+    setHoveredTooltip(null);
+  } : undefined;
+
   const band = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
 
+  const formatHour = (h: number): string => {
+    let h24 = h > 24 ? h - 24 : h;
+    if (h24 === 24) h24 = 0;
+    const ampm = h24 < 12 ? 'AM' : 'PM';
+    let h12 = h24 % 12;
+    if (h12 === 0) h12 = 12;
+    return `${h12} ${ampm}`;
+  };
+
   return (
-    <div className="mt-3 mb-4">
+    <div className="mt-6 mb-4">
       <div
-        className={`relative ${interactive ? 'cursor-pointer select-none' : ''}`}
+        className={`relative pt-5 ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
-        onMouseLeave={interactive ? () => setHoveredPeriod(null) : undefined}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Hover region highlight — visible on light bg */}
         {band && (
@@ -121,6 +141,7 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySpark
               ? h >= activePeriodRange[0] && h < activePeriodRange[1]
               : true;
             const inHovered = hoveredPeriod ? HOUR_TO_PERIOD[h] === hoveredPeriod : false;
+            const isTooltipHover = hoveredTooltip?.hour === h;
             // Hovered-but-inactive bars show their tier color at reduced opacity as a preview
             const barColor = hasValue
               ? (inActivePeriod || inHovered ? headwayToTierColor(hw) : 'var(--border-primary)')
@@ -135,8 +156,7 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySpark
                   {hasValue && (
                     <div
                       style={{ height: barH, background: barColor }}
-                      className={`w-[7px] rounded-sm transition-[background,opacity] duration-100 ${opacity}`}
-                      title={`${h > 24 ? h - 24 : h}${h < 12 || h >= 24 ? 'am' : 'pm'}: ${hw}m`}
+                      className={`w-[7px] rounded-sm transition-[background,opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}
                     />
                   )}
                 </div>
@@ -144,6 +164,24 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySpark
             );
           })}
         </div>
+
+        {/* Custom hover tooltip — replaces ugly native title= */}
+        {hoveredTooltip && (() => {
+          const hw = byHour[hoveredTooltip.hour];
+          if (hw == null) return null;
+          return (
+            <div
+              className="absolute text-[9px] font-bold whitespace-nowrap bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"
+              style={{
+                left: `${hoveredTooltip.x * 100}%`,
+                top: 0,
+                transform: 'translate(-50%, -100%)',
+              }}
+            >
+              {formatHour(hoveredTooltip.hour)} · every {hw} min
+            </div>
+          );
+        })()}
       </div>
       <div className="flex gap-px mt-1">
         {HOURS.map(h => (
