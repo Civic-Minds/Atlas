@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Fixed sparkline period label making chart width vary; now reserves fixed slot so chart stays consistent width
+- Sparkline hover tooltip no longer clips on left/right edge (edge-aware translate)
+- URL: no trailing "?" on bare path (e.g. default / not /?)
+- Search: "new york" / city names now match via region (in addition to "NYC")
+- Route selection highlight uses full `agency::routeId` (prevents unrelated routes bolding on numeric id collisions e.g. NYC subway)
 - **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring
 - **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail)
 - **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave

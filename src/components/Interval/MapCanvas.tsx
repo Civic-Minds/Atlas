@@ -735,14 +735,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       // Opacity based on route state (focused vs dimmed)
       if (selectedRoute) {
+        const selKey = selectedRoute;
         map.setPaintProperty('routes-layer', 'line-opacity', [
           'case',
-          ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 1.0,
+          ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey], 1.0,
           0.15
         ]);
         map.setPaintProperty('routes-layer', 'line-width', [
           'case',
-          ['==', ['get', 'routeId'], selectedRoute.split('::')[1]], 3.5,
+          ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey], 3.5,
           0.5
         ]);
       } else {
