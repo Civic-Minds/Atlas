@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.0] — 2026-07-05
 
 ### Added
 - **Agency coverage expanded to 324 agencies** across Canada and the US — all provinces, all major US metros. See `index.json` for the full list.
