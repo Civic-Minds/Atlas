@@ -232,11 +232,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       {showUi && (isLoading || isTilesLoading) && (
         <div className={`absolute bottom-6 left-6 ${Z_PANEL} flex items-center gap-2 ${SURFACE} backdrop-blur-md px-4 py-2 rounded-xl`}>
           <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-          {isLoading && (
-            <span className="text-[10px] font-bold text-[var(--text-muted)]">
-              {loadedCount}/{requestedCount} networks
-            </span>
-          )}
+          <span className="text-[10px] font-bold text-[var(--text-muted)]">
+            {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
+          </span>
         </div>
       )}
 
