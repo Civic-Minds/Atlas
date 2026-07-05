@@ -402,8 +402,8 @@
         -82.607
       ],
       "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-      "lastFeedExpiry": "20260924",
-      "lastFeedVersion": "7cef944a-cef1-425f-adc8-dce43741849f",
+      "lastFeedExpiry": "20260927",
+      "lastFeedVersion": "3f9d8088-9ef5-4be4-b29a-0a49c637e392",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-transit-windsor-gtfs-720.zip?alt=media"
     },
     {
@@ -421,8 +421,8 @@
         -79.3
       ],
       "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
-      "lastFeedExpiry": "20261123",
-      "lastFeedVersion": "20260527142759"
+      "lastFeedExpiry": "20261227",
+      "lastFeedVersion": "20260630142518"
     },
     {
       "slug": "yrt",
@@ -705,7 +705,7 @@
         -73.26
       ],
       "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
-      "lastFeedExpiry": "20260719",
+      "lastFeedExpiry": "20260802",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media",
       "gtfsFares": true
@@ -1466,8 +1466,8 @@
         -125.244
       ],
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
-      "lastFeedExpiry": "20260906",
-      "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00"
+      "lastFeedExpiry": "20270905",
+      "lastFeedVersion": "202607040/20260703 21:00:00/20260704 04:00:00"
     },
     {
       "slug": "squamish",
@@ -2245,8 +2245,8 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-county-transit-sct-gtfs-70.zip?alt=media",
-      "lastFeedExpiry": "20260630",
-      "lastFeedVersion": "UTC: 12-Jun-2026 19:42"
+      "lastFeedExpiry": "20260808",
+      "lastFeedVersion": "UTC: 01-Jul-2026 17:39"
     },
     {
       "slug": "vine",
@@ -2625,8 +2625,8 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-siskiyou-county-gtfs-117.zip?alt=media",
-      "lastFeedExpiry": "20270101",
-      "lastFeedVersion": "UTC: 10-Jun-2026 19:20"
+      "lastFeedExpiry": "20300725",
+      "lastFeedVersion": "UTC: 02-Jul-2026 18:56"
     },
     {
       "slug": "trinity",
@@ -4894,6 +4894,240 @@
       "region": "Ohio",
       "lastFeedExpiry": "20201205",
       "lastFeedVersion": "20200909"
+    },
+    {
+      "slug": "sun-metro",
+      "name": "Sun Metro (El Paso)",
+      "center": [
+        31.77,
+        -106.42
+      ],
+      "bbox": [
+        31.58,
+        -106.62,
+        31.96,
+        -106.22
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-148/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": "20260613",
+      "lastFeedVersion": "November 16, 2025_20260409"
+    },
+    {
+      "slug": "b-line",
+      "name": "B-Line (Corpus Christi RTA)",
+      "center": [
+        27.76,
+        -97.37
+      ],
+      "bbox": [
+        27.6,
+        -97.69,
+        27.91,
+        -97.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "citibus",
+      "name": "Citibus (Lubbock)",
+      "center": [
+        33.59,
+        -101.87
+      ],
+      "bbox": [
+        33.52,
+        -101.95,
+        33.66,
+        -101.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-569/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "UTC: 11-Mar-2026 20:19"
+    },
+    {
+      "slug": "amarillo",
+      "name": "Amarillo City Transit",
+      "center": [
+        35.2,
+        -101.85
+      ],
+      "bbox": [
+        35.15,
+        -101.94,
+        35.25,
+        -101.76
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-213/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": "20211231",
+      "lastFeedVersion": "1.0"
+    },
+    {
+      "slug": "missoula",
+      "name": "Mountain Line (Missoula)",
+      "center": [
+        46.87,
+        -114.03
+      ],
+      "bbox": [
+        46.82,
+        -114.09,
+        46.92,
+        -113.87
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-292/latest.zip",
+      "region": "Montana",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "S1000049"
+    },
+    {
+      "slug": "sportran",
+      "name": "SporTran (Shreveport)",
+      "center": [
+        32.51,
+        -93.74
+      ],
+      "bbox": [
+        32.4,
+        -93.9,
+        32.6,
+        -93.5
+      ],
+      "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
+      "region": "Louisiana",
+      "lastFeedExpiry": "20260802",
+      "lastFeedVersion": "20260428"
+    },
+    {
+      "slug": "billings",
+      "name": "MET Transit (Billings)",
+      "center": [
+        45.78,
+        -108.51
+      ],
+      "bbox": [
+        45.73,
+        -108.63,
+        45.84,
+        -108.45
+      ],
+      "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
+      "region": "Montana",
+      "lastFeedExpiry": "20260803",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "ecat",
+      "name": "ECAT (Escambia County)",
+      "center": [
+        30.42,
+        -87.27
+      ],
+      "bbox": [
+        30.2,
+        -87.5,
+        30.65,
+        -86.95
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": "20221101",
+      "lastFeedVersion": "UTC: 24-Feb-2022 22:06"
+    },
+    {
+      "slug": "rts",
+      "name": "RTS (Gainesville)",
+      "center": [
+        29.64,
+        -82.33
+      ],
+      "bbox": [
+        29.4,
+        -82.7,
+        29.85,
+        -82
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2412/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": "20250817",
+      "lastFeedVersion": "2501"
+    },
+    {
+      "slug": "scat",
+      "name": "SCAT (Sarasota County)",
+      "center": [
+        27.34,
+        -82.53
+      ],
+      "bbox": [
+        27,
+        -82.9,
+        27.7,
+        -82.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-327/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "leetran",
+      "name": "LeeTran (Fort Myers)",
+      "center": [
+        26.64,
+        -81.87
+      ],
+      "bbox": [
+        26.3,
+        -82.2,
+        27,
+        -81.45
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-324/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": "20261118",
+      "lastFeedVersion": "S1000223"
+    },
+    {
+      "slug": "wave-mobile",
+      "name": "Wave Transit (Mobile)",
+      "center": [
+        30.68,
+        -88.1
+      ],
+      "bbox": [
+        30.56,
+        -88.24,
+        30.79,
+        -87.97
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-6773/latest.zip",
+      "region": "Alabama",
+      "lastFeedExpiry": "20281231",
+      "lastFeedVersion": "20260319"
+    },
+    {
+      "slug": "huntsville",
+      "name": "Huntsville Shuttle",
+      "center": [
+        34.73,
+        -86.59
+      ],
+      "bbox": [
+        34.62,
+        -86.74,
+        34.84,
+        -86.44
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2081/latest.zip",
+      "region": "Alabama",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     }
   ]
 }

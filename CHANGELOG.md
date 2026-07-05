@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- **Static agency expansion — 13 more metros (total: 324)**: El Paso, Corpus Christi, Lubbock, Amarillo, Missoula, Billings, Shreveport, Pensacola, Gainesville FL, Sarasota, Fort Myers, Mobile AL, Huntsville AL. First Montana and Alabama-complete coverage.
+  - **Texas**: Sun Metro/El Paso (mdb-148), B-Line/Corpus Christi (mdb-315), Citibus/Lubbock (mdb-569), Amarillo City Transit (mdb-213)
+  - **Montana**: Mountain Line/Missoula (mdb-292), MET Transit/Billings (Passio GTFS)
+  - **Louisiana**: SporTran/Shreveport (direct GTFS)
+  - **Florida**: ECAT/Pensacola (mdb-335), RTS/Gainesville (mdb-2412), SCAT/Sarasota (mdb-327), LeeTran/Fort Myers (mdb-324)
+  - **Alabama**: Wave Transit/Mobile (tld-6773), Huntsville Shuttle (mdb-2081)
 - **Static agency expansion — 31 agencies (total: 311)**: NYC borough buses, Hampton Roads, Wilmington, Tallahassee, Birmingham, Montgomery, Charleston SC, Savannah, Tulsa, Tucson, Yuma, Columbia SC, Greenville SC, Chattanooga, Richmond VA, Roanoke VA, Lynchburg VA, Dayton OH, Youngstown OH, Fort Wayne, Peoria IL, Cedar Rapids, Fargo ND, Duluth MN.
   - **New York**: MTA NYCT Bus split by borough — Manhattan (mdb-513), Brooklyn (mdb-512), Queens (mdb-520), Bronx (mdb-528), Staten Island (mdb-514)
   - **Virginia**: HRT (mdb-473), Bay Transit (mdb-224), WATA (mdb-474), GRTC/Richmond (mdb-902), Valley Metro/Roanoke (mdb-2274), GLTC/Lynchburg (mdb-381)
@@ -21,15 +27,6 @@
   - **Iowa**: Cedar Rapids Transit (mdb-198)
   - **North Dakota**: MATBUS/Fargo (mdb-1285)
   - **Minnesota**: Duluth Transit Authority (mdb-301)
-  - **New York**: MTA NYCT Bus split by borough — Manhattan (mdb-513), Brooklyn (mdb-512), Queens (mdb-520), Bronx (mdb-528), Staten Island (mdb-514)
-  - **Virginia**: Hampton Roads Transit / HRT (mdb-473), Bay Transit (mdb-224), Williamsburg Area Transit Authority / WATA (mdb-474)
-  - **Delaware**: DART First State (mdb-1235)
-  - **North Carolina**: Wave Transit / Wilmington (mdb-1862)
-  - **Florida**: StarMetro / Tallahassee (mdb-344)
-  - **Alabama**: MAX Transit / Birmingham (mdb-2263), Montgomery Transit / The M (Trillium)
-  - **South Carolina**: CARTA / Charleston (mdb-352)
-  - **Georgia**: Chatham Area Transit / CAT / Savannah (mdb-2080)
-  - **Oklahoma**: Tulsa Transit / MTTA (mdb-184)
 - **index.json: backfill `region` field for 96 US agencies**: all agencies added during the US expansion were missing `region`, causing them to appear under "Other" in FilterChips. Added correct US state regions for all.
 - **Static agency expansion — DC/Virginia additional agencies**: Prince George's County Bus, DC Streetcar, Fredericksburg Regional Transit. (DC Circulator discontinued 2023; Alexandria DOT feed has no shapes.)
 - **Static agency expansion — 10 neighbouring agencies**: surrounding transit authorities for recently-added metros.

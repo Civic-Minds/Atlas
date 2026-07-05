@@ -6,13 +6,13 @@ Reference for Atlas agency coverage across static data, live polling, and histor
 
 ## Static Coverage
 
-311 agencies as of July 4, 2026. Coast-to-coast coverage across Canada and the US, with broad regional expansion in progress.
+324 agencies as of July 4, 2026. Coast-to-coast coverage across Canada and the US, with broad regional expansion in progress.
 
 Source of truth: [`public/data/index.json`](../public/data/index.json)
 
 Canada: Ontario, Quebec, British Columbia, Alberta, Saskatchewan, Manitoba, Nova Scotia, New Brunswick, Prince Edward Island, Newfoundland
 
-US: Washington, Oregon, California, Arizona, Nevada, Idaho, Utah, Colorado, New Mexico, Texas, Arkansas, Nebraska, Missouri, Kansas, Minnesota, Wisconsin, Illinois, Indiana, Michigan, Ohio, Kentucky, Tennessee, Louisiana, Alabama, Georgia, Florida, North Carolina, South Carolina, Virginia, Maryland, Washington DC, Pennsylvania, New Jersey, New York, Connecticut, Rhode Island, Massachusetts, Maine, Delaware, Hawaii
+US: Washington, Oregon, California, Arizona, Nevada, Idaho, Utah, Colorado, New Mexico, Texas, Arkansas, Nebraska, Missouri, Kansas, Minnesota, Wisconsin, Illinois, Indiana, Michigan, Ohio, Kentucky, Tennessee, Louisiana, Alabama, Georgia, Florida, North Carolina, South Carolina, Virginia, Maryland, Washington DC, Pennsylvania, New Jersey, New York, Connecticut, Rhode Island, Massachusetts, Maine, Delaware, Hawaii, Montana
 
 ---
 
