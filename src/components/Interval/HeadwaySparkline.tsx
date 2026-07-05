@@ -33,7 +33,8 @@ for (let h = 6; h < 9; h++) HOUR_TO_PERIOD[h] = 'amPeak';
 for (let h = 9; h < 15; h++) HOUR_TO_PERIOD[h] = 'midday';
 for (let h = 15; h < 19; h++) HOUR_TO_PERIOD[h] = 'pmPeak';
 for (let h = 19; h < 23; h++) HOUR_TO_PERIOD[h] = 'evening';
-for (let h = 23; h <= 26; h++) HOUR_TO_PERIOD[h] = 'late';
+for (let h = 23; h < 26; h++) HOUR_TO_PERIOD[h] = 'late';
+HOUR_TO_PERIOD[26] = 'overnight';
 
 // Pre-compute each period's position as fractions of the chart width
 const PERIOD_BANDS: Record<string, { left: number; width: number }> = (() => {
@@ -173,13 +174,15 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
         {hoveredTooltip && (() => {
           const hw = byHour[hoveredTooltip.hour];
           if (hw == null) return null;
+          const xPct = hoveredTooltip.x * 100;
+          const transform = xPct < 12 ? 'translate(0, -100%)' : xPct > 88 ? 'translate(-100%, -100%)' : 'translate(-50%, -100%)';
           return (
             <div
               className="absolute text-[9px] font-bold whitespace-nowrap bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"
               style={{
-                left: `${hoveredTooltip.x * 100}%`,
+                left: `${xPct}%`,
                 top: 0,
-                transform: 'translate(-50%, -100%)',
+                transform,
               }}
             >
               {formatHour(hoveredTooltip.hour)} · every {hw} min

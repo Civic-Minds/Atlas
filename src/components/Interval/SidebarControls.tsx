@@ -638,7 +638,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const fareViewMatchedAgencies = fareView && query !== ''
     ? suggestedFareAgencies
         .map(a => ({ ...a, agencyData: agencies.find(ag => ag.slug === a.slug) }))
-        .filter(a => a.name.toLowerCase().includes(query.toLowerCase()))
+        .filter(a => a.name.toLowerCase().includes(query.toLowerCase()) || (a.region || '').toLowerCase().includes(query.toLowerCase()))
     : [];
 
   const hasContent = !!(currentStop || currentRoute || (query !== '' && (fareView ? fareViewMatchedAgencies.length > 0 : searchMatchResults !== null)) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
@@ -875,7 +875,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {query !== '' && !fareView && searchMatchResults !== null && (() => {
           const qLower = query.toLowerCase();
           const matchedAgencies = agencies.filter(a =>
-            a.name.toLowerCase().includes(qLower) || a.slug.startsWith(qLower)
+            a.name.toLowerCase().includes(qLower) || a.slug.startsWith(qLower) || (a.region || '').toLowerCase().includes(qLower)
           );
           return (
             <div className="mb-4 space-y-3">

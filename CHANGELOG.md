@@ -8,6 +8,8 @@
 - **Route card symmetric direction collapse**: routes where both directions share the same headway and no headsigns (e.g. TTC 512) now show a headway row instead of rendering blank
 - **"Via" capitalization**: added `via` to the lowercase-preserve list in `titleCase` — "Finch via Pioneer Village" no longer renders as "Finch Via Pioneer Village"
 - **Search results missing route names**: routes with a null GTFS `route_short_name` now fall back to `routeId` in search result display, preventing blank rows
+- **TTC 506 Sparkline 2am Bug (AI-267)**: Fixed boundary mapping of hour 26 to `'overnight'` instead of `'late'` to align with period boundaries. Used `Math.max` between branch-specific start headways and terminal stop headways in the pipeline to prevent late-night schedule bunching/layover artifacts (e.g. 2-minute gaps at Main Street Station at 2 AM) from inflating route frequency.
+- **TTC 35 Headway Ranges (AI-270)**: Updated pipeline to compute branch-specific, headsign-specific period and hourly headways. Prevented shared terminal stop headways from bleeding into different branches (e.g. `35A` vs `35B` both ending at Mount Dennis) by comparing branch-specific start headways with terminal stop headways using `Math.max`.
 
 ## [3.0.0] — 2026-07-05
 

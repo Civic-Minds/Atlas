@@ -631,9 +631,13 @@ export async function processGtfsBuffer(
         directionId: parseInt(result.dir),
         tier: result.tier,
         headway: newHeadway,
-        headwayByPeriod: (() => {
-          const times = rawByDayType.get(`${result.route}::${result.dir}::${result.day}`);
-          return times ? computePeriodHeadways(times) : undefined;
+        headwayByPeriod: computePeriodHeadways(result.times),
+        headwayByHour: (() => {
+          const byHour: HeadwayByHour = {};
+          for (const h of SPARKLINE_HOURS) {
+            byHour[h] = medianHeadwayInWindow(result.times, h * 60, h * 60 + 90, 2);
+          }
+          return byHour;
         })(),
         routeShortName: shortName,
         routeLongName: route?.route_long_name ?? null,
@@ -869,7 +873,15 @@ export async function processGtfsBuffer(
       const allStopMedian = hwVals.length % 2 === 0
         ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
         : hwVals[mid];
-      const headway = terminalMiddayHw ?? terminalHw ?? allStopMedian;
+      let headway = terminalMiddayHw ?? terminalHw ?? allStopMedian;
+      
+      // If the terminal stop is shared, the combined terminal headway might be lower (better)
+      // than the branch-specific headway. Do not override with the combined headway in that case.
+      // Only override/degrade to the terminal headway if it is less frequent (higher) than branch headway.
+      const branchHw = feature.properties.headway as number | null;
+      if (branchHw != null && headway < branchHw) {
+        headway = branchHw;
+      }
       feature.properties.headway = headway;
 
       // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
@@ -905,8 +917,17 @@ export async function processGtfsBuffer(
     const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
     const periodMedians: HeadwayByPeriod = {};
     const periodMins: Partial<Record<PeriodKey, number>> = {};
+    const branchPeriodHw = feature.properties.headwayByPeriod as HeadwayByPeriod | undefined;
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
-      periodMedians[pk] = terminalPeriodHw?.[pk] ?? null;
+      const termH = terminalPeriodHw?.[pk] ?? null;
+      const bH = branchPeriodHw?.[pk] ?? null;
+      if (bH == null) {
+        periodMedians[pk] = termH;
+      } else if (termH == null) {
+        periodMedians[pk] = bH;
+      } else {
+        periodMedians[pk] = Math.max(bH, termH);
+      }
       const allVals = onShape
         .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
         .filter((v): v is number => v != null);
@@ -917,7 +938,22 @@ export async function processGtfsBuffer(
 
     // Hourly headways from terminal stop for the sparkline.
     const terminalHourHw = terminalStopId ? allStopHourHw[terminalStopId] : undefined;
-    if (terminalHourHw) {
+    const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
+    if (branchHourHw) {
+      const mergedHourHw: HeadwayByHour = {};
+      for (const h of SPARKLINE_HOURS) {
+        const termH = terminalHourHw?.[h] ?? null;
+        const bH = branchHourHw[h] ?? null;
+        if (bH == null) {
+          mergedHourHw[h] = termH;
+        } else if (termH == null) {
+          mergedHourHw[h] = bH;
+        } else {
+          mergedHourHw[h] = Math.max(bH, termH);
+        }
+      }
+      feature.properties.headwayByHour = mergedHourHw;
+    } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
     }
   }

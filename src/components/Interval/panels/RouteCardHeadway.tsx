@@ -119,9 +119,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         return (
           <div className="flex items-center gap-2">
             <div className="flex-1"><HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} onPeriodHover={setHoveredSparklinePeriod} /></div>
-            {(hoveredSparklinePeriod || period !== 'all') && (
-              <span className="text-[9px] font-bold text-[var(--text-dim)] shrink-0 mb-4">{PERIOD_LABELS[(hoveredSparklinePeriod ?? period) as TimePeriod]}</span>
-            )}
+            <div className="w-[70px] shrink-0 text-right mb-4">
+              {(hoveredSparklinePeriod || period !== 'all') && (
+                <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[(hoveredSparklinePeriod ?? period) as TimePeriod]}</span>
+              )}
+            </div>
           </div>
         );
       })()}

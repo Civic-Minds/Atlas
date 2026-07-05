@@ -284,6 +284,9 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     const agencySlug = ((p as any).agencySlug ?? '').toLowerCase();
     if (agencySlug.startsWith(q)) return true;
     if (q.length >= 3 && (p.agencyName ?? '').toLowerCase().includes(q)) return true;
+    // Support searching by region / city name (e.g. "new york", "nyc", "toronto")
+    const region = ((p as any).region ?? '').toLowerCase();
+    if (q.length >= 3 && region.includes(q)) return true;
     return false;
   }, [q]);
 

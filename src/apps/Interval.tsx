@@ -170,14 +170,16 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     const sp = new URLSearchParams(window.location.search);
     if (selectedRoute) sp.set('route', selectedRoute);
     else sp.delete('route');
-    window.history.replaceState(null, '', window.location.pathname + '?' + sp.toString());
+    const qs = sp.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
   }, [selectedRoute]);
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     if (selectedStop) sp.set('stop', selectedStop);
     else sp.delete('stop');
-    window.history.replaceState(null, '', window.location.pathname + '?' + sp.toString());
+    const qs = sp.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
   }, [selectedStop]);
 
   return (
