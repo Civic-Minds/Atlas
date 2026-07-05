@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+- **Sidebar panel width**: increased from `w-64` to `w-72` (288px) to prevent period labels like "Midday" from being clipped
+- **Search bar width**: bumped responsive steps from `w-40/52/64` to `w-44/56/72`
+- **Near You panel**: redesigned to use standard `LIST_ROW` style — tier dot + route short name + long name/headsign + headway; stop name moved into header; accent color removed from title
+
 ### Added
 - **IDB cache build version**: added `CACHE_BUILD` counter to `agencyGeoWeekVersion()` — increment this whenever mid-week data fixes are pushed so browsers re-fetch instead of serving stale IDB data
 - **Static agency expansion — Colorado, Midwest, California (15 agencies)**: fixed RTD Denver / Bustang slug collision (mdb-2280 is Bustang; RTD is mdb-178); added Bustang (mdb-2280), Bustang Outrider (mdb-2330), RFTA/Roaring Fork (mdb-2278), Grand Valley Transit (mdb-161), Durango Transit (mdb-2290), Pueblo Transit (mdb-2232), ECO Transit/Eagle County (mdb-173), All Points Transit/Montrose (mdb-212), KART/Kings Area Rural (mdb-2204), Tulare County Area Transit, Madison Metro (mdb-294), MCTS/Milwaukee (mdb-2127), Waukesha Metro, Pace Suburban Bus, Mountain Line/Morgantown WV (mdb-407)

@@ -19,6 +19,7 @@ function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number)
 export interface NearbyRoute {
   rKey: string;
   routeShortName: string;
+  routeLongName: string | null;
   agencyName: string;
   agencySlug: string;
   headway: number | null;
@@ -88,6 +89,7 @@ export function useNearbyRoutes(
           routeMap.set(mapKey, {
             rKey: rk,
             routeShortName: shortName,
+            routeLongName: (p.routeLongName as string | null) ?? null,
             agencyName: p.agencyName || slug,
             agencySlug: slug,
             headway: p.headway ?? null,

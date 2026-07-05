@@ -251,7 +251,7 @@ export default function App() {
 
         {/* Search bar — doubles as Corridors From input and History agency search */}
         <div ref={searchBarRef}>
-        <div className={`w-40 lg:w-52 xl:w-64 relative ${PILL_SURFACE} pl-1 pr-3`}>
+        <div className={`w-44 lg:w-56 xl:w-72 relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             ref={corridorsFromRef}

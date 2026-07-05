@@ -682,7 +682,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   return (
     <div
-      className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+      className={`absolute top-20 ${Z_PANEL} w-72 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
     >
       {searchFocused && query === '' && (
