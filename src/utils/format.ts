@@ -37,7 +37,7 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
 };
 
 // Articles/prepositions that stay lowercase unless they open the string
-const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for)$/i;
+const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for|via)$/i;
 
 export function fmtHeadway(minutes: number): string {
   if (minutes <= 60) return `every ${minutes} min`;

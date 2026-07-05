@@ -6,6 +6,8 @@
 - **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail)
 - **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave
 - **Route card symmetric direction collapse**: routes where both directions share the same headway and no headsigns (e.g. TTC 512) now show a headway row instead of rendering blank
+- **"Via" capitalization**: added `via` to the lowercase-preserve list in `titleCase` — "Finch via Pioneer Village" no longer renders as "Finch Via Pioneer Village"
+- **Search results missing route names**: routes with a null GTFS `route_short_name` now fall back to `routeId` in search result display, preventing blank rows
 
 ## [3.0.0] — 2026-07-05
 

@@ -345,7 +345,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       }
     }
     return [...byDisplay.values()]
-      .map(({ p, inView, key }) => ({ key, routeShortName: p.routeShortName, routeLongName: p.routeLongName, agencyName: p.agencyName, inView }))
+      .map(({ p, inView, key }) => ({ key, routeShortName: p.routeShortName ?? p.routeId, routeLongName: p.routeLongName, agencyName: p.agencyName, inView }))
       .sort((a, b) => {
         if (a.inView !== b.inView) return a.inView ? -1 : 1;
         return (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true });
