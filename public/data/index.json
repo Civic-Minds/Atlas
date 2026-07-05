@@ -14,10 +14,7 @@
         44.79,
         -79.19
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie-stops.json",
       "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/barrie-corridors.json",
       "lastFeedExpiry": "20261031",
       "lastFeedVersion": "20260628",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-barrie-transit-gtfs-3.zip?alt=media"
@@ -36,10 +33,7 @@
         44.199,
         -77.342
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville-stops.json",
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/belleville-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-belleville-transit-gtfs-1858.zip?alt=media"
@@ -58,10 +52,7 @@
         44.13,
         -79.26
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton-stops.json",
       "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/brampton-corridors.json",
       "lastFeedExpiry": "20260802",
       "lastFeedVersion": "20260629",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-brampton-transit-gtfs-729.zip?alt=media"
@@ -80,10 +71,7 @@
         43.73,
         -79.3
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington-stops.json",
       "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/burlington-corridors.json",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-burlington-transit-gtfs-724.zip?alt=media"
@@ -102,10 +90,7 @@
         45.063,
         -74.674
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall-stops.json",
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cornwall-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-cornwall-transit-gtfs-718.zip?alt=media"
@@ -124,10 +109,7 @@
         44.3,
         -78.35
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt-stops.json",
       "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/drt-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-durham-region-transit-gtfs-726.zip?alt=media"
@@ -146,10 +128,7 @@
         44.8,
         -77.5
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/go-corridors.json",
       "lastFeedExpiry": "20260904",
       "lastFeedVersion": "20260529182459"
     },
@@ -167,10 +146,7 @@
         43.85,
         -79.99
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/grt-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -188,10 +164,7 @@
         43.94,
         -79.75
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph-stops.json",
       "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/guelph-corridors.json",
       "lastFeedExpiry": "20250830",
       "lastFeedVersion": "2025 May _20250801",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media"
@@ -210,10 +183,7 @@
         43.66,
         -79.37
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton-stops.json",
       "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hamilton-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "2026 Spring & 2026 Summer Merged"
     },
@@ -231,10 +201,7 @@
         44.63,
         -75.99
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston-stops.json",
       "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingston-corridors.json",
       "lastFeedExpiry": "20270626",
       "lastFeedVersion": "1/20260626 08:06:05/20260627 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-kingston-transit-gtfs-733.zip?alt=media"
@@ -253,10 +220,7 @@
         43.39,
         -80.75
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london-stops.json",
       "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/london-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "2026 Summer_20260615",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-london-transit-commission-gtfs-2.zip?alt=media"
@@ -275,10 +239,7 @@
         43.99,
         -79.14
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway-stops.json",
       "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/miway-corridors.json",
       "lastFeedExpiry": "20260802",
       "lastFeedVersion": "1",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-miway-gtfs-730.zip?alt=media"
@@ -297,10 +258,7 @@
         43.92,
         -79.38
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton-stops.json",
       "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/milton-corridors.json",
       "lastFeedExpiry": "20260906",
       "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-milton-transit-gtfs-759.zip?alt=media"
@@ -319,11 +277,8 @@
         43.56,
         -78.75
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-niagara-region-transit-gtfs-722.zip?alt=media",
       "preprocess": "nrt-day-night",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/niagara-corridors.json",
       "lastFeedExpiry": "20210109",
       "lastFeedVersion": "S1000191"
     },
@@ -341,10 +296,7 @@
         45.52,
         -75.343
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/octranspo-corridors.json",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "S1000499-"
     },
@@ -362,10 +314,7 @@
         43.87,
         -79.19
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville-stops.json",
       "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/oakville-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-oakville-transit-gtfs-725.zip?alt=media"
@@ -377,8 +326,6 @@
         42.9995,
         -82.3089
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarnia.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarnia-stops.json",
       "feedUrl": null,
       "region": "Ontario"
     },
@@ -396,10 +343,7 @@
         44.8,
         -79.15
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe-stops.json",
       "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/simcoe-corridors.json",
       "lastFeedExpiry": "20270528",
       "lastFeedVersion": "1/20260629 22:00:00/20260630 00:00:00"
     },
@@ -417,10 +361,7 @@
         43.57,
         -80.73
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford-stops.json",
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stratford-corridors.json",
       "lastFeedExpiry": "20270506",
       "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
       "excludeRouteShortNames": [
@@ -441,10 +382,7 @@
         44.05,
         -78.88
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-stops.json",
       "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ttc-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media"
@@ -463,12 +401,9 @@
         42.342,
         -82.607
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor-stops.json",
       "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/windsor-corridors.json",
-      "lastFeedExpiry": "20260924",
-      "lastFeedVersion": "7cef944a-cef1-425f-adc8-dce43741849f",
+      "lastFeedExpiry": "20260927",
+      "lastFeedVersion": "3f9d8088-9ef5-4be4-b29a-0a49c637e392",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-transit-windsor-gtfs-720.zip?alt=media"
     },
     {
@@ -485,12 +420,9 @@
         43.75,
         -79.3
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress-stops.json",
       "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/upexpress-corridors.json",
-      "lastFeedExpiry": "20261123",
-      "lastFeedVersion": "20260527142759"
+      "lastFeedExpiry": "20261227",
+      "lastFeedVersion": "20260630142518"
     },
     {
       "slug": "yrt",
@@ -506,10 +438,7 @@
         44.28,
         -78.94
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-stops.json",
       "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yrt-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "2026.06.28_June_20260611",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-york-region-transit-gtfs-728.zip?alt=media"
@@ -528,10 +457,7 @@
         46.38,
         -73.73
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter-stops.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/linter-corridors.json",
       "lastFeedExpiry": "20260802",
       "lastFeedVersion": "1771259558641"
     },
@@ -549,10 +475,7 @@
         46.45,
         -74.3
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant-stops.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mont-tremblant-corridors.json",
       "lastFeedExpiry": "20260907",
       "lastFeedVersion": "1782135293942"
     },
@@ -570,12 +493,10 @@
         45.9,
         -73.07
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem-stops.json",
       "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rem-corridors.json",
       "lastFeedExpiry": "20261231",
-      "lastFeedVersion": "20260520"
+      "lastFeedVersion": "20260520",
+      "gtfsFares": true
     },
     {
       "slug": "rtc",
@@ -591,10 +512,7 @@
         47,
         -71
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-la-capitale-gtfs-757.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtc-corridors.json",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": null
     },
@@ -612,13 +530,11 @@
         45.94,
         -72.97
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-stops.json",
       "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rtl-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "202606181332",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-longueuil-gtfs-751.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-longueuil-gtfs-751.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "stl",
@@ -634,10 +550,7 @@
         46.01,
         -73.21
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl-stops.json",
       "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stl-corridors.json",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": "20260629044624",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media"
@@ -656,10 +569,7 @@
         46.828,
         -71.099
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-stops.json",
       "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stlevis-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "20260615",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-levis-gtfs-763.zip?alt=media"
@@ -678,13 +588,12 @@
         45.9,
         -73.07
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-stops.json",
       "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stm-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "20260602153030_26U",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media",
+      "gtfsFares": true,
+      "fareUrl": "https://www.stm.info/en/info/fares"
     },
     {
       "slug": "sto",
@@ -700,10 +609,7 @@
         45.593,
         -75.391
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-stops.json",
       "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sto-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media"
@@ -722,10 +628,7 @@
         45.51,
         -73.07
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr-stops.json",
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sjsr-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "1778686364253"
     },
@@ -743,10 +646,7 @@
         45.83,
         -72.75
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe-stops.json",
       "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-hyacinthe-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -764,13 +664,11 @@
         46.5,
         -72
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-stops.json",
       "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-presquile",
@@ -786,13 +684,11 @@
         45.81,
         -73.54
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-stops.json",
       "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-presquile-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-la-presquile-gtfs-743.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-la-presquile-gtfs-743.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-sudouest",
@@ -808,13 +704,11 @@
         45.75,
         -73.26
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-stops.json",
       "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-sudouest-corridors.json",
-      "lastFeedExpiry": "20260719",
+      "lastFeedExpiry": "20260802",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-lrrs",
@@ -830,13 +724,11 @@
         45.81,
         -73
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-stops.json",
       "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-lrrs-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-laurentides",
@@ -852,13 +744,11 @@
         46.06,
         -73.4
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-stops.json",
       "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-laurentides-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "exo-terrebonne",
@@ -874,13 +764,11 @@
         46.1,
         -73.15
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-stops.json",
       "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/exo-terrebonne-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "bc-fraser-valley",
@@ -890,10 +778,7 @@
         49.05,
         -122.3
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-fraser-valley-region-gtfs-1991.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bc-fraser-valley-corridors.json",
       "lastFeedExpiry": "20260627",
       "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
     },
@@ -905,10 +790,7 @@
         49.888,
         -119.496
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-kelowna-regional-transit-system-gtfs-2555.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kelowna-corridors.json",
       "lastFeedExpiry": "20260627",
       "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
     },
@@ -920,10 +802,7 @@
         48.4284,
         -123.3656
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-victoria-regional-transit-system-gtfs-2571.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/victoria-corridors.json",
       "lastFeedExpiry": "20260628",
       "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00"
     },
@@ -941,12 +820,10 @@
         49.5,
         -122.2
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-translink-vancouver-gtfs-1222.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/translink-corridors.json"
+      "gtfsFares": true
     },
     {
       "slug": "calgary",
@@ -962,10 +839,7 @@
         51.27,
         -113.72
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/calgary.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/calgary-stops.json",
       "feedUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/calgary-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-calgary-transit-gtfs-712.zip?alt=media"
@@ -984,10 +858,7 @@
         53.75,
         -113.15
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/edmonton.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/edmonton-stops.json",
       "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/edmonton-corridors.json",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "260623_1347",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-edmonton-transit-system-gtfs-714.zip?alt=media"
@@ -1006,10 +877,7 @@
         50.02,
         -96.86
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/winnipeg.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/winnipeg-stops.json",
       "feedUrl": "https://gtfs.winnipegtransit.com/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/winnipeg-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-manitoba-winnipeg-transit-gtfs-717.zip?alt=media"
@@ -1028,10 +896,7 @@
         50.52,
         -104.44
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/regina.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/regina-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-city-of-regina-gtfs-715.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/regina-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -1042,9 +907,6 @@
         52.1332,
         -106.67
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saskatoon.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saskatoon-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saskatoon-corridors.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-saskatoon-transit-gtfs-716.zip?alt=media",
       "region": "Saskatchewan",
       "bbox": [
@@ -1070,10 +932,7 @@
         44.9,
         -63.27
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/halifax.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/halifax-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-nova-scotia-halifax-transit-gtfs-734.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/halifax-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "2026_05_May_20260428"
     },
@@ -1091,10 +950,7 @@
         46.18,
         -64.55
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/codiac.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/codiac-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-codiac-transport-gtfs-1111.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/codiac-corridors.json",
       "lastFeedExpiry": "20260630",
       "lastFeedVersion": "2026 02 28  Bid5 V2"
     },
@@ -1112,10 +968,7 @@
         46.04,
         -66.49
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fredericton.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fredericton-stops.json",
       "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fredericton-corridors.json",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "202606290/20260628 23:30:00/20260629 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-fredericton-transit-gtfs-764.zip?alt=media"
@@ -1134,10 +987,7 @@
         45.38,
         -65.89
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-john.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-john-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-saint-john-transit-gtfs-2131.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/saint-john-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "a5193e57-6986-42e9-9310-bf35d76fe078"
     },
@@ -1155,10 +1005,7 @@
         46.33,
         -62.96
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/t3-transit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/t3-transit-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-prince-edward-island-t3-transit-gtfs-2132.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/t3-transit-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "UTC: 14-May-2026 15:14"
     },
@@ -1176,10 +1023,7 @@
         47.65,
         -52.57
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrobus.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrobus-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-newfoundland-metrobus-transit-gtfs-758.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/metrobus-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -1197,10 +1041,7 @@
         43.29,
         -78.38
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-stops.json",
       "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nfta-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "supplementalFeedUrls": [
@@ -1215,8 +1056,6 @@
         42.9709,
         -82.4249
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/port-huron.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/port-huron-stops.json",
       "feedUrl": null,
       "region": "Michigan"
     },
@@ -1228,10 +1067,7 @@
         42.3314,
         -83.0458
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-department-of-transportation-ddot-gtfs-464.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ddot-corridors.json",
       "lastFeedExpiry": "20260703",
       "lastFeedVersion": "S1000180"
     },
@@ -1243,10 +1079,7 @@
         42.3314,
         -83.0458
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-people-mover-gtfs-2281.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/detroit-people-mover-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "1"
     },
@@ -1258,12 +1091,9 @@
         42.34,
         -83.056
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/qline.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/qline-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-qline-detroit-gtfs-802.zip?alt=media",
       "lastFeedExpiry": "20251231",
-      "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/qline-corridors.json"
+      "lastFeedVersion": "UTC: 21-Apr-2025 21:29"
     },
     {
       "slug": "smart",
@@ -1273,10 +1103,7 @@
         42.4,
         -83.1
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-suburban-mobility-authority-for-regional-transit-smart-gtfs-414.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-corridors.json",
       "lastFeedExpiry": "20260621",
       "lastFeedVersion": "S1000139"
     },
@@ -1288,12 +1115,9 @@
         42.2808,
         -83.743
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/theride.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/theride-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-ann-arbor-area-transportation-authority-theride-gtfs-415.zip?alt=media",
       "lastFeedExpiry": null,
-      "lastFeedVersion": null,
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/theride-corridors.json"
+      "lastFeedVersion": null
     },
     {
       "slug": "gcrta",
@@ -1303,10 +1127,7 @@
         41.4993,
         -81.6944
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta-stops.json",
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-greater-cleveland-regional-transit-authority-gtfs-406.zip?alt=media",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/gcrta-corridors.json",
       "lastFeedExpiry": "20260801",
       "lastFeedVersion": "2606a"
     },
@@ -1317,8 +1138,6 @@
         41.6639,
         -83.5552
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tarta-stops.json",
       "feedUrl": null,
       "region": "Ohio"
     },
@@ -1330,10 +1149,7 @@
         43.157,
         -77.615
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rgrta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rgrta-stops.json",
       "feedUrl": "http://scheduledata.rgrta.com/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rgrta-corridors.json",
       "lastFeedExpiry": "20260906",
       "lastFeedVersion": "AprJun26_Merged",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-rochester-genesee-regional-transportation-authority-rgrta-gtfs-533.zip?alt=media"
@@ -1346,10 +1162,7 @@
         42.652,
         -73.756
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cdta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cdta-stops.json",
       "feedUrl": "https://www.cdta.org/schedules/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cdta-corridors.json",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "Major",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-capital-district-transportation-authority-cdta-gtfs-538.zip?alt=media"
@@ -1362,10 +1175,7 @@
         43.048,
         -76.147
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/centro.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/centro-stops.json",
       "feedUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/centro-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-centro-gtfs-534.zip?alt=media"
@@ -1378,10 +1188,7 @@
         42.443,
         -76.501
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tcat.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tcat-stops.json",
       "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tcat-corridors.json",
       "lastFeedExpiry": "20260815",
       "lastFeedVersion": "20260625"
     },
@@ -1393,10 +1200,7 @@
         42.097,
         -75.917
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broome.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broome-stops.json",
       "feedUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/broome-corridors.json",
       "lastFeedExpiry": "20260630",
       "lastFeedVersion": "20260120",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-broome-county-transit-bc-transit-gtfs-239.zip?alt=media"
@@ -1409,10 +1213,7 @@
         42.129,
         -80.085
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emta-stops.json",
       "feedUrl": "http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emta-corridors.json",
       "lastFeedExpiry": "20231101",
       "lastFeedVersion": "UTC: 22-Jun-2023 22:03"
     },
@@ -1424,10 +1225,7 @@
         41.081,
         -81.519
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/akron.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/akron-stops.json",
       "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/akron-corridors.json",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": "Updated: Jun 29, 2026, 10:39 AM",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-akron-metro-regional-transit-authority-metro-gtfs-411.zip?alt=media"
@@ -1440,10 +1238,7 @@
         40.798,
         -81.379
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarta-stops.json",
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sarta-corridors.json",
       "lastFeedExpiry": "20260808",
       "lastFeedVersion": "MAY 2026_20260409",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-stark-area-regional-transit-authority-sarta-gtfs-818.zip?alt=media"
@@ -1456,10 +1251,7 @@
         41.713,
         -81.337
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/laketran.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/laketran-stops.json",
       "feedUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/laketran-corridors.json",
       "lastFeedExpiry": "20260927",
       "lastFeedVersion": "May 2026",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-laketran-gtfs-410.zip?alt=media"
@@ -1472,10 +1264,7 @@
         43.012,
         -83.687
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mta-flint.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mta-flint-stops.json",
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mta-flint-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20260519"
     },
@@ -1487,10 +1276,7 @@
         42.733,
         -84.556
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cata-lansing.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cata-lansing-stops.json",
       "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cata-lansing-corridors.json",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "26-04 (May04-Aug23)_20260512"
     },
@@ -1502,10 +1288,7 @@
         42.963,
         -85.668
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/the-rapid.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/the-rapid-stops.json",
       "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/the-rapid-corridors.json",
       "lastFeedExpiry": "20260830",
       "lastFeedVersion": "20260604"
     },
@@ -1517,13 +1300,11 @@
         42.361,
         -71.057
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mbta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mbta-stops.json",
       "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mbta-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "Summer 2026, 2026-06-26T19:57:52+00:00, version D",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "pvta",
@@ -1533,13 +1314,11 @@
         42.101,
         -72.59
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvta-stops.json",
       "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pvta-corridors.json",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-pioneer-valley-transit-authority-pvta-gtfs-1234.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-pioneer-valley-transit-authority-pvta-gtfs-1234.zip?alt=media",
+      "gtfsFares": true
     },
     {
       "slug": "wrta",
@@ -1549,10 +1328,7 @@
         42.262,
         -71.802
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wrta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wrta-stops.json",
       "feedUrl": "http://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wrta-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-worcester-regional-transit-authority-wrta-gtfs-432.zip?alt=media"
@@ -1565,10 +1341,7 @@
         41.765,
         -72.682
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cttransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cttransit-stops.json",
       "feedUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cttransit-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -1580,10 +1353,7 @@
         52.268,
         -113.811
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/red-deer.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/red-deer-stops.json",
       "feedUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/red-deer-corridors.json",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "S1000149"
     },
@@ -1595,10 +1365,7 @@
         49.694,
         -112.832
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lethbridge.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lethbridge-stops.json",
       "feedUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lethbridge-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "2026-06-29",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-lethbridge-transit-gtfs-765.zip?alt=media"
@@ -1611,10 +1378,7 @@
         50.393,
         -105.535
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/moose-jaw.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/moose-jaw-stops.json",
       "feedUrl": "https://moosejaw.ca/wp-content/uploads/2023/11/moosejaw-GTFS.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/moose-jaw-corridors.json",
       "lastFeedExpiry": "20240331",
       "lastFeedVersion": "1"
     },
@@ -1626,10 +1390,7 @@
         53.203,
         -105.753
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/prince-albert.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/prince-albert-stops.json",
       "feedUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/prince-albert-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -1641,10 +1402,7 @@
         50.674,
         -120.327
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kamloops.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kamloops-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kamloops-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-kamloops-transit-system-gtfs-707.zip?alt=media"
@@ -1657,10 +1415,7 @@
         49.498,
         -119.586
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/south-okanagan.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/south-okanagan-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/south-okanagan-corridors.json",
       "lastFeedExpiry": "20260907",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00"
     },
@@ -1672,10 +1427,7 @@
         49.165,
         -123.936
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nanaimo.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nanaimo-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/nanaimo-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-nanaimo-gtfs-2473.zip?alt=media"
@@ -1688,10 +1440,7 @@
         48.781,
         -123.709
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cowichan.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cowichan-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cowichan-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-cowichan-valley-regional-transit-system-gtfs-694.zip?alt=media"
@@ -1704,10 +1453,7 @@
         49.687,
         -124.993
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/comox-valley.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/comox-valley-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/comox-valley-corridors.json",
       "lastFeedExpiry": "20260906",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00"
     },
@@ -1719,12 +1465,9 @@
         50.022,
         -125.244
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/campbell-river.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/campbell-river-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/campbell-river-corridors.json",
-      "lastFeedExpiry": "20260906",
-      "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00"
+      "lastFeedExpiry": "20270905",
+      "lastFeedVersion": "202607040/20260703 21:00:00/20260704 04:00:00"
     },
     {
       "slug": "squamish",
@@ -1734,10 +1477,7 @@
         49.702,
         -123.155
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/squamish.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/squamish-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/squamish-corridors.json",
       "lastFeedExpiry": "20260907",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-squamish-gtfs-701.zip?alt=media"
@@ -1750,10 +1490,7 @@
         50.319,
         -122.799
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pemberton.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pemberton-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/pemberton-corridors.json",
       "lastFeedExpiry": "20261124",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-pemberton-valley-gtfs-2470.zip?alt=media"
@@ -1766,10 +1503,7 @@
         50.116,
         -122.957
       ],
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whistler.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whistler-stops.json",
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whistler-corridors.json",
       "lastFeedExpiry": "20261122",
       "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-whistler-transit-system-gtfs-702.zip?alt=media"
@@ -1789,9 +1523,6 @@
         -121.8
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-king-county-metro-gtfs-1330.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingcountymetro.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingcountymetro-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kingcountymetro-corridors.json",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": "SPR26-160.3-MetroDayShuttleUpdate"
     },
@@ -1810,9 +1541,6 @@
         -121.7
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-sound-transit-gtfs-268.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soundtransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soundtransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soundtransit-corridors.json",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": "SC-Spring-2026.8"
     },
@@ -1831,9 +1559,6 @@
         -122
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-pierce-transit-gtfs-265.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/piercetransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/piercetransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/piercetransit-corridors.json",
       "lastFeedExpiry": "20260606",
       "lastFeedVersion": "S1000129"
     },
@@ -1852,9 +1577,6 @@
         -121.7
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-community-transit-ct-gtfs-287.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/communitytransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/communitytransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/communitytransit-corridors.json",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": "20260522-20260828"
     },
@@ -1873,9 +1595,6 @@
         -122.1
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-everett-transit-gtfs-3038.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/everetttransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/everetttransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/everetttransit-corridors.json",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "4fcef50b-1dfc-45aa-8abb-b2eecb95b162"
     },
@@ -1894,9 +1613,6 @@
         -122.3
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-kitsap-transit-gtfs-1304.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kitsaptransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kitsaptransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/kitsaptransit-corridors.json",
       "lastFeedExpiry": "20211231",
       "lastFeedVersion": "20210606"
     },
@@ -1915,9 +1631,6 @@
         -122.5
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-intercity-transit-gtfs-266.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/intercitytransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/intercitytransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/intercitytransit-corridors.json",
       "lastFeedExpiry": "20260912",
       "lastFeedVersion": "20260602"
     },
@@ -1936,9 +1649,6 @@
         -121.9
       ],
       "feedUrl": "https://www.skagittransit.org/gtfs/google_transit.zip",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/skagittransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/skagittransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/skagittransit-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -1957,9 +1667,6 @@
         -122
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-whatcom-transportation-authority-gtfs-284.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whatcomtransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whatcomtransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/whatcomtransit-corridors.json",
       "lastFeedExpiry": "20260919",
       "lastFeedVersion": "S1000173-S1000174"
     },
@@ -1978,9 +1685,6 @@
         -122.3
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/islandtransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/islandtransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/islandtransit-corridors.json",
       "lastFeedExpiry": "20261001",
       "lastFeedVersion": "UTC: 06-May-2026 16:22"
     },
@@ -1999,9 +1703,6 @@
         -122.5
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-jefferson-transit-authority-gtfs-838.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/jeffersontransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/jeffersontransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/jeffersontransit-corridors.json",
       "lastFeedExpiry": "20270501",
       "lastFeedVersion": "20260602"
     },
@@ -2020,9 +1721,6 @@
         -122.9
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-clallam-transit-system-gtfs-279.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/clallamtransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/clallamtransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/clallamtransit-corridors.json",
       "lastFeedExpiry": "20270522",
       "lastFeedVersion": "Updated: Mar 16, 2026, 12:30 PM"
     },
@@ -2041,9 +1739,6 @@
         -70
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-greater-portland-metro-bus-gtfs-2642.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/portlandme.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/portlandme-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/portlandme-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2062,9 +1757,6 @@
         -70.2
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-south-portland-gtfs-2641.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/southportlandme.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/southportlandme-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/southportlandme-corridors.json",
       "lastFeedExpiry": "20251005",
       "lastFeedVersion": "Updated: Aug 25, 2025, 10:00 AM"
     },
@@ -2083,9 +1775,6 @@
         -74.9
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-herkimer-oneida-counties-transportation-study-hocts-gtfs-588.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hocts.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hocts-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hocts-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2104,9 +1793,6 @@
         -73.4
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glensfallstransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glensfallstransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/glensfallstransit-corridors.json",
       "lastFeedExpiry": "",
       "lastFeedVersion": ""
     },
@@ -2125,9 +1811,6 @@
         -75.7
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-watertown-citibus-gtfs-2881.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/watertowncitibus.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/watertowncitibus-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/watertowncitibus-corridors.json",
       "lastFeedExpiry": "20260703",
       "lastFeedVersion": "20250228"
     },
@@ -2146,9 +1829,6 @@
         -73.7
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-hudson-link-gtfs-2312.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hudsonlink.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hudsonlink-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/hudsonlink-corridors.json",
       "lastFeedExpiry": "20261001",
       "lastFeedVersion": "UTC: 25-Mar-2026 23:59"
     },
@@ -2167,9 +1847,6 @@
         -122.3
       ],
       "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/wsf-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": "PDT: 05-Jun-2026 11:08"
     },
@@ -2188,9 +1865,6 @@
         -71.82
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-sherbrooke-gtfs-1996.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sherbrooke-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2210,9 +1884,6 @@
       ],
       "feedUrl": "http://developer.trimet.org/schedule/gtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-trimet-portland-streetcar-gtfs-247.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trimet-corridors.json",
       "lastFeedExpiry": "20261128",
       "lastFeedVersion": "20260531-20260624-2100"
     },
@@ -2232,9 +1903,6 @@
       ],
       "feedUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-c-tran-gtfs-258.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ctran-corridors.json",
       "lastFeedExpiry": "20260912",
       "lastFeedVersion": "20260510-20260912"
     },
@@ -2254,9 +1922,6 @@
       ],
       "feedUrl": "https://www.spokanetransit.com/gtfs",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-spokane-transit-authority-sta-gtfs-290.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/spokane-corridors.json",
       "lastFeedExpiry": "20260919",
       "lastFeedVersion": "MAY2026v3_20260521"
     },
@@ -2276,9 +1941,6 @@
       ],
       "feedUrl": "https://www.ltd.org/files/library/ltdgtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/eugene-ltd-corridors.json",
       "lastFeedExpiry": "20260131",
       "lastFeedVersion": ""
     },
@@ -2298,9 +1960,6 @@
       ],
       "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cherriots-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2320,9 +1979,6 @@
       ],
       "feedUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-city-of-corvallis-gtfs-2283.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/corvallis-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20260625"
     },
@@ -2342,9 +1998,6 @@
       ],
       "feedUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-san-francisco-san-francisco-m-gtfs-2886.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sfmta-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2364,9 +2017,6 @@
       ],
       "feedUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-bay-area-rapid-transit-bart-gtfs-53.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bart-corridors.json",
       "lastFeedExpiry": "20260807",
       "lastFeedVersion": "72"
     },
@@ -2386,9 +2036,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-caltrain-gtfs-54.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/caltrain-corridors.json",
       "lastFeedExpiry": "20270131",
       "lastFeedVersion": "UTC: 10-Jun-2026 22:25"
     },
@@ -2408,9 +2055,6 @@
       ],
       "feedUrl": "https://api.actransit.org/transit/gtfs/download",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-alameda-contra-costa-transit-district-ac-transit-gtfs-1244.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/actransit-corridors.json",
       "lastFeedExpiry": "20240302",
       "lastFeedVersion": "S1000222"
     },
@@ -2430,9 +2074,6 @@
       ],
       "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-clara-valley-transportation-authority-vta-gtfs-57.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vta-corridors.json",
       "lastFeedExpiry": "20260809",
       "lastFeedVersion": "2026-06-01_10:34"
     },
@@ -2452,9 +2093,6 @@
       ],
       "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-mateo-county-transit-district-samtrans-gtfs-49.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/samtrans-corridors.json",
       "lastFeedExpiry": "20260801",
       "lastFeedVersion": "Initial"
     },
@@ -2474,9 +2112,6 @@
       ],
       "feedUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-golden-gate-transit-gtfs-67.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/goldengate-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2496,9 +2131,6 @@
       ],
       "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-francisco-bay-area-water-emergency-transportation-authority-gtfs-3143.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/weta-corridors.json",
       "lastFeedExpiry": "20261101",
       "lastFeedVersion": "UTC: 24-Jun-2026 19:51"
     },
@@ -2518,9 +2150,6 @@
       ],
       "feedUrl": "https://countyconnection.com/GTFS/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-county-connection-gtfs-2421.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/countyconnection-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2540,9 +2169,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-westcat-gtfs-78.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westcat-corridors.json",
       "lastFeedExpiry": "20260831",
       "lastFeedVersion": "UTC: 25-Jun-2026 20:50"
     },
@@ -2562,9 +2188,6 @@
       ],
       "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-soltrans-gtfs-80.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/soltrans-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20260612"
     },
@@ -2584,9 +2207,6 @@
       ],
       "feedUrl": "https://marintransit.gov/data/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-marin-transit-gtfs-2937.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/marintransit-corridors.json",
       "lastFeedExpiry": "20270109",
       "lastFeedVersion": "UTC: 04-Feb-2026 00:08"
     },
@@ -2606,9 +2226,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-marin-area-rail-transit-smart-gtfs-815.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-ca-corridors.json",
       "lastFeedExpiry": "20270110",
       "lastFeedVersion": "UTC: 14-Apr-2026 15:07"
     },
@@ -2628,11 +2245,8 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-county-transit-sct-gtfs-70.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sonoma-county-corridors.json",
-      "lastFeedExpiry": "20260630",
-      "lastFeedVersion": "UTC: 12-Jun-2026 19:42"
+      "lastFeedExpiry": "20260808",
+      "lastFeedVersion": "UTC: 01-Jul-2026 17:39"
     },
     {
       "slug": "vine",
@@ -2650,9 +2264,6 @@
       ],
       "feedUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-vine-transit-gtfs-1288.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vine-corridors.json",
       "lastFeedExpiry": "20261031",
       "lastFeedVersion": "UTC: 26-Jun-2026 20:52"
     },
@@ -2672,9 +2283,6 @@
       ],
       "feedUrl": "https://emerygoround.com/data/emerygoround-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-emery-go-round-gtfs-2224.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/emerygoround-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2694,9 +2302,6 @@
       ],
       "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-stanford-marguerite-shuttle-sms-gtfs-59.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/stanford-corridors.json",
       "lastFeedExpiry": "20270618",
       "lastFeedVersion": "2026-06-16T21:38:12Z"
     },
@@ -2716,9 +2321,6 @@
       ],
       "feedUrl": "https://transitfeeds.com/p/tri-delta-transit/1148/latest/download",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-tri-delta-transit-gtfs-1323.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/tridelta-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2738,9 +2340,6 @@
       ],
       "feedUrl": "http://webwatch.lavta.org/TMGTFSRealTimeWebService/GTFS-Static/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lavta-corridors.json",
       "lastFeedExpiry": "20260430",
       "lastFeedVersion": "January_26_01_20260327"
     },
@@ -2760,9 +2359,6 @@
       ],
       "feedUrl": "https://data.trilliumtransit.com/gtfs/unioncity-ca-us/unioncity-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unioncity-corridors.json",
       "lastFeedExpiry": "20230927",
       "lastFeedVersion": "UTC: 14-Mar-2023 23:56"
     },
@@ -2782,9 +2378,6 @@
       ],
       "feedUrl": "https://gtfs.calitp.org/production/WestBerkeleyShuttleGTFS.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-west-berkeley-shuttle-gtfs-2238.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/westberkeley-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2804,9 +2397,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/petalumatransit-petaluma-ca-us/petalumatransit-petaluma-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-petaluma-transit-gtfs-72.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/petaluma-corridors.json",
       "lastFeedExpiry": "20230630",
       "lastFeedVersion": "UTC: 01-Dec-2022 01:48"
     },
@@ -2826,9 +2416,6 @@
       ],
       "feedUrl": "https://srcity.org/DocumentCenter/View/21635/google_transit",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-rosa-citybus-gtfs-73.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/santarosa-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -2848,9 +2435,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-fairfield-and-suisun-transit-fast-transit-gtfs-76.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/fast-ca-corridors.json",
       "lastFeedExpiry": "20260630",
       "lastFeedVersion": "UTC: 14-Nov-2025 10:07"
     },
@@ -2870,9 +2454,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/vacaville-corridors.json",
       "lastFeedExpiry": "20260630",
       "lastFeedVersion": "2.2.26"
     },
@@ -2892,9 +2473,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-rio-vista-delta-breeze-gtfs-81.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/riovista-corridors.json",
       "lastFeedExpiry": "20250131",
       "lastFeedVersion": "UTC: 23-Feb-2024 22:27"
     },
@@ -2914,9 +2492,6 @@
       ],
       "feedUrl": "https://transitfeeds.com/p/altamont-corridor-express/823/latest/download",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-altamont-corridor-express-gtfs-1133.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/ace-corridors.json",
       "lastFeedExpiry": "20241231",
       "lastFeedVersion": "20231226"
     },
@@ -2936,9 +2511,6 @@
       ],
       "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-rogue-valley-transportation-district-rvtd-gtfs-3219.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rvtd-corridors.json",
       "lastFeedExpiry": "20261122",
       "lastFeedVersion": "06-29-26  02:35"
     },
@@ -2958,9 +2530,6 @@
       ],
       "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-basin-transit-service-bts-gtfs-125.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/bts-or-corridors.json",
       "lastFeedExpiry": "20260831",
       "lastFeedVersion": "UTC: 30-Apr-2026 20:28"
     },
@@ -2980,9 +2549,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redwood-coast-transit-rct-gtfs-20.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/rct-corridors.json",
       "lastFeedExpiry": "20260523",
       "lastFeedVersion": "UTC: 20-Jan-2026 15:30"
     },
@@ -3002,9 +2568,6 @@
       ],
       "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-humboldt-county-gtfs-3032.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/humboldt-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "UTC: 04-Jun-2026 22:50"
     },
@@ -3024,9 +2587,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-mendocino-transit-authority-gtfs-69.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/mendocino-corridors.json",
       "lastFeedExpiry": "20260831",
       "lastFeedVersion": "UTC: 16-Jun-2026 17:58"
     },
@@ -3046,9 +2606,6 @@
       ],
       "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redding-redding-area-bu-gtfs-3031.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/raba-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "Updated: Jun 25, 2026, 7:10 PM"
     },
@@ -3068,11 +2625,8 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-siskiyou-county-gtfs-117.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/siskiyou-corridors.json",
-      "lastFeedExpiry": "20270101",
-      "lastFeedVersion": "UTC: 10-Jun-2026 19:20"
+      "lastFeedExpiry": "20300725",
+      "lastFeedVersion": "UTC: 02-Jul-2026 18:56"
     },
     {
       "slug": "trinity",
@@ -3090,9 +2644,6 @@
       ],
       "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-trinity-transit-gtfs-2709.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/trinity-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "Updated: Feb 3, 2026, 1:10 PM"
     },
@@ -3112,9 +2663,6 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-lassen-rural-bus-lrb-gtfs-118.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/lassen-corridors.json",
       "lastFeedExpiry": "20261130",
       "lastFeedVersion": "UTC: 22-May-2026 15:35"
     },
@@ -3134,9 +2682,6 @@
       ],
       "feedUrl": "https://www.sacrt.com/wp-content/uploads/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sacramento-regional-transit-gtfs-2137.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sacrt-corridors.json",
       "lastFeedExpiry": "20250405",
       "lastFeedVersion": "January_2025"
     },
@@ -3156,9 +2701,6 @@
       ],
       "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yolobus-corridors.json",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -3178,9 +2720,6 @@
       ],
       "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-unitrans-gtfs-82.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/unitrans-corridors.json",
       "lastFeedExpiry": "20260922",
       "lastFeedVersion": "SS1-SS2_2026_V1"
     },
@@ -3200,9 +2739,6 @@
       ],
       "feedUrl": "https://iportal.sacrt.com/gtfs/Roseville/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-roseville-transit-gtfs-1067.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/roseville-corridors.json",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "Roseville_April_2025-26"
     },
@@ -3222,9 +2758,6 @@
       ],
       "feedUrl": "https://mysmartbus.com/gtfs",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-south-metro-area-regional-transit-smart-gtfs-2706.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/smart-or-corridors.json",
       "lastFeedExpiry": "",
       "lastFeedVersion": "FY26 Q4 Effective 5/28/2026"
     },
@@ -3244,9 +2777,6 @@
       ],
       "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-sandy-area-metro-sam-gtfs-261.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/sam-corridors.json",
       "lastFeedExpiry": "20261201",
       "lastFeedVersion": "UTC: 17-Jun-2026 18:57"
     },
@@ -3266,9 +2796,6 @@
       ],
       "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-canby-area-transit-cat-gtfs-252.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/cat-or-corridors.json",
       "lastFeedExpiry": "20270101",
       "lastFeedVersion": "UTC: 09-Jun-2026 21:37"
     },
@@ -3288,11 +2815,2468 @@
       ],
       "feedUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-yamhill-county-transit-area-gtfs-250.zip?alt=media",
-      "url": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill.json",
-      "stopsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill-stops.json",
-      "corridorsUrl": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas/yamhill-corridors.json",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20260619"
+    },
+    {
+      "slug": "lacmta",
+      "name": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+      "center": [
+        34.05,
+        -118.24
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202606070210/mdb-29-202606070210.zip",
+      "lastFeedExpiry": "20261212",
+      "lastFeedVersion": "",
+      "region": "California"
+    },
+    {
+      "slug": "metrolink",
+      "name": "Metrolink",
+      "center": [
+        34.05,
+        -118.24
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-96/mdb-96-202605230122/mdb-96-202605230122.zip",
+      "lastFeedExpiry": "20360501",
+      "lastFeedVersion": "20260505",
+      "region": "California"
+    },
+    {
+      "slug": "bigbluebus",
+      "name": "Big Blue Bus",
+      "center": [
+        34.01,
+        -118.49
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-37/mdb-37-202604070127/mdb-37-202604070127.zip",
+      "lastFeedExpiry": "20260808",
+      "lastFeedVersion": "2026-04 (Apr)_20260319",
+      "region": "California"
+    },
+    {
+      "slug": "longbeach",
+      "name": "Long Beach Transit",
+      "center": [
+        33.77,
+        -118.19
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/mdb-1198-202606170039/mdb-1198-202606170039.zip",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": null,
+      "region": "California"
+    },
+    {
+      "slug": "octa",
+      "name": "Orange County Transportation Authority (OCTA)",
+      "center": [
+        33.84,
+        -117.91
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-15/mdb-15-202605100002/mdb-15-202605100002.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "California"
+    },
+    {
+      "slug": "foothill",
+      "name": "Foothill Transit",
+      "center": [
+        34.06,
+        -117.75
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-101/mdb-101-202607020124/mdb-101-202607020124.zip",
+      "lastFeedExpiry": "20261031",
+      "lastFeedVersion": "20260701",
+      "region": "California"
+    },
+    {
+      "slug": "avta",
+      "name": "Antelope Valley Transit Authority (AVTA)",
+      "center": [
+        34.58,
+        -118.12
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-214/mdb-214-202406071534/mdb-214-202406071534.zip",
+      "lastFeedExpiry": "20210801",
+      "lastFeedVersion": "20210503",
+      "region": "California"
+    },
+    {
+      "slug": "sdmts",
+      "name": "Metropolitan Transit System (San Diego MTS)",
+      "center": [
+        32.72,
+        -117.16
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-13/mdb-13-202605270056/mdb-13-202605270056.zip",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142",
+      "region": "California"
+    },
+    {
+      "slug": "nctd",
+      "name": "North County Transit District (NCTD)",
+      "center": [
+        33.2,
+        -117.39
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": "Version_20250205",
+      "region": "California"
+    },
+    {
+      "slug": "riverside",
+      "name": "Riverside Transit Agency",
+      "center": [
+        33.98,
+        -117.37
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-98/mdb-98-202605110136/mdb-98-202605110136.zip",
+      "lastFeedExpiry": "20260912",
+      "lastFeedVersion": "S1000245",
+      "region": "California"
+    },
+    {
+      "slug": "omnitrans",
+      "name": "OmniTrans",
+      "center": [
+        34.11,
+        -117.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-97/mdb-97-202604290039/mdb-97-202604290039.zip",
+      "lastFeedExpiry": "20260809",
+      "lastFeedVersion": "20260504_20260428a",
+      "region": "California"
+    },
+    {
+      "slug": "fax",
+      "name": "Fresno Area Express (FAX)",
+      "center": [
+        36.74,
+        -119.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202605220140/mdb-90-202605220140.zip",
+      "lastFeedExpiry": "20260809",
+      "lastFeedVersion": "6.1.26 Production_20260515",
+      "region": "California"
+    },
+    {
+      "slug": "get",
+      "name": "Golden Empire Transit District (GET)",
+      "center": [
+        35.37,
+        -119.02
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-46/mdb-46-202606130139/mdb-46-202606130139.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260612",
+      "region": "California"
+    },
+    {
+      "slug": "sjrtd",
+      "name": "San Joaquin Regional Transit District",
+      "center": [
+        37.96,
+        -121.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-886/mdb-886-202606020047/mdb-886-202606020047.zip",
+      "lastFeedExpiry": "20260725",
+      "lastFeedVersion": "20260531-20260725",
+      "region": "California"
+    },
+    {
+      "slug": "merced",
+      "name": "Merced County Transit (The Bus)",
+      "center": [
+        37.3,
+        -120.48
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/mdb-3117-202607030020/mdb-3117-202607030020.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "PASAT 8 Route Update",
+      "region": "California"
+    },
+    {
+      "slug": "start",
+      "name": "Stanislaus Regional Transit (StaRT)",
+      "center": [
+        37.64,
+        -120.99
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2273/mdb-2273-202606030124/mdb-2273-202606030124.zip",
+      "lastFeedExpiry": "20270630",
+      "lastFeedVersion": "20260602",
+      "region": "California"
+    },
+    {
+      "slug": "mst",
+      "name": "Monterey-Salinas Transit (MST)",
+      "center": [
+        36.6,
+        -121.89
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-56/mdb-56-202606240122/mdb-56-202606240122.zip",
+      "lastFeedExpiry": "20260828",
+      "lastFeedVersion": "202602v33",
+      "region": "California"
+    },
+    {
+      "slug": "sbmtd",
+      "name": "Santa Barbara Metropolitan Transit District (MTD)",
+      "center": [
+        34.42,
+        -119.7
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/mdb-1246-202606300054/mdb-1246-202606300054.zip",
+      "lastFeedExpiry": "20260816",
+      "lastFeedVersion": "S1000258",
+      "region": "California"
+    },
+    {
+      "slug": "slotransit",
+      "name": "City of San Luis Obispo Transit",
+      "center": [
+        35.28,
+        -120.66
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-44/mdb-44-202603280107/mdb-44-202603280107.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "2026-03-27T18:13:21Z",
+      "region": "California"
+    },
+    {
+      "slug": "slorta",
+      "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
+      "center": [
+        35.28,
+        -120.66
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-43/mdb-43-202606120140/mdb-43-202606120140.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260611",
+      "region": "California"
+    },
+    {
+      "slug": "sunline",
+      "name": "SunLine Transit Agency",
+      "center": [
+        33.87,
+        -116.54
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-461/tld-461-202606060105/tld-461-202606060105.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "6/5/2026",
+      "region": "California"
+    },
+    {
+      "slug": "rtcsnv",
+      "name": "Regional Transportation Commission of Southern Nevada (RTC)",
+      "center": [
+        36.17,
+        -115.14
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/mdb-2351-202606300119/mdb-2351-202606300119.zip",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "October 2025_20260302",
+      "region": "Nevada"
+    },
+    {
+      "slug": "rtcwashoe",
+      "name": "Regional Transportation Commission of Washoe County (RTC Washoe)",
+      "center": [
+        39.53,
+        -119.81
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-120/mdb-120-202605290123/mdb-120-202605290123.zip",
+      "lastFeedExpiry": "20260904",
+      "lastFeedVersion": "1",
+      "region": "Nevada"
+    },
+    {
+      "slug": "smat",
+      "name": "Santa Maria Area Transit",
+      "center": [
+        34.95,
+        -120.44
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2272/mdb-2272-202607030002/mdb-2272-202607030002.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "",
+      "region": "California"
+    },
+    {
+      "slug": "valleymetro",
+      "name": "Valley Metro (Phoenix)",
+      "center": [
+        33.45,
+        -112.07
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-147/mdb-147-202606300020/mdb-147-202606300020.zip",
+      "lastFeedExpiry": "20261025",
+      "lastFeedVersion": "GTFS_v4.5_20260616",
+      "region": "Arizona"
+    },
+    {
+      "slug": "mountainline",
+      "name": "Mountain Line (Flagstaff)",
+      "center": [
+        35.2,
+        -111.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/mdb-1979-202607030141/mdb-1979-202607030141.zip",
+      "lastFeedExpiry": "20261230",
+      "lastFeedVersion": "No deviations",
+      "region": "Arizona"
+    },
+    {
+      "slug": "mountainmetro",
+      "name": "Mountain Metropolitan Transit (Colorado Springs)",
+      "center": [
+        38.83,
+        -104.82
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2356/mdb-2356-202504260208/mdb-2356-202504260208.zip",
+      "lastFeedExpiry": "20250927",
+      "lastFeedVersion": "2025 (1) Spring_20250421",
+      "region": "Colorado"
+    },
+    {
+      "slug": "rtd-denver",
+      "name": "Regional Transportation District (RTD Denver)",
+      "center": [
+        39.74,
+        -104.98
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-178/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "bustang",
+      "name": "Bustang (CDOT)",
+      "center": [
+        39.71,
+        -106.68
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
+      "region": "Colorado",
+      "bbox": [
+        38.8,
+        -108.6,
+        40.6,
+        -104.8
+      ]
+    },
+    {
+      "slug": "abqride",
+      "name": "ABQ RIDE (Albuquerque)",
+      "center": [
+        35.09,
+        -106.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-166/mdb-166-202606060001/mdb-166-202606060001.zip",
+      "lastFeedExpiry": "20260904",
+      "lastFeedVersion": "2026-05_20260605",
+      "region": "New Mexico"
+    },
+    {
+      "slug": "santafetrails",
+      "name": "Santa Fe Trails",
+      "center": [
+        35.69,
+        -105.94
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-839/mdb-839-202412160115/mdb-839-202412160115.zip",
+      "lastFeedExpiry": "20260330",
+      "lastFeedVersion": "2024-12-14T14:31:44Z",
+      "region": "New Mexico"
+    },
+    {
+      "slug": "capmetro",
+      "name": "Capital Metro (Austin)",
+      "center": [
+        30.27,
+        -97.74
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-150/mdb-150-202607020147/mdb-150-202607020147.zip",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "260630_1449",
+      "region": "Texas"
+    },
+    {
+      "slug": "dart",
+      "name": "Dallas Area Rapid Transit (DART)",
+      "center": [
+        32.78,
+        -96.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202606120106/mdb-152-202606120106.zip",
+      "lastFeedExpiry": "20260719",
+      "lastFeedVersion": "V702-215-214-20260608",
+      "region": "Texas"
+    },
+    {
+      "slug": "trinitymetro",
+      "name": "Trinity Metro (Fort Worth)",
+      "center": [
+        32.73,
+        -97.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "MAY 26_20260526",
+      "region": "Texas"
+    },
+    {
+      "slug": "metrohouston",
+      "name": "METRO Houston",
+      "center": [
+        29.76,
+        -95.37
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202606160113/mdb-2060-202606160113.zip",
+      "lastFeedExpiry": "20260711",
+      "lastFeedVersion": "FIFA2026IVOMS_20260612",
+      "region": "Texas"
+    },
+    {
+      "slug": "via",
+      "name": "VIA Metropolitan Transit (San Antonio)",
+      "center": [
+        29.42,
+        -98.49
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-217/tld-217-202607030139/tld-217-202607030139.zip",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "May 2026_20260701",
+      "region": "Texas"
+    },
+    {
+      "slug": "embark",
+      "name": "Embark (Oklahoma City)",
+      "center": [
+        35.47,
+        -97.52
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/mdb-2062-202607030109/mdb-2062-202607030109.zip",
+      "lastFeedExpiry": "20270702",
+      "lastFeedVersion": "01/07/2026-22:30",
+      "region": "Oklahoma"
+    },
+    {
+      "slug": "rockregion",
+      "name": "Rock Region Metro (Little Rock)",
+      "center": [
+        34.75,
+        -92.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2264/mdb-2264-202507280407/mdb-2264-202507280407.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Arkansas"
+    },
+    {
+      "slug": "nashvillemta",
+      "name": "Nashville MTA WeGo Public Transit",
+      "center": [
+        36.16,
+        -86.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202606200107/mdb-360-202606200107.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Tennessee"
+    },
+    {
+      "slug": "mata",
+      "name": "Memphis Area Transit Authority",
+      "center": [
+        35.15,
+        -90.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2352/mdb-2352-202502100036/mdb-2352-202502100036.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Tennessee"
+    },
+    {
+      "slug": "norta",
+      "name": "New Orleans Regional Transit Authority (NORTA)",
+      "center": [
+        29.95,
+        -90.07
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60032/ntd-60032-202605140120/ntd-60032-202605140120.zip",
+      "lastFeedExpiry": "20270124",
+      "lastFeedVersion": "S1000253",
+      "region": "Louisiana"
+    },
+    {
+      "slug": "cincinnatimetro",
+      "name": "Cincinnati Metro (SORTA)",
+      "center": [
+        39.1,
+        -84.51
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-307/mdb-307-202607010002/mdb-307-202607010002.zip",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "gtfs_20260531-20260815_20260626",
+      "region": "Ohio"
+    },
+    {
+      "slug": "tarc",
+      "name": "Transit Authority of River City (Louisville)",
+      "center": [
+        38.25,
+        -85.76
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202604170127/mdb-2662-202604170127.zip",
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "20260416",
+      "region": "Kentucky"
+    },
+    {
+      "slug": "mcts",
+      "name": "Milwaukee County Transit System (MCTS)",
+      "center": [
+        43.04,
+        -87.91
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Wisconsin"
+    },
+    {
+      "slug": "metrostlouis",
+      "name": "Metro St. Louis",
+      "center": [
+        38.63,
+        -90.2
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Missouri"
+    },
+    {
+      "slug": "kcata",
+      "name": "Kansas City Area Transportation Authority (KCATA)",
+      "center": [
+        39.1,
+        -94.58
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-187/mdb-187-202607020106/mdb-187-202607020106.zip",
+      "lastFeedExpiry": "20260711",
+      "lastFeedVersion": "June 2026_20260630",
+      "region": "Missouri"
+    },
+    {
+      "slug": "omahametro",
+      "name": "Omaha Metro",
+      "center": [
+        41.26,
+        -96
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2261/mdb-2261-202604230118/mdb-2261-202604230118.zip",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "OMAHA 2604 V1",
+      "region": "Nebraska"
+    },
+    {
+      "slug": "ladot",
+      "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+      "center": [
+        34.05,
+        -118.24
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1210/mdb-1210-202607030056/mdb-1210-202607030056.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-CE 423 Changes v3,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026",
+      "region": "California"
+    },
+    {
+      "slug": "culvercitybus",
+      "name": "Culver City Bus",
+      "center": [
+        34,
+        -118.4
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-38/mdb-38-202605300008/mdb-38-202605300008.zip",
+      "lastFeedExpiry": "20260712",
+      "lastFeedVersion": "S1000250_2026.01.09",
+      "region": "California"
+    },
+    {
+      "slug": "santaclarita",
+      "name": "Santa Clarita Transit",
+      "center": [
+        34.41,
+        -118.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-1256/tld-1256-202606250025/tld-1256-202606250025.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260624",
+      "region": "California"
+    },
+    {
+      "slug": "montebello",
+      "name": "Montebello Bus Lines",
+      "center": [
+        34.01,
+        -118.11
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2201/mdb-2201-202606270133/mdb-2201-202606270133.zip",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "20260626",
+      "region": "California"
+    },
+    {
+      "slug": "burbankbus",
+      "name": "BurbankBus",
+      "center": [
+        34.18,
+        -118.31
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/mdb-2149-202607030052/mdb-2149-202607030052.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "1/12/2024",
+      "region": "California"
+    },
+    {
+      "slug": "glendalebeeline",
+      "name": "Glendale Beeline",
+      "center": [
+        34.14,
+        -118.26
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "California"
+    },
+    {
+      "slug": "pasadenatransit",
+      "name": "Pasadena Transit",
+      "center": [
+        34.15,
+        -118.13
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-41/mdb-41-202606270117/mdb-41-202606270117.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260626",
+      "region": "California"
+    },
+    {
+      "slug": "norwalktransit",
+      "name": "Norwalk Transit System",
+      "center": [
+        33.9,
+        -118.08
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-881/tld-881-202511280046/tld-881-202511280046.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20251126",
+      "region": "California"
+    },
+    {
+      "slug": "pvpta",
+      "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+      "center": [
+        33.74,
+        -118.39
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-35/mdb-35-202607030136/mdb-35-202607030136.zip",
+      "lastFeedExpiry": "20260723",
+      "lastFeedVersion": "UTC: 02-Jul-2026 21:43",
+      "region": "California"
+    },
+    {
+      "slug": "gtrans",
+      "name": "GTrans (Gardena Municipal Bus Lines)",
+      "center": [
+        33.89,
+        -118.31
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2270/mdb-2270-202606300031/mdb-2270-202606300031.zip",
+      "lastFeedExpiry": "20260718",
+      "lastFeedVersion": "S1000131",
+      "region": "California"
+    },
+    {
+      "slug": "vvta",
+      "name": "Victor Valley Transit Authority (VVTA)",
+      "center": [
+        34.54,
+        -117.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-99/mdb-99-202410070003/mdb-99-202410070003.zip",
+      "lastFeedExpiry": "20250329",
+      "lastFeedVersion": "2024.09",
+      "region": "California"
+    },
+    {
+      "slug": "vctc",
+      "name": "Ventura County Transportation Commission (VCTC Intercity)",
+      "center": [
+        34.27,
+        -119.23
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-31/mdb-31-202507150038/mdb-31-202507150038.zip",
+      "lastFeedExpiry": "20250815",
+      "lastFeedVersion": "UTC: 07-May-2025 21:06",
+      "region": "California"
+    },
+    {
+      "slug": "elmonte",
+      "name": "El Monte Transit",
+      "center": [
+        34.07,
+        -118.03
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-103/mdb-103-202403040057/mdb-103-202403040057.zip",
+      "lastFeedExpiry": "20251031",
+      "lastFeedVersion": "UTC: 29-Feb-2024 18:42",
+      "region": "California"
+    },
+    {
+      "slug": "cta",
+      "name": "Chicago Transit Authority (CTA)",
+      "center": [
+        41.8781,
+        -87.6298
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-389/mdb-389-202605300003/mdb-389-202605300003.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Illinois"
+    },
+    {
+      "slug": "metra",
+      "name": "Metra",
+      "center": [
+        41.8781,
+        -87.6298
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2854/mdb-2854-202606280011/mdb-2854-202606280011.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Illinois"
+    },
+    {
+      "slug": "pace-bus",
+      "name": "Pace Bus",
+      "center": [
+        41.9,
+        -87.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2347/mdb-2347-202605290102/mdb-2347-202605290102.zip",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "20260531",
+      "region": "Illinois"
+    },
+    {
+      "slug": "marta",
+      "name": "MARTA",
+      "center": [
+        33.749,
+        -84.388
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-368/mdb-368-202604190110/mdb-368-202604190110.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Georgia"
+    },
+    {
+      "slug": "cobblinc",
+      "name": "CobbLinc",
+      "center": [
+        33.9,
+        -84.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/mdb-3193-202607020158/mdb-3193-202607020158.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260701",
+      "region": "Georgia"
+    },
+    {
+      "slug": "gwinnett-transit",
+      "name": "Gwinnett County Transit",
+      "center": [
+        33.96,
+        -84.02
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2241/mdb-2241-202607030045/mdb-2241-202607030045.zip",
+      "lastFeedExpiry": "20261226",
+      "lastFeedVersion": "20260702",
+      "region": "Georgia"
+    },
+    {
+      "slug": "miami-dade-transit",
+      "name": "Miami-Dade Transit",
+      "center": [
+        25.7617,
+        -80.1918
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Florida"
+    },
+    {
+      "slug": "broward-transit",
+      "name": "Broward County Transit",
+      "center": [
+        26.1224,
+        -80.1373
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-330/mdb-330-202606300003/mdb-330-202606300003.zip",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "S20260621_E20260926_TS20260626144559",
+      "region": "Florida"
+    },
+    {
+      "slug": "transfort",
+      "name": "Transfort (Fort Collins)",
+      "center": [
+        40.5853,
+        -105.0844
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
+      "lastFeedExpiry": "20240511",
+      "lastFeedVersion": "S1000201",
+      "region": "Colorado"
+    },
+    {
+      "slug": "septa",
+      "name": "SEPTA",
+      "region": "Pennsylvania",
+      "center": [
+        39.9526,
+        -75.1652
+      ],
+      "bbox": [
+        39.8036,
+        -75.8351,
+        40.3349,
+        -74.7521
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
+      "supplementalFeedUrls": [
+        "https://files.mobilitydatabase.org/mdb-503/mdb-503-202607030135/mdb-503-202607030135.zip"
+      ],
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "v202606282"
+    },
+    {
+      "slug": "wmata",
+      "name": "WMATA",
+      "region": "Washington DC",
+      "center": [
+        38.9072,
+        -77.0369
+      ],
+      "bbox": [
+        38.6915,
+        -77.3663,
+        39.1562,
+        -76.7167
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1846.zip?alt=media",
+      "supplementalFeedUrls": [
+        "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1847.zip?alt=media"
+      ],
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1846.zip?alt=media",
+      "lastFeedExpiry": "20241221",
+      "lastFeedVersion": "S1000219"
+    },
+    {
+      "slug": "vre",
+      "name": "Virginia Railway Express (VRE)",
+      "region": "Virginia",
+      "center": [
+        38.85,
+        -77.25
+      ],
+      "bbox": [
+        38.2208,
+        -77.5265,
+        38.8995,
+        -77.0047
+      ],
+      "feedUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-virginia-virginia-railway-express-vre-gtfs-478.zip?alt=media",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "marc",
+      "name": "MARC Train (MTA Maryland)",
+      "region": "Maryland",
+      "center": [
+        39,
+        -77
+      ],
+      "bbox": [
+        38.899,
+        -77.9617,
+        39.5582,
+        -76.0733
+      ],
+      "feedUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "rideon",
+      "name": "Ride On (Montgomery County)",
+      "region": "Maryland",
+      "center": [
+        39.15,
+        -77.2
+      ],
+      "bbox": [
+        38.9357,
+        -77.4187,
+        39.2885,
+        -76.9286
+      ],
+      "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "13-May 3, 2026_20260423"
+    },
+    {
+      "slug": "fairfax",
+      "name": "Fairfax Connector",
+      "region": "Virginia",
+      "center": [
+        38.85,
+        -77.3
+      ],
+      "bbox": [
+        38.687,
+        -77.4653,
+        39.0291,
+        -77.0219
+      ],
+      "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
+      "lastFeedExpiry": "20280930",
+      "lastFeedVersion": "S1000208"
+    },
+    {
+      "slug": "art",
+      "name": "Arlington Transit (ART)",
+      "region": "Virginia",
+      "center": [
+        38.88,
+        -77.1
+      ],
+      "bbox": [
+        38.839,
+        -77.1625,
+        38.9266,
+        -77.0491
+      ],
+      "feedUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
+      "lastFeedExpiry": "20270531",
+      "lastFeedVersion": "S1000054"
+    },
+    {
+      "slug": "dash",
+      "name": "DASH (Alexandria)",
+      "region": "Virginia",
+      "center": [
+        38.82,
+        -77.05
+      ],
+      "bbox": [
+        38.7977,
+        -77.1433,
+        38.8697,
+        -77.0406
+      ],
+      "feedUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "S1000234"
+    },
+    {
+      "slug": "nyct-subway",
+      "name": "MTA NYCT Subway",
+      "region": "New York",
+      "center": [
+        40.71,
+        -74.01
+      ],
+      "bbox": [
+        40.5128,
+        -74.252,
+        40.9031,
+        -73.7554
+      ],
+      "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
+      "lastFeedExpiry": "20260907",
+      "lastFeedVersion": "20260526"
+    },
+    {
+      "slug": "nyct-bus-manhattan",
+      "name": "MTA NYCT Bus (Manhattan)",
+      "center": [
+        40.776,
+        -73.971
+      ],
+      "bbox": [
+        40.7,
+        -74.02,
+        40.878,
+        -73.907
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-513/latest.zip",
+      "region": "New York",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "gtfs_m_20260611T155328Z"
+    },
+    {
+      "slug": "nyct-bus-brooklyn",
+      "name": "MTA NYCT Bus (Brooklyn)",
+      "center": [
+        40.65,
+        -73.949
+      ],
+      "bbox": [
+        40.551,
+        -74.042,
+        40.739,
+        -73.833
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
+      "region": "New York",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "gtfs_b_20260611T155327Z"
+    },
+    {
+      "slug": "nyct-bus-queens",
+      "name": "MTA NYCT Bus (Queens)",
+      "center": [
+        40.728,
+        -73.794
+      ],
+      "bbox": [
+        40.541,
+        -73.962,
+        40.8,
+        -73.7
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-520/latest.zip",
+      "region": "New York",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "gtfs_q_20260611T155317Z"
+    },
+    {
+      "slug": "nyct-bus-bronx",
+      "name": "MTA NYCT Bus (Bronx)",
+      "center": [
+        40.845,
+        -73.866
+      ],
+      "bbox": [
+        40.785,
+        -73.934,
+        40.916,
+        -73.765
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
+      "region": "New York",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "gtfs_bx_20260611T155333Z"
+    },
+    {
+      "slug": "nyct-bus-si",
+      "name": "MTA NYCT Bus (Staten Island)",
+      "center": [
+        40.634,
+        -74.11
+      ],
+      "bbox": [
+        40.503,
+        -74.252,
+        40.766,
+        -73.969
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
+      "region": "New York",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "gtfs_si_20260611T155316Z"
+    },
+    {
+      "slug": "lirr",
+      "name": "MTA Long Island Rail Road",
+      "region": "New York",
+      "center": [
+        40.75,
+        -73.6
+      ],
+      "bbox": [
+        40.5891,
+        -73.9951,
+        41.1,
+        -71.9532
+      ],
+      "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
+      "lastFeedExpiry": "20260816",
+      "lastFeedVersion": "2026-07-02T12:06:00"
+    },
+    {
+      "slug": "mnr",
+      "name": "Metro-North Railroad (MNR)",
+      "region": "New York",
+      "center": [
+        40.8,
+        -73.9
+      ],
+      "bbox": [
+        40.753,
+        -73.9856,
+        41.8147,
+        -72.9218
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-524/mdb-524-202607030002/mdb-524-202607030002.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "njt-rail",
+      "name": "NJ Transit Rail",
+      "region": "New Jersey",
+      "center": [
+        40.7,
+        -74.2
+      ],
+      "bbox": [
+        39.3633,
+        -75.198,
+        41.4887,
+        -73.9883
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-509/mdb-509-202607010038/mdb-509-202607010038.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "njt-bus",
+      "name": "NJ Transit Bus",
+      "region": "New Jersey",
+      "center": [
+        40.72,
+        -74.1
+      ],
+      "bbox": [
+        38.9331,
+        -75.5212,
+        41.2563,
+        -73.9391
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-508/mdb-508-202607010134/mdb-508-202607010134.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "path",
+      "name": "PATH (Port Authority Trans-Hudson)",
+      "region": "New Jersey",
+      "center": [
+        40.73,
+        -74
+      ],
+      "bbox": [
+        40.7106,
+        -74.1637,
+        40.7491,
+        -73.9883
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip",
+      "lastFeedExpiry": "20260601",
+      "lastFeedVersion": "UTC: 22-May-2025 18:06"
+    },
+    {
+      "slug": "beeline",
+      "name": "Westchester County Bee-Line System (BeeLine)",
+      "region": "New York",
+      "center": [
+        41,
+        -73.8
+      ],
+      "bbox": [
+        40.741,
+        -73.99,
+        41.4222,
+        -73.6597
+      ],
+      "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "20260703_180756"
+    },
+    {
+      "slug": "nice",
+      "name": "Nassau Inter-County Express (NICE Bus)",
+      "region": "New York",
+      "center": [
+        40.73,
+        -73.6
+      ],
+      "bbox": [
+        40.586,
+        -73.8302,
+        40.8642,
+        -73.4087
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-521/mdb-521-202606070009/mdb-521-202606070009.zip",
+      "lastFeedExpiry": "20260912",
+      "lastFeedVersion": ""
+    },
+    {
+      "slug": "tor",
+      "name": "Transport of Rockland (TOR)",
+      "region": "New York",
+      "center": [
+        41.1,
+        -73.9
+      ],
+      "bbox": [
+        41.0188,
+        -74.1936,
+        41.2506,
+        -73.9196
+      ],
+      "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip",
+      "lastFeedExpiry": "20260630",
+      "lastFeedVersion": "TRANSDEV-v1"
+    },
+    {
+      "slug": "sct",
+      "name": "Suffolk County Transit (SCT)",
+      "region": "New York",
+      "center": [
+        40.85,
+        -73
+      ],
+      "bbox": [
+        40.6229,
+        -73.429,
+        41.1559,
+        -72.1918
+      ],
+      "feedUrl": "https://suffolkcountyny.gov/Portals/0/formsdocs/publicworks/Zip/google_transit.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "part",
+      "name": "Putnam Area Rapid Transit (PART)",
+      "region": "New York",
+      "center": [
+        41.4,
+        -73.7
+      ],
+      "bbox": [
+        41.3267,
+        -73.9641,
+        41.5091,
+        -73.5352
+      ],
+      "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "2026"
+    },
+    {
+      "slug": "dutchess",
+      "name": "Dutchess County Public Transit",
+      "region": "New York",
+      "center": [
+        41.7,
+        -73.9
+      ],
+      "bbox": [
+        41.494,
+        -73.9846,
+        42.0599,
+        -73.5665
+      ],
+      "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
+      "lastFeedExpiry": "20510930",
+      "lastFeedVersion": "124"
+    },
+    {
+      "slug": "metro-transit",
+      "name": "Metro Transit (Minneapolis)",
+      "center": [
+        44.98,
+        -93.27
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/mdb-205-202606280024/mdb-205-202606280024.zip",
+      "lastFeedExpiry": "20260821",
+      "lastFeedVersion": "1782334167",
+      "region": "Minnesota"
+    },
+    {
+      "slug": "port-authority-pa",
+      "name": "Port Authority of Allegheny County (Pittsburgh)",
+      "center": [
+        40.44,
+        -79.99
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-409/mdb-409-202606280112/mdb-409-202606280112.zip",
+      "lastFeedExpiry": "20261024",
+      "lastFeedVersion": "2606-Merged_Clever_2606",
+      "region": "Pennsylvania"
+    },
+    {
+      "slug": "uta",
+      "name": "Utah Transit Authority (UTA)",
+      "center": [
+        40.76,
+        -111.89
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-170/mdb-170-202606250127/mdb-170-202606250127.zip",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "2026 April SGR After_20260624",
+      "region": "Utah"
+    },
+    {
+      "slug": "jta",
+      "name": "Jacksonville Transportation Authority (JTA)",
+      "center": [
+        30.33,
+        -81.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-764/tld-764-202606200015/tld-764-202606200015.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Florida"
+    },
+    {
+      "slug": "cota",
+      "name": "Central Ohio Transit Authority (COTA)",
+      "center": [
+        39.96,
+        -82.99
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-404/mdb-404-202607010029/mdb-404-202607010029.zip",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "2026-MAY-04-BB_20260630",
+      "region": "Ohio"
+    },
+    {
+      "slug": "cats",
+      "name": "Charlotte Area Transit System (CATS)",
+      "center": [
+        35.23,
+        -80.84
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2265/mdb-2265-202606120001/mdb-2265-202606120001.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "North Carolina"
+    },
+    {
+      "slug": "goraleigh",
+      "name": "GoRaleigh (Capital Area Transit)",
+      "center": [
+        35.78,
+        -78.64
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2074/mdb-2074-202607010046/mdb-2074-202607010046.zip",
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "S1000094",
+      "region": "North Carolina"
+    },
+    {
+      "slug": "gotriangle",
+      "name": "GoTriangle",
+      "center": [
+        35.99,
+        -78.9
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3183/mdb-3183-202605281945/mdb-3183-202605281945.zip",
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "2026-03 service V1",
+      "region": "North Carolina"
+    },
+    {
+      "slug": "indygo",
+      "name": "IndyGo (Indianapolis)",
+      "center": [
+        39.77,
+        -86.16
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-50050/ntd-50050-202503060058/ntd-50050-202503060058.zip",
+      "lastFeedExpiry": "20250607",
+      "lastFeedVersion": "20250305",
+      "region": "Indiana"
+    },
+    {
+      "slug": "mta-maryland",
+      "name": "Maryland Transit Administration (MTA Maryland)",
+      "center": [
+        39.29,
+        -76.61
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-466/mdb-466-202607030053/mdb-466-202607030053.zip",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "20260701",
+      "region": "Maryland"
+    },
+    {
+      "slug": "hart",
+      "name": "Hillsborough Area Regional Transit (HART)",
+      "center": [
+        27.96,
+        -82.46
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "2606.2",
+      "region": "Florida"
+    },
+    {
+      "slug": "lynx",
+      "name": "LYNX (Central Florida)",
+      "center": [
+        28.54,
+        -81.38
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-347/mdb-347-202606060124/mdb-347-202606060124.zip",
+      "lastFeedExpiry": "20260808",
+      "lastFeedVersion": null,
+      "region": "Florida"
+    },
+    {
+      "slug": "thebus",
+      "name": "TheBus (Honolulu)",
+      "center": [
+        21.31,
+        -157.86
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/mdb-2350-202605210014/mdb-2350-202605210014.zip",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "(2605_v5_BusRail_MERGED_Landlines)",
+      "region": "Hawaii"
+    },
+    {
+      "slug": "ripta",
+      "name": "Rhode Island Public Transit Authority (RIPTA)",
+      "center": [
+        41.82,
+        -71.42
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-624/mdb-624-202606210030/mdb-624-202606210030.zip",
+      "lastFeedExpiry": "20260828",
+      "lastFeedVersion": null,
+      "region": "Rhode Island"
+    },
+    {
+      "slug": "valley-regional-transit",
+      "name": "Valley Regional Transit (Boise)",
+      "center": [
+        43.62,
+        -116.2
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-142/mdb-142-202606100102/mdb-142-202606100102.zip",
+      "lastFeedExpiry": "20270609",
+      "lastFeedVersion": "457",
+      "region": "Idaho"
+    },
+    {
+      "slug": "psta",
+      "name": "Pinellas Suncoast Transit Authority (PSTA)",
+      "center": [
+        27.9,
+        -82.7
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-326/mdb-326-202511300039/mdb-326-202511300039.zip",
+      "lastFeedExpiry": "20260606",
+      "lastFeedVersion": "S1000242",
+      "region": "Florida"
+    },
+    {
+      "slug": "palm-tran",
+      "name": "Palm Tran",
+      "center": [
+        26.7,
+        -80.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-332/mdb-332-202605190002/mdb-332-202605190002.zip",
+      "lastFeedExpiry": "20260919",
+      "lastFeedVersion": "20260511",
+      "region": "Florida"
+    },
+    {
+      "slug": "sunrail",
+      "name": "SunRail",
+      "center": [
+        28.5,
+        -81.4
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-626/mdb-626-202512170136/mdb-626-202512170136.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Florida"
+    },
+    {
+      "slug": "votran",
+      "name": "Votran (Volusia County)",
+      "center": [
+        29,
+        -81
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-349/mdb-349-202605300114/mdb-349-202605300114.zip",
+      "lastFeedExpiry": "20220115",
+      "lastFeedVersion": "20210223",
+      "region": "Florida"
+    },
+    {
+      "slug": "chapel-hill-transit",
+      "name": "Chapel Hill Transit",
+      "center": [
+        35.91,
+        -79.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-89/tld-89-202607040106/tld-89-202607040106.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Summer 2026",
+      "region": "North Carolina"
+    },
+    {
+      "slug": "mvta",
+      "name": "Minnesota Valley Transit Authority (MVTA)",
+      "center": [
+        44.6,
+        -93.3
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202606230010/mdb-206-202606230010.zip",
+      "lastFeedExpiry": "20260809",
+      "lastFeedVersion": "20260622",
+      "region": "Minnesota"
+    },
+    {
+      "slug": "xpress-ga",
+      "name": "Xpress (Georgia Regional)",
+      "center": [
+        33.7,
+        -84.4
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip",
+      "lastFeedExpiry": "20250705",
+      "lastFeedVersion": "S1000101",
+      "region": "Georgia"
+    },
+    {
+      "slug": "omniride",
+      "name": "OmniRide (PRTC)",
+      "center": [
+        38.5,
+        -77.3
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1156/mdb-1156-202604020037/mdb-1156-202604020037.zip",
+      "lastFeedExpiry": "20260725",
+      "lastFeedVersion": "2026 March_20260326",
+      "region": "Virginia"
+    },
+    {
+      "slug": "loudoun-transit",
+      "name": "Loudoun County Transit",
+      "center": [
+        39.08,
+        -77.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1053/mdb-1053-202604210103/mdb-1053-202604210103.zip",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "S1000079",
+      "region": "Virginia"
+    },
+    {
+      "slug": "cue-bus",
+      "name": "CUE Bus (Fairfax)",
+      "center": [
+        38.85,
+        -77.35
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2885/mdb-2885-202511251947/mdb-2885-202511251947.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Virginia"
+    },
+    {
+      "slug": "pgc-the-bus",
+      "name": "Prince George's County (The Bus)",
+      "center": [
+        38.85,
+        -76.85
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-477/mdb-477-202605010139/mdb-477-202605010139.zip",
+      "lastFeedExpiry": "20260901",
+      "lastFeedVersion": "UTC: 30-Apr-2026 18:15",
+      "region": "Maryland"
+    },
+    {
+      "slug": "dc-streetcar",
+      "name": "DC Streetcar",
+      "center": [
+        38.9,
+        -77
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2223/mdb-2223-202411271818/mdb-2223-202411271818.zip",
+      "lastFeedExpiry": "20250630",
+      "lastFeedVersion": "20230718",
+      "region": "Washington DC"
+    },
+    {
+      "slug": "fred-transit",
+      "name": "Fredericksburg Regional Transit",
+      "center": [
+        38.3,
+        -77.46
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "region": "Virginia"
+    },
+    {
+      "slug": "hrt",
+      "name": "Hampton Roads Transit",
+      "center": [
+        37,
+        -76.34
+      ],
+      "bbox": [
+        36.71,
+        -76.71,
+        37.29,
+        -75.97
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-473/latest.zip",
+      "region": "Virginia",
+      "lastFeedExpiry": "20261024",
+      "lastFeedVersion": "1"
+    },
+    {
+      "slug": "bay-transit",
+      "name": "Bay Transit",
+      "center": [
+        37.77,
+        -76.67
+      ],
+      "bbox": [
+        37.26,
+        -76.99,
+        38.27,
+        -76.35
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-224/latest.zip",
+      "region": "Virginia",
+      "lastFeedExpiry": "20261101",
+      "lastFeedVersion": "UTC: 12-Jun-2026 22:21"
+    },
+    {
+      "slug": "wata",
+      "name": "Williamsburg Area Transit Authority",
+      "center": [
+        37.3,
+        -76.67
+      ],
+      "bbox": [
+        37.19,
+        -76.82,
+        37.41,
+        -76.52
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-474/latest.zip",
+      "region": "Virginia"
+    },
+    {
+      "slug": "dart-first-state",
+      "name": "DART First State",
+      "center": [
+        39.1,
+        -75.54
+      ],
+      "bbox": [
+        38.45,
+        -75.77,
+        39.83,
+        -75.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1235/latest.zip",
+      "region": "Delaware",
+      "lastFeedExpiry": "20261114",
+      "lastFeedVersion": "May 2026_20260429"
+    },
+    {
+      "slug": "wave-transit",
+      "name": "Wave Transit",
+      "center": [
+        34.19,
+        -77.94
+      ],
+      "bbox": [
+        34.05,
+        -78.1,
+        34.3,
+        -77.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1862/latest.zip",
+      "region": "North Carolina",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "starmetro",
+      "name": "StarMetro (Tallahassee)",
+      "center": [
+        30.46,
+        -84.28
+      ],
+      "bbox": [
+        30.376,
+        -84.364,
+        30.543,
+        -84.202
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-344/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": "20240901",
+      "lastFeedVersion": "UTC: 07-May-2024 20:44"
+    },
+    {
+      "slug": "max-transit",
+      "name": "MAX Transit (Birmingham)",
+      "center": [
+        33.51,
+        -86.84
+      ],
+      "bbox": [
+        33.362,
+        -87.01,
+        33.653,
+        -86.677
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2263/latest.zip",
+      "region": "Alabama",
+      "lastFeedExpiry": "20350201",
+      "lastFeedVersion": "20240531"
+    },
+    {
+      "slug": "montgomery-transit",
+      "name": "Montgomery Transit (The M)",
+      "center": [
+        32.37,
+        -86.25
+      ],
+      "bbox": [
+        32.25,
+        -86.35,
+        32.5,
+        -86.15
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/montgomerytransit-al-us/montgomerytransit-al-us.zip",
+      "region": "Alabama",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "UTC: 08-Jan-2026 10:11"
+    },
+    {
+      "slug": "carta",
+      "name": "Charleston Area Regional Transportation Authority (CARTA)",
+      "center": [
+        32.78,
+        -79.93
+      ],
+      "bbox": [
+        32.569,
+        -80.574,
+        33.581,
+        -79.464
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
+      "region": "South Carolina",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "UTC: 25-Jun-2026 16:41"
+    },
+    {
+      "slug": "cat-savannah",
+      "name": "Chatham Area Transit (CAT)",
+      "center": [
+        32.095,
+        -81.121
+      ],
+      "bbox": [
+        31.969,
+        -81.283,
+        32.221,
+        -80.959
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2080/latest.zip",
+      "region": "Georgia",
+      "lastFeedExpiry": "20250727",
+      "lastFeedVersion": "S1000046"
+    },
+    {
+      "slug": "tulsa-transit",
+      "name": "Tulsa Transit (MTTA)",
+      "center": [
+        36.12,
+        -95.96
+      ],
+      "bbox": [
+        35.99,
+        -96.12,
+        36.25,
+        -95.79
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-184/latest.zip",
+      "region": "Oklahoma",
+      "lastFeedExpiry": "20230819",
+      "lastFeedVersion": "APRIL 2023_20230317"
+    },
+    {
+      "slug": "sun-tran",
+      "name": "Sun Tran (Tucson)",
+      "center": [
+        32.22,
+        -110.93
+      ],
+      "bbox": [
+        31.9,
+        -111.3,
+        32.5,
+        -110.6
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-43/latest.zip",
+      "region": "Arizona",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260611"
+    },
+    {
+      "slug": "ycat",
+      "name": "Yuma County Area Transit (YCAT)",
+      "center": [
+        32.73,
+        -114.63
+      ],
+      "bbox": [
+        32.5,
+        -114.9,
+        33,
+        -114.3
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
+      "region": "Arizona",
+      "lastFeedExpiry": "20261230",
+      "lastFeedVersion": "No deviations"
+    },
+    {
+      "slug": "comet",
+      "name": "The COMET (Columbia, SC)",
+      "center": [
+        34,
+        -81.03
+      ],
+      "bbox": [
+        33.8,
+        -81.3,
+        34.2,
+        -80.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-60/latest.zip",
+      "region": "South Carolina",
+      "lastFeedExpiry": "20231231",
+      "lastFeedVersion": "UTC: 26-May-2023 21:22"
+    },
+    {
+      "slug": "greenlink",
+      "name": "GreenLink (Greenville, SC)",
+      "center": [
+        34.85,
+        -82.39
+      ],
+      "bbox": [
+        34.6,
+        -82.6,
+        35.1,
+        -82.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-61/latest.zip",
+      "region": "South Carolina",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 30-Jun-2026 15:17"
+    },
+    {
+      "slug": "carta-chattanooga",
+      "name": "Chattanooga Area Regional Transportation Authority",
+      "center": [
+        35.05,
+        -85.31
+      ],
+      "bbox": [
+        34.8,
+        -85.6,
+        35.3,
+        -85
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-71/latest.zip",
+      "region": "Tennessee",
+      "lastFeedExpiry": "20260110",
+      "lastFeedVersion": "UTC: 24-Jul-2025 22:32"
+    },
+    {
+      "slug": "citilink-fw",
+      "name": "Citilink (Fort Wayne, IN)",
+      "center": [
+        41.135,
+        -85.136
+      ],
+      "bbox": [
+        40.7,
+        -85.5,
+        41.5,
+        -84.7
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2266/latest.zip",
+      "region": "Indiana",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Jun 18, 2026, 2:17 PM"
+    },
+    {
+      "slug": "citylink-peoria",
+      "name": "CityLink (Peoria, IL)",
+      "center": [
+        40.694,
+        -89.589
+      ],
+      "bbox": [
+        40.4,
+        -90,
+        40.9,
+        -89.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2208/latest.zip",
+      "region": "Illinois",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "20260602"
+    },
+    {
+      "slug": "cedar-rapids",
+      "name": "Cedar Rapids Transit",
+      "center": [
+        42.007,
+        -91.615
+      ],
+      "bbox": [
+        41.8,
+        -91.9,
+        42.3,
+        -91.3
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-198/latest.zip",
+      "region": "Iowa",
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "UTC: 20-Feb-2026 15:41"
+    },
+    {
+      "slug": "matbus",
+      "name": "MATBUS (Fargo, ND)",
+      "center": [
+        46.877,
+        -96.79
+      ],
+      "bbox": [
+        46.7,
+        -97,
+        47,
+        -96.5
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1285/latest.zip",
+      "region": "North Dakota",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "duluth-transit",
+      "name": "Duluth Transit Authority",
+      "center": [
+        46.782,
+        -92.106
+      ],
+      "bbox": [
+        46.5,
+        -92.3,
+        47.1,
+        -91.9
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-301/latest.zip",
+      "region": "Minnesota",
+      "lastFeedExpiry": "20260829",
+      "lastFeedVersion": "20260507094754"
+    },
+    {
+      "slug": "grtc",
+      "name": "GRTC Transit (Richmond, VA)",
+      "center": [
+        37.445,
+        -77.474
+      ],
+      "bbox": [
+        37.226,
+        -77.645,
+        37.664,
+        -77.303
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-902/latest.zip",
+      "region": "Virginia",
+      "lastFeedExpiry": "20240518",
+      "lastFeedVersion": "S1000151"
+    },
+    {
+      "slug": "valley-metro-roanoke",
+      "name": "Valley Metro (Roanoke, VA)",
+      "center": [
+        37.229,
+        -80.154
+      ],
+      "bbox": [
+        37.133,
+        -80.425,
+        37.324,
+        -79.882
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
+      "region": "Virginia",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "04/06/26"
+    },
+    {
+      "slug": "gltc",
+      "name": "Greater Lynchburg Transit Company",
+      "center": [
+        37.398,
+        -79.169
+      ],
+      "bbox": [
+        37.33,
+        -79.253,
+        37.467,
+        -79.085
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-381/latest.zip",
+      "region": "Virginia",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "UTC: 01-May-2026 16:41"
+    },
+    {
+      "slug": "dayton",
+      "name": "Greater Dayton RTA",
+      "center": [
+        39.76,
+        -84.19
+      ],
+      "bbox": [
+        39.5,
+        -84.5,
+        39.95,
+        -83.9
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip",
+      "region": "Ohio",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "S1000325"
+    },
+    {
+      "slug": "wrta",
+      "name": "Western Reserve Transit Authority (Youngstown)",
+      "center": [
+        41.1,
+        -80.65
+      ],
+      "bbox": [
+        40.85,
+        -81.1,
+        41.35,
+        -80.2
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-922/latest.zip",
+      "region": "Ohio",
+      "lastFeedExpiry": "20201205",
+      "lastFeedVersion": "20200909"
+    },
+    {
+      "slug": "sun-metro",
+      "name": "Sun Metro (El Paso)",
+      "center": [
+        31.77,
+        -106.42
+      ],
+      "bbox": [
+        31.58,
+        -106.62,
+        31.96,
+        -106.22
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-148/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": "20260613",
+      "lastFeedVersion": "November 16, 2025_20260409"
+    },
+    {
+      "slug": "b-line",
+      "name": "B-Line (Corpus Christi RTA)",
+      "center": [
+        27.76,
+        -97.37
+      ],
+      "bbox": [
+        27.6,
+        -97.69,
+        27.91,
+        -97.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "citibus",
+      "name": "Citibus (Lubbock)",
+      "center": [
+        33.59,
+        -101.87
+      ],
+      "bbox": [
+        33.52,
+        -101.95,
+        33.66,
+        -101.8
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-569/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "UTC: 11-Mar-2026 20:19"
+    },
+    {
+      "slug": "amarillo",
+      "name": "Amarillo City Transit",
+      "center": [
+        35.2,
+        -101.85
+      ],
+      "bbox": [
+        35.15,
+        -101.94,
+        35.25,
+        -101.76
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-213/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": "20211231",
+      "lastFeedVersion": "1.0"
+    },
+    {
+      "slug": "missoula",
+      "name": "Mountain Line (Missoula)",
+      "center": [
+        46.87,
+        -114.03
+      ],
+      "bbox": [
+        46.82,
+        -114.09,
+        46.92,
+        -113.87
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-292/latest.zip",
+      "region": "Montana",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "S1000049"
+    },
+    {
+      "slug": "sportran",
+      "name": "SporTran (Shreveport)",
+      "center": [
+        32.51,
+        -93.74
+      ],
+      "bbox": [
+        32.4,
+        -93.9,
+        32.6,
+        -93.5
+      ],
+      "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
+      "region": "Louisiana",
+      "lastFeedExpiry": "20260802",
+      "lastFeedVersion": "20260428"
+    },
+    {
+      "slug": "billings",
+      "name": "MET Transit (Billings)",
+      "center": [
+        45.78,
+        -108.51
+      ],
+      "bbox": [
+        45.73,
+        -108.63,
+        45.84,
+        -108.45
+      ],
+      "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
+      "region": "Montana",
+      "lastFeedExpiry": "20260803",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "ecat",
+      "name": "ECAT (Escambia County)",
+      "center": [
+        30.42,
+        -87.27
+      ],
+      "bbox": [
+        30.2,
+        -87.5,
+        30.65,
+        -86.95
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": "20221101",
+      "lastFeedVersion": "UTC: 24-Feb-2022 22:06"
+    },
+    {
+      "slug": "rts",
+      "name": "RTS (Gainesville)",
+      "center": [
+        29.64,
+        -82.33
+      ],
+      "bbox": [
+        29.4,
+        -82.7,
+        29.85,
+        -82
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2412/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": "20250817",
+      "lastFeedVersion": "2501"
+    },
+    {
+      "slug": "scat",
+      "name": "SCAT (Sarasota County)",
+      "center": [
+        27.34,
+        -82.53
+      ],
+      "bbox": [
+        27,
+        -82.9,
+        27.7,
+        -82.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-327/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "leetran",
+      "name": "LeeTran (Fort Myers)",
+      "center": [
+        26.64,
+        -81.87
+      ],
+      "bbox": [
+        26.3,
+        -82.2,
+        27,
+        -81.45
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-324/latest.zip",
+      "region": "Florida",
+      "lastFeedExpiry": "20261118",
+      "lastFeedVersion": "S1000223"
+    },
+    {
+      "slug": "wave-mobile",
+      "name": "Wave Transit (Mobile)",
+      "center": [
+        30.68,
+        -88.1
+      ],
+      "bbox": [
+        30.56,
+        -88.24,
+        30.79,
+        -87.97
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-6773/latest.zip",
+      "region": "Alabama",
+      "lastFeedExpiry": "20281231",
+      "lastFeedVersion": "20260319"
+    },
+    {
+      "slug": "huntsville",
+      "name": "Huntsville Shuttle",
+      "center": [
+        34.73,
+        -86.59
+      ],
+      "bbox": [
+        34.62,
+        -86.74,
+        34.84,
+        -86.44
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2081/latest.zip",
+      "region": "Alabama",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "bustang-outrider",
+      "name": "Bustang Outrider",
+      "center": [
+        38.5,
+        -104.9
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
+      "region": "Colorado",
+      "bbox": [
+        37.1,
+        -105,
+        38.3,
+        -104.4
+      ]
+    },
+    {
+      "slug": "rfta",
+      "name": "Roaring Fork Transportation Authority (RFTA)",
+      "center": [
+        39.4,
+        -107.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "grand-valley-transit",
+      "name": "Grand Valley Transit",
+      "center": [
+        39.07,
+        -108.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "durango-transit",
+      "name": "Durango Transit",
+      "center": [
+        37.27,
+        -107.88
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2290/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "pueblo-transit",
+      "name": "Pueblo Transit",
+      "center": [
+        38.25,
+        -104.61
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2232/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "eco-transit",
+      "name": "ECO Transit (Eagle County)",
+      "center": [
+        39.64,
+        -106.93
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-173/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "all-points-transit",
+      "name": "All Points Transit (Montrose)",
+      "center": [
+        38.47,
+        -107.87
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "kart",
+      "name": "Kings Area Rural Transit",
+      "center": [
+        36.33,
+        -119.95
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
+      "region": "California"
+    },
+    {
+      "slug": "tulare-county-transit",
+      "name": "Tulare County Area Transit (TCAT)",
+      "center": [
+        36.33,
+        -119.3
+      ],
+      "feedUrl": null,
+      "region": "California"
+    },
+    {
+      "slug": "madison-metro",
+      "name": "Madison Metro Transit",
+      "center": [
+        43.07,
+        -89.4
+      ],
+      "feedUrl": null
+    },
+    {
+      "slug": "waukesha-metro",
+      "name": "Waukesha Metro Transit",
+      "center": [
+        43.01,
+        -88.23
+      ],
+      "feedUrl": null,
+      "region": "Wisconsin"
+    },
+    {
+      "slug": "mountain-line",
+      "name": "Mountain Line Transit Authority (Morgantown)",
+      "center": [
+        39.63,
+        -79.95
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-407/latest.zip",
+      "region": "West Virginia"
+    },
+    {
+      "slug": "pace",
+      "name": "Pace Suburban Bus",
+      "center": [
+        41.83,
+        -87.83
+      ],
+      "feedUrl": null,
+      "region": "Illinois"
     }
   ]
 }

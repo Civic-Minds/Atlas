@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
+import { getAgencyArtifactUrls } from '../../shared/config';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 
@@ -127,7 +128,9 @@ export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null,
           return;
         }
 
-        fetchAgencyCorridors(agency.slug, agency.corridorsUrl!)
+        const arts = getAgencyArtifactUrls(agency.slug);
+        const cUrl = agency.corridorsUrl || arts.corridorsUrl;
+        fetchAgencyCorridors(agency.slug, cUrl)
           .then(data => {
             if (cancelled.current) return;
             setLayers(prev => ({ ...prev, [key]: data }));

@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+tmp
 *.local
 
 # Claude Code local settings (personal hooks/config, not for commit)
@@ -42,11 +43,16 @@ handoff.txt
 # Planning and integration docs
 INTEGRATION.md
 release-notes.txt
-
-# AI Rules and Context
 ATLASLOG.md
+
+# AI Rules and Context (personal AI assistant instructions — do not commit)
+AGENTS.md
+Agents.md
 CLAUDE.md
+Claude.md
 GEMINI.md
+.grok/
+.cursor/
 .claude/
 .conductor/
 _agents/
@@ -56,6 +62,11 @@ gtfs-test-log.md
 .env*
 public/data/*.json
 !public/data/index.json
+!public/data/index.schema.json
+
+# Personal AI instruction overrides / local variants
+CLAUDE.local.md
+AGENTS.local.md
 
 # Wrangler local dev state and captured feed samples
 workers/**/.wrangler/

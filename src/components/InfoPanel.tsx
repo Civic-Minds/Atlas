@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import type { Agency } from '../App';
@@ -146,7 +146,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
   const headerTitle = view === 'agencies' ? 'Data' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
 
   return (
-    <div className="fixed inset-0 z-[1400]" onClick={onClose}>
+    <div className={`fixed inset-0 ${Z_MODAL_BG}`} onClick={onClose}>
       <div
         className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
         onClick={e => e.stopPropagation()}
@@ -297,7 +297,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                         return (
                           <button
                             key={a.slug}
-                            onClick={() => { setSelectedSlug(a.slug); setView('agency-detail'); }}
+                            onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                             className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
                           >
                             <span className="text-xs text-[var(--text-primary)]">{a.name}</span>

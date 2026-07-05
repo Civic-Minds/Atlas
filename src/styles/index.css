@@ -4,6 +4,11 @@
   --color-brand: #4f46e5;
 }
 
+html {
+  font-size: 14px;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
 :root {
   --bg-app: #f0f0f0;
   --bg-header: #ffffff;
@@ -44,6 +49,10 @@
 
 button {
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 /* Leaflet attribution — required by license, but styled to be unobtrusive */
@@ -142,4 +151,62 @@ button {
 
 .live-vehicle-popup .maplibregl-popup-tip {
   display: none !important;
+}
+
+/* Time scrubber — compact pill matching locate button height (h-9), rounded, theme colors */
+.time-scrubber-range {
+  appearance: none;
+  height: 16px; /* enough to contain thumb without expanding the h-9 container */
+  background: transparent; /* track drawn inside */
+  outline: none;
+  cursor: pointer;
+  accent-color: var(--accent);
+  vertical-align: middle;
+}
+
+.time-scrubber-range::-webkit-slider-runnable-track {
+  height: 3px;
+  background: var(--border-primary);
+  border-radius: 9999px;
+  margin: 6.5px 0; /* center the 3px track in 16px */
+}
+
+.time-scrubber-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.time-scrubber-range::-webkit-slider-thumb:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.time-scrubber-range::-moz-range-track {
+  height: 3px;
+  background: var(--border-primary);
+  border-radius: 9999px;
+  margin: 6.5px 0;
+}
+
+.time-scrubber-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.time-scrubber-range::-moz-range-thumb:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }

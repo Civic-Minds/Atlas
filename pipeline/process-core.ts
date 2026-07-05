@@ -3,6 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
+import type { GtfsData, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
@@ -13,6 +14,13 @@ import { mergeNrtDayNightRoutes } from './transforms/nrt-day-night.js';
 import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { TIME_PERIODS, HEADWAY_TIERS } from '../shared/config.js';
+
+// Tier ordering from best to worst. Step 4 uses this to ensure it can only degrade
+// a route's tier (branch less frequent than trunk), never improve it.
+const TIER_RANK: Record<string, number> = Object.fromEntries([
+  ...HEADWAY_TIERS.map(({ max }, i) => [max === Infinity ? 'infrequent' : String(max), i]),
+  ['span', HEADWAY_TIERS.length],
+]);
 
 export type GtfsPreprocess = 'nrt-day-night';
 
@@ -43,7 +51,7 @@ const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }])
 ) as Record<string, { start: number; end: number }>;
 
-type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'lateNight';
+type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight';
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
 // Hours covered by the hourly sparkline: 5 AM through 2 AM next day (GTFS hour 26)
@@ -64,6 +72,107 @@ function detectBusSubType(
   if (/\b(express|xpress)\b/.test(combined)) return 'express';
   if (agencySlug === 'go') return 'coach';
   return 'local';
+}
+
+/**
+ * Build route_id -> base fare (in dollars).
+ * Prefers GTFS-Fares V2 if present, falls back to legacy V1.
+ *
+ * V2 path:
+ *   - Collect prices from adult (or uncategorized) fare products.
+ *   - If any positive prices: base = min(positive)
+ *   - Else (all 0 or only 0s): base = 0  → supports entirely fare-free agencies
+ *   - Apply that base to every route (simple global for now).
+ *
+ * V1 path: per-route via rules, min non-zero (0 explicitly means free).
+ *
+ * If nothing, base=null (later manual fallback or skipped in Fares view).
+ */
+function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): Map<string, number | null> {
+  const routeIdToFare = new Map<string, number | null>();
+
+  // Try V2 first
+  if (gtfs.fareProducts && gtfs.fareProducts.length > 0) {
+    const adultPrices: number[] = [];
+    const riderCatById = new Map((gtfs.riderCategories ?? []).map(c => [c.rider_category_id, c]));
+
+    for (const prod of gtfs.fareProducts) {
+      const price = parseFloat(prod.amount);
+      if (Number.isNaN(price) || price < 0) continue;
+
+      let isAdult = true;
+      if (prod.rider_category_id) {
+        const cat = riderCatById.get(prod.rider_category_id);
+        const name = (cat?.rider_category_name || '').toLowerCase();
+        // Consider it non-adult if explicitly youth/senior/child/disabled etc.
+        if (name && /(youth|child|senior|elder|disabled|student|concession)/.test(name)) {
+          isAdult = false;
+        }
+      }
+      if (isAdult) {
+        adultPrices.push(price);
+      }
+    }
+
+    if (adultPrices.length > 0) {
+      const positive = adultPrices.filter(p => p > 0);
+      // If there are any positive adult fares, use the lowest paid price as base.
+      // This avoids misclassifying paid systems that happen to have some $0 products
+      // (e.g. certain media, promotions, or special services).
+      // If *all* adult products are $0 (or only $0), treat the whole thing as free (base=0).
+      // This correctly supports entirely fare-free agencies without skipping them.
+      const base = positive.length > 0 ? Math.min(...positive) : 0;
+      // For V2 we apply the base price to all routes for now (per-route/network rules
+      // via fare_leg_rules + networks are more complex; can refine later).
+      for (const route of gtfs.routes ?? []) {
+        routeIdToFare.set(route.route_id, base);
+      }
+      // Apply manual only for missing (none here)
+      return routeIdToFare;
+    }
+  }
+
+  // Fallback to legacy V1
+  const farePriceById = new Map<string, number>();
+
+  for (const fa of gtfs.fareAttributes ?? []) {
+    const price = parseFloat(fa.price);
+    if (!Number.isNaN(price) && price >= 0) {
+      farePriceById.set(fa.fare_id, price);
+    }
+  }
+
+  // Prefer explicit route_id rules. For a route, take min positive; 0 wins as "free".
+  for (const rule of gtfs.fareRules ?? []) {
+    if (!rule.route_id) continue;
+    const price = farePriceById.get(rule.fare_id);
+    if (price === undefined) continue;
+
+    const prev = routeIdToFare.get(rule.route_id);
+    if (prev === undefined) {
+      routeIdToFare.set(rule.route_id, price);
+    } else if (price === 0 || (prev !== 0 && price < prev)) {
+      routeIdToFare.set(rule.route_id, price);
+    }
+  }
+
+  // Fill remaining routes as null (GTFS had no fare linkage)
+  for (const route of gtfs.routes ?? []) {
+    if (!routeIdToFare.has(route.route_id)) {
+      routeIdToFare.set(route.route_id, null);
+    }
+  }
+
+  // Apply manual fallback only where still null
+  if (manualBaseFare != null && manualBaseFare >= 0) {
+    for (const [rid, val] of routeIdToFare) {
+      if (val === null) {
+        routeIdToFare.set(rid, manualBaseFare);
+      }
+    }
+  }
+
+  return routeIdToFare;
 }
 
 function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
@@ -164,6 +273,8 @@ export interface ProcessOptions {
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   slug?: string;
+  /** Manual per-agency base fare fallback (dollars) when GTFS fares (V1/V2) missing */
+  manualBaseFare?: number;
 }
 
 export interface GeoJsonFeature {
@@ -182,6 +293,7 @@ export interface ProcessResult {
   geojson: string;
   corridorsGeojson: string; // isCorridor features only, served separately
   stopsJson: string; // JSON: Record<stopId, StopEntry> — for Corridors stop search
+  tripsJson: string; // JSON: Record<tripId, {d: directionId, h: headsign|null}> for live vehicle enrichment
   featureCount: number;
   center: [number, number] | null;
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
@@ -216,6 +328,8 @@ export async function processGtfsBuffer(
 
   // Synthesize direction_id if missing from feed (resolves headway/frequency understatements, AI-200)
   gtfs = synthesizeMissingDirections(gtfs);
+
+  const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
@@ -481,10 +595,15 @@ export async function processGtfsBuffer(
 
     const route = routeById.get(result.route);
     const shortName = route?.route_short_name ?? result.route;
+    // Normalize headsign for dedup using the same clean function as display.
+    // This collapses raw variants (e.g. "Hancock", "To Hancock Plaza") that clean to the same label.
+    const cleanedForDedup = result.headsign
+      ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || result.headsign
+      : null;
     // Deduplicate by (shortName, dir, day, headsign) so separate directions and terminuses
     // aren't collapsed together.
-    const dedupeKey = result.headsign
-      ? `${shortName}::${result.dir}::${result.day}::${result.headsign}`
+    const dedupeKey = cleanedForDedup
+      ? `${shortName}::${result.dir}::${result.day}::${cleanedForDedup}`
       : `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
@@ -521,6 +640,7 @@ export async function processGtfsBuffer(
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         busSubType: detectBusSubType(result.routeType, shortName, route?.route_long_name ?? null, options?.slug),
+        baseFare: routeBaseFares.get(result.route) ?? null,
         day: result.day,
         headsign: result.headsign
           ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || null
@@ -679,7 +799,13 @@ export async function processGtfsBuffer(
     const allStopHourHw: Record<string, HeadwayByHour> = {};
     for (const [stopId, times] of stopMap) {
       times.sort((a, b) => a - b);
-      const hw = medianHeadwayInWindow(times, 360, 1320);
+      // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
+      // An all-day median is skewed by peak clusters: Halifax 330 inbound has 9 AM trips
+      // in a 105-min window → all-day median gap = 10 min despite no off-peak service.
+      // Midday ?? PM peak correctly returns null for AM-peak-only routes, preventing them
+      // from appearing with a misleading green dot in the stop card.
+      const hw = medianHeadwayInWindow(times, 540, 900, 3)   // midday 9–15h
+              ?? medianHeadwayInWindow(times, 900, 1140, 3);  // PM peak 15–19h
       if (hw != null) allStopHw[stopId] = hw;
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
@@ -746,14 +872,20 @@ export async function processGtfsBuffer(
       const headway = terminalMiddayHw ?? terminalHw ?? allStopMedian;
       feature.properties.headway = headway;
 
-      let tier = 'infrequent';
+      // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
+      // never improve one. Route tier is owned by phase 2; Step 4 only refines it downward.
+      // This prevents AM/PM peak clusters from promoting infrequent routes (e.g. Halifax 330).
+      let newTier = 'infrequent';
       for (const { max } of HEADWAY_TIERS) {
         if (headway <= max) {
-          tier = max === Infinity ? 'infrequent' : String(max);
+          newTier = max === Infinity ? 'infrequent' : String(max);
           break;
         }
       }
-      feature.properties.tier = tier;
+      const currentRank = TIER_RANK[feature.properties.tier as string] ?? -1;
+      if ((TIER_RANK[newTier] ?? -1) > currentRank) {
+        feature.properties.tier = newTier;
+      }
 
       // Minimum stop headway — the best frequency available anywhere on this route.
       // Used by passesRouteFilter so routes with high-frequency sections aren't excluded
@@ -989,10 +1121,18 @@ export async function processGtfsBuffer(
     }
   }
 
+  // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign)
+  const tripsLookup: Record<string, { d: number; h: string | null }> = {};
+  for (const trip of gtfs.trips ?? []) {
+    const h = trip.trip_headsign?.trim() || null;
+    tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h };
+  }
+
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: mainFeatures }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
+    tripsJson: JSON.stringify(tripsLookup),
     featureCount: mainFeatures.length,
     center,
     feedExpiry: feedInfo?.feed_end_date ?? null,

@@ -1,12 +1,11 @@
 #!/usr/bin/env npx tsx
 /**
- * refresh.ts — re-download every agency feed and rebuild its Blob data.
+ * refresh.ts — re-download every agency feed and rebuild its artifacts on R2.
  * Usage:
  *   npm run refresh              → all agencies with a feedUrl
  *   npm run refresh -- ttc yrt   → specific slugs only
  *
- * Requires BLOB_READ_WRITE_TOKEN (local: vercel env pull; CI: repo secret).
- * Exits non-zero if any agency fails, but always processes the full list.
+ * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
 import { readFileSync, writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
@@ -116,8 +115,8 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
     const text = await entry.async('text');
     const lines = text.trim().split(/\r?\n/);
     if (lines.length < 2) return { feedExpiry: null, feedVersion: null };
-    const headers = lines[0].split(',').map(h => h.trim());
-    const values = lines[1].split(',').map(v => v.trim());
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const values = lines[1].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
     const get = (col: string) => {
       const i = headers.indexOf(col);
       return i >= 0 ? (values[i] || null) : null;
@@ -144,6 +143,7 @@ interface AgencyEntry {
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   staged?: boolean;
+  fare?: number;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -170,7 +170,7 @@ async function downloadFeed(url: string): Promise<Buffer> {
   }
 }
 
-async function refreshAgency(agency: AgencyEntry): Promise<string> {
+async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: number): Promise<string> {
   if (!agency.feedUrl) {
     return 'skipped (no feedUrl)';
   }
@@ -219,9 +219,10 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
     slug: agency.slug,
+    manualBaseFare: manualBaseFareOverride,
   });
 
-  let { geojson, corridorsGeojson, stopsJson, featureCount } = primary;
+  let { geojson, corridorsGeojson, stopsJson, tripsJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
 
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
@@ -230,6 +231,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     const mainFeatures = (JSON.parse(geojson) as GeoJsonFc).features;
     const corridorFeatures = (JSON.parse(corridorsGeojson) as GeoJsonFc).features;
     const stopsIndex = JSON.parse(stopsJson) as Record<string, unknown>;
+    const tripsIndex = JSON.parse(tripsJson) as Record<string, unknown>;
 
     for (const suppUrl of agency.supplementalFeedUrls) {
       const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
@@ -242,6 +244,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
       mainFeatures.push(...(JSON.parse(supp.geojson) as GeoJsonFc).features);
       corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as GeoJsonFc).features);
       Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
+      Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
       featureCount += supp.featureCount;
       process.stdout.write(`+${supp.featureCount} features`);
     }
@@ -250,6 +253,7 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     geojson = JSON.stringify({ type: 'FeatureCollection', features: mainFeatures });
     corridorsGeojson = JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures });
     stopsJson = JSON.stringify(stopsIndex);
+    tripsJson = JSON.stringify(tripsIndex);
   }
 
   if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
@@ -258,14 +262,14 @@ async function refreshAgency(agency: AgencyEntry): Promise<string> {
     r2Put(`atlas/${agency.slug}.json`, geojson),
     r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
     r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
+    r2Put(`atlas/${agency.slug}-trips.json`, tripsJson),
   ];
   if (primary.livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));
   }
-  const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
-  agency.url = url;
-  agency.stopsUrl = stopsUrl;
-  agency.corridorsUrl = corridorsUrl;
+  // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
+  // The uploads still happen so the files exist on R2.
+  await Promise.all(uploads);
 
   // Archive the raw zip to the private atlas-archive bucket, keyed by service end date.
   const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;
@@ -289,6 +293,16 @@ async function main() {
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: AgencyEntry[] } = JSON.parse(readFileSync(indexPath, 'utf8'));
 
+  // Load fare overrides from R2 — takes precedence over legacy fare field in index.json
+  let fareOverrides: Record<string, { adult?: number }> = {};
+  try {
+    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`);
+    if (res.ok) fareOverrides = await res.json() as Record<string, { adult?: number }>;
+  } catch {
+    // not yet uploaded; fall back to legacy fare field
+  }
+
   const targets = onlySlugs.length > 0
     ? index.agencies.filter(a => onlySlugs.includes(a.slug))
     : index.agencies;
@@ -302,7 +316,7 @@ async function main() {
   for (const agency of targets) {
     process.stdout.write(`  ${agency.slug.padEnd(12)} ... `);
     try {
-      const summary = await refreshAgency(agency);
+      const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare);
       console.log(summary);
       // Clear staged flag once data is live so the next deploy shows the agency.
       if (agency.staged) delete agency.staged;

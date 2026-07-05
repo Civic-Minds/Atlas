@@ -5,8 +5,10 @@ import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { Agency } from '../App';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM } from '../styles';
+import { getAgencyArtifactUrls } from '../../shared/config';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
+import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
 import { cleanRouteShortName, cleanRouteDisplayName } from '../utils/format';
 
@@ -18,6 +20,7 @@ interface Props {
   onInfoOpen?: () => void;
   query: string;
   layers?: Record<string, GeoJSON.FeatureCollection>;
+  sidebarLeft?: number;
 }
 
 interface RouteGroup {
@@ -48,7 +51,7 @@ function delayLabel(v: LiveVehicle): string {
 
 const MIN_LIVE_ZOOM = 9;
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {} }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft }: Props) {
   const { setOverlay } = useLiveVehiclesMapOverlay();
   const { bounds, zoom } = useViewport();
 
@@ -158,8 +161,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     for (const slug of slugsNeeded) {
       if (layers[slug] || localLayers[slug]) continue;
       const agency = agencies.find(a => a.slug === slug);
-      if (!agency?.url) continue;
-      fetch(agency.url)
+      if (!agency) continue;
+      const arts = getAgencyArtifactUrls(agency.slug);
+      const geoUrl = agency.url || arts.url;
+      fetch(geoUrl)
         .then(r => r.json())
         .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
         .catch(() => {});
@@ -249,10 +254,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       });
   }, [allVehicles, query]);
 
+  // Viewport-filter the sidebar list: only show routes with at least one vehicle on screen
+  const displayedRouteGroups = useMemo(() => {
+    if (!bounds) return routeGroups;
+    return routeGroups.filter(g =>
+      g.vehicles.some(v => v.lat >= bounds.s && v.lat <= bounds.n && v.lon >= bounds.w && v.lon <= bounds.e)
+    );
+  }, [routeGroups, bounds]);
+
   const multipleAgencies = useMemo(() => {
-    const slugs = new Set(routeGroups.map(g => g.agencySlug));
+    const slugs = new Set(displayedRouteGroups.map(g => g.agencySlug));
     return slugs.size > 1;
-  }, [routeGroups]);
+  }, [displayedRouteGroups]);
 
   const handleRouteClick = useCallback((key: string) => {
     setSelectedRoute(prev => {
@@ -275,48 +288,109 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     ? (agencies.find(a => a.slug === selectedGroup.agencySlug)?.name ?? selectedGroup.agencySlug)
     : null;
 
+  // Look up route long name from loaded GeoJSON layers for the selected route
+  const selectedRouteLongName = useMemo(() => {
+    if (!selectedGroup) return null;
+    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    if (!fc) return null;
+    const feature = fc.features.find(f => (f.properties as any)?.routeShortName === selectedGroup.routeShortName);
+    return (feature?.properties as any)?.routeLongName ?? null;
+  }, [selectedGroup, layers, localLayers]);
+
+  // Direction label lookup from GeoJSON features (headsign per directionId)
+  const directionLabels = useMemo(() => {
+    if (!selectedGroup) return new Map<number, string>();
+    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    if (!fc) return new Map<number, string>();
+    const map = new Map<number, string>();
+    for (const f of fc.features) {
+      const p = f.properties as any;
+      if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
+      if (p.directionId != null && p.headsign) map.set(Number(p.directionId), String(p.headsign));
+    }
+    return map;
+  }, [selectedGroup, layers, localLayers]);
+
+  // Direction drill-down within a route
+  const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
+  useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
+
+  // Group vehicles by headsign if available, else by directionId
+  const vehiclesByDirection = useMemo(() => {
+    if (!selectedGroup) return null;
+    const useHeadsign = selectedGroup.vehicles.some(v => v.headsign);
+    const map = new Map<string, LiveVehicle[]>();
+    for (const v of selectedGroup.vehicles) {
+      const key = useHeadsign
+        ? (v.headsign ?? 'Unknown')
+        : v.directionId != null ? String(v.directionId) : 'unknown';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(v);
+    }
+    return map;
+  }, [selectedGroup]);
+
+  // True when we can actually show meaningful direction groups (more than one, or one with a real label)
+  const canGroupByDirection = useMemo(() => {
+    if (!vehiclesByDirection) return false;
+    if (vehiclesByDirection.size > 1) return true;
+    const [soleKey] = [...vehiclesByDirection.keys()];
+    if (soleKey === 'unknown') return false;
+    const useHeadsign = selectedGroup?.vehicles.some(v => v.headsign) ?? false;
+    if (!useHeadsign) {
+      const label = directionLabels.get(parseInt(soleKey));
+      if (!label) return false; // no label from GeoJSON either — not useful
+    }
+    return true;
+  }, [vehiclesByDirection, directionLabels, selectedGroup]);
+
+  const useHeadsignGrouping = useMemo(
+    () => selectedGroup?.vehicles.some(v => v.headsign) ?? false,
+    [selectedGroup]
+  );
+
+  const getDirectionLabel = (key: string): string => {
+    if (useHeadsignGrouping) return key;
+    const dirId = parseInt(key);
+    return directionLabels.get(dirId) ?? (dirId === 0 ? 'Outbound' : 'Inbound');
+  };
+
   if (!active) return null;
 
   const totalVehicles = allVehicles.length;
   const hasAnyError = errors.length > 0 && totalVehicles === 0;
 
   return (
-    <div className="relative h-full w-full overflow-hidden pointer-events-none">
-      <div className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}>
+    <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
+      <div
+        className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
+        style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+      >
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
 
-          {/* Header */}
-          <div className="px-4 pt-3.5 pb-2.5 border-b border-[var(--border-primary)] flex items-center gap-2 shrink-0">
+          {/* Header — fixed height so it never reflows between list and route views */}
+          <div className="px-4 border-b border-[var(--border-primary)] flex items-start pt-[14px] gap-2 shrink-0 h-[52px]">
             {selectedGroup ? (
               // Route card header
               <>
                 <button
-                  onClick={() => { setSelectedRoute(null); setFocusedVehicle(null); }}
+                  onClick={selectedDirection
+                    ? () => setSelectedDirection(null)
+                    : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
                   className="p-0.5 -ml-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-                  aria-label="Back to route list"
+                  aria-label={selectedDirection ? 'Back to directions' : 'Back to route list'}
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                 </button>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-black text-[var(--text-primary)] truncate">
-                    {cleanRouteShortName(selectedGroup.routeShortName)}
-                    {(() => {
-                      const cleaned = cleanRouteShortName(selectedGroup.routeShortName);
-                      const isGeneric = selectedGroup.displayName === selectedGroup.routeShortName
-                        || selectedGroup.displayName.toLowerCase() === `route ${cleaned.toLowerCase()}`;
-                      return !isGeneric
-                        ? <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{selectedGroup.displayName}</span>
-                        : null;
-                    })()}
-                  </p>
-                  {selectedAgencyName && (
-                    <p className={`text-[10px] ${LIST_ROW_DIM} truncate`}>{selectedAgencyName}</p>
-                  )}
-                </div>
+                <RouteCardTitle
+                  routeShortName={selectedGroup.routeShortName}
+                  routeLongName={selectedRouteLongName}
+                  agencyName={selectedAgencyName}
+                />
               </>
             ) : (
-              // List header
-              <>
+              // List header — wrap in items-center so the 8px dot aligns with the text midline
+              <span className="flex items-center gap-2">
                 {!isZoomedIn ? (
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
                 ) : totalVehicles > 0 ? (
@@ -334,27 +408,69 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 ) : (
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
                 )}
-                <h2 className="text-xs font-black text-[var(--text-primary)]">Live Vehicles</h2>
-              </>
+                <h2 className="text-sm font-black text-[var(--text-primary)]">Live Vehicles</h2>
+              </span>
             )}
           </div>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
             {selectedGroup ? (
-              // Route card: individual vehicle list
+              // Route card: destination-grouped or vehicle-level fallback
               selectedGroup.vehicles.length === 0 ? (
                 <div className="py-10 text-center">
                   <p className="text-xs text-[var(--text-muted)]">No vehicles on this route</p>
                 </div>
+              ) : canGroupByDirection && !selectedDirection ? (
+                // Direction groups — headsign if available, directionId otherwise
+                [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
+                  const label = getDirectionLabel(dirKey);
+                  const preview = vehicles.slice(0, 3);
+                  const extra = vehicles.length - preview.length;
+                  return (
+                    <button
+                      key={dirKey}
+                      onClick={() => setSelectedDirection(dirKey)}
+                      className="w-full px-4 py-3 border-b border-[var(--border-primary)] text-left hover:bg-[var(--bg-hover)] transition-colors group"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs font-bold text-[var(--text-primary)] truncate flex-1">{label}</p>
+                        <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] shrink-0 transition-colors" />
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        {preview.map(v => {
+                          const colors = STATUS_COLORS[v.status];
+                          return (
+                            <span
+                              key={v.id}
+                              style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                              className={`text-[9px] font-black ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
+                            >
+                              {delayLabel(v)}
+                            </span>
+                          );
+                        })}
+                        {extra > 0 && (
+                          <span className={`text-[9px] ${LIST_ROW_DIM}`}>+{extra} more</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
               ) : (
-                selectedGroup.vehicles.map(v => {
+                // Individual vehicle rows — direction drill-down or no grouping possible
+                (selectedDirection
+                  ? (vehiclesByDirection?.get(selectedDirection) ?? [])
+                  : selectedGroup.vehicles
+                ).map(v => {
                   const label = delayLabel(v);
                   const colors = STATUS_COLORS[v.status];
+                  // Clean up garbage UUID-style IDs — take the last numeric segment
+                  const cleanId = (v.id.match(/\d{4,}$/)?.[0]) ?? (v.id.replace(/^[a-f0-9]{8,}$/, '').trim() || v.id);
                   return (
                     <div key={v.id} className="px-4 py-2.5 border-b border-[var(--border-primary)] flex items-center gap-3">
                       <p className="text-xs font-bold text-[var(--text-primary)] flex-1 min-w-0 truncate">
-                        {v.headsign || '—'}
+                        {v.headsign || `Bus ${cleanId || v.id}`}
                       </p>
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
@@ -367,20 +483,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 })
               )
             ) : !isZoomedIn ? (
-              // Too zoomed out
-              <div className="py-10 text-center px-4 flex flex-col items-center gap-2">
-                <p className="text-xs font-bold text-[var(--text-primary)]">Zoom in to see vehicles</p>
-                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                  Zoom into a city to start tracking live vehicles.
-                </p>
+              <div className="py-8 px-4 flex flex-col items-center gap-3">
+                <p className="text-[10px] text-[var(--text-dim)]">Zoom in to start tracking</p>
               </div>
             ) : visibleSlugs.length === 0 && !isLoading ? (
-              // No live agencies in viewport
-              <div className="py-10 text-center px-4 flex flex-col items-center gap-2">
-                <p className="text-xs font-bold text-[var(--text-primary)]">No live coverage here</p>
-                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                  Pan to Burlington, Hamilton, Toronto, York Region, Edmonton, or Halifax to see live vehicles.
-                </p>
+              <div className="py-8 px-4 flex flex-col items-center gap-3">
+                <p className="text-[10px] font-bold text-[var(--text-dim)]">Live coverage</p>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {(['Burlington', 'Hamilton', 'Toronto', 'York Region', 'Edmonton', 'Halifax'] as const).map(city => (
+                    <span key={city} className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1">
+                      {city}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-[10px] text-[var(--text-dim)]">Pan to a covered city</p>
               </div>
             ) : isLoading && totalVehicles === 0 ? (
               <div className="flex items-center justify-center py-12 gap-2">
@@ -397,7 +513,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   </p>
                 </div>
               </div>
-            ) : routeGroups.length === 0 ? (
+            ) : displayedRouteGroups.length === 0 ? (
               <div className="py-10 text-center flex flex-col items-center gap-2">
                 <p className="text-xs font-bold text-[var(--text-primary)]">
                   {query ? 'No routes match' : 'No vehicles right now'}
@@ -410,7 +526,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               // Route list, grouped by agency when multiple are visible
               (() => {
                 let lastSlug = '';
-                return routeGroups.map(g => {
+                return displayedRouteGroups.map(g => {
                   const key = `${g.agencySlug}::${g.routeShortName}`;
                   const isSelected = selectedRoute === key;
                   const colors = STATUS_COLORS[g.dominantStatus];
@@ -458,7 +574,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       </div>
 
       {/* Toolbar */}
-      <div className="absolute top-6 right-6 z-[1100] flex items-center gap-1.5 pointer-events-auto">
+      <div className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
         <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label="Toggle light mode">
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>

@@ -12,13 +12,13 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Nfta: 'NFTA',
   Ltc: 'LTC',
   Ktc: 'KTC',
-  // GO Transit line codes
+  // GO Transit line codes (2-char codes handled by the ≤3-char uppercase rule when standalone)
   Lw: 'LW',
   Le: 'LE',
   Ki: 'KI',
   Mi: 'MI',
   Br: 'BR',
-  St: 'ST',
+  // St intentionally excluded — "St" in stop names means Street/Saint, not the GO Stouffville line
   Rh: 'RH',
   // Bay Area / Staged expansion acronyms
   Bart: 'BART',
@@ -65,9 +65,11 @@ export function titleCase(s: string): string {
     return `${short} — ${titleCase(long)}`;
   }
 
-  // If it's a short string (<= 4 chars) and contains only letters/numbers,
-  // preserve it as uppercase (e.g. short name alone: "1T", "51A", "BART")
-  if (s.length <= 4 && /^[A-Z0-9a-z]+$/i.test(s)) {
+  // If it's a short string (<= 3 chars) and contains only letters/numbers,
+  // preserve it as uppercase (e.g. "GO", "LW", "VTA"). 4-char strings like "LOOP"
+  // fall through so they title-case correctly; real 4-char acronyms (BART, etc.)
+  // are handled by the TRANSIT_ACRONYMS table below.
+  if (s.length <= 3 && /^[A-Z0-9a-z]+$/i.test(s)) {
     return s.toUpperCase();
   }
 
@@ -86,7 +88,11 @@ export function titleCase(s: string): string {
       }
       return word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
     })
-    .replace(acronymRegex, m => TRANSIT_ACRONYMS[m] ?? m)
+    .replace(acronymRegex, (m, _g1, offset, str) => {
+      // Don't convert "St." (Saint abbreviation) — only the standalone GO line-code "ST"
+      if (m === 'St' && str[offset + m.length] === '.') return m;
+      return TRANSIT_ACRONYMS[m] ?? m;
+    })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
@@ -129,12 +135,15 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('marin transit')) return 'Marin Transit';
   if (lower.includes('golden gate')) return 'Golden Gate Transit';
   if (lower.includes('smart') && lower.includes('sonoma')) return 'SMART';
+  if (lower.includes('mountain metropolitan')) return 'Mountain Metro';
   
-  // General fallback: if there is a parenthetical abbreviation, use it
+  // General fallback: use parenthetical if short abbrev; otherwise strip long (City/Region) parens for compact display
   const match = name.match(/\(([^)]+)\)/);
   if (match) {
-    const abbrev = match[1];
+    const abbrev = match[1].trim();
     if (abbrev.length <= 10) return abbrev;
+    // Strip long locator parens (e.g. "(Colorado Springs)", "(Mississauga)")
+    return name.replace(/\s*\([^)]+\)\s*$/, '').trim();
   }
   
   return name;

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeftRight, Clock, Radio } from 'lucide-react';
-import { FLOATING_CARD } from '../styles';
+import { ArrowLeftRight, Clock, DollarSign } from 'lucide-react';
+import { FLOATING_CARD, Z_DROPDOWN } from '../styles';
 
-export type AppId = 'frequency' | 'corridors' | 'history' | 'live';
+export type AppId = 'frequency' | 'corridors' | 'history' | 'live' | 'fares';
 
 interface AppEntry {
   id: AppId;
@@ -21,11 +21,11 @@ const APPS: AppEntry[] = [
     available: true,
   },
   {
-    id: 'live',
-    label: 'Live Vehicles',
-    description: 'Real-time vehicle tracking',
-    icon: <Radio className="w-5 h-5" />,
-    available: true,
+    id: 'fares',
+    label: 'Fares',
+    description: 'Routes colored by base fare',
+    icon: <DollarSign className="w-5 h-5" />,
+    available: false,
   },
   {
     id: 'history',
@@ -65,7 +65,7 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
       </button>
 
       {open && (
-        <div className={`absolute top-10 left-0 w-56 ${FLOATING_CARD} overflow-hidden z-[1200] py-1.5`}>
+        <div className={`absolute top-10 left-0 w-56 ${FLOATING_CARD} overflow-hidden ${Z_DROPDOWN} py-1.5 cursor-default`}>
           {APPS.map(app => {
             const isActive = app.id === activeApp;
             return (
@@ -83,7 +83,7 @@ export default function AppDrawer({ activeApp, onSelect }: Props) {
                   isActive
                     ? 'opacity-40 cursor-default'
                     : app.available
-                      ? 'hover:bg-[var(--bg-hover)]'
+                      ? 'hover:bg-[var(--bg-hover)] cursor-pointer'
                       : 'opacity-40 cursor-not-allowed',
                 ].join(' ')}
               >

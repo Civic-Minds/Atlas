@@ -89,6 +89,49 @@ export interface GtfsFrequency {
     exact_times?: string; // '0' (default) or '1'
 }
 
+export interface GtfsFareAttribute {
+    fare_id: string;
+    price: string;
+    currency_type: string;
+    payment_method: string;
+    transfers?: string;
+    agency_id?: string;
+    transfer_duration?: string;
+}
+
+export interface GtfsFareRule {
+    fare_id: string;
+    route_id?: string;
+    origin_id?: string;
+    destination_id?: string;
+    contains_id?: string;
+}
+
+// GTFS-Fares V2 (modern)
+export interface GtfsFareProduct {
+    fare_product_id: string;
+    amount: string;   // note: "amount" in V2 spec (not "price")
+    currency_type: string;
+    rider_category_id?: string;
+    fare_media_id?: string;
+}
+
+export interface GtfsRiderCategory {
+    rider_category_id: string;
+    rider_category_name?: string;
+}
+
+export interface GtfsFareLegRule {
+    leg_group_id?: string;
+    network_id?: string;
+    from_area_id?: string;
+    to_area_id?: string;
+    from_timeframe_id?: string;
+    to_timeframe_id?: string;
+    fare_product_id: string;
+    rule_priority?: string;
+}
+
 export interface GtfsFeedInfo {
     feed_publisher_name?: string;
     feed_publisher_url?: string;
@@ -111,6 +154,13 @@ export interface GtfsData {
     shapes: GtfsShape[];
     feedInfo?: GtfsFeedInfo[];
     frequencies?: GtfsFrequency[];
+    fareAttributes?: GtfsFareAttribute[];
+    fareRules?: GtfsFareRule[];
+
+    // Fares V2
+    fareProducts?: GtfsFareProduct[];
+    riderCategories?: GtfsRiderCategory[];
+    fareLegRules?: GtfsFareLegRule[];
 }
 
 // ---------------------------------------------------------------------------

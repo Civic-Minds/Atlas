@@ -10,6 +10,7 @@ export interface LiveVehicle {
   bearing: number | null;
   delayMin: number | null;
   headsign: string | null;
+  directionId: number | null;
   status: 'no_data' | 'early' | 'late' | 'on_time';
   agencySlug: string; // tagged on frontend after fetch
 }

@@ -51,6 +51,27 @@ The frontend loads agency data lazily as you pan — only the agencies within yo
 
 **Commuter rail shape selection**: for rail services, the pipeline always uses the longest shape for both display and frequency analysis. This ensures that short-turn trains — which only run part of the line — don't win the shape competition and cut the route short on the map. Short-turn trips still count toward frequency at every stop they serve.
 
+## Adding a new city / GTFS feed
+
+1. Find a GTFS zip (prefer stable agency URL or latest from [Mobility Database](https://mobilitydatabase.org/)).
+2. `npm run process -- <https://...feed.zip | local.zip> <slug> "Display Name" "lat,lon"`
+   - The script now supports remote URLs directly (downloads + saves copy to `tmp/`).
+   - For agencies with separate bus/rail zips (e.g. SEPTA, WMATA): process the primary (usually bus), then set `supplementalFeedUrls` in `public/data/index.json`.
+3. After processing, edit the new entry in `public/data/index.json`:
+   - Set `region`, `bbox`, `feedUrl`, `mdbFeedUrl` (and `supplementalFeedUrls` for split feeds).
+   - The R2 artifact URLs are **derived** from the slug (see `shared/config.ts:getAgencyArtifactUrls`). No need to store or edit `url` / `stopsUrl` / `corridorsUrl`.
+4. `npm run refresh -- <slug> --force` (applies supplementals, history, lastFeed*).
+5. Commit `public/data/index.json`. The processed data lives on R2; the index is the registry + feed config.
+
+Example recent adds: `septa`, `wmata`.
+
+**Discovering feeds via Mobility Database (recommended):**
+```bash
+npm run find-mdb -- "search term (city or agency)" slug "lat,lon"
+npm run find-mdb -- "SEPTA Philadelphia" septa "39.9526,-75.1652"
+```
+It queries the live MDB catalog (using your MDB_REFRESH_TOKEN), shows matches, current hosted URL, and a ready-to-paste index.json snippet. Then use the URL with `npm run process`.
+
 ---
 
 [Back to Home](./README.md)

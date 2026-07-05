@@ -11,6 +11,7 @@
  *   R2_SECRET_ACCESS_KEY
  */
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 
 function requireEnv(key: string): string {
   const v = process.env[key];
@@ -79,11 +80,54 @@ export async function r2PutBuffer(key: string, body: Buffer, contentType: string
   return r2PublicUrl(key);
 }
 
-/** Upload a file to R2. Reads into a Buffer to avoid stream EPIPE on PutObject. */
+/**
+ * Upload a file to R2. Uses multipart upload for files ≥100 MB (reliable on large
+ * files where single-PUT hits SSL "bad record mac" errors mid-stream on Node 24).
+ * Falls back to buffered PutObject for small files.
+ */
 export async function r2PutFile(key: string, filePath: string, contentType: string): Promise<string> {
-  const { readFileSync } = await import('fs');
+  const { statSync, readFileSync, createReadStream } = await import('fs');
+  const size = statSync(filePath).size;
+  const bucket = requireEnv('R2_BUCKET_NAME');
+
+  if (size >= 100 * 1024 * 1024) {
+    // Multipart upload — tolerates transient SSL errors per part
+    const client = getR2Client();
+    const maxPartRetries = 5;
+    // Retry the whole multipart upload on transient SSL errors
+    for (let attempt = 1; attempt <= maxPartRetries; attempt++) {
+      const up = new Upload({
+        client,
+        params: { Bucket: bucket, Key: key, Body: createReadStream(filePath), ContentType: contentType, ContentLength: size },
+        partSize: 32 * 1024 * 1024,
+        leavePartsOnError: false,
+        queueSize: 1,
+      });
+      let lastPct = 0;
+      up.on('httpUploadProgress', (p) => {
+        const pct = p.total ? Math.round((p.loaded ?? 0) / p.total * 100) : 0;
+        if (pct !== lastPct && pct % 5 === 0) {
+          process.stdout.write(`\r  upload ${key}: ${pct}%   `);
+          lastPct = pct;
+        }
+      });
+      try {
+        await up.done();
+        process.stdout.write('\n');
+        return r2PublicUrl(key);
+      } catch (err) {
+        if (attempt < maxPartRetries && isRetryableR2Error(err)) {
+          console.warn(`\n  multipart upload error (attempt ${attempt}), retrying...`);
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+          continue;
+        }
+        throw err;
+      }
+    }
+  }
+
   const body = readFileSync(filePath);
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), body.length);
+  await r2PutRaw(key, body, contentType, bucket, body.length);
   return r2PublicUrl(key);
 }
 

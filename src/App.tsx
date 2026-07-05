@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map as MapIcon, Search, X, ArrowLeft, Info } from 'lucide-react';
-import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW } from './styles';
-import { R2_PUBLIC_URL } from '../shared/config';
+import { Map as MapIcon, Search, X, ArrowLeft, Info, Radio } from 'lucide-react';
+import { PILL_SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER } from './styles';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
 import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
@@ -14,32 +14,53 @@ import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel from './components/InfoPanel';
 
+export interface FareOverride {
+  adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
+  adultCash?: number;  // cash fare if different from card fare
+  zones?: boolean;     // true if fare varies by zone (display "from $X")
+  free?: boolean;      // service is currently free
+  label?: string;      // payment method name shown in UI (e.g. "OPUS", "Compass", "PRESTO")
+  currency?: 'CAD' | 'USD';
+  fareUrl?: string;    // link to full public fare page
+  source?: string;     // URL where data was sourced (internal reference)
+}
+
 export interface Agency {
   slug: string;
   name: string;
   center: [number, number];
+  /** Artifact URL on R2. Derived at load time from slug if absent (see getAgencyArtifactUrls). */
   url: string;
   stopsUrl?: string;
   corridorsUrl?: string;
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
-  lastFeedExpiry?: string | null; // YYYYMMDD from feed_info.txt feed_end_date
+  lastFeedExpiry?: string | null;
   excludeRouteShortNames?: string[];
   staged?: boolean;
   issueUrl?: string;
+  fare?: number;
+  gtfsFares?: boolean;
+  fareUrl?: string;
+  // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
+  feedUrl?: string | null;
+  mdbFeedUrl?: string;
+  supplementalFeedUrls?: string[];
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
   '/apps/frequency': 'frequency',
   '/apps/corridors': 'corridors',
+  '/apps/fares': 'fares',
   '/apps/history': 'history',
   '/apps/live': 'live',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
-  frequency: '/apps/frequency',
+  frequency: '/',
   corridors: '/apps/corridors',
+  fares: '/apps/fares',
   history: '/apps/history',
   live: '/apps/live',
 };
@@ -67,6 +88,26 @@ export default function App() {
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
+  const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
+  const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
+
+  // Measure the From search bar's actual screen position so Corridors can
+  // align the To bar to it precisely, regardless of header layout changes.
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const [fromBarAnchor, setFromBarAnchor] = useState<{ left: number; bottom: number; width: number } | null>(null);
+  useEffect(() => {
+    const el = searchBarRef.current;
+    if (!el) return;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      setFromBarAnchor({ left: r.left, bottom: r.bottom, width: r.width });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, []);
+  const sidebarLeft = fromBarAnchor?.left;
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
@@ -105,9 +146,11 @@ export default function App() {
   const inHistory = activeApp === 'history';
   const inCorridors = activeApp === 'corridors';
   const inLive = activeApp === 'live';
-  const searchValue = inFrequency || inHistory || inLive ? query : corridorsFrom;
+  const inFares = activeApp === 'fares';
+  const searchValue = inFrequency || inHistory || inLive || inFares ? query : corridorsFrom;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
+    : inFares ? 'Search agencies'
     : inHistory ? 'Find an agency…'
     : inLive ? 'Search vehicles…'
     : (corridorsFromFocused || corridorsFrom) ? 'Search stations…' : 'From';
@@ -115,12 +158,12 @@ export default function App() {
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
 
   function handleSearchChange(v: string) {
-    if (inFrequency || inHistory || inLive) setQuery(v);
+    if (inFrequency || inHistory || inLive || inFares) setQuery(v);
     else setCorridorsFrom(v);
   }
 
   function handleSearchClear() {
-    if (inFrequency || inHistory || inLive) setQuery('');
+    if (inFrequency || inHistory || inLive || inFares) setQuery('');
     else setCorridorsFrom('');
   }
 
@@ -128,6 +171,14 @@ export default function App() {
     if (activeApp === 'corridors') setCorridorsMounted(true);
     if (activeApp === 'live') setLiveMounted(true);
   }, [activeApp]);
+
+  // Clear history-specific pending state when leaving history mode
+  // (prevents lingering state after idle + exit, e.g. back arrow or panels)
+  useEffect(() => {
+    if (!inHistory) {
+      setPendingHistoryRoute(null);
+    }
+  }, [inHistory]);
 
   useEffect(() => {
     if (searchPlaceholder === shownPlaceholder) return;
@@ -142,7 +193,20 @@ export default function App() {
   useEffect(() => {
     fetch('/data/index.json')
       .then(r => r.json())
-      .then(data => setAgencies(data.agencies.filter((a: Agency) => !a.staged)))
+      .then((data: { agencies: Agency[] }) => {
+        const enriched = data.agencies
+          .filter((a: Agency) => !a.staged)
+          .map((a: Agency) => {
+            // Derive artifact URLs from slug when not explicitly stored.
+            // This allows us to stop duplicating the repetitive R2 paths in index.json.
+            if (!a.url) {
+              const arts = getAgencyArtifactUrls(a.slug);
+              return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
+            }
+            return a;
+          });
+        setAgencies(enriched);
+      })
       .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
@@ -161,7 +225,9 @@ export default function App() {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
-      <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
+      {/* Unified header row — left and right sections share one flex container so they can never overlap */}
+      <div className={`absolute top-6 left-6 right-6 ${Z_HEADER} flex items-center justify-between pointer-events-none`}>
+      <div className="flex items-center gap-2 pointer-events-auto">
         <button
           onClick={() => {
             if (activeApp !== 'frequency') {
@@ -173,10 +239,7 @@ export default function App() {
           aria-label={activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
-          {inFrequency
-            ? <MapIcon className="w-3.5 h-3.5 text-white" />
-            : <ArrowLeft className="w-3.5 h-3.5 text-white" />
-          }
+          <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
         <div className="flex flex-col leading-tight">
@@ -184,11 +247,12 @@ export default function App() {
           <span className="text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
+        {/* AppDrawer hidden until Corridors and History have sufficient data */}
+        {/* <AppDrawer activeApp={activeApp} onSelect={setActiveApp} /> */}
 
         {/* Search bar — doubles as Corridors From input and History agency search */}
-        <div>
-        <div className={`w-64 relative ${PILL_SURFACE} pl-1 pr-3`}>
+        <div ref={searchBarRef}>
+        <div className={`w-44 lg:w-56 xl:w-72 relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
             ref={corridorsFromRef}
@@ -230,20 +294,27 @@ export default function App() {
         </div>
         </div>
 
-        {stats && (
-          <div className={`flex gap-2 transition-all ${TRANSITION_SLOW} origin-left ${inFrequency ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
-            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-              <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
-              <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
-            </div>
-            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-              <span className="text-xs font-black text-[var(--text-primary)]">
-                {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
-              </span>
-              <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
-            </div>
-          </div>
-        )}
+        <button
+          onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
+          aria-label="Live vehicles"
+          className={`h-8 px-3 flex items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-white animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+          Live
+        </button>
+
+      </div>
+      {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
+      <div className="flex items-center gap-2 pointer-events-auto">
+        <div ref={headerPortalRef} className="flex items-center gap-2" />
+        <button
+          onClick={() => openInfo('about')}
+          aria-label="About Atlas"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+        >
+          <Info className="w-4 h-4" />
+        </button>
+      </div>
       </div>
 
       <main className="absolute inset-0 overflow-hidden">
@@ -254,7 +325,13 @@ export default function App() {
         ) : (
           <>
             <Interval
-              agencies={inHistory && historyAgencySlugs ? agencies.filter(a => historyAgencySlugs.has(a.slug)) : agencies}
+              agencies={
+                inHistory && historyAgencySlugs 
+                  ? agencies.filter(a => historyAgencySlugs.has(a.slug)) 
+                  : inFares 
+                    ? agencies.filter(a => a.gtfsFares) 
+                    : agencies
+              }
               lightMode={lightMode}
               setLightMode={setLightMode}
               query={query}
@@ -262,11 +339,12 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inHistory}
-              filterToAgencies={inHistory}
+              showRouteLayers={inFrequency || inHistory || inFares}
+              fareView={inFares}
+              filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               showCorridorBand={inCorridors}
-              hideFilterPanel={inCorridors || inLive}
+              hideFilterPanel={inCorridors || inLive || inHistory || inFares}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -277,10 +355,12 @@ export default function App() {
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}
+              headerPortalContainer={headerPortalEl}
+              sidebarLeft={sidebarLeft}
             />
-            <History active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
+            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
             {corridorsMounted && (
-              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inCorridors ? 'opacity-100' : 'opacity-0'}`}>
                 <Corridors
                   agencies={agencies}
                   lightMode={lightMode}
@@ -292,11 +372,12 @@ export default function App() {
                   onBindFromInput={setFromInputBindings}
                   active={inCorridors}
                   onInfoOpen={() => setInfoOpen(true)}
+                  fromBarAnchor={fromBarAnchor ?? undefined}
                 />
               </div>
             )}
             {liveMounted && (
-              <div className={`absolute inset-0 z-[500] pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <LiveVehicles
                   agencies={agencies}
                   lightMode={lightMode}
@@ -305,6 +386,7 @@ export default function App() {
                   onInfoOpen={() => setInfoOpen(true)}
                   query={query}
                   layers={layers}
+                  sidebarLeft={sidebarLeft}
                 />
               </div>
             )}

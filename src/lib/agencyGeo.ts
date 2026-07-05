@@ -1,5 +1,6 @@
 /** Shared in-memory cache for agency route GeoJSON (Frequency + Corridors). */
 import { idbGet, idbSet, idbPruneStale } from './idbCache';
+import { getAgencyArtifactUrls } from '../../shared/config';
 
 export interface AgencyGeoSource {
   slug: string;
@@ -8,14 +9,17 @@ export interface AgencyGeoSource {
   corridorsUrl?: string;
 }
 
-/** Rotates weekly so browsers re-fetch after the Monday refresh pipeline. */
+// Increment this when pushing mid-week data fixes that need to bust the browser IDB cache.
+const CACHE_BUILD = 1;
+
+/** Rotates weekly (+ CACHE_BUILD for mid-week fixes) so browsers re-fetch after data updates. */
 export function agencyGeoWeekVersion(): string {
   const d = new Date();
   const thu = new Date(d);
   thu.setDate(d.getDate() - d.getDay() + 4);
   const yearStart = new Date(thu.getFullYear(), 0, 1);
   const week = Math.ceil(((thu.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-  return `${thu.getFullYear()}${String(week).padStart(2, '0')}`;
+  return `${thu.getFullYear()}${String(week).padStart(2, '0')}-${CACHE_BUILD}`;
 }
 
 // LRU cache: Map preserves insertion order; delete+re-insert on access moves to front.
@@ -86,6 +90,8 @@ export function getCachedAgencyCorridors(slug: string): GeoJSON.FeatureCollectio
 
 /** Fetch agency GeoJSON, reusing memory cache and in-flight requests. */
 export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.FeatureCollection> {
+  const arts = getAgencyArtifactUrls(agency.slug);
+  const fetchUrl = agency.url || arts.url;
   pruneOnce();
 
   const hit = lruGet(cache, agency.slug);
@@ -112,7 +118,7 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
         w.postMessage({
           type: 'geo',
           slug: agency.slug,
-          url: agency.url,
+          url: fetchUrl,
           name: agency.name,
           weekVer,
         });
@@ -126,7 +132,7 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
           lruSet(cache, agency.slug, cached);
           return cached;
         }
-        const r = await fetch(`${agency.url}?v=${weekVer}`, { cache: 'default' });
+        const r = await fetch(`${fetchUrl}?v=${weekVer}`, { cache: 'default' });
         if (!r.ok) throw new Error(`${agency.slug} geo ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {

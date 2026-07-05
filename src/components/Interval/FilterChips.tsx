@@ -3,9 +3,8 @@ import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP } from '../../styles';
 import type { Agency } from '../../App';
-import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { VIRTUAL_LRT_MODE, PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import type { TimePeriod } from '../../hooks/useIntervalStats';
+import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { TIME_PERIODS } from '../../../shared/config';
 
 interface FilterChipsProps {
@@ -20,7 +19,7 @@ interface FilterChipsProps {
   agencies: Agency[];
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
-  layers: AgencyLayers;
+  bounds: ViewportBounds | null;
 }
 
 const MODES = [
@@ -33,7 +32,20 @@ const MODES = [
 ];
 
 
-const PERIODS: TimePeriod[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening', 'lateNight'];
+const PERIODS: TimePeriod[] = ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'];
+
+function fmtHour(h: number): string {
+  const h12 = h % 24;
+  if (h12 === 0 || h12 === 24) return '12a';
+  if (h12 === 12) return '12p';
+  return h12 < 12 ? `${h12}a` : `${h12 - 12}p`;
+}
+
+function periodRange(key: string): string {
+  const p = TIME_PERIODS.find(t => t.key === key);
+  if (!p) return '';
+  return `${fmtHour(p.startHour)}–${fmtHour(p.endHour)}`;
+}
 
 export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
   const d = new Date().getDay();
@@ -44,13 +56,22 @@ export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
 
 export function getNowPeriod(): TimePeriod {
   const h = new Date().getHours();
-  const matched = TIME_PERIODS.find(p => h >= p.startHour && h < p.endHour);
+  // Hours 0–5 (early morning) map to GTFS 24–29 so they match late/overnight periods
+  const gtfsH = h < 6 ? h + 24 : h;
+  const matched = TIME_PERIODS.find(p => gtfsH >= p.startHour && gtfsH < p.endHour);
   return (matched?.key as TimePeriod) || 'all';
 }
 
-type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies';
+type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
+
+const compactOptBtn = (active: boolean) =>
+  `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
+    active
+      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+      : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+  }`;
 
 const rowBtn = (active: boolean) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
@@ -63,36 +84,59 @@ interface AgenciesPanelProps {
   agencies: Agency[];
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
-  layers: AgencyLayers;
+  bounds: ViewportBounds | null;
   agencyQuery: string;
   setAgencyQuery: (q: string) => void;
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
 }
 
-function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
-  // Merge same-named agencies (e.g. NFTA bus + rail) then group by region
-  const byRegion = useMemo(() => {
-    const q = agencyQuery.toLowerCase();
-    // Dedupe by name within each region
-    const groups: { name: string; slugs: string[]; region: string }[] = [];
+function bboxInViewport(agency: { bbox?: [number, number, number, number]; center?: [number, number] }, bounds: ViewportBounds | null): boolean {
+  if (!bounds) return false;
+  if (agency.bbox) {
+    const [s, w, n, e] = agency.bbox;
+    return s <= bounds.n && n >= bounds.s && w <= bounds.e && e >= bounds.w;
+  }
+  if (agency.center) {
+    const [lat, lon] = agency.center;
+    const pad = 0.5;
+    return lat - pad <= bounds.n && lat + pad >= bounds.s && lon - pad <= bounds.e && lon + pad >= bounds.w;
+  }
+  return false;
+}
+
+function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
+  const [showAll, setShowAll] = useState(false);
+
+  // Build deduplicated groups, tagging each with whether it overlaps the current viewport
+  const allGroups = useMemo(() => {
+    const groups: { name: string; slugs: string[]; region: string; loaded: boolean }[] = [];
     for (const a of agencies) {
       const region = a.region ?? 'Other';
+      const inView = bboxInViewport(a, bounds);
       const g = groups.find(x => x.name === a.name && x.region === region);
-      if (g) g.slugs.push(a.slug);
-      else groups.push({ name: a.name, slugs: [a.slug], region });
+      if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
+      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: inView });
     }
-    const filtered = q ? groups.filter(g => g.name.toLowerCase().includes(q) || g.region.toLowerCase().includes(q)) : groups;
-    const map = new Map<string, typeof groups>();
+    return groups;
+  }, [agencies, bounds]);
+
+  const byRegion = useMemo(() => {
+    const q = agencyQuery.toLowerCase();
+    const source = (showAll || q) ? allGroups : allGroups.filter(g => g.loaded);
+    const filtered = q ? source.filter(g => g.name.toLowerCase().includes(q) || g.region.toLowerCase().includes(q)) : source;
+    const map = new Map<string, typeof allGroups>();
     for (const g of filtered) {
       if (!map.has(g.region)) map.set(g.region, []);
       map.get(g.region)!.push(g);
     }
     return map;
-  }, [agencies, agencyQuery]);
+  }, [allGroups, agencyQuery, showAll]);
 
+  const loadedSlugs = useMemo(() => allGroups.filter(g => g.loaded).flatMap(g => g.slugs), [allGroups]);
   const allSlugs = useMemo(() => agencies.map(a => a.slug), [agencies]);
-  const allOn = allSlugs.every(s => selectedAgencies.has(s));
-  const allOff = allSlugs.every(s => !selectedAgencies.has(s));
+  const scopedSlugs = (showAll || agencyQuery) ? allSlugs : loadedSlugs;
+  const allOn = scopedSlugs.every(s => selectedAgencies.has(s));
+  const allOff = scopedSlugs.every(s => !selectedAgencies.has(s));
 
   return (
     <div className={`${PANEL} w-56`}>
@@ -108,14 +152,18 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
       </div>
       <div className="flex gap-1 px-1 pt-1">
         <button
-          onClick={() => setSelectedAgencies(new Set(allSlugs))}
+          onClick={() => setSelectedAgencies(new Set(scopedSlugs))}
           disabled={allOn}
           className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
         >
           All
         </button>
         <button
-          onClick={() => setSelectedAgencies(new Set())}
+          onClick={() => {
+            const next = new Set(selectedAgencies);
+            scopedSlugs.forEach(s => next.delete(s));
+            setSelectedAgencies(next);
+          }}
           disabled={allOff}
           className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
         >
@@ -124,14 +172,13 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
         {byRegion.size === 0 && (
-          <p className="px-2 py-2 text-[10px] text-[var(--text-dim)]">No matches.</p>
+          <p className="px-2 py-2 text-[10px] text-[var(--text-dim)]">No agencies in view.</p>
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
             <p className="px-2 pt-2 pb-0.5 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const loaded = g.slugs.some(s => s in layers);
               return (
                 <button
                   key={g.name}
@@ -145,17 +192,20 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, layers
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1">{g.name}</span>
-                  {active && !loaded && (
-                    <span className="ml-auto w-2 h-2 rounded-full border border-current opacity-40 shrink-0" />
-                  )}
-                  {active && loaded && (
-                    <span className="ml-auto w-2 h-2 rounded-full bg-current shrink-0" />
-                  )}
+                  <span className={`ml-auto w-2 h-2 rounded-full shrink-0 ${active ? 'bg-current' : 'border border-current opacity-30'}`} />
                 </button>
               );
             })}
           </div>
         ))}
+        {!agencyQuery && (
+          <button
+            onClick={() => setShowAll(v => !v)}
+            className="mt-1 mb-0.5 mx-2 text-[10px] font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-left"
+          >
+            {showAll ? '← In view only' : `All agencies (${allGroups.length}) →`}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -173,7 +223,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   agencies,
   selectedAgencies,
   setSelectedAgencies,
-  layers,
+  bounds,
 }) => {
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
@@ -217,14 +267,76 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
+  const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
+
   return (
     <div ref={rowRef} className="flex items-center gap-2">
 
+      {/* Compact "More filters" panel — only below lg */}
+      <div className="relative lg:hidden">
+        <button onClick={() => toggle('compact')} className={chipClass(hasActiveCoreFilter)}>
+          More filters
+          <Dot show={hasActiveCoreFilter} />
+        </button>
+        {openChip === 'compact' && (
+          <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
+            {/* Frequency */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Frequency</p>
+              <div className="flex flex-wrap gap-1">
+                {HEADWAY_TIERS.map(({ max, label }) => {
+                  const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+                  return (
+                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max)}>
+                      <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
+                      {label === 'Infrequent' ? 'All routes' : label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Day */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Day</p>
+              <div className="flex gap-1">
+                {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
+                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d)}>
+                    {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* Time */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Time</p>
+              <div className="flex flex-wrap gap-1">
+                {PERIODS.map(p => (
+                  <button key={p} onClick={() => setPeriod(period === p ? 'all' : p)} className={compactOptBtn(period === p)}>
+                    {PERIOD_LABELS[p]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* Mode */}
+            <div>
+              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Mode</p>
+              <div className="flex flex-wrap gap-1">
+                {MODES.map(m => (
+                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(selectedModes.has(m.id))}>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Frequency */}
-      <div className="relative">
-        <button onClick={() => toggle('frequency')} className={chipClass(true)}>
-          {maxHeadway === Infinity ? 'Frequency' : (HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? 'Frequency')}
-          <Dot show={true} />
+      <div className="relative hidden lg:block">
+        <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
+          Frequency
+          <Dot show={maxHeadway !== Infinity} />
         </button>
         {openChip === 'frequency' && (
           <div className={`${PANEL} w-36`}>
@@ -248,10 +360,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </div>
 
       {/* Day */}
-      <div className="relative">
-        <button onClick={() => toggle('day')} className={chipClass(true)}>
-          {day}
-          <Dot show={true} />
+      <div className="relative hidden lg:block">
+        <button onClick={() => toggle('day')} className={chipClass(day !== 'Weekday')}>
+          Day
+          <Dot show={day !== 'Weekday'} />
         </button>
         {openChip === 'day' && (
           <div className={`${PANEL} w-36`}>
@@ -269,9 +381,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </div>
 
       {/* Period */}
-      <div className="relative">
+      <div className="relative hidden lg:block">
         <button onClick={() => toggle('period')} className={chipClass(period !== 'all')}>
-          {PERIOD_LABELS[period]}
+          Time
           <Dot show={period !== 'all'} />
         </button>
         {openChip === 'period' && (
@@ -279,10 +391,11 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {PERIODS.map((p) => (
               <button
                 key={p}
-                onClick={() => { setPeriod(p); setOpenChip(null); }}
-                className={rowBtn(period === p)}
+                onClick={() => { setPeriod(period === p ? 'all' : p); setOpenChip(null); }}
+                className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
               >
-                {PERIOD_LABELS[p]}
+                <span>{PERIOD_LABELS[p]}</span>
+                <span className="text-[9px] text-[var(--text-dim)] shrink-0">{periodRange(p)}</span>
               </button>
             ))}
           </div>
@@ -290,20 +403,11 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       </div>
 
       {/* Mode */}
-      <div className="relative">
-        {(() => {
-          const modeLabel = selectedModes.size === 0
-            ? 'Mode'
-            : selectedModes.size === 1
-              ? (MODES.find(m => selectedModes.has(m.id))?.label ?? 'Mode')
-              : `${selectedModes.size} modes`;
-          return (
-            <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
-              {modeLabel}
-              <Dot show={selectedModes.size > 0} />
-            </button>
-          );
-        })()}
+      <div className="relative hidden lg:block">
+        <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
+          Mode
+          <Dot show={selectedModes.size > 0} />
+        </button>
         {openChip === 'mode' && (
           <div className={`${PANEL} w-36`}>
             {MODES.map((m) => (
@@ -323,16 +427,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       <div className="relative">
         {(() => {
           const allOn = selectedAgencies.size >= agencies.length;
-          const hiddenCount = agencies.length - selectedAgencies.size;
-          const label = allOn
-            ? 'Agencies'
-            : hiddenCount === agencies.length - 1
-              ? (agencies.find(a => selectedAgencies.has(a.slug))?.name ?? '1 agency')
-              : `${selectedAgencies.size} agencies`;
           return (
             <button onClick={() => toggle('agencies')} className={chipClass(!allOn)}>
-              {label}
-              <Dot show={allOn} />
+              Agencies
+              <Dot show={!allOn} />
             </button>
           );
         })()}
@@ -341,7 +439,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             agencies={agencies}
             selectedAgencies={selectedAgencies}
             setSelectedAgencies={setSelectedAgencies}
-            layers={layers}
+            bounds={bounds}
             agencyQuery={agencyQuery}
             setAgencyQuery={setAgencyQuery}
             agencySearchRef={agencySearchRef}

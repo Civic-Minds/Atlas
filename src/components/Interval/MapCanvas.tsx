@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { MapboxOverlay } from '@deck.gl/mapbox';
+import { ScatterplotLayer, TextLayer } from 'deck.gl';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
@@ -12,13 +14,15 @@ import { useViewport } from '../../context/ViewportContext';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
-import { StopCardHtml, VehicleMarkerHtml, formatGap, formatDelta } from '../../lib/mapHtml';
+import { StopCardHtml, formatGap, formatDelta } from '../../lib/mapHtml';
 import { cleanRouteShortName } from '../../utils/format';
+import { Z_PANEL } from '../../styles';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
 interface MapCanvasProps {
   agencies: Agency[];
+  layers?: Record<string, GeoJSON.FeatureCollection>;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -43,11 +47,18 @@ interface MapCanvasProps {
   hideSpan?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
+  tileFilter?: any;
   selectedModes?: Set<number>;
+  selectedAgencySlug?: string | null;
+  setSelectedAgencySlug?: (slug: string | null) => void;
+  fareView?: boolean;
+  initialMapCenter?: { lat: number; lon: number; zoom: number };
+  onTileLoadingChange?: (loading: boolean) => void;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
   agencies,
+  layers,
   maxHeadway,
   period,
   q,
@@ -66,13 +77,20 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   hideSpan = false,
   filterToAgencies = false,
   onHistoryRouteClick,
+  tileFilter,
   selectedModes,
+  selectedAgencySlug,
+  setSelectedAgencySlug,
+  fareView = false,
+  initialMapCenter,
+  onTileLoadingChange,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
 
+  // Keep a ref to onViewChange so the moveend closure (registered once) always
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
@@ -82,8 +100,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   // Overlay marker references
   const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
-  const liveMarkersRef = useRef<maplibregl.Marker[]>([]);
   const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
+  // Deck.gl overlay for GPU-rendered vehicle markers
+  const deckOverlayRef = useRef<MapboxOverlay | null>(null);
   const liveFittedAgencyRef = useRef<string | null>(null);
 
   const liveFittedRouteRef = useRef<string | null>(null);
@@ -101,9 +120,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
 
     const saved = getSavedView();
-    const initialCenter = hasSavedView && saved
-      ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom }
-      : { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
+    const initialCenter = initialMapCenter
+      ?? (hasSavedView && saved ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom } : null)
+      ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
@@ -111,6 +130,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       center: [initialCenter.lon, initialCenter.lat],
       zoom: initialCenter.zoom,
       attributionControl: false,
+      canvasContextAttributes: { antialias: true },
     });
 
     mapRef.current = map;
@@ -126,8 +146,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         'source-layer': 'routes',
         paint: {
           'line-color': '#555555',
-          'line-width': 1.5,
-          'line-opacity': 0.85
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+          'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
         },
         layout: {
           'line-cap': 'round',
@@ -261,7 +281,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         source: 'live-route-shape',
         paint: {
           'line-color': ['get', 'color'],
-          'line-width': 4.0,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.5, 14, 3.5, 17, 5.0],
           'line-opacity': 0.85
         },
         layout: {
@@ -269,6 +289,45 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           'line-join': 'round'
         }
       });
+
+      // Deck.gl overlay for GPU-rendered vehicle markers
+      const deckOverlay = new MapboxOverlay({
+        interleaved: false,
+        layers: [],
+        getTooltip: (info: any) => {
+          const object = info.object;
+          if (!object || (!object.headsign && object.status === 'no_data')) return null;
+          const delayMin: number | null = object.delayMin;
+          const label = delayMin === null ? null
+            : delayMin <= -1.5 ? `${Math.round(Math.abs(delayMin))}m early`
+            : delayMin >= 5.5  ? `${Math.round(delayMin)}m late`
+            : 'On time';
+          const statusColor: Record<string, string> = {
+            on_time: '#38a169', early: '#3182ce', late: '#e53e3e', no_data: '#718096',
+          };
+          const color = statusColor[object.status] ?? statusColor.no_data;
+          return {
+            html: `
+              <div style="font-family:'Inter',ui-sans-serif,sans-serif;padding:8px 10px;min-width:130px;line-height:1.4;">
+                <div style="font-size:9px;font-weight:800;color:var(--text-dim);letter-spacing:0.4px;text-transform:uppercase;">Route ${cleanRouteShortName(object.routeShortName)}</div>
+                ${object.headsign ? `<div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${object.headsign}</div>` : ''}
+                ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-primary);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${label}</span></div>` : ''}
+              </div>`,
+            style: {
+              background: 'var(--bg-panel)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              borderRadius: '1rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid var(--border-primary)',
+              padding: '0',
+              color: 'var(--text-primary)',
+            },
+          };
+        },
+      });
+      map.addControl(deckOverlay as any);
+      deckOverlayRef.current = deckOverlay;
 
       // Handle hit-test clicks
       map.on('click', 'routes-hit-layer', (e) => {
@@ -291,7 +350,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           const slug = props.agencySlug as string;
           const rsn = props.routeShortName as string;
           if (slug && rsn) onHistoryRouteClick(slug, rsn);
+        } else if (fareViewRef.current && setSelectedAgencySlugRef.current) {
+          // In Fares mode fares are per agency — promote any route click to the agency card
+          const slug = props.agencySlug as string;
+          if (slug) setSelectedAgencySlugRef.current(slug);
         } else if (uniqueRouteKeys.length > 1) {
+          if (map.getZoom() < 11) {
+            setDisambiguationRoutes(null);
+            return;
+          }
           setDisambiguationRoutes(uniqueRouteKeys);
         } else {
           const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
@@ -309,6 +376,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
         setSelectedRoute(null);
         setDisambiguationRoutes(null);
+
+        if (map.getZoom() < 13) {
+          // At low zoom, avoid popping the full multi-route stop card for a "city" click.
+          // User can zoom in first for precise stop details.
+          e.preventDefault();
+          return;
+        }
+
         setSelectedStop(prev => prev === compositeId ? null : compositeId);
         e.preventDefault();
       });
@@ -325,19 +400,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       setMapLoaded(true);
     });
 
-    // Sync viewport boundaries
-    const onMove = () => {
-      const c = map.getCenter();
-      const z = map.getZoom();
-      saveView(c.lat, c.lng, z);
-      setZoom(z);
-
-      const b = map.getBounds();
-      const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
-      onBoundsChange(bounds);
-      setBoundsAndZoom(bounds, z);
-    };
-
     // Emit initial bounds so LiveVehicles can poll on first load
     map.once('idle', () => {
       const b = map.getBounds();
@@ -347,7 +409,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       );
     });
 
-    map.on('moveend', onMove);
     map.on('click', (e) => {
       if (e.defaultPrevented) return;
       setSelectedRoute(null);
@@ -360,6 +421,60 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       mapRef.current = null;
     };
   }, []);
+
+  // Refs keep event-handler closures (registered once on map load) from going stale
+  // when props change across app navigations.
+  const onBoundsChangeRef = useRef(onBoundsChange);
+  const fareViewRef = useRef(fareView);
+  const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
+  const onTileLoadingChangeRef = useRef(onTileLoadingChange);
+  useLayoutEffect(() => {
+    onBoundsChangeRef.current = onBoundsChange;
+    fareViewRef.current = fareView;
+    setSelectedAgencySlugRef.current = setSelectedAgencySlug;
+    onTileLoadingChangeRef.current = onTileLoadingChange;
+  });
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onMove = () => {
+      const c = map.getCenter();
+      const z = map.getZoom();
+      saveView(c.lat, c.lng, z);
+      setZoom(z);
+      // Update lat/lon/z in the URL directly via replaceState rather than going
+      // through React Router's setSearchParams. React Router's navigate() captures
+      // locationPathname in its closure — a stale capture from a Fares render
+      // would resolve "?lat=..." relative to /apps/fares, overwriting the
+      // /apps/frequency history entry. replaceState always reads window.location
+      // at call time so there is no stale-closure class of bug.
+      const sp = new URLSearchParams(window.location.search);
+      sp.set('lat', c.lat.toFixed(5));
+      sp.set('lon', c.lng.toFixed(5));
+      sp.set('z', z.toFixed(2));
+      window.history.replaceState(null, '', window.location.pathname + '?' + sp.toString());
+      const b = map.getBounds();
+      const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
+      onBoundsChangeRef.current(bounds);
+      setBoundsAndZoom(bounds, z);
+    };
+    map.on('moveend', onMove);
+    return () => { map.off('moveend', onMove); };
+  }, [mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onTileStart = () => onTileLoadingChangeRef.current?.(true);
+    const onIdle = () => onTileLoadingChangeRef.current?.(false);
+    map.on('sourcedataloading', onTileStart);
+    map.on('idle', onIdle);
+    return () => {
+      map.off('sourcedataloading', onTileStart);
+      map.off('idle', onIdle);
+    };
+  }, [mapLoaded]);
 
   // Toggle light/dark basemap without setStyle (setStyle would drop all the
   // programmatically added vector layers like routes-layer, stops-layer, etc.)
@@ -391,6 +506,22 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     );
   };
 
+  // Fly to selected agency when chosen from lists/panels (e.g. Data list in InfoPanel)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !selectedAgencySlug) return;
+    const agency = agencies.find(a => a.slug === selectedAgencySlug);
+    if (agency?.center) {
+      const [lat, lon] = agency.center;
+      map.flyTo({
+        center: [lon, lat],
+        zoom: 12,
+        duration: 900,
+        essential: true,
+      });
+    }
+  }, [selectedAgencySlug, agencies, mapLoaded]);
+
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
     const map = mapRef.current;
@@ -408,32 +539,50 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded || !selectedRoute) return;
 
-    // Center on the route coordinate box in the viewport
-    let bboxBigger: any[] = [];
-    if (map.getLayer('routes-layer')) {
-      bboxBigger = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-        .filter(f => routeKey(f.properties as any) === selectedRoute);
-    }
-
-    if (bboxBigger.length === 0) return;
-    
-    // Compute bounds for geometries
+    // Compute full-route bounds from GeoJSON layer data.
+    // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
+    // so match by slug (from selectedRoute key) + routeId separately.
+    const [routeSlug, routeId] = selectedRoute.split('::');
     let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-    bboxBigger.forEach(f => {
-      const geom = f.geometry as any;
-      const coords = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
-      coords.forEach(([lng, lat]: [number, number]) => {
-        if (lng < minLng) minLng = lng;
-        if (lng > maxLng) maxLng = lng;
-        if (lat < minLat) minLat = lat;
-        if (lat > maxLat) maxLat = lat;
-      });
-    });
+    let found = false;
 
-    if (minLng < maxLng) {
-      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 80, maxZoom: 13 });
+    const fc = layers?.[routeSlug];
+    if (fc) {
+      for (const f of fc.features) {
+        if ((f.properties as any)?.routeId !== routeId) continue;
+        const geom = f.geometry as any;
+        if (!geom?.coordinates) continue;
+        const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+        for (const [lng, lat] of coords) {
+          if (lng < minLng) minLng = lng;
+          if (lng > maxLng) maxLng = lng;
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+          found = true;
+        }
+      }
     }
-  }, [selectedRoute, mapLoaded]);
+
+    if (!found && map.getLayer('routes-layer')) {
+      const rendered = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+        .filter(f => routeKey(f.properties as any) === selectedRoute);
+      for (const f of rendered) {
+        const geom = f.geometry as any;
+        const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
+        for (const [lng, lat] of coords) {
+          if (lng < minLng) minLng = lng;
+          if (lng > maxLng) maxLng = lng;
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+          found = true;
+        }
+      }
+    }
+
+    if (found && minLng < maxLng) {
+      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 80, maxZoom: 14 });
+    }
+  }, [selectedRoute, mapLoaded, layers]);
 
   // Update Vector Tile Styling & Filters dynamically on parameters change
   useEffect(() => {
@@ -467,10 +616,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     // maxHeadway from the headway pill; Infinity means "show all"
     const capHeadway = maxHeadway === Infinity ? 9999 : maxHeadway;
 
-    // Coalesce so null-headway (span) routes → 9999, failing any finite headway filter.
-    // ['to-number', null, fallback] evaluates to 0 in MapLibre (null coerces to 0),
-    // which would make span routes pass every headway gate. ['coalesce'] is null-aware.
-    const headwayExpr: any = ['coalesce', ['get', 'headway'], 9999];
+    // Headway expression for filters.
+    // Treat tier==='infrequent' (and missing/null) as 9999 so they fail finite headway gates.
+    // This makes map filtering match the JS passesRouteFilter / resolveTierVal logic.
+    const headwayExpr: any = ['case',
+      ['==', ['get', 'tier'], 'infrequent'], 9999,
+      ['coalesce', ['get', 'headway'], 9999]
+    ];
 
     // Headway pill filter — applied whenever showRouteLayers is true
     const headwayPillFilter: any = capHeadway < 9999
@@ -478,8 +630,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       : null;
 
     // Hide span (irregular) routes from the map when hideSpan is active
-    const spanFilter: any = hideSpan ? ['!=', ['get', 'tier'], 'span'] : null;
-
     // MapLibre expression to compute the effective mode of a feature (matches useIntervalStats.ts effectiveMode)
     const VIRTUAL_LRT_MODE = 900;
     const modeExpr: any = [
@@ -518,24 +668,28 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       ]
     ];
 
+    // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
+    // MapCanvas only adds map-state-specific clauses on top.
     let routeFilter: any = null;
     if (!showRouteLayers) {
       routeFilter = ['==', 'agencySlug', ''];
+    } else if (fareView) {
+      const hasFare = ['has', 'baseFare'];
+      const searchClause = ql
+        ? (matchedAgencySlug
+            ? ['==', 'agencySlug', matchedAgencySlug]
+            : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]])
+        : null;
+      const clauses = [hasFare, searchClause, modeFilter].filter(Boolean);
+      routeFilter = clauses.length === 0 ? null : (clauses.length === 1 ? clauses[0] : ['all', ...clauses]);
     } else if (ql) {
-      // Search active: match query + respect headway pill, but skip zoom gate
-      // so users can find any route regardless of zoom level.
       const searchClause = matchedAgencySlug
         ? ['==', 'agencySlug', matchedAgencySlug]
-        : ['any',
-            ['in', q, ['get', 'routeShortName']],
-            ['in', q, ['get', 'routeId']],
-            ['in', q, ['get', 'agencySlug']]
-          ];
-      const clauses = [searchClause, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
+        : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]];
+      const clauses = [tileFilter, searchClause, headwayPillFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     } else {
-      // Overview: combine zoom gate + headway pill + span filter
-      const clauses = [zoomGateFilter, headwayPillFilter, spanFilter, modeFilter].filter(Boolean);
+      const clauses = [tileFilter, zoomGateFilter, headwayPillFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     }
 
@@ -548,16 +702,36 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
 
     if (hasRoutes) {
-      // Apply color paint styling based on headway tier
-      const lineColorMatch: any[] = ['match', ['get', 'tier']];
-      HEADWAY_TIERS.forEach(({ max, color }) => {
-        if (max !== Infinity) {
-          lineColorMatch.push(String(max), color);
-        }
-      });
-      lineColorMatch.push('#6b7280'); // fallback/default
+      // Apply color paint styling — fare view if requested and baseFare present, else tier
+      let lineColorExpr: any;
+      if (fareView) {
+        // Use match on numeric baseFare with tier buckets. Unknown/ null falls to gray.
+        const expr: any[] = ['case'];
+        // Free (0)
+        expr.push(['==', ['coalesce', ['get', 'baseFare'], -1], 0], '#14b8a6');
+        // Low <2
+        expr.push(['all', ['>', ['coalesce', ['get', 'baseFare'], 999], 0], ['<', ['coalesce', ['get', 'baseFare'], 999], 2]], '#4ade80');
+        // Mid <4
+        expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 2], ['<', ['coalesce', ['get', 'baseFare'], 999], 4]], '#facc15');
+        // High <8
+        expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 4], ['<', ['coalesce', ['get', 'baseFare'], 999], 8]], '#fb923c');
+        // Premium >=8
+        expr.push(['>=', ['coalesce', ['get', 'baseFare'], 999], 8], '#f87171');
+        // Unknown / no data
+        expr.push('#6b7280');
+        lineColorExpr = expr;
+      } else {
+        const lineColorMatch: any[] = ['match', ['get', 'tier']];
+        HEADWAY_TIERS.forEach(({ max, color }) => {
+          if (max !== Infinity) {
+            lineColorMatch.push(String(max), color);
+          }
+        });
+        lineColorMatch.push('#6b7280'); // fallback/default
+        lineColorExpr = lineColorMatch;
+      }
 
-      map.setPaintProperty('routes-layer', 'line-color', lineColorMatch);
+      map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
 
       // Opacity based on route state (focused vs dimmed)
       if (selectedRoute) {
@@ -572,8 +746,19 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           0.5
         ]);
       } else {
-        map.setPaintProperty('routes-layer', 'line-opacity', 0.85);
-        map.setPaintProperty('routes-layer', 'line-width', 1.8);
+        map.setPaintProperty('routes-layer', 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, 1.5,
+          11, 2.0,
+          14, 2.5,
+          17, 3.5,
+        ]);
+        map.setPaintProperty('routes-layer', 'line-opacity', [
+          'interpolate', ['linear'], ['zoom'],
+          8, 0.7,
+          11, 0.8,
+          14, 0.9,
+        ]);
       }
     }
 
@@ -606,7 +791,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, hideSpan, filterToAgencies, agencies, selectedModes]);
+  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, selectedModes, tileFilter, fareView]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
@@ -783,54 +968,64 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [historyOverlay, mapLoaded, expandedStop]);
 
-  // Live vehicles markers overlay
+  // Live vehicles — GPU-rendered via Deck.gl
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
+    const deck = deckOverlayRef.current;
+    if (!deck || !mapLoaded) return;
 
-    liveMarkersRef.current.forEach(m => m.remove());
-    liveMarkersRef.current = [];
+    const vehicles = (liveOverlay?.vehicles ?? []).filter(v => v.lat && v.lon);
+    const focusedId = liveOverlay?.focusedVehicle?.id ?? null;
 
-    if (!liveOverlay) return;
+    const statusRgb: Record<string, [number, number, number]> = {
+      on_time: [56, 161, 105],
+      early:   [49, 130, 206],
+      late:    [229,  62,  62],
+      no_data: [113, 128, 150],
+    };
 
-    liveOverlay.vehicles.forEach(vehicle => {
-      if (!vehicle.lat || !vehicle.lon) return;
-
-      const html = VehicleMarkerHtml(vehicle, true);
-      const el = document.createElement('div');
-      el.style.cssText = 'display:inline-block;';
-      el.innerHTML = html;
-
-      // Only show popup when there's something useful to say
-      const hasUsefulInfo = !!vehicle.headsign || vehicle.status !== 'no_data';
-      const marker = new maplibregl.Marker({ element: el }).setLngLat([vehicle.lon, vehicle.lat]);
-
-      if (hasUsefulInfo) {
-        const label = vehicle.delayMin === null
-          ? 'No data'
-          : vehicle.delayMin <= -1.5
-            ? `${Math.round(Math.abs(vehicle.delayMin))}m early`
-            : vehicle.delayMin >= 5.5
-              ? `${Math.round(vehicle.delayMin)}m late`
-              : 'On time';
-
-        const popup = new maplibregl.Popup({ closeButton: false, className: 'live-vehicle-popup', offset: 10 })
-          .setHTML(`
-            <div style="font-family: 'Inter', ui-sans-serif, sans-serif; padding: 8px 10px; min-width: 130px;">
-              <div style="font-size: 9px; font-weight: 800; color: var(--text-dim, #9ca3af); letter-spacing: 0.4px;">Route ${cleanRouteShortName(vehicle.routeShortName)}</div>
-              ${vehicle.headsign ? `<div style="font-size: 11px; font-weight: 700; color: var(--text-primary, #111); margin-top: 2px; line-height: 1.3;">${vehicle.headsign}</div>` : ''}
-              ${vehicle.status !== 'no_data' ? `
-              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-primary, rgba(0,0,0,0.1)); padding-top: 5px; margin-top: 6px;">
-                <span style="font-size: 9px; color: var(--text-dim); font-weight: 600;">Status</span>
-                <span style="font-size: 10px; font-weight: 800; color: ${STATUS_COLORS[vehicle.status].border};">${label}</span>
-              </div>` : ''}
-            </div>
-          `);
-        marker.setPopup(popup);
-      }
-
-      marker.addTo(map);
-      liveMarkersRef.current.push(marker);
+    deck.setProps({
+      layers: [
+        // Outer ring (focus highlight)
+        new ScatterplotLayer({
+          id: 'vehicles-focus-ring',
+          data: vehicles.filter(v => v.id === focusedId),
+          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
+          getRadius: 14,
+          getFillColor: [255, 255, 255, 80],
+          stroked: false,
+          radiusUnits: 'pixels',
+        }),
+        // Vehicle dots
+        new ScatterplotLayer({
+          id: 'vehicles-dots',
+          data: vehicles,
+          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
+          getRadius: (v: typeof vehicles[0]) => v.id === focusedId ? 11 : 9,
+          getFillColor: (v: typeof vehicles[0]) => statusRgb[v.status] ?? statusRgb.no_data,
+          stroked: true,
+          getLineColor: [255, 255, 255, 200],
+          getLineWidth: 2,
+          lineWidthUnits: 'pixels',
+          radiusUnits: 'pixels',
+          pickable: true,
+          autoHighlight: true,
+          highlightColor: [255, 255, 255, 60],
+        }),
+        // Route short name labels
+        new TextLayer({
+          id: 'vehicles-labels',
+          data: vehicles,
+          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
+          getText: (v: typeof vehicles[0]) => cleanRouteShortName(v.routeShortName) ?? '',
+          getSize: 9,
+          getColor: [255, 255, 255, 230],
+          fontWeight: 800,
+          fontFamily: '"Inter", ui-sans-serif, sans-serif',
+          getTextAnchor: 'middle',
+          getAlignmentBaseline: 'center',
+          billboard: true,
+        }),
+      ],
     });
   }, [liveOverlay, mapLoaded]);
 
@@ -895,8 +1090,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     return () => {
       historyMarkersRef.current.forEach(m => m.remove());
-      liveMarkersRef.current.forEach(m => m.remove());
       corridorMarkersRef.current.forEach(m => m.remove());
+      deckOverlayRef.current?.finalize();
     };
   }, []);
 
@@ -909,10 +1104,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <button
         onClick={locateUser}
         aria-label="Go to my location"
-        className="absolute bottom-6 right-3 z-[1000] w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto"
+        className={`absolute bottom-6 right-3 ${Z_PANEL} w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
       >
         <LocateFixed className="w-4 h-4" />
       </button>
+
     </div>
   );
 };

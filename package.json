@@ -2,7 +2,7 @@
   "name": "atlas",
   "private": true,
   "description": "A hosted frequency map for transit routes.",
-  "version": "2.3.1",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
@@ -17,12 +17,19 @@
     "build-history": "npx tsx pipeline/build-history.ts",
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
+    "validate-index": "npx tsx pipeline/validate-index.ts",
     "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
-    "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts"
+    "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts",
+    "find-mdb": "npx tsx pipeline/find-mdb-feed.ts",
+    "upload-pmtiles": "npx tsx pipeline/upload-pmtiles.ts",
+    "sync-agency-count": "node -e \"const fs=require('fs');const count=JSON.parse(fs.readFileSync('public/data/index.json','utf8')).agencies.length;const p='docs/AGENCIES.md';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace(/^(\\d+) agencies as of/m,count+' agencies as of'));console.log('Updated AGENCIES.md: '+count+' agencies');\""
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1075.0",
+    "@aws-sdk/lib-storage": "^3.1079.0",
+    "@deck.gl/mapbox": "^9.3.6",
     "@types/leaflet.markercluster": "^1.5.6",
+    "deck.gl": "^9.3.6",
     "dotenv": "^17.4.2",
     "gtfs-realtime-bindings": "^2.0.0",
     "jszip": "^3.10.1",

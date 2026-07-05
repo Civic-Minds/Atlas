@@ -10,6 +10,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { config } from 'dotenv';
 import { r2Put } from './r2.js';
+import { getAgencyArtifactUrls } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
 
@@ -33,8 +34,10 @@ async function main() {
     process.stdout.write(`  ${agency.slug.padEnd(20)} `);
 
     try {
-      // Fetch from current Vercel Blob URL
-      const res = await fetch(agency.url);
+      const art = getAgencyArtifactUrls(agency.slug);
+      const fetchUrl = agency.url || art.url;
+      // Fetch from current (or derived) URL
+      const res = await fetch(fetchUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const geojson = await res.text();
       const kb = Math.round(Buffer.byteLength(geojson) / 1024);
@@ -42,9 +45,8 @@ async function main() {
       // Upload to R2
       const key = `atlas/${agency.slug}.json`;
       const r2Url = await r2Put(key, geojson);
-
-      // Update index entry
-      agency.url = r2Url;
+      // Note: we intentionally do not write the full URL back into index.json anymore.
+      // Artifact URLs are derived from slug.
       ok++;
       console.log(`✓  ${kb} KB → ${r2Url}`);
     } catch (e: any) {

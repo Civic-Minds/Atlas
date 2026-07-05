@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 
 export interface RouteSnapshot {
@@ -44,6 +44,7 @@ interface Props {
   setQuery: (q: string) => void;
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
+  sidebarLeft?: number;
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
@@ -375,7 +376,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled }: Props) {
+export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(0);
@@ -544,30 +545,12 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   const showScrubber = selectedSlug && availableYears.length > 1;
 
   return (
-    <div
-      className={`absolute top-20 left-[182px] z-[1000] w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
-    >
-      {showScrubber && (
-        <div className="mx-2 px-2 py-1 bg-[var(--bg-panel)] rounded border border-[var(--border-primary)] text-[9px]">
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="font-bold text-[var(--text-muted)]">Time scrubber</span>
-            <span>{selectedYear}</span>
-          </div>
-          <input
-            type="range"
-            min={availableYears[0]}
-            max={availableYears[availableYears.length-1]}
-            step="1"
-            value={selectedYear}
-            onChange={e => setSelectedYear(parseInt(e.target.value))}
-            className="w-full accent-[var(--accent)]"
-          />
-          <div className="flex justify-between text-[7px] text-[var(--text-muted)] mt-0.5">
-            {availableYears.map(y => <span key={y}>{y}</span>)}
-          </div>
-        </div>
-      )}
-      {selectedSlug ? (
+    <>
+      <div
+        className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
+        style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+      >
+        {selectedSlug ? (
         (() => {
           const agencyHistory = historyData?.find(a => a.slug === selectedSlug) ?? null;
           if (!agencyHistory) return null;
@@ -654,6 +637,42 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
           )}
         </div>
       )}
-    </div>
+      </div>
+
+      {showScrubber && (
+        <div className={`absolute bottom-6 right-14 ${Z_PANEL} h-9 w-[280px] flex items-center gap-2 px-2 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`}>
+          <div
+            className="flex-1 relative h-1.5 bg-[var(--border-primary)] rounded-full cursor-pointer"
+            onMouseDown={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const update = (clientX: number) => {
+                const x = clientX - rect.left;
+                const pct = Math.max(0, Math.min(1, x / rect.width));
+                const idx = Math.round(pct * (availableYears.length - 1));
+                setSelectedYear(availableYears[Math.max(0, Math.min(availableYears.length - 1, idx))]);
+              };
+              update(e.clientX);
+              const onMove = (me: MouseEvent) => update(me.clientX);
+              const onUp = () => {
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('mouseup', onUp);
+              };
+              window.addEventListener('mousemove', onMove);
+              window.addEventListener('mouseup', onUp);
+            }}
+          >
+            <div
+              className="absolute top-0 left-0 h-1.5 bg-[var(--accent)] rounded-full pointer-events-none"
+              style={{ width: `${availableYears.length > 1 ? ((availableYears.indexOf(selectedYear) / (availableYears.length - 1)) * 100) : 0}%` }}
+            />
+            <div
+              className="absolute top-1/2 -mt-[5px] w-3 h-3 bg-[var(--bg-panel)] border-2 border-[var(--accent)] rounded-full shadow pointer-events-none"
+              style={{ left: `${availableYears.length > 1 ? ((availableYears.indexOf(selectedYear) / (availableYears.length - 1)) * 100) : 0}%` }}
+            />
+          </div>
+          <span className="text-xs font-bold text-[var(--text-primary)] tabular-nums w-[2.5ch] text-right shrink-0">{selectedYear}</span>
+        </div>
+      )}
+    </>
   );
 }
