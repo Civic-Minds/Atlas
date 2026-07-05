@@ -44,6 +44,12 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 
 ---
 
+## Data Quality
+
+- [ ] **Per-agency name normalizer**: `titleCase(str, agencyAcronyms?)` accepts an optional agency-specific acronym map merged with the global `TRANSIT_ACRONYMS` table at call time. Rules live in a `nameAcronyms` field per agency in `index.json` (only agencies that need overrides add an entry). Fixes cases where the global table is wrong for a specific agency — e.g. "St" means Street in most stop names, but GO Transit uses "ST" as the Stouffville line code. Currently handled by excluding the entry globally; per-agency injection would let GO use the override without affecting every other agency.
+
+---
+
 ## Data & Analysis
 
 - [ ] **Transit isochrones**: "how far can you reach in 30 min by transit?" Compute travel-time matrices from GTFS using OpenTripPlanner or Valhalla (self-hosted or managed). Render as a filled polygon overlay on the map. Shows algorithmic depth beyond visualization.

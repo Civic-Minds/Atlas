@@ -12,6 +12,7 @@
 - **Near You panel**: redesigned to use standard `LIST_ROW` style — each row shows tier dot + route + headway + that route's own nearest stop name and distance below it; removed misleading single-stop header that implied all routes shared one stop
 
 ### Added
+- **Per-agency normalizer roadmap entry**: added to `docs/ROADMAP_TECHNICAL.md` — `titleCase(str, agencyAcronyms?)` with per-agency `nameAcronyms` in `index.json`, merged at call time so agency-specific acronym rules don't pollute the global table
 - **IDB cache build version**: added `CACHE_BUILD` counter to `agencyGeoWeekVersion()` — increment this whenever mid-week data fixes are pushed so browsers re-fetch instead of serving stale IDB data
 - **Static agency expansion — Colorado, Midwest, California (15 agencies)**: fixed RTD Denver / Bustang slug collision (mdb-2280 is Bustang; RTD is mdb-178); added Bustang (mdb-2280), Bustang Outrider (mdb-2330), RFTA/Roaring Fork (mdb-2278), Grand Valley Transit (mdb-161), Durango Transit (mdb-2290), Pueblo Transit (mdb-2232), ECO Transit/Eagle County (mdb-173), All Points Transit/Montrose (mdb-212), KART/Kings Area Rural (mdb-2204), Tulare County Area Transit, Madison Metro (mdb-294), MCTS/Milwaukee (mdb-2127), Waukesha Metro, Pace Suburban Bus, Mountain Line/Morgantown WV (mdb-407)
 - **Sparkline click-to-period**: clicking a zone on the headway sparkline sets the period filter to that time of day; clicking again resets to All
