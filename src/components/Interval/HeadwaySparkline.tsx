@@ -55,9 +55,10 @@ interface HourlySparklineProps {
   byHour: HeadwayByHour;
   period?: string;
   onPeriodChange?: (period: string) => void;
+  onPeriodHover?: (period: string | null) => void;
 }
 
-export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover }: HourlySparklineProps) {
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredTooltip, setHoveredTooltip] = useState<{ hour: number; x: number } | null>(null);
 
@@ -83,8 +84,10 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySpark
     const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     const idx = Math.min(Math.floor(fraction * HOURS.length), HOURS.length - 1);
     const hour = HOURS[idx];
-    setHoveredPeriod(HOUR_TO_PERIOD[hour] ?? null);
+    const p = HOUR_TO_PERIOD[hour] ?? null;
+    setHoveredPeriod(p);
     setHoveredTooltip({ hour, x: fraction });
+    onPeriodHover?.(p);
   } : undefined;
 
   const handleClick = interactive ? (e: React.MouseEvent<HTMLDivElement>) => {
@@ -95,6 +98,7 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange }: HourlySpark
   const handleMouseLeave = interactive ? () => {
     setHoveredPeriod(null);
     setHoveredTooltip(null);
+    onPeriodHover?.(null);
   } : undefined;
 
   const band = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;

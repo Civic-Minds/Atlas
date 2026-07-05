@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ShapeProperties, TimePeriod } from '../../../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../../../hooks/useIntervalStats';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
@@ -72,6 +72,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   expDateStr,
 }) => {
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
+  const [hoveredSparklinePeriod, setHoveredSparklinePeriod] = useState<string | null>(null);
 
   return (
     <>
@@ -117,9 +118,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         if (!hasAny) return null;
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1"><HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} /></div>
-            {period !== 'all' && (
-              <span className="text-[9px] font-bold text-[var(--text-dim)] shrink-0 mb-4">{PERIOD_LABELS[period]}</span>
+            <div className="flex-1"><HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} onPeriodHover={setHoveredSparklinePeriod} /></div>
+            {(hoveredSparklinePeriod || period !== 'all') && (
+              <span className="text-[9px] font-bold text-[var(--text-dim)] shrink-0 mb-4">{PERIOD_LABELS[(hoveredSparklinePeriod ?? period) as TimePeriod]}</span>
             )}
           </div>
         );
@@ -153,7 +154,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const dimmed = maxHeadway !== Infinity && (minStopHw ?? d.headway ?? Infinity) > maxHeadway;
                     return (() => {
                       const label = d.headsign ? fmtH(d) : needsNumbered ? `Direction ${gi + 1}` : '';
-                      if (!label) return null;
+                      if (!label && !collapseGroups) return null;
                       const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
                       const byHour = (d as any).headwayByHour as Record<number, number | null> | undefined;
                       const ph = period !== 'all'

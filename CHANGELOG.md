@@ -4,6 +4,8 @@
 
 - **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring
 - **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail)
+- **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave
+- **Route card symmetric direction collapse**: routes where both directions share the same headway and no headsigns (e.g. TTC 512) now show a headway row instead of rendering blank
 
 ## [3.0.0] — 2026-07-05
 
