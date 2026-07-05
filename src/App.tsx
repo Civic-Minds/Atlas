@@ -58,7 +58,7 @@ const PATH_TO_APP: Record<string, AppId> = {
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
-  frequency: '/apps/frequency',
+  frequency: '/',
   corridors: '/apps/corridors',
   fares: '/apps/fares',
   history: '/apps/history',

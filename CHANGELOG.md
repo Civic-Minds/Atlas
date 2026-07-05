@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- **Frequency map now at `/`**: was navigating to `/apps/frequency`; `APP_TO_PATH` updated so the root URL is the homepage
 - **App drawer hidden**: Corridors and History are code-complete but lack sufficient data to be useful; drawer removed from header until data is ready (re-enable by uncommenting AppDrawer in App.tsx)
 
 ### Fixed
