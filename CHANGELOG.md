@@ -3,7 +3,7 @@
 ## [3.0.0] — 2026-07-05
 
 ### Added
-- **Agency coverage expanded to 324 agencies** across Canada and the US — all provinces, all major US metros
+- **Agency coverage expanded to 324 agencies** across Canada and the US — all provinces, all major US metros. See [index.json](public/data/index.json) for the full list.
 - **IDB cache build version**: `CACHE_BUILD` counter in `agencyGeoWeekVersion()` — increment after mid-week data fixes to force browsers to re-fetch instead of serving stale IDB data
 - **Sparkline click-to-period**: clicking a zone sets the period filter; clicking again resets to All
 - **Sparkline hover**: zone highlights with background band; inactive bars preview in tier color
