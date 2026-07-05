@@ -247,7 +247,8 @@ export default function App() {
           <span className="text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
+        {/* AppDrawer hidden until Corridors and History have sufficient data */}
+        {/* <AppDrawer activeApp={activeApp} onSelect={setActiveApp} /> */}
 
         {/* Search bar — doubles as Corridors From input and History agency search */}
         <div ref={searchBarRef}>

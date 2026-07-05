@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **App drawer hidden**: Corridors and History are code-complete but lack sufficient data to be useful; drawer removed from header until data is ready (re-enable by uncommenting AppDrawer in App.tsx)
+
 ### Fixed
 - **index.json**: decoded unicode escapes in Quebec agency names (RTC, STLévis, Sherbrooke); corrected Bustang Outrider center to [38.5, -104.9]
 - **Loading spinner now shows during tile loading**: spinner was only tracking GeoJSON fetches; when agencies are already loaded (cached in session), PMTiles tiles still stream in but no spinner appeared — now also fires on MapLibre `sourcedataloading` / `idle` events; shows "X/Y networks" during GeoJSON fetches and "Loading map..." during tile-only loading
