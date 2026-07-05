@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
+- **index.json**: decoded unicode escapes in Quebec agency names (RTC, STLévis, Sherbrooke); corrected Bustang Outrider center to [38.5, -104.9]
 - **Loading spinner now shows during tile loading**: spinner was only tracking GeoJSON fetches; when agencies are already loaded (cached in session), PMTiles tiles still stream in but no spinner appeared — now also fires on MapLibre `sourcedataloading` / `idle` events; shows "X/Y networks" during GeoJSON fetches and "Loading map..." during tile-only loading
 - **"ST" all-caps in stop names**: `St` removed from `TRANSIT_ACRONYMS` — it was added for the GO Stouffville line code but was uppercasing "St" in all stop names (e.g. "Nassau ST" → "Nassau St"); standalone "ST" still uppercases correctly via the ≤3-char rule
 

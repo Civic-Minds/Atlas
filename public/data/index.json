@@ -500,7 +500,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Qu\u00e9bec)",
+      "name": "RTC (Québec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -557,7 +557,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STL\u00e9vis",
+      "name": "STLévis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -1852,7 +1852,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
+      "name": "Société de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -5147,14 +5147,14 @@
       "slug": "bustang-outrider",
       "name": "Bustang Outrider",
       "center": [
-        37.72,
-        -104.67
+        38.5,
+        -104.9
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
       "region": "Colorado",
       "bbox": [
         37.1,
-        -105.0,
+        -105,
         38.3,
         -104.4
       ]
