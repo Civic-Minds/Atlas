@@ -500,7 +500,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -557,7 +557,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -1852,7 +1852,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -3149,9 +3149,17 @@
         39.74,
         -104.98
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/mdb-2280-202607020143/mdb-2280-202607020143.zip",
-      "lastFeedExpiry": "20260926",
-      "lastFeedVersion": "Jun26-36807-13-20-20260701-040207",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-178/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "bustang",
+      "name": "Bustang (CDOT)",
+      "center": [
+        39.55,
+        -105.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
       "region": "Colorado"
     },
     {
@@ -3329,7 +3337,7 @@
         43.04,
         -87.91
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/mdb-2127-202505080016/mdb-2127-202505080016.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "region": "Wisconsin"
@@ -5128,6 +5136,135 @@
       "region": "Alabama",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
+    },
+    {
+      "slug": "bustang-outrider",
+      "name": "Bustang Outrider",
+      "center": [
+        38.85,
+        -105.3
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "rfta",
+      "name": "Roaring Fork Transportation Authority (RFTA)",
+      "center": [
+        39.4,
+        -107.1
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "grand-valley-transit",
+      "name": "Grand Valley Transit",
+      "center": [
+        39.07,
+        -108.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "durango-transit",
+      "name": "Durango Transit",
+      "center": [
+        37.27,
+        -107.88
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2290/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "pueblo-transit",
+      "name": "Pueblo Transit",
+      "center": [
+        38.25,
+        -104.61
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2232/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "eco-transit",
+      "name": "ECO Transit (Eagle County)",
+      "center": [
+        39.64,
+        -106.93
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-173/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "all-points-transit",
+      "name": "All Points Transit (Montrose)",
+      "center": [
+        38.47,
+        -107.87
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip",
+      "region": "Colorado"
+    },
+    {
+      "slug": "kart",
+      "name": "Kings Area Rural Transit",
+      "center": [
+        36.33,
+        -119.95
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
+      "region": "California"
+    },
+    {
+      "slug": "tulare-county-transit",
+      "name": "Tulare County Area Transit (TCAT)",
+      "center": [
+        36.33,
+        -119.3
+      ],
+      "feedUrl": null,
+      "region": "California"
+    },
+    {
+      "slug": "madison-metro",
+      "name": "Madison Metro Transit",
+      "center": [
+        43.07,
+        -89.4
+      ],
+      "feedUrl": null
+    },
+    {
+      "slug": "waukesha-metro",
+      "name": "Waukesha Metro Transit",
+      "center": [
+        43.01,
+        -88.23
+      ],
+      "feedUrl": null,
+      "region": "Wisconsin"
+    },
+    {
+      "slug": "mountain-line",
+      "name": "Mountain Line Transit Authority (Morgantown)",
+      "center": [
+        39.63,
+        -79.95
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-407/latest.zip",
+      "region": "West Virginia"
+    },
+    {
+      "slug": "pace",
+      "name": "Pace Suburban Bus",
+      "center": [
+        41.83,
+        -87.83
+      ],
+      "feedUrl": null,
+      "region": "Illinois"
     }
   ]
 }

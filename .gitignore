@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+tmp
 *.local
 
 # Claude Code local settings (personal hooks/config, not for commit)
@@ -42,6 +43,7 @@ handoff.txt
 # Planning and integration docs
 INTEGRATION.md
 release-notes.txt
+ATLASLOG.md
 
 # AI Rules and Context (personal AI assistant instructions — do not commit)
 AGENTS.md

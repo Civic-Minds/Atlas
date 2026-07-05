@@ -125,54 +125,64 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               </button>
             </div>
 
-            <div className="overflow-y-auto px-5 py-2 flex flex-col divide-y divide-[var(--border-primary)]">
-              {/* Theme toggle */}
-              <div className="flex items-center justify-between py-4 first:pt-3">
-                <div className="flex items-start gap-3 min-w-0">
-                  {lightMode ? <Moon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" /> : <Sun className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />}
-                  <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">
-                    {lightMode ? 'Dark mode' : 'Light mode'}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setLightMode(v => !v)}
-                  aria-label="Toggle light/dark mode"
-                  className="mt-0.5 shrink-0"
-                >
-                  <Toggle on={!lightMode} />
-                </button>
+            <div className="overflow-y-auto flex flex-col">
+              {/* Appearance */}
+              <div className="px-5 pt-4 pb-1">
+                <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
               </div>
-
-              {!inFrequency && (
-                <p className="text-[10px] text-[var(--text-muted)] pt-3 pb-1">These settings apply to the Frequency map.</p>
-              )}
-              {SETTINGS.map(({ id, icon: Icon, label, description }) => (
-                <div key={id} className={`flex items-start justify-between gap-4 py-4 first:pt-3 last:pb-3 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
-                  <div className="flex items-start gap-3 min-w-0">
-                    <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
-                      {id === 'live' && onInfoOpen && (
-                        <button
-                          onClick={() => { onInfoOpen('live'); close(); }}
-                          className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
-                        >
-                          See which routes →
-                        </button>
-                      )}
-                    </div>
+              <div className="px-5 pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {lightMode ? <Moon className="w-4 h-4 shrink-0 text-[var(--text-dim)]" /> : <Sun className="w-4 h-4 shrink-0 text-[var(--text-dim)]" />}
+                    <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">
+                      {lightMode ? 'Dark mode' : 'Light mode'}
+                    </p>
                   </div>
                   <button
-                    onClick={toggles[id]}
-                    aria-label={label}
-                    className="mt-0.5 shrink-0"
+                    onClick={() => setLightMode(v => !v)}
+                    aria-label="Toggle light/dark mode"
+                    className="shrink-0"
                   >
-                    <Toggle on={values[id]} />
+                    <Toggle on={!lightMode} />
                   </button>
                 </div>
-              ))}
+              </div>
 
+              {/* Filters */}
+              <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+                <p className="text-[9px] font-bold text-[var(--text-dim)]">Filters</p>
+                {!inFrequency && (
+                  <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
+                )}
+              </div>
+              <div className="px-5 pb-3 flex flex-col divide-y divide-[var(--border-primary)]">
+                {SETTINGS.map(({ id, icon: Icon, label, description }) => (
+                  <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
+                    <div className="flex items-start gap-3 min-w-0">
+                      <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
+                        <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
+                        {id === 'live' && onInfoOpen && (
+                          <button
+                            onClick={() => { onInfoOpen('live'); close(); }}
+                            className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                          >
+                            See which routes →
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={toggles[id]}
+                      aria-label={label}
+                      className="mt-0.5 shrink-0"
+                    >
+                      <Toggle on={values[id]} />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

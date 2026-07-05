@@ -204,7 +204,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
                   <div className="flex items-center gap-1 shrink-0">
                     {isLive && <Radio className="w-2.5 h-2.5 text-[var(--accent)]" />}
                     {r.headway !== null && (
-                      <span className="text-[10px] text-[var(--text-dim)]">{r.headway}m</span>
+                      <span className="text-[10px] text-[var(--text-dim)]">every {r.headway} min</span>
                     )}
                   </div>
                 </button>

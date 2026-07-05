@@ -1,37 +1,20 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
-import { X, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
-import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
-import { titleCase, cleanHeadsign, fmtHeadway, fmtHeadwayRange, formatRemDisplay, getRouteLabel, shortenAgencyName } from '../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
-import { TIME_PERIODS } from '../../../shared/config';
-import { HeadwaySparkline, headwayToTierColor } from './HeadwaySparkline';
+import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
+import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import RouteListRow from '../RouteListRow';
-import RouteCardTitle from '../RouteCardTitle';
-
-// Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet
-// (e.g. for newly added periods before a pipeline rebuild). Takes the best (lowest) non-null
-// headway across the period's hours.
-function periodHeadwayFromByHour(
-  byHour: Record<number, number | null> | undefined,
-  periodKey: string,
-): number | null {
-  if (!byHour) return null;
-  const p = TIME_PERIODS.find(t => t.key === periodKey);
-  if (!p) return null;
-  let best: number | null = null;
-  for (let h = p.startHour; h < p.endHour; h++) {
-    const v = byHour[h];
-    if (v != null && (best === null || v < best)) best = v;
-  }
-  return best;
-}
+import { DisambiguationPanel } from './panels/DisambiguationPanel';
+import { StopCard } from './panels/StopCard';
+import type { StopRoute, NearbyConnection, DebugRow } from './panels/StopCard';
+import { RouteCardHeadway } from './panels/RouteCardHeadway';
+import { LiveAdherenceCard } from './panels/LiveAdherenceCard';
+import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -56,6 +39,7 @@ interface SidebarControlsProps {
   day: 'Weekday' | 'Saturday' | 'Sunday';
   setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
   period: TimePeriod;
+  setPeriod: (p: TimePeriod) => void;
   selectedStop: string | null;
   setSelectedStop: (s: string | null) => void;
   selectedRoute: string | null;
@@ -90,6 +74,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   day,
   setDay,
   period,
+  setPeriod,
   selectedStop,
   setSelectedStop,
   selectedRoute,
@@ -776,41 +761,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         </div>
       )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
-        <div className={`${FLOATING_CARD} ${PANEL_ENTER} max-h-[380px] overflow-y-auto custom-scrollbar`}>
-          <div>
-            {(() => {
-              const groups: { agencyName: string; routes: typeof disambigDetails }[] = [];
-              for (const r of disambigDetails) {
-                const last = groups[groups.length - 1];
-                if (last && last.agencyName === r.agencyName) last.routes.push(r);
-                else groups.push({ agencyName: r.agencyName, routes: [r] });
-              }
-              return groups.map(g => (
-                <div key={g.agencyName}>
-                  {g.agencyName && (
-                    <div className="px-4 pt-2.5 pb-1">
-                      <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">{g.agencyName}</span>
-                    </div>
-                  )}
-                  {g.routes.map(r => (
-                    <button
-                      key={r.key}
-                      onClick={() => { setSelectedRoute(r.key); setDisambiguationRoutes(null); }}
-                      className={LIST_ROW}
-                    >
-                      <div className="min-w-0 flex-1 flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: r.color }} />
-                        <span className={LIST_ROW_PRIMARY}>
-                          {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              ));
-            })()}
-          </div>
-        </div>
+        <DisambiguationPanel
+          disambigDetails={disambigDetails}
+          setSelectedRoute={setSelectedRoute}
+          setDisambiguationRoutes={setDisambiguationRoutes}
+        />
       )}
       {(currentStop || currentRoute || (query !== '' && searchMatchResults !== null)) && <div
         ref={scrollRef}
@@ -818,153 +773,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         className={`relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
       >
         {currentStop && !query.trim() && (
-          <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
-            <div className="flex items-center justify-end mb-2 -mt-2 -mr-2">
-              <button onClick={() => setSelectedStop(null)} className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <h3 className="text-sm font-black text-[var(--text-primary)] leading-tight mb-2">
-              {titleCase(currentStop.stopName)}
-            </h3>
-            {stopAgencies.length > 1 && (
-              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 mb-2">
-                {stopAgencies.map((name, i) => (
-                  <React.Fragment key={name}>
-                    <button
-                      onClick={() => setStopAgencyFilter(stopAgencyFilter === name ? null : name)}
-                      className={`text-[10px] font-bold transition-colors ${
-                        stopAgencyFilter === name
-                          ? 'text-[var(--accent)]'
-                          : 'text-[var(--text-dim)] hover:text-[var(--text-muted)]'
-                      }`}
-                    >
-                      {name}
-                    </button>
-                    {i < stopAgencies.length - 1 && (
-                      <span className="text-[10px] text-[var(--border-primary)] select-none">·</span>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            )}
-            <div className="space-y-2">
-              {filteredStopRoutes.map(({ shortName, longName, agencyName, branches }) => (
-                <div key={shortName} className="text-[11px]">
-                  <div className="font-black text-[var(--text-primary)] mb-0.5">
-                    {titleCase(getRouteLabel(shortName, longName, agencyName))}
-                  </div>
-                  <div className="space-y-0.5">
-                    {(() => {
-                      const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
-                      let lastDir: number | null = null;
-                      return branches.map(({ rKey, headsign, headway, stopPeriodHw, directionId }) => {
-                        const cleaned = headsign && !/^A[0-9]/.test(shortName)
-                          ? titleCase(cleanHeadsign(headsign.trim(), shortName, longName))
-                          : null;
-                        const isTo = cleaned && /^to\s/i.test(cleaned);
-                        const displayPrefix = isTo ? 'to' : '→';
-                        const displayBody = cleaned
-                          ? (isTo ? cleaned.replace(/^to\s+/i, '') : cleaned)
-                          : `dir ${directionId}`;
-                        const showDivider = hasMultipleDirections && lastDir !== null && directionId !== lastDir;
-                        lastDir = directionId;
-                        // Use period-specific stop headway when a filter is active, fall back to all-day stop headway.
-                        const displayHw = (period !== 'all' ? stopPeriodHw?.[period] : undefined) ?? headway;
-                        const showPeriodLabel = period !== 'all' && stopPeriodHw?.[period] != null;
-                        return (
-                           <React.Fragment key={`${rKey}::${directionId}::${headsign ?? ''}`}>
-                            {showDivider && (
-                              <div className="my-1 border-t border-[var(--border-primary)] opacity-50" />
-                            )}
-                            <div className="flex items-center justify-between">
-                              <button
-                                onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
-                                className="flex items-start gap-1.5 font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left"
-                              >
-                                <span className="shrink-0 min-w-[14px] text-center opacity-75">{displayPrefix}</span>
-                                <span>{displayBody}</span>
-                              </button>
-                              {displayHw != null && (
-                                <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] shrink-0 ml-2">
-                                  {isLivePollingRoute(rKey.split('::')[0], shortName) && (
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" title="Live data available" />
-                                  )}
-                                  <span
-                                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                                    style={{ background: headwayToTierColor(displayHw) }}
-                                  />
-                                  {fmtHeadway(displayHw)}
-                                  {showPeriodLabel && (
-                                    <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period]}</span>
-                                  )}
-                                </span>
-                              )}
-                            </div>
-                          </React.Fragment>
-                        );
-                      });
-                    })()}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {nearbyConnections.length > 0 && (
-              <div className="mt-3 -mx-4 px-4 pt-3 pb-2 border-t-4 border-[var(--border-primary)] bg-[var(--bg-hover)]">
-                <div className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Within 10 min walk</div>
-                <div className="space-y-1.5">
-                  {nearbyConnections.map(({ rKey, routeShortName, routeLongName, agencyName, headway, nearestStopName, distanceMeters }) => {
-                    const walkMin = Math.max(1, Math.round(distanceMeters / 80));
-                    return (
-                      <div key={rKey} className="flex items-start justify-between gap-2">
-                        <button
-                          onClick={() => { setSelectedStop(null); setSelectedRoute(rKey); }}
-                          className="flex flex-col items-start font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors text-left min-w-0"
-                        >
-                          <span className="text-[11px] leading-tight">{titleCase(getRouteLabel(routeShortName, routeLongName, agencyName))}</span>
-                          <span className="text-[9px] text-[var(--text-dim)] font-normal truncate max-w-full">{nearestStopName} · {walkMin} min walk</span>
-                        </button>
-                        {headway != null && (
-                          <span className="flex items-center gap-1.5 font-bold text-[var(--text-muted)] text-[11px] shrink-0 mt-0.5">
-                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: headwayToTierColor(headway) }} />
-                            {fmtHeadway(headway)}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            <div className="mt-3 border-t border-[var(--border-primary)] pt-2">
-              <button
-                onClick={() => setShowDebug(v => !v)}
-                className="text-[10px] text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors font-mono"
-              >
-                {showDebug ? '▾' : '▸'} debug headways
-              </button>
-              {showDebug && (
-                <div className="mt-1.5 space-y-0.5 font-mono text-[9px] text-[var(--text-dim)]">
-                  <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 font-bold text-[var(--text-muted)] border-b border-[var(--border-primary)] pb-0.5 mb-1">
-                    <span>route / dir / headsign</span>
-                    <span>stop hw</span>
-                    <span>route hw</span>
-                    <span>used</span>
-                  </div>
-                  {debugRows.map((r, i) => (
-                    <div key={i} className={`grid grid-cols-[1fr_auto_auto_auto] gap-x-2 ${r.stopHw != null ? 'text-[var(--text-primary)]' : ''}`}>
-                      <span className="truncate">{r.shortName} d{r.dir} {r.headsign}</span>
-                      <span>{r.stopHw != null ? `${r.stopHw}m` : '—'}</span>
-                      <span>{r.routeHw != null ? `${r.routeHw}m` : '—'}</span>
-                      <span>{r.stopHw != null ? '✓' : '✗'}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <StopCard
+            currentStop={currentStop}
+            setSelectedStop={setSelectedStop}
+            setSelectedRoute={setSelectedRoute}
+            stopAgencies={stopAgencies}
+            stopAgencyFilter={stopAgencyFilter}
+            setStopAgencyFilter={setStopAgencyFilter}
+            filteredStopRoutes={filteredStopRoutes as StopRoute[]}
+            period={period}
+            nearbyConnections={nearbyConnections as NearbyConnection[]}
+            showDebug={showDebug}
+            setShowDebug={setShowDebug}
+            debugRows={debugRows as DebugRow[]}
+          />
         )}
 
         {currentRoute && !query.trim() && (
@@ -1005,180 +827,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 </div>
               </>
             ) : (
-              <>
-            {liveRouteInfo && liveStatus !== 'noData' && (
-              <div className="flex items-center gap-1.5 -mt-1 mb-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
-                <span className="text-[10px] font-black text-[var(--text-dim)]">Scheduled</span>
-              </div>
-            )}
-            <div className="mb-1">
-              {(() => {
-                const slug = (currentRoute as any).agencySlug as string | undefined;
-                const agency = agencies.find(a => a.slug === slug);
-                const agencyDisplayName = shortenAgencyName(agency?.name ?? slug);
-                return (
-                  <div>
-                    <RouteCardTitle
-                      routeShortName={currentRoute.routeShortName}
-                      routeLongName={currentRoute.routeLongName}
-                      agencyName={agencyDisplayName}
-                      onAgencyClick={slug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(slug); setSelectedRoute(null); } : undefined}
-                    />
-                    {agency?.excludeRouteShortNames?.length ? (
-                      <a
-                        href={agency.issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"
-                      >
-                        We corrected this data
-                      </a>
-                    ) : null}
-                  </div>
-                );
-              })()}
-            </div>
-            {(() => {
-              // Merge headwayByHour across all directions — take the best (lowest) non-null
-              // headway per hour so bidirectional peak routes show the full service picture.
-              const HOURS = Array.from({ length: 22 }, (_, i) => i + 5);
-              const merged: Record<number, number | null> = {};
-              for (const h of HOURS) merged[h] = null;
-              for (const d of currentRoute.directions) {
-                const bh = (d as any).headwayByHour as Record<number, number | null> | undefined;
-                if (!bh) continue;
-                for (const h of HOURS) {
-                  const v = bh[h];
-                  if (v != null && (merged[h] == null || v < merged[h]!)) merged[h] = v;
-                }
-              }
-              const hasAny = HOURS.some(h => merged[h] != null);
-              return hasAny ? <HeadwaySparkline byHour={merged} /> : null;
-            })()}
-            <div className="border-t border-[var(--border-primary)] mt-2 mb-3" />
-            <div className="space-y-3">
-              {(() => {
-                // If every direction group has no headsigns, decide whether to collapse or number them.
-                const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
-                const groupHeadway = (g: typeof directionGroups[number]) => g.realTier[0]?.headway ?? null;
-                const collapseGroups = allLackHeadsigns && directionGroups.length > 1 &&
-                  directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
-                const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
-                const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
-                return displayGroups.map((group, gi) => {
-                const fmtH = (d: ShapeProperties): string => {
-                  const cleaned = cleanHeadsign((d.headsign ?? '').trim(), currentRoute.routeShortName, currentRoute.routeLongName);
-                  if (!cleaned) return '';
-                  const h = titleCase(cleaned);
-                  return /^to\s/i.test(h) || / to /i.test(h) ? h : `to ${h}`;
-                };
-                const spanNames = group.span
-                  .map(d => d.headsign ? titleCase(cleanHeadsign(d.headsign.trim(), currentRoute.routeShortName, currentRoute.routeLongName)) : '')
-                  .filter(Boolean);
-                return (
-                  <React.Fragment key={group.dirId}>
-                    {gi > 0 && displayGroups.length > 1 && (
-                      <div className="border-t border-[var(--border-primary)] opacity-30" />
-                    )}
-                    <div className="space-y-2">
-                      {group.realTier.map((d, i) => {
-                        const minStopHw = (d as any).minStopHeadway as number | undefined;
-                        const dimmed = maxHeadway !== Infinity && (minStopHw ?? d.headway ?? Infinity) > maxHeadway;
-                        return (
-                          <div key={`r${i}`} className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
-                            {(() => {
-                              const label = d.headsign ? fmtH(d) : needsNumbered ? `Direction ${gi + 1}` : '';
-                              return label ? (
-                                <span className="font-bold text-[var(--text-legend)] block break-words">{label}</span>
-                              ) : null;
-                            })()}
-                            <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
-                              {(() => {
-                                const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
-                                const byHour = (d as any).headwayByHour as Record<number, number | null> | undefined;
-                                const ph = period !== 'all'
-                                  ? (byPeriod?.[period as keyof HeadwayByPeriod] ?? periodHeadwayFromByHour(byHour, period))
-                                  : undefined;
-                                const displayH = ph ?? d.headway;
-                                // When a period filter is active, check if trunk stops have
-                                // meaningfully better frequency than the terminal — if so show a
-                                // range ("every 6–12 min") rather than the terminal number alone.
-                                const trunkHw = period !== 'all'
-                                  ? ((d as any).minStopHeadwayByPeriod as Partial<Record<string, number>> | undefined)?.[period]
-                                  : undefined;
-                                const showRange = trunkHw != null && displayH != null
-                                  && trunkHw < displayH * 0.65
-                                  && displayH / trunkHw <= 4;
-                                const color = headwayToTierColor(showRange ? trunkHw! : displayH);
-                                return (
-                                  <>
-                                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                                    {showRange
-                                      ? fmtHeadwayRange(trunkHw!, displayH!)
-                                      : fmtHeadway(displayH!)}
-                                    {ph != null && (
-                                      <span className="text-[9px] font-bold text-[var(--text-dim)]">{PERIOD_LABELS[period]}</span>
-                                    )}
-                                  </>
-                                );
-                              })()}
-                            </span>
-                          </div>
-                        );
-                      })}
-                      {(!hideSpan || group.realTier.length === 0) && group.span.length === 1 && (
-                        <div key="s0" className="text-[11px]">
-                          <span className="font-bold text-[var(--text-muted)] block break-words">
-                            {group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'}
-                          </span>
-                          <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
-                            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null) }} />
-                            limited
-                          </span>
-                        </div>
-                      )}
-                      {(!hideSpan || group.realTier.length === 0) && group.span.length > 1 && (
-                        <div key="smulti" className="text-[11px]">
-                          <span className="font-bold text-[var(--text-muted)] leading-snug block">
-                            {spanNames.join(' · ')}
-                          </span>
-                          <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
-                            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null) }} />
-                            limited
-                          </span>
-                        </div>
-                      )}
-                      {hideSpan && group.realTier.length > 0 && spanNames.length > 0 && (
-                        <div key="span-hint" className="flex items-start gap-1.5 text-[10px]">
-                          <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: getTierColor(null) }} />
-                          <span className="text-[var(--text-dim)] font-bold leading-snug">
-                            {spanNames.join(' · ')}
-                            <span className="ml-1.5 text-[8px] font-bold text-[var(--text-legend)] border border-[var(--border-primary)] rounded-full px-1.5 py-px whitespace-nowrap">limited</span>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </React.Fragment>
-                );
-                });
-              })()}
-              {routeIsStale && (
-                <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
-                  <p className="text-[9px] font-bold text-amber-500">
-                    Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}{routeSlug && (
-                      <>{' '}<a
-                        href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
-                      >Learn more →</a></>
-                    )}
-                  </p>
-                </div>
-              )}
-            </div>
-              </>
+              <RouteCardHeadway
+                currentRoute={currentRoute}
+                liveRouteInfo={liveRouteInfo}
+                liveStatus={liveStatus}
+                routeSlug={routeSlug}
+                routeAgency={routeAgency}
+                setSelectedAgencySlug={setSelectedAgencySlug}
+                setSelectedRoute={setSelectedRoute}
+                maxHeadway={maxHeadway}
+                period={period}
+                setPeriod={setPeriod}
+                directionGroups={directionGroups}
+                hideSpan={hideSpan}
+                routeIsStale={routeIsStale}
+                expDateStr={expDateStr}
+              />
             )}
           </div>
         )}
@@ -1267,93 +931,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       </div>}
 
       {liveRouteInfo && liveStatus !== 'noData' && !query.trim() && (
-        <div className={`p-4 ${FLOATING_CARD} ${PANEL_ENTER} space-y-2 shrink-0`}>
-          <div className="flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full bg-green-400 shrink-0 ${liveStatus === 'live' ? 'animate-pulse' : 'opacity-40'}`} />
-            <span className="text-[10px] font-black text-green-400">Live</span>
-            {liveStatus === 'pending' && (
-              <span className="text-[10px] font-bold text-[var(--text-dim)]">fetching…</span>
-            )}
-          </div>
-          {liveStatus === 'live' && (
-            <>
-              {liveRouteInfo.stopRows.length > 0 && (
-                <div className="space-y-2">
-                  {liveRouteInfo.stopRows.map(stop => {
-                    const absDelta = stop.delta == null ? null : Math.abs(stop.delta);
-                    const dotColor = absDelta == null ? 'var(--text-dim)'
-                      : absDelta >= 5 ? '#f87171'
-                      : absDelta >= 2 ? '#fbbf24'
-                      : '#4ade80';
-                    const deltaLabel = stop.delta == null ? null
-                      : absDelta! < 2 ? 'on time'
-                      : stop.delta > 0 ? `+${Math.round(stop.delta)} min`
-                      : `${Math.round(stop.delta)} min`;
-                    const deltaColor = absDelta == null ? ''
-                      : absDelta >= 5 ? 'text-red-400'
-                      : absDelta >= 2 ? 'text-amber-400'
-                      : 'text-green-400';
-                    return (
-                      <button
-                        key={stop.stopId}
-                        className="text-[11px] w-full text-left hover:opacity-70 transition-opacity"
-                        onClick={() => { setSelectedRoute(null); setSelectedStop(`${liveRouteInfo.agencySlug}::${stop.stopId}`); }}
-                      >
-                        <span className="font-bold text-[var(--text-muted)] block truncate">
-                          {stop.name}
-                        </span>
-                        <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
-                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-                          {stop.avgGap != null ? `${Math.round(stop.avgGap)} min` : '—'}
-                          {deltaLabel != null && (
-                            <span className={`text-[10px] font-bold tabular-nums ${deltaColor}`}>{deltaLabel}</span>
-                          )}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </>
-          )}
-
-          <div className="mt-3 border-t border-[var(--border-primary)] pt-2">
-            <button
-              onClick={() => setShowDebug(v => !v)}
-              className="text-[10px] text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors font-mono"
-            >
-              {showDebug ? '▾' : '▸'} debug headways
-            </button>
-            {showDebug && currentRoute && (
-              <div className="mt-1.5 space-y-0.5 font-mono text-[9px] text-[var(--text-dim)]">
-                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 font-bold text-[var(--text-muted)] border-b border-[var(--border-primary)] pb-0.5 mb-1">
-                  <span>headsign</span>
-                  <span>dir</span>
-                  <span>route hw</span>
-                  <span>tier</span>
-                </div>
-                {(() => {
-                  const rows: { headsign: string; dir: number; headway: number | null; tier: string }[] = [];
-                  for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-                    for (const f of fc.features) {
-                      const p = f.properties as unknown as ShapeProperties;
-                      if (routeKey({ ...p, agencySlug: slug } as any) !== selectedRoute) continue;
-                      rows.push({ headsign: p.headsign || '—', dir: (p as any).directionId ?? 0, headway: p.headway ?? null, tier: (p as any).tier || '—' });
-                    }
-                  }
-                  return rows.map((r, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2">
-                      <span className="truncate">{r.headsign}</span>
-                      <span>d{r.dir}</span>
-                      <span>{r.headway != null ? `${r.headway}m` : '—'}</span>
-                      <span>{r.tier}</span>
-                    </div>
-                  ));
-                })()}
-              </div>
-            )}
-          </div>
-        </div>
+        <LiveAdherenceCard
+          liveRouteInfo={liveRouteInfo as LiveRouteInfoData}
+          liveStatus={liveStatus}
+          showDebug={showDebug}
+          setShowDebug={setShowDebug}
+          hasCurrentRoute={!!currentRoute}
+          nonCorridorLayers={nonCorridorLayers}
+          selectedRoute={selectedRoute}
+          setSelectedRoute={setSelectedRoute}
+          setSelectedStop={setSelectedStop}
+        />
       )}
     </div>
   );

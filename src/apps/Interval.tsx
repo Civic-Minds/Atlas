@@ -313,6 +313,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         day={day}
         setDay={setDay}
         period={period}
+        setPeriod={setPeriod}
         selectedStop={selectedStop}
         setSelectedStop={setSelectedStop}
         selectedRoute={selectedRoute}
