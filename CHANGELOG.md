@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring
+- **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail)
 
 ## [3.0.0] — 2026-07-05
 
