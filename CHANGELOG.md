@@ -5,7 +5,7 @@
 ### Changed
 - **Sidebar panel width**: increased from `w-64` to `w-72` (288px) to prevent period labels like "Midday" from being clipped
 - **Search bar width**: bumped responsive steps from `w-40/52/64` to `w-44/56/72`
-- **Near You panel**: redesigned to use standard `LIST_ROW` style — tier dot + route short name + long name/headsign + headway; stop name moved into header; accent color removed from title
+- **Near You panel**: redesigned to use standard `LIST_ROW` style — each row shows tier dot + route + headway + that route's own nearest stop name and distance below it; removed misleading single-stop header that implied all routes shared one stop
 
 ### Added
 - **IDB cache build version**: added `CACHE_BUILD` counter to `agencyGeoWeekVersion()` — increment this whenever mid-week data fixes are pushed so browsers re-fetch instead of serving stale IDB data
