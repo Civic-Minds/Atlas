@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
+- **Loading spinner now shows during tile loading**: spinner was only tracking GeoJSON fetches; when agencies are already loaded (cached in session), PMTiles tiles still stream in but no spinner appeared — now also fires on MapLibre `sourcedataloading` / `idle` events; "X/Y networks" label only shows when GeoJSON is actively fetching
 - **"ST" all-caps in stop names**: `St` removed from `TRANSIT_ACRONYMS` — it was added for the GO Stouffville line code but was uppercasing "St" in all stop names (e.g. "Nassau ST" → "Nassau St"); standalone "ST" still uppercases correctly via the ≤3-char rule
 
 ### Changed

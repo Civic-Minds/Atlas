@@ -53,6 +53,7 @@ interface MapCanvasProps {
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
+  onTileLoadingChange?: (loading: boolean) => void;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -82,6 +83,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   setSelectedAgencySlug,
   fareView = false,
   initialMapCenter,
+  onTileLoadingChange,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -425,10 +427,12 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const onBoundsChangeRef = useRef(onBoundsChange);
   const fareViewRef = useRef(fareView);
   const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
+  const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   useLayoutEffect(() => {
     onBoundsChangeRef.current = onBoundsChange;
     fareViewRef.current = fareView;
     setSelectedAgencySlugRef.current = setSelectedAgencySlug;
+    onTileLoadingChangeRef.current = onTileLoadingChange;
   });
 
   useEffect(() => {
@@ -457,6 +461,19 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     };
     map.on('moveend', onMove);
     return () => { map.off('moveend', onMove); };
+  }, [mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onTileStart = () => onTileLoadingChangeRef.current?.(true);
+    const onIdle = () => onTileLoadingChangeRef.current?.(false);
+    map.on('sourcedataloading', onTileStart);
+    map.on('idle', onIdle);
+    return () => {
+      map.off('sourcedataloading', onTileStart);
+      map.off('idle', onIdle);
+    };
   }, [mapLoaded]);
 
   // Toggle light/dark basemap without setStyle (setStyle would drop all the

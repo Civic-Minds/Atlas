@@ -96,6 +96,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
+  const [isTilesLoading, setIsTilesLoading] = useState(false);
 
   const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, { showCorridorBand });
 
@@ -210,6 +211,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
         initialMapCenter={initialMapCenter}
+        onTileLoadingChange={setIsTilesLoading}
       />
 
       {showUi && stats && (stats.total > 0 || !isLoading) && (
@@ -227,12 +229,14 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {showUi && isLoading && (
+      {showUi && (isLoading || isTilesLoading) && (
         <div className={`absolute bottom-6 left-6 ${Z_PANEL} flex items-center gap-2 ${SURFACE} backdrop-blur-md px-4 py-2 rounded-xl`}>
           <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-          <span className="text-[10px] font-bold text-[var(--text-muted)]">
-            {loadedCount}/{requestedCount} networks
-          </span>
+          {isLoading && (
+            <span className="text-[10px] font-bold text-[var(--text-muted)]">
+              {loadedCount}/{requestedCount} networks
+            </span>
+          )}
         </div>
       )}
 
