@@ -12,13 +12,13 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Nfta: 'NFTA',
   Ltc: 'LTC',
   Ktc: 'KTC',
-  // GO Transit line codes
+  // GO Transit line codes (2-char codes handled by the ≤3-char uppercase rule when standalone)
   Lw: 'LW',
   Le: 'LE',
   Ki: 'KI',
   Mi: 'MI',
   Br: 'BR',
-  St: 'ST',
+  // St intentionally excluded — "St" in stop names means Street/Saint, not the GO Stouffville line
   Rh: 'RH',
   // Bay Area / Staged expansion acronyms
   Bart: 'BART',

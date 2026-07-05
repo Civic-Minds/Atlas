@@ -2,9 +2,13 @@
 
 ## [Unreleased]
 
+### Fixed
+- **"ST" all-caps in stop names**: `St` removed from `TRANSIT_ACRONYMS` — it was added for the GO Stouffville line code but was uppercasing "St" in all stop names (e.g. "Nassau ST" → "Nassau St"); standalone "ST" still uppercases correctly via the ≤3-char rule
+
 ### Changed
 - **Sidebar panel width**: increased from `w-64` to `w-72` (288px) to prevent period labels like "Midday" from being clipped
 - **Search bar width**: bumped responsive steps from `w-40/52/64` to `w-44/56/72`
+- **Inter font applied globally**: Inter was loaded from Google Fonts but never set on `html`; added `font-family: 'Inter'` to the root rule so the font actually renders
 - **Near You panel**: redesigned to use standard `LIST_ROW` style — each row shows tier dot + route + headway + that route's own nearest stop name and distance below it; removed misleading single-stop header that implied all routes shared one stop
 
 ### Added
