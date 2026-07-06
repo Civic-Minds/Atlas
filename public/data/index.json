@@ -240,7 +240,7 @@
         -79.14
       ],
       "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
-      "lastFeedExpiry": "20260802",
+      "lastFeedExpiry": "20260906",
       "lastFeedVersion": "1",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-miway-gtfs-730.zip?alt=media"
     },
@@ -403,8 +403,8 @@
         -82.607
       ],
       "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-      "lastFeedExpiry": "20260927",
-      "lastFeedVersion": "3f9d8088-9ef5-4be4-b29a-0a49c637e392",
+      "lastFeedExpiry": "20261002",
+      "lastFeedVersion": "7b71a7b9-94c0-4cd0-bdbb-4052595e2aa2",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-transit-windsor-gtfs-720.zip?alt=media"
     },
     {
@@ -477,7 +477,7 @@
         -74.3
       ],
       "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
-      "lastFeedExpiry": "20260907",
+      "lastFeedExpiry": "20260706",
       "lastFeedVersion": "1782135293942"
     },
     {
@@ -1177,8 +1177,8 @@
         -76.147
       ],
       "feedUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
-      "lastFeedExpiry": null,
-      "lastFeedVersion": null,
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "2026-06 Centro_20260616",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-centro-gtfs-534.zip?alt=media"
     },
     {
@@ -3151,7 +3151,9 @@
         -104.98
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-178/latest.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "Jun26-36807-13-20-20260704-030232"
     },
     {
       "slug": "bustang",
@@ -3167,7 +3169,9 @@
         -108.6,
         40.6,
         -104.8
-      ]
+      ],
+      "lastFeedExpiry": "20260926",
+      "lastFeedVersion": "Jun26-36807-13-20-20260704-040323"
     },
     {
       "slug": "abqride",
@@ -4494,7 +4498,9 @@
         -76.52
       ],
       "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
-      "region": "Virginia"
+      "region": "Virginia",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     },
     {
       "slug": "dart-first-state",
@@ -4997,8 +5003,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-292/latest.zip",
       "region": "Montana",
-      "lastFeedExpiry": "20261231",
-      "lastFeedVersion": "S1000049"
+      "lastFeedExpiry": "20270215",
+      "lastFeedVersion": "S1000051"
     },
     {
       "slug": "sportran",
@@ -5033,7 +5039,7 @@
       ],
       "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
       "region": "Montana",
-      "lastFeedExpiry": "20260803",
+      "lastFeedExpiry": "20260805",
       "lastFeedVersion": "20250228"
     },
     {
@@ -5158,7 +5164,9 @@
         -105,
         38.3,
         -104.4
-      ]
+      ],
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "UTC: 29-Jan-2026 21:32"
     },
     {
       "slug": "rfta",
@@ -5168,7 +5176,9 @@
         -107.1
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "lastFeedExpiry": "20260920",
+      "lastFeedVersion": "S1000163"
     },
     {
       "slug": "grand-valley-transit",
@@ -5178,7 +5188,9 @@
         -108.55
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "lastFeedExpiry": "20251105",
+      "lastFeedVersion": "Nov_05_2024"
     },
     {
       "slug": "durango-transit",
@@ -5189,7 +5201,8 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2290/latest.zip",
       "lastFeedExpiry": "20261201",
-      "region": "Colorado"
+      "region": "Colorado",
+      "lastFeedVersion": "UTC: 21-May-2026 20:09"
     },
     {
       "slug": "pueblo-transit",
@@ -5199,7 +5212,9 @@
         -104.61
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2232/latest.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "lastFeedExpiry": "20270301",
+      "lastFeedVersion": "UTC: 24-Apr-2026 17:32"
     },
     {
       "slug": "eco-transit",
@@ -5209,7 +5224,9 @@
         -106.93
       ],
       "feedUrl": "https://evta.org/gtfs.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "lastFeedExpiry": "20261121",
+      "lastFeedVersion": "S1000093"
     },
     {
       "slug": "all-points-transit",
@@ -5219,7 +5236,9 @@
         -107.87
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip",
-      "region": "Colorado"
+      "region": "Colorado",
+      "lastFeedExpiry": "20260801",
+      "lastFeedVersion": "UTC: 02-Feb-2026 20:47"
     },
     {
       "slug": "kart",
@@ -5229,7 +5248,9 @@
         -119.95
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
-      "region": "California"
+      "region": "California",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260704"
     },
     {
       "slug": "tulare-county-transit",
@@ -5274,7 +5295,9 @@
         -79.95
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-407/latest.zip",
-      "region": "West Virginia"
+      "region": "West Virginia",
+      "lastFeedExpiry": "20301231",
+      "lastFeedVersion": "1.0-2.7.19"
     },
     {
       "slug": "visalia",
