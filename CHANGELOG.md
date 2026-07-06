@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+- Added Visalia Transit, Green Bay Metro.
+- Gap additions: COTA (Columbus OH), Des Moines DART (IA), Wichita Transit (KS), Appleton/Valley Transit (WI).
+- Refreshed feeds + R2 artifacts for waukesha-metro, tulare-county-transit, visalia, green-bay (plus prior pace).
+
 ## [3.0.3] — 2026-07-06
 - Refresh: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.
 

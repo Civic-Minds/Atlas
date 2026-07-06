@@ -5238,8 +5238,11 @@
         36.33,
         -119.3
       ],
-      "feedUrl": null,
-      "region": "California"
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-646/mdb-646-202602190016/mdb-646-202602190016.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-646/mdb-646-202602190016/mdb-646-202602190016.zip",
+      "region": "California",
+      "lastFeedExpiry": "20261001",
+      "lastFeedVersion": "UTC: 18-Feb-2026 15:22"
     },
     {
       "slug": "madison-metro",
@@ -5257,8 +5260,11 @@
         43.01,
         -88.23
       ],
-      "feedUrl": null,
-      "region": "Wisconsin"
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
+      "region": "Wisconsin",
+      "lastFeedExpiry": "20250601",
+      "lastFeedVersion": "UTC: 22-Jan-2025 18:29"
     },
     {
       "slug": "mountain-line",
@@ -5271,14 +5277,82 @@
       "region": "West Virginia"
     },
     {
-      "slug": "pace",
-      "name": "Pace Suburban Bus",
+      "slug": "visalia",
+      "name": "Visalia Transit",
+      "region": "California",
       "center": [
-        41.83,
-        -87.83
+        36.33,
+        -119.29
       ],
-      "feedUrl": null,
-      "region": "Illinois"
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-90091/ntd-90091-202501060017/ntd-90091-202501060017.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-90091/ntd-90091-202501060017/ntd-90091-202501060017.zip",
+      "lastFeedExpiry": "20270103",
+      "lastFeedVersion": "20250102"
+    },
+    {
+      "slug": "green-bay",
+      "name": "Green Bay Metro",
+      "region": "Wisconsin",
+      "center": [
+        44.51,
+        -88.01
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
+      "lastFeedExpiry": "20201231",
+      "lastFeedVersion": ""
+    },
+    {
+      "slug": "cota",
+      "name": "Central Ohio Transit Authority (COTA)",
+      "region": "Ohio",
+      "center": [
+        39.96,
+        -82.99
+      ],
+      "feedUrl": "https://www.cota.com/data/cota.gtfs.zip",
+      "mdbFeedUrl": "https://www.cota.com/data/cota.gtfs.zip",
+      "lastFeedExpiry": "20260906",
+      "lastFeedVersion": "2026-MAY-04-BB_20260630"
+    },
+    {
+      "slug": "des-moines",
+      "name": "Des Moines Area Regional Transit Authority (DART)",
+      "region": "Iowa",
+      "center": [
+        41.59,
+        -93.62
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "2026.06_20260514"
+    },
+    {
+      "slug": "wichita",
+      "name": "Wichita Transit",
+      "region": "Kansas",
+      "center": [
+        37.69,
+        -97.34
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-185/mdb-185-202402080052/mdb-185-202402080052.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-185/mdb-185-202402080052/mdb-185-202402080052.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "appleton",
+      "name": "Valley Transit (Appleton/Fox Cities)",
+      "region": "Wisconsin",
+      "center": [
+        44.26,
+        -88.42
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2069/mdb-2069-202607060127/mdb-2069-202607060127.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2069/mdb-2069-202607060127/mdb-2069-202607060127.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "2026 Summer Detours 6/27"
     }
   ]
 }

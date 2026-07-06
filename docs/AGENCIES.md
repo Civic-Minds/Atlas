@@ -6,7 +6,7 @@ Reference for Atlas agency coverage across static data, live polling, and histor
 
 ## Static Coverage
 
-324 agencies as of July 4, 2026. Coast-to-coast coverage across Canada and the US, with broad regional expansion in progress.
+343 agencies as of July 4, 2026. Coast-to-coast coverage across Canada and the US, with broad regional expansion in progress.
 
 Source of truth: [`public/data/index.json`](../public/data/index.json)
 
