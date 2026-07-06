@@ -2,6 +2,7 @@ import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
   getLiveRouteConfig,
   matchesLiveRouteId,
+  LIVE_POLLING_ROUTES,
 } from './livePollingConfig.js';
 import { R2_PUBLIC_URL } from './config.js';
 
@@ -62,12 +63,17 @@ async function fetchTripUpdates(
 }
 
 async function fetchSidecar(agency: string): Promise<Record<string, any> | null> {
+  // Whitelist against known live polling slugs to prevent SSRF (agency comes from query params)
+  const allowed = new Set(LIVE_POLLING_ROUTES.map(c => c.slug));
+  if (!allowed.has(agency)) return null;
+
   try {
-    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${agency}.json`);
+    const safe = encodeURIComponent(agency);
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${safe}.json`);
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
-    console.error(`Failed to fetch sidecar for ${agency}`, err);
+    console.error('Failed to fetch sidecar for agency', agency, err);
     return null;
   }
 }

@@ -214,6 +214,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         fareView={fareView}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
+        setQuery={setQuery}
       />
 
       {showUi && stats && (stats.total > 0 || !isLoading) && (

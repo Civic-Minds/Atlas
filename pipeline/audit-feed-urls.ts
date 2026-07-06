@@ -79,9 +79,22 @@ async function main() {
   const raw = JSON.parse(readFileSync(indexPath, 'utf8'));
   const agencies: Agency[] = Array.isArray(raw) ? raw : raw.agencies ?? [];
 
-  const nonMdb = agencies.filter(
-    a => a.feedUrl && !a.feedUrl.includes('mdb-latest') && !a.feedUrl.includes('mobilitydatabase.org')
-  );
+  const nonMdb = agencies.filter(a => {
+    if (!a.feedUrl) return false;
+    try {
+      const u = new URL(a.feedUrl);
+      const h = u.hostname.toLowerCase();
+      const p = u.pathname.toLowerCase();
+      const isMdb = h.includes('mdb-latest') ||
+                    h.endsWith('mobilitydatabase.org') ||
+                    h.includes('.mobilitydatabase.org') ||
+                    p.includes('mdb-latest') ||
+                    p.includes('mobilitydatabase.org');
+      return !isMdb;
+    } catch {
+      return true; // treat invalid URLs as non-MDB
+    }
+  });
 
   console.log(`\nAuditing ${nonMdb.length} agencies on direct feed URLs...\n`);
 

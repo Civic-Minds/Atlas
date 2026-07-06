@@ -366,7 +366,8 @@
       "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
       "excludeRouteShortNames": [
         "LOS"
-      ]
+      ],
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/79"
     },
     {
       "slug": "ttc",
@@ -4492,7 +4493,7 @@
         37.41,
         -76.52
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-474/latest.zip",
+      "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
       "region": "Virginia"
     },
     {
@@ -5187,6 +5188,7 @@
         -107.88
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2290/latest.zip",
+      "lastFeedExpiry": "20261201",
       "region": "Colorado"
     },
     {
@@ -5206,7 +5208,7 @@
         39.64,
         -106.93
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-173/latest.zip",
+      "feedUrl": "https://evta.org/gtfs.zip",
       "region": "Colorado"
     },
     {

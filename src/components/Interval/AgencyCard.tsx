@@ -7,6 +7,7 @@ import type { Agency, FareOverride } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import { getFareColor } from '../../utils/colors';
+import { shortenAgencyName } from '../../utils/format';
 
 interface RouteRow {
   routeId: string;
@@ -107,7 +108,7 @@ export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sideba
     >
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{agency.name}</p>
+          <p className="text-sm font-black text-[var(--text-primary)] leading-tight">{shortenAgencyName(agency.name)}</p>
           {fareView ? (
             <>
               {fareOverride?.free ? (

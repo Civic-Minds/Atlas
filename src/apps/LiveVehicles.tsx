@@ -10,7 +10,7 @@ import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, Z_
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
-import { cleanRouteShortName, cleanRouteDisplayName } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName } from '../utils/format';
 
 interface Props {
   agencies: Agency[];
@@ -538,7 +538,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
                   const showAgencyHeader = multipleAgencies && g.agencySlug !== lastSlug;
                   lastSlug = g.agencySlug;
-                  const agencyName = agencies.find(a => a.slug === g.agencySlug)?.name ?? g.agencySlug;
+                  const rawAgencyName = agencies.find(a => a.slug === g.agencySlug)?.name ?? g.agencySlug;
+                  const agencyName = shortenAgencyName(rawAgencyName);
 
                   return (
                     <React.Fragment key={key}>
