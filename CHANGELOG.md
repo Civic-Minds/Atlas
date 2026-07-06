@@ -1,10 +1,10 @@
 # Changelog
 
-## [3.0.2] — 2026-07-06
+## [Unreleased]
 
 - Refresh: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.
 
-## [3.0.1] — 2026-07-06
+## [3.0.2] — 2026-07-06
 
 - **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
 - Fixed TypeScript errors in SidebarControls (region access on agencyData) and RouteCardTitle (null agencyName) to make dependabot PRs pass CI.
@@ -26,6 +26,8 @@
 - **Search results missing route names**: routes with a null GTFS `route_short_name` now fall back to `routeId` in search result display, preventing blank rows
 - **TTC 506 Sparkline 2am Bug (AI-267)**: Fixed boundary mapping of hour 26 to `'overnight'` instead of `'late'` to align with period boundaries. Used `Math.max` between branch-specific start headways and terminal stop headways in the pipeline to prevent late-night schedule bunching/layover artifacts (e.g. 2-minute gaps at Main Street Station at 2 AM) from inflating route frequency.
 - **TTC 35 Headway Ranges (AI-270)**: Updated pipeline to compute branch-specific, headsign-specific period and hourly headways. Prevented shared terminal stop headways from bleeding into different branches (e.g. `35A` vs `35B` both ending at Mount Dennis) by comparing branch-specific start headways with terminal stop headways using `Math.max`.
+
+## [3.0.1] — 2026-07-06
 
 ## [3.0.0] — 2026-07-05
 
