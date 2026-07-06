@@ -4,6 +4,7 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
+import { shortenAgencyName } from '../utils/format';
 
 export interface RouteSnapshot {
   label: string;
@@ -323,7 +324,7 @@ function HistoryAgencyPanel({
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="flex items-start justify-between">
           <div className="min-w-0 flex-1">
-            <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight">{agencyHistory.name}</h2>
+            <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight">{shortenAgencyName(agencyHistory.name)}</h2>
             <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
               {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear}–{maxYear}
             </p>
@@ -625,7 +626,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
                   className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
                 >
                   <div>
-                    <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{agency.name}</p>
+                    <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{shortenAgencyName(agency.name)}</p>
                     <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
                       {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
                     </p>

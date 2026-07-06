@@ -1,5 +1,5 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getLiveRouteConfig } from '../shared/livePollingConfig.js';
+import { getLiveRouteConfig, LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { computeHistoryAdherence, type Snapshot } from '../shared/computeHistoryAdherence.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 
@@ -57,8 +57,13 @@ async function fetchSnapshot(client: S3Client, key: string): Promise<Snapshot | 
 }
 
 async function fetchSidecar(agency: string): Promise<Record<string, any> | null> {
+  // Whitelist to prevent SSRF
+  const allowed = new Set(LIVE_POLLING_ROUTES.map(c => c.slug));
+  if (!allowed.has(agency)) return null;
+
   try {
-    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${agency}.json`);
+    const safe = encodeURIComponent(agency);
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${safe}.json`);
     if (!res.ok) return null;
     return await res.json();
   } catch {

@@ -54,6 +54,7 @@ interface MapCanvasProps {
   fareView?: boolean;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   onTileLoadingChange?: (loading: boolean) => void;
+  setQuery?: (q: string) => void;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -70,6 +71,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   setDisambiguationRoutes,
   onBoundsChange,
   resetViewKey,
+  setQuery,
   onLocate,
   routesForStop,
   showRouteLayers = true,
@@ -363,6 +365,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         } else {
           const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
           setSelectedRoute(prev => prev === key ? null : key);
+          setQuery?.('');
         }
         e.preventDefault();
       });

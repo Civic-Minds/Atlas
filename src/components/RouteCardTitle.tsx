@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function RouteCardTitle({ routeShortName, routeLongName, agencyName, onAgencyClick }: Props) {
-  const title = titleCase(getRouteLabel(routeShortName, routeLongName));
+  const title = titleCase(getRouteLabel(routeShortName, routeLongName, agencyName));
   const displayAgency = agencyName ? shortenAgencyName(agencyName) : null;
   return (
     <div className="flex-1 min-w-0">

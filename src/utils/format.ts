@@ -136,7 +136,56 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('golden gate')) return 'Golden Gate Transit';
   if (lower.includes('smart') && lower.includes('sonoma')) return 'SMART';
   if (lower.includes('mountain metropolitan')) return 'Mountain Metro';
-  
+
+  // Long " * Transit/Transportation Authority" names — map to common short/acronym forms used in UI
+  if (lower.includes('massachusetts bay') || lower.includes('mbta')) return 'MBTA';
+  if (lower.includes('capital district') || lower.includes('cdta')) return 'CDTA';
+  if (lower.includes('rochester-genesee') || lower.includes('rgrta')) return 'RGRTA';
+  if (lower.includes('pioneer valley') || lower.includes('pvta')) return 'PVTA';
+  if (lower.includes('worcester regional') || lower.includes('wrta')) return 'WRTA';
+  if (lower.includes('chattanooga')) return 'CARTA';
+  if (lower.includes('livermore amador')) return 'LAVTA';
+  if (lower.includes('ventura county')) return 'VCTC';
+  if (lower.includes('akron metro')) return 'Akron Metro';
+  if (lower.includes('stark area')) return 'SARTA';
+  if (lower.includes('capital area transportation')) return 'CATA';
+  if (lower.includes('san joaquin')) return 'SJRTD';
+  if (lower.includes('erie metropolitan')) return 'EMTA';
+  if (lower.includes('williamsburg area')) return 'WATA';
+  if (lower.includes('tompkins')) return 'TCAT';
+  if (lower.includes('greater lynchburg')) return 'GLTC';
+  if (lower.includes('whatcom')) return 'Whatcom Transit';
+  if (lower.includes('san luis obispo transit') || lower.includes('slotransit')) return 'SLO Transit';
+  if (lower.includes('maryland transit administration')) return 'MTA Maryland';
+  if (lower.includes('fredericksburg')) return 'FRED';
+  if (lower.includes('memphis area')) return 'MATA';
+  if (lower.includes('dutchess')) return 'Dutchess Transit';
+  if (lower.includes('fairfield and suisun')) return 'FAST';
+  if (lower.includes('glens falls')) return 'GGFT';
+  if (lower.includes('mendocino')) return 'Mendocino Transit';
+  if (lower.includes('yamhill')) return 'YCTA';
+  if (lower.includes('metropolitan transit system') || lower.includes('sdmts')) return 'MTS';
+  if (lower.includes('roaring fork')) return 'RFTA';
+  if (lower.includes('river city') || lower.includes('louisville')) return 'TARC';
+  if (lower.includes('bee-line') || lower.includes('westchester')) return 'Bee-Line';
+  if (lower.includes('port authority of allegheny')) return 'PAAC';
+  if (lower.includes('nashville') || lower.includes('wego')) return 'WeGo';
+  if (lower.includes('sherbrooke')) return 'STS';
+  if (lower.includes('toronto transit')) return 'TTC';
+  if (lower.includes('spokane')) return 'Spokane Transit';
+  if (lower.includes('altamont corridor')) return 'ACE';
+  if (lower.includes('long island rail')) return 'LIRR';
+  if (lower.includes('washington state ferries')) return 'WSF';
+  if (lower.includes('riverside transit')) return 'Riverside Transit';
+  if (lower.includes('via metropolitan')) return 'VIA';
+  if (lower.includes('duluth transit')) return 'DTA';
+  if (lower.includes('kings area rural')) return 'KART';
+  if (lower.includes('hamilton street')) return 'HSR';
+  if (lower.includes('blue water area')) return 'Blue Water';
+  if (lower.includes('gwinnett county')) return 'Gwinnett Transit';
+  if (lower.includes('santa maria area')) return 'SMAT';
+  if (lower.includes('redding area')) return 'RABA';
+
   // General fallback: use parenthetical if short abbrev; otherwise strip long (City/Region) parens for compact display
   const match = name.match(/\(([^)]+)\)/);
   if (match) {
@@ -145,6 +194,19 @@ export function shortenAgencyName(name: string): string {
     // Strip long locator parens (e.g. "(Colorado Springs)", "(Mississauga)")
     return name.replace(/\s*\([^)]+\)\s*$/, '').trim();
   }
-  
+
+  // Last-resort strip for any remaining very long "* Transit/Transportation Authority" style names
+  if (name.length > 22) {
+    const stripped = name
+      .replace(/\s+(Area|Regional|Metropolitan|Consolidated)\s+(Transit|Transportation)\s+(Authority|Agency|System|Commission)$/i, '')
+      .replace(/\s+(Transit|Transportation)\s+(Authority|Agency|System|Commission|District)$/i, '')
+      .replace(/\s+Area\s+(Transit|Bus)\s*(Service)?$/i, '')
+      .replace(/\s+Bus (Authority|Service)$/i, '')
+      .trim();
+    if (stripped.length >= 4 && stripped.length < name.length) {
+      return stripped;
+    }
+  }
+
   return name;
 }

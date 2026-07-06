@@ -1,12 +1,18 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.1] — 2026-07-06
 
+- **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
+- **DATA_OVERRIDES.md**: removed (deprecated; data overrides now tracked exclusively via individual GitHub issues with `data override` label + `issueUrl` per agency in `index.json`)
+- Fixed refresh failures: updated ECO Transit feedUrl to working EVTA source; set lastFeedExpiry for Durango (flex feed) to skip 0-feature processing.
 - Fixed sparkline period label making chart width vary; now reserves fixed slot so chart stays consistent width
 - Sparkline hover tooltip no longer clips on left/right edge (edge-aware translate)
 - URL: no trailing "?" on bare path (e.g. default / not /?)
 - Search: "new york" / city names now match via region (in addition to "NYC")
 - Route selection highlight uses full `agency::routeId` (prevents unrelated routes bolding on numeric id collisions e.g. NYC subway)
+- Map route clicks now clear active search query (so route card actually appears / "pops up")
+- RouteCardTitle now passes agencyName to getRouteLabel (helps name display in cards for special agencies)
+- Empty search results now show a "No routes match your search" message
 - **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring
 - **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail)
 - **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave
@@ -65,7 +71,7 @@
 - **Stale schedule warning**: route cards show "Schedule may be outdated" in amber when today is past `lastFeedExpiry`
 - **Station View stop-level headways**: each route row shows headway at the selected stop specifically, not the route's terminal headway
 - **Frequency range on route cards**: when trunk stops have ≥35% better headway than the terminal, shows a range (e.g. "every 6–12 min")
-- **DATA_OVERRIDES.md**: public log of intentional data corrections with per-agency reasoning
+- **Data overrides**: now tracked via per-agency GitHub issues (label `data override`) + `issueUrl` in index.json (UI links "We corrected this data"). Monolithic `DATA_OVERRIDES.md` deprecated.
 
 ### Changed
 - **Frequency map now at `/`**: `APP_TO_PATH` updated; `/apps/frequency` remains an alias

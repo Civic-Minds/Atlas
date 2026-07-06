@@ -722,7 +722,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   onClick={() => setQuery(a.name)}
                   className={LIST_ROW}
                 >
-                  <span className={LIST_ROW_PRIMARY}>{a.name}</span>
+                  <span className={LIST_ROW_PRIMARY}>{shortenAgencyName(a.name)}</span>
                 </button>
               ))}
               {suggestedFareAgencies.length === 0 && (
@@ -919,6 +919,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     />
                   ))}
                 </div>
+              )}
+              {searchMatchResults.length === 0 && (
+                <div className="text-[10px] font-bold text-[var(--text-dim)] px-1 py-2">No routes match your search.</div>
               )}
             </div>
           );
