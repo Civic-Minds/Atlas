@@ -1,8 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+- Refresh: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.
+
 ## [3.0.1] — 2026-07-06
 
 - **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
+- Fixed TypeScript errors in SidebarControls (region access on agencyData) and RouteCardTitle (null agencyName) to make dependabot PRs pass CI.
 - **DATA_OVERRIDES.md**: removed (deprecated; data overrides now tracked exclusively via individual GitHub issues with `data override` label + `issueUrl` per agency in `index.json`)
 - Fixed refresh failures: updated ECO Transit feedUrl to working EVTA source; set lastFeedExpiry for Durango (flex feed) to skip 0-feature processing.
 - Fixed sparkline period label making chart width vary; now reserves fixed slot so chart stays consistent width

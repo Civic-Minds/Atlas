@@ -256,7 +256,12 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
     tripsJson = JSON.stringify(tripsIndex);
   }
 
-  if (featureCount === 0) throw new Error('pipeline produced 0 features — refusing to overwrite');
+  if (featureCount === 0) {
+    process.stdout.write(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?)\n`);
+    agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
+    agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
+    return '0 features, skipped';
+  }
 
   const uploads: Promise<any>[] = [
     r2Put(`atlas/${agency.slug}.json`, geojson),
