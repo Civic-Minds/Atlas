@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **Refresh GTFS feeds workflow**: Fixed failure in `refresh-feeds.yml` by adding the missing `R2_PUBLIC_URL` environment variable to the `build-history` step.
+- **Workflow Error Handling**: Updated `pipeline/build-history.ts` to call `process.exit(1)` on error so that failures in history generation fail the workflow rather than passing silently.
+- **Git Push Failure**: Added `git pull --rebase origin main` before `git push` to prevent weekly refreshes from failing when concurrent commits are pushed.
+- **Node.js Deprecation**: Bumped Node.js setup version from `20` to `22` in `ci.yml` and `refresh-feeds.yml`.
+- **Security**: Fixed CodeQL "Incomplete URL substring sanitization" in `pipeline/audit-feed-urls.ts` (use parsed hostname with exact + safe `.endsWith('.mobilitydatabase.org')` + gated GCS `mdb-latest` path check).
+
 ## [3.0.4] — 2026-07-06
 
 - Added Visalia Transit, Green Bay Metro.

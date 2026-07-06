@@ -85,11 +85,15 @@ async function main() {
       const u = new URL(a.feedUrl);
       const h = u.hostname.toLowerCase();
       const p = u.pathname.toLowerCase();
-      const isMdb = h.includes('mdb-latest') ||
-                    h.endsWith('mobilitydatabase.org') ||
-                    h.includes('.mobilitydatabase.org') ||
-                    p.includes('mdb-latest') ||
-                    p.includes('mobilitydatabase.org');
+
+      // Proper host-based allowlist to avoid incomplete substring sanitization.
+      // Covers:
+      // - files.mobilitydatabase.org, api.mobilitydatabase.org, etc.
+      // - Legacy GCS mdb-latest mirrors (storage.googleapis.com + mdb-latest path)
+      const isMdbHost = h === 'mobilitydatabase.org' || h.endsWith('.mobilitydatabase.org');
+      const isGcsMdbLatest = h === 'storage.googleapis.com' && p.includes('mdb-latest');
+      const isMdb = isMdbHost || isGcsMdbLatest;
+
       return !isMdb;
     } catch {
       return true; // treat invalid URLs as non-MDB
