@@ -2,7 +2,7 @@
   "name": "atlas",
   "private": true,
   "description": "A hosted frequency map for transit routes.",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
@@ -21,6 +21,7 @@
     "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
     "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts",
     "find-mdb": "npx tsx pipeline/find-mdb-feed.ts",
+    "discover-gaps": "npx tsx pipeline/discover-gaps.ts",
     "upload-pmtiles": "npx tsx pipeline/upload-pmtiles.ts",
     "sync-agency-count": "node -e \"const fs=require('fs');const count=JSON.parse(fs.readFileSync('public/data/index.json','utf8')).agencies.length;const p='docs/AGENCIES.md';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace(/^(\\d+) agencies as of/m,count+' agencies as of'));console.log('Updated AGENCIES.md: '+count+' agencies');\""
   },

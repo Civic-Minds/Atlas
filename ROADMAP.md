@@ -5,6 +5,7 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 - **[Vision](docs/VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
 - **[Features](./README.md#features)**: Headway tiers, filtering, search, station view, corridors, live adherence, history, agency browser.
 - **[Agencies](docs/AGENCIES.md)**: Current coverage, regions, and feed metadata.
+- **[Agency Backlog](docs/AGENCY_BACKLOG.md)**: Prioritized expansion queue and `npm run discover-gaps` workflow.
 
 **Current focus:** Corridors app live. History and live data layers expanding. Exploring the new Factbook for data-driven insights and stories.
 

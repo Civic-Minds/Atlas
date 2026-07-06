@@ -6,11 +6,13 @@ Ongoing data gaps, feed quirks, and platform limitations that aren't tracked as 
 
 ## Missing Agencies
 
-Agencies in the GTHA or broader Ontario coverage area we haven't been able to add.
+Permanent blockers only — agencies we cannot add because upstream has no fixed-route GTFS or the feed is dead. Actionable adds belong in [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md).
 
 | Agency | Reason | Notes |
 |--------|--------|-------|
-| *(add as discovered)* | | |
+| Bradford BWG Transit | On-demand only | No fixed-route GTFS; evaluated 2026 |
+| STTR Trois-Rivières | Dead feed | MDB/official URL unreturnable; retry periodically |
+| RTC Québec City | Dead feed | Follow-up from CHANGELOG_ARCHIVE |
 
 ---
 

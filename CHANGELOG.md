@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [3.0.6] — 2026-07-06
+
+### Added
+- **Agency expansion**: 24 new agencies + stub feed fixes — 343 → 367 total (Stockton, Modesto, Baton Rouge, Knoxville, McAllen, Augusta, Lincoln, South Bend, Rockford, Racine, Sudbury, Anchorage, Lexington, Champaign, Kalamazoo, Laredo, Thunder Bay, Greensboro, Winston-Salem, Allentown, Harrisburg, Jackson MS, Lancaster, Scranton/Wilkes-Barre, PATCO; plus Sarnia, Port Huron, TARTA, Madison).
+- **`npm run discover-gaps`**: MDB `feeds_v2.csv` spatial anti-join + population ranking → `tmp/gap-candidates.json`.
+- **`docs/AGENCY_BACKLOG.md`**: Canonical prioritized expansion queue; linked from `AGENCIES.md` and `ROADMAP.md`.
+
+### Fixed
+- **Duplicate slugs**: Removed duplicate `cota` entry; renamed Youngstown `wrta` → `youngstown-wrta` (Worcester keeps `wrta`).
+
 ## [3.0.5] — 2026-07-06
 
 ### Added

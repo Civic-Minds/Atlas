@@ -323,11 +323,14 @@
       "slug": "sarnia",
       "name": "Sarnia Transit",
       "center": [
-        42.9995,
-        -82.3089
+        42.97,
+        -82.4
       ],
-      "feedUrl": null,
-      "region": "Ontario"
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-sarnia.zip",
+      "region": "Ontario",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4738/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1/20260705 22:00:00/20260706 00:00:00"
     },
     {
       "slug": "simcoe",
@@ -1054,11 +1057,14 @@
       "slug": "port-huron",
       "name": "Blue Water Area Transit",
       "center": [
-        42.9709,
-        -82.4249
+        42.97,
+        -82.42
       ],
-      "feedUrl": null,
-      "region": "Michigan"
+      "feedUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip",
+      "region": "Michigan",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7035/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Jun 2, 2026, 11:45 AM"
     },
     {
       "slug": "ddot",
@@ -1136,11 +1142,14 @@
       "slug": "tarta",
       "name": "TARTA (Toledo)",
       "center": [
-        41.6639,
-        -83.5552
+        41.66,
+        -83.56
       ],
-      "feedUrl": null,
-      "region": "Ohio"
+      "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
+      "region": "Ohio",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1716_1/latest.zip",
+      "lastFeedExpiry": "20270629",
+      "lastFeedVersion": "401"
     },
     {
       "slug": "rgrta",
@@ -2977,7 +2986,7 @@
     },
     {
       "slug": "sjrtd",
-      "name": "San Joaquin Regional Transit District",
+      "name": "San Joaquin RTD",
       "center": [
         37.96,
         -121.29
@@ -4161,18 +4170,6 @@
       "region": "Florida"
     },
     {
-      "slug": "cota",
-      "name": "Central Ohio Transit Authority (COTA)",
-      "center": [
-        39.96,
-        -82.99
-      ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-404/mdb-404-202607010029/mdb-404-202607010029.zip",
-      "lastFeedExpiry": "20260906",
-      "lastFeedVersion": "2026-MAY-04-BB_20260630",
-      "region": "Ohio"
-    },
-    {
       "slug": "cats",
       "name": "Charlotte Area Transit System (CATS)",
       "center": [
@@ -4899,7 +4896,7 @@
       "lastFeedVersion": "S1000325"
     },
     {
-      "slug": "wrta",
+      "slug": "youngstown-wrta",
       "name": "Western Reserve Transit Authority (Youngstown)",
       "center": [
         41.1,
@@ -5272,7 +5269,11 @@
         43.07,
         -89.4
       ],
-      "feedUrl": null
+      "feedUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-394/latest.zip",
+      "region": "Wisconsin",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "S070_202605050858"
     },
     {
       "slug": "waukesha-metro",
@@ -5376,6 +5377,331 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2069/mdb-2069-202607060127/mdb-2069-202607060127.zip",
       "lastFeedExpiry": "",
       "lastFeedVersion": "2026 Summer Detours 6/27"
+    },
+    {
+      "slug": "modesto",
+      "name": "Modesto Area Express",
+      "center": [
+        37.64,
+        -120.99
+      ],
+      "feedUrl": "https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2273/latest.zip",
+      "region": "California",
+      "lastFeedExpiry": "20270630",
+      "lastFeedVersion": "20260602"
+    },
+    {
+      "slug": "cats-baton",
+      "name": "Capital Area Transit System (Baton Rouge)",
+      "center": [
+        30.45,
+        -91.19
+      ],
+      "feedUrl": "https://cats.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2065/latest.zip",
+      "region": "Louisiana",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260619"
+    },
+    {
+      "slug": "knoxville",
+      "name": "Knoxville Area Transit",
+      "center": [
+        35.96,
+        -83.92
+      ],
+      "feedUrl": "http://www.knoxvilletn.gov/UserFiles/Servers/Server_109478/File/KAT/gtfs-kat.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1121/latest.zip",
+      "region": "Tennessee",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "MARCH 3/14"
+    },
+    {
+      "slug": "mcallen",
+      "name": "Metro McAllen",
+      "center": [
+        26.2,
+        -98.23
+      ],
+      "feedUrl": "https://mcallen.net/metro/assets/resources/GTFS%20-%20TransLoc.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60099/latest.zip",
+      "region": "Texas",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260317"
+    },
+    {
+      "slug": "augusta",
+      "name": "Augusta Transit",
+      "center": [
+        33.45,
+        -82.02
+      ],
+      "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
+      "region": "Georgia",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "lincoln",
+      "name": "StarTran (Lincoln)",
+      "center": [
+        40.81,
+        -96.68
+      ],
+      "feedUrl": "https://startran.connexionz.net/rtt/public/resource/gtfs.zip",
+      "region": "Nebraska",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2269/latest.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260701"
+    },
+    {
+      "slug": "south-bend",
+      "name": "South Bend Transpo",
+      "center": [
+        41.68,
+        -86.25
+      ],
+      "feedUrl": "https://passio3.com/transpo/passioTransit/gtfs/google_transit.zip",
+      "region": "Indiana",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7019/latest.zip",
+      "lastFeedExpiry": "20260805",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "rockford",
+      "name": "Rockford Mass Transit District",
+      "center": [
+        42.27,
+        -89.09
+      ],
+      "feedUrl": "https://dfef8f.p3cdn2.secureserver.net/wp-content/uploads/2023/08/RMTD_GTFS_AUGUST_2023.zip",
+      "region": "Illinois",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2019/latest.zip",
+      "lastFeedExpiry": "20230916",
+      "lastFeedVersion": "S1000045"
+    },
+    {
+      "slug": "racine",
+      "name": "Ryde Racine",
+      "center": [
+        42.73,
+        -87.78
+      ],
+      "feedUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx",
+      "region": "Wisconsin",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2246/latest.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260329"
+    },
+    {
+      "slug": "sudbury",
+      "name": "Greater Sudbury Transit",
+      "center": [
+        46.49,
+        -81.01
+      ],
+      "feedUrl": "https://www.greatersudbury.ca/image/opendata/gtfs.zip",
+      "region": "Ontario",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-737/latest.zip",
+      "lastFeedExpiry": "20260821",
+      "lastFeedVersion": "1/20260609 12:48:23/20260613 04:00:00"
+    },
+    {
+      "slug": "anchorage",
+      "name": "Anchorage People Mover",
+      "center": [
+        61.22,
+        -149.77
+      ],
+      "feedUrl": "http://gtfs.muni.org/People_Mover.gtfs.zip",
+      "region": "Alaska",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-225/latest.zip",
+      "lastFeedExpiry": "20270531",
+      "lastFeedVersion": "20260528"
+    },
+    {
+      "slug": "lexington",
+      "name": "Lextran",
+      "center": [
+        38.05,
+        -84.5
+      ],
+      "feedUrl": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx",
+      "region": "Kentucky",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2067/latest.zip",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "20260612"
+    },
+    {
+      "slug": "mtd-champaign",
+      "name": "Champaign-Urbana MTD",
+      "center": [
+        40.11,
+        -88.24
+      ],
+      "feedUrl": "https://developer.mtd.org/gtfs/google_transit.zip",
+      "region": "Illinois",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
+      "lastFeedExpiry": "20260808",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)"
+    },
+    {
+      "slug": "kalamazoo",
+      "name": "Kalamazoo Metro Transit",
+      "center": [
+        42.29,
+        -85.59
+      ],
+      "feedUrl": "https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx",
+      "region": "Michigan",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-674/latest.zip",
+      "lastFeedExpiry": "20260928",
+      "lastFeedVersion": "20260705"
+    },
+    {
+      "slug": "laredo",
+      "name": "El Metro (Laredo)",
+      "center": [
+        26.2,
+        -99.52
+      ],
+      "feedUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip",
+      "region": "Texas",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7038/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: May 6, 2026, 8:37 AM"
+    },
+    {
+      "slug": "thunder-bay",
+      "name": "Thunder Bay Transit",
+      "center": [
+        48.41,
+        -89.25
+      ],
+      "feedUrl": "http://api.nextlift.ca/gtfs.zip",
+      "region": "Ontario",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-736/latest.zip",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "1/20260629 12:26:31/20260630 04:00:00"
+    },
+    {
+      "slug": "greensboro",
+      "name": "Greensboro Transit Authority",
+      "center": [
+        36.07,
+        -79.79
+      ],
+      "feedUrl": "https://app.mecatran.com/urb/ws/feed/c2l0ZT1ncmVlbnNib3JvO2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT00ZDQ3MDYyMjNiNjI3ZjFmMTU1YzFiNGIxNTY0Mzg0ZDFjNzYyOTQy",
+      "region": "North Carolina",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
+      "lastFeedExpiry": "20250228",
+      "lastFeedVersion": "2024-06-28T20:55:07Z"
+    },
+    {
+      "slug": "lanta",
+      "name": "Lehigh and Northampton Transportation Authority (LANTA)",
+      "center": [
+        40.6,
+        -75.47
+      ],
+      "feedUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "region": "Pennsylvania",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "20260622"
+    },
+    {
+      "slug": "winston-salem",
+      "name": "Winston-Salem Transit Authority (WSTA)",
+      "center": [
+        36.1,
+        -80.24
+      ],
+      "feedUrl": "https://ridewsta.com/gtfs",
+      "region": "North Carolina",
+      "mdbFeedUrl": "https://ridewsta.com/gtfs",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Jan 4th 2026 GTFS"
+    },
+    {
+      "slug": "cat-harrisburg",
+      "name": "Capital Area Transit (Harrisburg)",
+      "center": [
+        40.27,
+        -76.88
+      ],
+      "feedUrl": "https://cat.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "region": "Pennsylvania",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4298/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260511"
+    },
+    {
+      "slug": "jackson-ms",
+      "name": "City of Jackson (JTRAN)",
+      "center": [
+        32.3,
+        -90.18
+      ],
+      "feedUrl": "https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip",
+      "region": "Mississippi",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2652/latest.zip",
+      "lastFeedExpiry": "20260805",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "lancaster",
+      "name": "Red Rose Transit Authority",
+      "center": [
+        40.04,
+        -76.31
+      ],
+      "feedUrl": "https://busfinder.redrosetransit.com/Infopoint/gtfs-zip.ashx",
+      "region": "Pennsylvania",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2000/latest.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260630"
+    },
+    {
+      "slug": "colts",
+      "name": "County of Lackawanna Transit System (COLTS)",
+      "center": [
+        41.41,
+        -75.66
+      ],
+      "feedUrl": "https://coltsivl.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "region": "Pennsylvania",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4553/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260706"
+    },
+    {
+      "slug": "lcta",
+      "name": "Luzerne County Transportation Authority",
+      "center": [
+        41.25,
+        -75.88
+      ],
+      "feedUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "region": "Pennsylvania",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4555/latest.zip",
+      "lastFeedExpiry": "20301214",
+      "lastFeedVersion": "20260609"
+    },
+    {
+      "slug": "patco",
+      "name": "PATCO Speedline",
+      "center": [
+        39.95,
+        -75.12
+      ],
+      "region": "New Jersey",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "15"
     }
   ]
 }

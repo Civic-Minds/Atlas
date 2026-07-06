@@ -72,6 +72,27 @@ npm run find-mdb -- "SEPTA Philadelphia" septa "39.9526,-75.1652"
 ```
 It queries the live MDB catalog (using your MDB_REFRESH_TOKEN), shows matches, current hosted URL, and a ready-to-paste index.json snippet. Then use the URL with `npm run process`.
 
+**Automated gap discovery (recommended at 300+ agencies):**
+```bash
+npm run discover-gaps                    # top 50 uncovered US/CA feeds by population
+npm run discover-gaps -- --region Ontario --limit 20
+npm run discover-gaps -- --min-pop 100000
+```
+Downloads [MDB feeds_v2.csv](https://files.mobilitydatabase.org/feeds_v2.csv), spatially anti-joins against `index.json`, ranks by metro population, writes `tmp/gap-candidates.json`. Triage into [`docs/AGENCY_BACKLOG.md`](docs/AGENCY_BACKLOG.md).
+
+## Batch adding agencies
+
+Adding agencies one at a time is slow because PMTiles must be rebuilt for routes to appear on the base map. Batch instead:
+
+1. `npm run discover-gaps` or pick rows from [`docs/AGENCY_BACKLOG.md`](docs/AGENCY_BACKLOG.md)
+2. Run `npm run process` for each candidate (parallel OK — R2 uploads are independent)
+3. Edit `public/data/index.json`: set `region`, `feedUrl`, `mdbFeedUrl`, `bbox` if needed
+4. `npm run refresh -- slug1 slug2 slug3 --force` (one command, all slugs)
+5. **One** `npm run build-pmtiles` + rclone upload (see `CLAUDE.md` / `AGENTS.md`)
+6. Mark rows `done` in `AGENCY_BACKLOG.md`; add `CHANGELOG.md` entry
+
+Do not rebuild PMTiles after every single agency — batch 10–15 adds per rebuild.
+
 ---
 
 [Back to Home](./README.md)
