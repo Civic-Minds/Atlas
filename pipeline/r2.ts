@@ -141,29 +141,35 @@ export async function r2PutArchiveJson(key: string, body: string): Promise<void>
   await r2PutRaw(key, body, 'application/json', requireEnv('R2_ARCHIVE_BUCKET_NAME'));
 }
 
+async function r2GetRaw(key: string, bucket: string): Promise<string | null> {
+  const client = getR2Client();
+  const maxAttempts = 4;
+  let lastErr: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+      return await res.Body!.transformToString();
+    } catch (err: any) {
+      if (err.name === 'NoSuchKey') return null;
+      lastErr = err;
+      if (attempt < maxAttempts && isRetryableR2Error(err)) {
+        await sleep(500 * 2 ** (attempt - 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 /** Read text from the private archive bucket. */
 export async function r2GetArchive(key: string): Promise<string | null> {
-  const client = getR2Client();
-  const bucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
-  try {
-    const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-    return await res.Body!.transformToString();
-  } catch (e: any) {
-    if (e.name === 'NoSuchKey') return null;
-    throw e;
-  }
+  return r2GetRaw(key, requireEnv('R2_ARCHIVE_BUCKET_NAME'));
 }
 
 export async function r2Get(key: string): Promise<string | null> {
-  const client = getR2Client();
-  const bucket = requireEnv('R2_BUCKET_NAME');
-  try {
-    const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-    return await res.Body!.transformToString();
-  } catch (e: any) {
-    if (e.name === 'NoSuchKey') return null;
-    throw e;
-  }
+  return r2GetRaw(key, requireEnv('R2_BUCKET_NAME'));
 }
 
 async function r2ListAll(bucket: string, prefix: string): Promise<string[]> {
@@ -171,7 +177,23 @@ async function r2ListAll(bucket: string, prefix: string): Promise<string[]> {
   const keys: string[] = [];
   let token: string | undefined;
   do {
-    const res = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: token }));
+    const maxAttempts = 4;
+    let res: any;
+    let lastErr: unknown;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        res = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: token }));
+        break;
+      } catch (err) {
+        lastErr = err;
+        if (attempt < maxAttempts && isRetryableR2Error(err)) {
+          await sleep(500 * 2 ** (attempt - 1));
+          continue;
+        }
+        throw err;
+      }
+    }
+    if (!res) throw lastErr;
     for (const obj of res.Contents ?? []) if (obj.Key) keys.push(obj.Key);
     token = res.IsTruncated ? res.NextContinuationToken : undefined;
   } while (token);

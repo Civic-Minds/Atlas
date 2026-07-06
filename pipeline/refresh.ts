@@ -14,6 +14,7 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2
 import JSZip from 'jszip';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
+import { runWithConcurrency } from './utils.js';
 
 config({ path: resolve('.env.local') });
 
@@ -170,10 +171,22 @@ async function downloadFeed(url: string): Promise<Buffer> {
   }
 }
 
-async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: number): Promise<string> {
+async function refreshAgency(
+  agency: AgencyEntry,
+  manualBaseFareOverride?: number,
+  logger?: { log: (msg: string) => void }
+): Promise<string> {
   if (!agency.feedUrl) {
     return 'skipped (no feedUrl)';
   }
+
+  const writeLog = (msg: string) => {
+    if (logger) {
+      logger.log(msg);
+    } else {
+      process.stdout.write(msg);
+    }
+  };
 
   let buf: Buffer;
   try {
@@ -183,7 +196,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
     }
   } catch (primaryErr) {
     if (!agency.mdbFeedUrl) throw primaryErr;
-    process.stdout.write(`\n  [warn] primary feed failed (${(primaryErr as Error).message}) — trying MDB fallback\n  `);
+    writeLog(`\n  [warn] primary feed failed (${(primaryErr as Error).message}) — trying MDB fallback\n  `);
     buf = await downloadFeed(agency.mdbFeedUrl);
   }
 
@@ -201,7 +214,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
     if (peekedExpiry < today) {
       const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
       const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
-      process.stdout.write(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
+      writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
     }
   }
 
@@ -235,7 +248,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
 
     for (const suppUrl of agency.supplementalFeedUrls) {
       const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
-      process.stdout.write(`\n    ↳ ${label} ... `);
+      writeLog(`\n    ↳ ${label} ... `);
       const suppBuf = await downloadFeed(suppUrl);
       const supp = await processGtfsBuffer(suppBuf, undefined, {
         routeTypes: agency.routeTypes,
@@ -246,9 +259,9 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
       Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
       Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
       featureCount += supp.featureCount;
-      process.stdout.write(`+${supp.featureCount} features`);
+      writeLog(`+${supp.featureCount} features`);
     }
-    process.stdout.write('\n    ');
+    writeLog('\n    ');
 
     geojson = JSON.stringify({ type: 'FeatureCollection', features: mainFeatures });
     corridorsGeojson = JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures });
@@ -257,7 +270,7 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
   }
 
   if (featureCount === 0) {
-    process.stdout.write(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?)\n`);
+    writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?)\n`);
     agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
     agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
     return '0 features, skipped';
@@ -281,14 +294,14 @@ async function refreshAgency(agency: AgencyEntry, manualBaseFareOverride?: numbe
   if (archiveKey) {
     await r2PutArchive(`gtfs/archive/${agency.slug}/${archiveKey}.zip`, buf, 'application/zip');
   } else {
-    process.stdout.write(`  [warn] no feed_end_date or feed_version — zip not archived\n`);
+    writeLog(`  [warn] no feed_end_date or feed_version — zip not archived\n`);
   }
   agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
   agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
   const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);
-  process.stdout.write(`  history: ${histResult}\n`);
+  writeLog(`  history: ${histResult}\n`);
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return `${featureCount} features, ${kb} KB`;
@@ -318,20 +331,28 @@ async function main() {
   }
 
   let failures = 0;
-  for (const agency of targets) {
-    process.stdout.write(`  ${agency.slug.padEnd(12)} ... `);
+  const tasks = targets.map(agency => async () => {
+    let logBuffer = '';
+    const logger = {
+      log: (msg: string) => {
+        logBuffer += msg;
+      }
+    };
     try {
-      const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare);
-      console.log(summary);
+      const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
+      console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
       // Clear staged flag once data is live so the next deploy shows the agency.
       if (agency.staged) delete agency.staged;
       // Write after each agency so a mid-run crash doesn't lose lastFeedExpiry for completed ones.
       writeFileSync(indexPath, JSON.stringify(index, null, 2));
     } catch (e) {
       failures++;
-      console.log(`FAILED — ${e instanceof Error ? e.message : e}`);
+      console.log(`  ${agency.slug.padEnd(12)} ... FAILED — ${e instanceof Error ? e.message : e}${logBuffer}`);
     }
-  }
+  });
+
+  console.log(`Refreshing ${targets.length} agencies in parallel (concurrency 5)...`);
+  await runWithConcurrency(tasks, 5);
 
   console.log(`\n  index.json updated. ${targets.length - failures}/${targets.length} succeeded.`);
   if (failures > 0) {

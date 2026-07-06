@@ -4,6 +4,7 @@ import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { r2PutFile } from './r2';
 import { getAgencyArtifactUrls } from '../shared/config.js';
+import { runWithConcurrency } from './utils.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -51,7 +52,7 @@ async function main() {
   const allStops: Feature[] = [];
   const allCorridors: Feature[] = [];
 
-  for (const agency of agencies) {
+  const downloadTasks = agencies.map(agency => async () => {
     const slug = agency.slug;
     const arts = getAgencyArtifactUrls(slug);
     const url = agency.url || arts.url;
@@ -61,7 +62,6 @@ async function main() {
 
     // 1. Routes
     if (url) {
-      console.log(`  Downloading routes from ${url}`);
       const data = await fetchJson(url);
       if (data && data.features) {
         data.features.forEach(f => {
@@ -75,7 +75,6 @@ async function main() {
 
     // 2. Stops
     if (stopsUrl) {
-      console.log(`  Downloading stops from ${stopsUrl}`);
       const data = await fetchJson(stopsUrl);
       if (data) {
         let stopFeatures: any[] = [];
@@ -103,7 +102,6 @@ async function main() {
 
     // 3. Corridors
     if (corridorsUrl) {
-      console.log(`  Downloading corridors from ${corridorsUrl}`);
       const data = await fetchJson(corridorsUrl);
       if (data && data.features) {
         data.features.forEach(f => {
@@ -113,7 +111,10 @@ async function main() {
         });
       }
     }
-  }
+  });
+
+  console.log(`Downloading routes, stops, and corridors for ${agencies.length} agencies in parallel (concurrency 20)...`);
+  await runWithConcurrency(downloadTasks, 20);
 
   console.log(`Collected features — routes: ${allRoutes.length}, stops: ${allStops.length}, corridors: ${allCorridors.length}`);
   if (allRoutes.length === 0) console.warn("WARNING: 0 routes features — routes layer will be missing from PMTiles!");

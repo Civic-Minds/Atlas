@@ -43,3 +43,34 @@ export function formatDistance(meters: number): string {
     }
     return `${Math.round(meters)} m`;
 }
+
+/**
+ * Run a list of asynchronous tasks with a maximum concurrency.
+ */
+export async function runWithConcurrency<T>(
+  tasks: (() => Promise<T>)[],
+  concurrency: number
+): Promise<T[]> {
+  const results: T[] = [];
+  let index = 0;
+
+  async function runTask(taskIndex: number): Promise<void> {
+    const task = tasks[taskIndex];
+    results[taskIndex] = await task();
+  }
+
+  const enqueue = async (): Promise<void> => {
+    if (index === tasks.length) return;
+    const currentIdx = index++;
+    await runTask(currentIdx);
+    await enqueue();
+  };
+
+  const initialPromises: Promise<void>[] = [];
+  for (let i = 0; i < Math.min(concurrency, tasks.length); i++) {
+    initialPromises.push(enqueue());
+  }
+  await Promise.all(initialPromises);
+  return results;
+}
+

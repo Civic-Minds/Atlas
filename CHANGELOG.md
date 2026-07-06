@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+- **Pipeline Concurrency**: Introduced parallel processing to pipeline stages (agency feed refreshes, PMTiles metadata downloads, and history snapshot compilation).
+- **R2 Retry Logic**: Implemented robust retry handling with exponential backoff for R2 GET and LIST actions to prevent SSL/socket hangups under high concurrency.
+
 ### Fixed
 - **Refresh GTFS feeds workflow**: Fixed failure in `refresh-feeds.yml` by adding the missing `R2_PUBLIC_URL` environment variable to the `build-history` step.
 - **Workflow Error Handling**: Updated `pipeline/build-history.ts` to call `process.exit(1)` on error so that failures in history generation fail the workflow rather than passing silently.

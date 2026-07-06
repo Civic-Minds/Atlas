@@ -17,6 +17,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Put } from './r2.js';
+import { runWithConcurrency } from './utils.js';
 
 config({ path: resolve('.env.local') });
 
@@ -148,6 +149,7 @@ async function main() {
     headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
   }>>> = {};
 
+  const tasks: (() => Promise<void>)[] = [];
   for (const key of keys) {
     const parts = key.split('/');
     // history/{slug}/{routeShortName}/{periodKey}.json → parts.length === 4
@@ -156,24 +158,29 @@ async function main() {
     if (!filename.endsWith('.json')) continue;
     const periodKey = filename.replace('.json', '');
 
-    try {
-      const raw = await r2GetArchive(key);
-      if (!raw) continue;
-      const data = JSON.parse(raw);
-      const h = data.headway;
-      if (h == null) continue;
-      if (!archiveRoutes[slug]) archiveRoutes[slug] = {};
-      if (!archiveRoutes[slug][routeShortName]) archiveRoutes[slug][routeShortName] = [];
-      archiveRoutes[slug][routeShortName].push({
-        periodKey,
-        headway: h,
-        routeLongName: data.routeLongName ?? undefined,
-        headwayByPeriod: data.headwayByPeriod ?? undefined,
-      });
-    } catch (err) {
-      console.error(`Failed to parse: ${key}`, err);
-    }
+    tasks.push(async () => {
+      try {
+        const raw = await r2GetArchive(key);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        const h = data.headway;
+        if (h == null) return;
+        if (!archiveRoutes[slug]) archiveRoutes[slug] = {};
+        if (!archiveRoutes[slug][routeShortName]) archiveRoutes[slug][routeShortName] = [];
+        archiveRoutes[slug][routeShortName].push({
+          periodKey,
+          headway: h,
+          routeLongName: data.routeLongName ?? undefined,
+          headwayByPeriod: data.headwayByPeriod ?? undefined,
+        });
+      } catch (err) {
+        console.error(`Failed to parse: ${key}`, err);
+      }
+    });
   }
+
+  console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency 50)...`);
+  await runWithConcurrency(tasks, 50);
 
   // 2. Merge BASE_HISTORY manual seeds into archiveRoutes
   for (const agency of BASE_HISTORY) {
@@ -202,15 +209,10 @@ async function main() {
   console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
 
   const currentHeadways: Record<string, Record<string, { headway: number }>> = {};
-  // Fetch in chunks to avoid hammering R2 with 65 simultaneous requests.
-  const CHUNK = 10;
-  for (let i = 0; i < slugsWithData.length; i += CHUNK) {
-    await Promise.all(
-      slugsWithData.slice(i, i + CHUNK).map(async slug => {
-        currentHeadways[slug] = await loadLatestHeadways(slug);
-      })
-    );
-  }
+  const headwayTasks = slugsWithData.map(slug => async () => {
+    currentHeadways[slug] = await loadLatestHeadways(slug);
+  });
+  await runWithConcurrency(headwayTasks, 25);
 
   const currentYear = new Date().getFullYear();
   const historyData: any[] = [];
