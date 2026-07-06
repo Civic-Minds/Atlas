@@ -109,7 +109,7 @@ export function formatRemDisplay(shortName: string | null | undefined, longName:
   return `${shortName} — ${cleaned}`;
 }
 
-export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string): string {
+export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string | null): string {
   // SMART Train (Sonoma-Marin): long name is just "Main Line", combine with agency name
   if (agencyName && /smart/i.test(agencyName) && longName && /Main Line/i.test(longName)) {
     return 'SMART Train';
