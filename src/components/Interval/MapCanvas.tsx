@@ -616,21 +616,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-    // maxHeadway from the headway pill; Infinity means "show all"
-    const capHeadway = maxHeadway === Infinity ? 9999 : maxHeadway;
-
-    // Headway expression for filters.
-    // Treat tier==='infrequent' (and missing/null) as 9999 so they fail finite headway gates.
-    // This makes map filtering match the JS passesRouteFilter / resolveTierVal logic.
+    // Headway expression for zoom gate only (progressive reveal by zoom level).
     const headwayExpr: any = ['case',
       ['==', ['get', 'tier'], 'infrequent'], 9999,
       ['coalesce', ['get', 'headway'], 9999]
     ];
-
-    // Headway pill filter — applied whenever showRouteLayers is true
-    const headwayPillFilter: any = capHeadway < 9999
-      ? ['<=', headwayExpr, capHeadway]
-      : null;
 
     // Hide span (irregular) routes from the map when hideSpan is active
     // MapLibre expression to compute the effective mode of a feature (matches useIntervalStats.ts effectiveMode)
@@ -689,10 +679,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const searchClause = matchedAgencySlug
         ? ['==', 'agencySlug', matchedAgencySlug]
         : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]];
-      const clauses = [tileFilter, searchClause, headwayPillFilter, modeFilter].filter(Boolean);
+      const clauses = [tileFilter, searchClause, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     } else {
-      const clauses = [tileFilter, zoomGateFilter, headwayPillFilter, modeFilter].filter(Boolean);
+      const clauses = [tileFilter, zoomGateFilter, modeFilter].filter(Boolean);
       routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
     }
 

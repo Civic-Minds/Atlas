@@ -164,7 +164,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         : undefined;
                       const displayH = ph ?? d.headway;
                       const trunkHw = period !== 'all'
-                        ? ((d as any).minStopHeadwayByPeriod as Partial<Record<string, number>> | undefined)?.[period]
+                        ? (((d as any).headsignMinStopHeadwayByPeriod as Partial<Record<string, number>> | undefined)?.[period]
+                          ?? ((d as any).minStopHeadwayByPeriod as Partial<Record<string, number>> | undefined)?.[period])
                         : undefined;
                       return (
                         <RouteDirectionRow

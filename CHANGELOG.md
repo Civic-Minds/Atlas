@@ -2,11 +2,17 @@
 
 ## [Unreleased]
 
+## [3.0.5] — 2026-07-06
+
 ### Added
 - **Pipeline Concurrency**: Introduced parallel processing to pipeline stages (agency feed refreshes, PMTiles metadata downloads, and history snapshot compilation).
 - **R2 Retry Logic**: Implemented robust retry handling with exponential backoff for R2 GET and LIST actions to prevent SSL/socket hangups under high concurrency.
 
 ### Fixed
+- **GRTC missing directions (#82, #84)**: Union full-route shape clusters in the pipeline so separate weekday/weekend `shape_id`s no longer drop an entire direction from GeoJSON.
+- **Map route count badge (#83)**: Align PMTiles `tileFilter` with `passesRouteFilter` (period + worst-direction headway); remove duplicate headway filter in MapCanvas.
+- **RGRTA misleading headway ranges (#80)**: Per-headsign trunk headways (`headsignMinStopHeadwayByPeriod`) so competing branches don't produce optimistic "every 13–30 min" ranges.
+- **CDTA BusPlus casing (#81)**: Normalize `Busplus` → `BusPlus` in route title display.
 - **Refresh GTFS feeds workflow**: Fixed failure in `refresh-feeds.yml` by adding the missing `R2_PUBLIC_URL` environment variable to the `build-history` step.
 - **Workflow Error Handling**: Updated `pipeline/build-history.ts` to call `process.exit(1)` on error so that failures in history generation fail the workflow rather than passing silently.
 - **Git Push Failure**: Added `git pull --rebase origin main` before `git push` to prevent weekly refreshes from failing when concurrent commits are pushed.

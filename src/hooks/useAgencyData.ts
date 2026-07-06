@@ -29,6 +29,8 @@ export interface ShapeProperties {
   busSubType?: 'brt' | 'express' | 'coach' | 'local';
   worstDirectionHeadway?: number;
   worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
+  minStopHeadwayByPeriod?: Partial<Record<string, number>>;
+  headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
 }
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;

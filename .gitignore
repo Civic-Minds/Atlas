@@ -40,6 +40,9 @@ server/.env
 HANDOFF.md
 handoff.txt
 
+# Issue filing guidelines (local agent reference — see also CLAUDE.md)
+docs/ISSUES.md
+
 # Planning and integration docs
 INTEGRATION.md
 release-notes.txt

@@ -434,6 +434,39 @@ export async function processGtfsBuffer(
   // Build shapeById early so rail shape selection can compare lengths.
   const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
 
+  // Cluster bus shapes by approximate point count, then union all full-route clusters.
+  // Winner-take-all dropped GRTC directions when weekday/weekend shape_ids differ slightly
+  // in length (e.g. BRT dir 1: 829 vs 753 pts) but are both full-route variants.
+  const SHORT_TURN_LEN_RATIO = 0.75;
+  function busAnalysisShapeIds(
+    shapeEntries: { sid: string; trips: number; len: number }[],
+  ): Set<string> {
+    if (shapeEntries.length === 0) return new Set();
+    const clusters: { shapeIds: string[]; trips: number; repLen: number }[] = [];
+    for (const e of shapeEntries) {
+      const tol = Math.max(10, Math.round(e.len * 0.01));
+      const cluster = clusters.find(c => Math.abs(c.repLen - e.len) <= tol);
+      if (cluster) {
+        cluster.shapeIds.push(e.sid);
+        cluster.trips += e.trips;
+      } else {
+        clusters.push({ shapeIds: [e.sid], trips: e.trips, repLen: e.len });
+      }
+    }
+    const maxLen = Math.max(...shapeEntries.map(e => e.len));
+    const shapeIds = new Set<string>();
+    for (const c of clusters) {
+      if (c.repLen >= maxLen * SHORT_TURN_LEN_RATIO) {
+        for (const sid of c.shapeIds) shapeIds.add(sid);
+      }
+    }
+    if (shapeIds.size === 0) {
+      const winning = clusters.sort((a, b) => b.trips - a.trips)[0];
+      if (winning) for (const sid of winning.shapeIds) shapeIds.add(sid);
+    }
+    return shapeIds;
+  }
+
   // Two separate shape maps:
   // - routeDirToDisplayShape: longest shape per direction, so branching routes (e.g. HSR Route 5
   //   via Downtown Dundas) show their full geographic extent on the map.
@@ -462,27 +495,11 @@ export async function processGtfsBuffer(
         .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
       if (byLength) routeDirToDisplayShape.set(key, byLength);
 
-      // Bus analysis: cluster shapes by approximate point count (geometry-equivalence proxy).
-      // TTC uses separate shape_ids per AM/PM block on the same path; Burlington uses
-      // different shape_ids per day-type (weekday vs weekend) with nearly identical point
-      // counts — picking only the global trip-count winner drops weekday service entirely.
-      // Genuine short-turns still have a much smaller point count and stay excluded.
       const shapeEntries = [...counts.entries()]
         .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
         .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
-      const clusters: { shapeIds: string[]; trips: number; repLen: number }[] = [];
-      for (const e of shapeEntries) {
-        const tol = Math.max(10, Math.round(e.len * 0.01));
-        const cluster = clusters.find(c => Math.abs(c.repLen - e.len) <= tol);
-        if (cluster) {
-          cluster.shapeIds.push(e.sid);
-          cluster.trips += e.trips;
-        } else {
-          clusters.push({ shapeIds: [e.sid], trips: e.trips, repLen: e.len });
-        }
-      }
-      const winningGroup = clusters.sort((a, b) => b.trips - a.trips)[0];
-      if (winningGroup) routeDirToAnalysisShapes.set(key, new Set(winningGroup.shapeIds));
+      const analysisShapes = busAnalysisShapeIds(shapeEntries);
+      if (analysisShapes.size > 0) routeDirToAnalysisShapes.set(key, analysisShapes);
     }
   }
 
@@ -516,15 +533,8 @@ export async function processGtfsBuffer(
       .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
       .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
     if (shapeEntries.length === 0) continue;
-    const hClusters: { shapeIds: string[]; trips: number; repLen: number }[] = [];
-    for (const e of shapeEntries) {
-      const tol = Math.max(10, Math.round(e.len * 0.01));
-      const cluster = hClusters.find(c => Math.abs(c.repLen - e.len) <= tol);
-      if (cluster) { cluster.shapeIds.push(e.sid); cluster.trips += e.trips; }
-      else hClusters.push({ shapeIds: [e.sid], trips: e.trips, repLen: e.len });
-    }
-    const winning = hClusters.sort((a, b) => b.trips - a.trips)[0];
-    if (winning) shapeFilterForPhase1.set(hKey, new Set(winning.shapeIds));
+    const analysisShapes = busAnalysisShapeIds(shapeEntries);
+    if (analysisShapes.size > 0) shapeFilterForPhase1.set(hKey, analysisShapes);
   }
 
   onStatus?.('Running phase 1...');
@@ -556,22 +566,34 @@ export async function processGtfsBuffer(
       if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
     }
   }
-  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string }>();
+  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null }>();
   for (const trip of gtfs.trips ?? []) {
     const dayType = serviceIdToDayType.get(trip.service_id);
     if (!dayType) continue;
     // Use shortName as the group key so agencies with multiple route_ids per line (e.g. GO Transit
     // date-prefixed IDs like 04260626-LW / 06260926-LW) merge into one combined stop frequency group.
-    const shortName = routeById.get(trip.route_id)?.route_short_name ?? trip.route_id;
+    const route = routeById.get(trip.route_id);
+    const shortName = route?.route_short_name ?? trip.route_id;
+    const longName = route?.route_long_name?.trim() ?? null;
+    let rawHeadsign = trip.trip_headsign?.trim() || null;
+    if (!rawHeadsign) {
+      const lastStopId = lastStopByTrip.get(trip.trip_id);
+      if (lastStopId) rawHeadsign = stopNameById.get(lastStopId) ?? null;
+    }
+    const headsign = rawHeadsign ? cleanHeadsign(rawHeadsign, shortName, longName) || rawHeadsign : null;
     tripGroupByTripId.set(trip.trip_id, {
       routeId: trip.route_id,
       shortName,
       dirId: String(trip.direction_id ?? '0'),
       dayType,
+      headsign,
     });
   }
   // stopDepsByGroup["routeId::dirId::dayType"] → stopId → sorted departure minutes
   const stopDepsByGroup = new Map<string, Map<string, number[]>>();
+  // Headsign-scoped deps for display trunk headways (RGRTA 21/22: combined trunk deps
+  // from competing branches produced misleading "every 13–30 min" ranges).
+  const stopDepsByHeadsignGroup = new Map<string, Map<string, number[]>>();
   // Track first visit per (trip_id, stop_id) to avoid double-counting loop routes
   // where the terminus appears at both the start and end of the same trip.
   const stopFirstVisit = new Map<string, Set<string>>();
@@ -706,6 +728,11 @@ export async function processGtfsBuffer(
           const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
           let stopMap = stopDepsByGroup.get(gKey);
           if (!stopMap) { stopMap = new Map(); stopDepsByGroup.set(gKey, stopMap); }
+          const pushDep = (map: Map<string, number[]>, stopId: string, mins: number) => {
+            let arr = map.get(stopId);
+            if (!arr) { arr = []; map.set(stopId, arr); }
+            arr.push(mins);
+          };
           // Only count first visit per (trip, stop) — loop routes visit the terminus
           // at both the start and end of each trip, which would otherwise interleave
           // outbound and inbound times to produce a falsely short headway (AI-121).
@@ -713,16 +740,23 @@ export async function processGtfsBuffer(
           if (!visitSet) { visitSet = new Set(); stopFirstVisit.set(st.trip_id, visitSet); }
           if (!visitSet.has(st.stop_id)) {
             visitSet.add(st.stop_id);
-            // Add departure to child stop
-            let arr = stopMap.get(st.stop_id);
-            if (!arr) { arr = []; stopMap.set(st.stop_id, arr); }
-            arr.push(mins);
+            pushDep(stopMap, st.stop_id, mins);
+            if (grp.headsign) {
+              const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
+              let hsMap = stopDepsByHeadsignGroup.get(hsKey);
+              if (!hsMap) { hsMap = new Map(); stopDepsByHeadsignGroup.set(hsKey, hsMap); }
+              pushDep(hsMap, st.stop_id, mins);
+            }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             if (parentId && !visitSet.has(parentId)) {
               visitSet.add(parentId);
-              let parentArr = stopMap.get(parentId);
-              if (!parentArr) { parentArr = []; stopMap.set(parentId, parentArr); }
-              parentArr.push(mins);
+              pushDep(stopMap, parentId, mins);
+              if (grp.headsign) {
+                const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
+                let hsMap = stopDepsByHeadsignGroup.get(hsKey);
+                if (!hsMap) { hsMap = new Map(); stopDepsByHeadsignGroup.set(hsKey, hsMap); }
+                pushDep(hsMap, parentId, mins);
+              }
             }
           }
         }
@@ -935,6 +969,35 @@ export async function processGtfsBuffer(
     }
     feature.properties.headwayByPeriod = periodMedians;
     feature.properties.minStopHeadwayByPeriod = periodMins;
+
+    // Headsign-scoped trunk minimums for route-card range display. minStopHeadwayByPeriod
+    // stays route-wide (combined deps) so map filters still show routes when any section qualifies.
+    const featHeadsign = feature.properties.headsign as string | null;
+    if (featHeadsign) {
+      const hsStopMap = stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`);
+      if (hsStopMap) {
+        const hsPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+        for (const [stopId, times] of hsStopMap) {
+          times.sort((a, b) => a - b);
+          const byPeriod: Partial<Record<PeriodKey, number>> = {};
+          for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+            const ph = medianHeadwayInWindow(times, start, end, 3);
+            if (ph != null) byPeriod[pk] = ph;
+          }
+          if (Object.keys(byPeriod).length > 0) hsPeriodHw[stopId] = byPeriod;
+        }
+        const headsignPeriodMins: Partial<Record<PeriodKey, number>> = {};
+        for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
+          const vals = onShape
+            .map(({ stopId }) => hsPeriodHw[stopId]?.[pk])
+            .filter((v): v is number => v != null);
+          if (vals.length > 0) headsignPeriodMins[pk] = Math.min(...vals);
+        }
+        if (Object.keys(headsignPeriodMins).length > 0) {
+          feature.properties.headsignMinStopHeadwayByPeriod = headsignPeriodMins;
+        }
+      }
+    }
 
     // Hourly headways from terminal stop for the sparkline.
     const terminalHourHw = terminalStopId ? allStopHourHw[terminalStopId] : undefined;

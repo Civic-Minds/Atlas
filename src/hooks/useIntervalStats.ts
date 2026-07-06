@@ -183,6 +183,27 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
   return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
 }
 
+/** MapLibre expression mirroring passesRouteFilter headway gating for PMTiles. */
+function tileEffectiveHeadwayExpr(period?: TimePeriod): any {
+  const tierFallback: any = ['case',
+    ['==', ['get', 'tier'], 'infrequent'], 9999,
+    ['coalesce', ['get', 'headway'], 9999],
+  ];
+  if (period && period !== 'all') {
+    return ['coalesce',
+      ['get', period, ['get', 'minStopHeadwayByPeriod']],
+      ['get', period, ['get', 'worstDirectionHeadwayByPeriod']],
+      ['get', period, ['get', 'headwayByPeriod']],
+      tierFallback,
+    ];
+  }
+  return ['coalesce',
+    ['get', 'worstDirectionHeadway'],
+    ['get', 'minStopHeadway'],
+    tierFallback,
+  ];
+}
+
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
   const dy = (lat2 - lat1) * 111320;
@@ -381,19 +402,14 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
     // Note: mode filter is handled in MapCanvas (has special virtual-mode expression for OCTranspo/ION)
 
-    // Headway pill - treat tier==='infrequent' (and missing/null headway) as 9999 so they are filtered out under any finite maxHeadway.
-    // This aligns the MapLibre expression with passesRouteFilter + resolveTierVal (infrequent → Infinity).
+    // Headway pill — mirrors passesRouteFilter (period, worst-direction, min-stop).
     if (maxHeadway !== Infinity) {
-      const effHw = ['case',
-        ['==', ['get', 'tier'], 'infrequent'], 9999,
-        ['coalesce', ['get', 'headway'], 9999]
-      ];
-      clauses.push(['<=', effHw, maxHeadway]);
+      clauses.push(['<=', tileEffectiveHeadwayExpr(period), maxHeadway]);
     }
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [agencies, day, hideSpan, modes, maxHeadway]);
+  }, [agencies, day, hideSpan, modes, maxHeadway, period]);
 
   return { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
 }

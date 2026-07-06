@@ -8,6 +8,7 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Hsr: 'HSR',
   Grt: 'GRT',
   Brt: 'BRT',
+  Busplus: 'BusPlus',
   Lrt: 'LRT',
   Nfta: 'NFTA',
   Ltc: 'LTC',

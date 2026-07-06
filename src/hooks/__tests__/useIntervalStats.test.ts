@@ -244,4 +244,30 @@ describe('useIntervalStats', () => {
     }));
     expect(noisy.current.filteredLayers['ttc']).toBeUndefined();
   });
+
+  it('should filter by worst-direction period headway', () => {
+    const layers: AgencyLayers = {
+      'test': {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: {
+            routeId: '1',
+            headway: 10,
+            tier: '10',
+            headwayByPeriod: { midday: 10 },
+            worstDirectionHeadwayByPeriod: { midday: 45 },
+          },
+        }],
+      },
+    };
+    const base = { ...defaultFilters, maxHeadway: 30, period: 'midday' as const };
+
+    const { result: passes } = renderHook(() => useIntervalStats(layers, { ...base, period: 'all' }));
+    expect(passes.current.stats?.matching).toBe(1);
+
+    const { result: fails } = renderHook(() => useIntervalStats(layers, base));
+    expect(fails.current.stats?.matching).toBe(0);
+  });
 });
