@@ -334,7 +334,10 @@ async function main() {
   }
 
   console.log(`\n  index.json updated. ${targets.length - failures}/${targets.length} succeeded.`);
-  if (failures > 0) process.exit(1);
+  if (failures > 0) {
+    console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
+    // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)
+  }
 }
 
 main().catch(e => {
