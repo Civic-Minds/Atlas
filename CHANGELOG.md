@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Refresh: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.
+
 ## [3.0.1] — 2026-07-06
 
 - **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
