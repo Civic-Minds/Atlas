@@ -638,7 +638,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const fareViewMatchedAgencies = fareView && query !== ''
     ? suggestedFareAgencies
         .map(a => ({ ...a, agencyData: agencies.find(ag => ag.slug === a.slug) }))
-        .filter(a => a.name.toLowerCase().includes(query.toLowerCase()) || (a.region || '').toLowerCase().includes(query.toLowerCase()))
+        .filter(a => a.name.toLowerCase().includes(query.toLowerCase()) || (a.agencyData?.region || '').toLowerCase().includes(query.toLowerCase()))
     : [];
 
   const hasContent = !!(currentStop || currentRoute || (query !== '' && (fareView ? fareViewMatchedAgencies.length > 0 : searchMatchResults !== null)) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
