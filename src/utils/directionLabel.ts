@@ -35,13 +35,7 @@ function centroid(coords: LonLat[]): LonLat | null {
   return [lon / coords.length, lat / coords.length];
 }
 
-function dist2(a: LonLat, b: LonLat): number {
-  const dx = a[0] - b[0];
-  const dy = a[1] - b[1];
-  return dx * dx + dy * dy;
-}
-
-/** Mean terminal point + bearing from route centroid for one direction_id group. */
+/** Service bearing for a direction_id group: mean shape start → mean shape end. */
 export function directionGroupBearing(
   features: GeoJSON.Feature[],
   dirId: number,
@@ -49,38 +43,30 @@ export function directionGroupBearing(
   const group = features.filter(f => (f.properties as { directionId?: number })?.directionId === dirId);
   if (group.length === 0) return null;
 
-  const allCoords = group.flatMap(f => lineCoords(f.geometry));
-  const center = centroid(allCoords);
-  if (!center) return null;
-
-  const terminals: LonLat[] = [];
+  const starts: LonLat[] = [];
+  const ends: LonLat[] = [];
   for (const f of group) {
     const coords = lineCoords(f.geometry);
     if (coords.length < 2) continue;
-    const start = coords[0];
-    const end = coords[coords.length - 1];
-    terminals.push(dist2(start, center) >= dist2(end, center) ? start : end);
+    starts.push(coords[0]);
+    ends.push(coords[coords.length - 1]);
   }
-  if (terminals.length === 0) return null;
+  if (starts.length === 0) return null;
 
-  const terminal = centroid(terminals)!;
-  return bearingDegrees(center[1], center[0], terminal[1], terminal[0]);
+  const start = centroid(starts)!;
+  const end = centroid(ends)!;
+  return bearingDegrees(start[1], start[0], end[1], end[0]);
 }
 
+/** Mean longitude of shape ends (for west-to-east group sort). */
 export function directionGroupTerminalLon(features: GeoJSON.Feature[], dirId: number): number | null {
   const group = features.filter(f => (f.properties as { directionId?: number })?.directionId === dirId);
-  const allCoords = group.flatMap(f => lineCoords(f.geometry));
-  const center = centroid(allCoords);
-  if (!center) return null;
-
-  const terminals: LonLat[] = [];
+  const ends: LonLat[] = [];
   for (const f of group) {
     const coords = lineCoords(f.geometry);
     if (coords.length < 2) continue;
-    const start = coords[0];
-    const end = coords[coords.length - 1];
-    terminals.push(dist2(start, center) >= dist2(end, center) ? start : end);
+    ends.push(coords[coords.length - 1]);
   }
-  if (terminals.length === 0) return null;
-  return centroid(terminals)![0];
+  if (ends.length === 0) return null;
+  return centroid(ends)![0];
 }
