@@ -6,6 +6,8 @@
 - **Branch hover highlight (#96)**: Hovering a destination row in the route card highlights that headsign's geometry on the map; sibling branches dim. Inbound (direction 1) branches reveal on hover. Sibling rows in the card fade while hovering.
 
 ### Fixed
+- **Route card direction groups (#97)**: Multi-direction routes show Westbound/Eastbound (etc.) section labels, a divider between groups, and west-to-east sort from branch terminal geometry.
+- **Route card sparkline (#98)**: Headway chart uses outbound branches only by default (median per hour); follows the hovered branch when one is selected — fixes misleading tall-bar/dot patterns on multi-branch routes.
 - **Local dev data loading**: Vite proxies `/atlas-data` to R2 so localhost bypasses browser CORS blocks on artifact fetches.
 - **Map zoom gate**: Progressive route reveal by zoom now uses paint opacity (MapLibre filters cannot use `zoom` expressions).
 

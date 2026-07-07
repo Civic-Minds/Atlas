@@ -25,10 +25,32 @@ function periodHeadwayFromByHour(
   return best;
 }
 
+function medianHeadway(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+}
+
+/** Merge hourly headways across branches — median per hour avoids min-spike artifacts (#98). */
+function mergeHeadwayByHour(
+  directions: ShapeProperties[],
+  hours: readonly number[],
+): Record<number, number | null> {
+  const merged: Record<number, number | null> = {};
+  for (const h of hours) {
+    const values = directions
+      .map(d => (d as { headwayByHour?: Record<number, number | null> }).headwayByHour?.[h])
+      .filter((v): v is number => v != null);
+    merged[h] = values.length === 0 ? null : values.length === 1 ? values[0] : medianHeadway(values);
+  }
+  return merged;
+}
+
 export interface DirectionGroup {
   dirId: number;
   realTier: ShapeProperties[];
   span: ShapeProperties[];
+  boundLabel?: string;
 }
 
 export interface CurrentRouteData {
@@ -106,16 +128,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       </div>
       {(() => {
         const HOURS = SPARKLINE_HOURS;
-        const merged: Record<number, number | null> = {};
-        for (const h of HOURS) merged[h] = null;
-        for (const d of currentRoute.directions) {
-          const bh = (d as any).headwayByHour as Record<number, number | null> | undefined;
-          if (!bh) continue;
-          for (const h of HOURS) {
-            const v = bh[h];
-            if (v != null && (merged[h] == null || v < merged[h]!)) merged[h] = v;
-          }
-        }
+        const sparklineDirs = hoveredBranch
+          ? currentRoute.directions.filter(
+              d => d.directionId === hoveredBranch.directionId && d.headsign === hoveredBranch.headsign,
+            )
+          : currentRoute.directions.filter(d => (d.directionId ?? 0) === 0);
+        const merged = mergeHeadwayByHour(sparklineDirs, HOURS);
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (
@@ -152,8 +170,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               .filter(Boolean);
             return (
               <React.Fragment key={group.dirId}>
-                {gi > 0 && displayGroups.length > 1 && displayGroups.length > 2 && (
+                {gi > 0 && displayGroups.length > 1 && (
                   <div className="border-t border-[var(--border-primary)] opacity-30" />
+                )}
+                {displayGroups.length > 1 && group.boundLabel && (
+                  <div className="text-[9px] font-black uppercase tracking-wider text-[var(--text-dim)]">
+                    {group.boundLabel}
+                  </div>
                 )}
                 <div className="space-y-2">
                   {group.realTier.map((d, i) => {

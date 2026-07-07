@@ -7,6 +7,7 @@ import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
+import { cardinalBoundLabel, directionGroupBearing, directionGroupTerminalLon } from '../../utils/directionLabel';
 import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
@@ -270,7 +271,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (aH !== bH) return aH - bH;
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
-    return { ...first, directions };
+    return { ...first, directions, features };
   }, [selectedRoute, nonCorridorLayers, currentDay]);
 
   const liveAgencySlug = useMemo(() => {
@@ -287,7 +288,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // and collapse multiple span patterns in the same group into one row.
   const directionGroups = useMemo(() => {
     if (!currentRoute) return [];
-    type Group = { dirId: number; realTier: ShapeProperties[]; span: ShapeProperties[] };
+    const routeFeatures = (currentRoute as { features?: GeoJSON.Feature[] }).features ?? [];
+    type Group = { dirId: number; realTier: ShapeProperties[]; span: ShapeProperties[]; boundLabel?: string };
     const map = new Map<number, Group>();
     for (const d of currentRoute.directions) {
       const dirId = d.directionId ?? 0;
@@ -309,11 +311,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
       g.realTier = Array.from(seen.values());
     }
-    return Array.from(map.values()).sort((a, b) => {
-      const aMin = a.realTier[0]?.headway ?? Infinity;
-      const bMin = b.realTier[0]?.headway ?? Infinity;
-      return aMin - bMin;
-    });
+    const groups = Array.from(map.values());
+    if (groups.length > 1 && routeFeatures.length > 0) {
+      for (const g of groups) {
+        const bearing = directionGroupBearing(routeFeatures, g.dirId);
+        if (bearing != null) g.boundLabel = cardinalBoundLabel(bearing);
+      }
+      groups.sort((a, b) => {
+        const aLon = directionGroupTerminalLon(routeFeatures, a.dirId);
+        const bLon = directionGroupTerminalLon(routeFeatures, b.dirId);
+        if (aLon != null && bLon != null && aLon !== bLon) return aLon - bLon;
+        return a.dirId - b.dirId;
+      });
+    }
+    return groups;
   }, [currentRoute]);
 
   const liveRouteInfo = useMemo(() => {
