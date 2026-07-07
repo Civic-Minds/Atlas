@@ -375,7 +375,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'outdated-schedule' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {helpContext.agencyName}&apos;s schedule
                   {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
                   {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
