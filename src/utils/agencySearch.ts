@@ -107,6 +107,28 @@ export function searchAgencyGroups(
     });
 }
 
+/** Max agency rows in the search dropdown. */
+export const SEARCH_AGENCY_DISPLAY_LIMIT = 5;
+
+export interface AgencySearchDisplay {
+  groups: AgencySearchGroup[];
+  totalMatches: number;
+  truncated: boolean;
+}
+
+export function prepareAgencyGroupsForDisplay(
+  groups: AgencySearchGroup[],
+  limit = SEARCH_AGENCY_DISPLAY_LIMIT,
+): AgencySearchDisplay {
+  const totalMatches = groups.length;
+  const truncated = totalMatches > limit;
+  return {
+    groups: truncated ? groups.slice(0, limit) : groups,
+    totalMatches,
+    truncated,
+  };
+}
+
 /** Slugs to prefetch when searching — nearest matched agencies beyond the viewport. */
 export function agencySlugsToPrefetchForSearch(
   agencies: Agency[],

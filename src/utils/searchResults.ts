@@ -112,7 +112,7 @@ export function filterRouteResultsForDisplay(
 }
 
 /** Max route rows in the search dropdown — list stays scannable; map still highlights all matches. */
-export const SEARCH_ROUTE_DISPLAY_LIMIT = 30;
+export const SEARCH_ROUTE_DISPLAY_LIMIT = 10;
 
 export interface RouteSearchDisplay {
   routes: RouteSearchResult[];

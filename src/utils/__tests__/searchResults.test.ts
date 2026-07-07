@@ -45,8 +45,8 @@ describe('searchResults', () => {
     expect(filterRouteResultsForDisplay('ttc', slugOnlyRoutes, agencies)).toEqual([]);
     const prepared = prepareRouteResultsForDisplay('express', slugOnlyRoutes, []);
     expect(prepared.totalMatches).toBe(20);
-    expect(prepared.routes).toHaveLength(20);
-    expect(prepared.truncated).toBe(false);
+    expect(prepared.routes).toHaveLength(10);
+    expect(prepared.truncated).toBe(true);
   });
 
   it('caps long route lists for display', () => {
@@ -60,7 +60,7 @@ describe('searchResults', () => {
     }));
     const prepared = prepareRouteResultsForDisplay('1', manyRoutes, []);
     expect(prepared.totalMatches).toBe(50);
-    expect(prepared.routes).toHaveLength(30);
+    expect(prepared.routes).toHaveLength(10);
     expect(prepared.truncated).toBe(true);
   });
 

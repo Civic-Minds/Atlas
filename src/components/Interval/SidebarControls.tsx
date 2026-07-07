@@ -11,7 +11,7 @@ import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
-import { searchAgencyGroups, type AgencySearchGroup } from '../../utils/agencySearch';
+import { searchAgencyGroups, prepareAgencyGroupsForDisplay, type AgencySearchGroup } from '../../utils/agencySearch';
 import {
   splitAgencyGroups,
   splitRouteResults,
@@ -660,7 +660,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return searchAgencyGroups(agencies, query, bounds, new Set(Object.keys(layers)));
   }, [agencies, query, bounds, fareView, layers, searchFocused]);
 
-  const agencySections = useMemo(() => splitAgencyGroups(matchedAgencyGroups), [matchedAgencyGroups]);
+  const agencySearchDisplay = useMemo(
+    () => prepareAgencyGroupsForDisplay(matchedAgencyGroups),
+    [matchedAgencyGroups],
+  );
+  const displayAgencyGroups = agencySearchDisplay.groups;
+  const agencySections = useMemo(() => splitAgencyGroups(displayAgencyGroups), [displayAgencyGroups]);
   const routeSearchDisplay = useMemo(
     () => prepareRouteResultsForDisplay(query, searchMatchResults ?? [], matchedAgencyGroups),
     [query, searchMatchResults, matchedAgencyGroups],
@@ -677,6 +682,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const routeResultsHeadLabel = routeSearchDisplay.truncated
     ? `Showing ${displayRouteResults.length} of ${routeSearchDisplay.totalMatches} routes — refine search`
     : `${routeSearchDisplay.totalMatches} route${routeSearchDisplay.totalMatches === 1 ? '' : 's'} match`;
+  const agencyResultsHeadLabel = agencySearchDisplay.truncated
+    ? `Showing ${displayAgencyGroups.length} of ${agencySearchDisplay.totalMatches} agencies — refine search`
+    : `${agencySearchDisplay.totalMatches} agenc${agencySearchDisplay.totalMatches === 1 ? 'y' : 'ies'} match`;
 
   const searchPanelActive = searchFocused && query !== '';
   const hasSearchResults = searchPanelActive && (
@@ -978,9 +986,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {searchPanelActive && !fareView && searchMatchResults !== null && (
           <div className="-mx-4 mb-4 space-y-4">
             {(() => {
-              const agencyBlock = matchedAgencyGroups.length > 0 && setSelectedAgencySlug ? (
+              const agencyBlock = displayAgencyGroups.length > 0 && setSelectedAgencySlug ? (
                 <SearchSplitList
-                  headLabel={`${matchedAgencyGroups.length} agenc${matchedAgencyGroups.length === 1 ? 'y' : 'ies'} match`}
+                  headLabel={agencyResultsHeadLabel}
                   inView={agencySections.inView}
                   elsewhere={agencySections.elsewhere}
                   itemKey={(g: AgencySearchGroup) => g.key}
