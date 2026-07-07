@@ -6,7 +6,7 @@ import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBound
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
-import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
+import { titleCase, getRouteLabel, shortenAgencyName, cleanRouteShortName, routeListCompanionName } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
@@ -20,7 +20,7 @@ import {
   routesBeforeAgencies,
   type RouteSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_HEAD, PANEL_SEARCH_SUBHEAD, SEARCH_BAR_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SEARCH_BAR_WIDTH } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
@@ -36,6 +36,30 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+function routeRowLabels(shortName: string, longName: string | null) {
+  const short = cleanRouteShortName(shortName);
+  const companion = routeListCompanionName(longName ? titleCase(longName) : null, shortName);
+  return {
+    shortName: titleCase(short),
+    name: companion ? titleCase(companion) : undefined,
+  };
+}
+
+function routeRowRight(agencyName: string, headway?: number | null) {
+  const agency = shortenAgencyName(agencyName);
+  if (headway != null && headway < 999) {
+    return (
+      <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right whitespace-nowrap`}>
+        {agency}
+        <span className="text-[var(--text-dim)] font-normal"> · </span>
+        every {headway}m
+      </span>
+    );
+  }
+  return (
+    <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>{agency}</span>
+  );
+}
 
 function SearchSplitList<T>({
   headLabel,
@@ -54,7 +78,7 @@ function SearchSplitList<T>({
   const split = inView.length > 0 && elsewhere.length > 0;
   return (
     <div>
-      <div className={PANEL_SEARCH_HEAD}>{headLabel}</div>
+      <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>{headLabel}</div>
       {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-1`}>In this area</div>}
       {inView.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
       {split && <div className={PANEL_SEARCH_SUBHEAD}>Elsewhere</div>}
@@ -262,6 +286,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const viewedKeys = new Set(recentlyViewed.map(r => r.key));
     return notableRoutes.filter(r => !viewedKeys.has(r.key));
   }, [notableRoutes, recentlyViewed]);
+
+  const headwayForRouteKey = useCallback((key: string): number | null => {
+    const [slug, routeId] = key.split('::');
+    const fc = nonCorridorLayers[slug];
+    const feat = fc?.features.find(f => {
+      const p = f.properties as ShapeProperties;
+      return p.routeId === routeId && !(p as { stopId?: string }).stopId;
+    });
+    if (!feat) return null;
+    return routeCardDisplayHeadway(feat.properties as ShapeProperties, period);
+  }, [nonCorridorLayers, period]);
 
   const suggestedFareAgencies = useMemo(() => {
     if (!fareView) return [];
@@ -803,22 +838,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     Recent routes
                   </div>
                   <div>
-                    {recentlyViewed.map((r) => (
-                      <button
-                        key={r.key}
-                        onClick={() => pickRoute(r.key)}
-                        className={LIST_ROW}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <div className={LIST_ROW_PRIMARY}>
-                            {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                          </div>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={LIST_ROW_DIM}>{r.agencyName}</span>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                    {recentlyViewed.map((r) => {
+                      const labels = routeRowLabels(r.shortName, r.longName);
+                      return (
+                        <RouteListRow
+                          key={r.key}
+                          shortName={labels.shortName}
+                          name={labels.name}
+                          right={routeRowRight(r.agencyName, r.headway ?? headwayForRouteKey(r.key))}
+                          onClick={() => pickRoute(r.key)}
+                        />
+                      );
+                    })}
                   </div>
                 </>
               )}
@@ -828,28 +859,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     Suggested routes
                   </div>
                   <div>
-                    {suggestedRoutes.map((r) => (
-                      <button
-                        key={r.key}
-                        onClick={() => pickRoute(r.key)}
-                        className={LIST_ROW}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <div className={LIST_ROW_PRIMARY}>
-                            {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                          </div>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={LIST_ROW_DIM}>{r.agencyName}</span>
-                            {r.headway < 999 && (
-                              <>
-                                <span className="text-[10px] text-[var(--text-dim)]">·</span>
-                                <span className="text-[10px] text-[var(--text-dim)]">every {r.headway}m</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                    {suggestedRoutes.map((r) => {
+                      const labels = routeRowLabels(r.shortName, r.longName);
+                      return (
+                        <RouteListRow
+                          key={r.key}
+                          shortName={labels.shortName}
+                          name={labels.name}
+                          right={routeRowRight(r.agencyName, r.headway)}
+                          onClick={() => pickRoute(r.key)}
+                        />
+                      );
+                    })}
                   </div>
                 </>
               )}
@@ -1012,23 +1033,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   inView={routeSections.inView}
                   elsewhere={routeSections.elsewhere}
                   itemKey={(r: RouteSearchResult) => r.key}
-                  renderItem={(r: RouteSearchResult) => (
-                    <RouteListRow
-                      shortName={titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
-                      selected={selectedRoute === r.key}
-                      onClick={() => {
-                        saveRecentSearch(query);
-                        setQuery('');
-                        setSearchFocused?.(false);
-                        setSelectedRoute(selectedRoute === r.key ? null : r.key);
-                      }}
-                      right={
-                        <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
-                          {shortenAgencyName(r.agencyName || '')}
-                        </span>
-                      }
-                    />
-                  )}
+                  renderItem={(r: RouteSearchResult) => {
+                    const labels = routeRowLabels(r.routeShortName ?? '', r.routeLongName);
+                    return (
+                      <RouteListRow
+                        shortName={labels.shortName}
+                        name={labels.name}
+                        selected={selectedRoute === r.key}
+                        onClick={() => {
+                          saveRecentSearch(query);
+                          setQuery('');
+                          setSearchFocused?.(false);
+                          setSelectedRoute(selectedRoute === r.key ? null : r.key);
+                        }}
+                        right={routeRowRight(r.agencyName || '', headwayForRouteKey(r.key))}
+                      />
+                    );
+                  }}
                 />
               ) : matchedAgencyGroups.length === 0 ? (
                 <div className="px-4 text-[10px] font-bold text-[var(--text-dim)] py-2">No routes match your search.</div>
