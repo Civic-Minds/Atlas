@@ -424,25 +424,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   : ''}
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                If a route shows &ldquo;schedule may be outdated,&rdquo; the agency&apos;s feed period has ended and we haven&apos;t received a newer file yet. When we patch bad upstream data, affected agencies show &ldquo;We corrected this data&rdquo; with a link explaining why.
-              </p>
-              <a
-                href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-              >
-                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">More on schedules</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-              </a>
-              <a
-                href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
-                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-              >
-                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-              </a>
             </div>
           )}
 
