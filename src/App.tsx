@@ -12,7 +12,7 @@ import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
-import InfoPanel from './components/InfoPanel';
+import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions } from './components/InfoPanel';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../types/gtfs';
 
@@ -83,11 +83,15 @@ export default function App() {
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [infoTab, setInfoTab] = useState<'about' | 'agencies' | 'history' | 'live'>('about');
-  function openInfo(tab: 'about' | 'agencies' | 'history' | 'live' = 'about') {
-    setInfoTab(tab);
+  const [infoTab, setInfoTab] = useState<Tab>('about');
+  const [infoFeatureFilter, setInfoFeatureFilter] = useState<InfoFeatureFilter>('all');
+  const openInfo = useCallback((tab: Tab = 'about', opts?: OpenInfoOptions) => {
+    const featureFilter: InfoFeatureFilter = opts?.featureFilter
+      ?? (tab === 'live' ? 'live' : tab === 'history' ? 'history' : 'all');
+    setInfoTab(tab === 'live' || tab === 'history' ? 'agencies' : tab);
+    setInfoFeatureFilter(featureFilter);
     setInfoOpen(true);
-  }
+  }, []);
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
@@ -386,7 +390,7 @@ export default function App() {
                   lightMode={lightMode}
                   setLightMode={setLightMode}
                   active={inLive}
-                  onInfoOpen={() => setInfoOpen(true)}
+                  onInfoOpen={openInfo}
                   query={query}
                   layers={layers}
                   sidebarLeft={sidebarLeft}
@@ -397,7 +401,7 @@ export default function App() {
           </ErrorBoundary>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
+      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
     </div>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

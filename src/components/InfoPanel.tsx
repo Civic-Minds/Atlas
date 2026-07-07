@@ -9,6 +9,9 @@ interface HistoryAgencySummary { slug: string; name: string; region: string; rou
 
 type View = 'home' | 'agencies' | 'agency-detail';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
+export type InfoFeatureFilter = 'all' | 'live' | 'history';
+export type OpenInfoOptions = { featureFilter?: 'live' | 'history' };
+export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return r.displayName;
@@ -21,6 +24,7 @@ interface Props {
   onClose: () => void;
   agencies: Agency[];
   defaultTab?: Tab;
+  featureFilter?: InfoFeatureFilter;
   onAgencySelect?: (slug: string) => void;
   onLiveRouteClick?: (slug: string, routeShortName: string) => void;
 }
@@ -30,11 +34,12 @@ function tabToView(tab: Tab): View {
   return 'agencies';
 }
 
-export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgencySelect, onLiveRouteClick }: Props) {
+export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', onAgencySelect, onLiveRouteClick }: Props) {
   const [view, setView] = useState<View>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<string | null>(null);
+  const [agencyFeatureFilter, setAgencyFeatureFilter] = useState<InfoFeatureFilter>('all');
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -65,11 +70,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
   useEffect(() => {
     if (open) {
       setView(tabToView(defaultTab ?? 'about'));
+      setAgencyFeatureFilter(featureFilter);
       setSelectedSlug(null);
     } else {
-      setQuery(''); setRegionFilter(null); setSelectedSlug(null);
+      setQuery(''); setRegionFilter(null); setSelectedSlug(null); setAgencyFeatureFilter('all');
     }
-  }, [open, defaultTab]);
+  }, [open, defaultTab, featureFilter]);
 
   useEffect(() => {
     if (view === 'agencies') {
@@ -84,26 +90,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
     return [...seen].sort();
   }, [agencies]);
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    return agencies.filter(a => {
-      if (regionFilter && (a.region ?? 'Other') !== regionFilter) return false;
-      if (!q) return true;
-      return a.name.toLowerCase().includes(q) || a.slug.includes(q);
-    });
-  }, [agencies, query, regionFilter]);
-
-  const byRegion = useMemo(() => {
-    const map = new Map<string, Agency[]>();
-    for (const a of filtered) {
-      const r = a.region ?? 'Other';
-      if (!map.has(r)) map.set(r, []);
-      map.get(r)!.push(a);
-    }
-    return map;
-  }, [filtered]);
-
-  // Per-agency feature availability
   const liveBySlug = useMemo(() => {
     const map = new Map<string, typeof LIVE_POLLING_ROUTES>();
     for (const r of LIVE_POLLING_ROUTES) {
@@ -119,6 +105,27 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
     for (const a of historyAgencies ?? []) map.set(a.slug, a);
     return map;
   }, [historyAgencies]);
+
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    return agencies.filter(a => {
+      if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) return false;
+      if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) return false;
+      if (regionFilter && (a.region ?? 'Other') !== regionFilter) return false;
+      if (!q) return true;
+      return a.name.toLowerCase().includes(q) || a.slug.includes(q);
+    });
+  }, [agencies, query, regionFilter, agencyFeatureFilter, liveBySlug, historyBySlug]);
+
+  const byRegion = useMemo(() => {
+    const map = new Map<string, Agency[]>();
+    for (const a of filtered) {
+      const r = a.region ?? 'Other';
+      if (!map.has(r)) map.set(r, []);
+      map.get(r)!.push(a);
+    }
+    return map;
+  }, [filtered]);
 
   const totalLiveAgencies = liveBySlug.size;
   const totalHistoryAgencies = historyBySlug.size;
@@ -257,6 +264,25 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, onAgenc
                       <X className="w-3 h-3" />
                     </button>
                   )}
+                </div>
+                <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                  {([
+                    ['all', 'All'],
+                    ['live', 'Live'],
+                    ['history', 'History'],
+                  ] as const).map(([id, label]) => (
+                    <button
+                      key={id}
+                      onClick={() => setAgencyFeatureFilter(id)}
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
+                        agencyFeatureFilter === id
+                          ? 'bg-[var(--accent)] text-white border-transparent'
+                          : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                   <button

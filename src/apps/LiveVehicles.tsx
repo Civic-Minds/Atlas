@@ -4,6 +4,7 @@ import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
+import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { getAgencyArtifactUrls } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SEARCH_BAR_WIDTH } from '../styles';
@@ -17,7 +18,7 @@ interface Props {
   lightMode: boolean;
   setLightMode: (v: boolean) => void;
   active: boolean;
-  onInfoOpen?: () => void;
+  onInfoOpen?: OpenInfoFn;
   query: string;
   layers?: Record<string, GeoJSON.FeatureCollection>;
   sidebarLeft?: number;
@@ -47,6 +48,19 @@ function delayLabel(v: LiveVehicle): string {
   if (v.delayMin <= -1.5) return `${Math.round(Math.abs(v.delayMin))}m early`;
   if (v.delayMin >= 5.5) return `${Math.round(v.delayMin)}m late`;
   return 'On time';
+}
+
+function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
+  if (!onInfoOpen) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => onInfoOpen('agencies', { featureFilter: 'live' })}
+      className="text-[10px] font-bold text-[var(--accent)] hover:underline px-4 pb-2"
+    >
+      Browse all live agencies
+    </button>
+  );
 }
 
 const MIN_LIVE_ZOOM = 9;
@@ -557,6 +571,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   ))}
                 </div>
                 <p className="text-[10px] text-[var(--text-dim)]">Pan to a covered city</p>
+                <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
               </div>
             ) : isLoading && totalVehicles === 0 ? (
               <div className="flex items-center justify-center gap-2 px-4 py-6">
@@ -601,6 +616,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       </div>
                     </>
                   )}
+                  <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
                 </div>
               )
             ) : (
@@ -623,7 +639,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
         {onInfoOpen && (
-          <button onClick={onInfoOpen} className={ICON_BTN} aria-label="About Atlas">
+          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label="About Atlas">
             <Info className="w-4 h-4" />
           </button>
         )}
