@@ -58,7 +58,7 @@ function getRoutes(
     const p = f.properties as ShapeProperties;
     if (!p.routeId || !p.routeShortName || (p as { stopId?: string }).stopId) continue;
     if (p.day && p.day !== day) continue;
-    if (p.directionId !== undefined && p.directionId !== 0) continue;
+    // Allow both directions so routes with 15min in one dir show in filters.
 
     const key = p.routeShortName;
     const h = effectiveRouteHeadway(p, period);

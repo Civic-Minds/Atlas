@@ -115,9 +115,10 @@ export function passesRouteFilter(
     if (routeCount < 3 && headway > 15) return false;
   }
 
-  // Only render direction 0 — direction 1 traces the same streets in reverse and doubles
-  // polyline count with no visual benefit on a frequency map.
-  if (!isCorridor && p.directionId !== undefined && p.directionId !== 0) return false;
+  // Note: we no longer force directionId === 0 here.
+  // Both directions are considered for filters so routes with good frequency in one direction
+  // (e.g. RGRTA 22 dir1 =15min while dir0=30) are not hidden. Overlapping lines for
+  // bidirectional routes are acceptable for accuracy.
 
   if (filters.modes.size > 0) {
     const modeSlug = (p as ShapeProperties).agencySlug ?? agencySlug;
@@ -344,7 +345,9 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         ['==', ['get', 'directionId'], 0],
       ]);
     } else {
-      clauses.push(['==', ['get', 'directionId'], 0]);
+      // Render both directions so that a route with good freq in one dir (e.g. RGRTA)
+      // is visible when the filter matches that dir's headway.
+      // (Previously forced dir 0 only.)
     }
 
     // Span filter
