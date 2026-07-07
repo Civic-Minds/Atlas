@@ -36,6 +36,7 @@ interface Props {
   pendingLiveRoute?: { slug: string; routeShortName: string } | null;
   onPendingLiveRouteHandled?: () => void;
   searchFocused?: boolean;
+  setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
@@ -48,7 +49,7 @@ interface Props {
   sidebarLeft?: number;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft }: Props) {
   const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -67,6 +68,17 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   const [hoveredBranch, setHoveredBranch] = useState<HoveredBranch | null>(null);
+  const prevSearchFocused = useRef(searchFocused);
+
+  useEffect(() => {
+    if (searchFocused && !prevSearchFocused.current) {
+      setSelectedRoute(null);
+      setSelectedStop(null);
+      setDisambiguationRoutes(null);
+      setHoveredBranch(null);
+    }
+    prevSearchFocused.current = searchFocused;
+  }, [searchFocused]);
 
   // Advanced Filter State
   const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
@@ -340,6 +352,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         query={query}
         setQuery={setQuery}
         searchFocused={searchFocused}
+        setSearchFocused={setSearchFocused}
         searchMatches={searchMatches}
         searchMatchResults={searchMatchResults}
         maxHeadway={maxHeadway}

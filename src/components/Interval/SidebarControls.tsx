@@ -64,6 +64,7 @@ interface SidebarControlsProps {
   query: string;
   setQuery: (q: string) => void;
   searchFocused: boolean;
+  setSearchFocused?: (focused: boolean) => void;
   searchMatches: number | null;
   searchMatchResults: { key: string; routeShortName: string | null; routeLongName: string | null; agencyName?: string }[] | null;
   maxHeadway: number;
@@ -103,6 +104,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   query,
   setQuery,
   searchFocused,
+  setSearchFocused,
   searchMatches,
   searchMatchResults,
   maxHeadway,
@@ -154,6 +156,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
+
+  const pickRoute = useCallback((key: string) => {
+    setSearchFocused?.(false);
+    setSelectedRoute(key);
+  }, [setSearchFocused, setSelectedRoute]);
 
   const loadRecents = useCallback(() => {
     try {
@@ -665,9 +672,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     fareView ? fareViewMatchedAgencies.length > 0 : searchMatchResults !== null
   );
 
+  const panelStop = currentStop && !query.trim() && !searchFocused;
+  const panelRoute = currentRoute && !query.trim() && !searchFocused;
   const hasContent = !!(
-    currentStop
-    || currentRoute
+    panelStop
+    || panelRoute
     || hasSearchResults
     || disambiguationRoutes
     || (searchFocused && query === '' && hasSuggestions)
@@ -778,7 +787,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     {recentlyViewed.map((r) => (
                       <button
                         key={r.key}
-                        onClick={() => setSelectedRoute(r.key)}
+                        onClick={() => pickRoute(r.key)}
                         className={LIST_ROW}
                       >
                         <div className="min-w-0 flex-1">
@@ -803,7 +812,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     {suggestedRoutes.map((r) => (
                       <button
                         key={r.key}
-                        onClick={() => setSelectedRoute(r.key)}
+                        onClick={() => pickRoute(r.key)}
                         className={LIST_ROW}
                       >
                         <div className="min-w-0 flex-1">
@@ -839,12 +848,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           setDisambiguationRoutes={setDisambiguationRoutes}
         />
       )}
-      {(currentStop || currentRoute || hasSearchResults) && <div
+      {(panelStop || panelRoute || hasSearchResults) && <div
         ref={scrollRef}
         onScroll={checkScroll}
         className={`relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
       >
-        {currentStop && !query.trim() && (
+        {panelStop && (
           <StopCard
             currentStop={currentStop}
             setSelectedStop={setSelectedStop}
@@ -872,7 +881,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           />
         )}
 
-        {currentRoute && !query.trim() && (
+        {panelRoute && (
           fareView ? (
               <>
                 <div className="flex items-start gap-2 mb-3">
@@ -967,7 +976,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   renderItem={(g: AgencySearchGroup) => (
                     <RouteListRow
                       shortName={g.name}
-                      onClick={() => { setSelectedAgencySlug(g.slug); setQuery(''); }}
+                      onClick={() => { setSelectedAgencySlug?.(g.slug); setQuery(''); setSearchFocused?.(false); }}
                       right={
                         <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
                           {g.region}
@@ -991,6 +1000,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                       onClick={() => {
                         saveRecentSearch(query);
                         setQuery('');
+                        setSearchFocused?.(false);
                         setSelectedRoute(selectedRoute === r.key ? null : r.key);
                       }}
                       right={
@@ -1020,7 +1030,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
       </div>}
 
-      {liveRouteInfo && liveStatus !== 'noData' && !query.trim() && (
+      {liveRouteInfo && liveStatus !== 'noData' && !query.trim() && !searchFocused && (
         <LiveAdherenceCard
           liveRouteInfo={liveRouteInfo as LiveRouteInfoData}
           liveStatus={liveStatus}

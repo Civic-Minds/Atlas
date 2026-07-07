@@ -371,6 +371,7 @@ export default function App() {
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}
               searchFocused={searchFocused}
+              setSearchFocused={setSearchFocused}
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}
