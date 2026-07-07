@@ -5968,6 +5968,82 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
       "lastFeedExpiry": "20270201",
       "lastFeedVersion": "20251212"
+    },
+    {
+      "slug": "space-coast",
+      "name": "Space Coast Area Transit",
+      "region": "Florida",
+      "center": [
+        28.35,
+        -80.72
+      ],
+      "bbox": [
+        27.9,
+        -80.924,
+        28.805,
+        -80.517
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-40063/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40063/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "martin-county",
+      "name": "Martin County Public Transit",
+      "region": "Florida",
+      "center": [
+        27.03,
+        -80.27
+      ],
+      "bbox": [
+        26.735,
+        -80.54,
+        27.316,
+        -80.009
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "2026-06-17"
+    },
+    {
+      "slug": "indian-river",
+      "name": "Indian River Transit",
+      "region": "Florida",
+      "center": [
+        27.63,
+        -80.48
+      ],
+      "bbox": [
+        27.366,
+        -80.657,
+        27.895,
+        -80.306
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "collier",
+      "name": "Collier Area Transit (Naples)",
+      "region": "Florida",
+      "center": [
+        26.14,
+        -81.79
+      ],
+      "bbox": [
+        25.862,
+        -81.876,
+        26.492,
+        -81.332
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     }
   ]
 }
