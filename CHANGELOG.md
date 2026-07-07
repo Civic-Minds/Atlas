@@ -8,6 +8,11 @@
 ### Fixed
 - **Route card direction groups (#97)**: Multi-direction routes show Westbound/Eastbound (etc.) section labels and a divider between groups. Two-group routes label by relative mean shape-end position; sort follows the same axis.
 - **Route card sparkline (#98)**: Headway chart uses outbound branches only by default (median per hour); follows the hovered branch when one is selected — fixes misleading tall-bar/dot patterns on multi-branch routes.
+- **GRT agency card (#93)**: ION light rail no longer summarized as "commuter rail" — blurb uses effective mode (same LRT remapping as map filters).
+- **HRT 757X route cards (#90)**: Public 757X brand shown instead of internal numeric short name (e.g. "757X" not "967 — 757X…").
+- **HRT sparkline bunching (#91)**: Hourly tooltip capped to period headway when paired departures inflate frequency (e.g. Tide 800 at 7 PM).
+- **HRT trunk range display (#92)**: Tight "every X–Y min" range hidden when period headway is ≥20 min (sparse paired service).
+- **Route card titles (#95)**: Show route long names alongside numbers when the name adds information (aligned with HSR-style cards).
 - **Local dev data loading**: Vite proxies `/atlas-data` to R2 so localhost bypasses browser CORS blocks on artifact fetches.
 - **Map zoom gate**: Progressive route reveal by zoom now uses paint opacity (MapLibre filters cannot use `zoom` expressions).
 

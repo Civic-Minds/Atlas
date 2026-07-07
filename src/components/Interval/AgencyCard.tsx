@@ -7,7 +7,9 @@ import type { Agency, FareOverride } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import { getFareColor } from '../../utils/colors';
+import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { shortenAgencyName } from '../../utils/format';
+import type { DayType } from '../../../types/gtfs';
 
 interface RouteRow {
   routeId: string;
@@ -54,13 +56,21 @@ function getRoutes(layers: AgencyLayers, slug: string, day: string): RouteRow[] 
   });
 }
 
+function railBlurbLabel(route: RouteRow): string | null {
+  const mode = effectiveMode({
+    routeType: route.routeType,
+    routeLongName: route.longName,
+    agencySlug: route.agencySlug,
+  });
+  if (mode === VIRTUAL_LRT_MODE) return 'light rail';
+  return GTFS_RAIL_MODE_LABELS[mode] ?? null;
+}
+
 function getAgencyBlurb(routes: RouteRow[]): string | null {
-  const rtLabels: Record<number, string> = { 0: 'light rail', 1: 'subway', 2: 'commuter rail', 4: 'ferry', 5: 'cable car', 6: 'gondola', 7: 'funicular', 11: 'trolleybus', 12: 'monorail' };
-  const rail = routes.filter(r => r.routeType in rtLabels);
   const brt = routes.filter(r => r.busSubType === 'brt');
   const express = routes.filter(r => r.busSubType === 'express');
   const parts: string[] = [];
-  const railTypes = [...new Set(rail.map(r => rtLabels[r.routeType]))];
+  const railTypes = [...new Set(routes.map(railBlurbLabel).filter((l): l is string => l != null))];
   if (railTypes.length) parts.push(railTypes.join(' and '));
   if (brt.length) parts.push(`${brt.length} BRT corridor${brt.length !== 1 ? 's' : ''}`);
   if (express.length) parts.push(`${express.length} express route${express.length !== 1 ? 's' : ''}`);
@@ -71,7 +81,7 @@ function getAgencyBlurb(routes: RouteRow[]): string | null {
 interface Props {
   agency: Agency;
   layers: AgencyLayers;
-  day: 'Weekday' | 'Saturday' | 'Sunday';
+  day: DayType;
   onClose: () => void;
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;

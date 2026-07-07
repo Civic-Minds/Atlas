@@ -6,7 +6,7 @@ import { titleCase, cleanHeadsign, shortenAgencyName } from '../../../utils/form
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import RouteCardTitle from '../../RouteCardTitle';
 import RouteDirectionRow from '../RouteDirectionRow';
-import { TIME_PERIODS, SPARKLINE_HOURS } from '../../../../shared/config';
+import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
 
 // Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet.
 // Takes the best (lowest) non-null headway across the period's hours.
@@ -44,6 +44,28 @@ function mergeHeadwayByHour(
     merged[h] = values.length === 0 ? null : values.length === 1 ? values[0] : medianHeadway(values);
   }
   return merged;
+}
+
+/** Cap hourly values below period summary when paired departures bunch (#91). */
+function sparklineHeadwayByHour(
+  directions: ShapeProperties[],
+  hours: readonly number[],
+): Record<number, number | null> {
+  const raw = mergeHeadwayByHour(directions, hours);
+  const out: Record<number, number | null> = {};
+  for (const h of hours) {
+    const hw = raw[h];
+    if (hw == null) { out[h] = null; continue; }
+    const pk = periodKeyForHour(h);
+    if (!pk) { out[h] = hw; continue; }
+    const periodVals = directions
+      .map(d => (d.headwayByPeriod as HeadwayByPeriod | undefined)?.[pk as keyof HeadwayByPeriod])
+      .filter((v): v is number => v != null);
+    if (periodVals.length === 0) { out[h] = hw; continue; }
+    const periodRep = periodVals.length === 1 ? periodVals[0] : medianHeadway(periodVals);
+    out[h] = hw < periodRep * 0.75 ? periodRep : hw;
+  }
+  return out;
 }
 
 export interface DirectionGroup {
@@ -133,7 +155,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               d => d.directionId === hoveredBranch.directionId && d.headsign === hoveredBranch.headsign,
             )
           : currentRoute.directions.filter(d => (d.directionId ?? 0) === 0);
-        const merged = mergeHeadwayByHour(sparklineDirs, HOURS);
+        const merged = sparklineHeadwayByHour(sparklineDirs, HOURS);
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (

@@ -127,6 +127,10 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
 
   if (!longName) return cleanShort;
 
+  // HRT 757X etc.: public brand in long_name; short_name is internal (967).
+  const brand = longName.match(/^(\d{3}X)\b/i);
+  if (brand && /^\d+$/.test(cleanShort)) return brand[1].toUpperCase();
+
   let cleanedLong = longName;
 
   // STM metro: "Ligne 5 - Bleue" → "Bleue"
@@ -149,15 +153,6 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
   }
 
   if (!cleanedLong) return cleanShort;
-
-  // Numeric-only short names (e.g. "24") with a short place-name long name (e.g. "Shane Park")
-  // are just using the terminus as the route name — not a useful descriptor alongside the number.
-  // Suppress if: purely numeric + 1–2 word long name + no transit keywords.
-  if (/^\d+$/.test(cleanShort)) {
-    const words = cleanedLong.trim().split(/\s+/);
-    const hasTransitKeyword = /\b(line|route|express|rapid|rapidride|local|limited|shuttle|bus|rail|train|metro|sky|link|station|center|centre|transit|loop|connector|crosstown|blink|zum|viva|flash|bolt|wave|pulse|boost)\b/i.test(cleanedLong);
-    if (words.length <= 2 && !hasTransitKeyword) return cleanShort;
-  }
 
   // Pure-letter short names (e.g. "LW", "LE", "KI") are acronyms of the long name — redundant to show both
   if (/^[A-Za-z]+$/.test(cleanShort)) return cleanedLong;

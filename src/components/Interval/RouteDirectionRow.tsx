@@ -30,7 +30,8 @@ export default function RouteDirectionRow({ label, headway, trunkHeadway, limite
   const faded = dimmed || branchDimmed;
   const showRange = trunkHeadway != null && headway != null
     && trunkHeadway < headway * 0.65
-    && headway / trunkHeadway <= 4;
+    && headway / trunkHeadway <= 4
+    && headway < 20;
   const dotColor = limited ? getTierColor(null) : headwayToTierColor(showRange ? trunkHeadway! : headway);
   const headwayText = limited
     ? 'limited'
