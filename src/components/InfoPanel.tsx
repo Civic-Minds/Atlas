@@ -393,11 +393,31 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'sources' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                Schedules come from public GTFS feeds published by transit agencies.
+                We use GTFS schedule feeds from transit agencies — usually downloaded directly from each agency&apos;s published URL.
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                When an agency&apos;s download link is broken or unreliable, we may pull the same feed from a public mirror instead.
+                When we can&apos;t rely on the official feed, we may use a public copy from:
               </p>
+              <div className="space-y-2">
+                <a
+                  href="https://mobilitydatabase.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Mobility Database</span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
+                <a
+                  href="https://www.transit.land/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Transitland</span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
+              </div>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
                   ? `Last full refresh: ${formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))}. `
