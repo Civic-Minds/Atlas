@@ -21,7 +21,7 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 ### Feeds requiring Mobility Database mirrors
 Some agencies publish feeds at unstable or rate-limited URLs. We use the Mobility Database stable mirror (`storage.googleapis.com/storage/v1/b/mdb-latest/o/{id}.zip?alt=media`) for:
 - **Grand River Transit** (GRT) — official URL unreliable
-- **Niagara Region Transit** — official URL unreliable
+- **Niagara Transit** (Niagara Region Transit) — official URL unreliable
 
 If a weekly refresh fails for an agency, check whether the official `feedUrl` in `index.json` is still valid before blaming the pipeline.
 
@@ -39,7 +39,7 @@ GO Transit buses frequently show headways like 55 min instead of 60 min. This is
 The Corridors app shows frequency at the departure stop (where the user waits), not the destination. At major hubs like Square One, many patterns converge and the TO-stop headway is artificially low — GO route 41 showed 7 min at Square One but 30 min at Hamilton GO, where the user actually boards.
 
 ### NRT day/night service merge
-Niagara Region Transit runs a separate "night" service under a different route ID that overlaps with the daytime route on the same corridor. The pipeline merges them by selecting the feature with the lower headway. Apparent headways on some NRT corridors may reflect the combined day+night service level.
+Niagara Transit (Niagara Region Transit) runs a separate "night" service under a different route ID that overlaps with the daytime route on the same corridor. The pipeline merges them by selecting the feature with the lower headway. Apparent headways on some NRT corridors may reflect the combined day+night service level.
 
 ### Commuter rail shape selection
 GO Rail routes have multiple shape variants (local vs express, different terminal branches). The pipeline selects the shape associated with the most-common headsign per direction. Shapes for minor branches (e.g. Barrie South short-turns) may not render.
