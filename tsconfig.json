@@ -23,7 +23,8 @@
     },
     "include": [
         "src",
-        "shared"
+        "shared",
+        "types"
     ],
     "references": [
         {
