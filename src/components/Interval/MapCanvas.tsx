@@ -33,6 +33,17 @@ function concatFilters(...parts: any[]): any {
   return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
 }
 
+/** True when a route feature serves any sibling stop of the selected hub (via stopHeadways). */
+function buildServingStopMatchExpression(
+  siblingIdsByAgency: Record<string, Set<string>> | undefined,
+): any {
+  const stopIds = siblingIdsByAgency
+    ? [...new Set(Object.values(siblingIdsByAgency).flatMap(s => [...s]))]
+    : [];
+  if (stopIds.length === 0) return false;
+  return ['any', ...stopIds.map(id => ['!=', ['get', id, ['get', 'stopHeadways']], null])];
+}
+
 interface MapCanvasProps {
   agencies: Agency[];
   layers?: Record<string, GeoJSON.FeatureCollection>;
@@ -720,6 +731,16 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             'case', routeMatch, 3.5, 0.5,
           ]);
         }
+      } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
+        const servingMatch = buildServingStopMatchExpression(routesForStop.siblingIdsByAgency);
+        map.setPaintProperty('routes-layer', 'line-opacity', [
+          'case', servingMatch, 1.0, 0.15,
+        ]);
+        map.setPaintProperty('routes-layer', 'line-width', [
+          'case', servingMatch,
+          ['interpolate', ['linear'], ['zoom'], 8, 2.0, 14, 3.0],
+          0.5,
+        ]);
       } else {
         map.setPaintProperty('routes-layer', 'line-width', [
           'interpolate', ['linear'], ['zoom'],

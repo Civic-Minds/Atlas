@@ -88,7 +88,7 @@ function passesRouteFilter(
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
-  // Note: routesForStop now only used for sidebar; map shows full context with dimming in styleFeature
+  // routesForStop drives stop-card sidebar and map dimming (sibling stopHeadways match)
 
   // Explicitly selected route (e.g. from station panel click) should always be visible with full geometry,
   // bypassing frequency, agency, span, etc. filters.

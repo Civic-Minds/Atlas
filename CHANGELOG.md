@@ -13,6 +13,9 @@
 - **Stop card period labels**: Dropped redundant "Evening" (etc.) suffix on every headway — active period is already in the sidebar filter.
 - **Stop card debug panel**: Removed internal "debug headways" toggle from the public stop card.
 
+### Added
+- **Stop click route highlight (#104)**: Selecting a stop keeps connecting routes at full color/width; other visible routes fade to 15% opacity.
+
 ## [3.0.7] — 2026-07-06
 
 ### Added
