@@ -277,6 +277,19 @@ export function formatBranchLabel(
   return withToPrefix(titleCase(raw));
 }
 
+/** Format YYYYMMDD or YYYY-MM-DD for display (UTC). */
+export function formatStoredDate(value: string): string {
+  const ymd = value.length === 8
+    ? { y: value.slice(0, 4), m: value.slice(4, 6), d: value.slice(6, 8) }
+    : value.length === 10 && value[4] === '-'
+      ? { y: value.slice(0, 4), m: value.slice(5, 7), d: value.slice(8, 10) }
+      : null;
+  if (!ymd) return '';
+  const date = new Date(Date.UTC(parseInt(ymd.y, 10), parseInt(ymd.m, 10) - 1, parseInt(ymd.d, 10)));
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+}
+
 /** Unified branch label for route and stop cards. */
 export function resolveBranchLabel(opts: {
   headsign: string | null | undefined;

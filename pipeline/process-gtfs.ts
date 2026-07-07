@@ -21,6 +21,7 @@ import {
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
 } from './overrideAudit.js';
+import { todayUtcYmd } from './utils.js';
 
 config({ path: resolve('.env.local') });
 
@@ -156,6 +157,7 @@ async function main() {
       center,
       lastFeedExpiry: feedExpiry,
       lastFeedVersion: feedVersion,
+      lastRefreshedAt: todayUtcYmd(),
     };
     if (prev.issueUrl && upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
       delete updated.issueUrl;
@@ -163,7 +165,7 @@ async function main() {
     }
     index.agencies[existing] = updated;
   } else {
-    index.agencies.push({ slug, name: agencyName, center, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion });
+    index.agencies.push({ slug, name: agencyName, center, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd() });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   console.log(`  index.json updated\n`);

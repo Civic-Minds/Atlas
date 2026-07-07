@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { formatBranchLabel, resolveBranchLabel } from '../format';
+import { formatBranchLabel, formatStoredDate, resolveBranchLabel } from '../format';
+
+describe('formatStoredDate', () => {
+  it('formats YYYYMMDD and YYYY-MM-DD', () => {
+    expect(formatStoredDate('20261010')).toBe('Oct 10, 2026');
+    expect(formatStoredDate('2026-07-07')).toBe('Jul 7, 2026');
+  });
+});
 
 describe('formatBranchLabel', () => {
   it('uses fallback when destination matches route long name', () => {

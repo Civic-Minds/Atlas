@@ -44,6 +44,11 @@ export function formatDistance(meters: number): string {
     return `${Math.round(meters)} m`;
 }
 
+/** UTC calendar date (YYYY-MM-DD) for index.json lastRefreshedAt. */
+export function todayUtcYmd(): string {
+    return new Date().toISOString().slice(0, 10);
+}
+
 /**
  * Run a list of asynchronous tasks with a maximum concurrency.
  */

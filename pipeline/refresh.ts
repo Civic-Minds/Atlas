@@ -17,7 +17,7 @@ import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
-import { runWithConcurrency } from './utils.js';
+import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
   clearIssueUrlOnFeedChange,
   formatOverrideIssueUrlClearedLog,
@@ -148,6 +148,7 @@ interface AgencyEntry {
   supplementalFeedUrls?: string[];
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
+  lastRefreshedAt?: string | null;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
@@ -231,9 +232,11 @@ async function refreshAgency(
 
   if (!forceRefresh && !hasSupplementals && !feedExpired) {
     if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
+      agency.lastRefreshedAt = todayUtcYmd();
       return `skipped (same schedule period: ${peekedExpiry})`;
     }
     if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
+      agency.lastRefreshedAt = todayUtcYmd();
       return `skipped (same feed version: ${peekedVersion})`;
     }
   }
@@ -302,6 +305,7 @@ async function refreshAgency(
     writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?)\n`);
     agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
     agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
+    agency.lastRefreshedAt = todayUtcYmd();
     return '0 features, skipped';
   }
 
@@ -327,6 +331,7 @@ async function refreshAgency(
   }
   agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
   agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
+  agency.lastRefreshedAt = todayUtcYmd();
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
   const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);

@@ -3,6 +3,7 @@ import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
+import { formatStoredDate } from '../utils/format';
 import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
@@ -15,12 +16,14 @@ export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  lastRefreshedAt?: string;
 };
 export type OpenInfoOptions = {
   featureFilter?: 'live' | 'history';
   helpTopic?: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  lastRefreshedAt?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
@@ -375,6 +378,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {helpContext.agencyName}&apos;s schedule
                   {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
+                </p>
+              )}
+              {helpContext?.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt) && (
+                <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                  Atlas last checked this feed on {formatStoredDate(helpContext.lastRefreshedAt)}.
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">

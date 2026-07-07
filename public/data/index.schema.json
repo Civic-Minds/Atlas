@@ -39,6 +39,7 @@
         },
         "lastFeedExpiry": { "type": ["string", "null"] },
         "lastFeedVersion": { "type": ["string", "null"] },
+        "lastRefreshedAt": { "type": ["string", "null"] },
         "preprocess": { "type": "string" },
         "excludeRouteShortNames": {
           "type": "array",

@@ -38,6 +38,7 @@ export interface Agency {
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
   lastFeedExpiry?: string | null;
+  lastRefreshedAt?: string | null;
   excludeRouteShortNames?: string[];
   staged?: boolean;
   issueUrl?: string;
@@ -95,6 +96,7 @@ export default function App() {
       topic: opts.helpTopic,
       agencyName: opts.agencyName,
       expDateStr: opts.expDateStr,
+      lastRefreshedAt: opts.lastRefreshedAt,
     } : null);
     setInfoOpen(true);
   }, []);
