@@ -78,6 +78,7 @@ interface MapCanvasProps {
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   onTileLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
+  onClearSelection?: () => void;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -109,6 +110,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   fareView = false,
   initialMapCenter,
   onTileLoadingChange,
+  onClearSelection,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -149,20 +151,30 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
+  const onClearSelectionRef = useRef(onClearSelection);
 
   const clearMapSelection = () => {
+    if (onClearSelectionRef.current) {
+      onClearSelectionRef.current();
+      return;
+    }
     setSelectedRouteRef.current(null);
     setSelectedStopRef.current(null);
     setDisambiguationRoutesRef.current(null);
   };
 
-  const handleDeckBackgroundClick = (info: { picked?: boolean; x: number; y: number }) => {
+  const isBackgroundMapPoint = (map: maplibregl.Map, x: number, y: number) => {
+    const hits = map.queryRenderedFeatures([x, y], { layers: ['routes-hit-layer', 'stops-layer'] });
+    return hits.length === 0;
+  };
+
+  const handleDeckBackgroundClick = (info: { picked?: boolean; x?: number; y?: number }) => {
     if (info.picked) return;
     const map = mapRef.current;
     if (!map) return;
-    const hit = map.queryRenderedFeatures([info.x, info.y], { layers: ['routes-hit-layer', 'stops-layer'] });
-    if (hit.length > 0) return;
-    clearMapSelection();
+    if (info.x == null || info.y == null || isBackgroundMapPoint(map, info.x, info.y)) {
+      clearMapSelection();
+    }
   };
 
   useLayoutEffect(() => {
@@ -175,6 +187,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     setSelectedAgencySlugRef.current = setSelectedAgencySlug;
     onBoundsChangeRef.current = onBoundsChange;
     onTileLoadingChangeRef.current = onTileLoadingChange;
+    onClearSelectionRef.current = onClearSelection;
   });
 
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
@@ -481,16 +494,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       );
     });
 
-    map.on('click', (e) => {
-      if (e.defaultPrevented) return;
-      clearMapSelection();
-    });
-
     return () => {
       map.remove();
       mapRef.current = null;
     };
   }, []);
+
+  // Background click → clear selection. Registered here (not in map load) so it stays
+  // paired with live onClearSelection and uses an explicit no-feature hit test.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const onBackgroundClick = (e: maplibregl.MapMouseEvent) => {
+      if (e.defaultPrevented) return;
+      if (isBackgroundMapPoint(map, e.point.x, e.point.y)) clearMapSelection();
+    };
+
+    map.on('click', onBackgroundClick);
+    return () => { map.off('click', onBackgroundClick); };
+  }, [mapLoaded]);
 
   useEffect(() => {
     const map = mapRef.current;

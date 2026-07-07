@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { useIntervalStats, type HoveredBranch } from '../hooks/useIntervalStats';
+import { useIntervalStats, routeKey, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
@@ -203,6 +203,26 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
   useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
 
+  const clearMapSelection = useCallback(() => {
+    setSelectedRoute(null);
+    setSelectedStop(null);
+    setDisambiguationRoutes(null);
+    setHoveredBranch(null);
+  }, []);
+
+  // Drop stale selection when the route card has no data (day change, agency unload, etc.)
+  useEffect(() => {
+    if (!selectedRoute) return;
+    const [slug] = selectedRoute.split('::');
+    const fc = layers[slug];
+    if (!fc) return;
+    const hasMatch = fc.features.some(f => {
+      const p = { ...(f.properties as object), agencySlug: slug } as ShapeProperties;
+      return routeKey(p) === selectedRoute && (p.day === undefined || p.day === day);
+    });
+    if (!hasMatch) clearMapSelection();
+  }, [selectedRoute, layers, day, clearMapSelection]);
+
   // Sync selected route and stop to URL — use replaceState directly (not React
   // Router's setSearchParams) to avoid the stale-closure bug where a closure
   // captured during the Fares render resolves the URL relative to /apps/fares.
@@ -255,6 +275,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
+        onClearSelection={clearMapSelection}
       />
 
       <MapAttribution />

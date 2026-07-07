@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
-- **Map route deselect** ([#141](https://github.com/Civic-Minds/Atlas/issues/141)): Background map clicks clear route highlight + sidebar card — Deck.gl overlay no longer swallows clicks when empty; selection handlers use live refs.
+- **Map route deselect** ([#141](https://github.com/Civic-Minds/Atlas/issues/141)): Background map clicks clear route highlight + sidebar card — explicit no-feature hit test, `onClearSelection` from Interval (incl. hover state), stale selection dropped when route data unloads.
 - **MiWay express headsigns** ([#142](https://github.com/Civic-Minds/Atlas/issues/142)): Strip direction-only express labels (`135 E Express Eglinton Exp`) so route cards show WESTBOUND/EASTBOUND without garbled "to W Express Eglinton Exp" rows.
 - **Route card one-way destinations** ([#134](https://github.com/Civic-Minds/Atlas/issues/134)): Unified headsign pipeline (`resolveDisplayHeadsign`) so GeoJSON never drops cleaned-away destinations; route/stop cards share `resolveBranchLabel` with direction fallbacks; route-title redundancy handled at display time, not in stored data. Route cards no longer repeat the section heading as a row label (e.g. "to Southbound" under SOUTHBOUND).
 - **Letter-suffix branch routes**: Pipeline auto-merges GTFS pairs like `blue` + `blue B` when long names prove same corridor (YRT VIVA, etc.) — default-on for all agencies; opt out with `skipLetterSuffixMerge` in `index.json`.
