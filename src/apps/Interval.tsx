@@ -97,7 +97,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [bounds, setBounds] = useState<ViewportBounds | null>(null);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const nearbyPanelRef = useRef<HTMLDivElement>(null);
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
+  const clearUserLocation = useCallback(() => setUserLocation(null), []);
   const [isTilesLoading, setIsTilesLoading] = useState(false);
 
   const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, {
@@ -108,6 +110,19 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => {
     onLayersChange?.(layers);
   }, [layers, onLayersChange]);
+
+  useEffect(() => {
+    if (!userLocation) return;
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node;
+      if (nearbyPanelRef.current?.contains(target)) return;
+      if ((target as Element).closest?.('[aria-label="Go to my location"]')) return;
+      clearUserLocation();
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [userLocation, clearUserLocation]);
+
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
   const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
     query,
@@ -271,6 +286,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
       {showUi && userLocation && (
         <NearbyRoutesPanel
+          ref={nearbyPanelRef}
           routes={nearbyRoutes}
           loading={isLoading}
           setSelectedRoute={setSelectedRoute}

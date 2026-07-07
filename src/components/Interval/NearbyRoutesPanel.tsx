@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { LocateFixed } from 'lucide-react';
 import { headwayToTierColor } from '../../utils/colors';
 import { fmtHeadway, titleCase } from '../../utils/format';
@@ -15,13 +15,14 @@ function fmtDist(m: number): string {
   return m < 100 ? `${Math.round(m)} m` : `${Math.round(m / 10) * 10} m`;
 }
 
-export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
+export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelProps>(function NearbyRoutesPanel({
   routes,
   loading = false,
   setSelectedRoute,
-}) => {
+}, ref) {
   return (
     <div
+      ref={ref}
       style={{ position: 'absolute', bottom: 72, right: 12, zIndex: PANEL_Z_INDEX }}
       className={`w-64 max-h-72 flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
     >
@@ -75,4 +76,4 @@ export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
       )}
     </div>
   );
-};
+});

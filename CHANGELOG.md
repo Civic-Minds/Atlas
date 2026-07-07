@@ -18,6 +18,7 @@
 - **Near You panel**: Removed close button; panel clears when location is dismissed from the map.
 - **Near You headways**: “Every X min” respects the selected day and period filter (`headwayByPeriod`), not midday headline only.
 - **Near You loading**: Shows spinner while agency GeoJSON loads instead of “No routes within 500 m”.
+- **Near You dismiss** ([#139](https://github.com/Civic-Minds/Atlas/issues/139)): Panel closes on outside click (same pattern as filter chips).
 
 ## [3.0.9] — 2026-07-06
 
