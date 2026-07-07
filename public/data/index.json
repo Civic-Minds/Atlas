@@ -299,7 +299,7 @@
         "RED",
         "BLUE"
       ],
-      "overrideNote": "Niagara Region Transit no longer operates the RED or BLUE services. The Red was rebranded to Route 116/216 under NRT; the Blue was transferred to Niagara Parks to operate alongside the WEGO GREEN route. We've hidden the stale RED/BLUE entries still present in the GTFS feed.",
+      "overrideNote": "Niagara Transit no longer operates the RED or BLUE services. The Red was rebranded to Route 116/216; the Blue was transferred to Niagara Parks to operate alongside the WEGO GREEN route. We've hidden the stale RED/BLUE entries still present in the GTFS feed.",
       "lastFeedExpiry": "20210109",
       "lastFeedVersion": "S1000191",
       "lastRefreshedAt": "2026-07-06",
