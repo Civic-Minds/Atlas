@@ -44,8 +44,8 @@ export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): n
   if (period !== 'all') {
     const periodHw =
       ext.minStopHeadwayByPeriod?.[period]
-      ?? ext.worstDirectionHeadwayByPeriod?.[period]
-      ?? ext.headwayByPeriod?.[period];
+      ?? ext.headwayByPeriod?.[period]
+      ?? ext.worstDirectionHeadwayByPeriod?.[period];
     if (periodHw != null) return periodHw;
   }
 

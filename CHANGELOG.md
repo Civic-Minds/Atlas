@@ -25,6 +25,7 @@
 - **Help notices**: single top border when "outdated schedule" + "We corrected this data" stack (no line between, e.g. Niagara).
 - **Outdated schedule notice**: reworded to "This schedule may be outdated and ended Jan 9, 2021." (no brackets or em dash).
 - **InfoPanel backdrop**: made non-blocking (`pointer-events-none`) + outside-click via listener so background elements (e.g. other "Learn more" buttons in cards) receive proper hover cursors and interactions while panel is open.
+- **Period filter**: prefer minStopHeadwayByPeriod or headwayByPeriod over worstDirectionHeadwayByPeriod for "15 min" etc filters (so routes with good sections or headBy show even if one direction is worse; fixes RGRTA 8/16/22 etc not appearing).
 - **Niagara Transit**: `excludeRouteShortNames: ["RED", "BLUE"]` + display name updated; no longer operates former WEGO Red (rebranded 116/216) or Blue (to Niagara Parks WEGO). Stale entries hidden via overrideNote.
 - **Empty routeShortName routes** (e.g. 145): changed `routeShortName &&` guard to `!= null` in process-core.ts so stop headway loop runs; headwayByHour, stopHeadways, stopOrder etc. now compute.
 - **Pipeline**: Post-merge tier refinement uses `headwayToTier()` instead of undefined `HEADWAY_TIERS`.

@@ -135,10 +135,10 @@ export function passesRouteFilter(
   // visually restricts the displayed geometry to the qualifying section.
   if (filters.period && filters.period !== 'all') {
     const minStopPeriodHw = (p as any).minStopHeadwayByPeriod?.[filters.period] as number | undefined;
-    // AI-182: use worst direction's period headway so both directions must qualify
+    const headByPeriod = (p as any).headwayByPeriod?.[filters.period] as number | undefined;
+    // AI-182: use worst direction's period headway so both directions must qualify, but prefer min-stop or headBy for routes with good sections
     const worstPeriodHw = (p as any).worstDirectionHeadwayByPeriod?.[filters.period] as number | undefined;
-    const periodHw = minStopPeriodHw ?? worstPeriodHw
-      ?? ((p as any).headwayByPeriod?.[filters.period] as number | undefined);
+    const periodHw = minStopPeriodHw ?? headByPeriod ?? worstPeriodHw;
     if (periodHw != null) {
       if (periodHw > filters.maxHeadway) return false;
       return true;
