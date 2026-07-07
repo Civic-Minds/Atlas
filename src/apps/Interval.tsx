@@ -212,7 +212,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         filterToAgencies={filterToAgencies}
         onHistoryRouteClick={onHistoryRouteClick}
         tileFilter={tileFilter}
-        selectedModes={selectedModes}
         selectedAgencySlug={selectedAgencySlug}
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}

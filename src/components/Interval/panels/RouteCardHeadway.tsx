@@ -2,7 +2,7 @@ import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { titleCase, shortenAgencyName, formatBranchLabel } from '../../../utils/format';
+import { titleCase, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import RouteCardTitle from '../../RouteCardTitle';
 import {
@@ -184,6 +184,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
           const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
           const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
+          const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
+            resolveBranchLabel({
+              headsign,
+              shortName: currentRoute.routeShortName ?? '',
+              longName: currentRoute.routeLongName ?? '',
+              directionId: needsNumbered ? gi : group.dirId,
+              multipleDirections: displayGroups.length > 1,
+              sectionBoundLabel: displayGroups.length > 1 ? group.boundLabel : undefined,
+            });
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
             if (!headsign) return {};
             const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId) && hoveredBranch?.headsign === headsign;
@@ -196,21 +205,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           };
           const multiBranchGroup = (g: DirectionGroup) => g.realTier.length >= 2;
           return displayGroups.map((group, gi) => {
-            const fmtH = (d: ShapeProperties): string =>
-              formatBranchLabel(d.headsign, currentRoute.routeShortName ?? '', currentRoute.routeLongName ?? '');
             const realHeadsignKeys = new Set(
               group.realTier.map(d => (d.headsign ?? '').trim().toLowerCase()).filter(Boolean),
             );
             const exclusiveSpans = (() => {
               const seen = new Set<string>();
               return group.span.filter(d => {
-                const key = (d.headsign ?? '').trim().toLowerCase();
-                if (!key || realHeadsignKeys.has(key) || seen.has(key)) return false;
+                const key = (d.headsign ?? '').trim().toLowerCase() || `__dir-${group.dirId}`;
+                if (realHeadsignKeys.has((d.headsign ?? '').trim().toLowerCase()) || seen.has(key)) return false;
                 seen.add(key);
                 return true;
               });
             })();
-            const exclusiveSpanNames = exclusiveSpans.map(d => fmtH(d)).filter(Boolean);
+            const exclusiveSpanNames = exclusiveSpans
+              .map(d => branchLabel(group, d.headsign, gi))
+              .filter(Boolean);
             return (
               <React.Fragment key={group.dirId}>
                 {gi > 0 && displayGroups.length > 1 && <CardDivider />}
@@ -222,14 +231,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const minStopHw = (d as any).minStopHeadway as number | undefined;
                     const dimmed = maxHeadway !== Infinity && (minStopHw ?? d.headway ?? Infinity) > maxHeadway;
                     return (() => {
-                      const label = d.headsign ? fmtH(d) : needsNumbered ? `Direction ${gi + 1}` : '';
-                      if (!label && !collapseGroups) return null;
                       const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
                       const byHour = (d as any).headwayByHour as Record<number, number | null> | undefined;
                       const ph = period !== 'all'
                         ? (byPeriod?.[period as keyof HeadwayByPeriod] ?? periodHeadwayFromByHour(byHour, period))
                         : undefined;
                       const displayH = ph ?? d.headway;
+                      const label = branchLabel(group, d.headsign, gi);
+                      if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = period !== 'all'
                         ? (d as ExtShape).minStopHeadwayByPeriod?.[period]
                         : undefined;
@@ -247,7 +256,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     })();
                   })}
                   {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length === 1 && (
-                    <CardDirectionRow key="s0" label={exclusiveSpans[0].headsign ? fmtH(exclusiveSpans[0]) : 'limited service'} limited {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign)} />
+                    <CardDirectionRow
+                      key="s0"
+                      label={branchLabel(group, exclusiveSpans[0].headsign, gi) || 'limited service'}
+                      limited
+                      {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign)}
+                    />
                   )}
                   {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length > 1 && (
                     <CardDirectionRow key="smulti" label={exclusiveSpanNames.join(' · ')} limited />

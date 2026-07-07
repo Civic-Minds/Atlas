@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **Route card one-way destinations** ([#134](https://github.com/Civic-Minds/Atlas/issues/134)): Unified headsign pipeline (`resolveDisplayHeadsign`) so GeoJSON never drops cleaned-away destinations; route/stop cards share `resolveBranchLabel` with direction fallbacks; route-title redundancy handled at display time, not in stored data. Route cards no longer repeat the section heading as a row label (e.g. "to Southbound" under SOUTHBOUND).
+- **Letter-suffix branch routes**: Pipeline auto-merges GTFS pairs like `blue` + `blue B` when long names prove same corridor (YRT VIVA, etc.) — default-on for all agencies; opt out with `skipLetterSuffixMerge` in `index.json`.
+- **Pipeline modularization**: GTFS normalize/transform orchestration, shape selection, headway utils, geometry, and feature enrichment extracted from `process-core.ts` into dedicated modules.
+- **Map attribution**: OSM/CARTO credit always visible (no collapsed ℹ toggle).
+- **Mode filter** ([#135](https://github.com/Civic-Minds/Atlas/issues/135)): Mode gating moved into shared `tileFilter` (map + stats use the same clause); `effectiveMode` coerces string `routeType` and always receives `agencySlug` for virtual LRT rules.
+- **Frequency filter** ([#136](https://github.com/Civic-Minds/Atlas/issues/136)): MapLibre tile filter expressions rewritten to compile with direction/day clauses — invalid nested `to-number`/numeric coalesce caused `setFilter` to fail silently so the map ignored headway/mode pills while stats updated.
+
 ## [3.0.9] — 2026-07-06
 
 ### Fixed

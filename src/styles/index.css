@@ -55,14 +55,20 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* MapLibre attribution — required by license, styled unobtrusive */
+/* MapLibre attribution — required by license; always visible (not collapsed behind ℹ) */
 .maplibregl-ctrl-attrib {
   font-size: 9px !important;
-  background: transparent !important;
+  background: color-mix(in srgb, var(--bg-header) 88%, transparent) !important;
   color: var(--text-dim) !important;
+  border-radius: 4px !important;
+  padding: 0 4px !important;
+  max-width: min(360px, calc(100vw - 24px));
 }
 .maplibregl-ctrl-attrib a {
   color: var(--text-muted) !important;
+}
+.maplibregl-ctrl-attrib-button {
+  display: none !important;
 }
 
 .atlas-tooltip {

@@ -6,7 +6,6 @@ import { ScatterplotLayer, TextLayer } from 'deck.gl';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, STATUS_COLORS, buildFareColorExpression, buildZoomHeadwayGateExpression } from '../../utils/colors';
-import { buildEffectiveModeExpression } from '../../../shared/modes';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
@@ -73,7 +72,6 @@ interface MapCanvasProps {
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   tileFilter?: any;
-  selectedModes?: Set<number>;
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
@@ -106,7 +104,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   filterToAgencies = false,
   onHistoryRouteClick,
   tileFilter,
-  selectedModes,
   selectedAgencySlug,
   setSelectedAgencySlug,
   fareView = false,
@@ -169,7 +166,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     });
 
     mapRef.current = map;
-    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-left');
+    map.addControl(new maplibregl.AttributionControl({ compact: false }), 'bottom-left');
 
     map.on('load', () => {
       setZoom(map.getZoom());
@@ -657,12 +654,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     ];
 
     // Hide span (irregular) routes from the map when hideSpan is active
-    // MapLibre expression to compute the effective mode of a feature (matches useIntervalStats.ts effectiveMode)
-    const modeExpr: any = buildEffectiveModeExpression();
-
-    const modeFilter: any = selectedModes && selectedModes.size > 0
-      ? ['any', ...Array.from(selectedModes).map(m => ['==', modeExpr, m])]
-      : null;
 
     // Zoom gate uses ['zoom'] — valid in paint, not in layer filters. Applied via line-opacity below.
     const zoomGateMaxHeadway: any = buildZoomHeadwayGateExpression(headwayExpr)[2];
@@ -679,14 +670,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             ? ['==', 'agencySlug', matchedAgencySlug]
             : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]])
         : null;
-      routeFilter = concatFilters(hasFare, searchClause, modeFilter);
+      routeFilter = concatFilters(hasFare, searchClause);
     } else if (ql) {
       const searchClause = matchedAgencySlug
         ? ['==', 'agencySlug', matchedAgencySlug]
         : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]];
-      routeFilter = concatFilters(tileFilter, searchClause, modeFilter);
+      routeFilter = concatFilters(tileFilter, searchClause);
     } else {
-      routeFilter = concatFilters(tileFilter, modeFilter);
+      routeFilter = tileFilter;
     }
 
     if (filterToAgencies && agencies.length > 0) {
@@ -795,7 +786,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, selectedModes, tileFilter, fareView]);
+  }, [mapLoaded, q, selectedRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, tileFilter, fareView]);
 
   // Sync corridor static layer visibility
   useEffect(() => {

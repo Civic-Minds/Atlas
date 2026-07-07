@@ -3,295 +3,40 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
-import type { GtfsData, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule } from '../types/gtfs.js';
+import type { GtfsData } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { filterGtfsByRouteTypes, filterGtfsByExcludedShortNames } from './filterGtfs.js';
-import { mergeNrtDayNightRoutes } from './transforms/nrt-day-night.js';
-import { cleanHeadsign } from '../shared/cleanHeadsign.js';
+import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
+import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { TIME_PERIODS, HEADWAY_TIERS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } from '../shared/config.js';
+import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } from '../shared/config.js';
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { t2m } from './transit-utils.js';
+import { computePeriodHeadways, headwayToTier, medianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
+import { projectStopsOntoShape, simplifyLine } from './geometry.js';
+import { computeLivePollingOffsets } from './live-polling-offsets.js';
+import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
+import { stampWorstDirectionHeadways } from './worst-direction.js';
+import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 
-function headwayToTier(h: number): string {
-  for (const { max } of HEADWAY_TIERS) {
-    if (h <= max) return max === Infinity ? 'infrequent' : String(max);
-  }
-  return 'infrequent';
-}
-// Tier ordering from best to worst. Step 4 uses this to ensure it can only degrade
-// a route's tier (branch less frequent than trunk), never improve it.
-const TIER_RANK: Record<string, number> = Object.fromEntries([
-  ...HEADWAY_TIERS.map(({ max }, i) => [max === Infinity ? 'infrequent' : String(max), i]),
-  ['span', HEADWAY_TIERS.length],
-]);
-
-export type GtfsPreprocess = 'nrt-day-night';
-
-// Douglas-Peucker line simplification. Tolerance in degrees (~0.0001 ≈ 11m).
-function simplifyLine(coords: number[][], tolerance: number): number[][] {
-  if (coords.length <= 2) return coords;
-  const [x1, y1] = coords[0];
-  const [x2, y2] = coords[coords.length - 1];
-  const dx = x2 - x1, dy = y2 - y1;
-  const lenSq = dx * dx + dy * dy;
-  let maxDist = 0, maxIdx = 0;
-  for (let i = 1; i < coords.length - 1; i++) {
-    const [px, py] = coords[i];
-    const dist = lenSq === 0
-      ? Math.sqrt((px - x1) ** 2 + (py - y1) ** 2)
-      : Math.abs(dy * px - dx * py + x2 * y1 - y2 * x1) / Math.sqrt(lenSq);
-    if (dist > maxDist) { maxDist = dist; maxIdx = i; }
-  }
-  if (maxDist > tolerance) {
-    const left = simplifyLine(coords.slice(0, maxIdx + 1), tolerance);
-    const right = simplifyLine(coords.slice(maxIdx), tolerance);
-    return [...left.slice(0, -1), ...right];
-  }
-  return [coords[0], coords[coords.length - 1]];
-}
-
-const PERIODS = Object.fromEntries(
-  TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }])
-) as Record<string, { start: number; end: number }>;
-
+export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
+export type { GeoJsonFeature, StopEntry };
 
-// AI-66: detect bus sub-type from route attributes and agency slug
-function detectBusSubType(
-  routeType: string | number | undefined,
-  shortName: string,
-  longName: string | null,
-  agencySlug?: string,
-): 'brt' | 'express' | 'coach' | 'local' | undefined {
-  const rt = parseInt(String(routeType ?? '3'));
-  if (rt !== 3) return undefined; // only tag route_type=3 buses
-  const combined = `${shortName} ${longName ?? ''}`.toLowerCase();
-  if (/\b(brt|bus rapid transit|viva|züm|zum|pulse|b-line|bline)\b/.test(combined)) return 'brt';
-  if (/\b(express|xpress)\b/.test(combined)) return 'express';
-  if (agencySlug === 'go') return 'coach';
-  return 'local';
-}
+const PERIODS = Object.fromEntries(
+  TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
+) as Record<string, { start: number; end: number }>;
 
-/**
- * Build route_id -> base fare (in dollars).
- * Prefers GTFS-Fares V2 if present, falls back to legacy V1.
- *
- * V2 path:
- *   - Collect prices from adult (or uncategorized) fare products.
- *   - If any positive prices: base = min(positive)
- *   - Else (all 0 or only 0s): base = 0  → supports entirely fare-free agencies
- *   - Apply that base to every route (simple global for now).
- *
- * V1 path: per-route via rules, min non-zero (0 explicitly means free).
- *
- * If nothing, base=null (later manual fallback or skipped in Fares view).
- */
-function computeRouteBaseFares(gtfs: GtfsData, manualBaseFare?: number): Map<string, number | null> {
-  const routeIdToFare = new Map<string, number | null>();
-
-  // Try V2 first
-  if (gtfs.fareProducts && gtfs.fareProducts.length > 0) {
-    const adultPrices: number[] = [];
-    const riderCatById = new Map((gtfs.riderCategories ?? []).map(c => [c.rider_category_id, c]));
-
-    for (const prod of gtfs.fareProducts) {
-      const price = parseFloat(prod.amount);
-      if (Number.isNaN(price) || price < 0) continue;
-
-      let isAdult = true;
-      if (prod.rider_category_id) {
-        const cat = riderCatById.get(prod.rider_category_id);
-        const name = (cat?.rider_category_name || '').toLowerCase();
-        // Consider it non-adult if explicitly youth/senior/child/disabled etc.
-        if (name && /(youth|child|senior|elder|disabled|student|concession)/.test(name)) {
-          isAdult = false;
-        }
-      }
-      if (isAdult) {
-        adultPrices.push(price);
-      }
-    }
-
-    if (adultPrices.length > 0) {
-      const positive = adultPrices.filter(p => p > 0);
-      // If there are any positive adult fares, use the lowest paid price as base.
-      // This avoids misclassifying paid systems that happen to have some $0 products
-      // (e.g. certain media, promotions, or special services).
-      // If *all* adult products are $0 (or only $0), treat the whole thing as free (base=0).
-      // This correctly supports entirely fare-free agencies without skipping them.
-      const base = positive.length > 0 ? Math.min(...positive) : 0;
-      // For V2 we apply the base price to all routes for now (per-route/network rules
-      // via fare_leg_rules + networks are more complex; can refine later).
-      for (const route of gtfs.routes ?? []) {
-        routeIdToFare.set(route.route_id, base);
-      }
-      // Apply manual only for missing (none here)
-      return routeIdToFare;
-    }
-  }
-
-  // Fallback to legacy V1
-  const farePriceById = new Map<string, number>();
-
-  for (const fa of gtfs.fareAttributes ?? []) {
-    const price = parseFloat(fa.price);
-    if (!Number.isNaN(price) && price >= 0) {
-      farePriceById.set(fa.fare_id, price);
-    }
-  }
-
-  // Prefer explicit route_id rules. For a route, take min positive; 0 wins as "free".
-  for (const rule of gtfs.fareRules ?? []) {
-    if (!rule.route_id) continue;
-    const price = farePriceById.get(rule.fare_id);
-    if (price === undefined) continue;
-
-    const prev = routeIdToFare.get(rule.route_id);
-    if (prev === undefined) {
-      routeIdToFare.set(rule.route_id, price);
-    } else if (price === 0 || (prev !== 0 && price < prev)) {
-      routeIdToFare.set(rule.route_id, price);
-    }
-  }
-
-  // Fill remaining routes as null (GTFS had no fare linkage)
-  for (const route of gtfs.routes ?? []) {
-    if (!routeIdToFare.has(route.route_id)) {
-      routeIdToFare.set(route.route_id, null);
-    }
-  }
-
-  // Apply manual fallback only where still null
-  if (manualBaseFare != null && manualBaseFare >= 0) {
-    for (const [rid, val] of routeIdToFare) {
-      if (val === null) {
-        routeIdToFare.set(rid, manualBaseFare);
-      }
-    }
-  }
-
-  return routeIdToFare;
-}
-
-function medianHeadwayInWindow(departureTimes: number[], start: number, end: number, minDeps = 2): number | null {
-  // Deduplicate and sort before computing gaps. Agencies that split the same schedule across
-  // multiple service_ids (e.g. OC Transpo Mon-Thu + Friday Confederation Line both having
-  // monday=1) would otherwise produce exact-duplicate minutes that collapse gaps to 0.
-  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
-  if (times.length < minDeps) return null;
-  const gaps: number[] = [];
-  for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
-  gaps.sort((a, b) => a - b);
-  return Math.round(gaps[Math.floor(gaps.length / 2)]);
-}
-
-function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
-  const result: HeadwayByPeriod = {};
-  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    // Require ≥3 departures per period: 2 departures gives only 1 gap, which is a single
-    // measurement, not a repeating headway. Niagara Falls GO with 2 AM Peak trains would
-    // otherwise show "every 90 min AM Peak" from a single gap.
-    result[key] = medianHeadwayInWindow(departureTimes, start, end, 3);
-  }
-  return result;
-}
-
-/**
- * Returns the parameter t ∈ [0, cumLen] (cumulative metres along the polyline)
- * of the nearest point to `pt` on the segment from `a` to `b`.
- * Uses flat-earth approximation — accurate enough for stops within a city.
- */
-function nearestParamOnSegment(
-  pt: [number, number],   // [lat, lon]
-  a: [number, number],
-  b: [number, number],
-  segLen: number,         // precomputed length of a→b in degrees²-space
-): number {
-  const dx = b[0] - a[0];
-  const dy = b[1] - a[1];
-  if (segLen === 0) return 0;
-  const t = Math.max(0, Math.min(1, ((pt[0] - a[0]) * dx + (pt[1] - a[1]) * dy) / segLen));
-  return t;
-}
-
-/**
- * Projects each stop onto the polyline (shape coordinates [lat, lon][]).
- * Returns stops sorted by their projected position along the shape (0 → end),
- * with normalized t values (0.0–1.0) for frontend geometry clipping and
- * dev2 (squared degrees deviation from the nearest shape point) for proximity filtering.
- * Stops that can't be projected (not in stopsById) are omitted.
- */
-function projectStopsOntoShape(
-  stopIds: string[],
-  stopsById: Map<string, { lat: number; lon: number }>,
-  shapePts: [number, number][],  // [lat, lon][]
-): { stopId: string; t: number; dev2: number }[] {
-  if (shapePts.length < 2) return [];
-
-  const segLens: number[] = [];
-  const cumLen: number[] = [0];
-  for (let i = 0; i < shapePts.length - 1; i++) {
-    const dx = shapePts[i + 1][0] - shapePts[i][0];
-    const dy = shapePts[i + 1][1] - shapePts[i][1];
-    const len2 = dx * dx + dy * dy;
-    segLens.push(len2);
-    cumLen.push(cumLen[i] + Math.sqrt(len2));
-  }
-  const totalLen = cumLen[cumLen.length - 1];
-  if (totalLen === 0) return [];
-
-  const projected: { stopId: string; t: number; dev2: number }[] = [];
-  for (const stopId of stopIds) {
-    const stop = stopsById.get(stopId);
-    if (!stop) continue;
-    const pt: [number, number] = [stop.lat, stop.lon];
-
-    let bestT = 0;
-    let bestDist2 = Infinity;
-    for (let i = 0; i < shapePts.length - 1; i++) {
-      const segT = nearestParamOnSegment(pt, shapePts[i], shapePts[i + 1], segLens[i]);
-      const nearLat = shapePts[i][0] + segT * (shapePts[i + 1][0] - shapePts[i][0]);
-      const nearLon = shapePts[i][1] + segT * (shapePts[i + 1][1] - shapePts[i][1]);
-      const dx = pt[0] - nearLat;
-      const dy = pt[1] - nearLon;
-      const d2 = dx * dx + dy * dy;
-      if (d2 < bestDist2) {
-        bestDist2 = d2;
-        bestT = (cumLen[i] + segT * Math.sqrt(segLens[i])) / totalLen;
-      }
-    }
-    projected.push({ stopId, t: bestT, dev2: bestDist2 });
-  }
-
-  return projected.sort((a, b) => a.t - b.t);
-}
-
-export interface ProcessOptions {
-  routeTypes?: number[];
-  preprocess?: GtfsPreprocess;
-  excludeRouteShortNames?: string[];
+export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
-  /** Manual per-agency base fare fallback (dollars) when GTFS fares (V1/V2) missing */
   manualBaseFare?: number;
 }
 
-export interface GeoJsonFeature {
-  type: 'Feature';
-  geometry: { type: 'LineString'; coordinates: number[][] };
-  properties: Record<string, unknown>;
-}
-
-export interface StopEntry {
-  name: string;
-  lat: number;
-  lon: number;
-}
 
 export interface ProcessResult {
   geojson: string;
@@ -311,27 +56,7 @@ export async function processGtfsBuffer(
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
   let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus);
-  if (options?.routeTypes?.length) {
-    gtfs = filterGtfsByRouteTypes(gtfs, options.routeTypes);
-  }
-  if (options?.excludeRouteShortNames?.length) {
-    gtfs = filterGtfsByExcludedShortNames(gtfs, options.excludeRouteShortNames);
-  }
-  if (options?.preprocess === 'nrt-day-night') {
-    const { gtfs: merged, result } = mergeNrtDayNightRoutes(gtfs);
-    gtfs = merged;
-    onStatus?.(
-      `NRT day/night merge: ${result.mergedPairs.length} pairs, ${result.tripsReassigned} trips reassigned` +
-        (result.orphanEveRoutes.length ? `, ${result.orphanEveRoutes.length} unmatched 4xx` : '') +
-        (result.shapeWarnings.length ? `, ${result.shapeWarnings.length} shape warnings` : ''),
-    );
-    for (const warning of result.shapeWarnings) {
-      onStatus?.(`NRT shape audit: ${warning}`);
-    }
-  }
-
-  // Synthesize direction_id if missing from feed (resolves headway/frequency understatements, AI-200)
-  gtfs = synthesizeMissingDirections(gtfs);
+  gtfs = normalizeGtfs(gtfs, options, onStatus);
 
   const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
 
@@ -349,197 +74,24 @@ export async function processGtfsBuffer(
     }
   }
 
-  // Determine the active service period before building the shape filter.
-  // Some agencies (e.g. DRT) encode the schedule version in shape IDs
-  // (e.g. `-2026-04` vs `-2026-06`). Counting shapes across ALL trips then picks
-  // the future period's shape ID, which no current-period trip matches — the shape
-  // filter silently drops every trip and produces missing or wildly wrong headways.
-  // Fix: count shapes only from trips in the currently active service period.
   const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
   const activeForShapes = new Set<string>([
     ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Monday', refDate),
     ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Saturday', refDate),
     ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Sunday', refDate),
   ]);
-
-  // Pre-index the last stop of each trip to serve as fallback trip_headsign
-  const lastStopByTrip = new Map<string, string>(); // tripId -> stop_id
-  const maxSeqByTrip = new Map<string, number>();   // tripId -> max stop_sequence
-  for (const st of gtfs.stopTimes ?? []) {
-    const seq = parseInt(st.stop_sequence);
-    if (Number.isNaN(seq)) continue;
-    const currentMax = maxSeqByTrip.get(st.trip_id) ?? -1;
-    if (seq > currentMax) {
-      maxSeqByTrip.set(st.trip_id, seq);
-      lastStopByTrip.set(st.trip_id, st.stop_id);
-    }
-  }
-
-  // Map stopId to stop_name
-  const stopNameById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
-
-  const shapeCounts = new Map<string, Map<string, number>>();
-  const headsignCounts = new Map<string, Map<string, number>>();
-  // shape counts per (routeId, dir, headsign) so each direction/terminus gets its own shape
-  const headsignShapeCounts = new Map<string, Map<string, number>>();
-  for (const trip of gtfs.trips ?? []) {
-    if (!activeForShapes.has(trip.service_id)) continue;
-    const key = `${trip.route_id}::${trip.direction_id ?? '0'}`;
-
-    let headsign = trip.trip_headsign?.trim() || null;
-    if (!headsign) {
-      const lastStopId = lastStopByTrip.get(trip.trip_id);
-      if (lastStopId) {
-        headsign = stopNameById.get(lastStopId) ?? null;
-      }
-    }
-
-    if (trip.shape_id) {
-      if (!shapeCounts.has(key)) shapeCounts.set(key, new Map());
-      const m = shapeCounts.get(key)!;
-      m.set(trip.shape_id, (m.get(trip.shape_id) ?? 0) + 1);
-      
-      if (headsign) {
-        const hKey = `${key}::${headsign}`;
-        if (!headsignShapeCounts.has(hKey)) headsignShapeCounts.set(hKey, new Map());
-        const hm = headsignShapeCounts.get(hKey)!;
-        hm.set(trip.shape_id, (hm.get(trip.shape_id) ?? 0) + 1);
-      }
-    }
-    if (headsign) {
-      if (!headsignCounts.has(key)) headsignCounts.set(key, new Map());
-      const hm = headsignCounts.get(key)!;
-      hm.set(headsign, (hm.get(headsign) ?? 0) + 1);
-    }
-  }
-
-  // Most common shape per (routeId, dir, headsign) for terminus splitting
-  const headsignDisplayShape = new Map<string, string>(); // "routeId::dir::headsign" → shapeId
-  for (const [hKey, counts] of headsignShapeCounts) {
-    const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
-    if (best) headsignDisplayShape.set(hKey, best);
-  }
-
-  // Most common headsign per route+direction, stripped of branch-letter prefixes
-  // (e.g. DRT's "A - Windfields Farm" -> "Windfields Farm") since those internal
-  // codes are meaningless without the agency's own branch legend.
-  const routeDirToHeadsign = new Map<string, string>();
-  for (const [key, counts] of headsignCounts) {
-    const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
-    if (best) {
-      const routeId = key.split('::')[0];
-      const route = routeById.get(routeId);
-      const sn = route?.route_short_name?.trim() ?? null;
-      const ln = route?.route_long_name?.trim() ?? null;
-      routeDirToHeadsign.set(key, cleanHeadsign(best, sn, ln));
-    }
-  }
-
-  // Build shapeById early so rail shape selection can compare lengths.
-  const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
-
-  // Cluster bus shapes by approximate point count, then union all full-route clusters.
-  // Winner-take-all dropped GRTC directions when weekday/weekend shape_ids differ slightly
-  // in length (e.g. BRT dir 1: 829 vs 753 pts) but are both full-route variants.
-  const SHORT_TURN_LEN_RATIO = 0.75;
-  function busAnalysisShapeIds(
-    shapeEntries: { sid: string; trips: number; len: number }[],
-  ): Set<string> {
-    if (shapeEntries.length === 0) return new Set();
-    const clusters: { shapeIds: string[]; trips: number; repLen: number }[] = [];
-    for (const e of shapeEntries) {
-      const tol = Math.max(10, Math.round(e.len * 0.01));
-      const cluster = clusters.find(c => Math.abs(c.repLen - e.len) <= tol);
-      if (cluster) {
-        cluster.shapeIds.push(e.sid);
-        cluster.trips += e.trips;
-      } else {
-        clusters.push({ shapeIds: [e.sid], trips: e.trips, repLen: e.len });
-      }
-    }
-    const maxLen = Math.max(...shapeEntries.map(e => e.len));
-    const shapeIds = new Set<string>();
-    for (const c of clusters) {
-      if (c.repLen >= maxLen * SHORT_TURN_LEN_RATIO) {
-        for (const sid of c.shapeIds) shapeIds.add(sid);
-      }
-    }
-    if (shapeIds.size === 0) {
-      const winning = clusters.sort((a, b) => b.trips - a.trips)[0];
-      if (winning) for (const sid of winning.shapeIds) shapeIds.add(sid);
-    }
-    return shapeIds;
-  }
-
-  // Two separate shape maps:
-  // - routeDirToDisplayShape: longest shape per direction, so branching routes (e.g. HSR Route 5
-  //   via Downtown Dundas) show their full geographic extent on the map.
-  // - routeDirToAnalysisShape: most-common shape per direction, used to filter trips for phase 1
-  //   frequency analysis so that short-turn/branch trips don't distort the headway calculation.
-  const routeDirToDisplayShape = new Map<string, string>();
-  // Set of shape_ids to include in the phase-1 analysis per route+dir (may contain
-  // several shape_ids when they're geometrically equivalent — see below).
-  const routeDirToAnalysisShapes = new Map<string, Set<string>>();
-  for (const [key, counts] of shapeCounts) {
-    const routeId = key.split('::')[0];
-    const routeType = routeById.get(routeId)?.route_type;
-    const isRail = routeType === '2' || routeType === 2;
-
-    if (isRail) {
-      // For rail, pick the longest shape (most points) so short-turn patterns
-      // (e.g. GO Transit Bramalea→Union) don't win over the full end-to-end route.
-      const best = [...counts.keys()]
-        .filter(sid => shapeById.has(sid))
-        .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
-      if (best) { routeDirToDisplayShape.set(key, best); routeDirToAnalysisShapes.set(key, new Set([best])); }
-    } else {
-      // Bus display: longest shape shows full branch extent.
-      const byLength = [...counts.keys()]
-        .filter(sid => shapeById.has(sid))
-        .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
-      if (byLength) routeDirToDisplayShape.set(key, byLength);
-
-      const shapeEntries = [...counts.entries()]
-        .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
-        .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
-      const analysisShapes = busAnalysisShapeIds(shapeEntries);
-      if (analysisShapes.size > 0) routeDirToAnalysisShapes.set(key, analysisShapes);
-    }
-  }
-
-  // Shape filter passed to phase 1: bus only, using the analysis shape group(s).
-  // Rail short-turn trains (e.g. GO Union→Bramalea) still serve every intermediate stop,
-  // so they should count toward effective corridor frequency. Excluding them (by filtering
-  // to the longest shape) inflates the computed headway and pushes real rail lines like
-  // Lakeshore West or Kitchener into tier=span. Bus short-turns are genuinely different
-  // products (they skip part of the route) so the shape filter still applies there.
-  const shapeFilterForPhase1 = new Map<string, Set<string>>();
-  for (const [key, shapeIds] of routeDirToAnalysisShapes) {
-    const routeId = key.split('::')[0];
-    const route = routeById.get(routeId);
-    const isRail = route?.route_type === '2' || route?.route_type === 2;
-    if (!isRail) shapeFilterForPhase1.set(key, shapeIds);
-  }
-
-  // Per-headsign shape filters for routes with genuine headsign-based branches
-  // (e.g. DRT 905 "A - Windfields Farm" vs "C - Uxbridge / Port Perry").
-  // The base cluster picks the majority headsign's shape, filtering out minority
-  // branches entirely. By adding headsign-specific entries, each branch uses only
-  // its own shape for analysis — the existing short-turn filter behaviour is
-  // preserved for trips that share the dominant headsign.
-  for (const [hKey, hShapeCounts] of headsignShapeCounts) {
-    const parts = hKey.split('::');
-    const routeId = parts[0];
-    const dirId = parts[1];
-    const route = routeById.get(routeId);
-    if (route?.route_type === '2' || route?.route_type === 2) continue;
-    const shapeEntries = [...hShapeCounts.entries()]
-      .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
-      .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
-    if (shapeEntries.length === 0) continue;
-    const analysisShapes = busAnalysisShapeIds(shapeEntries);
-    if (analysisShapes.size > 0) shapeFilterForPhase1.set(hKey, analysisShapes);
-  }
+  const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes);
+  const {
+    shapeById,
+    shapeCounts,
+    headsignDisplayShape,
+    routeDirToHeadsign,
+    routeDirToDisplayShape,
+    routeDirToAnalysisShapes,
+    shapeFilterForPhase1,
+    lastStopByTrip,
+    stopNameById,
+  } = shapes;
 
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1);
@@ -584,7 +136,7 @@ export async function processGtfsBuffer(
       const lastStopId = lastStopByTrip.get(trip.trip_id);
       if (lastStopId) rawHeadsign = stopNameById.get(lastStopId) ?? null;
     }
-    const headsign = rawHeadsign ? cleanHeadsign(rawHeadsign, shortName, longName) || rawHeadsign : null;
+    const headsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
     tripGroupByTripId.set(trip.trip_id, {
       routeId: trip.route_id,
       shortName,
@@ -623,9 +175,8 @@ export async function processGtfsBuffer(
     const shortName = route?.route_short_name ?? result.route;
     // Normalize headsign for dedup using the same clean function as display.
     // This collapses raw variants (e.g. "Hancock", "To Hancock Plaza") that clean to the same label.
-    const cleanedForDedup = result.headsign
-      ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || result.headsign
-      : null;
+    const routeLongName = route?.route_long_name?.trim() ?? null;
+    const cleanedForDedup = resolveDisplayHeadsign(result.headsign, shortName, routeLongName);
     // Deduplicate by (shortName, dir, day, headsign) so separate directions and terminuses
     // aren't collapsed together.
     const dedupeKey = cleanedForDedup
@@ -672,9 +223,8 @@ export async function processGtfsBuffer(
         busSubType: detectBusSubType(result.routeType, shortName, route?.route_long_name ?? null, options?.slug),
         baseFare: routeBaseFares.get(result.route) ?? null,
         day: result.day,
-        headsign: result.headsign
-          ? cleanHeadsign(result.headsign, shortName, route?.route_long_name?.trim() ?? null) || null
-          : routeDirToHeadsign.get(key) ?? null,
+        headsign: resolveDisplayHeadsign(result.headsign, shortName, routeLongName)
+          ?? routeDirToHeadsign.get(key) ?? null,
       },
     });
   }
@@ -1024,81 +574,8 @@ export async function processGtfsBuffer(
     }
   }
 
-  // AI-58: short-turn variant metadata — attach significant shape variants (≥15% of trips)
-  // to each feature as shortTurnVariants. Per-variant headways require phase-1 refactoring;
-  // this pass captures trip share and headsign so the UI can show "X% go to [headsign]".
-  // Only attaches to direction-0 features (the map-visible direction).
-  const dirTripTotals = new Map<string, number>();
-  for (const [key, counts] of shapeCounts) {
-    const total = [...counts.values()].reduce((s, n) => s + n, 0);
-    dirTripTotals.set(key, total);
-  }
-  // Build headsign per shapeId for annotation
-  const headsignByShape = new Map<string, string>(); // shapeId → most common headsign
-  for (const [hKey, hShapeCounts] of headsignShapeCounts) {
-    const parts = hKey.split('::');
-    const headsign = parts.slice(2).join('::'); // headsign may contain '::'
-    for (const [sid] of hShapeCounts) {
-      if (!headsignByShape.has(sid)) headsignByShape.set(sid, headsign);
-    }
-  }
-  for (const feature of features) {
-    const dirId = String(feature.properties.directionId ?? '0');
-    if (dirId !== '0') continue; // only direction-0 features are map-visible
-    const routeId = feature.properties.routeId as string;
-    const key = `${routeId}::${dirId}`;
-    const counts = shapeCounts.get(key);
-    if (!counts) continue;
-    const total = dirTripTotals.get(key) ?? 0;
-    if (total === 0) continue;
-    // Identify the dominant cluster's shape IDs
-    const dominantShapes = routeDirToAnalysisShapes.get(key) ?? new Set<string>();
-    const variants: { headsign: string | null; tripShare: number }[] = [];
-    // Group non-dominant shapes by headsign, sum their trip counts
-    const headsignTripCounts = new Map<string | null, number>();
-    for (const [sid, tripCount] of counts) {
-      if (dominantShapes.has(sid)) continue;
-      const share = tripCount / total;
-      if (share < 0.15) continue; // only variants with ≥15% of trips
-      const hs = headsignByShape.get(sid) ?? null;
-      headsignTripCounts.set(hs, (headsignTripCounts.get(hs) ?? 0) + tripCount);
-    }
-    for (const [hs, tripCount] of headsignTripCounts) {
-      variants.push({ headsign: hs ? cleanHeadsign(hs, feature.properties.routeShortName as string, feature.properties.routeLongName as string | null) : null, tripShare: Math.round(tripCount / total * 100) });
-    }
-    if (variants.length > 0) {
-      feature.properties.shortTurnVariants = variants.sort((a, b) => b.tripShare - a.tripShare);
-    }
-  }
-
-  // AI-182: worst-direction headway — both directions must meet the filter threshold.
-  // Compute the max headway across all directions per route (keyed by routeShortName),
-  // then stamp every feature with that value so the client filter can gate on it.
-  const routeWorstHw = new Map<string, number>();
-  const routeWorstHwByPeriod = new Map<string, HeadwayByPeriod>();
-  for (const f of features) {
-    const sn = f.properties.routeShortName as string;
-    const hw = f.properties.headway as number | null;
-    if (hw != null) {
-      const cur = routeWorstHw.get(sn) ?? 0;
-      if (hw > cur) routeWorstHw.set(sn, hw);
-    }
-    const byPeriod = f.properties.headwayByPeriod as HeadwayByPeriod | undefined;
-    if (byPeriod) {
-      let existing = routeWorstHwByPeriod.get(sn);
-      if (!existing) { existing = {}; routeWorstHwByPeriod.set(sn, existing); }
-      for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null][]) {
-        if (v != null && (existing[pk] == null || v > existing[pk]!)) existing[pk] = v;
-      }
-    }
-  }
-  for (const f of features) {
-    const sn = f.properties.routeShortName as string;
-    const worst = routeWorstHw.get(sn);
-    if (worst != null) f.properties.worstDirectionHeadway = worst;
-    const worstByPeriod = routeWorstHwByPeriod.get(sn);
-    if (worstByPeriod) f.properties.worstDirectionHeadwayByPeriod = worstByPeriod;
-  }
+  annotateShortTurnVariants(features, shapes);
+  stampWorstDirectionHeadways(features);
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)
   // get aggregate headway from the *union* of their departures. Emitted as small LineStrings
@@ -1213,7 +690,7 @@ export async function processGtfsBuffer(
           headway = minHw;
         }
 
-        const scheduleOffsetMin = computeOffsets(gtfs, cfg);
+        const scheduleOffsetMin = computeLivePollingOffsets(gtfs, cfg);
 
         livePollingSidecar[cfg.displayRouteShortName] = {
           scheduledHeadwayMin: headway,
@@ -1241,192 +718,5 @@ export async function processGtfsBuffer(
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
   };
-}
-
-function computeOffsets(gtfs: any, cfg: any) {
-  const routeIds = new Set(cfg.routeIds);
-  const targetStops = new Set(Object.keys(cfg.targetStops));
-  
-  const childToParent = new Map<string, string>();
-  for (const stop of gtfs.stops ?? []) {
-    if (stop.parent_station) {
-      childToParent.set(stop.stop_id, stop.parent_station);
-    }
-  }
-
-  const weekdayServices = new Set<string>();
-  for (const cal of gtfs.calendar ?? []) {
-    if (
-      cal.monday === '1' ||
-      cal.tuesday === '1' ||
-      cal.wednesday === '1' ||
-      cal.thursday === '1' ||
-      cal.friday === '1'
-    ) {
-      weekdayServices.add(cal.service_id);
-    }
-  }
-
-  const weekdayTrips = (gtfs.trips ?? []).filter((t: any) => 
-    routeIds.has(t.route_id) && weekdayServices.has(t.service_id)
-  );
-
-  const stopTimesByTrip = new Map<string, any[]>();
-  for (const st of gtfs.stopTimes ?? []) {
-    if (!stopTimesByTrip.has(st.trip_id)) {
-      stopTimesByTrip.set(st.trip_id, []);
-    }
-    stopTimesByTrip.get(st.trip_id)!.push(st);
-  }
-
-  const offsetsAccum: Record<string, Record<string, number[]>> = {};
-
-  function timeToMins(t: string): number {
-    const parts = t.split(':').map(Number);
-    if (parts.length < 2) return 0;
-    const h = parts[0];
-    const m = parts[1];
-    const s = parts[2] ?? 0;
-    return h * 60 + m + s / 60;
-  }
-
-  for (const trip of weekdayTrips) {
-    const stList = stopTimesByTrip.get(trip.trip_id);
-    if (!stList || stList.length === 0) continue;
-
-    stList.sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence));
-
-    const t0 = timeToMins(stList[0].departure_time || stList[0].arrival_time);
-    const dir = trip.direction_id ?? '0';
-
-    if (!offsetsAccum[dir]) offsetsAccum[dir] = {};
-
-    for (const st of stList) {
-      const parent = childToParent.get(st.stop_id) ?? st.stop_id;
-      const matchedTarget = targetStops.has(st.stop_id) ? st.stop_id : (targetStops.has(parent) ? parent : null);
-      if (!matchedTarget) continue;
-
-      const ts = timeToMins(st.arrival_time || st.departure_time);
-      const diff = ts - t0;
-      if (diff < 0) continue;
-
-      if (!offsetsAccum[dir][matchedTarget]) {
-        offsetsAccum[dir][matchedTarget] = [];
-      }
-      offsetsAccum[dir][matchedTarget].push(diff);
-    }
-  }
-
-  const result: Record<string, Record<string, number>> = {};
-  for (const [dir, stops] of Object.entries(offsetsAccum)) {
-    result[dir] = {};
-    for (const [stopId, diffs] of Object.entries(stops)) {
-      if (diffs.length === 0) continue;
-      const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length;
-      result[dir][stopId] = Math.round(avg);
-    }
-  }
-
-  return result;
-}
-
-function LevenshteinDistance(a: string, b: string): number {
-  const tmp: number[][] = [];
-  for (let i = 0; i <= a.length; i++) {
-    tmp[i] = [i];
-  }
-  for (let j = 0; j <= b.length; j++) {
-    tmp[0][j] = j;
-  }
-  for (let i = 1; i <= a.length; i++) {
-    for (let j = 1; j <= b.length; j++) {
-      tmp[i][j] = Math.min(
-        tmp[i - 1][j] + 1,
-        tmp[i][j - 1] + 1,
-        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
-      );
-    }
-  }
-  return tmp[a.length][b.length];
-}
-
-function synthesizeMissingDirections(gtfs: import('../types/gtfs.js').GtfsData): import('../types/gtfs.js').GtfsData {
-  if (!gtfs.trips || gtfs.trips.length === 0) return gtfs;
-
-  // Group trips by route_id
-  const tripsByRoute = new Map<string, typeof gtfs.trips>();
-  for (const t of gtfs.trips) {
-    if (!tripsByRoute.has(t.route_id)) tripsByRoute.set(t.route_id, []);
-    tripsByRoute.get(t.route_id)!.push(t);
-  }
-
-  // Pre-index the last stop of each trip to serve as fallback trip_headsign
-  const lastStopByTrip = new Map<string, string>();
-  const maxSeqByTrip = new Map<string, number>();
-  for (const st of gtfs.stopTimes ?? []) {
-    const seq = parseInt(st.stop_sequence);
-    if (Number.isNaN(seq)) continue;
-    const currentMax = maxSeqByTrip.get(st.trip_id) ?? -1;
-    if (seq > currentMax) {
-      maxSeqByTrip.set(st.trip_id, seq);
-      lastStopByTrip.set(st.trip_id, st.stop_id);
-    }
-  }
-  const stopNameById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
-
-  let synthesizedCount = 0;
-  for (const [routeId, rTrips] of tripsByRoute.entries()) {
-    const hasAnyDir = rTrips.some(t => t.direction_id != null && String(t.direction_id).trim() !== '');
-    if (hasAnyDir) continue;
-
-    // Group trips by shape_id, fallback to resolved headsign
-    const groups = new Map<string, typeof gtfs.trips>();
-    for (const t of rTrips) {
-      let headsign = t.trip_headsign?.trim();
-      if (!headsign) {
-        const lastStopId = lastStopByTrip.get(t.trip_id);
-        if (lastStopId) {
-          headsign = stopNameById.get(lastStopId);
-        }
-      }
-      const key = t.shape_id || headsign || 'default';
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key)!.push(t);
-    }
-
-    const sortedGroups = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
-    if (sortedGroups.length > 0) {
-      const [key0, trips0] = sortedGroups[0];
-      for (const t of trips0) {
-        t.direction_id = '0';
-        synthesizedCount++;
-      }
-
-      if (sortedGroups.length > 1) {
-        const [key1, trips1] = sortedGroups[1];
-        for (const t of trips1) {
-          t.direction_id = '1';
-          synthesizedCount++;
-        }
-
-        for (let i = 2; i < sortedGroups.length; i++) {
-          const [keyI, tripsI] = sortedGroups[i];
-          const dist0 = LevenshteinDistance(keyI, key0);
-          const dist1 = LevenshteinDistance(keyI, key1);
-          const dir = dist0 <= dist1 ? '0' : '1';
-          for (const t of tripsI) {
-            t.direction_id = dir;
-            synthesizedCount++;
-          }
-        }
-      }
-    }
-  }
-
-  if (synthesizedCount > 0) {
-    console.log(`Synthesized direction_id for ${synthesizedCount} trips across routes lacking direction_id.`);
-  }
-
-  return gtfs;
 }
 

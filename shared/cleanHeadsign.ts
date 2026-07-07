@@ -51,7 +51,12 @@ export function cleanHeadsign(
   h = h.replace(/\bExpress\b\s+(?=(?:towards|to)\s)/gi, '');
   const ttcMatch = h.match(/(?:Towards|To)\s+(.+?)(?:\s+Via\s+(.+))?$/i);
   if (ttcMatch) {
-    let dest = ttcMatch[1].trim().replace(/\s+Station\b/gi, '');
+    const rawDest = ttcMatch[1].trim();
+    let dest = rawDest.replace(/\s+Station\b/gi, '');
+    // Route 68 Warden → "Warden Station" must not collapse to bare long name "Warden".
+    if (longName && dest.toLowerCase() === longName.toLowerCase().trim() && /\s+Station\b/i.test(rawDest)) {
+      dest = rawDest;
+    }
     let via = ttcMatch[2] ? ttcMatch[2].trim().replace(/\s+Station\b/gi, '') : '';
     h = dest;
     if (via) h += ' via ' + via;
@@ -80,12 +85,6 @@ export function cleanHeadsign(
     }
   }
 
-  // Suppress if the cleaned headsign is just the route long name (redundant)
-  lowerH = h.toLowerCase().trim();
-  if (longName && lowerH === longName.toLowerCase().trim()) return '';
-  if (shortName && longName && lowerH === `${shortName.toLowerCase()} ${longName.toLowerCase()}`.trim()) {
-    return '';
-  }
   return h.trim();
 }
 

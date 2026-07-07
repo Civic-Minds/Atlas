@@ -6,16 +6,24 @@
 export const VIRTUAL_LRT_MODE = 100;
 
 export interface EffectiveModeInput {
-  routeType?: number;
+  routeType?: number | string | null;
   routeLongName?: string | null;
   agencySlug?: string;
 }
 
+/** Coerce GeoJSON / MVT routeType to a GTFS base type (defaults to bus). */
+export function normalizeRouteType(routeType: unknown): number {
+  if (routeType === undefined || routeType === null || routeType === '') return 3;
+  const n = typeof routeType === 'number' ? routeType : parseInt(String(routeType), 10);
+  return Number.isFinite(n) ? n : 3;
+}
+
 export function effectiveMode(p: EffectiveModeInput): number {
-  if (p.routeType === 0 && p.routeLongName && /^Line \d/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
-  if (p.routeType === 0 && p.agencySlug === 'octranspo') return VIRTUAL_LRT_MODE;
-  if (p.routeType === 2 && p.routeLongName && /\bION\b/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
-  return p.routeType ?? 3;
+  const rt = normalizeRouteType(p.routeType);
+  if (rt === 0 && p.routeLongName && /^Line \d/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
+  if (rt === 0 && p.agencySlug === 'octranspo') return VIRTUAL_LRT_MODE;
+  if (rt === 2 && p.routeLongName && /\bION\b/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
+  return rt;
 }
 
 /** Mode filter chip options (Frequency Map). */
@@ -74,18 +82,19 @@ export function getGtfsModeName(routeType: string | number): string {
 
 /** MapLibre expression: compute effective mode from feature properties. */
 export function buildEffectiveModeExpression(): unknown[] {
+  const routeType: unknown[] = ['to-number', ['coalesce', ['get', 'routeType'], 3]];
+  const longName: unknown[] = ['coalesce', ['get', 'routeLongName'], ''];
   return [
-    'coalesce',
-    [
-      'case',
-      ['all', ['==', ['get', 'routeType'], 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
-      VIRTUAL_LRT_MODE,
-      ['all', ['==', ['get', 'routeType'], 0], ['==', ['slice', ['coalesce', ['get', 'routeLongName'], ''], 0, 5], 'Line ']],
-      VIRTUAL_LRT_MODE,
-      ['all', ['==', ['get', 'routeType'], 2], ['in', 'ION', ['coalesce', ['get', 'routeLongName'], '']]],
-      VIRTUAL_LRT_MODE,
-      ['get', 'routeType'],
-    ],
-    3,
+    'case',
+    ['all', ['==', routeType, 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
+    VIRTUAL_LRT_MODE,
+    ['all', ['==', routeType, 0], ['==', ['slice', longName, 0, 5], 'Line ']],
+    VIRTUAL_LRT_MODE,
+    ['all', ['==', routeType, 2], ['>=', ['index-of', 'ION', longName], 0]],
+    VIRTUAL_LRT_MODE,
+    routeType,
   ];
 }
+
+/** MapLibre layer filter clause for selected mode chip ids (null = no filter). */
+export { buildModeFilterClause } from './tileFilterExprs.js';

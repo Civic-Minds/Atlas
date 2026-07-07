@@ -3,7 +3,7 @@ import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProp
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
-import { periodHeadwayFlatKeys } from '../../shared/pmtilesProps';
+import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../../shared/tileFilterExprs';
 import { effectiveMode } from '../../shared/modes';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
@@ -118,7 +118,14 @@ function passesRouteFilter(
   // polyline count with no visual benefit on a frequency map.
   if (!isCorridor && p.directionId !== undefined && p.directionId !== 0) return false;
 
-  if (filters.modes.size > 0 && p.routeType !== undefined && !filters.modes.has(effectiveMode(p))) return false;
+  if (filters.modes.size > 0) {
+    const modeSlug = (p as ShapeProperties).agencySlug ?? agencySlug;
+    if (!filters.modes.has(effectiveMode({
+      routeType: p.routeType,
+      routeLongName: p.routeLongName,
+      agencySlug: modeSlug,
+    }))) return false;
+  }
   if (p.day !== undefined && p.day !== filters.day) return false;
   if (filters.hideSpan && p.tier === 'span') return false;
   // When a specific period is active, prefer the per-stop minimum period headway (best frequency
@@ -183,31 +190,6 @@ function featureBbox(f: GeoJSON.Feature): [number, number, number, number] {
 function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
   const [minLon, minLat, maxLon, maxLat] = featureBbox(f);
   return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
-}
-
-/** MapLibre expression mirroring passesRouteFilter headway gating for PMTiles. */
-function tileEffectiveHeadwayExpr(period?: TimePeriod): any {
-  const tierFallback: any = ['case',
-    ['==', ['get', 'tier'], 'infrequent'], 9999,
-    ['all', ['has', 'tier'], ['!=', ['get', 'tier'], 'span']],
-      ['to-number', ['get', 'tier']],
-    ['coalesce', ['get', 'headway'], 9999],
-  ];
-  const allDay: any = ['coalesce',
-    ['get', 'worstDirectionHeadway'],
-    ['get', 'minStopHeadway'],
-    tierFallback,
-  ];
-  if (period && period !== 'all') {
-    const [msph, wdph, hph] = periodHeadwayFlatKeys(period);
-    return ['coalesce',
-      ['get', msph],
-      ['get', wdph],
-      ['get', hph],
-      allDay,
-    ];
-  }
-  return allDay;
 }
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -395,8 +377,8 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     }
     clauses.push(['in', ['get', 'agencySlug'], ['literal', Array.from(agencies)]]);
 
-    // Day: only show features for the selected day (or features with no day set, e.g. corridors)
-    clauses.push(['any', ['!has', 'day'], ['==', ['get', 'day'], day]]);
+    // Routes layer features always carry day + directionId (corridors are a separate layer).
+    clauses.push(['==', ['get', 'day'], day]);
 
     // Direction 0 by default. When hovering an inbound branch on the selected route,
     // show that direction for the selected route only; all others stay dir 0.
@@ -405,18 +387,20 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       clauses.push(['case',
         ['==', routeKeyExpr, selectedRoute],
         ['==', ['get', 'directionId'], hoveredBranch.directionId],
-        ['any', ['!has', 'directionId'], ['==', ['get', 'directionId'], 0]],
+        ['==', ['get', 'directionId'], 0],
       ]);
     } else {
-      clauses.push(['any', ['!has', 'directionId'], ['==', ['get', 'directionId'], 0]]);
+      clauses.push(['==', ['get', 'directionId'], 0]);
     }
 
     // Span filter
     if (hideSpan) {
-      clauses.push(['any', ['!has', 'tier'], ['!=', ['get', 'tier'], 'span']]);
+      clauses.push(['!=', ['coalesce', ['get', 'tier'], ''], 'span']);
     }
 
-    // Note: mode filter is handled in MapCanvas (has special virtual-mode expression for OCTranspo/ION)
+    // Mode (virtual LRT rules need agencySlug + routeLongName on features)
+    const modeClause = buildModeFilterClause(modes);
+    if (modeClause) clauses.push(modeClause);
 
     // Headway pill — mirrors passesRouteFilter (period, worst-direction, min-stop).
     if (maxHeadway !== Infinity) {

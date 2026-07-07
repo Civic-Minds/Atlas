@@ -1,4 +1,5 @@
 import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
+import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
 const TRANSIT_ACRONYMS: Record<string, string> = {
@@ -219,17 +220,44 @@ export function shortenAgencyName(name: string): string {
 }
 
 /** Destination label for route/stop cards — matches route card `to …` convention. */
+function withToPrefix(label: string): string {
+  if (!label) return '';
+  return /^to\s/i.test(label) || / to /i.test(label) ? label : `to ${label}`;
+}
+
 export function formatBranchLabel(
   headsign: string | null | undefined,
   shortName: string,
   longName: string,
   fallback = '',
 ): string {
-  if (!headsign?.trim()) return fallback;
+  if (!headsign?.trim()) return withToPrefix(fallback);
   const raw = /^A[0-9]/.test(shortName)
     ? headsign.trim()
     : cleanHeadsign(headsign.trim(), shortName, longName);
-  if (!raw) return fallback;
-  const h = titleCase(raw);
-  return /^to\s/i.test(h) || / to /i.test(h) ? h : `to ${h}`;
+  if (!raw || isRedundantWithRouteName(raw, shortName, longName)) return withToPrefix(fallback);
+  return withToPrefix(titleCase(raw));
+}
+
+/** Unified branch label for route and stop cards. */
+export function resolveBranchLabel(opts: {
+  headsign: string | null | undefined;
+  shortName: string;
+  longName: string;
+  directionId?: number;
+  boundLabel?: string;
+  multipleDirections?: boolean;
+  /** When the card already shows NORTHBOUND/SOUTHBOUND etc., omit row labels that repeat it. */
+  sectionBoundLabel?: string;
+}): string {
+  const hasSection = !!opts.sectionBoundLabel;
+  const fallback = opts.multipleDirections && opts.directionId != null && !hasSection
+    ? directionBranchFallback(opts.directionId, opts.boundLabel)
+    : '';
+  let label = formatBranchLabel(opts.headsign, opts.shortName, opts.longName, fallback);
+  if (hasSection && label) {
+    const dest = label.replace(/^to\s+/i, '').trim().toLowerCase();
+    if (dest === opts.sectionBoundLabel!.trim().toLowerCase()) label = '';
+  }
+  return label;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { isLivePollingRoute } from '../../../utils/livePolling';
-import { titleCase, getRouteLabel, formatBranchLabel } from '../../../utils/format';
+import { titleCase, getRouteLabel, resolveBranchLabel } from '../../../utils/format';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   CardDirectionRow,
@@ -41,12 +41,13 @@ export default function StopRouteGroup({
   const items = branches
     .map(branch => ({
       ...branch,
-      label: formatBranchLabel(
-        branch.headsign,
+      label: resolveBranchLabel({
+        headsign: branch.headsign,
         shortName,
         longName,
-        hasMultipleDirections ? `Direction ${branch.directionId + 1}` : '',
-      ),
+        directionId: branch.directionId,
+        multipleDirections: hasMultipleDirections,
+      }),
       hw: branchHeadway(branch, period),
     }))
     .filter(item => item.label);

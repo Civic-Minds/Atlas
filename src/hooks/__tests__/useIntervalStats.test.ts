@@ -89,23 +89,61 @@ describe('useIntervalStats', () => {
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { routeId: '1', headway: 10, agencyName: 'TTC', routeType: 1 } // Subway
+            properties: { routeId: '1', headway: 10, agencyName: 'TTC', routeType: 1 }
           },
           {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { routeId: '2', headway: 10, agencyName: 'TTC', routeType: 3 } // Bus
+            properties: { routeId: '2', headway: 10, agencyName: 'TTC', routeType: 3 }
           }
         ]
       }
     };
 
-    const { result } = renderHook(() => useIntervalStats(layersWithModes, { 
-      ...defaultFilters, 
-      modes: new Set([1]) 
+    const { result } = renderHook(() => useIntervalStats(layersWithModes, {
+      ...defaultFilters,
+      modes: new Set([1]),
     }));
-    
+
     expect(result.current.stats?.matching).toBe(1);
+  });
+
+  it('should filter by route mode when routeType is a string', () => {
+    const layersWithModes: AgencyLayers = {
+      'ttc': {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+            properties: { routeId: '1', headway: 10, agencyName: 'TTC', routeType: '3' }
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+            properties: { routeId: '2', headway: 10, agencyName: 'TTC', routeType: '1' }
+          }
+        ]
+      }
+    };
+
+    const { result } = renderHook(() => useIntervalStats(layersWithModes, {
+      ...defaultFilters,
+      modes: new Set([3]),
+    }));
+
+    expect(result.current.stats?.matching).toBe(1);
+  });
+
+  it('tileFilter includes mode clause when modes are selected', () => {
+    const { result } = renderHook(() => useIntervalStats(mockLayers, {
+      ...defaultFilters,
+      agencies: new Set(['ttc']),
+      modes: new Set([1]),
+    }));
+
+    expect(JSON.stringify(result.current.tileFilter)).toContain('"any"');
+    expect(JSON.stringify(result.current.tileFilter)).toContain('"routeType"');
   });
 
   it('should filter by day', () => {
