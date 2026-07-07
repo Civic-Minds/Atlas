@@ -12,7 +12,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL } from '../styles';
+import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
 import type { Agency, FareOverride } from '../App';
 import { R2_PUBLIC_URL } from '../../shared/config';
 
@@ -229,24 +229,24 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       {showUi && ((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading) && (
-            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+            <div className={`${MAP_BADGE} h-8`}>
               <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
-              <span className="text-[10px] font-bold text-[var(--text-muted)]">
+              <span className={MAP_BADGE_LABEL}>
                 {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
               </span>
             </div>
           )}
           {stats && (stats.total > 0 || !isLoading) && (
             <>
-              <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-                <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
-                <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
+              <div className={`${MAP_BADGE} h-8`}>
+                <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
+                <span className={MAP_BADGE_LABEL}>routes</span>
               </div>
-              <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-                <span className="text-xs font-black text-[var(--text-primary)]">
+              <div className={`${MAP_BADGE} h-8`}>
+                <span className={MAP_BADGE_COUNT}>
                   {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
                 </span>
-                <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
+                <span className={MAP_BADGE_LABEL}>coverage</span>
               </div>
             </>
           )}

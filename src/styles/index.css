@@ -55,6 +55,11 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Hide MapLibre default attribution — custom MapAttribution pill is the source of truth */
+.maplibregl-ctrl-attrib {
+  display: none !important;
+}
+
 .atlas-tooltip {
   background: none !important;
   border: none !important;

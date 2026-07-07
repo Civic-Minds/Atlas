@@ -35,6 +35,11 @@ export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shado
 /** Filter chip pill base — border color added dynamically per active state */
 export const CHIP_BASE = 'bg-[var(--bg-panel)] backdrop-blur-md border rounded-full shadow-lg';
 
+/** Bottom map HUD badge (routes, coverage, loading, attribution) */
+export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3';
+export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
+export const MAP_BADGE_LABEL = 'text-[10px] font-bold text-[var(--text-muted)]';
+
 /** Full-width border-b list row — suggestion lists, route lists, any clickable row inside a panel */
 export const LIST_ROW = 'flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group';
 
