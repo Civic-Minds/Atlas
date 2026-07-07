@@ -24,6 +24,9 @@
 - **Headway consistency**: Agency route list and search suggestions now use the same period-aware headway as route cards (e.g. midday `every 6 min`), not a different all-day minimum across directions.
 
 ### Changed
+- **Agency card mode filters**: Replaced the prose blurb (`subway and light rail, 23 express routes`) with tappable pills that filter the route list (Subway · 4, Light rail · 12, Express · 23, etc.).
+
+### Changed
 - **Corridors mode**: Header **Corridors** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Corridors from here…** entry.
 - **App drawer hidden**: Removed waffle menu from header again; History/Fares remain URL-only until ready (reverts [#115](https://github.com/Civic-Minds/Atlas/issues/115)).
 - **Near You panel**: Removed close button; panel clears when location is dismissed from the map.

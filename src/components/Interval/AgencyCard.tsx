@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import type { Agency, FareOverride } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
@@ -65,16 +65,66 @@ function railBlurbLabel(route: RouteRow): string | null {
   return GTFS_RAIL_MODE_LABELS[mode] ?? null;
 }
 
-function getAgencyBlurb(routes: RouteRow[]): string | null {
+export type AgencyRouteFilterKey = `mode:${number}` | 'subtype:brt' | 'subtype:express';
+
+export interface AgencyRouteFilter {
+  key: AgencyRouteFilterKey;
+  label: string;
+  count: number;
+}
+
+export function buildAgencyRouteFilters(routes: RouteRow[]): AgencyRouteFilter[] {
+  const chips: AgencyRouteFilter[] = [];
+  const byMode = new Map<number, RouteRow[]>();
+
+  for (const r of routes) {
+    const label = railBlurbLabel(r);
+    if (!label) continue;
+    const mode = effectiveMode({
+      routeType: r.routeType,
+      routeLongName: r.longName,
+      agencySlug: r.agencySlug,
+    });
+    const list = byMode.get(mode) ?? [];
+    list.push(r);
+    byMode.set(mode, list);
+  }
+
+  for (const [mode, rs] of [...byMode.entries()].sort((a, b) => b[1].length - a[1].length)) {
+    const label = railBlurbLabel(rs[0]);
+    if (!label) continue;
+    chips.push({
+      key: `mode:${mode}`,
+      label: titleCase(label),
+      count: rs.length,
+    });
+  }
+
   const brt = routes.filter(r => r.busSubType === 'brt');
+  if (brt.length) {
+    chips.push({ key: 'subtype:brt', label: 'BRT', count: brt.length });
+  }
+
   const express = routes.filter(r => r.busSubType === 'express');
-  const parts: string[] = [];
-  const railTypes = [...new Set(routes.map(railBlurbLabel).filter((l): l is string => l != null))];
-  if (railTypes.length) parts.push(railTypes.join(' and '));
-  if (brt.length) parts.push(`${brt.length} BRT corridor${brt.length !== 1 ? 's' : ''}`);
-  if (express.length) parts.push(`${express.length} express route${express.length !== 1 ? 's' : ''}`);
-  if (parts.length === 0) return null;
-  return parts.join(', ');
+  if (express.length) {
+    chips.push({ key: 'subtype:express', label: 'Express', count: express.length });
+  }
+
+  return chips;
+}
+
+export function routeMatchesAgencyFilter(r: RouteRow, filter: AgencyRouteFilterKey): boolean {
+  if (filter.startsWith('mode:')) {
+    const mode = Number(filter.slice(5));
+    return effectiveMode({
+      routeType: r.routeType,
+      routeLongName: r.longName,
+      agencySlug: r.agencySlug,
+    }) === mode;
+  }
+  if (filter === 'subtype:brt') return r.busSubType === 'brt';
+  if (filter === 'subtype:express') return r.busSubType === 'express';
+  return true;
 }
 
 interface Props {
@@ -91,7 +141,19 @@ interface Props {
 
 export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect, sidebarLeft, fareView, fareOverride }: Props) {
   const routes = useMemo(() => getRoutes(layers, agency.slug, day, period), [layers, agency.slug, day, period]);
-  const agencyBlurb = useMemo(() => getAgencyBlurb(routes), [routes]);
+  const routeFilters = useMemo(() => buildAgencyRouteFilters(routes), [routes]);
+  const [activeFilter, setActiveFilter] = useState<AgencyRouteFilterKey | null>(null);
+
+  useEffect(() => {
+    setActiveFilter(null);
+  }, [agency.slug]);
+
+  const visibleRoutes = useMemo(() => {
+    if (!activeFilter) return routes;
+    return routes.filter(r => routeMatchesAgencyFilter(r, activeFilter));
+  }, [routes, activeFilter]);
+
+  const activeFilterLabel = routeFilters.find(f => f.key === activeFilter)?.label;
 
   const baseFare = useMemo(() => {
     if (!fareView) return null;
@@ -165,10 +227,34 @@ export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect
           ) : (
           <>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
-            {[agency.region, `${routes.length} route${routes.length !== 1 ? 's' : ''}`].filter(Boolean).join(' · ')}
+            {[
+              agency.region,
+              activeFilter
+                ? `${visibleRoutes.length} of ${routes.length} routes`
+                : `${routes.length} route${routes.length !== 1 ? 's' : ''}`,
+            ].filter(Boolean).join(' · ')}
           </p>
-          {agencyBlurb && (
-            <p className="text-[10px] text-[var(--text-muted)] mt-1.5 leading-snug">{agencyBlurb}</p>
+          {routeFilters.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {routeFilters.map(f => {
+                const on = activeFilter === f.key;
+                return (
+                  <button
+                    key={f.key}
+                    type="button"
+                    onClick={() => setActiveFilter(on ? null : f.key)}
+                    className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${
+                      on
+                        ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                        : 'bg-[var(--bg-app)] text-[var(--text-secondary)] border-[var(--border-primary)] hover:border-[var(--accent-border)]'
+                    }`}
+                  >
+                    {f.label}
+                    <span className={on ? 'text-white/80' : 'text-[var(--text-dim)]'}> {f.count}</span>
+                  </button>
+                );
+              })}
+            </div>
           )}
           </>
           )}
@@ -180,11 +266,13 @@ export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect
       </div>
 
       {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {routes.length === 0 ? (
-          <p className="px-4 py-4 text-xs text-[var(--text-dim)]">No routes loaded yet.</p>
+        {visibleRoutes.length === 0 ? (
+          <p className="px-4 py-4 text-xs text-[var(--text-dim)]">
+            {activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}
+          </p>
         ) : (
           <div className="py-1">
-            {routes.map(r => {
+            {visibleRoutes.map(r => {
               const isLive = liveShortNames.has(r.shortName);
               const key = `${r.agencySlug}::${r.routeId}`;
               return (
