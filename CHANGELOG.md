@@ -6,12 +6,14 @@
 - **Pipeline override audit**: Clears `issueUrl` when upstream publishes a new GTFS file; logs when excluded routes may no longer need overrides (`excludeRouteShortNames` kept until verified).
 - **Unambiguous search Enter-to-select**: Pressing Enter in the main search bar auto-selects the row when exactly one agency or route result is visible.
 - **In-app Corrected Data details**: Clicking "Learn more →" on data override notices opens a dedicated in-app drawer explaining the data corrections made.
+- **London Transit route names preprocessor**: Added a pipeline preprocessor transform (`synthesizeLondonRouteNames`) to dynamically extract descriptive route long names from trip headsigns for agencies like London Transit that publish redundant names.
 
 ### Changed
 - **Card Help notices alignment**: Aligned styling, font size, and placement of "We corrected this data" with the outdated-schedule notice under a unified `CardHelpNotice` component.
 - **History eligibility criteria**: Filtered historical data exploration to agencies meeting `agencyQualifiesForHistoryExplore` threshold.
 - **Sidebar search component modularization**: Refactored `SidebarControls.tsx` to extract search suggestions and result list rendering logic into self-contained `SearchSuggestionsPanel` and `SearchResultsList` components.
 - **Search result layouts**: Removed border separators between individual rows in the search suggestions and matched results panels, and removed the " — refine search" suffix from truncated labels.
+- **Search results styling refinement**: Shortened agency names in the search matches list using `shortenAgencyName` and refined spacing/margin layouts between the routes and agencies categories.
 - **Rockford**: `excludeRouteShortNames: ["Test"]` — junk upstream route stripped at process time (Closes [#144](https://github.com/Civic-Minds/Atlas/issues/144)).
 - **Rockford**: Switched `feedUrl` to official `rmtd.org/rmtdgtfs/GTFS_FILES.zip` (valid through Oct 2026); removed Test override — upstream no longer publishes that route.
 - **Agencies**: Cascades East Transit, Mountain Transit (Big Bear Lake), RoadRUNNER Transit (Las Cruces), EZ Rider, San Angelo Transit, Brownsville Metro; Roswell/Hobbs (NM), Longview/Texarkana/Fort Bend (TX), Lake Charles/Terrebonne/Tangipahoa (LA); Space Coast, Martin County, Indian River, Collier CAT (FL).

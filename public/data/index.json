@@ -222,6 +222,7 @@
       "slug": "london",
       "name": "London Transit",
       "region": "Ontario",
+      "preprocess": "london-route-names",
       "center": [
         42.9849,
         -81.2453

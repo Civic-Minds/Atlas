@@ -4,6 +4,7 @@ import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
+import { shortenAgencyName } from '../../utils/format';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -23,11 +24,11 @@ export function SearchSplitList<T>({
   if (inView.length === 0 && elsewhere.length === 0) return null;
   const split = inView.length > 0 && elsewhere.length > 0;
   return (
-    <div>
-      <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>{headLabel}</div>
-      {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-1`}>In this area</div>}
+    <div className="flex flex-col">
+      <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)] mb-1`}>{headLabel}</div>
+      {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-2 pb-1`}>In this area</div>}
       {inView.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
-      {split && <div className={PANEL_SEARCH_SUBHEAD}>Elsewhere</div>}
+      {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-4 pb-1`}>Elsewhere</div>}
       {elsewhere.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
     </div>
   );
@@ -78,7 +79,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => (
         <RouteListRow
-          shortName={g.name}
+          shortName={shortenAgencyName(g.name)}
           className="border-b-0"
           onClick={() => {
             setSelectedAgencySlug?.(g.slug);
@@ -127,11 +128,17 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   ) : null;
 
   return (
-    <div className="-mx-4 mb-4 space-y-4">
+    <div className="-mx-4 mb-4 flex flex-col gap-5">
       {routesFirst ? (
-        <>{routeBlock}{agencyBlock}</>
+        <>
+          {routeBlock}
+          {agencyBlock && <div className="border-t border-[var(--border-primary)] pt-3">{agencyBlock}</div>}
+        </>
       ) : (
-        <>{agencyBlock}{routeBlock}</>
+        <>
+          {agencyBlock}
+          {routeBlock && <div className="border-t border-[var(--border-primary)] pt-3">{routeBlock}</div>}
+        </>
       )}
     </div>
   );

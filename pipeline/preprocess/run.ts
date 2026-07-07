@@ -3,8 +3,9 @@ import { filterGtfsByExcludedShortNames, filterGtfsByRouteTypes } from '../filte
 import { synthesizeMissingDirections } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
 import { mergeNrtDayNightRoutes } from '../transforms/nrt-day-night.js';
+import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
 
-export type GtfsPreprocess = 'nrt-day-night';
+export type GtfsPreprocess = 'nrt-day-night' | 'london-route-names';
 
 export interface GtfsTransformOptions {
   routeTypes?: number[];
@@ -45,6 +46,10 @@ export function normalizeGtfs(
     for (const warning of result.shapeWarnings) {
       onStatus?.(`NRT shape audit: ${warning}`);
     }
+  }
+  if (options?.preprocess === 'london-route-names') {
+    gtfs = synthesizeLondonRouteNames(gtfs);
+    onStatus?.('Synthesized descriptive route long names from trip headsigns');
   }
   return synthesizeMissingDirections(gtfs);
 }
