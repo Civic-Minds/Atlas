@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
+import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -68,6 +69,7 @@ async function main() {
           if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
           f.properties = f.properties || {};
           f.properties.agencySlug = slug;
+          flattenPeriodHeadwayProps(f.properties);
           allRoutes.push(f);
         });
       }

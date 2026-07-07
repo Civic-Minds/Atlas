@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Fixed
+- **Route card sparkline**: Restored 3 AM and 4 AM bars in overnight tail (GTFS hours 27–28); were dropped when 5 AM moved to end (#100).
+- **Frequency filter**: Map tile filter now uses flat PMTiles period headway keys (`wdph_midday`, etc.) instead of nested GeoJSON objects tippecanoe drops; all-day `worstDirectionHeadway` fallback and tier parsing aligned with sidebar logic.
 - **History timezone (#105)**: Hourly delay buckets use per-agency IANA timezones instead of hardcoded UTC−4.
 - **Supplemental feed skip (#106)**: Weekly refresh no longer skips agencies with unchanged primary feeds when supplementals exist.
 - **Per-stop GTFS times (#107)**: Pipeline uses `t2m()` for stop headways (supports >24:00 overnight times).

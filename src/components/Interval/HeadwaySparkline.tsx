@@ -15,7 +15,7 @@ const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
   HOURS.map(h => [h, periodKeyForHour(h)]).filter(([, p]) => p != null),
 ) as Record<number, string>;
 
-// Contiguous hover bands per period (overnight is 2 AM + 5 AM at the sparkline tail)
+// Contiguous hover bands per period (overnight tail: 2 AM, 3 AM, 4 AM, 5 AM)
 const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = (() => {
   const result: Record<string, { left: number; width: number }[]> = {};
   let i = 0;

@@ -270,4 +270,55 @@ describe('useIntervalStats', () => {
     const { result: fails } = renderHook(() => useIntervalStats(layers, base));
     expect(fails.current.stats?.matching).toBe(0);
   });
+
+  it('tileFilter uses flat period keys and all-day fallback (PMTiles-safe)', () => {
+    const layers: AgencyLayers = {
+      'test': {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: {
+            routeId: '1',
+            headway: 10,
+            worstDirectionHeadway: 45,
+            tier: '10',
+          },
+        }],
+      },
+    };
+    const filters = {
+      ...defaultFilters,
+      agencies: new Set(['test']),
+      maxHeadway: 30,
+      period: 'midday' as const,
+    };
+    const { result } = renderHook(() => useIntervalStats(layers, filters));
+    const tf = JSON.stringify(result.current.tileFilter);
+    // Flat period keys (post-PMTiles-build), not nested object access
+    expect(tf).toContain('wdph_midday');
+    expect(tf).toContain('worstDirectionHeadway');
+    expect(tf).not.toContain('minStopHeadwayByPeriod');
+  });
+
+  it('tileFilter headway clause respects maxHeadway', () => {
+    const layers: AgencyLayers = {
+      'ttc': {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: { routeId: '1', headway: 10, tier: '10', agencySlug: 'ttc' },
+        }],
+      },
+    };
+    const { result } = renderHook(() => useIntervalStats(layers, {
+      ...defaultFilters,
+      agencies: new Set(['ttc']),
+      maxHeadway: 15,
+      period: 'all' as const,
+    }));
+    expect(JSON.stringify(result.current.tileFilter)).toContain('"<="');
+    expect(JSON.stringify(result.current.tileFilter)).toContain('15');
+  });
 });

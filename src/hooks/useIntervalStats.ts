@@ -3,6 +3,7 @@ import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProp
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
+import { periodHeadwayFlatKeys } from '../../shared/pmtilesProps';
 import { effectiveMode } from '../../shared/modes';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
@@ -188,21 +189,25 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
 function tileEffectiveHeadwayExpr(period?: TimePeriod): any {
   const tierFallback: any = ['case',
     ['==', ['get', 'tier'], 'infrequent'], 9999,
+    ['all', ['has', 'tier'], ['!=', ['get', 'tier'], 'span']],
+      ['to-number', ['get', 'tier']],
     ['coalesce', ['get', 'headway'], 9999],
   ];
-  if (period && period !== 'all') {
-    return ['coalesce',
-      ['get', period, ['get', 'minStopHeadwayByPeriod']],
-      ['get', period, ['get', 'worstDirectionHeadwayByPeriod']],
-      ['get', period, ['get', 'headwayByPeriod']],
-      tierFallback,
-    ];
-  }
-  return ['coalesce',
+  const allDay: any = ['coalesce',
     ['get', 'worstDirectionHeadway'],
     ['get', 'minStopHeadway'],
     tierFallback,
   ];
+  if (period && period !== 'all') {
+    const [msph, wdph, hph] = periodHeadwayFlatKeys(period);
+    return ['coalesce',
+      ['get', msph],
+      ['get', wdph],
+      ['get', hph],
+      allDay,
+    ];
+  }
+  return allDay;
 }
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -415,7 +420,13 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
     // Headway pill — mirrors passesRouteFilter (period, worst-direction, min-stop).
     if (maxHeadway !== Infinity) {
-      clauses.push(['<=', tileEffectiveHeadwayExpr(period), maxHeadway]);
+      const hwExpr = tileEffectiveHeadwayExpr(period);
+      if (selectedRoute) {
+        const routeKeyExpr: any = ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']];
+        clauses.push(['any', ['==', routeKeyExpr, selectedRoute], ['<=', hwExpr, maxHeadway]]);
+      } else {
+        clauses.push(['<=', hwExpr, maxHeadway]);
+      }
     }
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
