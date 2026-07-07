@@ -12,7 +12,7 @@ import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PR
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
-import type { StopRoute, NearbyConnection, DebugRow } from './panels/StopCard';
+import type { StopRoute, NearbyConnection } from './panels/StopCard';
 import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import { LiveAdherenceCard } from './panels/LiveAdherenceCard';
 import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
@@ -571,55 +571,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     });
   }, [currentStop, nonCorridorLayers, currentDay]);
 
-  const debugRows = useMemo(() => {
-    if (!currentStop) return [];
-    const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
-    const rows: { routeId: string; shortName: string; dir: number; headsign: string; stopHw: number | null; routeHw: number | null }[] = [];
-
-    for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      const siblingIds = siblingIdsByAgency[slug] || new Set<string>();
-      if (siblingIds.size === 0) continue;
-
-      // Collect all routeIds served by any sibling stop in this agency
-      const routeIds = new Set<string>();
-      for (const f of fc.features) {
-        const p = f.properties as any;
-        if (p.stopId && siblingIds.has(p.stopId)) {
-          const rIds = p.routeIds as string[] | undefined;
-          if (rIds) {
-            for (const rId of rIds) routeIds.add(rId);
-          }
-        }
-      }
-
-      for (const f of fc.features) {
-        const p = f.properties as unknown as ShapeProperties;
-        if (!p.routeId || !routeIds.has(p.routeId)) continue;
-        if (p.day !== undefined && p.day !== currentDay) continue;
-
-        let stopHw: number | null = null;
-        for (const sId of siblingIds) {
-          const hw = (p as any).stopHeadways?.[sId];
-          if (hw != null) {
-            stopHw = hw;
-            break;
-          }
-        }
-        if (stopHw == null) continue;
-
-        rows.push({
-          routeId: p.routeId,
-          shortName: p.routeShortName || p.routeId,
-          dir: (p as any).directionId ?? 0,
-          headsign: p.headsign || '',
-          stopHw,
-          routeHw: p.headway ?? null,
-        });
-      }
-    }
-    return rows.sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }) || a.dir - b.dir);
-  }, [currentStop, nonCorridorLayers, currentDay]);
-
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
     return disambiguationRoutes
@@ -796,9 +747,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             filteredStopRoutes={filteredStopRoutes as StopRoute[]}
             period={period}
             nearbyConnections={nearbyConnections as NearbyConnection[]}
-            showDebug={showDebug}
-            setShowDebug={setShowDebug}
-            debugRows={debugRows as DebugRow[]}
           />
         )}
 

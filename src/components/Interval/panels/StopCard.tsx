@@ -37,15 +37,6 @@ export interface NearbyConnection {
   distanceMeters: number;
 }
 
-export interface DebugRow {
-  routeId: string;
-  shortName: string;
-  dir: number;
-  headsign: string;
-  stopHw: number | null;
-  routeHw: number | null;
-}
-
 export interface CurrentStopData {
   stopName: string;
 }
@@ -60,9 +51,6 @@ export interface StopCardProps {
   filteredStopRoutes: StopRoute[];
   period: TimePeriod;
   nearbyConnections: NearbyConnection[];
-  showDebug: boolean;
-  setShowDebug: React.Dispatch<React.SetStateAction<boolean>>;
-  debugRows: DebugRow[];
 }
 
 export const StopCard: React.FC<StopCardProps> = ({
@@ -75,9 +63,6 @@ export const StopCard: React.FC<StopCardProps> = ({
   filteredStopRoutes,
   period,
   nearbyConnections,
-  showDebug,
-  setShowDebug,
-  debugRows,
 }) => {
   const openRoute = (rKey: string) => {
     setSelectedStop(null);
@@ -146,33 +131,6 @@ export const StopCard: React.FC<StopCardProps> = ({
           })}
         </SidebarCardSection>
       )}
-
-      <div className="mt-3 border-t border-[var(--border-primary)] pt-2">
-        <button
-          onClick={() => setShowDebug(v => !v)}
-          className="text-[10px] text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors font-mono"
-        >
-          {showDebug ? '▾' : '▸'} debug headways
-        </button>
-        {showDebug && (
-          <div className="mt-1.5 space-y-0.5 font-mono text-[9px] text-[var(--text-dim)]">
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 font-bold text-[var(--text-muted)] border-b border-[var(--border-primary)] pb-0.5 mb-1">
-              <span>route / dir / headsign</span>
-              <span>stop hw</span>
-              <span>route hw</span>
-              <span>used</span>
-            </div>
-            {debugRows.map((r, i) => (
-              <div key={i} className={`grid grid-cols-[1fr_auto_auto_auto] gap-x-2 ${r.stopHw != null ? 'text-[var(--text-primary)]' : ''}`}>
-                <span className="truncate">{r.shortName} d{r.dir} {r.headsign}</span>
-                <span>{r.stopHw != null ? `${r.stopHw}m` : '—'}</span>
-                <span>{r.routeHw != null ? `${r.routeHw}m` : '—'}</span>
-                <span>{r.stopHw != null ? '✓' : '✗'}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </SidebarCardShell>
   );
 };
