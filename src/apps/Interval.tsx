@@ -28,6 +28,7 @@ interface Props {
   showUi?: boolean;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
+  forceShowCorridors?: boolean;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
@@ -47,7 +48,7 @@ interface Props {
   sidebarLeft?: number;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft }: Props) {
   const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -84,7 +85,10 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [period, setPeriod] = useState<TimePeriod>(getNowPeriod);
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
-  const [showCorridors, setShowCorridors] = useState(false);
+  const [showCorridors, setShowCorridors] = useState(forceShowCorridors);
+  useEffect(() => {
+    if (forceShowCorridors) setShowCorridors(true);
+  }, [forceShowCorridors]);
 
   const showSidebar = showUi || fareView;
   const [fareOverrides, setFareOverrides] = useState<Record<string, FareOverride>>({});

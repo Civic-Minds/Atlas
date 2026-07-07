@@ -31,6 +31,8 @@ export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
 
 /** Top-bar pill surface (search bar, headway filter row) */
 export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shadow-lg`;
+/** Shared responsive width used by the top search bar */
+export const SEARCH_BAR_WIDTH = 'w-44 lg:w-56 xl:w-72';
 
 /** Filter chip pill base — border color added dynamically per active state */
 export const CHIP_BASE = 'bg-[var(--bg-panel)] backdrop-blur-md border rounded-full shadow-lg';

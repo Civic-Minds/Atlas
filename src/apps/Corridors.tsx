@@ -12,6 +12,7 @@ import {
   LIST_ROW_PRIMARY,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
+  SEARCH_BAR_WIDTH,
 } from '../styles';
 import {
   buildStopCatalog,
@@ -502,7 +503,7 @@ export default function Corridors({
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
         ref={panelRef}
-        className={`absolute top-20 ${Z_PANEL} w-[min(32rem,calc(100vw-3rem))] max-h-[calc(100vh-104px)] flex flex-col pointer-events-auto ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+        className={`absolute top-[4.5rem] ${Z_PANEL} ${SEARCH_BAR_WIDTH} max-h-[calc(100vh-104px)] flex flex-col pointer-events-auto ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
         style={{ left: panelLeft }}
       >
         <div className={PANEL_TITLE_BAR}>
