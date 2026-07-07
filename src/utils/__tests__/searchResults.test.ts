@@ -5,6 +5,7 @@ import {
   isStrongAgencyQuery,
   prefersAgencySearchResults,
   prepareRouteResultsForDisplay,
+  resolveSearchEnterAction,
   routeQueryMatchRank,
   routesBeforeAgencies,
   searchRouteResults,
@@ -104,5 +105,27 @@ describe('searchResults', () => {
       inView: [{ id: 'a', inView: true }],
       elsewhere: [{ id: 'b', inView: false }],
     });
+  });
+
+  it('commits Enter only when one dropdown row is shown', () => {
+    const agency: AgencySearchGroup = {
+      key: 'Stratford::Ontario',
+      name: 'Stratford Transit',
+      region: 'Ontario',
+      slug: 'stratford',
+      inView: false,
+      distanceM: 1000,
+    };
+    const route = {
+      key: 'stratford::1',
+      routeShortName: '1',
+      routeLongName: 'Main',
+      inView: false,
+      distanceM: 1000,
+      matchRank: 0,
+    };
+    expect(resolveSearchEnterAction([agency], [])).toEqual({ type: 'agency', slug: 'stratford' });
+    expect(resolveSearchEnterAction([], [route])).toEqual({ type: 'route', key: 'stratford::1' });
+    expect(resolveSearchEnterAction([agency], [route])).toBeNull();
   });
 });

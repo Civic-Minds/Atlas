@@ -19,8 +19,8 @@ import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
-  clearIssueUrlOnFeedChange,
-  formatOverrideIssueUrlClearedLog,
+  clearOverrideUserFacingOnFeedChange,
+  formatOverrideUserFacingClearedLog,
   formatOverrideResolvedLog,
   reconcileExcludeRouteShortNames,
   routeShortNamesInGtfsZip,
@@ -156,6 +156,7 @@ interface AgencyEntry {
   staged?: boolean;
   fare?: number;
   issueUrl?: string;
+  overrideNote?: string;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -239,9 +240,9 @@ async function refreshAgency(
     }
   }
 
-  const clearedIssueUrl = clearIssueUrlOnFeedChange(agency, peekedExpiry, peekedVersion);
-  if (clearedIssueUrl) {
-    writeLog(`\n  ${formatOverrideIssueUrlClearedLog(agency.slug, clearedIssueUrl)}\n  `);
+  const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
+  if (clearedOverrideNote) {
+    writeLog(`\n  ${formatOverrideUserFacingClearedLog(agency.slug)}\n  `);
   }
 
   // When the feed file changed, warn if excluded routes may no longer need overrides.

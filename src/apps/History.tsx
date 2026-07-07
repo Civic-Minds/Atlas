@@ -5,6 +5,7 @@ import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SEARCH_BAR_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
+import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 
 export interface RouteSnapshot {
   label: string;
@@ -411,7 +412,9 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   }, [active]);
 
   const historyAgencies = useMemo(() => {
-    return (historyData ?? []).filter(a => a.routes.some(r => r.snapshots.length > 0));
+    return (historyData ?? []).filter(
+      a => a.routes.some(r => r.snapshots.length > 0) && agencyQualifiesForHistoryExplore(a),
+    );
   }, [historyData]);
 
   useEffect(() => {

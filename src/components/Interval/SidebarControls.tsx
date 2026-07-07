@@ -17,6 +17,7 @@ import {
   splitRouteResults,
   filterRouteResultsForDisplay,
   prepareRouteResultsForDisplay,
+  resolveSearchEnterAction,
   routesBeforeAgencies,
   type RouteSearchResult,
 } from '../../utils/searchResults';
@@ -127,6 +128,7 @@ interface SidebarControlsProps {
   setHoveredBranch: (b: HoveredBranch | null) => void;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
+  searchEnterRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -168,6 +170,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setHoveredBranch,
   onDirectFromStop,
   onInfoOpen,
+  searchEnterRef,
 }) => {
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
@@ -713,6 +716,26 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     () => splitRouteResults(displayRouteResults),
     [displayRouteResults],
   );
+  // Populate the Enter-to-select ref so App can trigger it from the search input's onKeyDown.
+  useEffect(() => {
+    if (!searchEnterRef) return;
+    searchEnterRef.current = () => {
+      const action = resolveSearchEnterAction(displayAgencyGroups, displayRouteResults);
+      if (!action) return;
+      if (action.type === 'agency' && setSelectedAgencySlug) {
+        setSelectedAgencySlug(action.slug);
+        setQuery('');
+        setSearchFocused?.(false);
+      } else if (action.type === 'route') {
+        saveRecentSearch(query);
+        setQuery('');
+        setSearchFocused?.(false);
+        setSelectedRoute(selectedRoute === action.key ? null : action.key);
+      }
+    };
+    return () => { searchEnterRef.current = null; };
+  }, [searchEnterRef, displayAgencyGroups, displayRouteResults, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute]);
+
   const routesFirst = useMemo(
     () => routesBeforeAgencies(query, displayRouteResults, matchedAgencyGroups),
     [query, displayRouteResults, matchedAgencyGroups],

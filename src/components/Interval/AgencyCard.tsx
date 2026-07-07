@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import type { Agency, FareOverride } from '../../App';
+import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_SEARCH_SUBHEAD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SEARCH_BAR_WIDTH } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
@@ -9,7 +10,7 @@ import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format'
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { effectiveRouteHeadway } from '../../utils/effectiveHeadway';
-import { CARD_TITLE, CardDirectionRow, DataOverrideLink } from './cardUi';
+import { CARD_TITLE, CardDirectionRow, CardHelpNotice } from './cardUi';
 
 interface RouteRow {
   routeId: string;
@@ -185,6 +186,7 @@ interface Props {
   sidebarLeft?: number;
   fareView?: boolean;
   fareOverride?: FareOverride;
+  onInfoOpen?: OpenInfoFn;
 }
 
 function RouteListSection({
@@ -231,6 +233,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   sidebarLeft,
   fareView,
   fareOverride,
+  onInfoOpen,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan }),
@@ -370,8 +373,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           </>
           )}
-          {agency.excludeRouteShortNames?.length && agency.issueUrl ? (
-            <DataOverrideLink issueUrl={agency.issueUrl} />
+          {agency.excludeRouteShortNames?.length && agency.overrideNote && onInfoOpen ? (
+            <CardHelpNotice
+              message="We corrected this data."
+              onLearnMore={() => onInfoOpen('about', {
+                helpTopic: 'corrected-data',
+                agencyName: agency.name,
+                overrideNote: agency.overrideNote,
+              })}
+            />
           ) : null}
         </div>
       </div>

@@ -39,6 +39,9 @@ export function daysUntilNextFeedRefresh(meta: FeedRefreshMeta, from = new Date(
   return calendarDaysBetween(from, next);
 }
 
+/** Short cadence line for contextual help (no day countdown). */
+export const FEED_REFRESH_CADENCE_LABEL = 'We check all feeds weekly.';
+
 export function feedRefreshCountdownLabel(meta: FeedRefreshMeta | null | undefined, from = new Date()): string {
   const days = meta ? daysUntilNextFeedRefresh(meta, from) : null;
   if (days == null) return 'We check for updates weekly.';

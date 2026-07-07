@@ -4,21 +4,23 @@ import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } f
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { formatStoredDate } from '../utils/format';
-import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
+import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
+import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'corrected-data' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
-export type HelpTopic = 'outdated-schedule';
+export type HelpTopic = 'outdated-schedule' | 'corrected-data';
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
   lastRefreshedAt?: string;
   websiteUrl?: string;
+  overrideNote?: string;
 };
 export type OpenInfoOptions = {
   featureFilter?: 'live' | 'history';
@@ -27,6 +29,7 @@ export type OpenInfoOptions = {
   expDateStr?: string;
   lastRefreshedAt?: string;
   websiteUrl?: string;
+  overrideNote?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
@@ -88,7 +91,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   useEffect(() => {
     if (open) {
-      setView(helpContext?.topic === 'outdated-schedule' ? 'outdated-schedule' : tabToView(defaultTab ?? 'about'));
+      setView(
+        helpContext?.topic === 'outdated-schedule' ? 'outdated-schedule'
+        : helpContext?.topic === 'corrected-data' ? 'corrected-data'
+        : tabToView(defaultTab ?? 'about'),
+      );
       setAgencyFeatureFilter(featureFilter);
       setSelectedSlug(null);
     } else {
@@ -115,7 +122,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   const historyBySlug = useMemo(() => {
     const map = new Map<string, HistoryAgencySummary>();
-    for (const a of historyAgencies ?? []) map.set(a.slug, a);
+    for (const a of historyAgencies ?? []) {
+      if (agencyQualifiesForHistoryExplore(a)) map.set(a.slug, a);
+    }
     return map;
   }, [historyAgencies]);
 
@@ -183,6 +192,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     view === 'agencies' ? 'Data'
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view === 'outdated-schedule' ? 'Outdated schedule'
+    : view === 'corrected-data' ? 'Corrected data'
     : view === 'sources' ? 'Sources'
     : null;
 
@@ -244,7 +254,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
-                  Covering {agencies.length} transit agencies. See live vehicle positions on {totalLiveAgencies}, or explore years of frequency history on {totalHistoryAgencies}.
+                  Covering {agencies.length} transit agencies. See live vehicle positions on {totalLiveAgencies}, or explore how service changed at {totalHistoryAgencies}.
                 </p>
                 <div className="space-y-2">
                   <button
@@ -264,34 +274,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 </div>
               </div>
 
-              <div>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Links</p>
-                <div className="space-y-2">
-                  <a
-                    href="https://github.com/Civic-Minds/Atlas"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                  >
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">GitHub</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                  </a>
-                  <a
-                    href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
-                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                  >
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Send feedback</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                  </a>
-                </div>
-              </div>
+              <a
+                href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
+                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Send feedback</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </a>
 
               <p className="text-[10px] text-[var(--text-dim)] leading-relaxed">
-                Public GTFS schedules.
-                {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
-                  ? ` Last refreshed ${formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))}.`
-                  : ''}{' '}
-                {feedRefreshCountdownLabel(feedRefreshMeta)} © 2026 Civic Minds.
+                © 2026 Civic Minds.
               </p>
             </div>
           )}
@@ -442,7 +434,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 Transit agencies publish schedules in periods. When a period ends and they haven&apos;t published the next one yet, Atlas still shows the last version we have — with this warning.
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {feedRefreshCountdownLabel(feedRefreshMeta)} Sometimes an agency is late publishing, or their download link breaks, and the warning can linger even though service may have changed.
+                {FEED_REFRESH_CADENCE_LABEL} Sometimes an agency is late publishing, or their download link breaks, and the warning can linger even though service may have changed.
               </p>
               {helpContext?.websiteUrl && (
                 <a
@@ -457,6 +449,26 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               )}
               <a
                 href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
+                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </a>
+            </div>
+          )}
+
+          {view === 'corrected-data' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              {helpContext?.agencyName && helpContext.overrideNote && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                  {helpContext.overrideNote}
+                </p>
+              )}
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                Sometimes agencies publish incorrect data in their GTFS feed. When we find a known problem, we filter it out during processing so the map reflects real service.
+              </p>
+              <a
+                href="mailto:hey@ryanisnota.pro?subject=Atlas%20data%20feedback"
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>

@@ -14,6 +14,7 @@ import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions, type HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
+import { agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 
@@ -43,6 +44,7 @@ export interface Agency {
   excludeRouteShortNames?: string[];
   staged?: boolean;
   issueUrl?: string;
+  overrideNote?: string;
   fare?: number;
   gtfsFares?: boolean;
   fareUrl?: string;
@@ -101,6 +103,7 @@ export default function App() {
       expDateStr: opts.expDateStr,
       lastRefreshedAt: opts.lastRefreshedAt,
       websiteUrl: opts.websiteUrl,
+      overrideNote: opts.overrideNote,
     } : null);
     setInfoOpen(true);
   }, []);
@@ -116,6 +119,7 @@ export default function App() {
 
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
+  const searchEnterRef = useRef<(() => void) | null>(null);
   const [sidebarLeft, setSidebarLeft] = useState<number>(SIDEBAR_LEFT_FALLBACK);
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); closeInfo(); }, [closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
@@ -227,7 +231,9 @@ export default function App() {
       .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
-      .then((data: Array<{ slug: string }>) => setHistoryAgencySlugs(new Set(data.map(a => a.slug))))
+      .then((data: Array<{ slug: string; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) =>
+        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistoryExplore).map(a => a.slug))),
+      )
       .catch(() => setHistoryAgencySlugs(new Set()));
   }, []);
 
@@ -274,6 +280,7 @@ export default function App() {
             value={query}
             aria-label={searchPlaceholder}
             onChange={e => setQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); searchEnterRef.current?.(); } }}
             onFocus={() => {
               clearTimeout(searchBlurTimer.current);
               setSearchFocused(true);
@@ -410,6 +417,7 @@ export default function App() {
               onLayersChange={setLayers}
               headerPortalContainer={headerPortalEl}
               sidebarLeft={sidebarLeft}
+              searchEnterRef={searchEnterRef}
             />
             <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
             {liveMounted && (

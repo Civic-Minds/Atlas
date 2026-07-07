@@ -10,7 +10,7 @@ import {
   CardDirectionRow,
   CardDivider,
   CardSectionLabel,
-  DataOverrideLink,
+  CardHelpNotice,
   SidebarCardHeaderBlock,
   SidebarCardList,
   SidebarCardShell,
@@ -159,9 +159,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           agencyName={agencyDisplayName}
           onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
         />
-        {routeAgency?.excludeRouteShortNames?.length && routeAgency.issueUrl ? (
-          <DataOverrideLink issueUrl={routeAgency.issueUrl} />
-        ) : null}
       </SidebarCardHeaderBlock>
       {(() => {
         const HOURS = SPARKLINE_HOURS;
@@ -272,25 +269,27 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {routeIsStale && (
-          <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
-            <p className="text-[9px] font-bold text-[var(--text-dim)]">
-              Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}
-              {onInfoOpen && (
-                <>{' '}<button
-                  type="button"
-                  onClick={() => onInfoOpen('about', {
-                    helpTopic: 'outdated-schedule',
-                    agencyName: routeAgency?.name,
-                    expDateStr: expDateStr || undefined,
-                    lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
-                    websiteUrl: routeAgency?.websiteUrl ?? undefined,
-                  })}
-                  className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
-                >Learn more →</button></>
-              )}
-            </p>
-          </div>
+        {routeIsStale && onInfoOpen && (
+          <CardHelpNotice
+            message={`Schedule may be outdated${expDateStr ? ` (ended ${expDateStr})` : ''}.`}
+            onLearnMore={() => onInfoOpen('about', {
+              helpTopic: 'outdated-schedule',
+              agencyName: routeAgency?.name,
+              expDateStr: expDateStr || undefined,
+              lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+              websiteUrl: routeAgency?.websiteUrl ?? undefined,
+            })}
+          />
+        )}
+        {routeAgency?.excludeRouteShortNames?.length && routeAgency.overrideNote && onInfoOpen && (
+          <CardHelpNotice
+            message="We corrected this data."
+            onLearnMore={() => onInfoOpen('about', {
+              helpTopic: 'corrected-data',
+              agencyName: routeAgency.name,
+              overrideNote: routeAgency.overrideNote,
+            })}
+          />
         )}
       </SidebarCardList>
     </SidebarCardShell>

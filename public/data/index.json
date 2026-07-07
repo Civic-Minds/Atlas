@@ -373,7 +373,7 @@
     },
     {
       "slug": "stratford",
-      "name": "stratford",
+      "name": "Stratford Transit",
       "region": "Ontario",
       "center": [
         43.3688,
@@ -391,7 +391,7 @@
       "excludeRouteShortNames": [
         "LOS"
       ],
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/79",
+      "overrideNote": "The \"Lights On Stratford\" shuttle is a seasonal hop-on hop-off route that only runs mid-December to mid-January, but it was showing up on the map year-round. We've hidden it until the transit agency fixes their schedule data.",
       "lastRefreshedAt": "2026-07-06"
     },
     {

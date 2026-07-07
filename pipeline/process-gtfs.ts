@@ -14,9 +14,8 @@ import { processGtfsBuffer } from './process-core.js';
 import { r2Put, r2PutArchive } from './r2.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
-  clearIssueUrlOnFeedChange,
-  formatOverrideIssueUrlClearedLog,
   formatOverrideResolvedLog,
+  formatOverrideUserFacingClearedLog,
   reconcileExcludeRouteShortNames,
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
@@ -159,9 +158,10 @@ async function main() {
       lastFeedVersion: feedVersion,
       lastRefreshedAt: todayUtcYmd(),
     };
-    if (prev.issueUrl && upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
+    if ((prev.issueUrl || prev.overrideNote) && upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
       delete updated.issueUrl;
-      console.log(`  ${formatOverrideIssueUrlClearedLog(slug, prev.issueUrl)}`);
+      delete updated.overrideNote;
+      console.log(`  ${formatOverrideUserFacingClearedLog(slug)}`);
     }
     index.agencies[existing] = updated;
   } else {

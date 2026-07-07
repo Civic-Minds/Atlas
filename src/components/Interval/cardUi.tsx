@@ -136,16 +136,20 @@ export function AgencyFilterChips({
   );
 }
 
-export function DataOverrideLink({ issueUrl }: { issueUrl: string }) {
+export function CardHelpNotice({ message, onLearnMore }: { message: string; onLearnMore: () => void }) {
   return (
-    <a
-      href={issueUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"
-    >
-      We corrected this data
-    </a>
+    <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
+      <p className="text-[9px] font-bold text-[var(--text-dim)]">
+        {message}{' '}
+        <button
+          type="button"
+          onClick={onLearnMore}
+          className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
+        >
+          Learn more →
+        </button>
+      </p>
+    </div>
   );
 }
 

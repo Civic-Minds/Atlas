@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   clearIssueUrlOnFeedChange,
+  clearOverrideUserFacingOnFeedChange,
   formatOverrideIssueUrlClearedLog,
   formatOverrideResolvedLog,
-  issueRefFromUrl,
+  formatOverrideUserFacingClearedLog,
   reconcileExcludeRouteShortNames,
   upstreamFeedChanged,
 } from '../overrideAudit.js';
@@ -53,6 +54,30 @@ describe('upstreamFeedChanged', () => {
   });
 });
 
+describe('clearOverrideUserFacingOnFeedChange', () => {
+  it('clears issueUrl and overrideNote on new upstream file but keeps exclusions', () => {
+    const agency = {
+      lastFeedVersion: 'S1000045',
+      issueUrl: 'https://github.com/Civic-Minds/Atlas/issues/144',
+      overrideNote: 'Hidden test route.',
+      excludeRouteShortNames: ['Test'],
+    };
+    expect(clearOverrideUserFacingOnFeedChange(agency, null, 'S1000099')).toBe(true);
+    expect(agency.issueUrl).toBeUndefined();
+    expect(agency.overrideNote).toBeUndefined();
+    expect(agency.excludeRouteShortNames).toEqual(['Test']);
+  });
+
+  it('does not clear when feed version is unchanged', () => {
+    const agency = {
+      lastFeedVersion: 'S1000045',
+      overrideNote: 'Hidden test route.',
+    };
+    expect(clearOverrideUserFacingOnFeedChange(agency, null, 'S1000045')).toBe(false);
+    expect(agency.overrideNote).toBeDefined();
+  });
+});
+
 describe('clearIssueUrlOnFeedChange', () => {
   it('clears issueUrl on new upstream file but keeps exclusions', () => {
     const agency = {
@@ -73,6 +98,12 @@ describe('clearIssueUrlOnFeedChange', () => {
     };
     expect(clearIssueUrlOnFeedChange(agency, null, 'S1000045')).toBeNull();
     expect(agency.issueUrl).toBeDefined();
+  });
+});
+
+describe('formatOverrideUserFacingClearedLog', () => {
+  it('mentions re-verify if override still needed', () => {
+    expect(formatOverrideUserFacingClearedLog('rockford')).toContain('excludeRouteShortNames kept');
   });
 });
 

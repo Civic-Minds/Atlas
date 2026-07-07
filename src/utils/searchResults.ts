@@ -269,3 +269,19 @@ export function routesBeforeAgencies(
   if (agencyInView && !routeInView) return false;
   return routes.length <= agencies.length;
 }
+
+export type SearchEnterAction =
+  | { type: 'agency'; slug: string }
+  | { type: 'route'; key: string };
+
+/** Enter commits when the dropdown shows exactly one selectable row. */
+export function resolveSearchEnterAction(
+  displayAgencyGroups: AgencySearchGroup[],
+  displayRouteResults: RouteSearchResult[],
+): SearchEnterAction | null {
+  const agencyCount = displayAgencyGroups.length;
+  const routeCount = displayRouteResults.length;
+  if (agencyCount + routeCount !== 1) return null;
+  if (agencyCount === 1) return { type: 'agency', slug: displayAgencyGroups[0].slug };
+  return { type: 'route', key: displayRouteResults[0].key };
+}

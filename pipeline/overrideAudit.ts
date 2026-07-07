@@ -56,17 +56,32 @@ export function upstreamFeedChanged(
   return false;
 }
 
-/** Drop issueUrl when a new upstream GTFS file arrives; keep excludeRouteShortNames. */
+/** Drop rider-facing override copy when a new upstream GTFS file arrives; keep excludeRouteShortNames. */
+export function clearOverrideUserFacingOnFeedChange(
+  agency: FeedVersionSnapshot & { issueUrl?: string; overrideNote?: string },
+  peekedExpiry: string | null,
+  peekedVersion: string | null,
+): boolean {
+  if (!agency.issueUrl && !agency.overrideNote) return false;
+  if (!upstreamFeedChanged(agency, peekedExpiry, peekedVersion)) return false;
+  delete agency.issueUrl;
+  delete agency.overrideNote;
+  return true;
+}
+
+/** @deprecated Use clearOverrideUserFacingOnFeedChange */
 export function clearIssueUrlOnFeedChange(
-  agency: FeedVersionSnapshot & { issueUrl?: string },
+  agency: FeedVersionSnapshot & { issueUrl?: string; overrideNote?: string },
   peekedExpiry: string | null,
   peekedVersion: string | null,
 ): string | null {
-  if (!agency.issueUrl) return null;
-  if (!upstreamFeedChanged(agency, peekedExpiry, peekedVersion)) return null;
-  const cleared = agency.issueUrl;
-  delete agency.issueUrl;
-  return cleared;
+  const prevUrl = agency.issueUrl;
+  if (!clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion)) return null;
+  return prevUrl ?? '(override note cleared)';
+}
+
+export function formatOverrideUserFacingClearedLog(slug: string): string {
+  return `[override] ${slug}: new upstream GTFS — cleared override note from index.json (excludeRouteShortNames kept; re-verify and restore note if override still needed)`;
 }
 
 export function formatOverrideIssueUrlClearedLog(slug: string, previousUrl: string): string {
