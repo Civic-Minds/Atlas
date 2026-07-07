@@ -273,7 +273,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 space-y-1">
             {routeIsStale && (
               <CardHelpNotice
-                message={`Schedule may be outdated${expDateStr ? `. Ended ${expDateStr}` : ''}.`}
+                message={`This schedule may be outdated${expDateStr ? ` and ended ${expDateStr}` : ''}.`}
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'outdated-schedule',
                   agencyName: routeAgency?.name,
