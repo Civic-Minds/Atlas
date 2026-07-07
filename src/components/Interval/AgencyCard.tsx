@@ -2,12 +2,13 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import type { Agency, FareOverride } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SEARCH_BAR_WIDTH } from '../../styles';
-import { getFareColor } from '../../utils/colors';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_SEARCH_SUBHEAD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SEARCH_BAR_WIDTH } from '../../styles';
+import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
-import type { DayType, TimePeriod } from '../../hooks/useIntervalStats';
-import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
+import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
+import { passesRouteFilter, PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import { effectiveRouteHeadway } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardCloseButton, CardDirectionRow, DataOverrideLink } from './cardUi';
 
 interface RouteRow {
@@ -19,20 +20,48 @@ interface RouteRow {
   tier: string | null;
   routeType: number;
   busSubType: string | undefined;
+  matchesFilter: boolean;
 }
 
-function getRoutes(layers: AgencyLayers, slug: string, day: string, period: TimePeriod): RouteRow[] {
+interface AgencyListFilters {
+  maxHeadway: number;
+  selectedModes: Set<number>;
+  hideSpan: boolean;
+}
+
+function getRoutes(
+  layers: AgencyLayers,
+  slug: string,
+  day: string,
+  period: TimePeriod,
+  filters: AgencyListFilters,
+): RouteRow[] {
   const fc = layers[slug];
   if (!fc) return [];
 
+  const agencyFilters = {
+    maxHeadway: filters.maxHeadway,
+    agencies: new Set([slug]),
+    modes: filters.selectedModes,
+    day,
+    period,
+    hideSpan: filters.hideSpan,
+    livePollingOnly: false,
+    showCorridors: false,
+    showCorridorBand: false,
+    selectedRoute: null,
+  };
+
   const best = new Map<string, RouteRow>();
   for (const f of fc.features) {
-    const p = f.properties as any;
-    if (!p.routeId || !p.routeShortName || p.stopId) continue;
+    const p = f.properties as ShapeProperties;
+    if (!p.routeId || !p.routeShortName || (p as { stopId?: string }).stopId) continue;
     if (p.day && p.day !== day) continue;
+    if (p.directionId !== undefined && p.directionId !== 0) continue;
 
     const key = p.routeShortName;
-    const h = routeCardDisplayHeadway(p, period);
+    const h = effectiveRouteHeadway(p, period);
+    const matchesFilter = passesRouteFilter(p, slug, agencyFilters, null);
     const existing = best.get(key);
     if (!existing || (h !== null && (existing.headway === null || h < existing.headway))) {
       best.set(key, {
@@ -44,6 +73,7 @@ function getRoutes(layers: AgencyLayers, slug: string, day: string, period: Time
         tier: p.tier ?? null,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
         busSubType: p.busSubType ?? undefined,
+        matchesFilter,
       });
     }
   }
@@ -53,6 +83,24 @@ function getRoutes(layers: AgencyLayers, slug: string, day: string, period: Time
     if (b.headway === null) return -1;
     return a.headway - b.headway;
   });
+}
+
+function frequencyFilterLabel(maxHeadway: number): string | null {
+  if (maxHeadway === Infinity) return null;
+  return HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? `≤${maxHeadway}m`;
+}
+
+export function buildHeaderSummary(
+  routes: RouteRow[],
+  maxHeadway: number,
+  period: TimePeriod,
+): string {
+  const matching = routes.filter(r => r.matchesFilter).length;
+  const parts = [`${routes.length} route${routes.length !== 1 ? 's' : ''}`];
+  const freqLabel = frequencyFilterLabel(maxHeadway);
+  if (freqLabel) parts.push(`${matching} match ${freqLabel}`);
+  if (period !== 'all') parts.push(PERIOD_LABELS[period]);
+  return parts.join(' · ');
 }
 
 function railBlurbLabel(route: RouteRow): string | null {
@@ -132,6 +180,9 @@ interface Props {
   layers: AgencyLayers;
   day: DayType;
   period: TimePeriod;
+  maxHeadway: number;
+  selectedModes: Set<number>;
+  hideSpan: boolean;
   onClose: () => void;
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
@@ -139,19 +190,85 @@ interface Props {
   fareOverride?: FareOverride;
 }
 
-export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect, sidebarLeft, fareView, fareOverride }: Props) {
-  const routes = useMemo(() => getRoutes(layers, agency.slug, day, period), [layers, agency.slug, day, period]);
+function RouteListSection({
+  routes,
+  liveShortNames,
+  onRouteSelect,
+  dimmed = false,
+}: {
+  routes: RouteRow[];
+  liveShortNames: Set<string>;
+  onRouteSelect: (key: string) => void;
+  dimmed?: boolean;
+}) {
+  return (
+    <div className="py-1">
+      {routes.map(r => {
+        const isLive = liveShortNames.has(r.shortName);
+        const key = `${r.agencySlug}::${r.routeId}`;
+        return (
+          <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
+            <CardDirectionRow
+              label={titleCase(getRouteLabel(r.shortName, r.longName))}
+              headway={r.headway ?? undefined}
+              live={isLive}
+              dimmed={dimmed}
+              onClick={() => onRouteSelect(key)}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function AgencyCard({
+  agency,
+  layers,
+  day,
+  period,
+  maxHeadway,
+  selectedModes,
+  hideSpan,
+  onClose,
+  onRouteSelect,
+  sidebarLeft,
+  fareView,
+  fareOverride,
+}: Props) {
+  const routes = useMemo(
+    () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan }),
+    [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan],
+  );
   const routeFilters = useMemo(() => buildAgencyRouteFilters(routes), [routes]);
   const [activeFilter, setActiveFilter] = useState<AgencyRouteFilterKey | null>(null);
+  const [showOtherRoutes, setShowOtherRoutes] = useState(false);
 
   useEffect(() => {
     setActiveFilter(null);
   }, [agency.slug]);
 
-  const visibleRoutes = useMemo(() => {
+  const filteredRoutes = useMemo(() => {
     if (!activeFilter) return routes;
     return routes.filter(r => routeMatchesAgencyFilter(r, activeFilter));
   }, [routes, activeFilter]);
+
+  const matchingRoutes = useMemo(
+    () => filteredRoutes.filter(r => r.matchesFilter),
+    [filteredRoutes],
+  );
+  const otherRoutes = useMemo(
+    () => filteredRoutes.filter(r => !r.matchesFilter),
+    [filteredRoutes],
+  );
+  const hasFilterSplit = otherRoutes.length > 0 && maxHeadway !== Infinity;
+  const showOthersExpanded = showOtherRoutes || matchingRoutes.length === 0;
+
+  useEffect(() => {
+    setShowOtherRoutes(false);
+  }, [agency.slug, maxHeadway, period, day]);
+
+  const visibleRoutes = filteredRoutes;
 
   const activeFilterLabel = routeFilters.find(f => f.key === activeFilter)?.label;
 
@@ -229,9 +346,7 @@ export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
             {[
               agency.region,
-              activeFilter
-                ? `${visibleRoutes.length} of ${routes.length} routes`
-                : `${routes.length} route${routes.length !== 1 ? 's' : ''}`,
+              buildHeaderSummary(visibleRoutes, maxHeadway, period),
             ].filter(Boolean).join(' · ')}
           </p>
           {routeFilters.length > 0 && (
@@ -270,23 +385,48 @@ export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect
           <p className="px-4 py-4 text-xs text-[var(--text-dim)]">
             {activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}
           </p>
+        ) : hasFilterSplit ? (
+          <>
+            {matchingRoutes.length > 0 && (
+              <>
+                <div className={PANEL_SEARCH_SUBHEAD}>Matching your filters</div>
+                <RouteListSection
+                  routes={matchingRoutes}
+                  liveShortNames={liveShortNames}
+                  onRouteSelect={onRouteSelect}
+                />
+              </>
+            )}
+            {otherRoutes.length > 0 && (
+              <>
+                {!showOthersExpanded ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowOtherRoutes(true)}
+                    className={`${PANEL_SEARCH_SUBHEAD} w-full text-left hover:text-[var(--text-muted)] transition-colors`}
+                  >
+                    {otherRoutes.length} more route{otherRoutes.length !== 1 ? 's' : ''} (outside filters)
+                  </button>
+                ) : (
+                  <>
+                    <div className={PANEL_SEARCH_SUBHEAD}>Other routes</div>
+                    <RouteListSection
+                      routes={otherRoutes}
+                      liveShortNames={liveShortNames}
+                      onRouteSelect={onRouteSelect}
+                      dimmed
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </>
         ) : (
-          <div className="py-1">
-            {visibleRoutes.map(r => {
-              const isLive = liveShortNames.has(r.shortName);
-              const key = `${r.agencySlug}::${r.routeId}`;
-              return (
-                <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
-                  <CardDirectionRow
-                    label={titleCase(getRouteLabel(r.shortName, r.longName))}
-                    headway={r.headway ?? undefined}
-                    live={isLive}
-                    onClick={() => onRouteSelect(key)}
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <RouteListSection
+            routes={visibleRoutes}
+            liveShortNames={liveShortNames}
+            onRouteSelect={onRouteSelect}
+          />
         )}
       </div>}
     </div>

@@ -1,8 +1,30 @@
 # Changelog
 
-## [3.0.10] — 2026-07-07
+## [3.0.11] — 2026-07-07
+
+### Changed
+- **Agency route list**: Split matching vs other routes when frequency filter is active; show filter-grade headways; header summary (`12 routes · 8 match ≤60m`); collapsed "outside filters" section.
 
 ### Fixed
+- **Frequency filter vs route card** ([#143](https://github.com/Civic-Minds/Atlas/issues/143)): `worstDirectionHeadway` no longer crosses service days — weekend headways were hiding weekday 60-min routes (e.g. TARTA 15) at ≤60m while the card showed "every 60 min".
+- **CI deploy**: TypeScript errors in SidebarControls, useIntervalStats, effectiveHeadway, and searchResults tests.
+
+## [3.0.10] — 2026-07-07
+
+### Changed
+- **Agency card mode filters**: Replaced the prose blurb (`subway and light rail, 23 express routes`) with tappable pills that filter the route list (Subway · 4, Light rail · 12, Express · 23, etc.).
+- **Corridors mode**: Header **Corridors** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Corridors from here…** entry.
+- **App drawer hidden**: Removed waffle menu from header again; History/Fares remain URL-only until ready (reverts [#115](https://github.com/Civic-Minds/Atlas/issues/115)).
+- **Near You panel**: Removed close button; panel clears when location is dismissed from the map.
+- **Near You headways**: “Every X min” respects the selected day and period filter (`headwayByPeriod`), not midday headline only.
+- **Near You loading**: Shows spinner while agency GeoJSON loads instead of “No routes within 500 m”.
+- **Near You dismiss** ([#139](https://github.com/Civic-Minds/Atlas/issues/139)): Panel closes on outside click (same pattern as filter chips).
+- **Search suggestions**: Section headers match content — Recent searches / Recent routes / Suggested routes (or agencies in Fares); both recent and suggested routes can show together.
+- **Live Vehicles**: Vehicle detail rows use fleet labels or ordinals instead of raw UUIDs; route list drops redundant "Route N" suffix; multi-agency headers match suggestion section style.
+- **Panel tokens**: Shared `PANEL_TITLE_BAR`, `PANEL_SECTION_HEAD`, `PANEL_CARD_HEADER`, etc. in `styles.ts`; Live Vehicles, Near You, and search suggestions use them.
+
+### Fixed
+- **CI / deploy**: Fix TypeScript errors blocking `tsc` (search result types, viewport bounds, headway-by-hour).
 - **Map route deselect** ([#141](https://github.com/Civic-Minds/Atlas/issues/141)): Unified map click handler; paint resets synchronously on clear; fix invalid MapLibre opacity expression that left highlight stuck after deselect.
 - **MiWay express headsigns** ([#142](https://github.com/Civic-Minds/Atlas/issues/142)): Strip direction-only express labels (`135 E Express Eglinton Exp`) so route cards show WESTBOUND/EASTBOUND without garbled "to W Express Eglinton Exp" rows.
 - **Route card one-way destinations** ([#134](https://github.com/Civic-Minds/Atlas/issues/134)): Unified headsign pipeline (`resolveDisplayHeadsign`) so GeoJSON never drops cleaned-away destinations; route/stop cards share `resolveBranchLabel` with direction fallbacks; route-title redundancy handled at display time, not in stored data. Route cards no longer repeat the section heading as a row label (e.g. "to Southbound" under SOUTHBOUND).
@@ -31,26 +53,29 @@
 - **Search vs route card**: Focusing the search bar clears the selected route/stop so suggestions don’t stack over an open route card; picking a search result dismisses search focus.
 - **Headway consistency**: Agency route list and search suggestions now use the same period-aware headway as route cards (e.g. midday `every 6 min`), not a different all-day minimum across directions.
 
-### Changed
-- **Agency card mode filters**: Replaced the prose blurb (`subway and light rail, 23 express routes`) with tappable pills that filter the route list (Subway · 4, Light rail · 12, Express · 23, etc.).
-
-### Changed
-- **Corridors mode**: Header **Corridors** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Corridors from here…** entry.
-- **App drawer hidden**: Removed waffle menu from header again; History/Fares remain URL-only until ready (reverts [#115](https://github.com/Civic-Minds/Atlas/issues/115)).
-- **Near You panel**: Removed close button; panel clears when location is dismissed from the map.
-- **Near You headways**: “Every X min” respects the selected day and period filter (`headwayByPeriod`), not midday headline only.
-- **Near You loading**: Shows spinner while agency GeoJSON loads instead of “No routes within 500 m”.
-- **Near You dismiss** ([#139](https://github.com/Civic-Minds/Atlas/issues/139)): Panel closes on outside click (same pattern as filter chips).
-- **Search suggestions**: Section headers match content — Recent searches / Recent routes / Suggested routes (or agencies in Fares); both recent and suggested routes can show together.
-- **Live Vehicles**: Vehicle detail rows use fleet labels or ordinals instead of raw UUIDs; route list drops redundant "Route N" suffix; multi-agency headers match suggestion section style.
-- **Panel tokens**: Shared `PANEL_TITLE_BAR`, `PANEL_SECTION_HEAD`, `PANEL_CARD_HEADER`, etc. in `styles.ts`; Live Vehicles, Near You, and search suggestions use them.
-
 ## [3.0.9] — 2026-07-06
 
 ### Fixed
 - **CI**: Pin `@emnapi/core` and `@emnapi/runtime` at 1.11.2 in `package-lock.json` so `npm ci` passes on Node 22 (Tailwind/Rolldown wasm optional deps).
 
 ## [3.0.8] — 2026-07-06
+
+### Added
+- **History adherence tests** ([#130](https://github.com/Civic-Minds/Atlas/issues/130)): Unit tests for `computeHistoryAdherence` timezone bucketing.
+- **Stop click route highlight** ([#104](https://github.com/Civic-Minds/Atlas/issues/104)): Selecting a stop keeps connecting routes at full color/width; other visible routes fade to 15% opacity.
+
+### Changed
+- **CI typecheck** ([#111](https://github.com/Civic-Minds/Atlas/issues/111)): Added `tsconfig.api.json` — API routes type-checked in CI alongside `src`/`shared`.
+- **validate-index in CI** ([#112](https://github.com/Civic-Minds/Atlas/issues/112)): `npm run validate-index` runs on every PR.
+- **R2 URL centralization** ([#127](https://github.com/Civic-Minds/Atlas/issues/127)): `DEFAULT_R2_PUBLIC_URL` exported from `shared/config.ts`.
+- **Dead code removed** ([#126](https://github.com/Civic-Minds/Atlas/issues/126)): Deleted `dev-api-server.ts` and `pipeline/mapStyles.ts`.
+- **Deps cleanup** ([#125](https://github.com/Civic-Minds/Atlas/issues/125)): Removed unused Leaflet and Playwright packages.
+- **Docs** ([#128](https://github.com/Civic-Minds/Atlas/issues/128)): README and ROADMAP updated to MapLibre GL stack.
+- **refresh-feeds CI** ([#131](https://github.com/Civic-Minds/Atlas/issues/131)): Weekly workflow runs typecheck and tests before commit.
+- **Worker gitignore**: Fixed pattern that incorrectly ignored `gtfs-rt-archiver/src/`.
+- **Sidebar card primitives** ([#103](https://github.com/Civic-Minds/Atlas/issues/103)): `SidebarCardShell`, shared list/section wrappers, and `CardDirectionRow` — stop, route, and agency cards share one layout system; removed duplicate route-card wrapper margin.
+- **Stop card period labels**: Dropped redundant "Evening" (etc.) suffix on every headway — active period is already in the sidebar filter.
+- **Stop card debug panel**: Removed internal "debug headways" toggle from the public stop card.
 
 ### Fixed
 - **CI**: Synced `package-lock.json` after dependency cleanup (restores optional `@emnapi` entries required by `npm ci` on Node 22).
@@ -78,23 +103,6 @@
 - **Sidebar card continuity** ([#101](https://github.com/Civic-Minds/Atlas/issues/101)): Stop and agency cards reuse `RouteDirectionRow` styling — stacked labels/headways, shared `to …` branch formatting, consistent dots and typography.
 - **Stop card route groups** ([#102](https://github.com/Civic-Minds/Atlas/issues/102)): Shared headway collapsed into one line per route with compact destination list — flat layout, no nested route cards.
 - **Route card limited destinations**: Limited-service hint no longer repeats destinations already shown with regular headways (e.g. GO 41 Square One).
-
-### Changed
-- **CI typecheck** ([#111](https://github.com/Civic-Minds/Atlas/issues/111)): Added `tsconfig.api.json` — API routes type-checked in CI alongside `src`/`shared`.
-- **validate-index in CI** ([#112](https://github.com/Civic-Minds/Atlas/issues/112)): `npm run validate-index` runs on every PR.
-- **R2 URL centralization** ([#127](https://github.com/Civic-Minds/Atlas/issues/127)): `DEFAULT_R2_PUBLIC_URL` exported from `shared/config.ts`.
-- **Dead code removed** ([#126](https://github.com/Civic-Minds/Atlas/issues/126)): Deleted `dev-api-server.ts` and `pipeline/mapStyles.ts`.
-- **Deps cleanup** ([#125](https://github.com/Civic-Minds/Atlas/issues/125)): Removed unused Leaflet and Playwright packages.
-- **Docs** ([#128](https://github.com/Civic-Minds/Atlas/issues/128)): README and ROADMAP updated to MapLibre GL stack.
-- **refresh-feeds CI** ([#131](https://github.com/Civic-Minds/Atlas/issues/131)): Weekly workflow runs typecheck and tests before commit.
-- **Worker gitignore**: Fixed pattern that incorrectly ignored `gtfs-rt-archiver/src/`.
-- **Sidebar card primitives** ([#103](https://github.com/Civic-Minds/Atlas/issues/103)): `SidebarCardShell`, shared list/section wrappers, and `CardDirectionRow` — stop, route, and agency cards share one layout system; removed duplicate route-card wrapper margin.
-- **Stop card period labels**: Dropped redundant "Evening" (etc.) suffix on every headway — active period is already in the sidebar filter.
-- **Stop card debug panel**: Removed internal "debug headways" toggle from the public stop card.
-
-### Added
-- **History adherence tests** ([#130](https://github.com/Civic-Minds/Atlas/issues/130)): Unit tests for `computeHistoryAdherence` timezone bucketing.
-- **Stop click route highlight** ([#104](https://github.com/Civic-Minds/Atlas/issues/104)): Selecting a stop keeps connecting routes at full color/width; other visible routes fade to 15% opacity.
 
 ## [3.0.7] — 2026-07-06
 
@@ -141,57 +149,22 @@
 
 ## [3.0.4] — 2026-07-06
 
-- Added Visalia Transit, Green Bay Metro.
+### Added
+- **Visalia Transit** and **Green Bay Metro**.
 - Gap additions: COTA (Columbus OH), Des Moines DART (IA), Wichita Transit (KS), Appleton/Valley Transit (WI).
+
+### Changed
 - Refreshed feeds + R2 artifacts for waukesha-metro, tulare-county-transit, visalia, green-bay (plus prior pace).
-- Fixed GitHub Actions refresh-feeds (and CI): bumped ancient checkout/setup-node, refresh script no longer fails the job on partial errors (expired feeds etc.).
+
+### Fixed
+- **GitHub Actions refresh-feeds (and CI)**: bumped ancient checkout/setup-node; refresh script no longer fails the job on partial errors (expired feeds etc.).
 
 ## [3.0.3] — 2026-07-06
-- Refresh: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.
+
+### Changed
+- **Changelog**: restored versioned release notes after 3.0.2 (no functional changes).
 
 ## [3.0.2] — 2026-07-06
 
-- **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
-- Fixed TypeScript errors in SidebarControls (region access on agencyData) and RouteCardTitle (null agencyName) to make dependabot PRs pass CI.
-- **DATA_OVERRIDES.md**: removed (deprecated; data overrides now tracked exclusively via individual GitHub issues with `data override` label + `issueUrl` per agency in `index.json`)
-- Fixed refresh failures: updated ECO Transit feedUrl to working EVTA source; set lastFeedExpiry for Durango (flex feed) to skip 0-feature processing.
-- Fixed sparkline period label making chart width vary; now reserves fixed slot so chart stays consistent width
-- Sparkline hover tooltip no longer clips on left/right edge (edge-aware translate)
-- URL: no trailing "?" on bare path (e.g. default / not /?)
-- Search: "new york" / city names now match via region (in addition to "NYC")
-- Route selection highlight uses full `agency::routeId` (prevents unrelated routes bolding on numeric id collisions e.g. NYC subway)
-- Map route clicks now clear active search query (so route card actually appears / "pops up")
-- RouteCardTitle now passes agencyName to getRouteLabel (helps name display in cards for special agencies)
-- Empty search results now show a "No routes match your search" message
-- **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring
-- **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail)
-- **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave
-- **Route card symmetric direction collapse**: routes where both directions share the same headway and no headsigns (e.g. TTC 512) now show a headway row instead of rendering blank
-- **"Via" capitalization**: added `via` to the lowercase-preserve list in `titleCase` — "Finch via Pioneer Village" no longer renders as "Finch Via Pioneer Village"
-- **Search results missing route names**: routes with a null GTFS `route_short_name` now fall back to `routeId` in search result display, preventing blank rows
-- **TTC 506 Sparkline 2am Bug (AI-267)**: Fixed boundary mapping of hour 26 to `'overnight'` instead of `'late'` to align with period boundaries. Used `Math.max` between branch-specific start headways and terminal stop headways in the pipeline to prevent late-night schedule bunching/layover artifacts (e.g. 2-minute gaps at Main Street Station at 2 AM) from inflating route frequency.
-- **TTC 35 Headway Ranges (AI-270)**: Updated pipeline to compute branch-specific, headsign-specific period and hourly headways. Prevented shared terminal stop headways from bleeding into different branches (e.g. `35A` vs `35B` both ending at Mount Dennis) by comparing branch-specific start headways with terminal stop headways using `Math.max`.
-
-## [3.0.1] — 2026-07-06
-
-
-- **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
-- Fixed TypeScript errors in SidebarControls (region access on agencyData) and RouteCardTitle (null agencyName) to make dependabot PRs pass CI.
-- **DATA_OVERRIDES.md**: removed (deprecated; data overrides now tracked exclusively via individual GitHub issues with `data override` label + `issueUrl` per agency in `index.json`)
-- Fixed refresh failures: updated ECO Transit feedUrl to working EVTA source; set lastFeedExpiry for Durango (flex feed) to skip 0-feature processing.
-- Fixed sparkline period label making chart width vary; now reserves fixed slot so chart stays consistent width
-- Sparkline hover tooltip no longer clips on left/right edge (edge-aware translate)
-- URL: no trailing "?" on bare path (e.g. default / not /?)
-- Search: "new york" / city names now match via region (in addition to "NYC")
-- Route selection highlight uses full `agency::routeId` (prevents unrelated routes bolding on numeric id collisions e.g. NYC subway)
-- Map route clicks now clear active search query (so route card actually appears / "pops up")
-- RouteCardTitle now passes agencyName to getRouteLabel (helps name display in cards for special agencies)
-- Empty search results now show a "No routes match your search" message
-- **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring
-- **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail)
-- **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave
-- **Route card symmetric direction collapse**: routes where both directions share the same headway and no headsigns (e.g. TTC 512) now show a headway row instead of rendering blank
-- **"Via" capitalization**: added `via` to the lowercase-preserve list in `titleCase` — "Finch via Pioneer Village" no longer renders as "Finch Via Pioneer Village"
-- **Search results missing route names**: routes with a null GTFS `route_short_name` now fall back to `routeId` in search result display, preventing blank rows
-- **TTC 506 Sparkline 2am Bug (AI-267)**: Fixed boundary mapping of hour 26 to `'overnight'` instead of `'late'` to align with period boundaries. Used `Math.max` between branch-specific start headways and terminal stop headways in the pipeline to prevent late-night schedule bunching/layover artifacts (e.g. 2-minute gaps at Main Street Station at 2 AM) from inflating route frequency.
-- **TTC 35 Headway Ranges (AI-270)**: Updated pipeline to compute branch-specific, headsign-specific period and hourly headways. Prevented shared terminal stop headways from bleeding into different branches (e.g. `35A` vs `35B` both ending at Mount Dennis) by comparing branch-specific start headways with terminal stop headways using `Math.max`.
+### Fixed
+- **Refresh**: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.

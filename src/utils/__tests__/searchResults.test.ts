@@ -65,8 +65,8 @@ describe('searchResults', () => {
   });
 
   it('ranks exact route number above substring', () => {
-    const exact = { routeId: '501', routeShortName: '501', routeLongName: 'Queen' };
-    const partial = { routeId: '5010', routeShortName: '5010', routeLongName: 'Other' };
+    const exact = { routeId: '501', routeShortName: '501', routeLongName: 'Queen', directionId: 0, tier: '5', headway: 5 };
+    const partial = { routeId: '5010', routeShortName: '5010', routeLongName: 'Other', directionId: 0, tier: '5', headway: 5 };
     expect(routeQueryMatchRank(exact, '501')).toBeLessThan(routeQueryMatchRank(partial, '501'));
   });
 

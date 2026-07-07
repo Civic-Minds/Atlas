@@ -82,7 +82,7 @@ function resolveTierVal(p: ShapeProperties): number | null {
 // Shared filter predicate for both visibleFeatures and filteredLayers.
 // slug is passed explicitly so the caller can use p.agencySlug (flat array path)
 // or the layer key (per-layer iteration path).
-function passesRouteFilter(
+export function passesRouteFilter(
   p: ShapeProperties,
   slug: string,
   filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
@@ -315,7 +315,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const searchMatchResults = useMemo(() => {
     if (q === '') return null;
-    return searchRouteResults(allFeatures, q, bounds);
+    return searchRouteResults(allFeatures, q, bounds ?? null);
   }, [allFeatures, q, bounds]);
 
   const searchMatches = searchMatchResults?.length ?? null;

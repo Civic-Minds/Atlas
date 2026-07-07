@@ -12,7 +12,7 @@ type HeadwayProps = ShapeProperties & {
 };
 
 function periodHeadwayFromByHour(
-  byHour: Record<number, number | null> | undefined,
+  byHour: Partial<Record<number, number | null>> | undefined,
   periodKey: string,
 ): number | null {
   if (!byHour) return null;

@@ -93,7 +93,7 @@ interface SidebarControlsProps {
   searchFocused: boolean;
   setSearchFocused?: (focused: boolean) => void;
   searchMatches: number | null;
-  searchMatchResults: { key: string; routeShortName: string | null; routeLongName: string | null; agencyName?: string }[] | null;
+  searchMatchResults: RouteSearchResult[] | null;
   maxHeadway: number;
   setMaxHeadway: (h: number) => void;
   agencies: Agency[];

@@ -2,6 +2,36 @@
 
 All legacy release notes for Atlas are preserved here. For recent changes, see [CHANGELOG.md](CHANGELOG.md).
 
+## [3.0.1] — 2026-07-06
+
+### Added
+- **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring.
+- Empty search results now show a "No routes match your search" message.
+
+### Changed
+- URL: no trailing `?` on bare path (e.g. default `/` not `/?`).
+- Search: "new york" / city names now match via region (in addition to "NYC").
+- Map route clicks now clear active search query (so route card actually appears / "pops up").
+- RouteCardTitle now passes agencyName to getRouteLabel (helps name display in cards for special agencies).
+- **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave.
+
+### Removed
+- **DATA_OVERRIDES.md**: deprecated; data overrides now tracked exclusively via individual GitHub issues with `data override` label + `issueUrl` per agency in `index.json`.
+
+### Fixed
+- **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
+- TypeScript errors in SidebarControls (region access on agencyData) and RouteCardTitle (null agencyName) to make dependabot PRs pass CI.
+- Refresh failures: updated ECO Transit feedUrl to working EVTA source; set lastFeedExpiry for Durango (flex feed) to skip 0-feature processing.
+- Sparkline period label making chart width vary; now reserves fixed slot so chart stays consistent width.
+- Sparkline hover tooltip no longer clips on left/right edge (edge-aware translate).
+- Route selection highlight uses full `agency::routeId` (prevents unrelated routes bolding on numeric id collisions e.g. NYC subway).
+- **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail).
+- **Route card symmetric direction collapse**: routes where both directions share the same headway and no headsigns (e.g. TTC 512) now show a headway row instead of rendering blank.
+- **"Via" capitalization**: added `via` to the lowercase-preserve list in `titleCase` — "Finch via Pioneer Village" no longer renders as "Finch Via Pioneer Village".
+- **Search results missing route names**: routes with a null GTFS `route_short_name` now fall back to `routeId` in search result display, preventing blank rows.
+- **TTC 506 Sparkline 2am Bug (AI-267)**: fixed boundary mapping of hour 26 to `'overnight'` instead of `'late'` to align with period boundaries; used `Math.max` between branch-specific start headways and terminal stop headways in the pipeline to prevent late-night schedule bunching/layover artifacts (e.g. 2-minute gaps at Main Street Station at 2 AM) from inflating route frequency.
+- **TTC 35 Headway Ranges (AI-270)**: pipeline computes branch-specific, headsign-specific period and hourly headways; prevented shared terminal stop headways from bleeding into different branches (e.g. `35A` vs `35B` both ending at Mount Dennis) by comparing branch-specific start headways with terminal stop headways using `Math.max`.
+
 ## [3.0.0] — 2026-07-05
 
 ### Added
@@ -133,6 +163,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **App drawer cursor flickering**: added `cursor-default` to dropdown panel wrapper; `button:disabled { cursor: not-allowed }` as global CSS rule
 - **InfoPanel slide carousel offset**: replaced fragile horizontal slide container with clean conditional rendering; fixed margin/clipping bugs
 - **Station stop grouping**: sibling stops grouped by name; multi-agency proximity grouping within 120m; major station hubs shown at zoom 12–15
+
 
 ## [2.3.1] - 2026-06-22
 

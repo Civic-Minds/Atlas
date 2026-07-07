@@ -330,6 +330,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             layers={layers}
             day={day}
             period={period}
+            maxHeadway={maxHeadway}
+            selectedModes={selectedModes}
+            hideSpan={hideSpan}
             onClose={onAgencyCardClose ?? (() => {})}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}
