@@ -9,6 +9,7 @@ import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling'
 import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
+import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, type AgencySearchGroup } from '../../utils/agencySearch';
 import {
   splitAgencyGroups,
@@ -357,6 +358,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
       const sortOrder = sortDirectionGroupIds(routeFeatures, dirIds);
       groups.sort((a, b) => sortOrder.indexOf(a.dirId) - sortOrder.indexOf(b.dirId));
+    }
+    if (groups.length > 1 && routeFeatures.length > 0) {
+      dedupeCrossDirectionHeadsigns(groups, routeFeatures);
     }
     return groups;
   }, [currentRoute]);
