@@ -2,6 +2,138 @@
 
 All legacy release notes for Atlas are preserved here. For recent changes, see [CHANGELOG.md](CHANGELOG.md).
 
+## [3.0.0] — 2026-07-05
+
+### Added
+- **Agency coverage expanded to 324 agencies** across Canada and the US — all provinces, all major US metros. See [index.json](public/data/index.json) for the full list.
+- **IDB cache build version**: `CACHE_BUILD` counter in `agencyGeoWeekVersion()` — increment after mid-week data fixes to force browsers to re-fetch instead of serving stale IDB data
+- **Sparkline click-to-period**: clicking a zone sets the period filter; clicking again resets to All
+- **Sparkline hover**: zone highlights with background band; inactive bars preview in tier color
+- **Period label beside sparkline**: period name shown inline right of chart
+- **SidebarControls refactor**: extracted DisambiguationPanel, StopCard, RouteCardHeadway, LiveAdherenceCard, DirectionLabel, RouteDirectionRow — 1330 → 948 lines
+- **Settings panel split**: Appearance (dark mode) and Filters sections with labeled dividers
+- **History time-scrubber**: year slider to replay service changes on the map
+- **History backfill**: annual snapshots for Community Transit (2016–2026), Kingston Transit (2016–2026), CDTA/Albany, GCRTA/Cleveland — via automated MDB backfill script (`pipeline/backfill-mdb-history.ts`)
+- **MDB fallback feed URLs**: 48 agencies now have `mdbFeedUrl` fallback for pipeline resilience
+- **Pipeline: worst-direction headway**: routes carry `worstDirectionHeadway`; filter gates on worst direction so a route passing one way doesn't appear if the return is too infrequent
+- **Pipeline: bus sub-type detection**: `busSubType` field — `brt`, `express`, `coach`, `local`
+- **Pipeline: short-turn variant metadata**: direction-0 features carry `shortTurnVariants` with headsign + trip share
+- **Late + Evening periods**: Evening extended to midnight; Late added for midnight–3 AM. `--force` flag on `npm run refresh` for schema changes
+- **Hourly sparkline**: per-hour frequency bars (5 AM–2 AM) with 90-min sliding window; replaces named-period bars
+- **Live Vehicles app**: real-time vehicle positions via GTFS-RT; delay-status indicators, 15s polling, route search, route-grouped sidebar, Deck.gl GPU-rendered markers
+- **Live polling**: TTC 503/504, TransLink 99 B-Line, STM 55, Edmonton 004, YRT VIVA Blue, Halifax 1 — with optional API key support (`apiKeyParamEnvVar`, `apiKeyHeaderEnvVar`)
+- **GTFS-RT archiver** (Cloudflare Worker): archives TripUpdates every 5 min to `atlas-live`; 30-day retention cleanup cron; skips idle overnight polls; currently Burlington + Hamilton
+- **Pipeline: static trips lookup**: `atlas/{slug}-trips.json` on R2 for live-vehicles direction/headsign enrichment when GTFS-RT feeds omit them
+- **History: headway trend sparkline**: time-series SVG sparkline on RouteHistoryCard across snapshot years; period tabs
+- **Staged agency support**: `staged: true` in `index.json` hides agencies until data is ready; pipeline auto-clears after first successful refresh
+- **LOD route visibility**: routes appear progressively by tier as zoom increases — frequent rapid from zoom 0, frequent from 7, moderate from 9, infrequent from 11
+- **History config on R2**: `atlas/history-config.json` fetched at runtime; no generated file committed to git
+- **GeoJSON Web Worker**: `geoWorker.ts` parses large agency GeoJSON in background thread; graceful main-thread fallback
+- **IndexedDB GeoJSON cache**: agency GeoJSON persists between sessions keyed by `{slug}-{weekVersion}`; stale entries pruned weekly
+- **Search bar suggestions**: focus shows last 5 searches; falls back to recently viewed routes or popular routes in viewport
+- **PMTiles + MapLibre GL JS migration**: replaced Leaflet; range-requested vector tiles from R2; 98% fewer cold-load data requests, 60 FPS panning
+- **URL-based map state**: `?lat=`, `?lon=`, `?z=`, `?route=`, `?stop=` — shared links open the exact same view
+- **Agency search**: typing an agency slug or name in the search bar filters the map to that network
+- **Connection explorer**: stop card shows routes reachable within 10 min walk (120m–800m); cross-agency connections automatic
+- **GTFS Fares V2 support**: pipeline parses `fare_products`, `rider_categories`, `fare_leg_rules`; prefers V2 adult products when present
+- **Fare map app**: routes colored by base adult fare (Free / <$2 / $2–4 / $4–8 / $8+); `fare-overrides.json` on R2 for manual overrides
+- **Shared UI primitives**: `LIST_ROW`, `SEARCH_PILL`, `SEARCH_FIELD`, `FLOATING_CARD`, `PANEL_ENTER`, transition constants in `styles.ts`; applied across all panels
+- **Info panel**: agency browser with region filter chips, Live tab (polled routes), History tab (covered agencies)
+- **URL routing**: `/apps/frequency`, `/apps/corridors`, `/apps/history`; SPA rewrite in `vercel.json`; browser back/forward works
+- **Corridors band view**: `isCorridor` segments shown when Corridors opens with no From/To selected
+- **History app** (`src/apps/History.tsx`): headway trends over time — agency search → route list → before/after headway comparison with sparkline, period tabs, vertical timeline, year scrubber
+- **GitHub Issues data override pattern**: per-agency override documentation linked from route/agency cards
+- **Multi-feed support**: `supplementalFeedUrls` per agency; zips merged before writing to R2
+- **Warn on expired GTFS feeds**: `refresh.ts` compares `feed_end_date` against today and warns in CI logs
+- **Pipeline: skip unchanged feeds**: compares `feed_end_date` / `feed_version` before processing; skips R2 writes if schedule unchanged; archives raw zips to `atlas-archive` when new
+- **Pipeline: R2 pagination**: `r2List` follows `NextContinuationToken` — no longer capped at 1000 objects
+- **`find-mdb` tool** (`npm run find-mdb`): queries MDB catalog and emits ready-to-paste `index.json` snippets
+- **Stale schedule warning**: route cards show "Schedule may be outdated" in amber when today is past `lastFeedExpiry`
+- **Station View stop-level headways**: each route row shows headway at the selected stop specifically, not the route's terminal headway
+- **Frequency range on route cards**: when trunk stops have ≥35% better headway than the terminal, shows a range (e.g. "every 6–12 min")
+- **Data overrides**: now tracked via per-agency GitHub issues (label `data override`) + `issueUrl` in index.json (UI links "We corrected this data"). Monolithic `DATA_OVERRIDES.md` deprecated.
+
+### Changed
+- **Frequency map now at `/`**: `APP_TO_PATH` updated; `/apps/frequency` remains an alias
+- **App drawer hidden**: Corridors and History lack sufficient data to be useful; re-enable by uncommenting `AppDrawer` in `App.tsx`
+- **Sidebar panel width**: `w-64` → `w-72` (288px) to prevent "Midday" label from clipping
+- **Search bar width**: responsive steps bumped from `w-40/52/64` to `w-44/56/72`
+- **Inter font applied globally**: was loaded from Google Fonts but never set on `html`
+- **Near You panel**: redesigned to LIST_ROW style — each row shows its own nearest stop name and distance; removed misleading shared-stop header
+- **Global UI scale**: root font-size 14px (from browser default 16px)
+- **Responsive header**: unified flex layout with React portal for right section; chips collapse below 1024px into "More filters" panel
+- **Filter chips**: static labels always; dot-only active indicator; "Period" renamed to "Time"; "Now" button removed (didn't belong in either chip)
+- **Live Vehicles**: moved from app drawer to standalone header button (Radio icon); minimum zoom gate at z9
+- **Fares app hidden**: `available: false` — pending fare card UX
+- **Fare data**: manual base fare overrides moved from `index.json` to R2 `fare-overrides.json`; richer fields (`label`, `zones`, `adultCash`, `free`, `fareUrl`) per agency
+- **Stop card**: agency names as plain text (not pill buttons); nearby connections section visually separated with thick top border
+- **Agency filter**: "None" deselects in-viewport agencies only; bbox/center intersection for visibility check; always-visible on/off dot per row
+- **Frequency map: zoom-based progressive rendering**: GPU MapLibre step expression — below z7 only ≤10 min routes; z7–9 shows ≤20 min; z9+ applies headway pill
+- **Disambiguation popup sorted numerically**
+- **Live Vehicles: viewport-based multi-agency polling**: polls all agencies whose bbox overlaps current viewport in parallel; removed agency selector dropdown
+- **Headline headway uses terminal stop midday period**: was all-day average; midday (9am–3pm) is more representative; falls back to all-day for peak-only routes
+- **History agency panel redesign**: purpose-built `HistoryAgencyPanel` showing first→last headway per route with change direction color-coding
+- **History: focus-triggered suggestions panel**: appears on search focus; Escape or map click dismisses
+- **Screen transitions**: History slides up/down, Corridors fades, header chips fade on app switch
+- **index.json refactor**: R2 artifact URLs derived via `getAgencyArtifactUrls`; JSON Schema + `npm run validate-index` added
+- **process-gtfs.ts**: accepts remote `https://...` GTFS URLs directly (auto-downloads to `tmp/`)
+- **Stats pills relocated**: moved from header to `bottom-6 right-14` map overlay; hidden while loading
+- **Live adherence card**: stop rows clickable; deviation labels rounded to whole minutes; sorted by worst deviation first
+- **Live button redesign**: pill with green dot + "Live" label; border when inactive, accent fill + pulsing dot when active
+- **Centralized configs**: `TIME_PERIODS`, `HEADWAY_TIERS`, `STATUS_COLORS`, `Z_MAP_OVERLAY`/`Z_PANEL`/`Z_HEADER` etc. in `shared/config.ts` and `styles.ts`; removed scattered duplicates across 12+ files
+- **MapCanvas tile filter centralized**: `useIntervalStats` returns `tileFilter` expression derived from the same inputs as `passesRouteFilter`; MapCanvas only adds map-state clauses
+- **Sidebar panel left position centralized**: `sidebarLeft` prop threaded from App.tsx via ResizeObserver measurement; `SIDEBAR_LEFT_FALLBACK = 182` as single fallback
+- **Various refactors**: extracted `RouteListRow`, `HeadwaySparkline`, `ServiceTimeline`, `StopInput`, `RouteGroupCard`, map utilities (`mapStyle.ts`, `mapHtml.ts`), `RouteCardTitle` — reduced file sizes across MapCanvas, Corridors, SidebarControls, History
+- **GTFS-RT archiver**: switched from raw protobuf (~1.5 MB/poll) to compact JSON (~5–20 KB); corrected cron to `*/5 * * * *`
+- **Dependency updates**: `@aws-sdk/client-s3`, `lucide-react`, `papaparse`, `playwright`; `actions/checkout` v4→v7, `actions/setup-node` v4→v6
+
+### Fixed
+- **index.json**: decoded unicode escapes in Quebec agency names (RTC, STLévis, Sherbrooke); corrected Bustang Outrider center
+- **Loading spinner**: now fires on MapLibre `sourcedataloading`/`idle` — shows when PMTiles tiles are streaming even if GeoJSON is already cached; "Loading map..." for tile-only, "X/Y networks" when fetching GeoJSON
+- **"ST" all-caps in stop names**: removed `St` from `TRANSIT_ACRONYMS`; was uppercasing "Street" in stop names (e.g. "Nassau ST"); standalone "ST" still uppercases via ≤3-char rule
+- **Route card missing for stale-cached agencies**: `CACHE_BUILD` counter in `agencyGeoWeekVersion()` forces re-fetch after mid-week data fixes
+- **Bustang/Outrider cards missing in Denver**: added explicit bboxes covering actual route extents
+- **RTD Denver showing no routes**: slug was pointing at Bustang feed (mdb-2280); re-processed from correct mdb-178
+- **Near You panel**: each route now shows its own nearest stop; was showing `routes[0].nearestStopName` as a shared header
+- **Agency filter: deselecting had no effect on map**: `selectedAgencies` was only applied to sidebar/stats, never to the PMTiles tile filter
+- **Headsign display all-caps**: reduced ≤4-char uppercase preservation to ≤3 — "LOOP" now title-cases; real 4-char acronyms (BART etc.) are in `TRANSIT_ACRONYMS`
+- **Route 330 stop card headway**: peak-only routes with fewer than 3 midday/PM trips now excluded from stop card for that direction rather than showing misleading all-day median
+- **Worst-direction tier promotion bug**: Step 4 terminal headway override can now only degrade a tier, never promote; prevents AM-peak cluster inflation
+- **Direction-less feed headway understatement**: `synthesizeMissingDirections` assigns direction_id via shape/headsign clustering when feed lacks `direction_id` column
+- **Loop route parent station headway inflation**: parent station credited with only one visit per trip; fixes multi-bay stations over-counting departures
+- **Pipeline: feed expiry date parsing**: strips surrounding quotes from `feed_info.txt` fields (Hamilton uses quoted CSV values)
+- **Search route list alignment + agency headers**: flex-1 truncation misalignment fixed; "(CITY)" parens stripped from route card headers
+- **Duplicate destination rows**: pipeline and UI now dedup on cleaned headsign
+- **Frequency filter for infrequent routes**: map tile expression now treats `tier==='infrequent'` as 9999 to match `passesRouteFilter` JS logic
+- **Blank map for newly added US agencies**: `atlas.pmtiles` was not rebuilt after adding agencies; routes invisible until PMTiles regenerated
+- **Back button stuck after leaving Fares app**: `moveend` and URL-sync effects migrated to `window.history.replaceState` to avoid stale React Router closure capturing `/apps/fares` pathname
+- **Corridors/Live Vehicles capturing events when invisible**: added `inert` attribute to root div of each — suppresses pointer/keyboard events unconditionally including children with explicit `pointer-events-auto`
+- **Fares app breaking all map interactions**: was rendering a second `Interval` (second MapLibre map) on top of the main one; fixed by removing separate `Fares` component and passing `fareView={inFares}` to the main `Interval`
+- **Map route selection fits full extent**: was using `queryRenderedFeatures` (only in-viewport tiles); now scans in-memory GeoJSON for the correct agency
+- **Disambiguation threshold**: lowered from zoom 13 to zoom 11 so clicks on dense corridors at normal city zoom show the route picker
+- **Live Vehicles: agencies outside viewport shown in sidebar**: route list now filtered to vehicles within current map bounds
+- **Live Vehicles: route card header inconsistent**: shared `RouteCardTitle` component; same `text-sm font-black` + `getRouteLabel()` in frequency and live cards
+- **Live Vehicles: vehicle detail showed "—"**: groups by headsign when available; falls back to cleaned vehicle ID
+- **Fares: STM search showing 187 routes**: Fares mode now shows agency fare cards in search, not individual routes
+- **Fares: suggested agencies showing wrong-area/duplicates**: suggestions now scoped to loaded viewport agencies; deduped by name
+- **Fares legend**: replaced circle dots with horizontal line swatches matching map rendering; tightened spacing
+- **Sparkline hover**: switched from `nativeEvent.offsetX` (breaks on child elements) to `getBoundingClientRect` + `clientX`
+- **SidebarControls parse error**: `return ({(() => {` is invalid JSX; fixed to `return (() => {`
+- **Route label cleanup**: suppress terminus-style 1–2 word long names for numeric routes; strip "Via [location]" routing qualifiers; suppress BRT brand names from terminus suppression list; strip leading "- " after prefix removal; suppress redundant "G Line — G-Line Rapid Ride" patterns
+- **Route card**: removed back button from frequency map card; collapsed identical no-headsign directions; `line-clamp-2` on long titles; left-aligned stale schedule notice
+- **Stop card**: removed redundant "Station View" header; destination prefix wrapping fixed
+- **Agency card**: removed debug slug mono text; region + route count as single muted text line
+- **Agency filter pill**: `shortenAgencyName` truncates long formal names to clean short forms
+- **Info button color**: `text-dim` → `text-muted` at rest (was looking disabled)
+- **Live button**: neutral dot when Live is off; was green regardless of state
+- **Route lines antialiasing**: `antialias: true` on MapLibre constructor; zoom-interpolated line-width/opacity
+- **Stats pills hidden while loading**: suppress "0 routes / 0%" during pan to unloaded area
+- **Z-index stack**: named constants in `styles.ts` replace scattered `z-[500]`/`z-[1000]` etc. across 12 files
+- **Time filter**: Late (11pm–2am) and Overnight (2am–6am) periods added; `getNowPeriod` correctly maps early-morning hours to GTFS 24+ notation; period chips now toggleable
+- **App drawer cursor flickering**: added `cursor-default` to dropdown panel wrapper; `button:disabled { cursor: not-allowed }` as global CSS rule
+- **InfoPanel slide carousel offset**: replaced fragile horizontal slide container with clean conditional rendering; fixed margin/clipping bugs
+- **Station stop grouping**: sibling stops grouped by name; multi-agency proximity grouping within 120m; major station hubs shown at zoom 12–15
+
 ## [2.3.1] - 2026-06-22
 
 ### Fixed
