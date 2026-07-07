@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Radio } from 'lucide-react';
+import { Radio } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { PANEL_ENTER_LEFT } from '../../styles';
@@ -29,39 +29,6 @@ export function HeadwayBadge({
       <span className="whitespace-nowrap">{fmtHeadway(headway)}</span>
       {suffix && <span className="text-[9px] font-bold text-[var(--text-dim)] whitespace-nowrap">{suffix}</span>}
     </span>
-  );
-}
-
-export function CardCloseButton({
-  onClick,
-  variant = 'sidebar',
-  className = '',
-}: {
-  onClick: () => void;
-  variant?: 'sidebar' | 'compact';
-  className?: string;
-}) {
-  if (variant === 'compact') {
-    return (
-      <button
-        onClick={onClick}
-        className={`w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0 mt-0.5 ${className}`}
-        aria-label="Close"
-      >
-        <X className="w-3.5 h-3.5" />
-      </button>
-    );
-  }
-  return (
-    <div className={`flex items-center justify-end mb-2 -mt-2 -mr-2 ${className}`}>
-      <button
-        onClick={onClick}
-        className="p-2 text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors"
-        aria-label="Close"
-      >
-        <X className="w-3.5 h-3.5" />
-      </button>
-    </div>
   );
 }
 
@@ -169,10 +136,10 @@ export function AgencyFilterChips({
   );
 }
 
-export function DataOverrideLink({ slug, issueUrl }: { slug: string; issueUrl?: string }) {
+export function DataOverrideLink({ issueUrl }: { issueUrl: string }) {
   return (
     <a
-      href={issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${slug}`}
+      href={issueUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"

@@ -37,6 +37,8 @@ export default function StopRouteGroup({
 }: Props) {
   const routeLabel = titleCase(getRouteLabel(shortName, longName, showAgency ? agencyName : undefined));
   const hasMultipleDirections = new Set(branches.map(b => b.directionId)).size > 1;
+  const simpleBidirectional = hasMultipleDirections && branches.length === 2 &&
+    new Set(branches.map(b => b.directionId)).size === 2;
 
   const items = branches
     .map(branch => ({
@@ -93,7 +95,8 @@ export default function StopRouteGroup({
           {(() => {
             let lastDir: number | null = null;
             return items.map(item => {
-              const showDivider = hasMultipleDirections && lastDir !== null && item.directionId !== lastDir;
+              const showDivider = hasMultipleDirections && !simpleBidirectional
+                && lastDir !== null && item.directionId !== lastDir;
               lastDir = item.directionId;
               return (
                 <React.Fragment key={`${item.rKey}::${item.directionId}::${item.headsign ?? ''}`}>

@@ -40,6 +40,10 @@ export function cleanHeadsign(
     h = h.replace(new RegExp(`^${escaped}\\s+(?:towards|to)\\s+`, 'i'), '');
   }
 
+  // MVTA 4FUN: "4FUN East to MOA/MSP", "4FUN West to Marschall Road TS"
+  h = h.replace(/^4FUN\s+(?:East|West)\s+(?:Mystic Lake\s+to\s+)?/i, '');
+  h = h.replace(/^4FUN\s+(?:East|West)\s+to\s+/i, '');
+
   // Generic branch/direction prefix: DRT "A - ", GO Transit "KI - ", TTC "East - "
   h = h.replace(/^(?:[A-Za-z0-9]{1,5}|East|West|North|South)\s*-\s*/i, '');
 
@@ -136,6 +140,12 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
   if (rem && rem !== cleanShort) return rem;
 
   if (!longName) return cleanShort;
+
+  // Branded corridor list: "4FUN: Shakopee-Savage-Burnsville-MOA-MSP" → "495 — 4FUN"
+  const brandPrefix = longName.match(/^([A-Za-z0-9]+):\s*.+$/);
+  if (brandPrefix && brandPrefix[1].toUpperCase() === brandPrefix[1] && brandPrefix[1].length <= 8) {
+    return `${cleanShort} — ${brandPrefix[1]}`;
+  }
 
   // HRT 757X etc.: public brand in long_name; short_name is internal (967).
   const brand = longName.match(/^(\d{3}X)\b/i);

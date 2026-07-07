@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cleanHeadsign, isMiwayExpressHeadsign } from '../cleanHeadsign';
+import { cleanHeadsign, getRouteLabel, isMiwayExpressHeadsign } from '../cleanHeadsign';
 
 describe('cleanHeadsign', () => {
   it('keeps TTC station destination when it shares the route long name', () => {
@@ -24,6 +24,18 @@ describe('cleanHeadsign', () => {
 
   it('still extracts MiWay local route destinations', () => {
     expect(cleanHeadsign('57 E Courtneypark To Renforth Station', '57', 'Courtneypark')).toBe('Renforth');
+  });
+
+  it('strips MVTA 4FUN directional prefixes', () => {
+    expect(cleanHeadsign('4FUN East to MOA/MSP', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('MOA/MSP');
+    expect(cleanHeadsign('4FUN West to Marschall Road TS', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('Marschall Road TS');
+    expect(cleanHeadsign('4FUN East Mystic Lake to MOA/MSP', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('MOA/MSP');
+  });
+});
+
+describe('getRouteLabel', () => {
+  it('uses branded short name for MVTA 4FUN corridor routes', () => {
+    expect(getRouteLabel('495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('495 — 4FUN');
   });
 });
 

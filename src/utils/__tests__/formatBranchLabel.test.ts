@@ -44,4 +44,9 @@ describe('resolveBranchLabel', () => {
       sectionBoundLabel: 'Southbound',
     })).toBe('');
   });
+
+  it('capitalizes MVTA destination abbreviations', () => {
+    expect(formatBranchLabel('MOA/MSP', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('to MOA/MSP');
+    expect(formatBranchLabel('Marschall Road TS', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('to Marschall Road TS');
+  });
 });

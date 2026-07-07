@@ -20,6 +20,7 @@ import {
   dirIdNum,
   headsignTrunkHeadway,
 } from '../../../utils/routeCardTrunk';
+import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 
 // Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet.
 // Takes the best (lowest) non-null headway across the period's hours.
@@ -155,8 +156,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           agencyName={agencyDisplayName}
           onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
         />
-        {routeAgency?.excludeRouteShortNames?.length ? (
-          <DataOverrideLink slug={routeSlug ?? ''} issueUrl={routeAgency.issueUrl} />
+        {routeAgency?.excludeRouteShortNames?.length && routeAgency.issueUrl ? (
+          <DataOverrideLink issueUrl={routeAgency.issueUrl} />
         ) : null}
       </SidebarCardHeaderBlock>
       {(() => {
@@ -182,14 +183,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
           const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
           const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
+          const showDirectionSections = shouldShowDirectionSections(displayGroups);
           const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
             resolveBranchLabel({
               headsign,
               shortName: currentRoute.routeShortName ?? '',
               longName: currentRoute.routeLongName ?? '',
               directionId: needsNumbered ? gi : group.dirId,
-              multipleDirections: displayGroups.length > 1,
-              sectionBoundLabel: displayGroups.length > 1 ? group.boundLabel : undefined,
+              multipleDirections: showDirectionSections,
+              sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
             });
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
             if (!headsign) return {};
@@ -220,8 +222,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               .filter(Boolean);
             return (
               <React.Fragment key={group.dirId}>
-                {gi > 0 && displayGroups.length > 1 && <CardDivider />}
-                {displayGroups.length > 1 && group.boundLabel && (
+                {gi > 0 && showDirectionSections && <CardDivider />}
+                {showDirectionSections && group.boundLabel && (
                   <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                 )}
                 <div className="space-y-2">

@@ -37,6 +37,10 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Ctran: 'C-TRAN',
   Wsf: 'WSF',
   Owl: 'OWL',
+  Moa: 'MOA',
+  Msp: 'MSP',
+  Ts: 'TS',
+  Fun: 'FUN',
 };
 
 // Articles/prepositions that stay lowercase unless they open the string
@@ -167,6 +171,7 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('bart')) return 'BART';
   if (lower.includes('caltrain')) return 'Caltrain';
   if (lower.includes('samtrans')) return 'SamTrans';
+  if (lower.includes('minnesota valley') || lower.includes('mvta')) return 'MVTA';
   if (lower.includes('vta')) return 'VTA';
   if (lower.includes('weta')) return 'WETA';
   if (lower.includes('county connection')) return 'County Connection';
@@ -225,6 +230,7 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('gwinnett county')) return 'Gwinnett Transit';
   if (lower.includes('santa maria area')) return 'SMAT';
   if (lower.includes('redding area')) return 'RABA';
+  if (lower.includes('rockford mass') || lower.includes('rmtd')) return 'RMTD';
 
   // General fallback: use parenthetical if short abbrev; otherwise strip long (City/Region) parens for compact display
   const match = name.match(/\(([^)]+)\)/);
