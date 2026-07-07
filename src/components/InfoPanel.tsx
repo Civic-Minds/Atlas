@@ -4,6 +4,7 @@ import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } f
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { formatStoredDate } from '../utils/format';
+import { feedRefreshCountdownLabel } from '../../shared/feedRefresh';
 import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
@@ -389,7 +390,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 Transit agencies publish schedules in periods. When a period ends and they haven&apos;t published the next one yet, Atlas still shows the last version we have — with this warning.
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                We check for updates every Monday. Sometimes an agency is late publishing, or their download link breaks, and the warning can linger even though service may have changed.
+                {feedRefreshCountdownLabel()} Sometimes an agency is late publishing, or their download link breaks, and the warning can linger even though service may have changed.
               </p>
               {helpContext?.websiteUrl && (
                 <a

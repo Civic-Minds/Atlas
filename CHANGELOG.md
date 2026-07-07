@@ -16,7 +16,7 @@
 - **RMTD**: `shortenAgencyName` maps Rockford Mass Transit District before generic "Mass" stripping.
 - **Agency card**: Removed period from header and close button; dismiss via outside click, Escape, or map click.
 - **Data override link**: Shown only when `issueUrl` is set — card stops linking after weekly refresh clears the URL while exclusions remain.
-- **Stale schedule help**: Route card "Learn more" opens in-app outdated-schedule explainer instead of GitHub docs; help panel shows when Atlas last fetched the feed (`lastRefreshedAt`, backfilled from last weekly refresh for existing agencies). Expired-feed agencies get `websiteUrl` from GTFS with a "Check current schedules" link in the help panel.
+- **Stale schedule help**: Route card "Learn more" opens in-app outdated-schedule explainer instead of GitHub docs; help panel shows when Atlas last fetched the feed (`lastRefreshedAt`, backfilled from last weekly refresh for existing agencies). Expired-feed agencies get `websiteUrl` from GTFS with a "Check current schedules" link in the help panel. Next refresh countdown is dynamic (`FEED_REFRESH_WEEKDAY`).
 
 ## [3.0.12] — 2026-07-07
 
