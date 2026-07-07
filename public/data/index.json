@@ -5480,7 +5480,11 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2019/latest.zip",
       "lastFeedExpiry": "20230916",
-      "lastFeedVersion": "S1000045"
+      "lastFeedVersion": "S1000045",
+      "excludeRouteShortNames": [
+        "Test"
+      ],
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/144"
     },
     {
       "slug": "racine",
@@ -5702,6 +5706,120 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "15"
+    },
+    {
+      "slug": "cascades-east",
+      "name": "Cascades East Transit",
+      "region": "Oregon",
+      "center": [
+        44.06,
+        -121.32
+      ],
+      "bbox": [
+        43.62,
+        -121.729,
+        45.023,
+        -120.792
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-170/tld-170-202607070151/tld-170-202607070151.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-170/latest.zip",
+      "lastFeedExpiry": "20260805",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "mountain-transit-ca",
+      "name": "Mountain Transit (Big Bear Lake)",
+      "region": "California",
+      "center": [
+        34.24,
+        -116.91
+      ],
+      "bbox": [
+        34.05,
+        -117.376,
+        34.322,
+        -116.741
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-107/mdb-107-202606300014/mdb-107-202606300014.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-107/latest.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 29-Jun-2026 16:59"
+    },
+    {
+      "slug": "las-cruces",
+      "name": "RoadRUNNER Transit (Las Cruces)",
+      "region": "New Mexico",
+      "center": [
+        32.31,
+        -106.78
+      ],
+      "bbox": [
+        32.221,
+        -106.866,
+        32.44,
+        -106.651
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2075/mdb-2075-202607070135/mdb-2075-202607070135.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2075/latest.zip",
+      "lastFeedExpiry": "20260805",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "ez-rider",
+      "name": "EZ Rider (Midland/Odessa)",
+      "region": "Texas",
+      "center": [
+        31.85,
+        -102.37
+      ],
+      "bbox": [
+        31.78,
+        -102.462,
+        32.088,
+        -102.004
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2634/mdb-2634-202505211819/mdb-2634-202505211819.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2634/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "san-angelo",
+      "name": "Concho Valley Transit (San Angelo)",
+      "region": "Texas",
+      "center": [
+        31.46,
+        -100.44
+      ],
+      "bbox": [
+        31.354,
+        -100.562,
+        31.559,
+        -100.33
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-5864/tld-5864-202607070159/tld-5864-202607070159.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5864/latest.zip",
+      "lastFeedExpiry": "20260805",
+      "lastFeedVersion": "20250228"
+    },
+    {
+      "slug": "brownsville",
+      "name": "Brownsville Metro",
+      "region": "Texas",
+      "center": [
+        25.9,
+        -97.5
+      ],
+      "bbox": [
+        25.816,
+        -97.593,
+        26.054,
+        -97.357
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-7927/tld-7927-202607070136/tld-7927-202607070136.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
     }
   ]
 }

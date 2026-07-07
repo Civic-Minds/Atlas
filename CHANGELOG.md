@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **Pipeline override audit**: Clears `issueUrl` when upstream publishes a new GTFS file; logs when excluded routes may no longer need overrides (`excludeRouteShortNames` kept until verified).
+
+### Changed
+- **Rockford**: `excludeRouteShortNames: ["Test"]` — junk upstream route stripped at process time (Closes [#144](https://github.com/Civic-Minds/Atlas/issues/144)).
+- **Agencies**: Cascades East Transit, Mountain Transit (Big Bear Lake), RoadRUNNER Transit (Las Cruces), EZ Rider, San Angelo Transit, Brownsville Metro.
+
+### Fixed
+- **Pipeline**: Post-merge tier refinement uses `headwayToTier()` instead of undefined `HEADWAY_TIERS`.
+- **MVTA**: Agency label (`MVTA` not `VTA`); 4FUN corridor title and headsign cleanup; MOA/MSP/TS/FUN acronyms; route/stop cards skip direction dividers for simple bidirectional pairs.
+- **RMTD**: `shortenAgencyName` maps Rockford Mass Transit District before generic "Mass" stripping.
+- **Agency card**: Removed period from header and close button; dismiss via outside click, Escape, or map click.
+- **Data override link**: Shown only when `issueUrl` is set — card stops linking after weekly refresh clears the URL while exclusions remain.
+
 ## [3.0.12] — 2026-07-07
 
 ### Fixed
