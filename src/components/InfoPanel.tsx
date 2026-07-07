@@ -123,7 +123,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const historyBySlug = useMemo(() => {
     const map = new Map<string, HistoryAgencySummary>();
     for (const a of historyAgencies ?? []) {
-      if (agencyQualifiesForHistoryExplore(a)) map.set(a.slug, a);
+      if (agencyQualifiesForHistoryExplore(a as any)) map.set(a.slug, a);
     }
     return map;
   }, [historyAgencies]);

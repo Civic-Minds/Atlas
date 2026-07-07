@@ -6,7 +6,7 @@ import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBound
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
-import { titleCase, getRouteLabel, shortenAgencyName, cleanRouteShortName, routeListCompanionName } from '../../utils/format';
+import { shortenAgencyName } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
@@ -30,63 +30,14 @@ import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import { LiveAdherenceCard } from './panels/LiveAdherenceCard';
 import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
+import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
+import { SearchResultsList } from './SearchResultsList';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
   const dy = (lat2 - lat1) * 111320;
   const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
   return Math.sqrt(dx * dx + dy * dy);
-}
-
-function routeRowLabels(shortName: string, longName: string | null) {
-  const short = cleanRouteShortName(shortName);
-  const companion = routeListCompanionName(longName ? titleCase(longName) : null, shortName);
-  return {
-    shortName: titleCase(short),
-    name: companion ? titleCase(companion) : undefined,
-  };
-}
-
-function routeRowRight(agencyName: string, headway?: number | null) {
-  const agency = shortenAgencyName(agencyName);
-  if (headway != null && headway < 999) {
-    return (
-      <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right whitespace-nowrap`}>
-        {agency}
-        <span className="text-[var(--text-dim)] font-normal"> · </span>
-        every {headway}m
-      </span>
-    );
-  }
-  return (
-    <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>{agency}</span>
-  );
-}
-
-function SearchSplitList<T>({
-  headLabel,
-  inView,
-  elsewhere,
-  renderItem,
-  itemKey,
-}: {
-  headLabel: string;
-  inView: T[];
-  elsewhere: T[];
-  renderItem: (item: T) => React.ReactNode;
-  itemKey: (item: T) => string;
-}) {
-  if (inView.length === 0 && elsewhere.length === 0) return null;
-  const split = inView.length > 0 && elsewhere.length > 0;
-  return (
-    <div>
-      <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>{headLabel}</div>
-      {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-1`}>In this area</div>}
-      {inView.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
-      {split && <div className={PANEL_SEARCH_SUBHEAD}>Elsewhere</div>}
-      {elsewhere.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
-    </div>
-  );
 }
 
 interface SidebarControlsProps {
@@ -741,10 +692,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     [query, displayRouteResults, matchedAgencyGroups],
   );
   const routeResultsHeadLabel = routeSearchDisplay.truncated
-    ? `Showing ${displayRouteResults.length} of ${routeSearchDisplay.totalMatches} routes — refine search`
+    ? `Showing ${displayRouteResults.length} of ${routeSearchDisplay.totalMatches} routes`
     : `${routeSearchDisplay.totalMatches} route${routeSearchDisplay.totalMatches === 1 ? '' : 's'} match`;
   const agencyResultsHeadLabel = agencySearchDisplay.truncated
-    ? `Showing ${displayAgencyGroups.length} of ${agencySearchDisplay.totalMatches} agencies — refine search`
+    ? `Showing ${displayAgencyGroups.length} of ${agencySearchDisplay.totalMatches} agencies`
     : `${agencySearchDisplay.totalMatches} agenc${agencySearchDisplay.totalMatches === 1 ? 'y' : 'ies'} match`;
 
   const searchPanelActive = searchFocused && query !== '';
@@ -805,107 +756,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
     >
       {searchFocused && query === '' && (
-        <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
-          {recentSearches.length > 0 && (
-            <>
-              <div className={`flex items-center justify-between border-b border-[var(--border-primary)] ${PANEL_SECTION_HEAD}`}>
-                <span>Recent searches</span>
-                <button
-                  onClick={clearRecentSearches}
-                  className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
-                >
-                  Clear
-                </button>
-              </div>
-              <div>
-                {recentSearches.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setQuery(s)}
-                    className={LIST_ROW}
-                  >
-                    <span className={LIST_ROW_PRIMARY}>{s}</span>
-                    <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {fareView ? (
-            <>
-              {suggestedFareAgencies.length > 0 && (
-                <>
-                  <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
-                    Suggested agencies
-                  </div>
-                  <div>
-                    {suggestedFareAgencies.map((a) => (
-                      <button
-                        key={a.slug}
-                        onClick={() => setQuery(a.name)}
-                        className={LIST_ROW}
-                      >
-                        <span className={LIST_ROW_PRIMARY}>{shortenAgencyName(a.name)}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-              {suggestedFareAgencies.length === 0 && recentSearches.length === 0 && (
-                <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No agencies with fare data in this area.</p>
-              )}
-            </>
-          ) : (
-            <>
-              {recentlyViewed.length > 0 && (
-                <>
-                  <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
-                    Recent routes
-                  </div>
-                  <div>
-                    {recentlyViewed.map((r) => {
-                      const labels = routeRowLabels(r.shortName, r.longName);
-                      return (
-                        <RouteListRow
-                          key={r.key}
-                          shortName={labels.shortName}
-                          name={labels.name}
-                          right={routeRowRight(r.agencyName, r.headway ?? headwayForRouteKey(r.key))}
-                          onClick={() => pickRoute(r.key)}
-                        />
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-              {suggestedRoutes.length > 0 && (
-                <>
-                  <div className={`${PANEL_SECTION_HEAD} ${(recentSearches.length > 0 || recentlyViewed.length > 0) ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
-                    Suggested routes
-                  </div>
-                  <div>
-                    {suggestedRoutes.map((r) => {
-                      const labels = routeRowLabels(r.shortName, r.longName);
-                      return (
-                        <RouteListRow
-                          key={r.key}
-                          shortName={labels.shortName}
-                          name={labels.name}
-                          right={routeRowRight(r.agencyName, r.headway)}
-                          onClick={() => pickRoute(r.key)}
-                        />
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-              {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
-                <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
-              )}
-            </>
-          )}
-        </div>
+        <SearchSuggestionsPanel
+          recentSearches={recentSearches}
+          clearRecentSearches={clearRecentSearches}
+          setQuery={setQuery}
+          suggestedFareAgencies={suggestedFareAgencies}
+          recentlyViewed={recentlyViewed}
+          suggestedRoutes={suggestedRoutes}
+          pickRoute={pickRoute}
+          fareView={fareView}
+          headwayForRouteKey={headwayForRouteKey}
+        />
       )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
         <DisambiguationPanel
@@ -1032,63 +893,24 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
 
         {searchPanelActive && !fareView && searchMatchResults !== null && (
-          <div className="-mx-4 mb-4 space-y-4">
-            {(() => {
-              const agencyBlock = displayAgencyGroups.length > 0 && setSelectedAgencySlug ? (
-                <SearchSplitList
-                  headLabel={agencyResultsHeadLabel}
-                  inView={agencySections.inView}
-                  elsewhere={agencySections.elsewhere}
-                  itemKey={(g: AgencySearchGroup) => g.key}
-                  renderItem={(g: AgencySearchGroup) => (
-                    <RouteListRow
-                      shortName={g.name}
-                      onClick={() => { setSelectedAgencySlug?.(g.slug); setQuery(''); setSearchFocused?.(false); }}
-                      right={
-                        <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
-                          {g.region}
-                        </span>
-                      }
-                    />
-                  )}
-                />
-              ) : null;
-
-              const routeBlock = displayRouteResults.length > 0 ? (
-                <SearchSplitList
-                  headLabel={routeResultsHeadLabel}
-                  inView={routeSections.inView}
-                  elsewhere={routeSections.elsewhere}
-                  itemKey={(r: RouteSearchResult) => r.key}
-                  renderItem={(r: RouteSearchResult) => {
-                    const labels = routeRowLabels(r.routeShortName ?? '', r.routeLongName);
-                    return (
-                      <RouteListRow
-                        shortName={labels.shortName}
-                        name={labels.name}
-                        selected={selectedRoute === r.key}
-                        onClick={() => {
-                          saveRecentSearch(query);
-                          setQuery('');
-                          setSearchFocused?.(false);
-                          setSelectedRoute(selectedRoute === r.key ? null : r.key);
-                        }}
-                        right={routeRowRight(r.agencyName || '', headwayForRouteKey(r.key))}
-                      />
-                    );
-                  }}
-                />
-              ) : matchedAgencyGroups.length === 0 ? (
-                <div className="px-4 text-[10px] font-bold text-[var(--text-dim)] py-2">No routes match your search.</div>
-              ) : null;
-
-              return routesFirst ? (
-                <>{routeBlock}{agencyBlock}</>
-              ) : (
-                <>{agencyBlock}{routeBlock}</>
-              );
-            })()}
-          </div>
+          <SearchResultsList
+            query={query}
+            displayAgencyGroups={displayAgencyGroups}
+            displayRouteResults={displayRouteResults}
+            agencySections={agencySections}
+            routeSections={routeSections}
+            routesFirst={routesFirst}
+            agencyResultsHeadLabel={agencyResultsHeadLabel}
+            routeResultsHeadLabel={routeResultsHeadLabel}
+            matchedAgencyGroups={matchedAgencyGroups}
+            selectedRoute={selectedRoute}
+            setSelectedRoute={setSelectedRoute}
+            setSelectedAgencySlug={setSelectedAgencySlug}
+            setQuery={setQuery}
+            setSearchFocused={setSearchFocused}
+            saveRecentSearch={saveRecentSearch}
+            headwayForRouteKey={headwayForRouteKey}
+          />
         )}
 
 
