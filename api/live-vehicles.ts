@@ -1,6 +1,12 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
-import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_TIMEZONES } from '../shared/livePollingConfig.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
+import {
+  delayFromTripUpdate,
+  delayMinFromDelaySec,
+  explicitTripDelaySec,
+  serviceDayStartEpoch,
+} from '../shared/liveVehicleDelay.js';
 
 export const config = {
   maxDuration: 60,
@@ -85,11 +91,14 @@ export default async function handler(req: Request) {
 
   try {
     // Fetch positions, trip updates, and static trips lookup in parallel
-    const [positionsFeed, updatesFeed, tripsLookup] = await Promise.all([
+    const [positionsFeed, updatesFeed, tripsLookup, liveSidecar] = await Promise.all([
       fetchProtoFeed(vehiclePositionsUrl, fetchOpts),
       fetchProtoFeed(tripUpdatesUrl, fetchOpts),
       fetch(`${R2_PUBLIC_URL}/atlas/${agencySlug}-trips.json`)
         .then(r => r.ok ? r.json() as Promise<Record<string, { d: number; h: string | null }>> : null)
+        .catch(() => null),
+      fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${encodeURIComponent(agencySlug)}.json`)
+        .then(r => r.ok ? r.json() as Promise<Record<string, { tripStopTimes?: Record<string, Record<string, number>> }>> : null)
         .catch(() => null),
     ]);
 
@@ -106,6 +115,7 @@ export default async function handler(req: Request) {
     // Map live routeIds to their display names
     const routeIdToShortName = new Map<string, string>();
     const routeIdToDisplayName = new Map<string, string>();
+    const routeTripStopTimes = new Map<string, Record<string, Record<string, number>>>();
     for (const config of configs) {
       for (const rid of config.routeIds) {
         routeIdToShortName.set(rid, config.displayRouteShortName);
@@ -113,6 +123,45 @@ export default async function handler(req: Request) {
           routeIdToDisplayName.set(rid, config.displayName);
         }
       }
+      const times = liveSidecar?.[config.displayRouteShortName]?.tripStopTimes;
+      if (times) routeTripStopTimes.set(config.displayRouteShortName, times);
+    }
+
+    const refEpoch = Number(
+      positionsFeed.header?.timestamp
+      ?? updatesFeed?.header?.timestamp
+      ?? Math.floor(Date.now() / 1000),
+    );
+    const timeZone = LIVE_AGENCY_TIMEZONES[agencySlug] ?? 'America/Toronto';
+    const serviceDayStart = serviceDayStartEpoch(refEpoch, timeZone);
+
+    const tripUpdatesById = new Map<string, any>();
+    if (updatesFeed?.entity) {
+      for (const e of (updatesFeed.entity as any[])) {
+        const tu = e.tripUpdate;
+        const tId = tu?.trip?.tripId;
+        if (tId) tripUpdatesById.set(tId, tu);
+      }
+    }
+
+    function headsignFromTripUpdate(tu: any): string | undefined {
+      let headsign = tu.trip?.tripHeadsign;
+      if (!headsign && tu.stopTimeUpdate?.length > 0) {
+        const lastUpdate = tu.stopTimeUpdate[tu.stopTimeUpdate.length - 1];
+        headsign = lastUpdate.stopHeadsign;
+      }
+      return headsign;
+    }
+
+    function resolveTripDelaySec(tu: any, routeShortName: string, vehicleCtx?: {
+      stopId?: string;
+      stopSequence?: number;
+      currentStatus?: string | number;
+    }): number | null {
+      const explicit = explicitTripDelaySec(tu);
+      if (explicit != null) return explicit;
+      const tripStopTimes = routeTripStopTimes.get(routeShortName);
+      return delayFromTripUpdate(tu, tripStopTimes, serviceDayStart, vehicleCtx);
     }
 
     // Extract trip delays and headsigns from Trip Updates feed
@@ -122,29 +171,18 @@ export default async function handler(req: Request) {
         const tu = e.tripUpdate;
         if (!tu) continue;
         const tId = tu.trip?.tripId;
-        if (!tId) continue;
+        const routeId = tu.trip?.routeId;
+        if (!tId || !routeId) continue;
+        const routeShortName = routeIdToShortName.get(routeId);
+        if (!routeShortName) continue;
 
-        // Try trip-level delay, or first stop_time_update delay
-        let delaySec = tu.delay;
-        if (delaySec == null && tu.stopTimeUpdate && tu.stopTimeUpdate.length > 0) {
-          const firstUpdate = tu.stopTimeUpdate[0];
-          const event = firstUpdate.arrival || firstUpdate.departure;
-          if (event?.delay != null) {
-            delaySec = event.delay;
-          }
-        }
+        const delaySec = resolveTripDelaySec(tu, routeShortName);
+        if (delaySec == null) continue;
 
-        const delayMin = delaySec != null ? Math.round(Number(delaySec) / 60 * 10) / 10 : null;
-
-        let headsign = tu.trip?.tripHeadsign;
-        if (!headsign && tu.stopTimeUpdate && tu.stopTimeUpdate.length > 0) {
-          const lastUpdate = tu.stopTimeUpdate[tu.stopTimeUpdate.length - 1];
-          headsign = lastUpdate.stopHeadsign;
-        }
-
-        if (delayMin != null) {
-          tripDelays.set(tId, { delay: delayMin, headsign });
-        }
+        tripDelays.set(tId, {
+          delay: delayMinFromDelaySec(delaySec),
+          headsign: headsignFromTripUpdate(tu),
+        });
       }
     }
 
@@ -166,7 +204,19 @@ export default async function handler(req: Request) {
         const displayName = routeIdToDisplayName.get(routeId) || '';
 
         const delayInfo = tripId ? tripDelays.get(tripId) : null;
-        const delayMin = delayInfo?.delay ?? null;
+        let delayMin = delayInfo?.delay ?? null;
+
+        if (delayMin == null && tripId) {
+          const tu = tripUpdatesById.get(tripId);
+          if (tu) {
+            const delaySec = resolveTripDelaySec(tu, routeShortName, {
+              stopId: vp.stopId,
+              stopSequence: vp.currentStopSequence,
+              currentStatus: vp.currentStatus,
+            });
+            if (delaySec != null) delayMin = delayMinFromDelaySec(delaySec);
+          }
+        }
 
         // Prefer real-time headsign; fall back to static trips lookup
         const rtHeadsign = delayInfo?.headsign ?? null;

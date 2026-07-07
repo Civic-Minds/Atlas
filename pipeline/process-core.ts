@@ -18,7 +18,7 @@ import { t2m } from './transit-utils.js';
 import { computePeriodHeadways, headwayToTier, medianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
-import { computeLivePollingOffsets } from './live-polling-offsets.js';
+import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
@@ -691,10 +691,12 @@ export async function processGtfsBuffer(
         }
 
         const scheduleOffsetMin = computeLivePollingOffsets(gtfs, cfg);
+        const tripStopTimes = computeLiveTripStopTimes(gtfs, cfg);
 
         livePollingSidecar[cfg.displayRouteShortName] = {
           scheduledHeadwayMin: headway,
           scheduleOffsetMin,
+          tripStopTimes,
         };
       }
     }
