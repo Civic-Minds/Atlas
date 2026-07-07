@@ -18,6 +18,7 @@
 - **Search placeholder flashing**: Removed placeholder fade/crossfade on app switch so search hint text updates instantly between Frequency, Live, and Corridors.
 - **Route card headways**: Removed ranged labels (`every X–Y min`) from direction rows; cards now consistently show a single cadence value per branch.
 - **Route card sparkline realism**: Route-card sparklines now use branch/destination cadence only (no combined trunk minimum), avoiding optimistic lows like `every 3 min` on destination-specific service.
+- **Route card headway ranges (restored, gated)**: Multi-branch rows can show `every X–Y min` again when headsign-scoped trunk wait is ≥5 min, ≥5 min better than destination wait, and ratio ≤4×; route-wide combined deps no longer drive the low end.
 
 ### Changed
 - **Corridors mode**: Header **Corridors** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Corridors from here…** entry.

@@ -17,6 +17,7 @@ import {
 import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
 import {
   dirIdNum,
+  headsignTrunkHeadway,
 } from '../../../utils/routeCardTrunk';
 
 // Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet.
@@ -236,7 +237,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const label = branchLabel(group, d.headsign, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = period !== 'all'
-                        ? (d as ExtShape).minStopHeadwayByPeriod?.[period]
+                        ? headsignTrunkHeadway(d, period)
                         : undefined;
                       return (
                         <CardDirectionRow

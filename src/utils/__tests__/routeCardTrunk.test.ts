@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { groupTrunkHeadway, shouldShowTrunkSummary, trunkSparklineByHour } from '../routeCardTrunk';
+import {
+  groupTrunkHeadway,
+  shouldShowTrunkSummary,
+  trunkSparklineByHour,
+  headsignTrunkHeadway,
+  shouldShowBranchHeadwayRange,
+} from '../routeCardTrunk';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 const hsrWestBranches: ShapeProperties[] = [
@@ -40,5 +46,27 @@ describe('routeCardTrunk', () => {
   it('sparkline at 3 PM uses pmPeak trunk not 30-min terminal', () => {
     const byHour = trunkSparklineByHour(hsrWestBranches, [15]);
     expect(byHour[15]).toBe(8);
+  });
+
+  it('reads headsign-scoped trunk minimum separately from route-wide combined deps', () => {
+    const branch = {
+      ...hsrWestBranches[0],
+      headsignMinStopHeadwayByPeriod: { pmPeak: 12, evening: 15 },
+    };
+    expect(headsignTrunkHeadway(branch, 'pmPeak')).toBe(12);
+    expect(groupTrunkHeadway([branch], 'pmPeak')).toBe(8);
+  });
+
+  describe('shouldShowBranchHeadwayRange', () => {
+    it('shows range for multi-branch trunk vs destination gap', () => {
+      expect(shouldShowBranchHeadwayRange(8, 30, true)).toBe(true);
+    });
+
+    it('hides range for single branch, small gap, or sub-5 trunk mins', () => {
+      expect(shouldShowBranchHeadwayRange(8, 30, false)).toBe(false);
+      expect(shouldShowBranchHeadwayRange(8, 11, true)).toBe(false);
+      expect(shouldShowBranchHeadwayRange(3, 9, true)).toBe(false);
+      expect(shouldShowBranchHeadwayRange(5, 25, true)).toBe(false);
+    });
   });
 });

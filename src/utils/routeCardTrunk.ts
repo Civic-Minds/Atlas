@@ -2,7 +2,30 @@ import type { HeadwayByPeriod } from '../hooks/useAgencyData';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { TIME_PERIODS, periodKeyForHour } from '../../shared/config';
 
-type ExtShape = ShapeProperties & { minStopHeadway?: number };
+type ExtShape = ShapeProperties & {
+  minStopHeadway?: number;
+  headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
+};
+
+/** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
+export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
+  const ext = d as ExtShape;
+  if (period === 'all') return ext.minStopHeadway ?? null;
+  return ext.headsignMinStopHeadwayByPeriod?.[period] ?? null;
+}
+
+/** Show `every X–Y min` only when trunk wait is materially better than destination wait. */
+export function shouldShowBranchHeadwayRange(
+  trunkHw: number | null | undefined,
+  destHw: number | null | undefined,
+  multiBranch: boolean,
+): boolean {
+  if (!multiBranch || trunkHw == null || destHw == null) return false;
+  if (trunkHw < 5 || trunkHw >= destHw) return false;
+  if (destHw - trunkHw < 5) return false;
+  if (destHw / trunkHw > 4) return false;
+  return true;
+}
 
 export function dirIdNum(dirId: number | string | undefined | null): number {
   const n = Number(dirId);
