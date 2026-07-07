@@ -60,14 +60,11 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
-      - name: Record feed refresh run
-        run: npm run sync-feed-refresh-meta -- --completed
-
       - name: Commit updated files if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/index.json public/data/feed-refresh.json shared/cacheBuild.ts
+          git add public/data/index.json shared/cacheBuild.ts
           if ! git diff --cached --quiet; then
             git commit -m "chore: weekly GTFS feed refresh"
             git pull --rebase origin main

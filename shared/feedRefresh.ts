@@ -1,7 +1,7 @@
 export type FeedRefreshMeta = {
-  /** GitHub Actions schedule cron — synced from refresh-feeds.yml */
+  /** GitHub Actions schedule cron — synced from refresh-feeds.yml (git) */
   scheduleCron: string;
-  /** ISO timestamp of the last successful refresh workflow run */
+  /** ISO timestamp of last full refresh run — on R2, not git */
   lastCompletedAt?: string | null;
 };
 

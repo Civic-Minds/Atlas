@@ -212,9 +212,18 @@ export default function App() {
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));
-    fetch('/data/feed-refresh.json')
-      .then(r => (r.ok ? r.json() : null))
-      .then((data: FeedRefreshMeta | null) => { if (data?.scheduleCron) setFeedRefreshMeta(data); })
+    Promise.all([
+      fetch('/data/feed-refresh.json').then(r => (r.ok ? r.json() : null)),
+      fetch(`${R2_PUBLIC_URL}/atlas/feed-refresh-meta.json`).then(r => (r.ok ? r.json() : null)),
+    ])
+      .then(([schedule, run]: [FeedRefreshMeta | null, { lastCompletedAt?: string } | null]) => {
+        if (schedule?.scheduleCron) {
+          setFeedRefreshMeta({
+            scheduleCron: schedule.scheduleCron,
+            lastCompletedAt: run?.lastCompletedAt ?? null,
+          });
+        }
+      })
       .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())

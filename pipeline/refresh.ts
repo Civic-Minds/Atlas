@@ -232,11 +232,9 @@ async function refreshAgency(
 
   if (!forceRefresh && !hasSupplementals && !feedExpired) {
     if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
-      agency.lastRefreshedAt = todayUtcYmd();
       return `skipped (same schedule period: ${peekedExpiry})`;
     }
     if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
-      agency.lastRefreshedAt = todayUtcYmd();
       return `skipped (same feed version: ${peekedVersion})`;
     }
   }
@@ -409,6 +407,18 @@ async function main() {
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
     // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)
+  }
+
+  // Last-run timestamp on R2 only — avoids a git commit when feeds are unchanged.
+  if (onlySlugs.length === 0) {
+    try {
+      await r2Put('atlas/feed-refresh-meta.json', JSON.stringify({
+        lastCompletedAt: new Date().toISOString(),
+      }));
+      console.log('  feed-refresh-meta.json → R2');
+    } catch (e) {
+      console.warn(`  [warn] feed-refresh-meta R2 write failed — ${e instanceof Error ? e.message : e}`);
+    }
   }
 }
 
