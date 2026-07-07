@@ -17,7 +17,6 @@ import {
 import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
 import {
   dirIdNum,
-  trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 
 // Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet.
@@ -166,10 +165,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             )
           : (primaryMultiBranch?.realTier
             ?? currentRoute.directions.filter(d => dirIdNum(d.directionId) === 0));
-        const useTrunkSparkline = !hoveredBranch && sparklineDirs.length >= 2;
-        const merged = useTrunkSparkline
-          ? trunkSparklineByHour(sparklineDirs, HOURS)
-          : sparklineHeadwayByHour(sparklineDirs, HOURS);
+        const merged = sparklineHeadwayByHour(sparklineDirs, HOURS);
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (
