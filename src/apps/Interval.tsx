@@ -108,7 +108,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => {
     onLayersChange?.(layers);
   }, [layers, onLayersChange]);
-  const nearbyRoutes = useNearbyRoutes(userLocation, layers, day);
+  const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
   const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
     query,
     maxHeadway,

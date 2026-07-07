@@ -1,6 +1,6 @@
 import React from 'react';
 import { LocateFixed } from 'lucide-react';
-import { getTierColor } from '../../utils/colors';
+import { headwayToTierColor } from '../../utils/colors';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW } from '../../styles';
@@ -44,7 +44,7 @@ export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
                 <div className="flex items-center gap-2">
                   <span
                     className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{ background: getTierColor(r.tier) }}
+                    style={{ background: headwayToTierColor(r.headway) }}
                   />
                   <span className="text-[11px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
                     {r.routeShortName}

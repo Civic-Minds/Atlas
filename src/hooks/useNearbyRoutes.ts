@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
-import type { ShapeProperties, DayType } from './useIntervalStats';
+import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
+import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 
 const NEARBY_RADIUS_M = 500;
 const EARTH_R = 6371000;
@@ -32,6 +33,7 @@ export function useNearbyRoutes(
   userLocation: { lat: number; lon: number } | null,
   layers: Record<string, GeoJSON.FeatureCollection>,
   currentDay: DayType,
+  period: TimePeriod,
 ): NearbyRoute[] {
   return useMemo(() => {
     if (!userLocation) return [];
@@ -80,10 +82,12 @@ export function useNearbyRoutes(
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
+        if (p.directionId !== undefined && p.directionId !== 0) continue;
 
         const shortName = p.routeShortName || p.routeId;
         const mapKey = `${slug}::${shortName}`;
         const rk = routeKey({ ...p, agencySlug: slug } as any);
+        const headway = effectiveRouteHeadway(p, period);
 
         if (!routeMap.has(mapKey)) {
           routeMap.set(mapKey, {
@@ -92,16 +96,15 @@ export function useNearbyRoutes(
             routeLongName: (p.routeLongName as string | null) ?? null,
             agencyName: p.agencyName || slug,
             agencySlug: slug,
-            headway: p.headway ?? null,
+            headway,
             tier: (p.tier as string | null) ?? null,
             nearestStopName: stop.stopName,
             distanceMeters: stop.distanceMeters,
           });
         } else {
           const existing = routeMap.get(mapKey)!;
-          if (p.headway != null && (existing.headway === null || p.headway < existing.headway)) {
-            existing.headway = p.headway;
-            existing.tier = (p.tier as string | null) ?? null;
+          if (headway != null && (existing.headway === null || headway < existing.headway)) {
+            existing.headway = headway;
           }
           if (stop.distanceMeters < existing.distanceMeters) {
             existing.distanceMeters = stop.distanceMeters;
@@ -117,5 +120,5 @@ export function useNearbyRoutes(
       if (b.headway !== null) return 1;
       return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
     });
-  }, [userLocation, layers, currentDay]);
+  }, [userLocation, layers, currentDay, period]);
 }
