@@ -2,9 +2,13 @@ import { useMemo, useCallback } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
-import { TIME_PERIODS } from '../../shared/config';
+import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
+import { effectiveMode } from '../../shared/modes';
+import type { DayType } from '../../types/gtfs';
 
 export { HEADWAY_TIERS, getTierColor };
+export { effectiveMode, VIRTUAL_LRT_MODE } from '../../shared/modes';
+export type { DayType };
 export type AgencyLayers = BaseAgencyLayers;
 
 export interface ShapeProperties extends BaseShapeProperties {
@@ -24,32 +28,28 @@ export interface ShapeProperties extends BaseShapeProperties {
 
 export const routeKey = (p: ShapeProperties) => `${(p as any).agencySlug ?? p.agencyName ?? ''}::${p.routeId}`;
 
-// Virtual mode ID for LRT routes that share route_type=0 with streetcars.
-// Identified by routeLongName starting with "Line <digit>" (TTC Line 5 Eglinton, Line 6 Finch West).
-export const VIRTUAL_LRT_MODE = 100;
-
-function effectiveMode(p: ShapeProperties): number {
-  if (p.routeType === 0 && p.routeLongName && /^Line \d/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
-  // OC Transpo O-Train (Confederation, Trillium, Airport lines) uses route_type=0 but is LRT
-  if (p.routeType === 0 && p.agencySlug === 'octranspo') return VIRTUAL_LRT_MODE;
-  // GRT ION is tagged route_type=2 in GTFS but is urban LRT, not commuter rail
-  if (p.routeType === 2 && p.routeLongName && /\bION\b/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
-  return p.routeType ?? 3;
+/** Sidebar hover target for branch highlight on the map (routeId + headsign). */
+export interface HoveredBranch {
+  directionId: number;
+  headsign: string;
 }
 
-export type TimePeriod = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight';
+export type { PeriodKey };
+export type TimePeriod = 'all' | PeriodKey;
 
 export const PERIOD_LABELS: Record<TimePeriod, string> = {
   all: 'All day',
-  ...Object.fromEntries(TIME_PERIODS.map(p => [p.key, p.label]))
-} as Record<TimePeriod, string>;
+  ...PERIOD_LABELS_BY_KEY,
+};
+
+export { PERIOD_KEYS, TIME_PERIODS };
 
 export interface IntervalFilters {
   query: string;
   maxHeadway: number;
   agencies: Set<string>; // slugs
   modes: Set<number>;    // route_type
-  day: 'Weekday' | 'Saturday' | 'Sunday';
+  day: DayType;
   period: TimePeriod;
   selectedStop: string | null; // stopId
   selectedRoute?: string | null; // force-include the full geometry of this route even if it doesn't match frequency/agency/etc filters
@@ -58,6 +58,7 @@ export interface IntervalFilters {
   livePollingOnly?: boolean; // only show routes covered by Atlas's GTFS-RT adherence polling
   showCorridors?: boolean; // show segments where multiple routes overlap to provide higher frequency
   showCorridorBand?: boolean; // Corridors app is open; always pass isCorridor features through for band rendering
+  hoveredBranch?: HoveredBranch | null; // reveal + highlight this headsign branch on the map
 }
 
 export interface ViewportBounds {
@@ -212,7 +213,7 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors, showCorridorBand } = filters;
+  const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors, showCorridorBand, hoveredBranch } = filters;
   const q = query.trim().toLowerCase();
 
   const allFeatures = useMemo(() => {
@@ -392,8 +393,18 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     // Day: only show features for the selected day (or features with no day set, e.g. corridors)
     clauses.push(['any', ['!has', 'day'], ['==', ['get', 'day'], day]]);
 
-    // Direction 0 only (direction 1 traces same streets in reverse)
-    clauses.push(['any', ['!has', 'directionId'], ['==', ['get', 'directionId'], 0]]);
+    // Direction 0 by default. When hovering an inbound branch on the selected route,
+    // show that direction for the selected route only; all others stay dir 0.
+    if (hoveredBranch && selectedRoute) {
+      const routeKeyExpr: any = ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']];
+      clauses.push(['case',
+        ['==', routeKeyExpr, selectedRoute],
+        ['==', ['get', 'directionId'], hoveredBranch.directionId],
+        ['any', ['!has', 'directionId'], ['==', ['get', 'directionId'], 0]],
+      ]);
+    } else {
+      clauses.push(['any', ['!has', 'directionId'], ['==', ['get', 'directionId'], 0]]);
+    }
 
     // Span filter
     if (hideSpan) {
@@ -409,7 +420,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [agencies, day, hideSpan, modes, maxHeadway, period]);
+  }, [agencies, day, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
   return { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
 }

@@ -5,20 +5,33 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, TextLayer } from 'deck.gl';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, STATUS_COLORS } from '../../utils/colors';
+import { HEADWAY_TIERS, STATUS_COLORS, buildFareColorExpression, buildZoomHeadwayGateExpression } from '../../utils/colors';
+import { buildEffectiveModeExpression } from '../../../shared/modes';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { useViewport } from '../../context/ViewportContext';
 import type { Agency } from '../../App';
-import type { ShapeProperties, ViewportBounds, TimePeriod } from '../../hooks/useIntervalStats';
+import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { StopCardHtml, formatGap, formatDelta } from '../../lib/mapHtml';
 import { cleanRouteShortName } from '../../utils/format';
 import { Z_PANEL } from '../../styles';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
+
+/** Flatten nested ['all', ...] filters into one clause list for MapLibre. */
+function concatFilters(...parts: any[]): any {
+  const clauses: any[] = [];
+  for (const part of parts) {
+    if (!part) continue;
+    if (Array.isArray(part) && part[0] === 'all') clauses.push(...part.slice(1));
+    else clauses.push(part);
+  }
+  if (clauses.length === 0) return null;
+  return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
+}
 
 interface MapCanvasProps {
   agencies: Agency[];
@@ -27,6 +40,7 @@ interface MapCanvasProps {
   period: TimePeriod;
   q: string;
   selectedRoute: string | null;
+  hoveredBranch?: HoveredBranch | null;
   setSelectedRoute: React.Dispatch<React.SetStateAction<string | null>>;
   selectedStop: string | null;
   setSelectedStop: React.Dispatch<React.SetStateAction<string | null>>;
@@ -64,6 +78,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   period,
   q,
   selectedRoute,
+  hoveredBranch = null,
   setSelectedRoute,
   selectedStop,
   setSelectedStop,
@@ -624,42 +639,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
     // Hide span (irregular) routes from the map when hideSpan is active
     // MapLibre expression to compute the effective mode of a feature (matches useIntervalStats.ts effectiveMode)
-    const VIRTUAL_LRT_MODE = 900;
-    const modeExpr: any = [
-      'coalesce',
-      [
-        'case',
-        // 1. OCTranspo routeType 0 -> LRT (900)
-        ['all', ['==', ['get', 'routeType'], 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
-        VIRTUAL_LRT_MODE,
-        // 2. LRT Line 1/2/3/4 (routeType 0 and routeLongName starts with "Line ")
-        ['all', ['==', ['get', 'routeType'], 0], ['==', ['slice', ['coalesce', ['get', 'routeLongName'], ''], 0, 5], 'Line ']],
-        VIRTUAL_LRT_MODE,
-        // 3. ION Light Rail (routeType 2 and routeLongName containing "ION")
-        ['all', ['==', ['get', 'routeType'], 2], ['in', 'ION', ['coalesce', ['get', 'routeLongName'], '']]],
-        VIRTUAL_LRT_MODE,
-        // Default: use routeType (or fallback to 3 - Bus)
-        ['get', 'routeType']
-      ],
-      3
-    ];
+    const modeExpr: any = buildEffectiveModeExpression();
 
     const modeFilter: any = selectedModes && selectedModes.size > 0
       ? ['any', ...Array.from(selectedModes).map(m => ['==', modeExpr, m])]
       : null;
 
-    // Zoom-based progressive gate — GPU-evaluated so it responds in real-time as the user zooms
-    // without needing a React re-render. Shows only the most frequent routes when zoomed out.
-    // At zoom 9+ there is no additional zoom constraint; the headway pill alone controls visibility.
-    const zoomGateFilter: any = [
-      '<=',
-      headwayExpr,
-      ['step', ['zoom'],
-        10,     // zoom < 7  → ≤10 min only (blue tier spines)
-        7, 20,  // zoom 7–9  → ≤20 min (main corridors)
-        9, 9999 // zoom 9+   → no additional zoom gate
-      ]
-    ];
+    // Zoom gate uses ['zoom'] — valid in paint, not in layer filters. Applied via line-opacity below.
+    const zoomGateMaxHeadway: any = buildZoomHeadwayGateExpression(headwayExpr)[2];
 
     // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
     // MapCanvas only adds map-state-specific clauses on top.
@@ -673,22 +660,19 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             ? ['==', 'agencySlug', matchedAgencySlug]
             : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]])
         : null;
-      const clauses = [hasFare, searchClause, modeFilter].filter(Boolean);
-      routeFilter = clauses.length === 0 ? null : (clauses.length === 1 ? clauses[0] : ['all', ...clauses]);
+      routeFilter = concatFilters(hasFare, searchClause, modeFilter);
     } else if (ql) {
       const searchClause = matchedAgencySlug
         ? ['==', 'agencySlug', matchedAgencySlug]
         : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]];
-      const clauses = [tileFilter, searchClause, modeFilter].filter(Boolean);
-      routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
+      routeFilter = concatFilters(tileFilter, searchClause, modeFilter);
     } else {
-      const clauses = [tileFilter, zoomGateFilter, modeFilter].filter(Boolean);
-      routeFilter = clauses.length === 1 ? clauses[0] : ['all', ...clauses];
+      routeFilter = concatFilters(tileFilter, modeFilter);
     }
 
     if (filterToAgencies && agencies.length > 0) {
       const slugAllowlist: any = ['in', ['get', 'agencySlug'], ['literal', agencies.map(a => a.slug)]];
-      routeFilter = routeFilter ? ['all', routeFilter, slugAllowlist] : slugAllowlist;
+      routeFilter = concatFilters(routeFilter, slugAllowlist);
     }
 
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
@@ -698,21 +682,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       // Apply color paint styling — fare view if requested and baseFare present, else tier
       let lineColorExpr: any;
       if (fareView) {
-        // Use match on numeric baseFare with tier buckets. Unknown/ null falls to gray.
-        const expr: any[] = ['case'];
-        // Free (0)
-        expr.push(['==', ['coalesce', ['get', 'baseFare'], -1], 0], '#14b8a6');
-        // Low <2
-        expr.push(['all', ['>', ['coalesce', ['get', 'baseFare'], 999], 0], ['<', ['coalesce', ['get', 'baseFare'], 999], 2]], '#4ade80');
-        // Mid <4
-        expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 2], ['<', ['coalesce', ['get', 'baseFare'], 999], 4]], '#facc15');
-        // High <8
-        expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 4], ['<', ['coalesce', ['get', 'baseFare'], 999], 8]], '#fb923c');
-        // Premium >=8
-        expr.push(['>=', ['coalesce', ['get', 'baseFare'], 999], 8], '#f87171');
-        // Unknown / no data
-        expr.push('#6b7280');
-        lineColorExpr = expr;
+        lineColorExpr = buildFareColorExpression();
       } else {
         const lineColorMatch: any[] = ['match', ['get', 'tier']];
         HEADWAY_TIERS.forEach(({ max, color }) => {
@@ -729,16 +699,27 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       // Opacity based on route state (focused vs dimmed)
       if (selectedRoute) {
         const selKey = selectedRoute;
-        map.setPaintProperty('routes-layer', 'line-opacity', [
-          'case',
-          ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey], 1.0,
-          0.15
-        ]);
-        map.setPaintProperty('routes-layer', 'line-width', [
-          'case',
-          ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey], 3.5,
-          0.5
-        ]);
+        const routeMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey];
+        if (hoveredBranch) {
+          const branchMatch: any = ['all',
+            routeMatch,
+            ['==', ['get', 'directionId'], hoveredBranch.directionId],
+            ['==', ['get', 'headsign'], hoveredBranch.headsign],
+          ];
+          map.setPaintProperty('routes-layer', 'line-opacity', [
+            'case', branchMatch, 1.0, routeMatch, 0.25, 0.15,
+          ]);
+          map.setPaintProperty('routes-layer', 'line-width', [
+            'case', branchMatch, 3.5, routeMatch, 1.0, 0.5,
+          ]);
+        } else {
+          map.setPaintProperty('routes-layer', 'line-opacity', [
+            'case', routeMatch, 1.0, 0.15,
+          ]);
+          map.setPaintProperty('routes-layer', 'line-width', [
+            'case', routeMatch, 3.5, 0.5,
+          ]);
+        }
       } else {
         map.setPaintProperty('routes-layer', 'line-width', [
           'interpolate', ['linear'], ['zoom'],
@@ -747,11 +728,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           14, 2.5,
           17, 3.5,
         ]);
+        // Zoom gate via opacity (zoom expressions are not allowed in layer filters).
         map.setPaintProperty('routes-layer', 'line-opacity', [
-          'interpolate', ['linear'], ['zoom'],
-          8, 0.7,
-          11, 0.8,
-          14, 0.9,
+          'case',
+          ['>', headwayExpr, zoomGateMaxHeadway], 0,
+          ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
         ]);
       }
     }
@@ -785,7 +766,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, selectedModes, tileFilter, fareView]);
+  }, [mapLoaded, q, selectedRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, selectedModes, tileFilter, fareView]);
 
   // Sync corridor static layer visibility
   useEffect(() => {

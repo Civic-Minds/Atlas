@@ -2,8 +2,8 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { useIntervalStats } from '../hooks/useIntervalStats';
-import type { ViewportBounds, TimePeriod } from '../hooks/useIntervalStats';
+import { useIntervalStats, type HoveredBranch } from '../hooks/useIntervalStats';
+import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { SidebarControls } from '../components/Interval/SidebarControls';
@@ -36,8 +36,8 @@ interface Props {
   hideFilterPanel?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
-  day: 'Weekday' | 'Saturday' | 'Sunday';
-  setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  day: DayType;
+  setDay: (d: DayType) => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
   headerPortalContainer?: Element | null;
   fareView?: boolean;
@@ -62,6 +62,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
+  const [hoveredBranch, setHoveredBranch] = useState<HoveredBranch | null>(null);
 
   // Advanced Filter State
   const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
@@ -118,6 +119,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     livePollingOnly,
     showCorridors,
     showCorridorBand,
+    hoveredBranch,
   });
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
@@ -162,6 +164,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
+  useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
 
   // Sync selected route and stop to URL — use replaceState directly (not React
   // Router's setSearchParams) to avoid the stale-closure bug where a closure
@@ -192,6 +195,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         period={period}
         q={q}
         selectedRoute={selectedRoute}
+        hoveredBranch={hoveredBranch}
         setSelectedRoute={setSelectedRoute}
         selectedStop={selectedStop}
         setSelectedStop={setSelectedStop}
@@ -335,6 +339,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         fareView={fareView}
         fareOverrides={fareOverrides}
         sidebarLeft={sidebarLeft}
+        hoveredBranch={hoveredBranch}
+        setHoveredBranch={setHoveredBranch}
       />
       </div>
     </div>

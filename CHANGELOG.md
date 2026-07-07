@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **Branch hover highlight (#96)**: Hovering a destination row in the route card highlights that headsign's geometry on the map; sibling branches dim. Inbound (direction 1) branches reveal on hover. Sibling rows in the card fade while hovering.
+
+### Fixed
+- **Local dev data loading**: Vite proxies `/atlas-data` to R2 so localhost bypasses browser CORS blocks on artifact fetches.
+- **Map zoom gate**: Progressive route reveal by zoom now uses paint opacity (MapLibre filters cannot use `zoom` expressions).
+
 ## [3.0.6] — 2026-07-06
 
 ### Added

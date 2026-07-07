@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react'
 import { ArrowLeft } from 'lucide-react';
 import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
-import type { ShapeProperties, TimePeriod } from '../../hooks/useIntervalStats';
+import type { ShapeProperties, TimePeriod, DayType, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
@@ -36,8 +36,8 @@ interface SidebarControlsProps {
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
   selectedModes: Set<number>;
   setSelectedModes: React.Dispatch<React.SetStateAction<Set<number>>>;
-  day: 'Weekday' | 'Saturday' | 'Sunday';
-  setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  day: DayType;
+  setDay: (d: DayType) => void;
   period: TimePeriod;
   setPeriod: (p: TimePeriod) => void;
   selectedStop: string | null;
@@ -47,7 +47,7 @@ interface SidebarControlsProps {
   disambiguationRoutes: string[] | null;
   setDisambiguationRoutes: (routes: string[] | null) => void;
   layers: Record<string, GeoJSON.FeatureCollection>;
-  currentDay: 'Weekday' | 'Saturday' | 'Sunday';
+  currentDay: DayType;
   hideSpan: boolean;
   setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
   livePollingOnly: boolean;
@@ -56,6 +56,8 @@ interface SidebarControlsProps {
   fareView?: boolean;
   fareOverrides?: Record<string, FareOverride>;
   sidebarLeft?: number;
+  hoveredBranch: HoveredBranch | null;
+  setHoveredBranch: (b: HoveredBranch | null) => void;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -91,6 +93,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   fareView = false,
   fareOverrides = {},
   sidebarLeft,
+  hoveredBranch,
+  setHoveredBranch,
 }) => {
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
@@ -842,6 +846,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 hideSpan={hideSpan}
                 routeIsStale={routeIsStale}
                 expDateStr={expDateStr}
+                hoveredBranch={hoveredBranch}
+                setHoveredBranch={setHoveredBranch}
               />
             )}
           </div>

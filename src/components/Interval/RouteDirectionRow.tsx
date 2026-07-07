@@ -13,6 +13,11 @@ interface Props {
   limitedHint?: boolean;  // inline hint row (dot + label + "limited" badge)
   // Filtering
   dimmed?: boolean;
+  // Branch map highlight (#96)
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
+  branchHovered?: boolean;
+  branchDimmed?: boolean;
 }
 
 /**
@@ -20,7 +25,9 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, trunkHeadway, limited, limitedHint, dimmed }: Props) {
+export default function RouteDirectionRow({ label, headway, trunkHeadway, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed }: Props) {
+  const interactive = !!(onHoverStart && onHoverEnd);
+  const faded = dimmed || branchDimmed;
   const showRange = trunkHeadway != null && headway != null
     && trunkHeadway < headway * 0.65
     && headway / trunkHeadway <= 4;
@@ -42,7 +49,11 @@ export default function RouteDirectionRow({ label, headway, trunkHeadway, limite
   }
 
   return (
-    <div className={`text-[11px] transition-opacity ${dimmed ? 'opacity-40' : ''}`}>
+    <div
+      className={`text-[11px] transition-opacity duration-150 rounded-lg -mx-1 px-1 py-0.5 ${faded ? 'opacity-35' : ''} ${interactive ? 'cursor-default' : ''} ${branchHovered ? 'bg-[var(--bg-hover)] opacity-100' : ''}`}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+    >
       <span className="font-bold text-[var(--text-primary)] block break-words">{label}</span>
       {headwayText != null && (
         <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
