@@ -16,7 +16,7 @@
 - **Sidebar panel width**: Live, History, Frequency sidebar, and agency card panels now share `SEARCH_BAR_WIDTH` with the header search bar.
 - **Live Vehicles TTC adherence** ([#140](https://github.com/Civic-Minds/Atlas/issues/140)): Infer delay from predicted vs scheduled stop times when GTFS-RT omits `delay` (TTC); pipeline sidecar now stores per-trip stop schedules.
 - **Search list rows**: Recent, suggested, and typed search results now share `RouteListRow` (route + companion name, agency · headway on the right) and `PANEL_SECTION_HEAD` section labels.
-- **Live Vehicles empty state**: When buses are active off-screen, list them under “Outside this view” instead of a blank panel; true empty shows which routes are monitored in the area. Links to Data panel filtered to live agencies.
+- **Live Vehicles empty state**: When buses are active off-screen, list them under “Outside this view” instead of a blank panel; true empty shows which routes are monitored in the area. Links to Data panel filtered to live agencies (empty and off-screen states).
 - **Data panel filters**: Agency list adds All / Live / History chips (Live opens from Live Vehicles empty states and settings). Feature badges hidden when that filter is active. Feature + region chips share one scroll row; regions scope to the active feature.
 - **Corridors map**: Stop showing the full PMTiles corridor-band layer in Corridors mode — only clipped A→B route segments render after From/To are set.
 - **Corridors panel alignment**: Corridors input panel now uses the same responsive width as the main search bar and is anchored directly under the header row instead of oversized/off-position.

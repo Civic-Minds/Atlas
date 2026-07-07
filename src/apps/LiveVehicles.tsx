@@ -627,6 +627,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   </div>
                 )}
                 {renderRouteGroupList(sidebarRouteGroups)}
+                {offScreenOnly && !query && (
+                  <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
+                )}
               </>
             )}
           </div>
