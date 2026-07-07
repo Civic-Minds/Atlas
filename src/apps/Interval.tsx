@@ -11,7 +11,7 @@ import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { SURFACE, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL } from '../styles';
+import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL } from '../styles';
 import type { Agency, FareOverride } from '../App';
 import { R2_PUBLIC_URL } from '../../shared/config';
 
@@ -99,7 +99,10 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
   const [isTilesLoading, setIsTilesLoading] = useState(false);
 
-  const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, { showCorridorBand });
+  const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, {
+    showCorridorBand,
+    searchQuery: searchFocused ? query : '',
+  });
 
   useEffect(() => {
     onLayersChange?.(layers);
@@ -220,27 +223,30 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setQuery={setQuery}
       />
 
-      {showUi && stats && (stats.total > 0 || !isLoading) && (
+      {showUi && ((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-            <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
-            <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
-          </div>
-          <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
-            <span className="text-xs font-black text-[var(--text-primary)]">
-              {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
-            </span>
-            <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
-          </div>
-        </div>
-      )}
-
-      {showUi && (isLoading || isTilesLoading) && (
-        <div className={`absolute bottom-6 left-6 ${Z_PANEL} flex items-center gap-2 ${SURFACE} backdrop-blur-md px-4 py-2 rounded-xl`}>
-          <div className="w-3.5 h-3.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-          <span className="text-[10px] font-bold text-[var(--text-muted)]">
-            {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
-          </span>
+          {(isLoading || isTilesLoading) && (
+            <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+              <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
+              <span className="text-[10px] font-bold text-[var(--text-muted)]">
+                {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
+              </span>
+            </div>
+          )}
+          {stats && (stats.total > 0 || !isLoading) && (
+            <>
+              <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+                <span className="text-xs font-black text-[var(--text-primary)]">{stats.matching}</span>
+                <span className="text-[10px] font-bold text-[var(--text-muted)]">routes</span>
+              </div>
+              <div className="h-8 flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3">
+                <span className="text-xs font-black text-[var(--text-primary)]">
+                  {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
+                </span>
+                <span className="text-[10px] font-bold text-[var(--text-muted)]">coverage</span>
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -338,6 +344,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         fareView={fareView}
         fareOverrides={fareOverrides}
         sidebarLeft={sidebarLeft}
+        bounds={bounds}
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
       />

@@ -2,12 +2,19 @@ import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react'
 import { ArrowLeft } from 'lucide-react';
 import { getTierColor, getFareColor } from '../../utils/colors';
 import { routeKey } from '../../hooks/useIntervalStats';
-import type { ShapeProperties, TimePeriod, DayType, HoveredBranch } from '../../hooks/useIntervalStats';
+import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
+import { searchAgencyGroups, type AgencySearchGroup } from '../../utils/agencySearch';
+import {
+  splitAgencyGroups,
+  splitRouteResults,
+  routesBeforeAgencies,
+  type RouteSearchResult,
+} from '../../utils/searchResults';
 import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
@@ -22,6 +29,35 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
   const dy = (lat2 - lat1) * 111320;
   const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
   return Math.sqrt(dx * dx + dy * dy);
+}
+
+const SEARCH_HEAD = 'px-4 text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5';
+const SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-[9px] font-bold uppercase tracking-wide text-[var(--text-dim)]';
+
+function SearchSplitList<T>({
+  headLabel,
+  inView,
+  elsewhere,
+  renderItem,
+  itemKey,
+}: {
+  headLabel: string;
+  inView: T[];
+  elsewhere: T[];
+  renderItem: (item: T) => React.ReactNode;
+  itemKey: (item: T) => string;
+}) {
+  if (inView.length === 0 && elsewhere.length === 0) return null;
+  const split = inView.length > 0 && elsewhere.length > 0;
+  return (
+    <div>
+      <div className={SEARCH_HEAD}>{headLabel}</div>
+      {split && <div className={`${SEARCH_SUBHEAD} pt-1`}>In this area</div>}
+      {inView.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
+      {split && <div className={SEARCH_SUBHEAD}>Elsewhere</div>}
+      {elsewhere.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
+    </div>
+  );
 }
 
 interface SidebarControlsProps {
@@ -57,6 +93,7 @@ interface SidebarControlsProps {
   fareView?: boolean;
   fareOverrides?: Record<string, FareOverride>;
   sidebarLeft?: number;
+  bounds?: ViewportBounds | null;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
 }
@@ -94,6 +131,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   fareView = false,
   fareOverrides = {},
   sidebarLeft,
+  bounds = null,
   hoveredBranch,
   setHoveredBranch,
 }) => {
@@ -605,7 +643,33 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         .filter(a => a.name.toLowerCase().includes(query.toLowerCase()) || (a.agencyData?.region || '').toLowerCase().includes(query.toLowerCase()))
     : [];
 
-  const hasContent = !!(currentStop || currentRoute || (query !== '' && (fareView ? fareViewMatchedAgencies.length > 0 : searchMatchResults !== null)) || disambiguationRoutes || (searchFocused && query === '' && hasSuggestions));
+  const matchedAgencyGroups = useMemo(() => {
+    if (!query.trim() || fareView || !searchFocused) return [];
+    return searchAgencyGroups(agencies, query, bounds, new Set(Object.keys(layers)));
+  }, [agencies, query, bounds, fareView, layers, searchFocused]);
+
+  const agencySections = useMemo(() => splitAgencyGroups(matchedAgencyGroups), [matchedAgencyGroups]);
+  const routeSections = useMemo(
+    () => splitRouteResults(searchMatchResults ?? []),
+    [searchMatchResults],
+  );
+  const routesFirst = useMemo(
+    () => routesBeforeAgencies(query, searchMatchResults ?? [], matchedAgencyGroups),
+    [query, searchMatchResults, matchedAgencyGroups],
+  );
+
+  const searchPanelActive = searchFocused && query !== '';
+  const hasSearchResults = searchPanelActive && (
+    fareView ? fareViewMatchedAgencies.length > 0 : searchMatchResults !== null
+  );
+
+  const hasContent = !!(
+    currentStop
+    || currentRoute
+    || hasSearchResults
+    || disambiguationRoutes
+    || (searchFocused && query === '' && hasSuggestions)
+  );
 
   const [panelShouldRender, setPanelShouldRender] = useState(false);
   const [panelVisible, setPanelVisible] = useState(false);
@@ -731,7 +795,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           setDisambiguationRoutes={setDisambiguationRoutes}
         />
       )}
-      {(currentStop || currentRoute || (query !== '' && searchMatchResults !== null)) && <div
+      {(currentStop || currentRoute || hasSearchResults) && <div
         ref={scrollRef}
         onScroll={checkScroll}
         className={`relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
@@ -808,7 +872,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             )
         )}
 
-        {query !== '' && fareView && fareViewMatchedAgencies.length > 0 && (
+        {searchPanelActive && fareView && fareViewMatchedAgencies.length > 0 && (
           <div className="mb-4 flex flex-col gap-2">
             {fareViewMatchedAgencies.map(({ slug, name, agencyData }) => {
               const baseFare = fareOverrides[slug]?.adult ?? agencyData?.fare ?? null;
@@ -833,38 +897,37 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           </div>
         )}
 
-        {query !== '' && !fareView && searchMatchResults !== null && (() => {
-          const qLower = query.toLowerCase();
-          const matchedAgencies = agencies.filter(a =>
-            a.name.toLowerCase().includes(qLower) || a.slug.startsWith(qLower) || (a.region || '').toLowerCase().includes(qLower)
-          );
-          return (
-            <div className="mb-4 space-y-3">
-              {matchedAgencies.length > 0 && setSelectedAgencySlug && (
-                <div>
-                  <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
-                    {matchedAgencies.length} agenc{matchedAgencies.length === 1 ? 'y' : 'ies'} match
-                  </div>
-                  {matchedAgencies.map(a => (
-                    <button
-                      key={a.slug}
-                      onClick={() => { setSelectedAgencySlug(a.slug); setQuery(''); }}
-                      className={LIST_ROW}
-                    >
-                      <span className={`${LIST_ROW_PRIMARY} flex-1 min-w-0 truncate`}>{a.name}</span>
-                      {a.region && <span className={`${LIST_ROW_DIM} shrink-0`}>{a.region}</span>}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {searchMatchResults.length > 0 && (
-                <div>
-                  <div className="text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5">
-                    {searchMatches} route{searchMatches === 1 ? '' : 's'} match
-                  </div>
-                  {searchMatchResults.map((r) => (
+        {searchPanelActive && !fareView && searchMatchResults !== null && (
+          <div className="-mx-4 mb-4 space-y-4">
+            {(() => {
+              const agencyBlock = matchedAgencyGroups.length > 0 && setSelectedAgencySlug ? (
+                <SearchSplitList
+                  headLabel={`${matchedAgencyGroups.length} agenc${matchedAgencyGroups.length === 1 ? 'y' : 'ies'} match`}
+                  inView={agencySections.inView}
+                  elsewhere={agencySections.elsewhere}
+                  itemKey={(g: AgencySearchGroup) => g.key}
+                  renderItem={(g: AgencySearchGroup) => (
                     <RouteListRow
-                      key={r.key}
+                      shortName={g.name}
+                      onClick={() => { setSelectedAgencySlug(g.slug); setQuery(''); }}
+                      right={
+                        <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
+                          {g.region}
+                        </span>
+                      }
+                    />
+                  )}
+                />
+              ) : null;
+
+              const routeBlock = searchMatchResults.length > 0 ? (
+                <SearchSplitList
+                  headLabel={`${searchMatches} route${searchMatches === 1 ? '' : 's'} match`}
+                  inView={routeSections.inView}
+                  elsewhere={routeSections.elsewhere}
+                  itemKey={(r: RouteSearchResult) => r.key}
+                  renderItem={(r: RouteSearchResult) => (
+                    <RouteListRow
                       shortName={titleCase(getRouteLabel(r.routeShortName, r.routeLongName, r.agencyName))}
                       selected={selectedRoute === r.key}
                       onClick={() => {
@@ -878,15 +941,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                         </span>
                       }
                     />
-                  ))}
-                </div>
-              )}
-              {searchMatchResults.length === 0 && (
-                <div className="text-[10px] font-bold text-[var(--text-dim)] px-1 py-2">No routes match your search.</div>
-              )}
-            </div>
-          );
-        })()}
+                  )}
+                />
+              ) : matchedAgencyGroups.length === 0 ? (
+                <div className="px-4 text-[10px] font-bold text-[var(--text-dim)] py-2">No routes match your search.</div>
+              ) : null;
+
+              return routesFirst ? (
+                <>{routeBlock}{agencyBlock}</>
+              ) : (
+                <>{agencyBlock}{routeBlock}</>
+              );
+            })()}
+          </div>
+        )}
 
 
         {canScrollMore && (

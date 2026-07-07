@@ -5,7 +5,8 @@ import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP } from '../../styles';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
-import { formatPeriodRange, periodKeyForHour, AGENCY_CHIP_PAD } from '../../../shared/config';
+import { formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../types/gtfs';
 
@@ -58,20 +59,6 @@ interface AgenciesPanelProps {
   agencyQuery: string;
   setAgencyQuery: (q: string) => void;
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
-}
-
-function bboxInViewport(agency: { bbox?: [number, number, number, number]; center?: [number, number] }, bounds: ViewportBounds | null): boolean {
-  if (!bounds) return false;
-  if (agency.bbox) {
-    const [s, w, n, e] = agency.bbox;
-    return s <= bounds.n && n >= bounds.s && w <= bounds.e && e >= bounds.w;
-  }
-  if (agency.center) {
-    const [lat, lon] = agency.center;
-    const pad = AGENCY_CHIP_PAD;
-    return lat - pad <= bounds.n && lat + pad >= bounds.s && lon - pad <= bounds.e && lon + pad >= bounds.w;
-  }
-  return false;
 }
 
 function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {

@@ -4,6 +4,7 @@ import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgen
 import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByPeriod } from '../../shared/config';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
+import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 
 export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
@@ -63,8 +64,13 @@ function bboxIntersects(
   return !(n < vp.s || s > vp.n || e < vp.w || w > vp.e);
 }
 
-export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null, options?: { showCorridorBand?: boolean }) {
+export function useAgencyData(
+  agencies: Agency[],
+  bounds: ViewportBounds | null,
+  options?: { showCorridorBand?: boolean; searchQuery?: string },
+) {
   const showCorridorBand = options?.showCorridorBand ?? false;
+  const searchQuery = options?.searchQuery ?? '';
   const [layers, setLayers] = useState<AgencyLayers>({});
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
@@ -106,15 +112,25 @@ export function useAgencyData(agencies: Agency[], bounds: ViewportBounds | null,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load all agencies whose bbox intersects the current viewport.
-  // Before the map reports its first moveend, fall back to the initial Toronto-area bounds
-  // so GTHA agencies load immediately without hardcoding specific slugs.
+  // Load agencies in the viewport, plus search-matched agencies so route search
+  // can see GeoJSON beyond the current map bounds (agency search uses the full index).
   useEffect(() => {
     const vp = bounds ?? INITIAL_BOUNDS;
-    agencies
-      .filter(a => bboxIntersects(getAgencyBbox(a), vp))
-      .forEach(fetchAgency);
-  }, [agencies, bounds, fetchAgency]);
+    const slugsToLoad = new Set<string>();
+
+    for (const a of agencies) {
+      if (bboxIntersects(getAgencyBbox(a), vp)) slugsToLoad.add(a.slug);
+    }
+
+    const q = searchQuery.trim();
+    if (q) {
+      for (const slug of agencySlugsToPrefetchForSearch(agencies, q, bounds)) {
+        slugsToLoad.add(slug);
+      }
+    }
+
+    agencies.filter(a => slugsToLoad.has(a.slug)).forEach(fetchAgency);
+  }, [agencies, bounds, fetchAgency, searchQuery]);
 
   // When the Corridors band view is active, lazily load per-agency corridor GeoJSON
   // (isCorridor features) for visible agencies that have a corridorsUrl.

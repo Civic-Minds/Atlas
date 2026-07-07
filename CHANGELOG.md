@@ -6,9 +6,15 @@
 - **Route card one-way destinations** ([#134](https://github.com/Civic-Minds/Atlas/issues/134)): Unified headsign pipeline (`resolveDisplayHeadsign`) so GeoJSON never drops cleaned-away destinations; route/stop cards share `resolveBranchLabel` with direction fallbacks; route-title redundancy handled at display time, not in stored data. Route cards no longer repeat the section heading as a row label (e.g. "to Southbound" under SOUTHBOUND).
 - **Letter-suffix branch routes**: Pipeline auto-merges GTFS pairs like `blue` + `blue B` when long names prove same corridor (YRT VIVA, etc.) — default-on for all agencies; opt out with `skipLetterSuffixMerge` in `index.json`.
 - **Pipeline modularization**: GTFS normalize/transform orchestration, shape selection, headway utils, geometry, and feature enrichment extracted from `process-core.ts` into dedicated modules.
-- **Map attribution**: OSM/CARTO credit always visible (no collapsed ℹ toggle).
+- **Map attribution**: OSM/CARTO credit always visible in a glass pill (`text-xs`); loading spinner joins routes/coverage pills bottom-right.
 - **Mode filter** ([#135](https://github.com/Civic-Minds/Atlas/issues/135)): Mode gating moved into shared `tileFilter` (map + stats use the same clause); `effectiveMode` coerces string `routeType` and always receives `agencySlug` for virtual LRT rules.
 - **Frequency filter** ([#136](https://github.com/Civic-Minds/Atlas/issues/136)): MapLibre tile filter expressions rewritten to compile with direction/day clauses — invalid nested `to-number`/numeric coalesce caused `setFilter` to fail silently so the map ignored headway/mode pills while stats updated.
+- **Agency search** ([#137](https://github.com/Civic-Minds/Atlas/issues/137)): Dedupe sub-agency slugs (e.g. exo), sort in-viewport/nearest first, align list rows with route results; routes and agencies split into “In this area” / “Elsewhere” with route-first ordering for route-like queries.
+- **Route search**: Substring match on route short names (aligned with map); prefetch GeoJSON for search-matched agencies so routes appear outside the viewport.
+- **Search dismiss** ([#138](https://github.com/Civic-Minds/Atlas/issues/138)): Results/suggestions panel closes on blur when clicking outside; typed results gated on `searchFocused` like other panels.
+
+### Changed
+- **App drawer hidden**: Removed waffle menu from header again; Corridors/History/Fares remain URL-only until ready (reverts [#115](https://github.com/Civic-Minds/Atlas/issues/115)).
 
 ## [3.0.9] — 2026-07-06
 

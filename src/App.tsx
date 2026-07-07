@@ -7,7 +7,7 @@ import Interval from './apps/Interval';
 import Corridors, { type CorridorsFromInputBindings } from './apps/Corridors';
 import History from './apps/History';
 import LiveVehicles from './apps/LiveVehicles';
-import AppDrawer, { type AppId } from './components/AppDrawer';
+import type { AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -250,7 +250,7 @@ export default function App() {
           <span className="text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
+        {/* AppDrawer hidden — Corridors/History/Fares not ready; Live uses header button. Re-enable in App.tsx when shipping. */}
 
         {/* Search bar — doubles as Corridors From input and History agency search */}
         <div ref={searchBarRef}>

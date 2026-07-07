@@ -191,6 +191,28 @@ describe('useIntervalStats', () => {
     expect(result.current.searchMatches).toBe(1);
   });
 
+  it('should match route short names by substring', () => {
+    const layersWithSuffix: AgencyLayers = {
+      ttc: {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: {
+            routeId: '6x',
+            routeShortName: '6X',
+            routeLongName: 'Express',
+            headway: 10,
+            tier: '10',
+            agencyName: 'TTC',
+          },
+        }],
+      },
+    };
+    const { result } = renderHook(() => useIntervalStats(layersWithSuffix, { ...defaultFilters, query: 'x' }));
+    expect(result.current.searchMatches).toBe(1);
+  });
+
   it('should handle empty layers gracefully', () => {
     const { result } = renderHook(() => useIntervalStats({}, defaultFilters));
     expect(result.current.stats).toBeNull();

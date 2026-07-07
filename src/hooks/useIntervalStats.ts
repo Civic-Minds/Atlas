@@ -1,5 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
+import { matchesRouteQuery, searchRouteResults } from '../utils/searchResults';
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
@@ -274,30 +275,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     };
   }, [allFeatures, selectedStop]);
 
-  const matchesQuery = useCallback((p: ShapeProperties) => {
-    if (q === '') return true;
-    const stripLeadingZeros = (s: string) => s.replace(/^0+/, '') || '0';
-    const qNorm = stripLeadingZeros(q);
-    const shortName = (p.routeShortName ?? '').toLowerCase();
-    const nameHit =
-      shortName.startsWith(q) ||
-      stripLeadingZeros(shortName).startsWith(qNorm) ||
-      (p.routeId ?? '').toLowerCase().startsWith(q) ||
-      (q.length >= 3 && (p.routeLongName ?? '').toLowerCase().includes(q));
-    if (nameHit) return true;
-    const cIds = (p as any).routeIds as string[] | undefined;
-    if (cIds && cIds.some((r) => r.toLowerCase().includes(q))) return true;
-    const cNames = (p as any).corridorShortNames as string[] | undefined;
-    if (cNames && cNames.some((n) => n.toLowerCase().includes(q))) return true;
-    // Agency: slug (e.g. "ttc", "hamilton") or display name (3+ chars, e.g. "toronto transit")
-    const agencySlug = ((p as any).agencySlug ?? '').toLowerCase();
-    if (agencySlug.startsWith(q)) return true;
-    if (q.length >= 3 && (p.agencyName ?? '').toLowerCase().includes(q)) return true;
-    // Support searching by region / city name (e.g. "new york", "nyc", "toronto")
-    const region = ((p as any).region ?? '').toLowerCase();
-    if (q.length >= 3 && region.includes(q)) return true;
-    return false;
-  }, [q]);
+  const matchesQuery = useCallback((p: ShapeProperties) => matchesRouteQuery(p, q), [q]);
 
   const visibleFeatures = useMemo(() =>
     allFeatures.filter(f => {
@@ -337,31 +315,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const searchMatchResults = useMemo(() => {
     if (q === '') return null;
-    // Search all loaded routes regardless of active agency/mode filters.
-    const allRoutesOnly = allFeatures.filter(f => (f.properties as any).routeId);
-    // Deduplicate by agencySlug::shortName::longName so different schedule-period
-    // route_ids for the same route (e.g. two GO "LW" feeds) collapse to one result.
-    // Keep the routeKey of the first match for click-to-select; prefer in-viewport entries.
-    const byDisplay = new Map<string, { p: ShapeProperties; inView: boolean; key: string }>();
-    for (const f of allRoutesOnly) {
-      const p = f.properties as unknown as ShapeProperties;
-      if (!matchesQuery(p)) continue;
-      const key = routeKey(p);
-      const displayKey = `${(p as any).agencySlug ?? p.agencyName ?? ''}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`;
-      const featureInView = !bounds || inViewport(f, bounds);
-      const existing = byDisplay.get(displayKey);
-      if (!existing) {
-        byDisplay.set(displayKey, { p, inView: featureInView, key });
-      } else if (featureInView && !existing.inView) {
-        byDisplay.set(displayKey, { p, inView: true, key });
-      }
-    }
-    return [...byDisplay.values()]
-      .map(({ p, inView, key }) => ({ key, routeShortName: p.routeShortName ?? p.routeId, routeLongName: p.routeLongName, agencyName: p.agencyName, inView }))
-      .sort((a, b) => {
-        if (a.inView !== b.inView) return a.inView ? -1 : 1;
-        return (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true });
-      });
+    return searchRouteResults(allFeatures, q, bounds);
   }, [allFeatures, q, bounds]);
 
   const searchMatches = searchMatchResults?.length ?? null;

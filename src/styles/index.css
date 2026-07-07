@@ -55,17 +55,37 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* MapLibre attribution — required by license; always visible (not collapsed behind ℹ) */
+/* MapLibre attribution — required by license; pill matches routes/coverage badges */
+.maplibregl-ctrl-bottom-left {
+  margin: 0 0 1.5rem 1.5rem !important;
+  z-index: 1000;
+}
 .maplibregl-ctrl-attrib {
-  font-size: 9px !important;
-  background: color-mix(in srgb, var(--bg-header) 88%, transparent) !important;
-  color: var(--text-dim) !important;
-  border-radius: 4px !important;
-  padding: 0 4px !important;
-  max-width: min(360px, calc(100vw - 24px));
+  margin: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.maplibregl-ctrl-attrib-inner {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 2rem !important;
+  padding: 0 0.75rem !important;
+  font-size: 0.75rem !important; /* text-xs — matches routes/coverage pill count */
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  color: var(--text-muted) !important;
+  background: var(--bg-panel) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25) !important;
+  max-width: min(360px, calc(100vw - 3rem)) !important;
 }
 .maplibregl-ctrl-attrib a {
-  color: var(--text-muted) !important;
+  color: var(--text-dim) !important;
+  font-weight: 700 !important;
+  font-size: inherit !important;
 }
 .maplibregl-ctrl-attrib-button {
   display: none !important;
