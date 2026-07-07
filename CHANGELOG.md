@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **Route card trunk frequency**: Multi-branch routes (e.g. HSR 5) show combined shared-section headway in the sparkline and a "Shared section" row per direction group; destination rows keep terminal wait times. Branch hover switches sparkline to that branch.
+
 ## [3.0.7] — 2026-07-06
 
 ### Added

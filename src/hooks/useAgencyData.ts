@@ -1,18 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
-import { getAgencyArtifactUrls } from '../../shared/config';
+import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByPeriod } from '../../shared/config';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 
-export interface HeadwayByPeriod {
-  amPeak?: number | null;
-  midday?: number | null;
-  pmPeak?: number | null;
-  evening?: number | null;
-  lateNight?: number | null;
-}
-
+export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
 export interface ShapeProperties {
@@ -29,6 +22,7 @@ export interface ShapeProperties {
   busSubType?: 'brt' | 'express' | 'coach' | 'local';
   worstDirectionHeadway?: number;
   worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
+  minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
 }
@@ -39,16 +33,26 @@ export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;
 // Built from the saved view so returning Montreal users don't load Toronto agencies first.
 function buildInitialBounds(): ViewportBounds {
   const saved = getSavedView();
-  const lat = saved?.lat ?? 43.65;
-  const lon = saved?.lon ?? -79.45;
-  return { s: lat - 0.5, w: lon - 0.6, n: lat + 0.5, e: lon + 0.6 };
+  const lat = saved?.lat ?? DEFAULT_MAP_CENTER[0];
+  const lon = saved?.lon ?? DEFAULT_MAP_CENTER[1];
+  return {
+    s: lat - VIEWPORT_BBOX_PAD.lat,
+    w: lon - VIEWPORT_BBOX_PAD.lon,
+    n: lat + VIEWPORT_BBOX_PAD.lat,
+    e: lon + VIEWPORT_BBOX_PAD.lon,
+  };
 }
 const INITIAL_BOUNDS = buildInitialBounds();
 
 function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
   const [lat, lon] = agency.center;
-  return [lat - 0.4, lon - 0.5, lat + 0.4, lon + 0.5];
+  return [
+    lat - AGENCY_BBOX_PAD.lat,
+    lon - AGENCY_BBOX_PAD.lon,
+    lat + AGENCY_BBOX_PAD.lat,
+    lon + AGENCY_BBOX_PAD.lon,
+  ];
 }
 
 function bboxIntersects(

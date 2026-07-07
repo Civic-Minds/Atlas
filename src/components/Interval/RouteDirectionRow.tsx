@@ -18,6 +18,7 @@ interface Props {
   onHoverEnd?: () => void;
   branchHovered?: boolean;
   branchDimmed?: boolean;
+  allowTrunkRange?: boolean;
 }
 
 /**
@@ -25,13 +26,13 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, trunkHeadway, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed }: Props) {
+export default function RouteDirectionRow({ label, headway, trunkHeadway, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, allowTrunkRange }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const faded = dimmed || branchDimmed;
   const showRange = trunkHeadway != null && headway != null
     && trunkHeadway < headway * 0.65
     && headway / trunkHeadway <= 4
-    && headway < 20;
+    && (allowTrunkRange || headway < 20);
   const dotColor = limited ? getTierColor(null) : headwayToTierColor(showRange ? trunkHeadway! : headway);
   const headwayText = limited
     ? 'limited'
