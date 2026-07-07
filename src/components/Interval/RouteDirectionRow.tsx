@@ -1,6 +1,5 @@
 import React from 'react';
 import { getTierColor } from '../../utils/colors';
-import { fmtHeadwayRange } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { HeadwayBadge } from './cardUi';
 
@@ -31,18 +30,11 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, allowTrunkRange, onClick }: Props) {
+export default function RouteDirectionRow({ label, headway, headwaySuffix, subLabel, live, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
-  const showRange = trunkHeadway != null && headway != null
-    && trunkHeadway < headway * 0.65
-    && headway / trunkHeadway <= 4
-    && (allowTrunkRange || headway < 20);
-  const dotColor = limited ? getTierColor(null) : headwayToTierColor(showRange ? trunkHeadway! : headway);
-  const rangeText = !limited && headway != null && showRange
-    ? fmtHeadwayRange(trunkHeadway!, headway)
-    : null;
+  const dotColor = limited ? getTierColor(null) : headwayToTierColor(headway);
 
   if (limitedHint) {
     return (
@@ -74,14 +66,8 @@ export default function RouteDirectionRow({ label, headway, trunkHeadway, headwa
             limited
           </span>
         )}
-        {!limited && headway != null && !showRange && (
+        {!limited && headway != null && (
           <HeadwayBadge headway={headway} live={live} suffix={headwaySuffix} />
-        )}
-        {!limited && rangeText && (
-          <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-[11px] leading-snug shrink-0">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
-            <span className="whitespace-nowrap">{rangeText}</span>
-          </span>
         )}
       </div>
       {subLabel && (
