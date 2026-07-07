@@ -8,7 +8,7 @@ import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES } from '../../../shared/modes';
-import { DAY_TYPES, getNowDay, type DayType } from '../../../types/gtfs';
+import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 
 export { getNowDay };
 

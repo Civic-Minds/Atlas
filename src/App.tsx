@@ -14,7 +14,7 @@ import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions } from './components/InfoPanel';
 import ErrorBoundary from './components/ErrorBoundary';
-import { DAY_TYPES, getNowDay, type DayType } from '../types/gtfs';
+import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)

@@ -2,6 +2,12 @@
 
 All legacy release notes for Atlas are preserved here. For recent changes, see [CHANGELOG.md](CHANGELOG.md).
 
+## [3.0.2] — 2026-07-06
+
+### Fixed
+- **Refresh**: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.
+
+
 ## [3.0.1] — 2026-07-06
 
 ### Added

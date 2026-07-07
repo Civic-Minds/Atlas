@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Agency } from '../App';
 import Interval from './Interval';
-import type { DayType } from '../../types/gtfs';
+import type { DayType } from '../../shared/dayTypes';
 
 interface Props {
   agencies: Agency[];

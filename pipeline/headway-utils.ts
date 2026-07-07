@@ -1,4 +1,4 @@
-import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type PeriodKey } from '../../shared/config.js';
+import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
 
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),

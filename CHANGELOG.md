@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.12] — 2026-07-07
+
+### Fixed
+- **Vercel deploy**: Frontend day-type imports moved to `shared/dayTypes.ts` — `types/` is `.vercelignore`d so `types/gtfs` was missing at build time.
+- **Pipeline refresh**: Correct `headway-utils.ts` import path for `shared/config`.
+
 ## [3.0.11] — 2026-07-07
 
 ### Changed
@@ -164,7 +170,3 @@
 ### Changed
 - **Changelog**: restored versioned release notes after 3.0.2 (no functional changes).
 
-## [3.0.2] — 2026-07-06
-
-### Fixed
-- **Refresh**: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.

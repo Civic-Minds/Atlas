@@ -28,7 +28,7 @@ import { type RouteFeature, type RouteGroup } from './corridor-types';
 import { ServiceTimeline } from './ServiceTimeline';
 import { StopInput } from './StopInput';
 import { PERIOD_KEYS } from '../../shared/config';
-import type { DayType } from '../../types/gtfs';
+import type { DayType } from '../../shared/dayTypes';
 
 interface Props {
   agencies: Agency[];
