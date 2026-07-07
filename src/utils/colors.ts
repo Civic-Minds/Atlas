@@ -100,3 +100,24 @@ export function buildZoomHeadwayGateExpression(headwayExpr: unknown): unknown[] 
   }
   return ['<=', headwayExpr, steps];
 }
+
+/** Headway ceiling at a fixed zoom — mirrors buildZoomHeadwayGateExpression step stops. */
+function headwayThresholdForZoom(zoom: number): number {
+  let threshold = MAP_ZOOM_DEFAULT_MAX_HEADWAY;
+  for (const [z, maxHw] of MAP_ZOOM_HEADWAY_STEPS) {
+    if (zoom >= z) threshold = maxHw;
+  }
+  return threshold;
+}
+
+/**
+ * Default routes-layer line-opacity. MapLibre allows only one zoom-based subexpression
+ * per paint property, so gate headway per interpolate stop instead of nesting step+interpolate.
+ */
+export function buildDefaultRouteLineOpacityExpression(headwayExpr: unknown): unknown[] {
+  const expr: unknown[] = ['interpolate', ['linear'], ['zoom']];
+  for (const [z, opacity] of [[8, 0.7], [11, 0.8], [14, 0.9]] as const) {
+    expr.push(z, ['case', ['>', headwayExpr, headwayThresholdForZoom(z)], 0, opacity]);
+  }
+  return expr;
+}

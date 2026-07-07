@@ -223,6 +223,21 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     if (!hasMatch) clearMapSelection();
   }, [selectedRoute, layers, day, clearMapSelection]);
 
+  // Route card is hidden while search is focused — blur so the card appears on map select.
+  useEffect(() => {
+    if (selectedRoute) setSearchFocused?.(false);
+  }, [selectedRoute, setSearchFocused]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (!selectedRoute && !selectedStop && !disambiguationRoutes?.length) return;
+      clearMapSelection();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedRoute, selectedStop, disambiguationRoutes, clearMapSelection]);
+
   // Sync selected route and stop to URL — use replaceState directly (not React
   // Router's setSearchParams) to avoid the stale-closure bug where a closure
   // captured during the Fares render resolves the URL relative to /apps/fares.

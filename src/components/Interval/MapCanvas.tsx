@@ -5,7 +5,7 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ScatterplotLayer, TextLayer } from 'deck.gl';
 import { LocateFixed } from 'lucide-react';
 import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, STATUS_COLORS, buildFareColorExpression, buildZoomHeadwayGateExpression } from '../../utils/colors';
+import { HEADWAY_TIERS, STATUS_COLORS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
@@ -152,8 +152,25 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
+  const selectedRouteRef = useRef(selectedRoute);
+  const handleMapClickRef = useRef<(e: maplibregl.MapMouseEvent) => void>(() => {});
+
+  const resetRoutesLayerDefaultPaint = (map: maplibregl.Map) => {
+    if (!map.getLayer('routes-layer')) return;
+    const headwayExpr: any = ['case',
+      ['==', ['get', 'tier'], 'infrequent'], 9999,
+      ['coalesce', ['get', 'headway'], 9999],
+    ];
+    map.setPaintProperty('routes-layer', 'line-width', [
+      'interpolate', ['linear'], ['zoom'],
+      8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5,
+    ]);
+    map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
+  };
 
   const clearMapSelection = () => {
+    const map = mapRef.current;
+    if (map) resetRoutesLayerDefaultPaint(map);
     if (onClearSelectionRef.current) {
       onClearSelectionRef.current();
       return;
@@ -163,19 +180,70 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     setDisambiguationRoutesRef.current(null);
   };
 
-  const isBackgroundMapPoint = (map: maplibregl.Map, x: number, y: number) => {
-    const hits = map.queryRenderedFeatures([x, y], { layers: ['routes-hit-layer', 'stops-layer'] });
-    return hits.length === 0;
-  };
+  useLayoutEffect(() => {
+    selectedRouteRef.current = selectedRoute;
+  }, [selectedRoute]);
 
-  const handleDeckBackgroundClick = (info: { picked?: boolean; x?: number; y?: number }) => {
-    if (info.picked) return;
-    const map = mapRef.current;
-    if (!map) return;
-    if (info.x == null || info.y == null || isBackgroundMapPoint(map, info.x, info.y)) {
+  useLayoutEffect(() => {
+    handleMapClickRef.current = (e: maplibregl.MapMouseEvent) => {
+      const map = mapRef.current;
+      if (!map) return;
+
+      const stopHits = map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] });
+      if (stopHits.length > 0) {
+        const props = stopHits[0].properties;
+        const compositeId = `${props.agencySlug}::${props.stopId}`;
+        setSelectedRouteRef.current(null);
+        setDisambiguationRoutesRef.current(null);
+        if (map.getZoom() < 13) {
+          map.flyTo({ center: e.lngLat, zoom: 13, duration: 800 });
+          showMapHint('Zoom in to choose a stop');
+          return;
+        }
+        setSelectedStopRef.current(prev => prev === compositeId ? null : compositeId);
+        return;
+      }
+
+      const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+        [e.point.x - 12, e.point.y - 12],
+        [e.point.x + 12, e.point.y + 12],
+      ];
+      const routeHits = map.queryRenderedFeatures(bbox, { layers: ['routes-hit-layer'] });
+      if (routeHits.length > 0) {
+        const props = routeHits[0].properties;
+        const uniqueRouteKeys = Array.from(new Set(routeHits.map(f => {
+          const p = f.properties;
+          return routeKey({ ...p, agencySlug: p.agencySlug } as any);
+        })));
+
+        setSelectedStopRef.current(null);
+        if (onHistoryRouteClickRef.current) {
+          const slug = props.agencySlug as string;
+          const rsn = props.routeShortName as string;
+          if (slug && rsn) onHistoryRouteClickRef.current(slug, rsn);
+        } else if (fareViewRef.current && setSelectedAgencySlugRef.current) {
+          const slug = props.agencySlug as string;
+          if (slug) setSelectedAgencySlugRef.current(slug);
+        } else if (uniqueRouteKeys.length > 1) {
+          if (map.getZoom() < 11) {
+            setDisambiguationRoutesRef.current(null);
+            showMapHint('Zoom in to choose a route');
+            return;
+          }
+          setDisambiguationRoutesRef.current(uniqueRouteKeys);
+        } else {
+          const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
+          const wasSelected = selectedRouteRef.current === key;
+          setSelectedRouteRef.current(prev => prev === key ? null : key);
+          setQueryRef.current?.('');
+          if (wasSelected) resetRoutesLayerDefaultPaint(map);
+        }
+        return;
+      }
+
       clearMapSelection();
-    }
-  };
+    };
+  });
 
   useLayoutEffect(() => {
     setSelectedRouteRef.current = setSelectedRoute;
@@ -377,7 +445,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const deckOverlay = new MapboxOverlay({
         interleaved: false,
         layers: [],
-        onClick: (info) => handleDeckBackgroundClick(info),
         getTooltip: (info: any) => {
           const object = info.object;
           if (!object || (!object.headsign && object.status === 'no_data')) return null;
@@ -413,75 +480,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       map.addControl(deckOverlay as any);
       deckOverlayRef.current = deckOverlay;
 
-      // Handle hit-test clicks
-      map.on('click', 'routes-hit-layer', (e) => {
-        const features = e.features;
-        if (!features || features.length === 0) return;
-        const props = features[0].properties;
-
-        const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
-          [e.point.x - 12, e.point.y - 12],
-          [e.point.x + 12, e.point.y + 12]
-        ];
-        const hitFeatures = map.queryRenderedFeatures(bbox, { layers: ['routes-hit-layer'] });
-        const uniqueRouteKeys = Array.from(new Set(hitFeatures.map(f => {
-          const p = f.properties;
-          return routeKey({ ...p, agencySlug: p.agencySlug } as any);
-        })));
-
-        setSelectedStopRef.current(null);
-        if (onHistoryRouteClickRef.current) {
-          const slug = props.agencySlug as string;
-          const rsn = props.routeShortName as string;
-          if (slug && rsn) onHistoryRouteClickRef.current(slug, rsn);
-        } else if (fareViewRef.current && setSelectedAgencySlugRef.current) {
-          // In Fares mode fares are per agency — promote any route click to the agency card
-          const slug = props.agencySlug as string;
-          if (slug) setSelectedAgencySlugRef.current(slug);
-        } else if (uniqueRouteKeys.length > 1) {
-          if (map.getZoom() < 11) {
-            setDisambiguationRoutesRef.current(null);
-            showMapHint('Zoom in to choose a route');
-            return;
-          }
-          setDisambiguationRoutesRef.current(uniqueRouteKeys);
-        } else {
-          const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
-          setSelectedRouteRef.current(prev => prev === key ? null : key);
-          setQueryRef.current?.('');
-        }
-        e.preventDefault();
-      });
-
-      // Handle stop clicks
-      map.on('click', 'stops-layer', (e) => {
-        const features = e.features;
-        if (!features || features.length === 0) return;
-        const props = features[0].properties;
-        const compositeId = `${props.agencySlug}::${props.stopId}`;
-
-        setSelectedRouteRef.current(null);
-        setDisambiguationRoutesRef.current(null);
-
-        if (map.getZoom() < 13) {
-          map.flyTo({ center: e.lngLat, zoom: 13, duration: 800 });
-          e.preventDefault();
-          return;
-        }
-
-        setSelectedStopRef.current(prev => prev === compositeId ? null : compositeId);
-        e.preventDefault();
-      });
-
-      // Corridor clicks (for Corridors app to respond to blue lines and corridor routes)
-      map.on('click', 'corridor-dynamic-layer', (e) => {
-        e.preventDefault();
-        // TODO: integrate with Corridors to show RouteGroupCard or set from/to
-      });
-      map.on('click', 'corridor-shapes-layer', (e) => {
-        e.preventDefault();
-      });
-
       setMapLoaded(true);
     });
 
@@ -500,19 +498,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     };
   }, []);
 
-  // Background click → clear selection. Registered here (not in map load) so it stays
-  // paired with live onClearSelection and uses an explicit no-feature hit test.
+  // Single map click handler — avoids layer preventDefault blocking background deselect.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-
-    const onBackgroundClick = (e: maplibregl.MapMouseEvent) => {
-      if (e.defaultPrevented) return;
-      if (isBackgroundMapPoint(map, e.point.x, e.point.y)) clearMapSelection();
-    };
-
-    map.on('click', onBackgroundClick);
-    return () => { map.off('click', onBackgroundClick); };
+    const onClick = (e: maplibregl.MapMouseEvent) => handleMapClickRef.current(e);
+    map.on('click', onClick);
+    return () => { map.off('click', onClick); };
   }, [mapLoaded]);
 
   useEffect(() => {
@@ -701,9 +693,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
     // Hide span (irregular) routes from the map when hideSpan is active
 
-    // Zoom gate uses ['zoom'] — valid in paint, not in layer filters. Applied via line-opacity below.
-    const zoomGateMaxHeadway: any = buildZoomHeadwayGateExpression(headwayExpr)[2];
-
     // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
     // MapCanvas only adds map-state-specific clauses on top.
     let routeFilter: any = null;
@@ -794,12 +783,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           14, 2.5,
           17, 3.5,
         ]);
-        // Zoom gate via opacity (zoom expressions are not allowed in layer filters).
-        map.setPaintProperty('routes-layer', 'line-opacity', [
-          'case',
-          ['>', headwayExpr, zoomGateMaxHeadway], 0,
-          ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
-        ]);
+        map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
       }
     }
 
@@ -833,6 +817,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
 
   }, [mapLoaded, q, selectedRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, tileFilter, fareView]);
+
+  // Force-reset route paint when selection clears (guards against stuck highlight state).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || selectedRoute) return;
+    resetRoutesLayerDefaultPaint(map);
+  }, [selectedRoute, mapLoaded]);
 
   // Sync corridor static layer visibility
   useEffect(() => {
