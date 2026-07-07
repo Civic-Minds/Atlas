@@ -143,7 +143,7 @@ export function CardHelpNotice({ message, onLearnMore }: { message: string; onLe
       <button
         type="button"
         onClick={onLearnMore}
-        className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
+        className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold cursor-pointer"
       >
         Learn more →
       </button>

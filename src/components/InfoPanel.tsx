@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
@@ -65,6 +65,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
@@ -87,6 +88,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
+  }, [open, onClose]);
+
+  // Close on click outside the panel (allows background elements to receive hover/clicks)
+  useEffect(() => {
+    if (!open) return;
+    const handleOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
   }, [open, onClose]);
 
   useEffect(() => {
@@ -197,9 +210,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : null;
 
   return (
-    <div className={`fixed inset-0 ${Z_MODAL_BG}`} onClick={onClose}>
+    <div className={`fixed inset-0 ${Z_MODAL_BG} pointer-events-none`}>
       <div
-        className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
+        ref={panelRef}
+        className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)} pointer-events-auto`}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
