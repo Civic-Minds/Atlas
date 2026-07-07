@@ -139,6 +139,44 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   const liveFittedRouteRef = useRef<string | null>(null);
 
+  // Refs keep event-handler closures (registered once on map load) from going stale.
+  const setSelectedRouteRef = useRef(setSelectedRoute);
+  const setSelectedStopRef = useRef(setSelectedStop);
+  const setDisambiguationRoutesRef = useRef(setDisambiguationRoutes);
+  const setQueryRef = useRef(setQuery);
+  const onHistoryRouteClickRef = useRef(onHistoryRouteClick);
+  const fareViewRef = useRef(fareView);
+  const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
+  const onBoundsChangeRef = useRef(onBoundsChange);
+  const onTileLoadingChangeRef = useRef(onTileLoadingChange);
+
+  const clearMapSelection = () => {
+    setSelectedRouteRef.current(null);
+    setSelectedStopRef.current(null);
+    setDisambiguationRoutesRef.current(null);
+  };
+
+  const handleDeckBackgroundClick = (info: { picked?: boolean; x: number; y: number }) => {
+    if (info.picked) return;
+    const map = mapRef.current;
+    if (!map) return;
+    const hit = map.queryRenderedFeatures([info.x, info.y], { layers: ['routes-hit-layer', 'stops-layer'] });
+    if (hit.length > 0) return;
+    clearMapSelection();
+  };
+
+  useLayoutEffect(() => {
+    setSelectedRouteRef.current = setSelectedRoute;
+    setSelectedStopRef.current = setSelectedStop;
+    setDisambiguationRoutesRef.current = setDisambiguationRoutes;
+    setQueryRef.current = setQuery;
+    onHistoryRouteClickRef.current = onHistoryRouteClick;
+    fareViewRef.current = fareView;
+    setSelectedAgencySlugRef.current = setSelectedAgencySlug;
+    onBoundsChangeRef.current = onBoundsChange;
+    onTileLoadingChangeRef.current = onTileLoadingChange;
+  });
+
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
   const hasSavedView = useMemo(() => getSavedView() !== null, []);
 
@@ -326,6 +364,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const deckOverlay = new MapboxOverlay({
         interleaved: false,
         layers: [],
+        onClick: (info) => handleDeckBackgroundClick(info),
         getTooltip: (info: any) => {
           const object = info.object;
           if (!object || (!object.headsign && object.status === 'no_data')) return null;
@@ -377,26 +416,26 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           return routeKey({ ...p, agencySlug: p.agencySlug } as any);
         })));
 
-        setSelectedStop(null);
-        if (onHistoryRouteClick) {
+        setSelectedStopRef.current(null);
+        if (onHistoryRouteClickRef.current) {
           const slug = props.agencySlug as string;
           const rsn = props.routeShortName as string;
-          if (slug && rsn) onHistoryRouteClick(slug, rsn);
+          if (slug && rsn) onHistoryRouteClickRef.current(slug, rsn);
         } else if (fareViewRef.current && setSelectedAgencySlugRef.current) {
           // In Fares mode fares are per agency — promote any route click to the agency card
           const slug = props.agencySlug as string;
           if (slug) setSelectedAgencySlugRef.current(slug);
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 11) {
-            setDisambiguationRoutes(null);
+            setDisambiguationRoutesRef.current(null);
             showMapHint('Zoom in to choose a route');
             return;
           }
-          setDisambiguationRoutes(uniqueRouteKeys);
+          setDisambiguationRoutesRef.current(uniqueRouteKeys);
         } else {
           const key = routeKey({ ...props, agencySlug: props.agencySlug } as any);
-          setSelectedRoute(prev => prev === key ? null : key);
-          setQuery?.('');
+          setSelectedRouteRef.current(prev => prev === key ? null : key);
+          setQueryRef.current?.('');
         }
         e.preventDefault();
       });
@@ -408,8 +447,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         const props = features[0].properties;
         const compositeId = `${props.agencySlug}::${props.stopId}`;
 
-        setSelectedRoute(null);
-        setDisambiguationRoutes(null);
+        setSelectedRouteRef.current(null);
+        setDisambiguationRoutesRef.current(null);
 
         if (map.getZoom() < 13) {
           map.flyTo({ center: e.lngLat, zoom: 13, duration: 800 });
@@ -417,7 +456,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           return;
         }
 
-        setSelectedStop(prev => prev === compositeId ? null : compositeId);
+        setSelectedStopRef.current(prev => prev === compositeId ? null : compositeId);
         e.preventDefault();
       });
 
@@ -444,9 +483,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
     map.on('click', (e) => {
       if (e.defaultPrevented) return;
-      setSelectedRoute(null);
-      setSelectedStop(null);
-      setDisambiguationRoutes(null);
+      clearMapSelection();
     });
 
     return () => {
@@ -454,19 +491,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       mapRef.current = null;
     };
   }, []);
-
-  // Refs keep event-handler closures (registered once on map load) from going stale
-  // when props change across app navigations.
-  const onBoundsChangeRef = useRef(onBoundsChange);
-  const fareViewRef = useRef(fareView);
-  const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
-  const onTileLoadingChangeRef = useRef(onTileLoadingChange);
-  useLayoutEffect(() => {
-    onBoundsChangeRef.current = onBoundsChange;
-    fareViewRef.current = fareView;
-    setSelectedAgencySlugRef.current = setSelectedAgencySlug;
-    onTileLoadingChangeRef.current = onTileLoadingChange;
-  });
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1021,6 +1045,24 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         }),
       ],
     });
+  }, [liveOverlay, mapLoaded]);
+
+  // Deck.gl canvas sits above MapLibre and swallows clicks even with no pickable features.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const hasPickableVehicles = (liveOverlay?.vehicles ?? []).some(v => v.lat && v.lon);
+    const syncPointerEvents = () => {
+      for (const el of map.getContainer().querySelectorAll<HTMLElement>('canvas')) {
+        if (el.classList.contains('maplibregl-canvas')) continue;
+        el.style.pointerEvents = hasPickableVehicles ? 'auto' : 'none';
+      }
+    };
+    syncPointerEvents();
+    const obs = new MutationObserver(syncPointerEvents);
+    obs.observe(map.getContainer(), { childList: true, subtree: true });
+    return () => obs.disconnect();
   }, [liveOverlay, mapLoaded]);
 
   // Live route dynamic shape overlay
