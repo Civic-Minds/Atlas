@@ -16,6 +16,9 @@
 ### Added
 - **Stop click route highlight (#104)**: Selecting a stop keeps connecting routes at full color/width; other visible routes fade to 15% opacity.
 
+### Fixed
+- **Route card limited destinations**: Limited-service hint no longer repeats destinations already shown with regular headways (e.g. GO 41 Square One).
+
 ## [3.0.7] — 2026-07-06
 
 ### Added

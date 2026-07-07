@@ -198,9 +198,19 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           return displayGroups.map((group, gi) => {
             const fmtH = (d: ShapeProperties): string =>
               formatBranchLabel(d.headsign, currentRoute.routeShortName ?? '', currentRoute.routeLongName ?? '');
-            const spanNames = group.span
-              .map(d => formatBranchLabel(d.headsign, currentRoute.routeShortName ?? '', currentRoute.routeLongName ?? ''))
-              .filter(Boolean);
+            const realHeadsignKeys = new Set(
+              group.realTier.map(d => (d.headsign ?? '').trim().toLowerCase()).filter(Boolean),
+            );
+            const exclusiveSpans = (() => {
+              const seen = new Set<string>();
+              return group.span.filter(d => {
+                const key = (d.headsign ?? '').trim().toLowerCase();
+                if (!key || realHeadsignKeys.has(key) || seen.has(key)) return false;
+                seen.add(key);
+                return true;
+              });
+            })();
+            const exclusiveSpanNames = exclusiveSpans.map(d => fmtH(d)).filter(Boolean);
             return (
               <React.Fragment key={group.dirId}>
                 {gi > 0 && displayGroups.length > 1 && <CardDivider />}
@@ -236,14 +246,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       );
                     })();
                   })}
-                  {(!hideSpan || group.realTier.length === 0) && group.span.length === 1 && (
-                    <CardDirectionRow key="s0" label={group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'} limited {...branchHoverProps(group.dirId, group.span[0].headsign)} />
+                  {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length === 1 && (
+                    <CardDirectionRow key="s0" label={exclusiveSpans[0].headsign ? fmtH(exclusiveSpans[0]) : 'limited service'} limited {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign)} />
                   )}
-                  {(!hideSpan || group.realTier.length === 0) && group.span.length > 1 && (
-                    <CardDirectionRow key="smulti" label={spanNames.join(' · ')} limited />
+                  {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length > 1 && (
+                    <CardDirectionRow key="smulti" label={exclusiveSpanNames.join(' · ')} limited />
                   )}
-                  {hideSpan && group.realTier.length > 0 && spanNames.length > 0 && (
-                    <CardDirectionRow key="span-hint" label={spanNames.join(' · ')} limitedHint />
+                  {hideSpan && group.realTier.length > 0 && exclusiveSpanNames.length > 0 && (
+                    <CardDirectionRow key="span-hint" label={exclusiveSpanNames.join(' · ')} limitedHint />
                   )}
                 </div>
               </React.Fragment>
