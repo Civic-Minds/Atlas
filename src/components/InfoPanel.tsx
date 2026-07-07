@@ -375,14 +375,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'outdated-schedule' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                   {helpContext.agencyName}&apos;s schedule
                   {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
-                </p>
-              )}
-              {helpContext?.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt) && (
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                  Atlas last checked this feed on {formatStoredDate(helpContext.lastRefreshedAt)}.
+                  {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
+                    ? ` Atlas last checked this feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
+                    : ''}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
