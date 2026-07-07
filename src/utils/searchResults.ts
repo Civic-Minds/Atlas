@@ -70,8 +70,71 @@ export function isRoutePrimaryQuery(query: string): boolean {
   const q = query.trim();
   if (!q) return false;
   if (/^\d/.test(q)) return true;
-  if (q.length <= 4 && /^[a-z0-9]+$/i.test(q)) return true;
+  // Short alphanumeric codes need a digit (e.g. 6X) — pure letters like "ttc" are agency slugs.
+  if (q.length <= 6 && /\d/.test(q) && /^[a-z0-9]+$/i.test(q)) return true;
   return false;
+}
+
+/** Exact agency slug or display name — user is searching for the agency, not every route. */
+export function isStrongAgencyQuery(query: string, agencies: AgencySearchGroup[]): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q || agencies.length === 0) return false;
+  return agencies.some(a => a.slug === q || a.name.toLowerCase() === q);
+}
+
+/** Most route hits are only because the agency slug matched, not the route fields. */
+function routesAreMostlyAgencySlugMatches(routes: RouteSearchResult[]): boolean {
+  if (routes.length < 8) return false;
+  const slugOnly = routes.filter(r => r.matchRank >= 7).length;
+  return slugOnly / routes.length >= 0.75;
+}
+
+/** Agency should lead the list and implicit slug-only route matches should be hidden. */
+export function prefersAgencySearchResults(
+  query: string,
+  routes: RouteSearchResult[],
+  agencies: AgencySearchGroup[],
+): boolean {
+  if (agencies.length === 0) return false;
+  if (isStrongAgencyQuery(query, agencies)) return true;
+  if (agencies.length === 1 && routesAreMostlyAgencySlugMatches(routes)) return true;
+  return false;
+}
+
+/** Drop routes that only matched via agency slug when the query is agency-primary. */
+export function filterRouteResultsForDisplay(
+  query: string,
+  routes: RouteSearchResult[],
+  agencies: AgencySearchGroup[],
+): RouteSearchResult[] {
+  if (!prefersAgencySearchResults(query, routes, agencies)) return routes;
+  return routes.filter(r => r.matchRank < 7);
+}
+
+/** Max route rows in the search dropdown — list stays scannable; map still highlights all matches. */
+export const SEARCH_ROUTE_DISPLAY_LIMIT = 30;
+
+export interface RouteSearchDisplay {
+  routes: RouteSearchResult[];
+  totalMatches: number;
+  truncated: boolean;
+}
+
+/** Agency-slug noise removal, then cap for broad queries (already sorted by relevance). */
+export function prepareRouteResultsForDisplay(
+  query: string,
+  routes: RouteSearchResult[],
+  agencies: AgencySearchGroup[],
+  limit = SEARCH_ROUTE_DISPLAY_LIMIT,
+): RouteSearchDisplay {
+  const filtered = filterRouteResultsForDisplay(query, routes, agencies);
+  const totalMatches = filtered.length;
+  const truncated = totalMatches > limit;
+  return {
+    routes: truncated ? filtered.slice(0, limit) : filtered,
+    totalMatches,
+    truncated,
+  };
 }
 
 /** Lower rank = better match. */
@@ -198,6 +261,7 @@ export function routesBeforeAgencies(
 ): boolean {
   if (routes.length === 0) return false;
   if (agencies.length === 0) return true;
+  if (prefersAgencySearchResults(query, routes, agencies)) return false;
   if (isRoutePrimaryQuery(query)) return true;
   const routeInView = routes.some(r => r.inView);
   const agencyInView = agencies.some(a => a.inView);

@@ -15,6 +15,8 @@ import { searchAgencyGroups, type AgencySearchGroup } from '../../utils/agencySe
 import {
   splitAgencyGroups,
   splitRouteResults,
+  filterRouteResultsForDisplay,
+  prepareRouteResultsForDisplay,
   routesBeforeAgencies,
   type RouteSearchResult,
 } from '../../utils/searchResults';
@@ -659,14 +661,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [agencies, query, bounds, fareView, layers, searchFocused]);
 
   const agencySections = useMemo(() => splitAgencyGroups(matchedAgencyGroups), [matchedAgencyGroups]);
-  const routeSections = useMemo(
-    () => splitRouteResults(searchMatchResults ?? []),
-    [searchMatchResults],
-  );
-  const routesFirst = useMemo(
-    () => routesBeforeAgencies(query, searchMatchResults ?? [], matchedAgencyGroups),
+  const routeSearchDisplay = useMemo(
+    () => prepareRouteResultsForDisplay(query, searchMatchResults ?? [], matchedAgencyGroups),
     [query, searchMatchResults, matchedAgencyGroups],
   );
+  const displayRouteResults = routeSearchDisplay.routes;
+  const routeSections = useMemo(
+    () => splitRouteResults(displayRouteResults),
+    [displayRouteResults],
+  );
+  const routesFirst = useMemo(
+    () => routesBeforeAgencies(query, displayRouteResults, matchedAgencyGroups),
+    [query, displayRouteResults, matchedAgencyGroups],
+  );
+  const routeResultsHeadLabel = routeSearchDisplay.truncated
+    ? `Showing ${displayRouteResults.length} of ${routeSearchDisplay.totalMatches} routes — refine search`
+    : `${routeSearchDisplay.totalMatches} route${routeSearchDisplay.totalMatches === 1 ? '' : 's'} match`;
 
   const searchPanelActive = searchFocused && query !== '';
   const hasSearchResults = searchPanelActive && (
@@ -988,9 +998,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 />
               ) : null;
 
-              const routeBlock = searchMatchResults.length > 0 ? (
+              const routeBlock = displayRouteResults.length > 0 ? (
                 <SearchSplitList
-                  headLabel={`${searchMatches} route${searchMatches === 1 ? '' : 's'} match`}
+                  headLabel={routeResultsHeadLabel}
                   inView={routeSections.inView}
                   elsewhere={routeSections.elsewhere}
                   itemKey={(r: RouteSearchResult) => r.key}
