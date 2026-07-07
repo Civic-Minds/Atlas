@@ -1,7 +1,6 @@
 import React from 'react';
 import { isLivePollingRoute } from '../../../utils/livePolling';
 import { titleCase, getRouteLabel, formatBranchLabel } from '../../../utils/format';
-import { PERIOD_LABELS } from '../../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   CardDirectionRow,
@@ -58,9 +57,6 @@ export default function StopRouteGroup({
   const allSame = headways.length > 0 && headways.every(h => h === headways[0]);
   const slug = branches[0]?.rKey.split('::')[0] ?? '';
   const live = isLivePollingRoute(slug, shortName);
-  const periodLabel = period !== 'all' && branches.some(b => b.stopPeriodHw?.[period] != null)
-    ? PERIOD_LABELS[period]
-    : undefined;
 
   const single = items.length === 1;
   const compact = items.length > 1 && allSame;
@@ -73,7 +69,6 @@ export default function StopRouteGroup({
         onClick={() => onOpenRoute(item.rKey)}
         headway={item.hw}
         live={live}
-        headwaySuffix={periodLabel}
         below={(
           <CardSublineButton onClick={() => onOpenRoute(item.rKey)} className="mt-0.5">
             {item.label}
@@ -92,7 +87,6 @@ export default function StopRouteGroup({
           onClick={() => onOpenRoute(branches[0]?.rKey ?? '')}
           headway={sharedHw}
           live={live}
-          headwaySuffix={periodLabel}
         />
         <div className="space-y-0.5">
           {(() => {

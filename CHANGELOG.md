@@ -10,6 +10,7 @@
 
 ### Changed
 - **Sidebar card primitives (#103)**: `SidebarCardShell`, shared list/section wrappers, and `CardDirectionRow` — stop, route, and agency cards share one layout system; removed duplicate route-card wrapper margin.
+- **Stop card period labels**: Dropped redundant "Evening" (etc.) suffix on every headway — active period is already in the sidebar filter.
 
 ## [3.0.7] — 2026-07-06
 
