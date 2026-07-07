@@ -7,7 +7,7 @@ import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
-import { cardinalBoundLabel, directionGroupBearing, directionGroupTerminalLon } from '../../utils/directionLabel';
+import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
@@ -313,16 +313,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
     const groups = Array.from(map.values());
     if (groups.length > 1 && routeFeatures.length > 0) {
+      const dirIds = groups.map(g => g.dirId);
+      const boundLabels = labelDirectionGroups(routeFeatures, dirIds);
       for (const g of groups) {
-        const bearing = directionGroupBearing(routeFeatures, g.dirId);
-        if (bearing != null) g.boundLabel = cardinalBoundLabel(bearing);
+        const label = boundLabels.get(g.dirId);
+        if (label) g.boundLabel = label;
       }
-      groups.sort((a, b) => {
-        const aLon = directionGroupTerminalLon(routeFeatures, a.dirId);
-        const bLon = directionGroupTerminalLon(routeFeatures, b.dirId);
-        if (aLon != null && bLon != null && aLon !== bLon) return aLon - bLon;
-        return a.dirId - b.dirId;
-      });
+      const sortOrder = sortDirectionGroupIds(routeFeatures, dirIds);
+      groups.sort((a, b) => sortOrder.indexOf(a.dirId) - sortOrder.indexOf(b.dirId));
     }
     return groups;
   }, [currentRoute]);
