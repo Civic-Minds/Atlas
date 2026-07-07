@@ -13,6 +13,14 @@ import { config } from 'dotenv';
 import { processGtfsBuffer } from './process-core.js';
 import { r2Put, r2PutArchive } from './r2.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
+import {
+  clearIssueUrlOnFeedChange,
+  formatOverrideIssueUrlClearedLog,
+  formatOverrideResolvedLog,
+  reconcileExcludeRouteShortNames,
+  routeShortNamesInGtfsZip,
+  upstreamFeedChanged,
+} from './overrideAudit.js';
 
 config({ path: resolve('.env.local') });
 
@@ -78,15 +86,25 @@ async function main() {
   const indexPath = resolve('public/data/index.json');
   let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
   let excludeRouteShortNames: string[] | undefined;
+  let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; fare?: number }>;
+      agencies: Array<{ slug: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; issueUrl?: string; fare?: number }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
     preprocess = entry?.preprocess;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
+    issueUrl = entry?.issueUrl;
     if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
+  }
+
+  if (excludeRouteShortNames?.length) {
+    const present = await routeShortNamesInGtfsZip(buf);
+    const { resolved } = reconcileExcludeRouteShortNames(present, excludeRouteShortNames);
+    if (resolved.length > 0) {
+      console.log(`  ${formatOverrideResolvedLog(slug, resolved, issueUrl)}`);
+    }
   }
   // fare-overrides.json on R2 takes precedence over legacy index.json fare field
   try {
@@ -131,13 +149,19 @@ async function main() {
   // Artifact URLs are now derived (see shared/config.ts getAgencyArtifactUrls).
   // Only persist name, center, and source config.
   if (existing >= 0) {
-    index.agencies[existing] = {
-      ...index.agencies[existing],
+    const prev = index.agencies[existing];
+    const updated = {
+      ...prev,
       name: agencyName,
       center,
       lastFeedExpiry: feedExpiry,
       lastFeedVersion: feedVersion,
     };
+    if (prev.issueUrl && upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
+      delete updated.issueUrl;
+      console.log(`  ${formatOverrideIssueUrlClearedLog(slug, prev.issueUrl)}`);
+    }
+    index.agencies[existing] = updated;
   } else {
     index.agencies.push({ slug, name: agencyName, center, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion });
   }

@@ -18,6 +18,13 @@ import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
 import { runWithConcurrency } from './utils.js';
+import {
+  clearIssueUrlOnFeedChange,
+  formatOverrideIssueUrlClearedLog,
+  formatOverrideResolvedLog,
+  reconcileExcludeRouteShortNames,
+  routeShortNamesInGtfsZip,
+} from './overrideAudit.js';
 
 config({ path: resolve('.env.local') });
 
@@ -147,6 +154,7 @@ interface AgencyEntry {
   skipLetterSuffixMerge?: boolean;
   staged?: boolean;
   fare?: number;
+  issueUrl?: string;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -227,6 +235,20 @@ async function refreshAgency(
     }
     if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
       return `skipped (same feed version: ${peekedVersion})`;
+    }
+  }
+
+  const clearedIssueUrl = clearIssueUrlOnFeedChange(agency, peekedExpiry, peekedVersion);
+  if (clearedIssueUrl) {
+    writeLog(`\n  ${formatOverrideIssueUrlClearedLog(agency.slug, clearedIssueUrl)}\n  `);
+  }
+
+  // When the feed file changed, warn if excluded routes may no longer need overrides.
+  if (agency.excludeRouteShortNames?.length) {
+    const present = await routeShortNamesInGtfsZip(buf);
+    const { resolved } = reconcileExcludeRouteShortNames(present, agency.excludeRouteShortNames);
+    if (resolved.length > 0) {
+      writeLog(`\n  ${formatOverrideResolvedLog(agency.slug, resolved, agency.issueUrl)}\n  `);
     }
   }
 
