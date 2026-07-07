@@ -20,6 +20,7 @@
 - **Near You loading**: Shows spinner while agency GeoJSON loads instead of “No routes within 500 m”.
 - **Near You dismiss** ([#139](https://github.com/Civic-Minds/Atlas/issues/139)): Panel closes on outside click (same pattern as filter chips).
 - **Search suggestions**: Section headers match content — Recent searches / Recent routes / Suggested routes (or agencies in Fares); both recent and suggested routes can show together.
+- **Live Vehicles**: Vehicle detail rows use fleet labels or ordinals instead of raw UUIDs; route list drops redundant "Route N" suffix; multi-agency headers match suggestion section style.
 
 ## [3.0.9] — 2026-07-06
 

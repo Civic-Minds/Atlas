@@ -195,6 +195,7 @@ export default async function handler(req: Request) {
           delayMin,
           headsign,
           directionId,
+          vehicleLabel: vp.vehicle?.label ?? null,
           status,
         });
       }

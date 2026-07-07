@@ -6,11 +6,13 @@ import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollin
 import { useViewport } from '../context/ViewportContext';
 import type { Agency } from '../App';
 import { getAgencyArtifactUrls } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
-import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, routeListCompanionName, liveVehicleRowLabel } from '../utils/format';
+
+const SUGGESTIONS_HEAD = 'px-4 py-2 text-[10px] font-black tracking-wide text-[var(--text-dim)]';
 
 interface Props {
   agencies: Agency[];
@@ -462,15 +464,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 (selectedDirection
                   ? (vehiclesByDirection?.get(selectedDirection) ?? [])
                   : selectedGroup.vehicles
-                ).map(v => {
+                ).map((v, i) => {
                   const label = delayLabel(v);
                   const colors = STATUS_COLORS[v.status];
-                  // Clean up garbage UUID-style IDs — take the last numeric segment
-                  const cleanId = (v.id.match(/\d{4,}$/)?.[0]) ?? (v.id.replace(/^[a-f0-9]{8,}$/, '').trim() || v.id);
                   return (
-                    <div key={v.id} className="px-4 py-2.5 border-b border-[var(--border-primary)] flex items-center gap-3">
-                      <p className="text-xs font-bold text-[var(--text-primary)] flex-1 min-w-0 truncate">
-                        {v.headsign || `Bus ${cleanId || v.id}`}
+                    <div key={v.id} className={`${LIST_ROW} cursor-default hover:bg-transparent`}>
+                      <p className={`${LIST_ROW_PRIMARY} flex-1 min-w-0 truncate group-hover:text-[var(--text-primary)]`}>
+                        {liveVehicleRowLabel(v, i)}
                       </p>
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
@@ -526,6 +526,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               // Route list, grouped by agency when multiple are visible
               (() => {
                 let lastSlug = '';
+                let agencyHeaderIndex = 0;
                 return displayedRouteGroups.map(g => {
                   const key = `${g.agencySlug}::${g.routeShortName}`;
                   const isSelected = selectedRoute === key;
@@ -544,13 +545,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   return (
                     <React.Fragment key={key}>
                       {showAgencyHeader && (
-                        <div className="px-4 pt-3 pb-1 text-[9px] font-black tracking-wider text-[var(--text-dim)]">
+                        <div className={`${SUGGESTIONS_HEAD} ${agencyHeaderIndex++ > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
                           {agencyName}
                         </div>
                       )}
                       <RouteListRow
                         shortName={cleanRouteShortName(g.routeShortName)}
-                        name={g.displayName}
+                        name={routeListCompanionName(g.displayName, g.routeShortName)}
                         selected={isSelected}
                         onClick={() => handleRouteClick(key)}
                         right={

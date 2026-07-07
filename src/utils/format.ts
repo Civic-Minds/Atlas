@@ -128,6 +128,38 @@ export function cleanRouteDisplayName(displayName: string, shortName: string): s
   return displayName;
 }
 
+const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-/i;
+
+/** Companion name for RouteListRow — omit when redundant with shortName (e.g. "Route 1" + "1"). */
+export function routeListCompanionName(
+  displayName: string | undefined | null,
+  shortName: string
+): string | undefined {
+  if (!displayName) return undefined;
+  const cleaned = cleanRouteShortName(shortName);
+  if (displayName === cleaned) return undefined;
+  const m = displayName.match(/^Route\s+(.+)$/i);
+  if (m && cleanRouteShortName(m[1]) === cleaned) return undefined;
+  return displayName;
+}
+
+/** Sidebar label for a live vehicle row when headsign is unavailable. */
+export function liveVehicleRowLabel(
+  v: { headsign: string | null; id: string; vehicleLabel?: string | null },
+  index: number
+): string {
+  if (v.headsign) return v.headsign;
+  const fleet = v.vehicleLabel?.trim();
+  if (fleet && !UUID_LIKE.test(fleet)) return `Bus ${fleet}`;
+  const id = v.id.trim();
+  if (/^\d{3,7}$/.test(id)) return `Bus ${id}`;
+  if (!UUID_LIKE.test(id)) {
+    const tail = id.match(/\d{4,}$/)?.[0];
+    if (tail) return `Bus ${tail}`;
+  }
+  return `Vehicle ${index + 1}`;
+}
+
 export function shortenAgencyName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';
