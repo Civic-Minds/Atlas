@@ -9,7 +9,7 @@ import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../.
 import { getFareColor } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { shortenAgencyName } from '../../utils/format';
-import type { DayType } from '../../../types/gtfs';
+import type { DayType } from '../../hooks/useIntervalStats';
 
 interface RouteRow {
   routeId: string;

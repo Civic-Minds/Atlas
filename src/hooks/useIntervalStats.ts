@@ -4,11 +4,11 @@ import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { effectiveMode } from '../../shared/modes';
-import type { DayType } from '../../types/gtfs';
+
+export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
 export { HEADWAY_TIERS, getTierColor };
 export { effectiveMode, VIRTUAL_LRT_MODE } from '../../shared/modes';
-export type { DayType };
 export type AgencyLayers = BaseAgencyLayers;
 
 export interface ShapeProperties extends BaseShapeProperties {
