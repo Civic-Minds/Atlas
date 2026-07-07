@@ -235,7 +235,7 @@ export async function processGtfsBuffer(
   const featureStopHeadwaySlots = new Map<GeoJsonFeature, { shortName: string; dirId: string; day: string }>();
   for (const feature of features) {
     const p = feature.properties;
-    if (p.routeShortName && p.directionId != null && p.day) {
+    if (p.routeShortName != null && p.directionId != null && p.day) {
       featureStopHeadwaySlots.set(feature, {
         shortName: p.routeShortName as string,
         dirId: String(p.directionId),

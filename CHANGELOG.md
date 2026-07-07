@@ -21,6 +21,7 @@
 - **Agencies**: Cascades East Transit, Mountain Transit (Big Bear Lake), RoadRUNNER Transit (Las Cruces), EZ Rider, San Angelo Transit, Brownsville Metro; Roswell/Hobbs (NM), Longview/Texarkana/Fort Bend (TX), Lake Charles/Terrebonne/Tangipahoa (LA); Space Coast, Martin County, Indian River, Collier CAT (FL).
 
 ### Fixed
+- **Empty routeShortName routes** (e.g. 145): changed `routeShortName &&` guard to `!= null` in process-core.ts so stop headway loop runs; headwayByHour, stopHeadways, stopOrder etc. now compute.
 - **Pipeline**: Post-merge tier refinement uses `headwayToTier()` instead of undefined `HEADWAY_TIERS`.
 - **MVTA**: Agency label (`MVTA` not `VTA`); 4FUN corridor title and headsign cleanup; MOA/MSP/TS/FUN acronyms; route/stop cards skip direction dividers for simple bidirectional pairs.
 - **RMTD**: `shortenAgencyName` maps Rockford Mass Transit District before generic "Mass" stripping.
