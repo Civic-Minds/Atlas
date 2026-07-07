@@ -32,6 +32,7 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 const SEARCH_HEAD = 'px-4 text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5';
+const SUGGESTIONS_HEAD = 'px-4 py-2 text-[10px] font-black tracking-wide text-[var(--text-dim)]';
 const SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-[9px] font-bold uppercase tracking-wide text-[var(--text-dim)]';
 
 function SearchSplitList<T>({
@@ -246,6 +247,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return routes.sort((a, b) => a.headway - b.headway).slice(0, 5);
   }, [nonCorridorLayers]);
 
+  const suggestedRoutes = useMemo(() => {
+    const viewedKeys = new Set(recentlyViewed.map(r => r.key));
+    return notableRoutes.filter(r => !viewedKeys.has(r.key));
+  }, [notableRoutes, recentlyViewed]);
+
   const suggestedFareAgencies = useMemo(() => {
     if (!fareView) return [];
 
@@ -267,14 +273,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     return result;
   }, [agencies, fareView, nonCorridorLayers]);
-
-  const isFareSuggestions = fareView && suggestedFareAgencies.length > 0 && recentSearches.length === 0;
-  const suggestionsTitle = recentSearches.length > 0 
-    ? 'Recent searches' 
-    : fareView ? 'Suggested agencies' : 'Suggested routes';
-  const suggestionsList = recentSearches.length > 0 
-    ? null 
-    : (fareView ? suggestedFareAgencies : (recentlyViewed.length > 0 ? recentlyViewed : notableRoutes));
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -715,76 +713,118 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     >
       {searchFocused && query === '' && (
         <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-primary)]">
-            <span className="text-[10px] font-black tracking-wide text-[var(--text-dim)]">
-              {suggestionsTitle}
-            </span>
-            {recentSearches.length > 0 && (
-              <button
-                onClick={clearRecentSearches}
-                className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
-              >
-                Clear
-              </button>
-            )}
-          </div>
+          {recentSearches.length > 0 && (
+            <>
+              <div className={`flex items-center justify-between border-b border-[var(--border-primary)] ${SUGGESTIONS_HEAD}`}>
+                <span>Recent searches</span>
+                <button
+                  onClick={clearRecentSearches}
+                  className="text-[9px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
+              <div>
+                {recentSearches.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setQuery(s)}
+                    className={LIST_ROW}
+                  >
+                    <span className={LIST_ROW_PRIMARY}>{s}</span>
+                    <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
-          {recentSearches.length > 0 ? (
-            <div>
-              {recentSearches.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => setQuery(s)}
-                  className={LIST_ROW}
-                >
-                  <span className={LIST_ROW_PRIMARY}>{s}</span>
-                  <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
-                </button>
-              ))}
-            </div>
-          ) : isFareSuggestions ? (
-            <div>
-              {suggestedFareAgencies.map((a) => (
-                <button
-                  key={a.slug}
-                  onClick={() => setQuery(a.name)}
-                  className={LIST_ROW}
-                >
-                  <span className={LIST_ROW_PRIMARY}>{shortenAgencyName(a.name)}</span>
-                </button>
-              ))}
-              {suggestedFareAgencies.length === 0 && (
+          {fareView ? (
+            <>
+              {suggestedFareAgencies.length > 0 && (
+                <>
+                  <div className={`${SUGGESTIONS_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+                    Suggested agencies
+                  </div>
+                  <div>
+                    {suggestedFareAgencies.map((a) => (
+                      <button
+                        key={a.slug}
+                        onClick={() => setQuery(a.name)}
+                        className={LIST_ROW}
+                      >
+                        <span className={LIST_ROW_PRIMARY}>{shortenAgencyName(a.name)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {suggestedFareAgencies.length === 0 && recentSearches.length === 0 && (
                 <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No agencies with fare data in this area.</p>
               )}
-            </div>
+            </>
           ) : (
-            <div>
-              {(recentlyViewed.length > 0 ? recentlyViewed : notableRoutes).map((r) => (
-                <button
-                  key={r.key}
-                  onClick={() => setSelectedRoute(r.key)}
-                  className={LIST_ROW}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className={LIST_ROW_PRIMARY}>
-                      {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
-                    </div>
-                    <div className={`flex items-center gap-1.5 mt-0.5`}>
-                      <span className={LIST_ROW_DIM}>{r.agencyName}</span>
-                      {recentlyViewed.length === 0 && r.headway !== undefined && r.headway < 999 && (
-                        <>
-                          <span className="text-[10px] text-[var(--text-dim)]">·</span>
-                          <span className="text-[10px] text-[var(--text-dim)]">every {r.headway}m</span>
-                        </>
-                      )}
-                    </div>
+            <>
+              {recentlyViewed.length > 0 && (
+                <>
+                  <div className={`${SUGGESTIONS_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+                    Recent routes
                   </div>
-                </button>
-              ))}
-              {recentlyViewed.length === 0 && notableRoutes.length === 0 && (
+                  <div>
+                    {recentlyViewed.map((r) => (
+                      <button
+                        key={r.key}
+                        onClick={() => setSelectedRoute(r.key)}
+                        className={LIST_ROW}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className={LIST_ROW_PRIMARY}>
+                            {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className={LIST_ROW_DIM}>{r.agencyName}</span>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {suggestedRoutes.length > 0 && (
+                <>
+                  <div className={`${SUGGESTIONS_HEAD} ${(recentSearches.length > 0 || recentlyViewed.length > 0) ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+                    Suggested routes
+                  </div>
+                  <div>
+                    {suggestedRoutes.map((r) => (
+                      <button
+                        key={r.key}
+                        onClick={() => setSelectedRoute(r.key)}
+                        className={LIST_ROW}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className={LIST_ROW_PRIMARY}>
+                            {titleCase(getRouteLabel(r.shortName, r.longName, r.agencyName))}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className={LIST_ROW_DIM}>{r.agencyName}</span>
+                            {r.headway < 999 && (
+                              <>
+                                <span className="text-[10px] text-[var(--text-dim)]">·</span>
+                                <span className="text-[10px] text-[var(--text-dim)]">every {r.headway}m</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {recentSearches.length === 0 && recentlyViewed.length === 0 && suggestedRoutes.length === 0 && (
                 <p className="text-[11px] text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
               )}
-            </div>
+            </>
           )}
         </div>
       )}
