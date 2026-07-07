@@ -98,7 +98,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               <button
                 key={i}
                 onClick={() => setQuery(s)}
-                className={LIST_ROW}
+                className={`${LIST_ROW} border-b-0`}
               >
                 <span className={LIST_ROW_PRIMARY}>{s}</span>
                 <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
@@ -120,7 +120,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                   <button
                     key={a.slug}
                     onClick={() => setQuery(a.name)}
-                    className={LIST_ROW}
+                    className={`${LIST_ROW} border-b-0`}
                   >
                     <span className={LIST_ROW_PRIMARY}>{shortenAgencyName(a.name)}</span>
                   </button>
@@ -149,6 +149,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={routeRowRight(r.agencyName, r.headway ?? headwayForRouteKey(r.key))}
                       onClick={() => pickRoute(r.key)}
+                      className="border-b-0"
                     />
                   );
                 })}
@@ -170,6 +171,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={routeRowRight(r.agencyName, r.headway)}
                       onClick={() => pickRoute(r.key)}
+                      className="border-b-0"
                     />
                   );
                 })}

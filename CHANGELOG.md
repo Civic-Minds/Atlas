@@ -11,7 +11,7 @@
 - **Card Help notices alignment**: Aligned styling, font size, and placement of "We corrected this data" with the outdated-schedule notice under a unified `CardHelpNotice` component.
 - **History eligibility criteria**: Filtered historical data exploration to agencies meeting `agencyQualifiesForHistoryExplore` threshold.
 - **Sidebar search component modularization**: Refactored `SidebarControls.tsx` to extract search suggestions and result list rendering logic into self-contained `SearchSuggestionsPanel` and `SearchResultsList` components.
-- **Search result labels**: Removed " — refine search" suffix from truncated result labels.
+- **Search result layouts**: Removed border separators between individual rows in the search suggestions and matched results panels, and removed the " — refine search" suffix from truncated labels.
 - **Rockford**: `excludeRouteShortNames: ["Test"]` — junk upstream route stripped at process time (Closes [#144](https://github.com/Civic-Minds/Atlas/issues/144)).
 - **Rockford**: Switched `feedUrl` to official `rmtd.org/rmtdgtfs/GTFS_FILES.zip` (valid through Oct 2026); removed Test override — upstream no longer publishes that route.
 - **Agencies**: Cascades East Transit, Mountain Transit (Big Bear Lake), RoadRUNNER Transit (Las Cruces), EZ Rider, San Angelo Transit, Brownsville Metro; Roswell/Hobbs (NM), Longview/Texarkana/Fort Bend (TX), Lake Charles/Terrebonne/Tangipahoa (LA); Space Coast, Martin County, Indian River, Collier CAT (FL).

@@ -79,6 +79,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       renderItem={(g: AgencySearchGroup) => (
         <RouteListRow
           shortName={g.name}
+          className="border-b-0"
           onClick={() => {
             setSelectedAgencySlug?.(g.slug);
             setQuery('');
@@ -107,6 +108,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             shortName={labels.shortName}
             name={labels.name}
             selected={selectedRoute === r.key}
+            className="border-b-0"
             onClick={() => {
               saveRecentSearch(query);
               setQuery('');
