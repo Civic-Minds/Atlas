@@ -20,7 +20,7 @@ import {
   routesBeforeAgencies,
   type RouteSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_HEAD, PANEL_SEARCH_SUBHEAD } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_HEAD, PANEL_SEARCH_SUBHEAD, SEARCH_BAR_WIDTH } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
@@ -740,7 +740,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   return (
     <div
-      className={`absolute top-20 ${Z_PANEL} w-72 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+      className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
     >
       {searchFocused && query === '' && (

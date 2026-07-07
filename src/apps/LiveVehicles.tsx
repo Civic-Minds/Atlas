@@ -6,7 +6,7 @@ import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollin
 import { useViewport } from '../context/ViewportContext';
 import type { Agency } from '../App';
 import { getAgencyArtifactUrls } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SEARCH_BAR_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
@@ -363,7 +363,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
-        className={`absolute top-20 ${Z_PANEL} w-64 max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
+        className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
         style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
       >
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>

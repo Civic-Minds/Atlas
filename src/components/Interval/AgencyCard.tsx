@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import type { Agency, FareOverride } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SEARCH_BAR_WIDTH } from '../../styles';
 import { getFareColor } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
@@ -175,7 +175,7 @@ export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect
 
   return (
     <div
-      className={`absolute top-20 ${Z_PANEL} w-64 ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+      className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
       style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
     >
       <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
