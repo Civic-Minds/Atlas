@@ -9,6 +9,7 @@ import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling'
 import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
+import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, type AgencySearchGroup } from '../../utils/agencySearch';
 import {
@@ -245,7 +246,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (!p.routeId || p.stopId) continue;
         const key = routeKey({ ...p, agencySlug: slug } as any);
         if (routes.some(r => r.key === key)) continue;
-        const headway = p.headway ?? 999;
+        const headway = routeCardDisplayHeadway(p, period) ?? 999;
         const shortName = p.routeShortName || p.routeId;
         const longName = p.routeLongName || '';
         const agencyName = shortenAgencyName(p.agencyName || slug);
@@ -253,7 +254,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return routes.sort((a, b) => a.headway - b.headway).slice(0, 5);
-  }, [nonCorridorLayers]);
+  }, [nonCorridorLayers, period]);
 
   const suggestedRoutes = useMemo(() => {
     const viewedKeys = new Set(recentlyViewed.map(r => r.key));

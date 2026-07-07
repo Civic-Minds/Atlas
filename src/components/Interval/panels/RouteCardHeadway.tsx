@@ -15,6 +15,7 @@ import {
   SidebarCardShell,
 } from '../cardUi';
 import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
+import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import {
   dirIdNum,
   headsignTrunkHeadway,
@@ -228,12 +229,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const minStopHw = (d as any).minStopHeadway as number | undefined;
                     const dimmed = maxHeadway !== Infinity && (minStopHw ?? d.headway ?? Infinity) > maxHeadway;
                     return (() => {
-                      const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
-                      const byHour = (d as any).headwayByHour as Record<number, number | null> | undefined;
-                      const ph = period !== 'all'
-                        ? (byPeriod?.[period as keyof HeadwayByPeriod] ?? periodHeadwayFromByHour(byHour, period))
-                        : undefined;
-                      const displayH = ph ?? d.headway;
+                      const displayH = routeCardDisplayHeadway(d, period);
                       const label = branchLabel(group, d.headsign, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = period !== 'all'

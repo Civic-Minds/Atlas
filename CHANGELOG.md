@@ -21,6 +21,7 @@
 - **Route card headway ranges (restored, gated)**: Multi-branch rows can show `every X–Y min` again when headsign-scoped trunk wait is ≥5 min, ≥5 min better than destination wait, and ratio ≤4×; route-wide combined deps no longer drive the low end.
 - **Route card duplicate destinations**: Drop stub headsign duplicates that appear in both direction groups (e.g. TTC 900 “to Kipling” under Eastbound and Westbound) — keep the full-length branch only.
 - **Search vs route card**: Focusing the search bar clears the selected route/stop so suggestions don’t stack over an open route card; picking a search result dismisses search focus.
+- **Headway consistency**: Agency route list and search suggestions now use the same period-aware headway as route cards (e.g. midday `every 6 min`), not a different all-day minimum across directions.
 
 ### Changed
 - **Corridors mode**: Header **Corridors** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Corridors from here…** entry.

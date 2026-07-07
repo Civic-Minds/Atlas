@@ -293,6 +293,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             agency={agency}
             layers={layers}
             day={day}
+            period={period}
             onClose={onAgencyCardClose ?? (() => {})}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}

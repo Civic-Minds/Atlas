@@ -6,7 +6,8 @@ import { FLOATING_CARD, PANEL_ENTER, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../.
 import { getFareColor } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
-import type { DayType } from '../../hooks/useIntervalStats';
+import type { DayType, TimePeriod } from '../../hooks/useIntervalStats';
+import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardCloseButton, CardDirectionRow, DataOverrideLink } from './cardUi';
 
 interface RouteRow {
@@ -20,7 +21,7 @@ interface RouteRow {
   busSubType: string | undefined;
 }
 
-function getRoutes(layers: AgencyLayers, slug: string, day: string): RouteRow[] {
+function getRoutes(layers: AgencyLayers, slug: string, day: string, period: TimePeriod): RouteRow[] {
   const fc = layers[slug];
   if (!fc) return [];
 
@@ -31,7 +32,7 @@ function getRoutes(layers: AgencyLayers, slug: string, day: string): RouteRow[] 
     if (p.day && p.day !== day) continue;
 
     const key = p.routeShortName;
-    const h: number | null = p.headway ?? null;
+    const h = routeCardDisplayHeadway(p, period);
     const existing = best.get(key);
     if (!existing || (h !== null && (existing.headway === null || h < existing.headway))) {
       best.set(key, {
@@ -80,6 +81,7 @@ interface Props {
   agency: Agency;
   layers: AgencyLayers;
   day: DayType;
+  period: TimePeriod;
   onClose: () => void;
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
@@ -87,8 +89,8 @@ interface Props {
   fareOverride?: FareOverride;
 }
 
-export function AgencyCard({ agency, layers, day, onClose, onRouteSelect, sidebarLeft, fareView, fareOverride }: Props) {
-  const routes = useMemo(() => getRoutes(layers, agency.slug, day), [layers, agency.slug, day]);
+export function AgencyCard({ agency, layers, day, period, onClose, onRouteSelect, sidebarLeft, fareView, fareOverride }: Props) {
+  const routes = useMemo(() => getRoutes(layers, agency.slug, day, period), [layers, agency.slug, day, period]);
   const agencyBlurb = useMemo(() => getAgencyBlurb(routes), [routes]);
 
   const baseFare = useMemo(() => {

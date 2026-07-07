@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, routeCardDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -21,6 +21,17 @@ describe('effectiveRouteHeadway', () => {
     } as ShapeProperties;
     expect(effectiveRouteHeadway(p, 'midday')).toBe(10);
     expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(5);
+  });
+
+  it('routeCardDisplayHeadway uses period summary not min-stop filter headway', () => {
+    const p = {
+      ...base,
+      headway: 5,
+      headwayByPeriod: { midday: 6 },
+      minStopHeadwayByPeriod: { midday: 5 },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(6);
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(5);
   });
 
   it('falls back to all-day headway when period is all', () => {
