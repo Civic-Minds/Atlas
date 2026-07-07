@@ -84,12 +84,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     }
   }, [view]);
 
-  const regions = useMemo(() => {
-    const seen = new Set<string>();
-    for (const a of agencies) seen.add(a.region ?? 'Other');
-    return [...seen].sort();
-  }, [agencies]);
-
   const liveBySlug = useMemo(() => {
     const map = new Map<string, typeof LIVE_POLLING_ROUTES>();
     for (const r of LIVE_POLLING_ROUTES) {
@@ -105,6 +99,22 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     for (const a of historyAgencies ?? []) map.set(a.slug, a);
     return map;
   }, [historyAgencies]);
+
+  const regionsInScope = useMemo(() => {
+    const seen = new Set<string>();
+    for (const a of agencies) {
+      if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) continue;
+      if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) continue;
+      seen.add(a.region ?? 'Other');
+    }
+    return [...seen].sort();
+  }, [agencies, agencyFeatureFilter, liveBySlug, historyBySlug]);
+
+  useEffect(() => {
+    if (regionFilter && !regionsInScope.includes(regionFilter)) {
+      setRegionFilter(null);
+    }
+  }, [regionFilter, regionsInScope]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -265,7 +275,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     </button>
                   )}
                 </div>
-                <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                <div className="flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                   {([
                     ['all', 'All'],
                     ['live', 'Live'],
@@ -283,19 +293,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                       {label}
                     </button>
                   ))}
-                </div>
-                <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
-                  <button
-                    onClick={() => setRegionFilter(null)}
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                      regionFilter === null
-                        ? 'bg-[var(--accent)] text-white border-transparent'
-                        : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
-                    }`}
-                  >
-                    All
-                  </button>
-                  {regions.map(r => (
+                  {regionsInScope.length > 0 && (
+                    <span className="w-px h-3.5 shrink-0 bg-[var(--border-primary)] mx-0.5" aria-hidden />
+                  )}
+                  {regionsInScope.map(r => (
                     <button
                       key={r}
                       onClick={() => setRegionFilter(prev => prev === r ? null : r)}
