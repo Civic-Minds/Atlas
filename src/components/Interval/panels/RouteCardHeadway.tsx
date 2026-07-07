@@ -284,6 +284,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     agencyName: routeAgency?.name,
                     expDateStr: expDateStr || undefined,
                     lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+                    websiteUrl: routeAgency?.websiteUrl ?? undefined,
                   })}
                   className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
                 >Learn more →</button></>

@@ -17,6 +17,7 @@ export type HelpContext = {
   agencyName?: string;
   expDateStr?: string;
   lastRefreshedAt?: string;
+  websiteUrl?: string;
 };
 export type OpenInfoOptions = {
   featureFilter?: 'live' | 'history';
@@ -24,6 +25,7 @@ export type OpenInfoOptions = {
   agencyName?: string;
   expDateStr?: string;
   lastRefreshedAt?: string;
+  websiteUrl?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
@@ -389,6 +391,17 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 We check for updates every Monday. Sometimes an agency is late publishing, or their download link breaks, and the warning can linger even though service may have changed.
               </p>
+              {helpContext?.websiteUrl && (
+                <a
+                  href={helpContext.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Check current schedules</span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
+              )}
               <a
                 href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"

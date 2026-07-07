@@ -48,6 +48,7 @@
         "staged": { "type": "boolean" },
         "gtfsFares": { "type": "boolean" },
         "fareUrl": { "type": "string" },
+        "websiteUrl": { "type": "string" },
         "issueUrl": { "type": "string" },
         "fare": { "type": "number" }
       },

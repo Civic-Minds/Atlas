@@ -45,6 +45,7 @@ export interface Agency {
   fare?: number;
   gtfsFares?: boolean;
   fareUrl?: string;
+  websiteUrl?: string;
   // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
   feedUrl?: string | null;
   mdbFeedUrl?: string;
@@ -97,6 +98,7 @@ export default function App() {
       agencyName: opts.agencyName,
       expDateStr: opts.expDateStr,
       lastRefreshedAt: opts.lastRefreshedAt,
+      websiteUrl: opts.websiteUrl,
     } : null);
     setInfoOpen(true);
   }, []);
