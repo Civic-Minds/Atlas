@@ -22,6 +22,12 @@ jobs:
 
       - run: npm ci
 
+      - name: Type Check
+        run: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.api.json
+
+      - name: Test
+        run: npm run test
+
       - name: Refresh all agency feeds
         run: npm run refresh
         env:
@@ -58,7 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/index.json
+          git add public/data/index.json shared/cacheBuild.ts
           if ! git diff --cached --quiet; then
             git commit -m "chore: weekly GTFS feed refresh"
             git pull --rebase origin main

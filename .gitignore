@@ -73,8 +73,8 @@ AGENTS.local.md
 
 # Wrangler local dev state and captured feed samples
 workers/**/.wrangler/
-workers/**/burlington/
-workers/gtfs-rt-archiver/*/
+workers/gtfs-rt-archiver/burlington/
+workers/gtfs-rt-archiver/hamilton/
 
 # Gemini Agents config
 .agents/

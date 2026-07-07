@@ -2,6 +2,8 @@
  * Shared configuration constants
  */
 
+export const DEFAULT_R2_PUBLIC_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+
 const getR2PublicUrl = (): string => {
   if (typeof process !== 'undefined' && process.env?.R2_PUBLIC_URL) {
     return process.env.R2_PUBLIC_URL;
@@ -17,7 +19,7 @@ const getR2PublicUrl = (): string => {
     // @ts-ignore
     return import.meta.env.VITE_R2_PUBLIC_URL;
   }
-  return 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+  return DEFAULT_R2_PUBLIC_URL;
 };
 
 export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');

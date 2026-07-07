@@ -40,6 +40,20 @@ export const LIVE_AGENCY_BBOXES: Record<string, [number, number, number, number]
   edmonton:   [-113.90, 53.30, -113.10, 53.78],
   yrt:        [-79.85, 43.73, -79.00, 44.45],
   halifax:    [-63.92, 44.48, -63.38, 44.85],
+  translink:  [-123.50, 49.00, -122.20, 49.50],
+  stm:        [-74.07, 45.10, -73.07, 45.90],
+};
+
+/** IANA timezone per live-polling agency (History hourly bucketing). */
+export const LIVE_AGENCY_TIMEZONES: Record<string, string> = {
+  burlington: 'America/Toronto',
+  ttc: 'America/Toronto',
+  hamilton: 'America/Toronto',
+  yrt: 'America/Toronto',
+  translink: 'America/Vancouver',
+  stm: 'America/Montreal',
+  edmonton: 'America/Edmonton',
+  halifax: 'America/Halifax',
 };
 
 export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
@@ -98,7 +112,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     vehiclePositionsUrl: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary',
     scheduleOffsetMin: {
       '0': { '18660': 0, '5587': 17, '1098': 34, '5382': 40 },
-      '1': { '5382': 0, '17664': 9, '2538': 32, '18660': 55 },
+      '1': { '5382': 0, '17664': 9, '18660': 55 },
     },
   },
   {
@@ -161,7 +175,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     apiKeyHeaderEnvVar: 'STM_API_KEY',
     scheduleOffsetMin: {
       '0': { '50314': 0, '50869': 22, '51848': 44, '52947': 65 },
-      '1': { '52947': 0, '51827': 21, '50785': 46, '50314': 70 },
+      '1': { '52947': 0, '51827': 21, '51848': 46, '50314': 70 },
     },
   },
   {

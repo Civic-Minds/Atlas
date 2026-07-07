@@ -15,7 +15,14 @@ import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { TIME_PERIODS, HEADWAY_TIERS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } from '../shared/config.js';
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
+import { t2m } from './transit-utils.js';
 
+function headwayToTier(h: number): string {
+  for (const { max } of HEADWAY_TIERS) {
+    if (h <= max) return max === Infinity ? 'infrequent' : String(max);
+  }
+  return 'infrequent';
+}
 // Tier ordering from best to worst. Step 4 uses this to ensure it can only degrade
 // a route's tier (branch less frequent than trunk), never improve it.
 const TIER_RANK: Record<string, number> = Object.fromEntries([
@@ -719,9 +726,8 @@ export async function processGtfsBuffer(
     if (grp) {
       const timeStr = st.departure_time || st.arrival_time;
       if (timeStr) {
-        const parts = timeStr.split(':');
-        const mins = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        if (Number.isFinite(mins)) {
+        const mins = t2m(timeStr);
+        if (mins !== null) {
           const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
           let stopMap = stopDepsByGroup.get(gKey);
           if (!stopMap) { stopMap = new Map(); stopDepsByGroup.set(gKey, stopMap); }
@@ -1135,7 +1141,7 @@ export async function processGtfsBuffer(
           isCorridor: true,
           corridorId: c.linkId,
           headway: h,
-          tier: String(h),
+          tier: headwayToTier(h),
           routeIds: c.routeIds,
           corridorShortNames: shortNames,
           day: d,

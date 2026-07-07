@@ -1,5 +1,6 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
+import { R2_PUBLIC_URL } from '../shared/config.js';
 
 export const config = {
   maxDuration: 60,
@@ -83,8 +84,6 @@ export default async function handler(req: Request) {
   const fetchOpts = { apiKeyParam, apiKeyHeader };
 
   try {
-    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
-
     // Fetch positions, trip updates, and static trips lookup in parallel
     const [positionsFeed, updatesFeed, tripsLookup] = await Promise.all([
       fetchProtoFeed(vehiclePositionsUrl, fetchOpts),

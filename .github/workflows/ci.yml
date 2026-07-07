@@ -28,10 +28,13 @@ jobs:
         run: npm ci
 
       - name: Type Check
-        run: npx tsc --noEmit
+        run: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.api.json
+
+      - name: Validate index.json
+        run: npm run validate-index
 
       - name: Test
-        run: npm test
+        run: npm run test
 
       - name: Build
         run: npm run build

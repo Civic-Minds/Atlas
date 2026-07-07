@@ -3,6 +3,39 @@
 ## [Unreleased]
 
 ### Fixed
+- **History timezone (#105)**: Hourly delay buckets use per-agency IANA timezones instead of hardcoded UTC−4.
+- **Supplemental feed skip (#106)**: Weekly refresh no longer skips agencies with unchanged primary feeds when supplementals exist.
+- **Per-stop GTFS times (#107)**: Pipeline uses `t2m()` for stop headways (supports >24:00 overnight times).
+- **Stale feed expiry (#108)**: Expired `feed_end_date` forces reprocess instead of indefinite skip.
+- **Live Vehicles bboxes (#109)**: TransLink and STM added to `LIVE_AGENCY_BBOXES`.
+- **Live config drift (#110)**: TTC 503 and STM 55 `scheduleOffsetMin` stop IDs aligned with `targetStops`.
+- **Agency index load (#113)**: Failed `index.json` fetch shows retry UI instead of infinite Loading.
+- **History API env (#114)**: `history-adherence` fails fast on missing R2 credentials.
+- **App navigation (#115)**: Re-enabled `AppDrawer` for Corridors, History, and Fares.
+- **Error boundaries (#116)**: Map shell wrapped in recoverable `ErrorBoundary`.
+- **Map zoom UX (#117)**: Low-zoom stop clicks fly in; route disambiguation and geolocation show hints.
+- **Search a11y (#118)**: Main search input has `aria-label` per app mode.
+- **Map attribution (#119)**: Compact MapLibre attribution control restored.
+- **process-gtfs parity (#120)**: Manual process archives zip and updates `lastFeedExpiry`/`lastFeedVersion`.
+- **Supplemental options (#121)**: Supplemental feeds receive full `ProcessOptions` in refresh.
+- **IDB cache bust (#122)**: `CACHE_BUILD` auto-increments on successful refresh uploads.
+- **Corridor tiers (#123)**: Corridor features use `HEADWAY_TIERS` bucket labels.
+- **peekFeedInfo CSV (#124)**: Feed info parsing uses Papa CSV instead of naive split.
+
+### Changed
+- **CI typecheck (#111)**: Added `tsconfig.api.json` — API routes type-checked in CI alongside `src`/`shared`.
+- **validate-index in CI (#112)**: `npm run validate-index` runs on every PR.
+- **R2 URL centralization (#127)**: `DEFAULT_R2_PUBLIC_URL` exported from `shared/config.ts`.
+- **Dead code removed (#126)**: Deleted `dev-api-server.ts` and `pipeline/mapStyles.ts`.
+- **Deps cleanup (#125)**: Removed unused Leaflet and Playwright packages.
+- **Docs (#128)**: README and ROADMAP updated to MapLibre GL stack.
+- **refresh-feeds CI (#131)**: Weekly workflow runs typecheck and tests before commit.
+- **Worker gitignore**: Fixed pattern that incorrectly ignored `gtfs-rt-archiver/src/`.
+
+### Added
+- **History adherence tests (#130)**: Unit tests for `computeHistoryAdherence` timezone bucketing.
+
+### Fixed
 - **Route card trunk frequency (#99)**: Multi-branch routes (e.g. HSR 5) show combined shared-section headway in the sparkline by default; destination rows show terminal wait ranges. Branch hover switches sparkline to that branch.
 - **Route card sparkline overnight (#100)**: Hourly chart runs 6 AM → 2 AM left-to-right with 5 AM grouped at the end — overnight no longer splits across both ends.
 - **Sidebar card continuity (#101)**: Stop and agency cards reuse `RouteDirectionRow` styling — stacked labels/headways, shared `to …` branch formatting, consistent dots and typography.

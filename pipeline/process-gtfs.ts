@@ -11,7 +11,8 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { config } from 'dotenv';
 import { processGtfsBuffer } from './process-core.js';
-import { r2Put } from './r2.js';
+import { r2Put, r2PutArchive } from './r2.js';
+import { R2_PUBLIC_URL } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
 
@@ -89,7 +90,6 @@ async function main() {
   }
   // fare-overrides.json on R2 takes precedence over legacy index.json fare field
   try {
-    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
     const res = await fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`);
     if (res.ok) {
       const overrides = await res.json() as Record<string, { adult?: number }>;
@@ -99,7 +99,7 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, featureCount, center: computedCenter, livePollingSidecar } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, featureCount, center: computedCenter, livePollingSidecar, feedExpiry, feedVersion } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { preprocess, excludeRouteShortNames, slug, manualBaseFare });
   const center = argCenter ?? computedCenter ?? [0, 0];
@@ -117,6 +117,12 @@ async function main() {
   const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
 
+  const archiveKey = feedExpiry ?? feedVersion;
+  if (archiveKey) {
+    await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
+    console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
+  }
+
   let index: { agencies: any[] } = { agencies: [] };
   if (existsSync(indexPath)) {
     index = JSON.parse(readFileSync(indexPath, 'utf8'));
@@ -125,9 +131,15 @@ async function main() {
   // Artifact URLs are now derived (see shared/config.ts getAgencyArtifactUrls).
   // Only persist name, center, and source config.
   if (existing >= 0) {
-    index.agencies[existing] = { ...index.agencies[existing], name: agencyName, center };
+    index.agencies[existing] = {
+      ...index.agencies[existing],
+      name: agencyName,
+      center,
+      lastFeedExpiry: feedExpiry,
+      lastFeedVersion: feedVersion,
+    };
   } else {
-    index.agencies.push({ slug, name: agencyName, center, feedUrl: null });
+    index.agencies.push({ slug, name: agencyName, center, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   console.log(`  index.json updated\n`);

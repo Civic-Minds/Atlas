@@ -15,6 +15,8 @@ import JSZip from 'jszip';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
+import { R2_PUBLIC_URL } from '../shared/config.js';
+import { parseCsv } from './parseGtfs.js';
 import { runWithConcurrency } from './utils.js';
 
 config({ path: resolve('.env.local') });
@@ -115,15 +117,13 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
     );
     if (!entry) return { feedExpiry: null, feedVersion: null };
     const text = await entry.async('text');
-    const lines = text.trim().split(/\r?\n/);
-    if (lines.length < 2) return { feedExpiry: null, feedVersion: null };
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-    const values = lines[1].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-    const get = (col: string) => {
-      const i = headers.indexOf(col);
-      return i >= 0 ? (values[i] || null) : null;
+    const rows = parseCsv<Record<string, string>>(text);
+    if (rows.length === 0) return { feedExpiry: null, feedVersion: null };
+    const row = rows[0];
+    return {
+      feedExpiry: row.feed_end_date || null,
+      feedVersion: row.feed_version || null,
     };
-    return { feedExpiry: get('feed_end_date'), feedVersion: get('feed_version') };
   } catch {
     return { feedExpiry: null, feedVersion: null };
   }
@@ -209,17 +209,18 @@ async function refreshAgency(
   // Skip processing if the feed hasn't changed since last refresh.
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
-  if (peekedExpiry) {
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    if (peekedExpiry < today) {
-      const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
-      const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
-      writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
-    }
+  if (peekedExpiry && peekedExpiry < today) {
+    const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
+    const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
+    writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
   }
 
-  if (!forceRefresh) {
+  const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
+  const feedExpired = !!(peekedExpiry && peekedExpiry < today);
+
+  if (!forceRefresh && !hasSupplementals && !feedExpired) {
     if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
       return `skipped (same schedule period: ${peekedExpiry})`;
     }
@@ -254,6 +255,9 @@ async function refreshAgency(
       const supp = await processGtfsBuffer(suppBuf, undefined, {
         routeTypes: agency.routeTypes,
         preprocess: agency.preprocess,
+        excludeRouteShortNames: agency.excludeRouteShortNames,
+        slug: agency.slug,
+        manualBaseFare: manualBaseFareOverride,
       });
       mainFeatures.push(...(JSON.parse(supp.geojson) as GeoJsonFc).features);
       corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as GeoJsonFc).features);
@@ -308,6 +312,18 @@ async function refreshAgency(
   return `${featureCount} features, ${kb} KB`;
 }
 
+function bumpCacheBuild(): void {
+  const cachePath = resolve('shared/cacheBuild.ts');
+  const content = readFileSync(cachePath, 'utf8');
+  const match = content.match(/export const CACHE_BUILD = (\d+)/);
+  if (!match) return;
+  const next = parseInt(match[1], 10) + 1;
+  writeFileSync(
+    cachePath,
+    `/** Bumped by pipeline refresh when R2 artifacts change (busts browser IDB cache). */\nexport const CACHE_BUILD = ${next};\n`,
+  );
+}
+
 async function main() {
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: AgencyEntry[] } = JSON.parse(readFileSync(indexPath, 'utf8'));
@@ -315,7 +331,6 @@ async function main() {
   // Load fare overrides from R2 — takes precedence over legacy fare field in index.json
   let fareOverrides: Record<string, { adult?: number }> = {};
   try {
-    const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
     const res = await fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`);
     if (res.ok) fareOverrides = await res.json() as Record<string, { adult?: number }>;
   } catch {
@@ -332,6 +347,7 @@ async function main() {
   }
 
   let failures = 0;
+  let uploads = 0;
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
     const logger = {
@@ -341,6 +357,7 @@ async function main() {
     };
     try {
       const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
+      if (!summary.startsWith('skipped')) uploads++;
       console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
       // Clear staged flag once data is live so the next deploy shows the agency.
       if (agency.staged) delete agency.staged;
@@ -356,6 +373,10 @@ async function main() {
   await runWithConcurrency(tasks, 5);
 
   console.log(`\n  index.json updated. ${targets.length - failures}/${targets.length} succeeded.`);
+  if (uploads > 0) {
+    bumpCacheBuild();
+    console.log(`  cache build bumped (${uploads} agencies uploaded)`);
+  }
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
     // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)

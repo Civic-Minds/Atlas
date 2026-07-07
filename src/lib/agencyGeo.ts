@@ -1,6 +1,7 @@
 /** Shared in-memory cache for agency route GeoJSON (Frequency + Corridors). */
 import { idbGet, idbSet, idbPruneStale } from './idbCache';
 import { getAgencyArtifactUrls } from '../../shared/config';
+import { CACHE_BUILD } from '../../shared/cacheBuild';
 
 export interface AgencyGeoSource {
   slug: string;
@@ -8,9 +9,6 @@ export interface AgencyGeoSource {
   url: string;
   corridorsUrl?: string;
 }
-
-// Increment this when pushing mid-week data fixes that need to bust the browser IDB cache.
-const CACHE_BUILD = 1;
 
 /** Rotates weekly (+ CACHE_BUILD for mid-week fixes) so browsers re-fetch after data updates. */
 export function agencyGeoWeekVersion(): string {

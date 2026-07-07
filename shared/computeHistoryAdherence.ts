@@ -1,4 +1,14 @@
-import { getLiveRouteConfig } from './livePollingConfig.js';
+import { getLiveRouteConfig, LIVE_AGENCY_TIMEZONES } from './livePollingConfig.js';
+
+function localHour(unixTs: number, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour: 'numeric',
+    hour12: false,
+  }).formatToParts(new Date(unixTs * 1000));
+  const hour = parseInt(parts.find(p => p.type === 'hour')?.value ?? '0', 10);
+  return hour === 24 ? 0 : hour;
+}
 
 /** One snapshot file from atlas-live/{slug}/{date}/{ts}.json */
 export interface SnapshotTrip {
@@ -40,20 +50,18 @@ export function computeHistoryAdherence(
   if (!cfg) return null;
 
   const routeIdSet = new Set(cfg.routeIds);
+  const timeZone = LIVE_AGENCY_TIMEZONES[agency] ?? 'America/Toronto';
 
-  // Accumulate delay samples per hour of day (Eastern time — UTC-4 in summer)
   const hourSamples: Map<number, number[]> = new Map();
   for (let h = 0; h < 24; h++) hourSamples.set(h, []);
 
   for (const snap of snapshots) {
-    const localHour = new Date(snap.ts * 1000).getUTCHours();
-    // Rough EST offset: UTC-4 (EDT). Wrap around midnight.
-    const estHour = (localHour - 4 + 24) % 24;
+    const hour = localHour(snap.ts, timeZone);
 
     for (const trip of snap.trips) {
       if (!routeIdSet.has(trip.r)) continue;
       if (trip.delay === null) continue;
-      hourSamples.get(estHour)!.push(trip.delay / 60);
+      hourSamples.get(hour)!.push(trip.delay / 60);
     }
   }
 

@@ -117,6 +117,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
+  const [mapHint, setMapHint] = useState<string | null>(null);
+  const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const showMapHint = (msg: string) => {
+    setMapHint(msg);
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    hintTimerRef.current = setTimeout(() => setMapHint(null), 2500);
+  };
 
   // Keep a ref to onViewChange so the moveend closure (registered once) always
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
@@ -162,6 +169,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     });
 
     mapRef.current = map;
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-left');
 
     map.on('load', () => {
       setZoom(map.getZoom());
@@ -385,6 +393,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 11) {
             setDisambiguationRoutes(null);
+            showMapHint('Zoom in to choose a route');
             return;
           }
           setDisambiguationRoutes(uniqueRouteKeys);
@@ -407,8 +416,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutes(null);
 
         if (map.getZoom() < 13) {
-          // At low zoom, avoid popping the full multi-route stop card for a "city" click.
-          // User can zoom in first for precise stop details.
+          map.flyTo({ center: e.lngLat, zoom: 13, duration: 800 });
           e.preventDefault();
           return;
         }
@@ -530,7 +538,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         map.flyTo({ center: [coords.longitude, coords.latitude], zoom: 14, duration: 1200 });
         onLocate?.(coords.latitude, coords.longitude);
       },
-      () => {},
+      () => showMapHint('Location unavailable — check browser permissions'),
       { timeout: 8000 }
     );
   };
@@ -1097,6 +1105,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
 
       {/* Geolocate Button Control Overlay */}
+      {mapHint && (
+        <div className={`absolute bottom-20 left-1/2 -translate-x-1/2 ${Z_PANEL} px-3 py-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-xs text-[var(--text-muted)] shadow-lg pointer-events-none`}>
+          {mapHint}
+        </div>
+      )}
       <button
         onClick={locateUser}
         aria-label="Go to my location"

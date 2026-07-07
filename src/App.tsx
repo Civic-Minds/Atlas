@@ -13,6 +13,7 @@ import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel from './components/InfoPanel';
+import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../types/gtfs';
 
 export interface FareOverride {
@@ -76,6 +77,7 @@ export default function App() {
   }
 
   const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [query, setQuery] = useState('');
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
@@ -189,14 +191,16 @@ export default function App() {
   }, [searchPlaceholder]);
 
   useEffect(() => {
+    setAgenciesLoadState('loading');
     fetch('/data/index.json')
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
           .filter((a: Agency) => !a.staged)
           .map((a: Agency) => {
-            // Derive artifact URLs from slug when not explicitly stored.
-            // This allows us to stop duplicating the repetitive R2 paths in index.json.
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug);
               return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
@@ -204,8 +208,9 @@ export default function App() {
             return a;
           });
         setAgencies(enriched);
+        setAgenciesLoadState('ready');
       })
-      .catch(() => {});
+      .catch(() => setAgenciesLoadState('error'));
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
       .then((data: Array<{ slug: string }>) => setHistoryAgencySlugs(new Set(data.map(a => a.slug))))
@@ -245,8 +250,7 @@ export default function App() {
           <span className="text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        {/* AppDrawer hidden until Corridors and History have sufficient data */}
-        {/* <AppDrawer activeApp={activeApp} onSelect={setActiveApp} /> */}
+        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
         {/* Search bar — doubles as Corridors From input and History agency search */}
         <div ref={searchBarRef}>
@@ -256,6 +260,7 @@ export default function App() {
             ref={corridorsFromRef}
             type="text"
             value={searchValue}
+            aria-label={searchPlaceholder}
             onChange={e => handleSearchChange(e.target.value)}
             onFocus={() => {
               clearTimeout(searchBlurTimer.current);
@@ -316,11 +321,44 @@ export default function App() {
       </div>
 
       <main className="absolute inset-0 overflow-hidden">
-        {agencies.length === 0 ? (
+        {agenciesLoadState === 'loading' ? (
           <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
             Loading…
           </div>
+        ) : agenciesLoadState === 'error' ? (
+          <div className="flex flex-col items-center justify-center h-full gap-3 text-sm text-[var(--text-dim)]">
+            <p>Could not load agency data.</p>
+            <button
+              type="button"
+              className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"
+              onClick={() => {
+                setAgenciesLoadState('loading');
+                fetch('/data/index.json')
+                  .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.json();
+                  })
+                  .then((data: { agencies: Agency[] }) => {
+                    const enriched = data.agencies
+                      .filter((a: Agency) => !a.staged)
+                      .map((a: Agency) => {
+                        if (!a.url) {
+                          const arts = getAgencyArtifactUrls(a.slug);
+                          return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
+                        }
+                        return a;
+                      });
+                    setAgencies(enriched);
+                    setAgenciesLoadState('ready');
+                  })
+                  .catch(() => setAgenciesLoadState('error'));
+              }}
+            >
+              Retry
+            </button>
+          </div>
         ) : (
+          <ErrorBoundary label="The map encountered an error.">
           <>
             <Interval
               agencies={
@@ -389,6 +427,7 @@ export default function App() {
               </div>
             )}
           </>
+          </ErrorBoundary>
         )}
       </main>
       <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
