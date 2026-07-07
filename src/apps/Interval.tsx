@@ -14,6 +14,7 @@ import { FilterChips, getNowPeriod } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
 import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
 import type { Agency, FareOverride } from '../App';
+import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
 
@@ -29,7 +30,7 @@ interface Props {
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
   forceShowCorridors?: boolean;
-  onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
+  onInfoOpen?: OpenInfoFn;
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
   onAgencyCardClose?: () => void;
@@ -438,6 +439,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
         onDirectFromStop={onDirectFromStop}
+        onInfoOpen={onInfoOpen}
       />
       </div>
     </div>

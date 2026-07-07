@@ -12,7 +12,7 @@ import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
-import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions } from './components/InfoPanel';
+import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions, type HelpContext } from './components/InfoPanel';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 
@@ -85,12 +85,22 @@ export default function App() {
   const [infoOpen, setInfoOpen] = useState(false);
   const [infoTab, setInfoTab] = useState<Tab>('about');
   const [infoFeatureFilter, setInfoFeatureFilter] = useState<InfoFeatureFilter>('all');
+  const [infoHelpContext, setInfoHelpContext] = useState<HelpContext | null>(null);
   const openInfo = useCallback((tab: Tab = 'about', opts?: OpenInfoOptions) => {
     const featureFilter: InfoFeatureFilter = opts?.featureFilter
       ?? (tab === 'live' ? 'live' : tab === 'history' ? 'history' : 'all');
     setInfoTab(tab === 'live' || tab === 'history' ? 'agencies' : tab);
     setInfoFeatureFilter(featureFilter);
+    setInfoHelpContext(opts?.helpTopic ? {
+      topic: opts.helpTopic,
+      agencyName: opts.agencyName,
+      expDateStr: opts.expDateStr,
+    } : null);
     setInfoOpen(true);
+  }, []);
+  const closeInfo = useCallback(() => {
+    setInfoOpen(false);
+    setInfoHelpContext(null);
   }, []);
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
@@ -101,8 +111,8 @@ export default function App() {
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const [sidebarLeft, setSidebarLeft] = useState<number>(SIDEBAR_LEFT_FALLBACK);
-  const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); setInfoOpen(false); }, []);
-  const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); setInfoOpen(false); }, []);
+  const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); closeInfo(); }, [closeInfo]);
+  const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
@@ -401,7 +411,7 @@ export default function App() {
           </ErrorBoundary>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={() => setInfoOpen(false)} agencies={agencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
+      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={agencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
     </div>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

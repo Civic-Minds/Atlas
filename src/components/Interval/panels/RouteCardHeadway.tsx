@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
+import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
 import { titleCase, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
@@ -114,6 +115,7 @@ export interface RouteCardHeadwayProps {
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
+  onInfoOpen?: OpenInfoFn;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -133,6 +135,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   expDateStr,
   hoveredBranch,
   setHoveredBranch,
+  onInfoOpen,
 }) => {
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
 
@@ -272,13 +275,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {routeIsStale && (
           <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
             <p className="text-[9px] font-bold text-[var(--text-dim)]">
-              Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}{routeSlug && (
-                <>{' '}<a
-                  href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
-                  target="_blank"
-                  rel="noopener noreferrer"
+              Schedule may be outdated{expDateStr ? ` (ended ${expDateStr})` : ''}
+              {onInfoOpen && (
+                <>{' '}<button
+                  type="button"
+                  onClick={() => onInfoOpen('about', {
+                    helpTopic: 'outdated-schedule',
+                    agencyName: routeAgency?.name,
+                    expDateStr: expDateStr || undefined,
+                  })}
                   className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
-                >Learn more →</a></>
+                >Learn more →</button></>
               )}
             </p>
           </div>

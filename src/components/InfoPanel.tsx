@@ -7,10 +7,21 @@ import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
-export type OpenInfoOptions = { featureFilter?: 'live' | 'history' };
+export type HelpTopic = 'outdated-schedule';
+export type HelpContext = {
+  topic: HelpTopic;
+  agencyName?: string;
+  expDateStr?: string;
+};
+export type OpenInfoOptions = {
+  featureFilter?: 'live' | 'history';
+  helpTopic?: HelpTopic;
+  agencyName?: string;
+  expDateStr?: string;
+};
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
@@ -25,6 +36,7 @@ interface Props {
   agencies: Agency[];
   defaultTab?: Tab;
   featureFilter?: InfoFeatureFilter;
+  helpContext?: HelpContext | null;
   onAgencySelect?: (slug: string) => void;
   onLiveRouteClick?: (slug: string, routeShortName: string) => void;
 }
@@ -34,7 +46,7 @@ function tabToView(tab: Tab): View {
   return 'agencies';
 }
 
-export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', onAgencySelect, onLiveRouteClick }: Props) {
+export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, onAgencySelect, onLiveRouteClick }: Props) {
   const [view, setView] = useState<View>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -69,13 +81,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   useEffect(() => {
     if (open) {
-      setView(tabToView(defaultTab ?? 'about'));
+      setView(helpContext?.topic === 'outdated-schedule' ? 'outdated-schedule' : tabToView(defaultTab ?? 'about'));
       setAgencyFeatureFilter(featureFilter);
       setSelectedSlug(null);
     } else {
       setQuery(''); setRegionFilter(null); setSelectedSlug(null); setAgencyFeatureFilter('all');
     }
-  }, [open, defaultTab, featureFilter]);
+  }, [open, defaultTab, featureFilter, helpContext]);
 
   useEffect(() => {
     if (view === 'agencies') {
@@ -160,7 +172,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   if (!open) return null;
 
-  const headerTitle = view === 'agencies' ? 'Data' : view === 'agency-detail' ? selectedAgency?.name ?? '' : null;
+  const headerTitle =
+    view === 'agencies' ? 'Data'
+    : view === 'agency-detail' ? selectedAgency?.name ?? ''
+    : view === 'outdated-schedule' ? 'Outdated schedule'
+    : null;
 
   return (
     <div className={`fixed inset-0 ${Z_MODAL_BG}`} onClick={onClose}>
@@ -188,7 +204,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             }`}
           >
             <button
-              onClick={() => view === 'agency-detail' ? setView('agencies') : setView('home')}
+              onClick={() => {
+                if (view === 'agency-detail') setView('agencies');
+                else setView('home');
+              }}
               className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors text-left"
             >
               <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
@@ -347,6 +366,30 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {view === 'outdated-schedule' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              {helpContext?.agencyName && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                  {helpContext.agencyName}&apos;s schedule
+                  {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
+                </p>
+              )}
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                Transit agencies publish schedules in periods. When a period ends and they haven&apos;t published the next one yet, Atlas still shows the last version we have — with this warning.
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                We check for updates every Monday. Sometimes an agency is late publishing, or their download link breaks, and the warning can linger even though service may have changed.
+              </p>
+              <a
+                href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
+                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </a>
             </div>
           )}
 

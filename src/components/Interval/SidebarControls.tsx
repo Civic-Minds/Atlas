@@ -28,6 +28,7 @@ import type { StopRoute, NearbyConnection } from './panels/StopCard';
 import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import { LiveAdherenceCard } from './panels/LiveAdherenceCard';
 import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
+import type { OpenInfoFn } from '../InfoPanel';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -125,6 +126,7 @@ interface SidebarControlsProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   onDirectFromStop?: (stop: StopEntry) => void;
+  onInfoOpen?: OpenInfoFn;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -165,6 +167,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   hoveredBranch,
   setHoveredBranch,
   onDirectFromStop,
+  onInfoOpen,
 }) => {
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
@@ -975,6 +978,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 expDateStr={expDateStr}
                 hoveredBranch={hoveredBranch}
                 setHoveredBranch={setHoveredBranch}
+                onInfoOpen={onInfoOpen}
               />
             )
         )}
