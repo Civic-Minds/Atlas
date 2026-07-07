@@ -474,13 +474,7 @@ export async function processGtfsBuffer(
       // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
       // never improve one. Route tier is owned by phase 2; Step 4 only refines it downward.
       // This prevents AM/PM peak clusters from promoting infrequent routes (e.g. Halifax 330).
-      let newTier = 'infrequent';
-      for (const { max } of HEADWAY_TIERS) {
-        if (headway <= max) {
-          newTier = max === Infinity ? 'infrequent' : String(max);
-          break;
-        }
-      }
+      let newTier = headwayToTier(headway);
       const currentRank = TIER_RANK[feature.properties.tier as string] ?? -1;
       if ((TIER_RANK[newTier] ?? -1) > currentRank) {
         feature.properties.tier = newTier;
