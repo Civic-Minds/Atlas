@@ -3,7 +3,7 @@ import { LocateFixed } from 'lucide-react';
 import { headwayToTierColor } from '../../utils/colors';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_BODY, PANEL_EMPTY } from '../../styles';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -26,9 +26,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       style={{ position: 'absolute', bottom: 72, right: 12, zIndex: PANEL_Z_INDEX }}
       className={`w-64 max-h-72 flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
     >
-      <div className="flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0">
+      <div className={PANEL_TITLE_BAR}>
         <LocateFixed className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-        <span className="text-[10px] font-black text-[var(--text-dim)] tracking-wide">Near You</span>
+        <span className={PANEL_TITLE}>Near You</span>
       </div>
 
       {loading ? (
@@ -37,11 +37,11 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
           <span className="text-[10px] font-bold text-[var(--text-muted)]">Loading nearby…</span>
         </div>
       ) : routes.length === 0 ? (
-        <p className="px-4 py-3 text-[11px] text-[var(--text-muted)] font-bold">
+        <p className={PANEL_EMPTY}>
           No routes within 500 m
         </p>
       ) : (
-        <div className="overflow-y-auto custom-scrollbar flex-1 min-h-0">
+        <div className={PANEL_BODY}>
           {routes.map(r => (
             <button
               key={r.rKey}

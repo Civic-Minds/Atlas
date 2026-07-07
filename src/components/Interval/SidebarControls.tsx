@@ -15,7 +15,7 @@ import {
   routesBeforeAgencies,
   type RouteSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_HEAD, PANEL_SEARCH_SUBHEAD } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
@@ -31,9 +31,6 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-const SEARCH_HEAD = 'px-4 text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5';
-const SUGGESTIONS_HEAD = 'px-4 py-2 text-[10px] font-black tracking-wide text-[var(--text-dim)]';
-const SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-[9px] font-bold uppercase tracking-wide text-[var(--text-dim)]';
 
 function SearchSplitList<T>({
   headLabel,
@@ -52,10 +49,10 @@ function SearchSplitList<T>({
   const split = inView.length > 0 && elsewhere.length > 0;
   return (
     <div>
-      <div className={SEARCH_HEAD}>{headLabel}</div>
-      {split && <div className={`${SEARCH_SUBHEAD} pt-1`}>In this area</div>}
+      <div className={PANEL_SEARCH_HEAD}>{headLabel}</div>
+      {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-1`}>In this area</div>}
       {inView.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
-      {split && <div className={SEARCH_SUBHEAD}>Elsewhere</div>}
+      {split && <div className={PANEL_SEARCH_SUBHEAD}>Elsewhere</div>}
       {elsewhere.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
     </div>
   );
@@ -715,7 +712,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
           {recentSearches.length > 0 && (
             <>
-              <div className={`flex items-center justify-between border-b border-[var(--border-primary)] ${SUGGESTIONS_HEAD}`}>
+              <div className={`flex items-center justify-between border-b border-[var(--border-primary)] ${PANEL_SECTION_HEAD}`}>
                 <span>Recent searches</span>
                 <button
                   onClick={clearRecentSearches}
@@ -743,7 +740,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <>
               {suggestedFareAgencies.length > 0 && (
                 <>
-                  <div className={`${SUGGESTIONS_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+                  <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
                     Suggested agencies
                   </div>
                   <div>
@@ -767,7 +764,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             <>
               {recentlyViewed.length > 0 && (
                 <>
-                  <div className={`${SUGGESTIONS_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+                  <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
                     Recent routes
                   </div>
                   <div>
@@ -792,7 +789,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               )}
               {suggestedRoutes.length > 0 && (
                 <>
-                  <div className={`${SUGGESTIONS_HEAD} ${(recentSearches.length > 0 || recentlyViewed.length > 0) ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+                  <div className={`${PANEL_SECTION_HEAD} ${(recentSearches.length > 0 || recentlyViewed.length > 0) ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
                     Suggested routes
                   </div>
                   <div>

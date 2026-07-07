@@ -6,13 +6,11 @@ import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollin
 import { useViewport } from '../context/ViewportContext';
 import type { Agency } from '../App';
 import { getAgencyArtifactUrls } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
 import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, routeListCompanionName, liveVehicleRowLabel } from '../utils/format';
-
-const SUGGESTIONS_HEAD = 'px-4 py-2 text-[10px] font-black tracking-wide text-[var(--text-dim)]';
 
 interface Props {
   agencies: Agency[];
@@ -370,61 +368,54 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       >
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
 
-          {/* Header — fixed height so it never reflows between list and route views */}
-          <div className="px-4 border-b border-[var(--border-primary)] flex items-start pt-[14px] gap-2 shrink-0 h-[52px]">
-            {selectedGroup ? (
-              // Route card header
-              <>
-                <button
-                  onClick={selectedDirection
-                    ? () => setSelectedDirection(null)
-                    : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
-                  className="p-0.5 -ml-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
-                  aria-label={selectedDirection ? 'Back to directions' : 'Back to route list'}
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                </button>
-                <RouteCardTitle
-                  routeShortName={selectedGroup.routeShortName}
-                  routeLongName={selectedRouteLongName}
-                  agencyName={selectedAgencyName}
-                />
-              </>
-            ) : (
-              // List header — wrap in items-center so the 8px dot aligns with the text midline
-              <span className="flex items-center gap-2">
-                {!isZoomedIn ? (
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
-                ) : totalVehicles > 0 ? (
-                  <span className="relative flex h-2 w-2 shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                  </span>
-                ) : isLoading ? (
-                  <span className="relative flex h-2 w-2 shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
-                  </span>
-                ) : hasAnyError ? (
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shrink-0" />
-                ) : (
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
-                )}
-                <h2 className="text-sm font-black text-[var(--text-primary)]">Live Vehicles</h2>
-              </span>
-            )}
-          </div>
+          {/* Header */}
+          {selectedGroup ? (
+            <div className={PANEL_CARD_HEADER}>
+              <button
+                onClick={selectedDirection
+                  ? () => setSelectedDirection(null)
+                  : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
+                className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+                aria-label={selectedDirection ? 'Back to directions' : 'Back to route list'}
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </button>
+              <RouteCardTitle
+                routeShortName={selectedGroup.routeShortName}
+                routeLongName={selectedRouteLongName}
+                agencyName={selectedAgencyName}
+              />
+            </div>
+          ) : (
+            <div className={PANEL_TITLE_BAR}>
+              {!isZoomedIn ? (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
+              ) : totalVehicles > 0 ? (
+                <span className="relative flex h-2 w-2 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                </span>
+              ) : isLoading ? (
+                <span className="relative flex h-2 w-2 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+                </span>
+              ) : hasAnyError ? (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shrink-0" />
+              ) : (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
+              )}
+              <span className={PANEL_TITLE}>Live Vehicles</span>
+            </div>
+          )}
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
+          <div className={PANEL_BODY}>
             {selectedGroup ? (
               // Route card: destination-grouped or vehicle-level fallback
               selectedGroup.vehicles.length === 0 ? (
-                <div className="py-10 text-center">
-                  <p className="text-xs text-[var(--text-muted)]">No vehicles on this route</p>
-                </div>
+                <p className={`${PANEL_EMPTY} text-center`}>No vehicles on this route</p>
               ) : canGroupByDirection && !selectedDirection ? (
-                // Direction groups — headsign if available, directionId otherwise
                 [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
                   const label = getDirectionLabel(dirKey);
                   const preview = vehicles.slice(0, 3);
@@ -433,34 +424,33 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     <button
                       key={dirKey}
                       onClick={() => setSelectedDirection(dirKey)}
-                      className="w-full px-4 py-3 border-b border-[var(--border-primary)] text-left hover:bg-[var(--bg-hover)] transition-colors group"
+                      className={LIST_ROW}
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs font-bold text-[var(--text-primary)] truncate flex-1">{label}</p>
-                        <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] shrink-0 transition-colors" />
+                      <div className="min-w-0 flex-1">
+                        <p className={`${LIST_ROW_PRIMARY} truncate`}>{label}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                          {preview.map(v => {
+                            const colors = STATUS_COLORS[v.status];
+                            return (
+                              <span
+                                key={v.id}
+                                style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                                className={`text-[10px] font-bold ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
+                              >
+                                {delayLabel(v)}
+                              </span>
+                            );
+                          })}
+                          {extra > 0 && (
+                            <span className={LIST_ROW_DIM}>+{extra} more</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        {preview.map(v => {
-                          const colors = STATUS_COLORS[v.status];
-                          return (
-                            <span
-                              key={v.id}
-                              style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                              className={`text-[9px] font-black ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
-                            >
-                              {delayLabel(v)}
-                            </span>
-                          );
-                        })}
-                        {extra > 0 && (
-                          <span className={`text-[9px] ${LIST_ROW_DIM}`}>+{extra} more</span>
-                        )}
-                      </div>
+                      <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] shrink-0 transition-colors" />
                     </button>
                   );
                 })
               ) : (
-                // Individual vehicle rows — direction drill-down or no grouping possible
                 (selectedDirection
                   ? (vehiclesByDirection?.get(selectedDirection) ?? [])
                   : selectedGroup.vehicles
@@ -474,7 +464,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       </p>
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                        className={`text-[10px] font-black shrink-0 ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
+                        className={`text-[10px] font-bold shrink-0 ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
                       >
                         {label}
                       </span>
@@ -483,12 +473,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 })
               )
             ) : !isZoomedIn ? (
-              <div className="py-8 px-4 flex flex-col items-center gap-3">
-                <p className="text-[10px] text-[var(--text-dim)]">Zoom in to start tracking</p>
-              </div>
+              <p className={`${PANEL_EMPTY} text-center`}>Zoom in to start tracking</p>
             ) : visibleSlugs.length === 0 && !isLoading ? (
-              <div className="py-8 px-4 flex flex-col items-center gap-3">
-                <p className="text-[10px] font-bold text-[var(--text-dim)]">Live coverage</p>
+              <div className="py-6 px-4 flex flex-col items-center gap-3">
+                <p className={PANEL_TITLE}>Live coverage</p>
                 <div className="flex flex-wrap justify-center gap-1.5">
                   {(['Burlington', 'Hamilton', 'Toronto', 'York Region', 'Edmonton', 'Halifax'] as const).map(city => (
                     <span key={city} className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1">
@@ -499,9 +487,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <p className="text-[10px] text-[var(--text-dim)]">Pan to a covered city</p>
               </div>
             ) : isLoading && totalVehicles === 0 ? (
-              <div className="flex items-center justify-center py-12 gap-2">
-                <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-[var(--text-muted)]">Loading feed…</span>
+              <div className="flex items-center justify-center gap-2 px-4 py-6">
+                <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
+                <span className="text-[10px] font-bold text-[var(--text-muted)]">Loading feed…</span>
               </div>
             ) : hasAnyError ? (
               <div className="py-6 text-center px-4 flex flex-col items-center gap-3">
@@ -514,11 +502,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 </div>
               </div>
             ) : displayedRouteGroups.length === 0 ? (
-              <div className="py-10 text-center flex flex-col items-center gap-2">
-                <p className="text-xs font-bold text-[var(--text-primary)]">
+              <div className="py-6 px-4 text-center flex flex-col items-center gap-1.5">
+                <p className="text-[11px] font-bold text-[var(--text-primary)]">
                   {query ? 'No routes match' : 'No vehicles right now'}
                 </p>
-                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                <p className="text-[10px] font-bold text-[var(--text-muted)] leading-relaxed">
                   {query ? 'Try a different search.' : 'Active vehicles will appear here as they check in.'}
                 </p>
               </div>
@@ -545,7 +533,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   return (
                     <React.Fragment key={key}>
                       {showAgencyHeader && (
-                        <div className={`${SUGGESTIONS_HEAD} ${agencyHeaderIndex++ > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
+                        <div className={`${PANEL_SECTION_HEAD} ${agencyHeaderIndex++ > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
                           {agencyName}
                         </div>
                       )}
@@ -556,9 +544,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                         onClick={() => handleRouteClick(key)}
                         right={
                           <div className="flex items-center gap-1.5 shrink-0 ml-3">
-                            <span className="text-[10px] text-[var(--text-muted)] font-bold">{g.vehicles.length} veh</span>
+                            <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
                             {statusLabel && (
-                              <span style={{ color: colors.border }} className="text-[9px] font-black">
+                              <span style={{ color: colors.border }} className="text-[10px] font-bold">
                                 · {statusLabel}
                               </span>
                             )}

@@ -49,6 +49,30 @@ export const LIST_ROW_PRIMARY = 'text-xs font-black text-[var(--text-primary)] g
 /** Dim sub-label inside a LIST_ROW */
 export const LIST_ROW_DIM = 'text-[10px] text-[var(--text-muted)] font-bold';
 
+/** Floating panel title bar — Near You, Live Vehicles list, etc. */
+export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
+
+/** Title text inside PANEL_TITLE_BAR */
+export const PANEL_TITLE = 'text-[10px] font-black text-[var(--text-dim)] tracking-wide';
+
+/** Back + card title row inside a floating panel */
+export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
+
+/** Section label inside a floating panel list */
+export const PANEL_SECTION_HEAD = 'px-4 py-2 text-[10px] font-black tracking-wide text-[var(--text-dim)]';
+
+/** Accent group label in search results */
+export const PANEL_SEARCH_HEAD = 'px-4 text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5';
+
+/** Sub-section label (In this area / Elsewhere) */
+export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-[9px] font-bold uppercase tracking-wide text-[var(--text-dim)]';
+
+/** Scrollable body inside a floating panel */
+export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';
+
+/** Empty / loading copy inside a panel row */
+export const PANEL_EMPTY = 'px-4 py-3 text-[11px] text-[var(--text-muted)] font-bold';
+
 /** Pill search box wrapper — used inside panels (recessed bg-app background) */
 export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-3 gap-1.5';
 
