@@ -18,6 +18,7 @@
 - **Branch hover debouncing**: Added an intentional 80ms delay before highlighting branches on hover, and 50ms before clearing, to completely prevent rapid layout oscillation/map flickers when positioning the mouse near row boundaries.
 - **Rockford**: `excludeRouteShortNames: ["Test"]` — junk upstream route stripped at process time (Closes [#144](https://github.com/Civic-Minds/Atlas/issues/144)).
 - **Rockford**: Switched `feedUrl` to official `rmtd.org/rmtdgtfs/GTFS_FILES.zip` (valid through Oct 2026); removed Test override — upstream no longer publishes that route.
+- **Niagara Transit**: switched `feedUrl` to current http://68.71.24.110/gtfs/GTFSExport.zip (via transit.land; previous mdb mirror was stale 2021 data with legacy RED/BLUE).
 - **Agencies**: Cascades East Transit, Mountain Transit (Big Bear Lake), RoadRUNNER Transit (Las Cruces), EZ Rider, San Angelo Transit, Brownsville Metro; Roswell/Hobbs (NM), Longview/Texarkana/Fort Bend (TX), Lake Charles/Terrebonne/Tangipahoa (LA); Space Coast, Martin County, Indian River, Collier CAT (FL).
 
 ### Fixed

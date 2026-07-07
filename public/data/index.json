@@ -293,7 +293,7 @@
         43.56,
         -78.75
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-niagara-region-transit-gtfs-722.zip?alt=media",
+      "feedUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
       "preprocess": "nrt-day-night",
       "excludeRouteShortNames": [
         "RED",
