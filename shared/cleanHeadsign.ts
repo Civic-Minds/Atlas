@@ -1,4 +1,13 @@
 /**
+ * MiWay express routes encode direction + route name in trip_headsign, not a terminal.
+ * e.g. "135 E Express Eglinton Exp", "101 W Express Dundas Exp"
+ */
+export function isMiwayExpressHeadsign(headsign: string): boolean {
+  const h = headsign.trim();
+  return /^\d+\s+(?:[NSEW]\s+)?Express\s+.+\s+Exp$/i.test(h);
+}
+
+/**
  * Shared headsign cleaning for pipeline (GeoJSON properties) and frontend (route panel).
  * Keep all stripping rules here so build-time and render-time labels stay in sync.
  *
@@ -12,6 +21,8 @@ export function cleanHeadsign(
   longName: string | null = null,
 ): string {
   let h = headsign;
+
+  if (isMiwayExpressHeadsign(h)) return '';
 
   // REM (Montreal): branch prefixes like "A3 - Anse-à-l'Orme"
   h = h.replace(/^A[0-9]+\s*-\s*/i, '');

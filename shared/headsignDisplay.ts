@@ -1,4 +1,4 @@
-import { cleanHeadsign } from './cleanHeadsign.js';
+import { cleanHeadsign, isMiwayExpressHeadsign } from './cleanHeadsign.js';
 
 /** Cleaned destination equals the route title — hide on branch rows, not in stored data. */
 export function isRedundantWithRouteName(
@@ -26,7 +26,10 @@ export function resolveDisplayHeadsign(
 ): string | null {
   if (!raw?.trim()) return null;
   const trimmed = raw.trim();
-  return cleanHeadsign(trimmed, shortName, longName) || trimmed;
+  const cleaned = cleanHeadsign(trimmed, shortName, longName);
+  if (cleaned) return cleaned;
+  if (isMiwayExpressHeadsign(trimmed)) return null;
+  return trimmed;
 }
 
 /** Fallback when a branch has headway but no displayable destination. */

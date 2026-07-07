@@ -9,6 +9,17 @@ describe('formatBranchLabel', () => {
   it('shows distinct terminals', () => {
     expect(formatBranchLabel('Warden Station', '68', 'Warden', 'Southbound')).toBe('to Warden Station');
   });
+
+  it('omits MiWay express branding headsigns when section heading is present', () => {
+    expect(resolveBranchLabel({
+      headsign: '135 W Express Eglinton Exp',
+      shortName: '135',
+      longName: 'Eglinton Express',
+      directionId: 1,
+      multipleDirections: true,
+      sectionBoundLabel: 'Westbound',
+    })).toBe('');
+  });
 });
 
 describe('resolveBranchLabel', () => {
