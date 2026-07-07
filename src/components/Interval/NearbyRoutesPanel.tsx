@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, LocateFixed } from 'lucide-react';
+import { LocateFixed } from 'lucide-react';
 import { getTierColor } from '../../utils/colors';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
@@ -7,7 +7,6 @@ import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW } from '../../style
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
-  onClose: () => void;
   setSelectedRoute: (key: string | null) => void;
 }
 
@@ -17,7 +16,6 @@ function fmtDist(m: number): string {
 
 export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
   routes,
-  onClose,
   setSelectedRoute,
 }) => {
   return (
@@ -25,18 +23,9 @@ export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
       style={{ position: 'absolute', bottom: 72, right: 12, zIndex: PANEL_Z_INDEX }}
       className={`w-64 max-h-72 flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
     >
-      <div className="flex items-center justify-between px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0">
-        <div className="flex items-center gap-1.5">
-          <LocateFixed className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-          <span className="text-[10px] font-black text-[var(--text-dim)] tracking-wide">Near You</span>
-        </div>
-        <button
-          onClick={onClose}
-          className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors shrink-0"
-          aria-label="Close nearby panel"
-        >
-          <X className="w-3 h-3" />
-        </button>
+      <div className="flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0">
+        <LocateFixed className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+        <span className="text-[10px] font-black text-[var(--text-dim)] tracking-wide">Near You</span>
       </div>
 
       {routes.length === 0 ? (

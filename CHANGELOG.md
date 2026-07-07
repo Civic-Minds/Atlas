@@ -15,6 +15,7 @@
 
 ### Changed
 - **App drawer hidden**: Removed waffle menu from header again; Corridors/History/Fares remain URL-only until ready (reverts [#115](https://github.com/Civic-Minds/Atlas/issues/115)).
+- **Near You panel**: Removed close button; panel clears when location is dismissed from the map.
 
 ## [3.0.9] — 2026-07-06
 

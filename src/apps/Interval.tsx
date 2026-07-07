@@ -272,7 +272,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       {showUi && userLocation && (
         <NearbyRoutesPanel
           routes={nearbyRoutes}
-          onClose={() => setUserLocation(null)}
           setSelectedRoute={setSelectedRoute}
         />
       )}
