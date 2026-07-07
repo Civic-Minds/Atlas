@@ -262,10 +262,79 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     );
   }, [routeGroups, bounds]);
 
+  const vehiclesInViewport = useMemo(() => {
+    if (!bounds) return allVehicles.length;
+    return allVehicles.filter(v =>
+      v.lat >= bounds.s && v.lat <= bounds.n && v.lon >= bounds.w && v.lon <= bounds.e,
+    ).length;
+  }, [allVehicles, bounds]);
+
+  const monitoredRoutes = useMemo(() => {
+    return LIVE_POLLING_ROUTES
+      .filter(r => ELIGIBLE_SLUGS.has(r.slug) && visibleSlugs.includes(r.slug))
+      .map(r => ({
+        key: `${r.slug}::${r.displayRouteShortName}`,
+        agencySlug: r.slug,
+        routeShortName: r.displayRouteShortName,
+        label: r.displayName ?? r.displayRouteShortName,
+        agencyName: shortenAgencyName(agencies.find(a => a.slug === r.slug)?.name ?? r.slug),
+      }));
+  }, [visibleSlugs, agencies]);
+
+  const offScreenOnly = displayedRouteGroups.length === 0 && routeGroups.length > 0;
+  const sidebarRouteGroups = offScreenOnly ? routeGroups : displayedRouteGroups;
+
   const multipleAgencies = useMemo(() => {
-    const slugs = new Set(displayedRouteGroups.map(g => g.agencySlug));
+    const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
     return slugs.size > 1;
-  }, [displayedRouteGroups]);
+  }, [sidebarRouteGroups]);
+
+  const renderRouteGroupList = (groups: RouteGroup[]) => {
+    let lastSlug = '';
+    let agencyHeaderIndex = 0;
+    return groups.map(g => {
+      const key = `${g.agencySlug}::${g.routeShortName}`;
+      const isSelected = selectedRoute === key;
+      const colors = STATUS_COLORS[g.dominantStatus];
+      const statusLabel = g.lateCount > 0
+        ? `${g.lateCount} late`
+        : g.earlyCount > 0
+          ? `${g.earlyCount} early`
+          : null;
+
+      const showAgencyHeader = multipleAgencies && g.agencySlug !== lastSlug;
+      lastSlug = g.agencySlug;
+      const rawAgencyName = agencies.find(a => a.slug === g.agencySlug)?.name ?? g.agencySlug;
+      const agencyName = shortenAgencyName(rawAgencyName);
+
+      return (
+        <React.Fragment key={key}>
+          {showAgencyHeader && (
+            <div className={`${PANEL_SECTION_HEAD} ${agencyHeaderIndex++ > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
+              {agencyName}
+            </div>
+          )}
+          <RouteListRow
+            shortName={cleanRouteShortName(g.routeShortName)}
+            name={routeListCompanionName(g.displayName, g.routeShortName)}
+            selected={isSelected}
+            onClick={() => handleRouteClick(key)}
+            right={
+              <div className="flex items-center gap-1.5 shrink-0 ml-3">
+                <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
+                {statusLabel && (
+                  <span style={{ color: colors.border }} className="text-[10px] font-bold">
+                    · {statusLabel}
+                  </span>
+                )}
+                <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+              </div>
+            }
+          />
+        </React.Fragment>
+      );
+    });
+  };
 
   const handleRouteClick = useCallback((key: string) => {
     setSelectedRoute(prev => {
@@ -359,6 +428,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const totalVehicles = allVehicles.length;
   const hasAnyError = errors.length > 0 && totalVehicles === 0;
+  const hasLiveElsewhere = offScreenOnly && !query;
 
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
@@ -390,7 +460,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             <div className={PANEL_TITLE_BAR}>
               {!isZoomedIn ? (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
-              ) : totalVehicles > 0 ? (
+              ) : vehiclesInViewport > 0 ? (
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
@@ -402,6 +472,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 </span>
               ) : hasAnyError ? (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shrink-0" />
+              ) : hasLiveElsewhere ? (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 shrink-0" />
               ) : (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
@@ -501,63 +573,45 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   </p>
                 </div>
               </div>
-            ) : displayedRouteGroups.length === 0 ? (
-              <div className="py-6 px-4 text-center flex flex-col items-center gap-1.5">
-                <p className="text-[11px] font-bold text-[var(--text-primary)]">
-                  {query ? 'No routes match' : 'No vehicles right now'}
-                </p>
-                <p className="text-[10px] font-bold text-[var(--text-muted)] leading-relaxed">
-                  {query ? 'Try a different search.' : 'Active vehicles will appear here as they check in.'}
-                </p>
-              </div>
+            ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
+              query ? (
+                <p className={`${PANEL_EMPTY} text-center`}>No routes match your search.</p>
+              ) : (
+                <div className="py-5 px-4 flex flex-col gap-3">
+                  <div className="text-center">
+                    <p className="text-[11px] font-bold text-[var(--text-primary)]">Nothing active on tracked routes</p>
+                    <p className="text-[10px] font-bold text-[var(--text-muted)] mt-1 leading-relaxed">
+                      Buses appear here when they are running on a monitored route.
+                    </p>
+                  </div>
+                  {monitoredRoutes.length > 0 && (
+                    <>
+                      <div className={`${PANEL_SECTION_HEAD} border-t border-[var(--border-primary)]`}>
+                        Tracking in this area
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 px-4 pb-1">
+                        {monitoredRoutes.map(r => (
+                          <span
+                            key={r.key}
+                            className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
+                          >
+                            {r.agencyName} {r.label}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )
             ) : (
-              // Route list, grouped by agency when multiple are visible
-              (() => {
-                let lastSlug = '';
-                let agencyHeaderIndex = 0;
-                return displayedRouteGroups.map(g => {
-                  const key = `${g.agencySlug}::${g.routeShortName}`;
-                  const isSelected = selectedRoute === key;
-                  const colors = STATUS_COLORS[g.dominantStatus];
-                  const statusLabel = g.lateCount > 0
-                    ? `${g.lateCount} late`
-                    : g.earlyCount > 0
-                      ? `${g.earlyCount} early`
-                      : null;
-
-                  const showAgencyHeader = multipleAgencies && g.agencySlug !== lastSlug;
-                  lastSlug = g.agencySlug;
-                  const rawAgencyName = agencies.find(a => a.slug === g.agencySlug)?.name ?? g.agencySlug;
-                  const agencyName = shortenAgencyName(rawAgencyName);
-
-                  return (
-                    <React.Fragment key={key}>
-                      {showAgencyHeader && (
-                        <div className={`${PANEL_SECTION_HEAD} ${agencyHeaderIndex++ > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
-                          {agencyName}
-                        </div>
-                      )}
-                      <RouteListRow
-                        shortName={cleanRouteShortName(g.routeShortName)}
-                        name={routeListCompanionName(g.displayName, g.routeShortName)}
-                        selected={isSelected}
-                        onClick={() => handleRouteClick(key)}
-                        right={
-                          <div className="flex items-center gap-1.5 shrink-0 ml-3">
-                            <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
-                            {statusLabel && (
-                              <span style={{ color: colors.border }} className="text-[10px] font-bold">
-                                · {statusLabel}
-                              </span>
-                            )}
-                            <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                          </div>
-                        }
-                      />
-                    </React.Fragment>
-                  );
-                });
-              })()
+              <>
+                {offScreenOnly && !query && (
+                  <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
+                    Outside this view · {totalVehicles} vehicle{totalVehicles === 1 ? '' : 's'}
+                  </div>
+                )}
+                {renderRouteGroupList(sidebarRouteGroups)}
+              </>
             )}
           </div>
         </div>
