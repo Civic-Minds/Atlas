@@ -9,7 +9,7 @@ import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 export type HelpTopic = 'outdated-schedule';
@@ -183,6 +183,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     view === 'agencies' ? 'Data'
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view === 'outdated-schedule' ? 'Outdated schedule'
+    : view === 'sources' ? 'Sources'
     : null;
 
   return (
@@ -245,13 +246,22 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies. See live vehicle positions on {totalLiveAgencies}, or explore years of frequency history on {totalHistoryAgencies}.
                 </p>
-                <button
-                  onClick={() => setView('agencies')}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </button>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setView('agencies')}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                  >
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
+                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                  </button>
+                  <button
+                    onClick={() => setView('sources')}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                  >
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Schedule sources</span>
+                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -277,16 +287,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
 
               <p className="text-[10px] text-[var(--text-dim)] leading-relaxed">
-                Schedule data from public GTFS feeds — published by agencies, or mirrored via{' '}
-                <a
-                  href="https://mobilitydatabase.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
-                >
-                  Mobility Database
-                </a>{' '}
-                when an agency URL is unreliable.
+                Public GTFS schedules.
                 {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
                   ? ` Last refreshed ${formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))}.`
                   : ''}{' '}
@@ -386,6 +387,42 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {view === 'sources' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                Schedules come from public GTFS feeds published by transit agencies.
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                When an agency&apos;s download link is broken or unreliable, we may pull the same feed from a public mirror instead.
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
+                  ? `Last full refresh: ${formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))}. `
+                  : ''}
+                {feedRefreshCountdownLabel(feedRefreshMeta)}
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                If a route shows &ldquo;schedule may be outdated,&rdquo; the agency&apos;s feed period has ended and we haven&apos;t received a newer file yet. When we patch bad upstream data, affected agencies show &ldquo;We corrected this data&rdquo; with a link explaining why.
+              </p>
+              <a
+                href="https://github.com/Civic-Minds/Atlas/blob/main/docs/SCHEDULES.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">More on schedules</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </a>
+              <a
+                href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
+                className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+              >
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
+                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+              </a>
             </div>
           )}
 
