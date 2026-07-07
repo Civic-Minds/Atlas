@@ -250,7 +250,7 @@ export default function App() {
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
       <div className={`absolute top-6 left-6 right-6 ${Z_HEADER} flex items-center justify-between pointer-events-none`}>
-      <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto">
+      <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto flex-1 max-w-[calc(100%-3rem)] sm:max-w-none mr-2 sm:mr-0">
         <button
           onClick={() => {
             if (activeApp !== 'frequency') {
@@ -266,13 +266,13 @@ export default function App() {
         </button>
 
         <div className="flex flex-col leading-tight">
-          <span className="text-sm font-black text-[var(--text-primary)]">Atlas</span>
-          <span className="text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
+          <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
+          <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
         {/* AppDrawer hidden — History/Fares remain URL-only; Corridors + Live use header toggles. */}
 
-        <div ref={searchBarRef}>
+        <div ref={searchBarRef} className="flex-1 sm:flex-initial">
         <div className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
@@ -313,19 +313,19 @@ export default function App() {
         <button
           onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
           aria-label="Live vehicles"
-          className={`h-8 px-3 flex items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-white animate-pulse' : 'bg-[var(--text-dim)]'}`} />
-          Live
+          <span>Live</span>
         </button>
 
         <button
           onClick={() => setActiveApp(inCorridors ? 'frequency' : 'corridors')}
           aria-label={inCorridors ? 'Back to frequency map' : 'Corridors — routes between two stations'}
-          className={`h-8 px-3 flex items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inCorridors ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inCorridors ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
           <ArrowLeftRight className="w-3.5 h-3.5 shrink-0" />
-          Corridors
+          <span>Corridors</span>
         </button>
 
       </div>

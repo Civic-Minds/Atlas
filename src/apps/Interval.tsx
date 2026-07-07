@@ -320,7 +320,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             </div>
           )}
           {stats && (stats.total > 0 || !isLoading) && (
-            <>
+            <div className="hidden sm:flex gap-2">
               <div className={`${MAP_BADGE} h-8`}>
                 <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
                 <span className={MAP_BADGE_LABEL}>routes</span>
@@ -331,7 +331,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
                 </span>
                 <span className={MAP_BADGE_LABEL}>coverage</span>
               </div>
-            </>
+            </div>
           )}
         </div>
       )}
@@ -368,7 +368,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
       {headerPortalContainer && createPortal(
         <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel ? 'pointer-events-none' : ''}`}>
-          <div className={`flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <FilterChips
               maxHeadway={maxHeadway}
               setMaxHeadway={setMaxHeadway}
@@ -396,6 +396,18 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
               setShowCorridors={setShowCorridors}
               onInfoOpen={onInfoOpen}
               inFrequency={showUi}
+              maxHeadway={maxHeadway}
+              setMaxHeadway={setMaxHeadway}
+              selectedModes={selectedModes}
+              setSelectedModes={setSelectedModes}
+              day={day}
+              setDay={setDay}
+              period={period}
+              setPeriod={setPeriod}
+              agencies={agencies}
+              selectedAgencies={selectedAgencies}
+              setSelectedAgencies={setSelectedAgencies}
+              bounds={bounds}
             />
           )}
         </div>,

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, X, Radio, Sun, Moon, Zap, Info } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
+import { FILTER_MODES } from '../../../shared/modes';
+import { DAY_TYPES } from '../../../shared/dayTypes';
+import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import type { Agency } from '../../App';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -13,6 +18,20 @@ interface FilterPanelProps {
   setShowCorridors: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   inFrequency?: boolean;
+
+  // New optional props for mobile filters
+  maxHeadway?: number;
+  setMaxHeadway?: (h: number) => void;
+  selectedModes?: Set<number>;
+  setSelectedModes?: (modes: Set<number>) => void;
+  day?: string;
+  setDay?: (d: any) => void;
+  period?: string;
+  setPeriod?: (p: any) => void;
+  agencies?: Agency[];
+  selectedAgencies?: Set<string>;
+  setSelectedAgencies?: (agencies: Set<string>) => void;
+  bounds?: any;
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -63,6 +82,18 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setShowCorridors,
   onInfoOpen,
   inFrequency = true,
+  maxHeadway,
+  setMaxHeadway,
+  selectedModes,
+  setSelectedModes,
+  day,
+  setDay,
+  period,
+  setPeriod,
+  agencies,
+  selectedAgencies,
+  setSelectedAgencies,
+  bounds,
 }) => {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -78,7 +109,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const close = () => setOpen(false);
 
-  const hasActiveFilters = hideSpan || livePollingOnly || showCorridors;
+  const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
+  const hasActiveFilters = hideSpan || livePollingOnly || showCorridors || hasActiveCoreFilter;
 
   const values: Record<string, boolean> = {
     corridors: showCorridors,
@@ -183,6 +215,110 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </div>
                 ))}
               </div>
+
+              {/* Mobile-only Core Filters */}
+              {maxHeadway !== undefined && (
+                <div className="block sm:hidden border-t border-[var(--border-primary)] pb-4">
+                  {/* Frequency */}
+                  <div className="px-5 pt-4 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Frequency</p>
+                  </div>
+                  <div className="px-5 pb-3 flex flex-wrap gap-1.5">
+                    {HEADWAY_TIERS.map(({ max, label }) => {
+                      const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+                      const active = maxHeadway === max;
+                      return (
+                        <button
+                          key={label}
+                          onClick={() => setMaxHeadway?.(max)}
+                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                            active
+                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                          }`}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
+                          {label === 'Infrequent' ? 'All routes' : label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Day of Service */}
+                  <div className="px-5 pt-2 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Day of Service</p>
+                  </div>
+                  <div className="px-5 pb-3 flex gap-1.5">
+                    {DAY_TYPES.map(dayType => {
+                      const active = day === dayType;
+                      return (
+                        <button
+                          key={dayType}
+                          onClick={() => setDay?.(dayType)}
+                          className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                            active
+                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                          }`}
+                        >
+                          {dayType}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Time Period */}
+                  <div className="px-5 pt-2 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Time Period</p>
+                  </div>
+                  <div className="px-5 pb-3 flex flex-wrap gap-1.5">
+                    {Object.entries(PERIOD_LABELS).map(([key, label]) => {
+                      const active = period === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => setPeriod?.(key)}
+                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                            active
+                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Transit Modes */}
+                  <div className="px-5 pt-2 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Transit Modes</p>
+                  </div>
+                  <div className="px-5 pb-3 flex flex-wrap gap-1.5">
+                    {FILTER_MODES.map(({ id, label }) => {
+                      const active = selectedModes?.has(id) ?? false;
+                      return (
+                        <button
+                          key={id}
+                          onClick={() => {
+                            if (!selectedModes || !setSelectedModes) return;
+                            const next = new Set(selectedModes);
+                            if (next.has(id)) next.delete(id); else next.add(id);
+                            setSelectedModes(next);
+                          }}
+                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
+                            active
+                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

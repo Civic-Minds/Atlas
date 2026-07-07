@@ -3,7 +3,7 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_SEARCH_SUBHEAD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SEARCH_BAR_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_SEARCH_SUBHEAD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
@@ -292,8 +292,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   return (
     <div
       ref={ref}
-      className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
-      style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+      className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+      style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
     >
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="min-w-0">

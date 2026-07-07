@@ -21,7 +21,7 @@ import {
   routesBeforeAgencies,
   type RouteSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SEARCH_BAR_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
@@ -692,11 +692,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     [query, displayRouteResults, matchedAgencyGroups],
   );
   const routeResultsHeadLabel = routeSearchDisplay.truncated
-    ? `Showing ${displayRouteResults.length} of ${routeSearchDisplay.totalMatches} routes`
-    : `${routeSearchDisplay.totalMatches} route${routeSearchDisplay.totalMatches === 1 ? '' : 's'} match`;
+    ? `Routes (${routeSearchDisplay.totalMatches} matches)`
+    : `Routes (${routeSearchDisplay.totalMatches})`;
   const agencyResultsHeadLabel = agencySearchDisplay.truncated
-    ? `Showing ${displayAgencyGroups.length} of ${agencySearchDisplay.totalMatches} agencies`
-    : `${agencySearchDisplay.totalMatches} agenc${agencySearchDisplay.totalMatches === 1 ? 'y' : 'ies'} match`;
+    ? `Agencies (${agencySearchDisplay.totalMatches} matches)`
+    : `Agencies (${agencySearchDisplay.totalMatches})`;
 
   const searchPanelActive = searchFocused && query !== '';
   const hasSearchResults = searchPanelActive && (
@@ -752,8 +752,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   return (
     <div
-      className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
-      style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+      className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+      style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
     >
       {searchFocused && query === '' && (
         <SearchSuggestionsPanel

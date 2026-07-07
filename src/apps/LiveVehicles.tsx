@@ -7,7 +7,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { getAgencyArtifactUrls } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SEARCH_BAR_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
@@ -447,8 +447,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
-        className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
-        style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
+        style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
 

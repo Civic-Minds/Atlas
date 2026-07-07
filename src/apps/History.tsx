@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SEARCH_BAR_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -543,8 +543,8 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   return (
     <>
       <div
-        className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
-        style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
+        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
+        style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         {selectedSlug ? (
         (() => {
