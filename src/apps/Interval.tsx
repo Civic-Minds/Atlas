@@ -69,6 +69,17 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   const [hoveredBranch, setHoveredBranch] = useState<HoveredBranch | null>(null);
   const prevSearchFocused = useRef(searchFocused);
+  const agencyCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!selectedAgencySlug || selectedRoute || selectedStop) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (agencyCardRef.current?.contains(e.target as Node)) return;
+      onAgencyCardClose?.();
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => document.removeEventListener('pointerdown', onPointerDown, true);
+  }, [selectedAgencySlug, selectedRoute, selectedStop, onAgencyCardClose]);
 
   useEffect(() => {
     if (searchFocused && !prevSearchFocused.current) {
@@ -208,7 +219,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     setSelectedStop(null);
     setDisambiguationRoutes(null);
     setHoveredBranch(null);
-  }, []);
+    onAgencyCardClose?.();
+  }, [onAgencyCardClose]);
 
   // Drop stale selection when the route card has no data (day change, agency unload, etc.)
   useEffect(() => {
@@ -231,12 +243,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (!selectedRoute && !selectedStop && !disambiguationRoutes?.length) return;
+      if (!selectedRoute && !selectedStop && !disambiguationRoutes?.length && !selectedAgencySlug) return;
       clearMapSelection();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedRoute, selectedStop, disambiguationRoutes, clearMapSelection]);
+  }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, clearMapSelection]);
 
   // Sync selected route and stop to URL — use replaceState directly (not React
   // Router's setSearchParams) to avoid the stale-closure bug where a closure
@@ -326,6 +338,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard
+            ref={agencyCardRef}
             agency={agency}
             layers={layers}
             day={day}
@@ -333,7 +346,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             maxHeadway={maxHeadway}
             selectedModes={selectedModes}
             hideSpan={hideSpan}
-            onClose={onAgencyCardClose ?? (() => {})}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}
             fareView={fareView}

@@ -23,7 +23,7 @@ describe('agency card filters', () => {
   });
 
   it('summarizes matching routes for active frequency filter', () => {
-    expect(buildHeaderSummary(routes, 60, 'all')).toBe('4 routes · 3 match ≤60m');
-    expect(buildHeaderSummary(routes, Infinity, 'midday')).toBe('4 routes · Midday');
+    expect(buildHeaderSummary(routes, 60)).toBe('4 routes · 3 match ≤60m');
+    expect(buildHeaderSummary(routes, Infinity)).toBe('4 routes');
   });
 });

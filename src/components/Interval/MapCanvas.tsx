@@ -149,6 +149,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const onHistoryRouteClickRef = useRef(onHistoryRouteClick);
   const fareViewRef = useRef(fareView);
   const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
+  const selectedAgencySlugRef = useRef(selectedAgencySlug);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
@@ -188,6 +189,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     handleMapClickRef.current = (e: maplibregl.MapMouseEvent) => {
       const map = mapRef.current;
       if (!map) return;
+
+      if (selectedAgencySlugRef.current) {
+        setSelectedAgencySlugRef.current?.(null);
+      }
 
       const stopHits = map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] });
       if (stopHits.length > 0) {
@@ -253,6 +258,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     onHistoryRouteClickRef.current = onHistoryRouteClick;
     fareViewRef.current = fareView;
     setSelectedAgencySlugRef.current = setSelectedAgencySlug;
+    selectedAgencySlugRef.current = selectedAgencySlug;
     onBoundsChangeRef.current = onBoundsChange;
     onTileLoadingChangeRef.current = onTileLoadingChange;
     onClearSelectionRef.current = onClearSelection;

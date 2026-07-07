@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import type { Agency, FareOverride } from '../../App';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
@@ -7,9 +7,9 @@ import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
-import { passesRouteFilter, PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { effectiveRouteHeadway } from '../../utils/effectiveHeadway';
-import { CARD_TITLE, CardCloseButton, CardDirectionRow, DataOverrideLink } from './cardUi';
+import { CARD_TITLE, CardDirectionRow, DataOverrideLink } from './cardUi';
 
 interface RouteRow {
   routeId: string;
@@ -93,13 +93,11 @@ function frequencyFilterLabel(maxHeadway: number): string | null {
 export function buildHeaderSummary(
   routes: RouteRow[],
   maxHeadway: number,
-  period: TimePeriod,
 ): string {
   const matching = routes.filter(r => r.matchesFilter).length;
   const parts = [`${routes.length} route${routes.length !== 1 ? 's' : ''}`];
   const freqLabel = frequencyFilterLabel(maxHeadway);
   if (freqLabel) parts.push(`${matching} match ${freqLabel}`);
-  if (period !== 'all') parts.push(PERIOD_LABELS[period]);
   return parts.join(' · ');
 }
 
@@ -183,7 +181,6 @@ interface Props {
   maxHeadway: number;
   selectedModes: Set<number>;
   hideSpan: boolean;
-  onClose: () => void;
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
   fareView?: boolean;
@@ -222,7 +219,7 @@ function RouteListSection({
   );
 }
 
-export function AgencyCard({
+export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard({
   agency,
   layers,
   day,
@@ -230,12 +227,11 @@ export function AgencyCard({
   maxHeadway,
   selectedModes,
   hideSpan,
-  onClose,
   onRouteSelect,
   sidebarLeft,
   fareView,
   fareOverride,
-}: Props) {
+}, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan }),
     [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan],
@@ -292,11 +288,12 @@ export function AgencyCard({
 
   return (
     <div
+      ref={ref}
       className={`absolute top-20 ${Z_PANEL} ${SEARCH_BAR_WIDTH} ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
       style={{ left: sidebarLeft ?? SIDEBAR_LEFT_FALLBACK }}
     >
-      <div className="shrink-0 flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-        <div className="flex-1 min-w-0">
+      <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+        <div className="min-w-0">
           <p className={`${CARD_TITLE} mb-0`}>{shortenAgencyName(agency.name)}</p>
           {fareView ? (
             <>
@@ -346,7 +343,7 @@ export function AgencyCard({
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
             {[
               agency.region,
-              buildHeaderSummary(visibleRoutes, maxHeadway, period),
+              buildHeaderSummary(visibleRoutes, maxHeadway),
             ].filter(Boolean).join(' · ')}
           </p>
           {routeFilters.length > 0 && (
@@ -373,11 +370,10 @@ export function AgencyCard({
           )}
           </>
           )}
-          {agency.excludeRouteShortNames?.length ? (
-            <DataOverrideLink slug={agency.slug} issueUrl={agency.issueUrl} />
+          {agency.excludeRouteShortNames?.length && agency.issueUrl ? (
+            <DataOverrideLink issueUrl={agency.issueUrl} />
           ) : null}
         </div>
-        <CardCloseButton onClick={onClose} variant="compact" />
       </div>
 
       {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -431,4 +427,4 @@ export function AgencyCard({
       </div>}
     </div>
   );
-}
+});
