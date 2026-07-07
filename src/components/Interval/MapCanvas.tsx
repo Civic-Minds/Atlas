@@ -166,7 +166,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     });
 
     mapRef.current = map;
-    map.addControl(new maplibregl.AttributionControl({ compact: false }), 'bottom-left');
 
     map.on('load', () => {
       setZoom(map.getZoom());

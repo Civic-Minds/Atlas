@@ -6,6 +6,7 @@ import { useIntervalStats, type HoveredBranch } from '../hooks/useIntervalStats'
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
+import { MapAttribution } from '../components/Interval/MapAttribution';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
@@ -222,6 +223,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
       />
+
+      <MapAttribution />
 
       {showUi && ((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
