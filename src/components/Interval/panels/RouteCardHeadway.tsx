@@ -269,27 +269,31 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {routeIsStale && onInfoOpen && (
-          <CardHelpNotice
-            message={`Schedule may be outdated${expDateStr ? ` (ended ${expDateStr})` : ''}.`}
-            onLearnMore={() => onInfoOpen('about', {
-              helpTopic: 'outdated-schedule',
-              agencyName: routeAgency?.name,
-              expDateStr: expDateStr || undefined,
-              lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
-              websiteUrl: routeAgency?.websiteUrl ?? undefined,
-            })}
-          />
-        )}
-        {routeAgency?.excludeRouteShortNames?.length && routeAgency.overrideNote && onInfoOpen && (
-          <CardHelpNotice
-            message="We corrected this data."
-            onLearnMore={() => onInfoOpen('about', {
-              helpTopic: 'corrected-data',
-              agencyName: routeAgency.name,
-              overrideNote: routeAgency.overrideNote,
-            })}
-          />
+        {(routeIsStale || (routeAgency?.excludeRouteShortNames?.length && routeAgency.overrideNote)) && onInfoOpen && (
+          <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 space-y-1">
+            {routeIsStale && (
+              <CardHelpNotice
+                message={`Schedule may be outdated${expDateStr ? ` (ended ${expDateStr})` : ''}.`}
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'outdated-schedule',
+                  agencyName: routeAgency?.name,
+                  expDateStr: expDateStr || undefined,
+                  lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+                  websiteUrl: routeAgency?.websiteUrl ?? undefined,
+                })}
+              />
+            )}
+            {routeAgency?.excludeRouteShortNames?.length && routeAgency.overrideNote && (
+              <CardHelpNotice
+                message="We corrected this data."
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'corrected-data',
+                  agencyName: routeAgency.name,
+                  overrideNote: routeAgency.overrideNote,
+                })}
+              />
+            )}
+          </div>
         )}
       </SidebarCardList>
     </SidebarCardShell>

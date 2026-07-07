@@ -138,18 +138,16 @@ export function AgencyFilterChips({
 
 export function CardHelpNotice({ message, onLearnMore }: { message: string; onLearnMore: () => void }) {
   return (
-    <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
-      <p className="text-[9px] font-bold text-[var(--text-dim)]">
-        {message}{' '}
-        <button
-          type="button"
-          onClick={onLearnMore}
-          className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
-        >
-          Learn more →
-        </button>
-      </p>
-    </div>
+    <p className="text-[9px] font-bold text-[var(--text-dim)]">
+      {message}{' '}
+      <button
+        type="button"
+        onClick={onLearnMore}
+        className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
+      >
+        Learn more →
+      </button>
+    </p>
   );
 }
 

@@ -21,6 +21,7 @@
 - **Agencies**: Cascades East Transit, Mountain Transit (Big Bear Lake), RoadRUNNER Transit (Las Cruces), EZ Rider, San Angelo Transit, Brownsville Metro; Roswell/Hobbs (NM), Longview/Texarkana/Fort Bend (TX), Lake Charles/Terrebonne/Tangipahoa (LA); Space Coast, Martin County, Indian River, Collier CAT (FL).
 
 ### Fixed
+- **Help notices**: single top border when "outdated schedule" + "We corrected this data" stack (no line between, e.g. Niagara).
 - **Niagara Transit**: `excludeRouteShortNames: ["RED", "BLUE"]` + display name updated; no longer operates former WEGO Red (rebranded 116/216) or Blue (to Niagara Parks WEGO). Stale entries hidden via overrideNote.
 - **Empty routeShortName routes** (e.g. 145): changed `routeShortName &&` guard to `!= null` in process-core.ts so stop headway loop runs; headwayByHour, stopHeadways, stopOrder etc. now compute.
 - **Pipeline**: Post-merge tier refinement uses `headwayToTier()` instead of undefined `HEADWAY_TIERS`.

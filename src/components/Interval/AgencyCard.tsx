@@ -373,16 +373,18 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           </>
           )}
-          {agency.excludeRouteShortNames?.length && agency.overrideNote && onInfoOpen ? (
-            <CardHelpNotice
-              message="We corrected this data."
-              onLearnMore={() => onInfoOpen('about', {
-                helpTopic: 'corrected-data',
-                agencyName: agency.name,
-                overrideNote: agency.overrideNote,
-              })}
-            />
-          ) : null}
+          {agency.excludeRouteShortNames?.length && agency.overrideNote && onInfoOpen && (
+            <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
+              <CardHelpNotice
+                message="We corrected this data."
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'corrected-data',
+                  agencyName: agency.name,
+                  overrideNote: agency.overrideNote,
+                })}
+              />
+            </div>
+          )}
         </div>
       </div>
 
