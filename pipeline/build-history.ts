@@ -18,6 +18,7 @@ import { resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
+import type { HeadwayByPeriod } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
 
@@ -146,7 +147,7 @@ async function main() {
   // Map: slug → routeShortName → sorted array of change events
   const archiveRoutes: Record<string, Record<string, Array<{
     periodKey: string; headway: number; routeLongName?: string; label?: string;
-    headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
+    headwayByPeriod?: HeadwayByPeriod;
   }>>> = {};
 
   const tasks: (() => Promise<void>)[] = [];
@@ -228,7 +229,7 @@ async function main() {
       changes.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
 
       // Build snapshot list from archived change events
-      const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null }; geometry?: number[][] }> = changes.map(c => {
+      const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }> = changes.map(c => {
         const { year, label } = parsePeriodKey(c.periodKey);
         return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, geometry: c.geometry };
       });

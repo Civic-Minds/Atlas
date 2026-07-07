@@ -3,7 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { r2PutFile } from './r2';
-import { getAgencyArtifactUrls } from '../shared/config.js';
+import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 
 dotenv.config({ path: '.env.local' });
@@ -125,7 +125,7 @@ async function main() {
   // ≤10 min (frequent rapid) → visible from zoom 0; less frequent tiers reveal progressively later.
   for (const f of allRoutes) {
     const hw = (f.properties?.headway ?? Infinity) as number;
-    const minzoom = hw <= 10 ? 0 : hw <= 15 ? 7 : hw <= 30 ? 9 : 11;
+    const minzoom = pmtilesMinZoomForHeadway(hw);
     f.properties['tippecanoe:minzoom'] = minzoom;
   }
 

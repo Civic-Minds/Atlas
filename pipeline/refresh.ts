@@ -14,6 +14,7 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2
 import JSZip from 'jszip';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
+import type { HeadwayByPeriod } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 
 config({ path: resolve('.env.local') });
@@ -33,7 +34,7 @@ interface RouteSummary {
   headway: number;
   tier: string | null;
   routeLongName?: string;
-  headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
+  headwayByPeriod?: HeadwayByPeriod;
 }
 
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
@@ -52,7 +53,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
       current[sn] = {
         headway: h, tier: t,
         routeLongName: ln ?? current[sn]?.routeLongName,
-        headwayByPeriod: byp ? { amPeak: byp.amPeak ?? null, midday: byp.midday ?? null, pmPeak: byp.pmPeak ?? null, evening: byp.evening ?? null } : undefined,
+        headwayByPeriod: byp ?? undefined,
       };
     }
   }

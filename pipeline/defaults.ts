@@ -1,4 +1,7 @@
 import { AnalysisCriteria } from '../types/gtfs';
+import { SURFACE_TIER_MAXES } from '../shared/config.js';
+
+const SURFACE_TIERS = SURFACE_TIER_MAXES;
 
 /**
  * Default analysis criteria:
@@ -12,15 +15,15 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     dayTypes: {
         Weekday: {
             timeWindow: { start: 420, end: 1320 },  // 07:00–22:00
-            tiers: [10, 15, 20, 30, 60],
+            tiers: SURFACE_TIERS,
         },
         Saturday: {
             timeWindow: { start: 420, end: 1320 },  // 07:00–22:00
-            tiers: [10, 15, 20, 30, 60],
+            tiers: SURFACE_TIERS,
         },
         Sunday: {
             timeWindow: { start: 540, end: 1260 },  // 09:00–21:00
-            tiers: [10, 15, 20, 30, 60],
+            tiers: SURFACE_TIERS,
         },
     },
     graceMinutes: 5,
@@ -29,7 +32,7 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     violationPercent: 0.30,
     modeTierOverrides: {
         rail: [5, 8, 10, 15, 30, 60],
-        surface: [10, 15, 20, 30, 60],
+        surface: SURFACE_TIERS,
     },
     isDefault: true,
 };

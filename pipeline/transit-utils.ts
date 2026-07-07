@@ -1,4 +1,5 @@
 import { GtfsCalendar, DayName } from '../types/gtfs';
+import { getGtfsModeName } from '../shared/modes.js';
 
 /**
  * Converts HH:MM:SS string to minutes from beginning of day.
@@ -37,33 +38,7 @@ export const computeMedian = (arr: number[]): number => {
  * GTFS route_type → human-readable mode name.
  * Covers base types (0–7, 11, 12) and the full HVT extended spec.
  */
-const MODE_MAP: Record<string, string> = {
-    '0': 'Tram/Light Rail',
-    '1': 'Subway/Metro',
-    '2': 'Commuter Rail',
-    '3': 'Bus',
-    '4': 'Ferry',
-    '5': 'Cable Tram',
-    '6': 'Gondola',
-    '7': 'Funicular',
-    '11': 'Trolleybus',
-    '12': 'Monorail',
-};
-
-export const getModeName = (routeType: string): string => {
-    if (MODE_MAP[routeType]) return MODE_MAP[routeType];
-    const n = parseInt(routeType);
-    if (Number.isNaN(n)) return 'Transit';
-    if (n >= 100 && n < 200) return 'Commuter Rail';
-    if (n >= 200 && n < 400) return 'Bus';
-    if (n >= 400 && n < 600) return 'Tram/Light Rail';
-    if (n >= 600 && n < 700) return 'Subway/Metro';
-    if (n >= 700 && n < 900) return 'Bus';
-    if (n >= 900 && n < 1000) return 'Tram/Light Rail';
-    if (n >= 1000 && n < 1200) return 'Ferry';
-    if (n >= 1300 && n < 1500) return 'Gondola';
-    return 'Transit';
-};
+export const getModeName = getGtfsModeName;
 
 /**
  * Maps DayName to the corresponding GtfsCalendar field name.

@@ -119,13 +119,17 @@ export function isHourInPeriod(h: number, periodKey: string): boolean {
   return p != null && gtfsH >= p.startHour && gtfsH < p.endHour;
 }
 
-/** Sparkline / hourly headway window: 5 AM through 2 AM next day (GTFS hour 26). */
+/** Sparkline data window: 5 AM–2 AM (GTFS hours 5–26). */
 export const SPARKLINE_START_HOUR = 5;
 export const SPARKLINE_END_HOUR = 26;
-export const SPARKLINE_HOURS = Array.from(
-  { length: SPARKLINE_END_HOUR - SPARKLINE_START_HOUR + 1 },
-  (_, i) => i + SPARKLINE_START_HOUR,
-);
+/** Display order: 6 AM → 2 AM, then 5 AM — keeps overnight/post-midnight at the tail (#100). */
+export const SPARKLINE_HOURS: readonly number[] = [
+  ...Array.from(
+    { length: SPARKLINE_END_HOUR - SPARKLINE_START_HOUR },
+    (_, i) => i + SPARKLINE_START_HOUR + 1,
+  ),
+  SPARKLINE_START_HOUR,
+];
 
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 

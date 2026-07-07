@@ -13,7 +13,8 @@ import { filterGtfsByRouteTypes, filterGtfsByExcludedShortNames } from './filter
 import { mergeNrtDayNightRoutes } from './transforms/nrt-day-night.js';
 import { cleanHeadsign } from '../shared/cleanHeadsign.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { TIME_PERIODS, HEADWAY_TIERS } from '../shared/config.js';
+import { TIME_PERIODS, HEADWAY_TIERS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } from '../shared/config.js';
+import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 
 // Tier ordering from best to worst. Step 4 uses this to ensure it can only degrade
 // a route's tier (branch less frequent than trunk), never improve it.
@@ -51,11 +52,7 @@ const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }])
 ) as Record<string, { start: number; end: number }>;
 
-type PeriodKey = 'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight';
-export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
-
-// Hours covered by the hourly sparkline: 5 AM through 2 AM next day (GTFS hour 26)
-const SPARKLINE_HOURS = Array.from({ length: 22 }, (_, i) => i + 5); // [5, 6, ..., 26]
+export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
 // AI-66: detect bus sub-type from route attributes and agency slug
@@ -559,8 +556,8 @@ export async function processGtfsBuffer(
   // so we can collect per-stop departure arrays from stop_times without a second GTFS scan.
   // This runs before the feature-building loop; stop_times are scanned once below alongside
   // the existing routesByStop collection.
-  const serviceIdToDayType = new Map<string, 'Weekday' | 'Saturday' | 'Sunday'>();
-  for (const dayType of ['Weekday', 'Saturday', 'Sunday'] as const) {
+  const serviceIdToDayType = new Map<string, DayType>();
+  for (const dayType of DAY_TYPES) {
     const calDay = dayType === 'Weekday' ? 'Monday' : dayType;
     for (const id of getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], calDay, refDate)) {
       if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
@@ -1111,7 +1108,7 @@ export async function processGtfsBuffer(
   onStatus?.('Calculating combined corridors...');
   const corridorFeatures: GeoJsonFeature[] = [];
   if (!allRailFeed) {
-  const dayTypes: Array<'Weekday' | 'Saturday' | 'Sunday'> = ['Weekday', 'Saturday', 'Sunday'];
+  const dayTypes: DayType[] = [...DAY_TYPES];
   for (const d of dayTypes) {
     const dayCfg = DEFAULT_CRITERIA.dayTypes[d];
     if (!dayCfg) continue;

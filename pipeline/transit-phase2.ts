@@ -10,6 +10,7 @@ import {
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
+import { SURFACE_TIER_MAXES } from '../shared/config.js';
 import { computeRawDepartures } from './transit-phase1';
 
 /**
@@ -20,7 +21,7 @@ export const determineTier = (
     headways: number[],
     tripCount: number,
     spanMinutes: number,
-    tiers: number[] = [10, 15, 20, 30, 60],
+    tiers: number[] = SURFACE_TIER_MAXES,
     graceMinutes: number = 5,
     maxGraceViolations: number = 2,
     gracePercent: number = 0.15,
@@ -358,9 +359,9 @@ export const calculateTiers = (
     const criteria: AnalysisCriteria = {
         ...DEFAULT_CRITERIA,
         dayTypes: {
-            Weekday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: [10, 15, 20, 30, 60] },
-            Saturday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: [10, 15, 20, 30, 60] },
-            Sunday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: [10, 15, 20, 30, 60] },
+            Weekday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: SURFACE_TIER_MAXES },
+            Saturday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: SURFACE_TIER_MAXES },
+            Sunday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: SURFACE_TIER_MAXES },
         },
     };
     return applyAnalysisCriteria(rawData, criteria);
