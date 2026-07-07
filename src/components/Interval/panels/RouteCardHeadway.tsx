@@ -2,15 +2,21 @@ import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { titleCase, cleanHeadsign, shortenAgencyName, fmtHeadway } from '../../../utils/format';
-import { HeadwaySparkline, headwayToTierColor } from '../HeadwaySparkline';
+import { titleCase, shortenAgencyName, formatBranchLabel } from '../../../utils/format';
+import { HeadwaySparkline } from '../HeadwaySparkline';
 import RouteCardTitle from '../../RouteCardTitle';
-import RouteDirectionRow from '../RouteDirectionRow';
+import {
+  CardDirectionRow,
+  CardDivider,
+  CardSectionLabel,
+  DataOverrideLink,
+  SidebarCardHeaderBlock,
+  SidebarCardList,
+  SidebarCardShell,
+} from '../cardUi';
 import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
 import {
   dirIdNum,
-  groupTrunkHeadway,
-  shouldShowTrunkSummary,
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 
@@ -134,33 +140,24 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
 
   return (
-    <>
+    <SidebarCardShell>
       {liveRouteInfo && liveStatus !== 'noData' && (
         <div className="flex items-center gap-1.5 -mt-1 mb-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
           <span className="text-[10px] font-black text-[var(--text-dim)]">Scheduled</span>
         </div>
       )}
-      <div className="mb-1">
-        <div>
-          <RouteCardTitle
-            routeShortName={currentRoute.routeShortName}
-            routeLongName={currentRoute.routeLongName}
-            agencyName={agencyDisplayName}
-            onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
-          />
-          {routeAgency?.excludeRouteShortNames?.length ? (
-            <a
-              href={routeAgency.issueUrl ?? `https://github.com/Civic-Minds/Atlas/issues?q=is%3Aissue+${routeSlug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[9px] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mt-0.5 block"
-            >
-              We corrected this data
-            </a>
-          ) : null}
-        </div>
-      </div>
+      <SidebarCardHeaderBlock>
+        <RouteCardTitle
+          routeShortName={currentRoute.routeShortName}
+          routeLongName={currentRoute.routeLongName}
+          agencyName={agencyDisplayName}
+          onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
+        />
+        {routeAgency?.excludeRouteShortNames?.length ? (
+          <DataOverrideLink slug={routeSlug ?? ''} issueUrl={routeAgency.issueUrl} />
+        ) : null}
+      </SidebarCardHeaderBlock>
       {(() => {
         const HOURS = SPARKLINE_HOURS;
         const sparklineDirs = hoveredBranch
@@ -176,15 +173,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (
-          <div>
-            {useTrunkSparkline && (
-              <p className="text-[9px] font-bold text-[var(--text-dim)] mb-0.5">Shared section</p>
-            )}
-            <HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
-          </div>
+          <HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
         );
       })()}
-      <div className="space-y-3">
+      <SidebarCardList>
         {(() => {
           const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
           const groupHeadway = (g: DirectionGroup) => g.realTier[0]?.headway ?? null;
@@ -204,38 +196,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           };
           const multiBranchGroup = (g: DirectionGroup) => g.realTier.length >= 2;
           return displayGroups.map((group, gi) => {
-            const fmtH = (d: ShapeProperties): string => {
-              const cleaned = cleanHeadsign((d.headsign ?? '').trim(), currentRoute.routeShortName, currentRoute.routeLongName);
-              if (!cleaned) return '';
-              const h = titleCase(cleaned);
-              return /^to\s/i.test(h) || / to /i.test(h) ? h : `to ${h}`;
-            };
+            const fmtH = (d: ShapeProperties): string =>
+              formatBranchLabel(d.headsign, currentRoute.routeShortName ?? '', currentRoute.routeLongName ?? '');
             const spanNames = group.span
-              .map(d => d.headsign ? titleCase(cleanHeadsign(d.headsign.trim(), currentRoute.routeShortName, currentRoute.routeLongName)) : '')
+              .map(d => formatBranchLabel(d.headsign, currentRoute.routeShortName ?? '', currentRoute.routeLongName ?? ''))
               .filter(Boolean);
-            const groupHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(group.dirId);
-            const trunkPeriodKey = period !== 'all' ? period : 'midday';
-            const groupTrunk = shouldShowTrunkSummary(group.realTier, period)
-              ? groupTrunkHeadway(group.realTier, trunkPeriodKey)
-              : null;
             return (
               <React.Fragment key={group.dirId}>
-                {gi > 0 && displayGroups.length > 1 && (
-                  <div className="border-t border-[var(--border-primary)] opacity-30" />
-                )}
+                {gi > 0 && displayGroups.length > 1 && <CardDivider />}
                 {displayGroups.length > 1 && group.boundLabel && (
-                  <div className="text-[9px] font-black uppercase tracking-wider text-[var(--text-dim)]">
-                    {group.boundLabel}
-                  </div>
-                )}
-                {groupTrunk != null && (
-                  <div className={`text-[10px] transition-opacity duration-150 ${groupHovered ? 'opacity-35' : ''}`}>
-                    <span className="font-bold text-[var(--text-primary)]">Shared section</span>
-                    <span className="flex items-center gap-1.5 font-black text-[var(--text-primary)] mt-0.5">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(groupTrunk) }} />
-                      {fmtHeadway(groupTrunk)}
-                    </span>
-                  </div>
+                  <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                 )}
                 <div className="space-y-2">
                   {group.realTier.map((d, i) => {
@@ -254,7 +224,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? (d as ExtShape).minStopHeadwayByPeriod?.[period]
                         : undefined;
                       return (
-                        <RouteDirectionRow
+                        <CardDirectionRow
                           key={`r${i}`}
                           label={label}
                           headway={displayH ?? undefined}
@@ -267,13 +237,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     })();
                   })}
                   {(!hideSpan || group.realTier.length === 0) && group.span.length === 1 && (
-                    <RouteDirectionRow key="s0" label={group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'} limited {...branchHoverProps(group.dirId, group.span[0].headsign)} />
+                    <CardDirectionRow key="s0" label={group.span[0].headsign ? fmtH(group.span[0]) : 'limited service'} limited {...branchHoverProps(group.dirId, group.span[0].headsign)} />
                   )}
                   {(!hideSpan || group.realTier.length === 0) && group.span.length > 1 && (
-                    <RouteDirectionRow key="smulti" label={spanNames.join(' · ')} limited />
+                    <CardDirectionRow key="smulti" label={spanNames.join(' · ')} limited />
                   )}
                   {hideSpan && group.realTier.length > 0 && spanNames.length > 0 && (
-                    <RouteDirectionRow key="span-hint" label={spanNames.join(' · ')} limitedHint />
+                    <CardDirectionRow key="span-hint" label={spanNames.join(' · ')} limitedHint />
                   )}
                 </div>
               </React.Fragment>
@@ -294,7 +264,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             </p>
           </div>
         )}
-      </div>
-    </>
+      </SidebarCardList>
+    </SidebarCardShell>
   );
 };

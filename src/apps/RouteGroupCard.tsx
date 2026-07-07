@@ -14,7 +14,7 @@ export function RouteGroupCard({ group }: { group: RouteGroup }) {
         <span className="text-[10px] text-[var(--text-muted)]">{group.agencyName}</span>
         {group.bestHeadway != null && (
           <span className="ml-auto text-xs font-black text-[var(--text-primary)]">
-            {fmtHeadway(group.bestHeadway)}
+            {fmtHeadway(group.bestHeadway, 'compact')}
           </span>
         )}
       </div>
@@ -29,7 +29,7 @@ export function RouteGroupCard({ group }: { group: RouteGroup }) {
               </span>
               {hw != null && (
                 <span className="text-[11px] font-bold text-[var(--text-primary)]">
-                  {fmtHeadway(hw)}
+                  {fmtHeadway(hw, 'compact')}
                 </span>
               )}
             </div>

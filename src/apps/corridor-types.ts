@@ -23,8 +23,4 @@ export interface RouteGroup {
   bestHeadway: number | null;
 }
 
-export function fmtHeadway(hw: number | null | undefined): string {
-  if (hw == null) return '—';
-  if (hw >= 60) return `${Math.round(hw / 60)}h`;
-  return `${Math.round(hw)} min`;
-}
+export { fmtHeadway } from '../utils/format';

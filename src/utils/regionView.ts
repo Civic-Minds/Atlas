@@ -1,7 +1,5 @@
 import type { Agency } from '../App';
-
-const DEFAULT_CENTER: [number, number] = [43.65, -79.45];
-const DEFAULT_ZOOM = 11;
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../../shared/config';
 const VIEW_KEY = 'atlas_view';
 
 export interface SavedView { lat: number; lon: number; zoom: number }
@@ -25,7 +23,7 @@ export function saveView(lat: number, lon: number, zoom: number): void {
 export function getRegionalView(_agencies: Agency[]): { center: [number, number]; zoom: number } {
   const saved = getSavedView();
   if (saved) return { center: [saved.lat, saved.lon], zoom: saved.zoom };
-  return { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM };
+  return { center: DEFAULT_MAP_CENTER, zoom: DEFAULT_MAP_ZOOM };
 }
 
 export function getAgencyBounds(agencies: Agency[]): [[number, number], [number, number]] | null {

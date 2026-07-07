@@ -1,24 +1,16 @@
 import React from 'react';
 import { getTimelineHeadwayColor } from '../utils/colors';
-import { TIME_PERIODS } from '../../shared/config';
-import { type RouteGroup, fmtHeadway } from './corridor-types';
+import { TIME_PERIODS, formatPeriodRangeLong } from '../../shared/config';
+import { type RouteGroup } from './corridor-types';
+import { fmtHeadway } from '../utils/format';
 import type { StopEntry } from './corridor-search';
 
-const TIMELINE_PERIODS: Array<{ key: string; label: string; time: string; flex: number }> = TIME_PERIODS.map(p => {
-  const formatHour = (hr: number) => {
-    const suffix = hr >= 12 ? 'PM' : 'AM';
-    const h12 = hr % 12 === 0 ? 12 : hr % 12;
-    return `${h12} ${suffix}`;
-  };
-  const startStr = formatHour(p.startHour);
-  const endStr = formatHour(p.endHour);
-  const startSuffix = startStr.split(' ')[1];
-  const endSuffix = endStr.split(' ')[1];
-  const timeStr = startSuffix === endSuffix
-    ? `${startStr.split(' ')[0]}–${endStr}`
-    : `${startStr}–${endStr}`;
-  return { key: p.key, label: p.label, time: timeStr, flex: 1 };
-});
+const TIMELINE_PERIODS = TIME_PERIODS.map(p => ({
+  key: p.key,
+  label: p.label,
+  time: formatPeriodRangeLong(p.startHour, p.endHour),
+  flex: 1,
+}));
 
 const LABEL_W = 136;
 
@@ -90,7 +82,7 @@ export function ServiceTimeline({
                         const { bg, fg } = getTimelineHeadwayColor(val);
                         return (
                           <div key={p.key} className="flex flex-1 items-center justify-center" style={{ backgroundColor: bg }}>
-                            <span className="text-[10px] font-bold" style={{ color: fg }}>{fmtHeadway(val)}</span>
+                            <span className="text-[10px] font-bold" style={{ color: fg }}>{fmtHeadway(val, 'compact')}</span>
                           </div>
                         );
                       })}

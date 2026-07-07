@@ -3,7 +3,13 @@
 ## [Unreleased]
 
 ### Fixed
-- **Route card trunk frequency**: Multi-branch routes (e.g. HSR 5) show combined shared-section headway in the sparkline and a "Shared section" row per direction group; destination rows keep terminal wait times. Branch hover switches sparkline to that branch.
+- **Route card trunk frequency (#99)**: Multi-branch routes (e.g. HSR 5) show combined shared-section headway in the sparkline by default; destination rows show terminal wait ranges. Branch hover switches sparkline to that branch.
+- **Route card sparkline overnight (#100)**: Hourly chart runs 6 AM → 2 AM left-to-right with 5 AM grouped at the end — overnight no longer splits across both ends.
+- **Sidebar card continuity (#101)**: Stop and agency cards reuse `RouteDirectionRow` styling — stacked labels/headways, shared `to …` branch formatting, consistent dots and typography.
+- **Stop card route groups (#102)**: Shared headway collapsed into one line per route with compact destination list — flat layout, no nested route cards.
+
+### Changed
+- **Sidebar card primitives (#103)**: `SidebarCardShell`, shared list/section wrappers, and `CardDirectionRow` — stop, route, and agency cards share one layout system; removed duplicate route-card wrapper margin.
 
 ## [3.0.7] — 2026-07-06
 

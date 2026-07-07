@@ -803,8 +803,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
 
         {currentRoute && !query.trim() && (
-          <div className={`mb-5 ${PANEL_ENTER_LEFT}`}>
-            {fareView ? (
+          fareView ? (
               <>
                 <div className="flex items-start gap-2 mb-3">
                   <button
@@ -858,8 +857,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 hoveredBranch={hoveredBranch}
                 setHoveredBranch={setHoveredBranch}
               />
-            )}
-          </div>
+            )
         )}
 
         {query !== '' && fareView && fareViewMatchedAgencies.length > 0 && (

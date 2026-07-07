@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
-import { R2_PUBLIC_URL } from '../../shared/config';
+import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
@@ -10,18 +10,10 @@ export interface RouteSnapshot {
   label: string;
   year: number;
   weekdayHeadwayMin: number;
-  headwayByPeriod?: { amPeak?: number | null; midday?: number | null; pmPeak?: number | null; evening?: number | null };
+  headwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
   note?: string;
 }
-
-type HistoryPeriod = 'midday' | 'amPeak' | 'pmPeak' | 'evening';
-const HISTORY_PERIODS: Array<{ key: HistoryPeriod; label: string; desc: string }> = [
-  { key: 'amPeak', label: 'AM', desc: '6 – 9 AM' },
-  { key: 'midday', label: 'Mid', desc: '12 – 3 PM' },
-  { key: 'pmPeak', label: 'PM', desc: '4 – 7 PM' },
-  { key: 'evening', label: 'Eve', desc: '7 – 10 PM' },
-];
 
 export interface RouteHistoryEntry {
   routeShortName: string;

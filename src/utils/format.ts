@@ -1,4 +1,5 @@
-export { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
+import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cleanHeadsign';
+export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
 const TRANSIT_ACRONYMS: Record<string, string> = {
   Go: 'GO',
@@ -40,7 +41,12 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
 // Articles/prepositions that stay lowercase unless they open the string
 const KEEP_LOWER = /^(of|to|the|a|an|and|or|in|at|by|for|via)$/i;
 
-export function fmtHeadway(minutes: number): string {
+export function fmtHeadway(minutes: number | null | undefined, style: 'narrative' | 'compact' = 'narrative'): string {
+  if (minutes == null) return style === 'compact' ? '—' : '—';
+  if (style === 'compact') {
+    if (minutes >= 60) return `${Math.round(minutes / 60)}h`;
+    return `${Math.round(minutes)} min`;
+  }
   if (minutes <= 60) return `every ${minutes} min`;
   const hrs = Math.round(minutes / 30) / 2;
   return `every ~${hrs}h`;
@@ -210,4 +216,20 @@ export function shortenAgencyName(name: string): string {
   }
 
   return name;
+}
+
+/** Destination label for route/stop cards — matches route card `to …` convention. */
+export function formatBranchLabel(
+  headsign: string | null | undefined,
+  shortName: string,
+  longName: string,
+  fallback = '',
+): string {
+  if (!headsign?.trim()) return fallback;
+  const raw = /^A[0-9]/.test(shortName)
+    ? headsign.trim()
+    : cleanHeadsign(headsign.trim(), shortName, longName);
+  if (!raw) return fallback;
+  const h = titleCase(raw);
+  return /^to\s/i.test(h) || / to /i.test(h) ? h : `to ${h}`;
 }

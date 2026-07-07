@@ -16,6 +16,8 @@ import { type RouteFeature, type RouteGroup, fmtHeadway } from './corridor-types
 import { ServiceTimeline } from './ServiceTimeline';
 import { StopInput } from './StopInput';
 import { RouteGroupCard } from './RouteGroupCard';
+import { PERIOD_KEYS } from '../../shared/config';
+import { DAY_TYPES, type DayType } from '../../types/gtfs';
 
 export type CorridorsFromInputBindings = {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -58,14 +60,6 @@ interface GeoJsonAgency {
     };
   }>;
 }
-
-const PERIOD_LABELS: Record<string, string> = {
-  amPeak: 'AM Peak',
-  midday: 'Midday',
-  pmPeak: 'PM Peak',
-  evening: 'Evening',
-};
-
 
 /** Agencies that might serve a direct corridor between two normalized stop names. */
 function agencySlugsForQuery(
@@ -113,7 +107,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
   const [toQuery, setToQuery] = useState('');
   const [toStop, setToStop] = useState<StopEntry | null>(null);
   const [toActive, setToActive] = useState(false);
-  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>('Weekday');
+  const [day, setDay] = useState<DayType>('Weekday');
   const [stopsReady, setStopsReady] = useState(false);
   const [fromHighlight, setFromHighlight] = useState(0);
   const [toHighlight, setToHighlight] = useState(0);
@@ -298,7 +292,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
         // TO stop headway can be misleadingly low at major hubs (many patterns converge there).
         const fromStopId = p.stopOrder[fromIdx];
         const fromStopHeadwayByPeriod: Record<string, number | null> = {};
-        for (const pk of Object.keys(PERIOD_LABELS)) {
+        for (const pk of PERIOD_KEYS) {
           fromStopHeadwayByPeriod[pk] = stopHwByPeriod
             ? (stopHwByPeriod[fromStopId]?.[pk] ?? null)
             : null;
@@ -306,7 +300,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
 
         const toStopHeadway = toStopId && stopHeadways ? (stopHeadways[toStopId] ?? null) : null;
         const toStopHeadwayByPeriod: Record<string, number | null> = {};
-        for (const pk of Object.keys(PERIOD_LABELS)) {
+        for (const pk of PERIOD_KEYS) {
           toStopHeadwayByPeriod[pk] = (toStopId && stopHwByPeriod)
             ? (stopHwByPeriod[toStopId]?.[pk] ?? null)
             : null;
@@ -571,7 +565,7 @@ export default function Corridors({ agencies, lightMode, setLightMode, fromQuery
 
       {/* Day picker + info — top-right */}
       <div className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
-        {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
+        {DAY_TYPES.map(d => (
           <button
             key={d}
             onClick={() => setDay(d)}

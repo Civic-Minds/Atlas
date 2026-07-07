@@ -13,6 +13,7 @@ import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel from './components/InfoPanel';
+import { DAY_TYPES, getNowDay, type DayType } from '../types/gtfs';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -129,15 +130,12 @@ export default function App() {
   const [fromInputBindings, setFromInputBindings] = useState<CorridorsFromInputBindings | null>(null);
   const [corridorsMounted, setCorridorsMounted] = useState(false);
   const [liveMounted, setLiveMounted] = useState(false);
-  const [day, setDay] = useState<'Weekday' | 'Saturday' | 'Sunday'>(() => {
+  const [day, setDay] = useState<DayType>(() => {
     try {
       const s = localStorage.getItem('atlas_pref_day');
-      if (s === 'Weekday' || s === 'Saturday' || s === 'Sunday') return s;
+      if (s && (DAY_TYPES as readonly string[]).includes(s)) return s as DayType;
     } catch {}
-    const d = new Date().getDay();
-    if (d === 0) return 'Sunday';
-    if (d === 6) return 'Saturday';
-    return 'Weekday';
+    return getNowDay();
   });
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});

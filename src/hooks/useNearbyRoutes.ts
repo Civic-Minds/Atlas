@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
-import type { ShapeProperties } from './useIntervalStats';
+import type { ShapeProperties, DayType } from './useIntervalStats';
 
 const NEARBY_RADIUS_M = 500;
 const EARTH_R = 6371000;
@@ -31,7 +31,7 @@ export interface NearbyRoute {
 export function useNearbyRoutes(
   userLocation: { lat: number; lon: number } | null,
   layers: Record<string, GeoJSON.FeatureCollection>,
-  currentDay: 'Weekday' | 'Saturday' | 'Sunday',
+  currentDay: DayType,
 ): NearbyRoute[] {
   return useMemo(() => {
     if (!userLocation) return [];

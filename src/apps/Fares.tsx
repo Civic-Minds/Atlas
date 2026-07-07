@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Agency } from '../App';
 import Interval from './Interval';
+import type { DayType } from '../../types/gtfs';
 
 interface Props {
   agencies: Agency[];
@@ -14,8 +15,8 @@ interface Props {
   layers?: Record<string, GeoJSON.FeatureCollection>;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
   headerPortalContainer?: Element | null;
-  day: 'Weekday' | 'Saturday' | 'Sunday';
-  setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  day: DayType;
+  setDay: (d: DayType) => void;
 }
 
 /**

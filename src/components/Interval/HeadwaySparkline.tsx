@@ -1,53 +1,30 @@
 import React, { useState } from 'react';
-import { getTierColor } from '../../utils/colors';
+import { headwayToTierColor } from '../../utils/colors';
+export { headwayToTierColor };
+import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS } from '../../../shared/config';
+import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 
-export function headwayToTierColor(h: number | null | undefined): string {
-  if (!h) return getTierColor(null);
-  if (h <= 10) return getTierColor('10');
-  if (h <= 15) return getTierColor('15');
-  if (h <= 20) return getTierColor('20');
-  if (h <= 30) return getTierColor('30');
-  if (h <= 60) return getTierColor('60');
-  return getTierColor('infrequent');
-}
-
-// Hours shown: 5 AM through 2 AM next day (GTFS hour 26)
-const HOURS = Array.from({ length: 22 }, (_, i) => i + 5);
+const HOURS = SPARKLINE_HOURS;
 
 // Label positions: 6a, 12p, 6p, 12a
 const HOUR_LABELS: Record<number, string> = { 6: '6a', 12: '12p', 18: '6p', 24: '12a' };
 
-const PERIOD_HOURS: Record<string, [number, number]> = {
-  amPeak:    [6,  9],
-  midday:    [9,  15],
-  pmPeak:    [15, 19],
-  evening:   [19, 23],
-  late:      [23, 26],
-  overnight: [26, 30],
-};
+const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
+  HOURS.map(h => [h, periodKeyForHour(h)]).filter(([, p]) => p != null),
+) as Record<number, string>;
 
-const HOUR_TO_PERIOD: Record<number, string> = {};
-for (let h = 5; h < 6; h++) HOUR_TO_PERIOD[h] = 'amPeak';  // hour 5 → snap to amPeak
-for (let h = 6; h < 9; h++) HOUR_TO_PERIOD[h] = 'amPeak';
-for (let h = 9; h < 15; h++) HOUR_TO_PERIOD[h] = 'midday';
-for (let h = 15; h < 19; h++) HOUR_TO_PERIOD[h] = 'pmPeak';
-for (let h = 19; h < 23; h++) HOUR_TO_PERIOD[h] = 'evening';
-for (let h = 23; h < 26; h++) HOUR_TO_PERIOD[h] = 'late';
-HOUR_TO_PERIOD[26] = 'overnight';
-
-// Pre-compute each period's position as fractions of the chart width
-const PERIOD_BANDS: Record<string, { left: number; width: number }> = (() => {
-  const raw: Record<string, { start: number; count: number }> = {};
-  HOURS.forEach((h, i) => {
-    const p = HOUR_TO_PERIOD[h];
-    if (!p) return;
-    if (!raw[p]) raw[p] = { start: i, count: 0 };
-    raw[p].count++;
-  });
-  const result: Record<string, { left: number; width: number }> = {};
-  for (const [p, { start, count }] of Object.entries(raw)) {
-    result[p] = { left: start / HOURS.length, width: count / HOURS.length };
+// Contiguous hover bands per period (overnight is 2 AM + 5 AM at the sparkline tail)
+const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = (() => {
+  const result: Record<string, { left: number; width: number }[]> = {};
+  let i = 0;
+  while (i < HOURS.length) {
+    const p = HOUR_TO_PERIOD[HOURS[i]];
+    if (!p) { i++; continue; }
+    const start = i;
+    while (i < HOURS.length && HOUR_TO_PERIOD[HOURS[i]] === p) i++;
+    (result[p] ??= []).push({ left: start / HOURS.length, width: (i - start) / HOURS.length });
   }
   return result;
 })();
@@ -70,7 +47,7 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
   const maxFreq = Math.max(...valids.map(v => 1 / v));
   const minFreq = Math.min(...valids.map(v => 1 / v));
 
-  const activePeriodRange = period && period !== 'all' ? PERIOD_HOURS[period] : null;
+  const activePeriodKey = period && period !== 'all' ? period : null;
 
   const interactive = !!onPeriodChange;
 
@@ -102,7 +79,8 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
     onPeriodHover?.(null);
   } : undefined;
 
-  const band = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
+  const bands = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
+  const activeLabelKey = (hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
 
   const formatHour = (h: number): string => {
     let h24 = h > 24 ? h - 24 : h;
@@ -121,9 +99,15 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
+        {activeLabelKey && (
+          <span className="absolute top-0 right-0 text-[9px] font-bold text-[var(--text-dim)] pointer-events-none">
+            {PERIOD_LABELS[activeLabelKey]}
+          </span>
+        )}
         {/* Hover region highlight — visible on light bg */}
-        {band && (
+        {bands?.map((band, i) => (
           <div
+            key={i}
             className="absolute inset-y-0 rounded-sm pointer-events-none"
             style={{
               left: `${band.left * 100}%`,
@@ -131,7 +115,7 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
               background: 'var(--bg-btn-hover)',
             }}
           />
-        )}
+        ))}
         <div className="flex items-end gap-px">
           {HOURS.map(h => {
             const hw = byHour[h];
@@ -142,8 +126,8 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
                   ? Math.max(4, Math.round((freq - minFreq) / (maxFreq - minFreq) * (H - 4) + 4))
                   : H)
               : 0;
-            const inActivePeriod = activePeriodRange
-              ? h >= activePeriodRange[0] && h < activePeriodRange[1]
+            const inActivePeriod = activePeriodKey
+              ? isHourInPeriod(h, activePeriodKey)
               : true;
             const inHovered = hoveredPeriod ? HOUR_TO_PERIOD[h] === hoveredPeriod : false;
             const isTooltipHover = hoveredTooltip?.hour === h;

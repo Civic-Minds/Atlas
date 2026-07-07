@@ -3,17 +3,21 @@ import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP } from '../../styles';
 import type { Agency } from '../../App';
-import { VIRTUAL_LRT_MODE, PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
-import { TIME_PERIODS } from '../../../shared/config';
+import { formatPeriodRange, periodKeyForHour, AGENCY_CHIP_PAD } from '../../../shared/config';
+import { FILTER_MODES } from '../../../shared/modes';
+import { DAY_TYPES, getNowDay, type DayType } from '../../../types/gtfs';
+
+export { getNowDay };
 
 interface FilterChipsProps {
   maxHeadway: number;
   setMaxHeadway: (h: number) => void;
   selectedModes: Set<number>;
   setSelectedModes: React.Dispatch<React.SetStateAction<Set<number>>>;
-  day: 'Weekday' | 'Saturday' | 'Sunday';
-  setDay: (d: 'Weekday' | 'Saturday' | 'Sunday') => void;
+  day: DayType;
+  setDay: (d: DayType) => void;
   period: TimePeriod;
   setPeriod: (p: TimePeriod) => void;
   agencies: Agency[];
@@ -22,44 +26,10 @@ interface FilterChipsProps {
   bounds: ViewportBounds | null;
 }
 
-const MODES = [
-  { id: 1, label: 'Subway' },
-  { id: VIRTUAL_LRT_MODE, label: 'LRT' },
-  { id: 0, label: 'Streetcar' },
-  { id: 2, label: 'Rail' },
-  { id: 3, label: 'Bus' },
-  { id: 4, label: 'Ferry' },
-];
-
-
-const PERIODS: TimePeriod[] = ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'];
-
-function fmtHour(h: number): string {
-  const h12 = h % 24;
-  if (h12 === 0 || h12 === 24) return '12a';
-  if (h12 === 12) return '12p';
-  return h12 < 12 ? `${h12}a` : `${h12 - 12}p`;
-}
-
-function periodRange(key: string): string {
-  const p = TIME_PERIODS.find(t => t.key === key);
-  if (!p) return '';
-  return `${fmtHour(p.startHour)}–${fmtHour(p.endHour)}`;
-}
-
-export function getNowDay(): 'Weekday' | 'Saturday' | 'Sunday' {
-  const d = new Date().getDay();
-  if (d === 0) return 'Sunday';
-  if (d === 6) return 'Saturday';
-  return 'Weekday';
-}
+const MODES = FILTER_MODES;
 
 export function getNowPeriod(): TimePeriod {
-  const h = new Date().getHours();
-  // Hours 0–5 (early morning) map to GTFS 24–29 so they match late/overnight periods
-  const gtfsH = h < 6 ? h + 24 : h;
-  const matched = TIME_PERIODS.find(p => gtfsH >= p.startHour && gtfsH < p.endHour);
-  return (matched?.key as TimePeriod) || 'all';
+  return periodKeyForHour(new Date().getHours()) ?? 'all';
 }
 
 type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
@@ -98,7 +68,7 @@ function bboxInViewport(agency: { bbox?: [number, number, number, number]; cente
   }
   if (agency.center) {
     const [lat, lon] = agency.center;
-    const pad = 0.5;
+    const pad = AGENCY_CHIP_PAD;
     return lat - pad <= bounds.n && lat + pad >= bounds.s && lon - pad <= bounds.e && lon + pad >= bounds.w;
   }
   return false;
@@ -299,7 +269,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <div>
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Day</p>
               <div className="flex gap-1">
-                {(['Weekday', 'Saturday', 'Sunday'] as const).map(d => (
+                {DAY_TYPES.map(d => (
                   <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d)}>
                     {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
                   </button>
@@ -310,7 +280,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <div>
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
-                {PERIODS.map(p => (
+                {PERIOD_KEYS.map(p => (
                   <button key={p} onClick={() => setPeriod(period === p ? 'all' : p)} className={compactOptBtn(period === p)}>
                     {PERIOD_LABELS[p]}
                   </button>
@@ -367,7 +337,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         </button>
         {openChip === 'day' && (
           <div className={`${PANEL} w-36`}>
-            {(['Weekday', 'Saturday', 'Sunday'] as const).map((d) => (
+            {DAY_TYPES.map((d) => (
               <button
                 key={d}
                 onClick={() => { setDay(d); setOpenChip(null); }}
@@ -388,14 +358,14 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         </button>
         {openChip === 'period' && (
           <div className={`${PANEL} w-36`}>
-            {PERIODS.map((p) => (
+            {PERIOD_KEYS.map((p) => (
               <button
                 key={p}
                 onClick={() => { setPeriod(period === p ? 'all' : p); setOpenChip(null); }}
                 className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
               >
                 <span>{PERIOD_LABELS[p]}</span>
-                <span className="text-[9px] text-[var(--text-dim)] shrink-0">{periodRange(p)}</span>
+                <span className="text-[9px] text-[var(--text-dim)] shrink-0">{formatPeriodRange(p)}</span>
               </button>
             ))}
           </div>
