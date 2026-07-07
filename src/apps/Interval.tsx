@@ -69,7 +69,26 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
-  const [hoveredBranch, setHoveredBranch] = useState<HoveredBranch | null>(null);
+  const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
+  const hoverTimeoutRef = useRef<number | null>(null);
+
+  const setHoveredBranch = useCallback((branch: HoveredBranch | null) => {
+    if (hoverTimeoutRef.current !== null) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    if (branch === null) {
+      hoverTimeoutRef.current = window.setTimeout(() => {
+        setHoveredBranchState(null);
+        hoverTimeoutRef.current = null;
+      }, 50);
+    } else {
+      hoverTimeoutRef.current = window.setTimeout(() => {
+        setHoveredBranchState(branch);
+        hoverTimeoutRef.current = null;
+      }, 80);
+    }
+  }, []);
   const prevSearchFocused = useRef(searchFocused);
   const agencyCardRef = useRef<HTMLDivElement>(null);
 
