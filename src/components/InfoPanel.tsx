@@ -277,7 +277,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
 
               <p className="text-[10px] text-[var(--text-dim)] leading-relaxed">
-                Schedule data from official GTFS feeds, refreshed every Monday. © 2026 Civic Minds.
+                Schedule data from public GTFS feeds — published by agencies, or mirrored via{' '}
+                <a
+                  href="https://mobilitydatabase.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold"
+                >
+                  Mobility Database
+                </a>{' '}
+                when an agency URL is unreliable.
+                {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
+                  ? ` Last refreshed ${formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))}.`
+                  : ''}{' '}
+                {feedRefreshCountdownLabel(feedRefreshMeta)} © 2026 Civic Minds.
               </p>
             </div>
           )}
