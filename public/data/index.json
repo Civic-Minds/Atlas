@@ -5476,15 +5476,11 @@
         42.27,
         -89.09
       ],
-      "feedUrl": "https://dfef8f.p3cdn2.secureserver.net/wp-content/uploads/2023/08/RMTD_GTFS_AUGUST_2023.zip",
+      "feedUrl": "https://rmtd.org/rmtdgtfs/GTFS_FILES.zip",
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2019/latest.zip",
-      "lastFeedExpiry": "20230916",
-      "lastFeedVersion": "S1000045",
-      "excludeRouteShortNames": [
-        "Test"
-      ],
-      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/144"
+      "lastFeedExpiry": "20261010",
+      "lastFeedVersion": "S1000085"
     },
     {
       "slug": "racine",
@@ -5820,6 +5816,158 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
+    },
+    {
+      "slug": "roswell",
+      "name": "Roswell Transit",
+      "region": "New Mexico",
+      "center": [
+        33.39,
+        -104.52
+      ],
+      "bbox": [
+        33.257,
+        -104.573,
+        33.499,
+        -104.47
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60167/ntd-60167-202412090027/ntd-60167-202412090027.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60167/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null
+    },
+    {
+      "slug": "hobbs",
+      "name": "City of Hobbs Transit",
+      "region": "New Mexico",
+      "center": [
+        32.7,
+        -103.14
+      ],
+      "bbox": [
+        32.643,
+        -103.239,
+        32.825,
+        -103.063
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60190/ntd-60190-202601240120/ntd-60190-202601240120.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60190/latest.zip",
+      "lastFeedExpiry": "20270331",
+      "lastFeedVersion": "20230901"
+    },
+    {
+      "slug": "longview",
+      "name": "City of Longview Transit",
+      "region": "Texas",
+      "center": [
+        32.49,
+        -94.75
+      ],
+      "bbox": [
+        32.386,
+        -94.862,
+        32.6,
+        -94.643
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
+      "lastFeedExpiry": "20260930",
+      "lastFeedVersion": "2.0"
+    },
+    {
+      "slug": "texarkana",
+      "name": "Texarkana T-Line",
+      "region": "Texas",
+      "center": [
+        33.44,
+        -94.07
+      ],
+      "bbox": [
+        33.347,
+        -94.181,
+        33.541,
+        -93.949
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
+      "lastFeedExpiry": "20280131",
+      "lastFeedVersion": "02-2025"
+    },
+    {
+      "slug": "fort-bend",
+      "name": "Fort Bend County Transit",
+      "region": "Texas",
+      "center": [
+        29.64,
+        -95.6
+      ],
+      "bbox": [
+        29.472,
+        -95.859,
+        29.803,
+        -95.341
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60103/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60103/latest.zip",
+      "lastFeedExpiry": "20281230",
+      "lastFeedVersion": "1"
+    },
+    {
+      "slug": "lake-charles",
+      "name": "Lake Charles Transit",
+      "region": "Louisiana",
+      "center": [
+        30.22,
+        -93.2
+      ],
+      "bbox": [
+        30.119,
+        -93.3,
+        30.32,
+        -93.105
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60023/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60023/latest.zip",
+      "lastFeedExpiry": "20260929",
+      "lastFeedVersion": "157"
+    },
+    {
+      "slug": "terrebonne-parish",
+      "name": "Good Earth Transit (Houma)",
+      "region": "Louisiana",
+      "center": [
+        29.69,
+        -90.75
+      ],
+      "bbox": [
+        29.514,
+        -90.897,
+        29.861,
+        -90.597
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
+      "lastFeedExpiry": "20260929",
+      "lastFeedVersion": "381"
+    },
+    {
+      "slug": "tangipahoa-parish",
+      "name": "Tangipahoa Transit (Hammond)",
+      "region": "Louisiana",
+      "center": [
+        30.53,
+        -90.47
+      ],
+      "bbox": [
+        30.374,
+        -90.559,
+        30.684,
+        -90.373
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "20251212"
     }
   ]
 }
