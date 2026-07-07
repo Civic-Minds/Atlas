@@ -51,6 +51,7 @@ export interface StopCardProps {
   filteredStopRoutes: StopRoute[];
   period: TimePeriod;
   nearbyConnections: NearbyConnection[];
+  onDirectFromStop?: () => void;
 }
 
 export const StopCard: React.FC<StopCardProps> = ({
@@ -63,6 +64,7 @@ export const StopCard: React.FC<StopCardProps> = ({
   filteredStopRoutes,
   period,
   nearbyConnections,
+  onDirectFromStop,
 }) => {
   const openRoute = (rKey: string) => {
     setSelectedStop(null);
@@ -99,6 +101,16 @@ export const StopCard: React.FC<StopCardProps> = ({
           </>
         )}
       </SidebarCardHeaderBlock>
+
+      {onDirectFromStop && (
+        <button
+          type="button"
+          onClick={onDirectFromStop}
+          className="mb-3 text-[10px] font-bold text-[var(--accent)] hover:opacity-80 transition-opacity text-left"
+        >
+          Direct routes from here…
+        </button>
+      )}
 
       <SidebarCardList>
         {sortedRoutes.map(route => (

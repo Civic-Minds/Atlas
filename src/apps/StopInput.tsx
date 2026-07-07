@@ -8,10 +8,12 @@ export interface StopInputProps {
   onChange: (v: string) => void;
   onFocus: () => void;
   onClear: () => void;
+  onBlur?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export const StopInput = React.forwardRef<HTMLInputElement, StopInputProps>(
-  ({ label, value, selected, onChange, onFocus, onClear }, ref) => {
+  ({ label, value, selected, onChange, onFocus, onClear, onBlur, onKeyDown }, ref) => {
     const [focused, setFocused] = React.useState(false);
     const placeholder = (focused || value) ? 'Search stations…' : label;
     return (
@@ -23,7 +25,8 @@ export const StopInput = React.forwardRef<HTMLInputElement, StopInputProps>(
           value={value}
           onChange={e => onChange(e.target.value)}
           onFocus={() => { setFocused(true); onFocus(); }}
-          onBlur={() => setFocused(false)}
+          onBlur={() => { setFocused(false); onBlur?.(); }}
+          onKeyDown={onKeyDown}
           placeholder={placeholder}
           className="flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none min-w-0"
         />

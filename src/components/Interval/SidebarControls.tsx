@@ -7,6 +7,7 @@ import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { titleCase, getRouteLabel, shortenAgencyName } from '../../utils/format';
+import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { searchAgencyGroups, type AgencySearchGroup } from '../../utils/agencySearch';
 import {
@@ -94,6 +95,7 @@ interface SidebarControlsProps {
   bounds?: ViewportBounds | null;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
+  onDirectFromStop?: (stop: StopEntry) => void;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -132,6 +134,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   bounds = null,
   hoveredBranch,
   setHoveredBranch,
+  onDirectFromStop,
 }) => {
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
@@ -848,6 +851,20 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             filteredStopRoutes={filteredStopRoutes as StopRoute[]}
             period={period}
             nearbyConnections={nearbyConnections as NearbyConnection[]}
+            onDirectFromStop={onDirectFromStop ? () => {
+              const stopName = currentStop.stopName as string;
+              const agencySlug = currentStop.agencySlug as string;
+              const agency = agencies.find(a => a.slug === agencySlug);
+              onDirectFromStop({
+                stopId: currentStop.stopId as string,
+                name: stopName,
+                displayName: normalizeStopName(stopName),
+                lat: currentStop.lat as number,
+                lon: currentStop.lon as number,
+                agencySlug,
+                agencyName: agency?.name ?? agencySlug,
+              });
+            } : undefined}
           />
         )}
 

@@ -34,8 +34,8 @@ export function ServiceTimeline({
   }
 
   return (
-    <div className="overflow-y-auto p-5">
-      <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3">
+    <div className="overflow-y-auto px-4 py-3">
+      <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mb-3">
         {results.length} route{results.length !== 1 ? 's' : ''} · {day}
       </p>
 
