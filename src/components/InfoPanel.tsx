@@ -320,6 +320,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                       {list.map(a => {
                         const hasLive = liveBySlug.has(a.slug);
                         const hasHistory = historyBySlug.has(a.slug);
+                        const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
+                        const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
                         return (
                           <button
                             key={a.slug}
@@ -327,10 +329,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                             className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
                           >
                             <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
-                            <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                              {hasLive && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live</span>}
-                              {hasHistory && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>}
-                            </div>
+                            {(showLiveBadge || showHistoryBadge) && (
+                              <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                {showLiveBadge && (
+                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live</span>
+                                )}
+                                {showHistoryBadge && (
+                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>
+                                )}
+                              </div>
+                            )}
                           </button>
                         );
                       })}
