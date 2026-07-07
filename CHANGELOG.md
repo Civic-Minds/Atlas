@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.9] — 2026-07-06
+
+### Fixed
+- **CI**: Pin `@emnapi/core` and `@emnapi/runtime` at 1.11.2 in `package-lock.json` so `npm ci` passes on Node 22 (Tailwind/Rolldown wasm optional deps).
+
 ## [3.0.8] — 2026-07-06
 
 ### Fixed
