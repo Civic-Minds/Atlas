@@ -66,6 +66,7 @@ gtfs-test-log.md
 public/data/*.json
 !public/data/index.json
 !public/data/index.schema.json
+!public/data/feed-refresh.json
 
 # Personal AI instruction overrides / local variants
 CLAUDE.local.md

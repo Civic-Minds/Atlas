@@ -18,6 +18,7 @@
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
     "validate-index": "npx tsx pipeline/validate-index.ts",
+    "sync-feed-refresh-meta": "npx tsx scripts/sync-feed-refresh-meta.ts",
     "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
     "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts",
     "find-mdb": "npx tsx pipeline/find-mdb-feed.ts",

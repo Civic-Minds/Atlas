@@ -13,6 +13,7 @@ import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions, type HelpContext } from './components/InfoPanel';
+import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 
@@ -88,6 +89,7 @@ export default function App() {
   const [infoTab, setInfoTab] = useState<Tab>('about');
   const [infoFeatureFilter, setInfoFeatureFilter] = useState<InfoFeatureFilter>('all');
   const [infoHelpContext, setInfoHelpContext] = useState<HelpContext | null>(null);
+  const [feedRefreshMeta, setFeedRefreshMeta] = useState<FeedRefreshMeta | null>(null);
   const openInfo = useCallback((tab: Tab = 'about', opts?: OpenInfoOptions) => {
     const featureFilter: InfoFeatureFilter = opts?.featureFilter
       ?? (tab === 'live' ? 'live' : tab === 'history' ? 'history' : 'all');
@@ -210,6 +212,10 @@ export default function App() {
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));
+    fetch('/data/feed-refresh.json')
+      .then(r => (r.ok ? r.json() : null))
+      .then((data: FeedRefreshMeta | null) => { if (data?.scheduleCron) setFeedRefreshMeta(data); })
+      .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
       .then((data: Array<{ slug: string }>) => setHistoryAgencySlugs(new Set(data.map(a => a.slug))))
@@ -415,7 +421,7 @@ export default function App() {
           </ErrorBoundary>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={agencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
+      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={agencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
     </div>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
