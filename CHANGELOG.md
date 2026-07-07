@@ -14,7 +14,7 @@
 - **Search dismiss** ([#138](https://github.com/Civic-Minds/Atlas/issues/138)): Results/suggestions panel closes on blur when clicking outside; typed results gated on `searchFocused` like other panels.
 
 ### Changed
-- **Direct routes mode**: Header **Direct** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Direct routes from here…** entry.
+- **Corridors mode**: Header **Corridors** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Corridors from here…** entry.
 - **App drawer hidden**: Removed waffle menu from header again; History/Fares remain URL-only until ready (reverts [#115](https://github.com/Civic-Minds/Atlas/issues/115)).
 - **Near You panel**: Removed close button; panel clears when location is dismissed from the map.
 - **Near You headways**: “Every X min” respects the selected day and period filter (`headwayByPeriod`), not midday headline only.

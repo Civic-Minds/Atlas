@@ -507,7 +507,7 @@ export default function Corridors({
       >
         <div className={PANEL_TITLE_BAR}>
           <ArrowLeftRight className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
-          <span className={PANEL_TITLE}>Direct routes</span>
+          <span className={PANEL_TITLE}>Corridors</span>
         </div>
 
         <div className="p-3 flex flex-col gap-2 border-b border-[var(--border-primary)] shrink-0">

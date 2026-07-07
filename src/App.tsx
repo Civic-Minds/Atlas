@@ -250,9 +250,9 @@ export default function App() {
           <span className="text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        {/* AppDrawer hidden — History/Fares remain URL-only; Direct + Live use header toggles. */}
+        {/* AppDrawer hidden — History/Fares remain URL-only; Corridors + Live use header toggles. */}
 
-        {/* Search bar — hidden in Direct mode; Corridors owns From/To */}
+        {/* Search bar — hidden in Corridors mode; Corridors owns From/To */}
         {!inCorridors && (
         <div ref={searchBarRef}>
         <div className={`w-44 lg:w-56 xl:w-72 relative ${PILL_SURFACE} pl-1 pr-3`}>
@@ -294,11 +294,11 @@ export default function App() {
 
         <button
           onClick={() => setActiveApp(inCorridors ? 'frequency' : 'corridors')}
-          aria-label={inCorridors ? 'Back to frequency map' : 'Direct routes between stations'}
+          aria-label={inCorridors ? 'Back to frequency map' : 'Corridors — routes between two stations'}
           className={`h-8 px-3 flex items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inCorridors ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
           <ArrowLeftRight className="w-3.5 h-3.5 shrink-0" />
-          Direct
+          Corridors
         </button>
 
         <button
