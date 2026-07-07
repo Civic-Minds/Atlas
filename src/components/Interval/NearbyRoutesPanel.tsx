@@ -7,6 +7,7 @@ import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW } from '../../style
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
+  loading?: boolean;
   setSelectedRoute: (key: string | null) => void;
 }
 
@@ -16,6 +17,7 @@ function fmtDist(m: number): string {
 
 export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
   routes,
+  loading = false,
   setSelectedRoute,
 }) => {
   return (
@@ -28,7 +30,12 @@ export const NearbyRoutesPanel: React.FC<NearbyRoutesPanelProps> = ({
         <span className="text-[10px] font-black text-[var(--text-dim)] tracking-wide">Near You</span>
       </div>
 
-      {routes.length === 0 ? (
+      {loading ? (
+        <div className="flex items-center gap-2 px-4 py-3">
+          <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
+          <span className="text-[10px] font-bold text-[var(--text-muted)]">Loading nearby…</span>
+        </div>
+      ) : routes.length === 0 ? (
         <p className="px-4 py-3 text-[11px] text-[var(--text-muted)] font-bold">
           No routes within 500 m
         </p>
