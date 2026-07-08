@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.13] — 2026-07-08
 
 ### Added
 - **Pipeline override audit**: Clears `issueUrl` when upstream publishes a new GTFS file; logs when excluded routes may no longer need overrides (`excludeRouteShortNames` kept until verified).
