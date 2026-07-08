@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { useIntervalStats, routeKey, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
+import { useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
@@ -63,6 +63,14 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
+    try {
+      const h = searchParams.get('h') || searchParams.get('headway') || searchParams.get('max');
+      if (h) {
+        if (h === 'all' || h === 'inf' || h === 'Infinity') return Infinity;
+        const n = Number(h);
+        if (isFinite(n) && n > 0) return n;
+      }
+    } catch {}
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
   });
@@ -126,7 +134,13 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     return allSlugs;
   });
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
-  const [period, setPeriod] = useState<TimePeriod>(getNowPeriod);
+  const [period, setPeriod] = useState<TimePeriod>(() => {
+    try {
+      const p = searchParams.get('p') || searchParams.get('period');
+      if (p === 'all' || (p && PERIOD_KEYS.includes(p as any))) return p as TimePeriod;
+    } catch {}
+    return getNowPeriod();
+  });
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
   const [showCorridors, setShowCorridors] = useState(forceShowCorridors);
@@ -289,6 +303,26 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     const qs = sp.toString();
     window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
   }, [selectedStop]);
+
+  // Sync filter state (maxHeadway, period) to URL for active view persistence (refresh/share).
+  // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
+  // current (like lat/lon/z). Defaults (h=60, p=all) omitted to keep URLs short.
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (maxHeadway === Infinity) sp.set('h', 'all');
+    else if (maxHeadway !== 60) sp.set('h', String(maxHeadway));
+    else sp.delete('h');
+    const qs = sp.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+  }, [maxHeadway]);
+
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (period !== 'all') sp.set('p', period);
+    else sp.delete('p');
+    const qs = sp.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+  }, [period]);
 
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
