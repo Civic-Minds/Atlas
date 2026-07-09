@@ -305,7 +305,7 @@ describe('useIntervalStats', () => {
     expect(noisy.current.filteredLayers['ttc']).toBeUndefined();
   });
 
-  it('should filter by worst-direction period headway', () => {
+  it('period filter prefers headwayByPeriod (or minStopHeadwayByPeriod) over worstDirectionHeadwayByPeriod', () => {
     const layers: AgencyLayers = {
       'test': {
         type: 'FeatureCollection',
@@ -327,8 +327,9 @@ describe('useIntervalStats', () => {
     const { result: passes } = renderHook(() => useIntervalStats(layers, { ...base, period: 'all' }));
     expect(passes.current.stats?.matching).toBe(1);
 
-    const { result: fails } = renderHook(() => useIntervalStats(layers, base));
-    expect(fails.current.stats?.matching).toBe(0);
+    // headByPeriod (10) is preferred over worst (45); route with good headBy shows under 30min midday filter
+    const { result: shows } = renderHook(() => useIntervalStats(layers, base));
+    expect(shows.current.stats?.matching).toBe(1);
   });
 
   it('tileFilter uses flat period keys and all-day fallback (PMTiles-safe)', () => {

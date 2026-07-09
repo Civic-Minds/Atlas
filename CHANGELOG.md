@@ -5,6 +5,9 @@
 ### Changed
 - Frequency/day/period filters now drive from URL (active view) with LS fallback for prefs. Survives refresh, shareable links, back/forward. Agencies remain LS-only.
 
+### Fixed
+- Test 'should filter by worst-direction period headway' updated for new precedence (headBy/min over worst) after RGRTA filter logic change.
+
 ## [3.0.13] — 2026-07-08
 
 ### Added
