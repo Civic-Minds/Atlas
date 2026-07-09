@@ -23,6 +23,8 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
+| done | `yellowknife` | Yellowknife Transit | Northwest Territories | tld-4708 |
+| done | `whitehorse` | Whitehorse Transit | Yukon | mdb-689 |
 | done | `ben-franklin` | Ben Franklin Transit | Washington | mdb-2122 Tri-Cities |
 | done | `asheville` | Asheville Rides Transit | North Carolina | mdb-903 |
 | done | `bloomington` | Bloomington Transit | Indiana | mdb-2066 college town |

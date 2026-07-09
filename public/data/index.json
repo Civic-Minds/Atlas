@@ -7031,6 +7031,46 @@
         39.0146,
         -76.464
       ]
+    },
+    {
+      "slug": "yellowknife",
+      "name": "Yellowknife Transit",
+      "center": [
+        62.45,
+        -114.37
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-4708/latest.zip",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Northwest Territories",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4708/latest.zip",
+      "bbox": [
+        62.4038,
+        -114.4539,
+        62.4952,
+        -114.3161
+      ]
+    },
+    {
+      "slug": "whitehorse",
+      "name": "Whitehorse Transit",
+      "center": [
+        60.72,
+        -135.05
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Yukon",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
+      "bbox": [
+        60.6639,
+        -135.1889,
+        60.8076,
+        -134.9969
+      ]
     }
   ]
 }
