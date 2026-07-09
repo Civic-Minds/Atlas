@@ -194,6 +194,28 @@ function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
   return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
 }
 
+/** True when the feature's actual geometry enters the viewport — bbox intersection
+ *  alone over-counts badly (an L-shaped route's box can cover downtown while the
+ *  line never comes near it). Vertex check; shapes are dense enough at city scale. */
+function geometryInViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
+  const g = f.geometry as any;
+  if (!g) return false;
+  if (g.type === 'Point') {
+    const [lon, lat] = g.coordinates;
+    return lon >= b.w && lon <= b.e && lat >= b.s && lat <= b.n;
+  }
+  const lines: [number, number][][] =
+    g.type === 'LineString' ? [g.coordinates]
+    : g.type === 'MultiLineString' ? g.coordinates
+    : [];
+  for (const line of lines) {
+    for (const [lon, lat] of line) {
+      if (lon >= b.w && lon <= b.e && lat >= b.s && lat <= b.n) return true;
+    }
+  }
+  return false;
+}
+
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
   const dy = (lat2 - lat1) * 111320;
@@ -303,16 +325,19 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
-    // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in
-    const onScreen = (f: GeoJSON.Feature) => !bounds || inViewport(f, bounds);
-    const routesOnly = allFeatures.filter(f => (f.properties as any).routeId && onScreen(f));
-    const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId && onScreen(f));
+    // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in.
+    // Restrict to the active service day — the map only draws the selected day's features,
+    // so counting other days' variants inflates the badge (e.g. weekday-only routes on a Sunday).
+    const onScreen = (f: GeoJSON.Feature) => !bounds || (inViewport(f, bounds) && geometryInViewport(f, bounds));
+    const activeDay = (f: GeoJSON.Feature) => (f.properties as any).day === day;
+    const routesOnly = allFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
+    const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
 
     return {
       total: new Set(routesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
       matching: new Set(visibleRoutesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
     };
-  }, [allFeatures, visibleFeatures, bounds]);
+  }, [allFeatures, visibleFeatures, bounds, day]);
 
   const searchMatchResults = useMemo(() => {
     if (q === '') return null;
