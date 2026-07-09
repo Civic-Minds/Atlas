@@ -1,8 +1,9 @@
 /**
  * atlas-gtfs-rt-archiver
  *
- * Runs every 5 minutes. Fetches the GTFS-RT TripUpdates feed for each
- * configured agency, parses it, and writes compact trip-delay JSON to R2 at:
+ * Runs every minute. Vehicle positions (POSITION_FEEDS) are archived each run
+ * to atlas-live/positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json; TripUpdates
+ * trip-delay summaries (FEEDS) self-gate to every 5th minute, written to:
  *   atlas-live/{slug}/{YYYY-MM-DD}/{unix-seconds}.json
  *
  * Skips writing if the feed is too small to contain active trips (< 5 KB).
@@ -322,7 +323,8 @@ export default {
       }),
     );
 
-    const results = await Promise.allSettled(
+    // Trip delays keep the original 5-minute cadence; positions run every minute
+    const results = now.getUTCMinutes() % 5 !== 0 ? [] : await Promise.allSettled(
       FEEDS.map(async ({ slug, url, apiKeyHeader }) => {
         const headers: Record<string, string> = { 'User-Agent': USER_AGENT };
         if (apiKeyHeader) {

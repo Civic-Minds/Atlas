@@ -8,4 +8,6 @@ binding = "BUCKET"
 bucket_name = "atlas-live"
 
 [triggers]
-crons = ["*/5 * * * *", "0 4 * * *"]
+# Every minute: vehicle positions (headway/bunching needs sampling well under the
+# ~5-min streetcar headway). Trip-delay archiving self-gates to every 5th minute.
+crons = ["* * * * *", "0 4 * * *"]
