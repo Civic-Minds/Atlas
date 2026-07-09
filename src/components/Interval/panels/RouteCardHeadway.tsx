@@ -164,35 +164,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
         />
       </SidebarCardHeaderBlock>
-      {variantFamily && routeSlug && (
-        <div className="mb-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[10px] font-bold text-[var(--text-dim)]">Runs with</span>
-            {variantFamily.members.map(m => {
-              const isCurrent = m.shortName === currentRoute.routeShortName;
-              return (
-                <button
-                  key={m.shortName}
-                  type="button"
-                  disabled={isCurrent}
-                  onClick={() => setSelectedRoute(`${routeSlug}::${m.routeId}`)}
-                  className={`text-[10px] font-bold rounded-full px-2 py-0.5 border transition-colors ${
-                    isCurrent
-                      ? 'text-[var(--text-primary)] border-[var(--accent-border)] bg-[var(--bg-app)]'
-                      : 'text-[var(--text-muted)] border-[var(--border-primary)] bg-[var(--bg-app)] hover:text-[var(--accent)] hover:border-[var(--accent-border)] cursor-pointer'
-                  }`}
-                >
-                  {m.shortName}
-                </button>
-              );
-            })}
-          </div>
+      {variantFamily && (
+        <p className="text-[10px] text-[var(--text-dim)] -mt-1 mb-3">
+          Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
           {variantFamily.combinedHeadwayMin != null && (
-            <p className="text-[10px] text-[var(--text-dim)] mt-1.5">
-              Together where they overlap: every ~{variantFamily.combinedHeadwayMin} min
-            </p>
+            <> · combined every ~{variantFamily.combinedHeadwayMin} min on shared sections</>
           )}
-        </div>
+        </p>
       )}
       {(() => {
         const HOURS = SPARKLINE_HOURS;

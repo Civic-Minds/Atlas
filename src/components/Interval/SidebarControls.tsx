@@ -295,14 +295,35 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const currentRoute = useMemo(() => {
     if (!selectedRoute) return null;
-    const features = Object.entries(nonCorridorLayers)
+    const all = Object.entries(nonCorridorLayers)
       .flatMap(([slug, fc]) => fc.features.map(f => ({ ...f, properties: { ...f.properties, agencySlug: slug } })))
       .filter(f => {
         const p = f.properties as unknown as ShapeProperties;
-        return p.routeId && routeKey(p) === selectedRoute && (p.day === undefined || p.day === currentDay);
+        return p.routeId && (p.day === undefined || p.day === currentDay);
       });
+    let features = all.filter(f => routeKey(f.properties as unknown as ShapeProperties) === selectedRoute);
     if (features.length === 0) return null;
     const first = features[0].properties as unknown as ShapeProperties;
+
+    // Lettered variants (1/1A/1B/1C) are the same route: fold siblings' features in
+    // so the destinations list and combined headways cover the whole family.
+    const slug = (first as any).agencySlug as string;
+    const slugProps = all
+      .filter(f => (f.properties as any).agencySlug === slug)
+      .map(f => f.properties as unknown as ShapeProperties);
+    const fam = findVariantFamily(slugProps, first.routeShortName ?? null, period);
+    if (fam) {
+      const siblingIds = new Set(fam.members.map(m => m.routeId));
+      siblingIds.delete(String(first.routeId));
+      features = [
+        ...features,
+        ...all.filter(f => {
+          const p = f.properties as unknown as ShapeProperties;
+          return (p as any).agencySlug === slug && siblingIds.has(String(p.routeId));
+        }),
+      ];
+    }
+
     const directions = features
       .map(f => f.properties as unknown as ShapeProperties)
       .sort((a, b) => {
@@ -312,7 +333,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
     return { ...first, directions, features };
-  }, [selectedRoute, nonCorridorLayers, currentDay]);
+  }, [selectedRoute, nonCorridorLayers, currentDay, period]);
 
   // Lettered variant family (GRTC 1/1A/1B/1C style) for the selected route
   const variantFamily = useMemo(() => {
