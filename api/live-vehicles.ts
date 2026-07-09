@@ -164,8 +164,10 @@ export default async function handler(req: Request) {
       return delayFromTripUpdate(tu, tripStopTimes, serviceDayStart, vehicleCtx);
     }
 
-    // Extract trip delays and headsigns from Trip Updates feed
+    // Extract trip delays and headsigns from Trip Updates feed.
+    // Also collect predicted arrival epochs per (route, direction, stop) for observed headways.
     const tripDelays = new Map<string, { delay: number; headsign?: string }>();
+    const stopArrivals = new Map<string, number[]>();
     if (updatesFeed?.entity) {
       for (const e of (updatesFeed.entity as any[])) {
         const tu = e.tripUpdate;
@@ -176,6 +178,19 @@ export default async function handler(req: Request) {
         const routeShortName = routeIdToShortName.get(routeId);
         if (!routeShortName) continue;
 
+        // Stops are directional (each direction has its own stop ids), so per-stop
+        // gaps are direction-clean even though TTC's RT feed carries no directionId.
+        const schedRel = tu.trip?.scheduleRelationship;
+        if (schedRel !== 'DELETED' && schedRel !== 'CANCELED') {
+          for (const stu of tu.stopTimeUpdate ?? []) {
+            const t = Number(stu.arrival?.time ?? stu.departure?.time);
+            if (!stu.stopId || !Number.isFinite(t) || t <= 0) continue;
+            const key = `${routeShortName}::${stu.stopId}`;
+            if (!stopArrivals.has(key)) stopArrivals.set(key, []);
+            stopArrivals.get(key)!.push(t);
+          }
+        }
+
         const delaySec = resolveTripDelaySec(tu, routeShortName);
         if (delaySec == null) continue;
 
@@ -184,6 +199,27 @@ export default async function handler(req: Request) {
           headsign: headsignFromTripUpdate(tu),
         });
       }
+    }
+
+    // Observed headway per route: median gap between successive predicted arrivals
+    // across all stops (gaps over 3h are schedule boundaries, not headways)
+    const gapsByRoute = new Map<string, number[]>();
+    for (const [key, times] of stopArrivals) {
+      if (times.length < 2) continue;
+      const routeShortName = key.split('::')[0];
+      times.sort((a, b) => a - b);
+      for (let i = 1; i < times.length; i++) {
+        const gapMin = (times[i] - times[i - 1]) / 60;
+        if (gapMin <= 0 || gapMin > 180) continue;
+        if (!gapsByRoute.has(routeShortName)) gapsByRoute.set(routeShortName, []);
+        gapsByRoute.get(routeShortName)!.push(gapMin);
+      }
+    }
+    const headways: Record<string, { gapMin: number; samples: number }> = {};
+    for (const [routeShortName, gaps] of gapsByRoute) {
+      gaps.sort((a, b) => a - b);
+      const median = gaps[Math.floor(gaps.length / 2)];
+      headways[routeShortName] = { gapMin: Math.round(median * 10) / 10, samples: gaps.length };
     }
 
     // Compile active vehicles list
@@ -242,6 +278,9 @@ export default async function handler(req: Request) {
           lat: Number(lat),
           lon: Number(lon),
           bearing: vp.position?.bearing != null ? Number(vp.position.bearing) : null,
+          // GTFS-RT speed is m/s
+          speedKmh: vp.position?.speed != null ? Math.round(Number(vp.position.speed) * 3.6) : null,
+          tsEpoch: vp.timestamp != null && Number(vp.timestamp) > 0 ? Number(vp.timestamp) : null,
           delayMin,
           headsign,
           directionId,
@@ -251,7 +290,7 @@ export default async function handler(req: Request) {
       }
     }
 
-    return new Response(JSON.stringify({ vehicles }), {
+    return new Response(JSON.stringify({ vehicles, headways }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

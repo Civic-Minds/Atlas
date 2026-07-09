@@ -71,6 +71,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Per-agency vehicle state
   const [vehiclesBySlug, setVehiclesBySlug] = useState<Record<string, LiveVehicle[]>>({});
+  // Observed headways from the API: slug → routeShortName → { gapMin, samples }
+  const [headwaysBySlug, setHeadwaysBySlug] = useState<Record<string, Record<string, { gapMin: number; samples: number }>>>({});
   const [loadingBySlug, setLoadingBySlug] = useState<Record<string, boolean>>({});
   const [errorBySlug, setErrorBySlug] = useState<Record<string, string | null>>({});
 
@@ -108,6 +110,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const data = await res.json();
       const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
       setVehiclesBySlug(prev => ({ ...prev, [slug]: tagged }));
+      setHeadwaysBySlug(prev => ({ ...prev, [slug]: data.headways || {} }));
       setErrorBySlug(prev => ({ ...prev, [slug]: null }));
     } catch (err: any) {
       setErrorBySlug(prev => ({ ...prev, [slug]: err.message || 'Feed unavailable' }));
@@ -118,6 +121,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   useEffect(() => {
     if (!active || visibleSlugs.length === 0) {
       setVehiclesBySlug({});
+      setHeadwaysBySlug({});
       setLoadingBySlug({});
       setErrorBySlug({});
       return;
@@ -458,6 +462,33 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return directionLabels.get(dirId) ?? (dirId === 0 ? 'Outbound' : 'Inbound');
   };
 
+  // Observed vs scheduled headway line for the selected route ("Every ~7 min · scheduled every 6 min")
+  const selectedRouteHeadwayLine = useMemo((): string | null => {
+    if (!selectedGroup) return null;
+    const observed = headwaysBySlug[selectedGroup.agencySlug]?.[selectedGroup.routeShortName];
+    if (!observed || observed.samples < 3) return null;
+    const gap = Math.round(observed.gapMin);
+
+    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    let scheduled: number | null = null;
+    if (fc) {
+      const now = new Date();
+      const day = now.getDay() === 0 ? 'Sunday' : now.getDay() === 6 ? 'Saturday' : 'Weekday';
+      const hour = now.getHours();
+      for (const f of fc.features) {
+        const p = f.properties as any;
+        if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
+        if (p.day && p.day !== day) continue;
+        const hw = p.headwayByHour?.[hour] ?? p.headway;
+        if (hw != null && (scheduled === null || Number(hw) < scheduled)) scheduled = Number(hw);
+      }
+    }
+
+    return scheduled != null
+      ? `Every ~${gap} min · scheduled every ${Math.round(scheduled)} min`
+      : `Every ~${gap} min`;
+  }, [selectedGroup, headwaysBySlug, layers, localLayers]);
+
   if (!active) return null;
 
   const totalVehicles = allVehicles.length;
@@ -518,8 +549,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {/* Content */}
           <div className={PANEL_BODY}>
             {selectedGroup ? (
-              // Route card: destination-grouped or vehicle-level fallback
-              selectedGroup.vehicles.length === 0 ? (
+              <>
+              {selectedRouteHeadwayLine && (
+                <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
+                  {selectedRouteHeadwayLine}
+                </div>
+              )}
+              {/* Route card: destination-grouped or vehicle-level fallback */}
+              {selectedGroup.vehicles.length === 0 ? (
                 <p className={`${PANEL_EMPTY} text-center`}>No vehicles on this route</p>
               ) : canGroupByDirection && !selectedDirection ? (
                 [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
@@ -568,6 +605,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       <p className={`${LIST_ROW_PRIMARY} flex-1 min-w-0 truncate group-hover:text-[var(--text-primary)]`}>
                         {liveVehicleRowLabel(v, i)}
                       </p>
+                      {v.speedKmh != null && (
+                        <span className={`${LIST_ROW_DIM} shrink-0`}>{v.speedKmh} km/h</span>
+                      )}
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
                         className={`text-[10px] font-bold shrink-0 ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
@@ -577,7 +617,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     </div>
                   );
                 })
-              )
+              )}
+              </>
             ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
               <>
                 <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>

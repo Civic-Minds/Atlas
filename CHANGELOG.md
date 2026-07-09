@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- **Live headway on route cards**: Live route cards now show "Every ~X min · scheduled every Y min" — observed headway computed from gaps between predicted arrivals across all stops, compared against the frequency data for the current day and hour. Answers "is the promised frequency actually being delivered right now?"
+- **Per-vehicle speed in Live**: the live API now surfaces GTFS-RT speed (km/h) and per-vehicle timestamps; vehicle rows show current speed. Groundwork for corridor speed analysis.
 - **Full TTC streetcar network on Live Vehicles**: all 10 streetcar routes (501–512) now show on the Live map via a new `vehiclesOnly` config tier — no anchor-stop curation needed. Delay badges work from the TTC's explicit per-stop delay values. Adherence card and History remain scoped to fully configured routes.
 - **Tier 1–2 coverage**: Springfield MO (City Utilities), Evansville METS, Kenosha Area Transit; Brownsville Metro processed to R2. Tier 1–2 backlog exhausted for public GTFS.
 - **Fixed-route batch (+24)**: Ben Franklin, Asheville, Bloomington, Athens ACC + UGA, Blacksburg, CATA State College, CyRide/Iowa City/Coralville/CAMBUS, Lawrence–KU, SMTD Springfield IL, Topeka, BARTA, COAST NH, Advance Transit, CCTA/GMT + Marble Valley VT, Bis-Man, Bangor, Brandon MB, Juneau, Annapolis. Fills college-town frequency + VT/NH holes.

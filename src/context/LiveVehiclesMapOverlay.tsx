@@ -8,6 +8,8 @@ export interface LiveVehicle {
   lat: number;
   lon: number;
   bearing: number | null;
+  speedKmh: number | null;
+  tsEpoch: number | null;
   delayMin: number | null;
   headsign: string | null;
   directionId: number | null;
