@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+- **Day filter chip indicator**: Always show the active dot indicator on the Day filter chip to reflect that a day-of-service filter is consistently active (Weekday/Saturday/Sunday).
+- **InfoPanel layout**: Restored the "Feedback" header in the Info panel above the "Send feedback" button.
+
 ### Fixed
 - **Headway filtering fallback**: derived time-period headways from hourly data (`headwayByHour`) when the selected period is not pre-computed (e.g. for `late` or `overnight` periods on older agency data runs). This prevents routes with high-frequency service from being hidden under period filters (fixes [#146](https://github.com/Civic-Minds/Atlas/issues/146)).
 

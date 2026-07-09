@@ -318,9 +318,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Day */}
       <div className="relative hidden lg:block">
-        <button onClick={() => toggle('day')} className={chipClass(day !== 'Weekday')}>
+        <button onClick={() => toggle('day')} className={chipClass(true)}>
           Day
-          <Dot show={day !== 'Weekday'} />
+          <Dot show={true} />
         </button>
         {openChip === 'day' && (
           <div className={`${PANEL} w-36`}>
