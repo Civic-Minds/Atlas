@@ -1045,9 +1045,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           getLineWidth: 2,
           lineWidthUnits: 'pixels',
           radiusUnits: 'pixels',
-          pickable: true,
-          autoHighlight: true,
-          highlightColor: [255, 255, 255, 60],
         }),
         // Route short name labels
         new TextLayer({
@@ -1067,23 +1064,24 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     });
   }, [liveOverlay, mapLoaded]);
 
-  // Deck.gl canvas sits above MapLibre and swallows clicks even with no pickable features.
+  // Deck.gl's canvas sits above MapLibre; if it ever receives pointer events it
+  // swallows map pan/zoom across the whole viewport. Nothing on the deck layers
+  // needs direct clicks (vehicle dots have no onClick), so keep it inert always.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
 
-    const hasPickableVehicles = (liveOverlay?.vehicles ?? []).some(v => v.lat && v.lon);
     const syncPointerEvents = () => {
       for (const el of map.getContainer().querySelectorAll<HTMLElement>('canvas')) {
         if (el.classList.contains('maplibregl-canvas')) continue;
-        el.style.pointerEvents = hasPickableVehicles ? 'auto' : 'none';
+        el.style.pointerEvents = 'none';
       }
     };
     syncPointerEvents();
     const obs = new MutationObserver(syncPointerEvents);
     obs.observe(map.getContainer(), { childList: true, subtree: true });
     return () => obs.disconnect();
-  }, [liveOverlay, mapLoaded]);
+  }, [mapLoaded]);
 
   // Live route dynamic shape overlay
   useEffect(() => {
