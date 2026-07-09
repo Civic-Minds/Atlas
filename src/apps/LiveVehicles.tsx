@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Info, Moon, Sun, WifiOff, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -80,6 +80,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // selectedRoute is a composite "slug::routeShortName" key
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [focusedVehicle, setFocusedVehicle] = useState<{ id: string; lat: number; lon: number; ts: number } | null>(null);
+  const [focusArea, setFocusArea] = useState<{ bounds: [number, number, number, number]; minZoom?: number; ts: number } | null>(null);
 
   const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
 
@@ -219,8 +220,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll)
   useEffect(() => {
     if (!active) return;
-    setOverlay({ vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute });
-  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, setOverlay]);
+    setOverlay({ vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea });
+  }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, setOverlay]);
 
   // Clear overlay when deactivating or unmounting
   useEffect(() => {
@@ -294,6 +295,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         agencyName: shortenAgencyName(agencies.find(a => a.slug === r.slug)?.name ?? r.slug),
       }));
   }, [visibleSlugs, agencies]);
+
+  // Live-enabled places, for the coverage list shown when nothing is trackable here
+  const livePlaces = useMemo(() => {
+    return Object.keys(LIVE_AGENCY_BBOXES)
+      .filter(slug => ELIGIBLE_SLUGS.has(slug))
+      .map(slug => ({
+        slug,
+        place: LIVE_AGENCY_PLACES[slug] ?? slug,
+        agencyName: shortenAgencyName(agencies.find(a => a.slug === slug)?.name ?? ''),
+      }))
+      .sort((a, b) => a.place.localeCompare(b.place));
+  }, [agencies]);
+
+  const handlePlaceClick = useCallback((slug: string) => {
+    const bounds = LIVE_AGENCY_BBOXES[slug];
+    if (!bounds) return;
+    // Land safely above the tracking threshold so vehicles appear right away
+    setFocusArea({ bounds, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
+  }, []);
 
   const offScreenOnly = displayedRouteGroups.length === 0 && routeGroups.length > 0;
   const sidebarRouteGroups = offScreenOnly ? routeGroups : displayedRouteGroups;
@@ -558,21 +578,26 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   );
                 })
               )
-            ) : !isZoomedIn ? (
-              <p className={`${PANEL_EMPTY} text-center`}>Zoom in to start tracking</p>
-            ) : visibleSlugs.length === 0 && !isLoading ? (
-              <div className="py-6 px-4 flex flex-col items-center gap-3">
-                <p className={PANEL_TITLE}>Live coverage</p>
-                <div className="flex flex-wrap justify-center gap-1.5">
-                  {(['Burlington', 'Hamilton', 'Toronto', 'York Region', 'Edmonton', 'Halifax'] as const).map(city => (
-                    <span key={city} className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1">
-                      {city}
-                    </span>
-                  ))}
+            ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
+              <>
+                <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
+                  Live in these places
                 </div>
-                <p className="text-[10px] text-[var(--text-dim)]">Pan to a covered city</p>
+                {livePlaces.map(p => (
+                  <button
+                    key={p.slug}
+                    onClick={() => handlePlaceClick(p.slug)}
+                    className={LIST_ROW}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className={`${LIST_ROW_PRIMARY} truncate`}>{p.place}</p>
+                      {p.agencyName && <p className={`${LIST_ROW_DIM} truncate mt-0.5`}>{p.agencyName}</p>}
+                    </div>
+                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+                  </button>
+                ))}
                 <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
-              </div>
+              </>
             ) : isLoading && totalVehicles === 0 ? (
               <div className="flex items-center justify-center gap-2 px-4 py-6">
                 <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />

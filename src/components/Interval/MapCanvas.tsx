@@ -1142,6 +1142,17 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 14) });
   }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded]);
 
+  // Coverage-area fly — live panel requests a jump to an agency's bbox (place list click)
+  useEffect(() => {
+    const map = mapRef.current;
+    const area = liveOverlay?.focusArea;
+    if (!map || !mapLoaded || !area) return;
+    const [w, s, e, n] = area.bounds;
+    const cam = map.cameraForBounds([[w, s], [e, n]], { padding: 64 });
+    if (!cam) return;
+    map.flyTo({ center: cam.center, zoom: Math.max(cam.zoom ?? 0, area.minZoom ?? 0) });
+  }, [liveOverlay?.focusArea, mapLoaded]);
+
   // Clean overlays on unmount
   useEffect(() => {
     return () => {

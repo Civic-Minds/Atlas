@@ -22,6 +22,9 @@ export interface LiveVehiclesMapOverlay {
   routeFeatures?: GeoJSON.Feature[];
   // Composite key "slug::routeShortName" — used for route shape fit-bounds tracking
   selectedRouteKey?: string | null;
+  // One-shot request to fly the map to a coverage area: [w, s, e, n] bounds,
+  // landing at ≥ minZoom so live tracking activates. ts re-triggers repeat clicks.
+  focusArea?: { bounds: [number, number, number, number]; minZoom?: number; ts: number } | null;
 }
 
 interface ContextValue {

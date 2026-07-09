@@ -44,6 +44,18 @@ export const LIVE_AGENCY_BBOXES: Record<string, [number, number, number, number]
   stm:        [-74.07, 45.10, -73.07, 45.90],
 };
 
+/** Human-readable place name per live-capable agency, for the Live Vehicles coverage list. */
+export const LIVE_AGENCY_PLACES: Record<string, string> = {
+  burlington: 'Burlington',
+  ttc: 'Toronto',
+  hamilton: 'Hamilton',
+  edmonton: 'Edmonton',
+  yrt: 'York Region',
+  halifax: 'Halifax',
+  translink: 'Vancouver',
+  stm: 'Montréal',
+};
+
 /** IANA timezone per live-polling agency (History hourly bucketing). */
 export const LIVE_AGENCY_TIMEZONES: Record<string, string> = {
   burlington: 'America/Toronto',
