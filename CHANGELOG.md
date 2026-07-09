@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.14] — 2026-07-08
 
 ### Changed
 - Frequency/day/period filters now drive from URL (active view) with LS fallback for prefs. Survives refresh, shareable links, back/forward. Agencies remain LS-only.
