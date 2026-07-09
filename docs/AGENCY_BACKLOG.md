@@ -19,7 +19,28 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
-## Recently completed (2026-07-06)
+## Recently completed (2026-07-08)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `springfield-mo` | City Utilities Transit | Missouri | Official `webapp.cityutilities.net/GTPM` |
+| done | `brownsville` | Brownsville Metro | Texas | tld-7927 (was stub; processed) |
+| done | `evansville` | METS (Evansville) | Indiana | ntd-50043 (stale calendar end ~2025-01) |
+| done | `kenosha` | Kenosha Area Transit | Wisconsin | Trillium feed (stale ~2024; NTD waived) |
+
+## Blocked from Tier 1–2 (no public fixed-route GTFS)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| blocked | `peterborough` | Peterborough Transit | Ontario | No public URL; tmix 404; not in MDB |
+| blocked | `brantford` | Brantford Transit | Ontario | No public URL; tmix 404; not in MDB |
+| blocked | `cape-breton` | Transit Cape Breton | Nova Scotia | No public GTFS found |
+| blocked | `sts-saguenay` | STS Saguenay | Quebec | Données Québec points at STS Sherbrooke host; no Saguenay zip |
+| blocked | `sttr` | STTR Trois-Rivières | Quebec | Feed dead — see KNOWN_ISSUES |
+
+---
+
+## Previously completed (2026-07-06)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -57,26 +78,15 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
-## Tier 1 — Next batch (population-weighted US)
+## Tier 1 — US (complete)
 
-| Status | Slug | Agency | Region | Est. pop | MDB | Notes |
-|--------|------|--------|--------|----------|-----|-------|
-| todo | `springfield-mo` | City Utilities Transit | Missouri | 470k | TBD | Not in MDB |
-| todo | `brownsville` | Brownsville Metro | Texas | 240k | tld-7927 | |
-| todo | `evansville` | METS | Indiana | 230k | ntd-50043 | |
-| todo | `kenosha` | Kenosha Area Transit | Wisconsin | 170k | TBD | Not in MDB |
+All population-weighted Tier 1 todos processed or blocked (none remaining).
 
 ---
 
-## Tier 2 — Canada
+## Tier 2 — Canada (complete for available feeds)
 
-| Status | Slug | Agency | Region | Est. pop | Notes |
-|--------|------|--------|--------|----------|-------|
-| todo | `peterborough` | Peterborough Transit | Ontario | 85k | Metrolinx tmix pattern |
-| todo | `brantford` | Brantford Transit | Ontario | 100k | Metrolinx tmix pattern |
-| todo | `cape-breton` | Transit Cape Breton | Nova Scotia | 30k | Atlantic gap |
-| todo | `sts-saguenay` | STS Saguenay | Quebec | 160k | |
-| blocked | `sttr` | STTR Trois-Rivières | Quebec | 140k | Feed dead — see KNOWN_ISSUES |
+Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + KNOWN_ISSUES).
 
 ---
 

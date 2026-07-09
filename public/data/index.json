@@ -540,7 +540,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -600,7 +600,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -1998,7 +1998,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -5962,7 +5962,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {
@@ -6239,20 +6239,20 @@
       "name": "Brownsville Metro",
       "region": "Texas",
       "center": [
-        25.9,
-        -97.5
+        25.9017,
+        -97.4975
       ],
       "bbox": [
-        25.816,
-        -97.593,
-        26.054,
-        -97.357
+        25.8458,
+        -97.5629,
+        26.024,
+        -97.3871
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-7927/tld-7927-202607070136/tld-7927-202607070136.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-07-06"
+      "lastRefreshedAt": "2026-07-09"
     },
     {
       "slug": "roswell",
@@ -6493,6 +6493,64 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-07-06"
+    },
+    {
+      "slug": "springfield-mo",
+      "name": "City Utilities Transit (Springfield)",
+      "center": [
+        37.209,
+        -93.2923
+      ],
+      "feedUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip",
+      "lastFeedExpiry": "20261003",
+      "lastFeedVersion": "2026 CU Q3 1",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Missouri",
+      "bbox": [
+        37.1082,
+        -93.3827,
+        37.2738,
+        -93.1752
+      ]
+    },
+    {
+      "slug": "evansville",
+      "name": "METS (Evansville)",
+      "center": [
+        37.9716,
+        -87.5711
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
+      "lastFeedExpiry": "20250115",
+      "lastFeedVersion": "20240618",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Indiana",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
+      "bbox": [
+        37.9235,
+        -87.6991,
+        38.0509,
+        -87.4227
+      ]
+    },
+    {
+      "slug": "kenosha",
+      "name": "Kenosha Area Transit",
+      "center": [
+        42.5847,
+        -87.8212
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/kenosha-wi-us/kenosha-wi-us.zip",
+      "lastFeedExpiry": "20240901",
+      "lastFeedVersion": "UTC: 04-Aug-2023 15:47",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Wisconsin",
+      "bbox": [
+        42.4973,
+        -87.9747,
+        42.6687,
+        -87.7985
+      ]
     }
   ]
 }

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- **Tier 1–2 coverage**: Springfield MO (City Utilities), Evansville METS, Kenosha Area Transit; Brownsville Metro processed to R2. Tier 1–2 backlog exhausted for public GTFS.
+
 ### Changed
 - **Day filter chip indicator**: Always show the active dot indicator on the Day filter chip to reflect that a day-of-service filter is consistently active (Weekday/Saturday/Sunday).
 - **InfoPanel layout**: Restored the "Feedback" header in the Info panel above the "Send feedback" button.
