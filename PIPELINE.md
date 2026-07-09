@@ -1,98 +1,130 @@
-# Pipeline
+# The Atlas Pipeline: How We Calculate Transit Frequency
 
-How a transit agency's schedule becomes a layer on the Atlas map.
+This document describes the methodology used by the Atlas data processing pipeline to turn raw General Transit Feed Specification (GTFS) schedule feeds into the frequency layers rendered on the map.
 
----
-
-## 1. Fetch
-
-Atlas pulls each agency's GTFS feed from the source — either the agency's own download URL or a stable mirror from the [Mobility Database](https://github.com/MobilityData/mobility-database-catalogs) when the official URL is unreliable. Feeds are re-downloaded automatically every week.
-
-## 2. Detect the active schedule
-
-GTFS feeds often contain future or expired service periods alongside the current one. The pipeline determines which service period is actually active — using the nearest date within a window of the current date that has scheduled service — so the map always reflects what's running now, not a past or future timetable.
-
-## 3. Build route shapes
-
-For each route, the pipeline selects the representative shape for display (the longest branch, to show full geographic extent) and the representative shape for frequency analysis (the most common trip pattern, to avoid letting short-turn trips distort the headway calculation). These can differ: a subway line that runs mostly end-to-end but occasionally short-turns still needs to show the full line on the map.
-
-## 4. Count departures
-
-For each route direction and day type (Weekday, Saturday, Sunday), the pipeline counts how often service departs across each stop within defined service windows. Rather than trusting the published headway field — which agencies often leave blank or fill in incorrectly — Atlas derives headway from the actual departure times in stop_times.
-
-## 5. Calculate headway
-
-The median gap between consecutive departures is used as the route's headway. Median is more stable than average: a route that runs every 10 minutes all day except for one 45-minute gap caused by a tripper trip will still show as a 10-minute route, not an inflated average.
-
-Per-stop headways are also computed, because frequency varies along a route. An express route might serve downtown stops every 5 minutes but outlying terminals every 20. The per-stop values power the Corridors app (which shows headway at the destination stop, not the route average) and the frequency filter (which shows a route if any part of it meets the threshold).
-
-## 6. Assign a frequency tier
-
-Each route gets a tier based on its median headway — from rapid (very frequent service) through to infrequent or span-only (routes that only run outside the main service window). The tier determines the colour on the map.
-
-## 7. Generate output
-
-The pipeline produces two files per agency:
-
-- **Route shapes** — a GeoJSON file with one feature per route direction per day type, carrying headway, tier, stop order, and per-stop frequency data
-- **Stops index** — a lookup of stop IDs to names and coordinates, used by the Corridors app for station search
-
-Both are uploaded to Cloudflare R2. The map fetches them directly — no server sits in between.
-
-## 8. Load on the map
-
-The frontend loads agency data lazily as you pan — only the agencies within your current viewport are fetched. This keeps the initial load fast regardless of how many agencies are in the system.
+By standardizing feed schedules across different transit agencies, this pipeline produces a unified, regional transit frequency map.
 
 ---
 
-## Edge cases
+## Technical Methodology
 
-**Agencies with day/night route splits**: some agencies publish separate route IDs for daytime and overnight variants of the same corridor. The pipeline merges these before analysis so they appear as a single route on the map rather than two overlapping ones.
+### 1. Fetching the Feeds
+The pipeline downloads each agency's GTFS feed from its official source URL. If an official URL is rate-limited or unstable, the pipeline falls back to a stable mirror hosted on the [Mobility Database](https://mobilitydatabase.org/).
 
-**Commuter rail shape selection**: for rail services, the pipeline always uses the longest shape for both display and frequency analysis. This ensures that short-turn trains — which only run part of the line — don't win the shape competition and cut the route short on the map. Short-turn trips still count toward frequency at every stop they serve.
+- **Update Frequency:** Feeds are checked and re-downloaded automatically every week.
+- **Mirroring:** We use Mobility Database mirrors for agencies with unstable feeds to ensure the weekly refresh is reliable.
 
-## Adding a new city / GTFS feed
+### 2. Active Schedule Detection
+GTFS feeds often package historical, current, and future service periods together. The pipeline checks the calendar dates inside the feed and programmatically determines which schedule is currently active.
 
-1. Find a GTFS zip (prefer stable agency URL or latest from [Mobility Database](https://mobilitydatabase.org/)).
-2. `npm run process -- <https://...feed.zip | local.zip> <slug> "Display Name" "lat,lon"`
-   - The script now supports remote URLs directly (downloads + saves copy to `tmp/`).
-   - For agencies with separate bus/rail zips (e.g. SEPTA, WMATA): process the primary (usually bus), then set `supplementalFeedUrls` in `public/data/index.json`.
-3. After processing, edit the new entry in `public/data/index.json`:
-   - Set `region`, `bbox`, `feedUrl`, `mdbFeedUrl` (and `supplementalFeedUrls` for split feeds).
-   - The R2 artifact URLs are **derived** from the slug (see `shared/config.ts:getAgencyArtifactUrls`). No need to store or edit `url` / `stopsUrl` / `corridorsUrl`.
-4. `npm run refresh -- <slug> --force` (applies supplementals, history, lastFeed*).
-5. Commit `public/data/index.json`. The processed data lives on R2; the index is the registry + feed config.
+- **Resolution:** It looks for active dates closest to the execution day to ensure the map shows what is actually running now, rather than an expired or future schedule.
+- **Service Types:** Departures are split into Weekday, Saturday, and Sunday schedules.
 
-Example recent adds: `septa`, `wmata`.
+### 3. Route Shape Selection
+Transit routes often have multiple routing variants, such as branches, short-turns, or trips to the garage. To keep the map clean, the pipeline isolates two specific shapes for each route:
 
-**Discovering feeds via Mobility Database (recommended):**
+- **Display Shape:** The pipeline selects the shape variant with the longest geographical path to display on the map. This ensures the full extent of the route is visible.
+- **Headway Shape:** For counting departures, the pipeline selects the shape corresponding to the most common trip pattern (the trunk line). This prevents short-turns from skewing the frequency calculation.
+
+### 4. Counting Departures
+Instead of trusting the optional headway fields in GTFS feeds (which agencies often leave blank or format incorrectly), Atlas counts departures directly from `stop_times.txt`.
+
+- **Event Parsing:** The pipeline extracts departure times for every stop on a route.
+- **Grouping:** Departures are grouped by route, direction, day type, and stop.
+- **Time Windows:** Departures are analyzed within defined service windows (such as Midday or PM Peak) to isolate headway variations throughout the day.
+
+### 5. Calculating Headways
+A route's frequency is calculated as the median gap (headway) between consecutive departures.
+
+- **Why the Median:** We use the median instead of the mean (average) because it is much more resistant to outliers. For example, if a bus runs every 10 minutes all day but has one 60-minute gap for a driver shift change, the median headway remains 10 minutes, representing the typical rider experience.
+- **Stop-Level Headways:** Gaps are computed at every individual stop along a route. This powers the Corridors app, which displays frequency at the passenger's boarding stop rather than a generic route average.
+
+### 6. Assigning Frequency Tiers
+Calculated median headways are mapped to qualitative frequency tiers. These tiers determine the colors and line weights shown on the map:
+
+| Tier | Headway Range | Description |
+|------|---------------|-------------|
+| Rapid | $\le 10$ min | High-frequency trunk |
+| Frequent | $11 - 15$ min | Turn-up-and-go service |
+| Regular | $16 - 30$ min | Standard scheduled service |
+| Moderate | $31 - 60$ min | Low-frequency service |
+| Infrequent | $> 60$ min | Minimal coverage service |
+
+### 7. Generating Output & Distribution
+To maintain a serverless architecture, the pipeline converts the processed data into static files:
+
+- **Route GeoJSON:** Contains route geometries populated with headways and frequency tiers.
+- **Stops Index:** A lightweight JSON lookup of stop coordinates and names, used by the Corridors app for search.
+- **Vector Tiles:** Route shapes and stops are compiled into a single `atlas.pmtiles` archive for fast rendering.
+- **Storage:** All generated files are uploaded to Cloudflare R2, which serves them directly to the client.
+
+### 8. Loading Data on the Map
+The frontend client uses lazy loading to keep the application fast and responsive:
+
+- **Viewport Loading:** The map only requests GeoJSON files for transit agencies currently visible in the user's viewport.
+- **Vector Tile Queries:** MapLibre GL dynamically queries the PMTiles archive for geometries as the user pans and zooms.
+
+---
+
+## Edge Cases & Exceptions
+
+- **Day/Night Route Splits:** Some agencies publish separate route IDs for day and night variants of the same corridor. The pipeline merges these and selects the lower headway variant to show them as a single route on the map.
+- **Commuter Rail Shape Overrides:** For rail lines, the pipeline locks both the display and analytical shapes to the longest variant. This ensures that short-turns do not truncate the rail lines on the map.
+- **GTFS-Flex (On-Demand Transit):** We do not process demand-responsive transit zones yet because GTHA agencies do not publish GTFS-Flex data. This will be added once feeds adopt the spec.
+
+---
+
+## Operational Workflows
+
+### Protocol A: Integrating a New Transit Agency
+To manually add an agency to Atlas:
+
+1. Obtain the GTFS ZIP download link (preferring a stable agency URL or Mobility Database link).
+2. Process the feed:
+   ```bash
+   npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]"
+   ```
+3. Edit `public/data/index.json` to add the metadata:
+   - Configure `region`, `feedUrl`, `mdbFeedUrl`, and `bbox` (bounding box).
+   - Note: Artifact URLs are derived from the slug at runtime; do not hardcode them.
+4. Run the refresh script to pull supplemental feeds and setup history config:
+   ```bash
+   npm run refresh -- <slug> --force
+   ```
+5. Commit the updated `public/data/index.json` file.
+
+### Protocol B: Querying the Mobility Database
+To search for an agency in the Mobility Database catalog:
 ```bash
-npm run find-mdb -- "search term (city or agency)" slug "lat,lon"
-npm run find-mdb -- "SEPTA Philadelphia" septa "39.9526,-75.1652"
+npm run find-mdb -- "[search query]" <slug> "[lat,lon]"
+# Example:
+npm run find-mdb -- "Hamilton Street Railway" hamilton "43.25,-79.87"
 ```
-It queries the live MDB catalog (using your MDB_REFRESH_TOKEN), shows matches, current hosted URL, and a ready-to-paste index.json snippet. Then use the URL with `npm run process`.
 
-**Automated gap discovery (recommended at 300+ agencies):**
+### Protocol C: Coverage Gap Discovery
+To locate missing transit agencies by cross-referencing global catalogs against existing coverage:
 ```bash
-npm run discover-gaps                    # top 50 uncovered US/CA feeds by population
+# General discovery:
+npm run discover-gaps
+
+# Filtered by region or population:
 npm run discover-gaps -- --region Ontario --limit 20
 npm run discover-gaps -- --min-pop 100000
 ```
-Downloads [MDB feeds_v2.csv](https://files.mobilitydatabase.org/feeds_v2.csv), spatially anti-joins against `index.json`, ranks by metro population, writes `tmp/gap-candidates.json`. Triage into [`docs/AGENCY_BACKLOG.md`](docs/AGENCY_BACKLOG.md).
+This script identifies uncovered feeds, ranks them by metropolitan population, and writes candidates to `tmp/gap-candidates.json`.
 
-## Batch adding agencies
-
-Adding agencies one at a time is slow because PMTiles must be rebuilt for routes to appear on the base map. Batch instead:
-
-1. `npm run discover-gaps` or pick rows from [`docs/AGENCY_BACKLOG.md`](docs/AGENCY_BACKLOG.md)
-2. Run `npm run process` for each candidate (parallel OK — R2 uploads are independent)
-3. Edit `public/data/index.json`: set `region`, `feedUrl`, `mdbFeedUrl`, `bbox` if needed
-4. `npm run refresh -- slug1 slug2 slug3 --force` (one command, all slugs)
-5. **One** `npm run build-pmtiles` + rclone upload (see `CLAUDE.md` / `AGENTS.md`)
-6. Mark rows `done` in `AGENCY_BACKLOG.md`; add `CHANGELOG.md` entry
-
-Do not rebuild PMTiles after every single agency — batch 10–15 adds per rebuild.
-
----
-
-[Back to Home](./README.md)
+### Protocol D: Batch Processing
+Because rebuilding PMTiles is resource-intensive, process new agencies in batches:
+1. Identify candidates using **Protocol C**.
+2. Run `npm run process` for each candidate.
+3. Update `public/data/index.json` with the new entries.
+4. Refresh all new slugs in a single command:
+   ```bash
+   npm run refresh -- slug1 slug2 slug3 --force
+   ```
+5. Rebuild the PMTiles archive:
+   ```bash
+   npm run build-pmtiles
+   ```
+6. Upload the new `atlas.pmtiles` file to the Cloudflare R2 bucket.
+7. Record the additions in `CHANGELOG.md` and mark backlog items `done` in `docs/AGENCY_BACKLOG.md`.
