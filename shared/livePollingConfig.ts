@@ -25,6 +25,9 @@ export interface LiveRouteConfig {
   apiKeyHeaderEnvVar?: string;
   /** Set to true once the API key is configured in Vercel — makes the route visible in the UI. */
   active?: boolean;
+  /** Vehicles-map-only route: shows on the Live Vehicles map but has no anchor-stop
+   *  adherence config — excluded from the adherence card, History, and live filters. */
+  vehiclesOnly?: boolean;
   longPatternKey?: string;
   longPatternStops?: string[];
   longPatternScheduleOffsetMin?: Record<string, number>;
@@ -148,6 +151,23 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
       '1': { '5008': 0, '11178': 16, '6783': 34, '3760': 61 },
     },
   },
+  // TTC streetcar network — vehicles-map-only (no anchor-stop adherence config).
+  // Delay comes from the TTC's explicit per-stop delay values in TripUpdates.
+  // scheduledHeadwayMin values are fallbacks; the pipeline sidecar overrides them.
+  ...([
+    ['501', 5], ['505', 8], ['506', 7], ['507', 12],
+    ['509', 8], ['510', 5], ['511', 9], ['512', 6],
+  ] as [string, number][]).map(([route, headway]): LiveRouteConfig => ({
+    slug: 'ttc',
+    displayRouteShortName: route,
+    routeIds: [route],
+    scheduledHeadwayMin: headway,
+    targetStops: {},
+    tripUpdatesUrl: 'https://gtfsrt.ttc.ca/trips/update?format=binary',
+    vehiclePositionsUrl: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary',
+    scheduleOffsetMin: {},
+    vehiclesOnly: true,
+  })),
   {
     slug: 'translink',
     displayRouteShortName: '099',
@@ -299,8 +319,9 @@ export function getLiveRouteConfig(
   routeShortName: string | null | undefined,
 ): LiveRouteConfig | undefined {
   if (!routeShortName) return undefined;
+  // vehiclesOnly routes have no anchor stops — adherence surfaces must not see them
   return LIVE_POLLING_ROUTES.find(
-    c => c.slug === slug && c.displayRouteShortName === routeShortName,
+    c => c.slug === slug && c.displayRouteShortName === routeShortName && !c.vehiclesOnly,
   );
 }
 
