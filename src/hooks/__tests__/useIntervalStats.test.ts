@@ -382,4 +382,34 @@ describe('useIntervalStats', () => {
     expect(JSON.stringify(result.current.tileFilter)).toContain('"<="');
     expect(JSON.stringify(result.current.tileFilter)).toContain('15');
   });
+
+  it('period filter falls back to headwayByHour if period data is missing', () => {
+    const layers: AgencyLayers = {
+      'test': {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: {
+            routeId: '1',
+            headway: 20,
+            worstDirectionHeadway: 20,
+            headwayByHour: {
+              5: null, 6: null, 7: null, 8: null,
+              9: null, 10: 12, 11: null, 12: null, 13: null, 14: null,
+              15: null
+            }
+          },
+        }],
+      },
+    };
+
+    const { result } = renderHook(() => useIntervalStats(layers, {
+      ...defaultFilters,
+      agencies: new Set(['test']),
+      maxHeadway: 15,
+      period: 'midday' as const,
+    }));
+    expect(result.current.stats?.matching).toBe(1);
+  });
 });

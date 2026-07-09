@@ -6,6 +6,7 @@ import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../../shared/tileFilterExprs';
 import { effectiveMode } from '../../shared/modes';
+import { periodHeadwayFromByHour } from '../utils/effectiveHeadway';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -137,9 +138,8 @@ export function passesRouteFilter(
   if (filters.period && filters.period !== 'all') {
     const minStopPeriodHw = (p as any).minStopHeadwayByPeriod?.[filters.period] as number | undefined;
     const headByPeriod = (p as any).headwayByPeriod?.[filters.period] as number | undefined;
-    // AI-182: use worst direction's period headway so both directions must qualify, but prefer min-stop or headBy for routes with good sections
     const worstPeriodHw = (p as any).worstDirectionHeadwayByPeriod?.[filters.period] as number | undefined;
-    const periodHw = minStopPeriodHw ?? headByPeriod ?? worstPeriodHw;
+    const periodHw = minStopPeriodHw ?? headByPeriod ?? worstPeriodHw ?? periodHeadwayFromByHour((p as any).headwayByHour, filters.period);
     if (periodHw != null) {
       if (periodHw > filters.maxHeadway) return false;
       return true;

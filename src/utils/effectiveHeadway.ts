@@ -11,7 +11,7 @@ type HeadwayProps = ShapeProperties & {
   minStopHeadway?: number;
 };
 
-function periodHeadwayFromByHour(
+export function periodHeadwayFromByHour(
   byHour: Partial<Record<number, number | null>> | undefined,
   periodKey: string,
 ): number | null {
@@ -45,7 +45,8 @@ export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): n
     const periodHw =
       ext.minStopHeadwayByPeriod?.[period]
       ?? ext.headwayByPeriod?.[period]
-      ?? ext.worstDirectionHeadwayByPeriod?.[period];
+      ?? ext.worstDirectionHeadwayByPeriod?.[period]
+      ?? periodHeadwayFromByHour(ext.headwayByHour, period);
     if (periodHw != null) return periodHw;
   }
 

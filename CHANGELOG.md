@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **Headway filtering fallback**: derived time-period headways from hourly data (`headwayByHour`) when the selected period is not pre-computed (e.g. for `late` or `overnight` periods on older agency data runs). This prevents routes with high-frequency service from being hidden under period filters (fixes [#146](https://github.com/Civic-Minds/Atlas/issues/146)).
+
 ## [3.0.14] — 2026-07-08
 
 ### Changed
