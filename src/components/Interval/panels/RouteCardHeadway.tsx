@@ -22,6 +22,7 @@ import {
   headsignTrunkHeadway,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
+import type { VariantFamily } from '../../../utils/routeVariants';
 
 // Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet.
 // Takes the best (lowest) non-null headway across the period's hours.
@@ -100,6 +101,8 @@ export interface CurrentRouteData {
 
 export interface RouteCardHeadwayProps {
   currentRoute: CurrentRouteData;
+  /** Lettered variants sharing this route's base number (GRTC 1/1A/1B/1C style). */
+  variantFamily?: VariantFamily | null;
   liveRouteInfo: object | null;
   liveStatus: string;
   routeSlug: string | undefined;
@@ -120,6 +123,7 @@ export interface RouteCardHeadwayProps {
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
+  variantFamily,
   liveRouteInfo,
   liveStatus,
   routeSlug,
@@ -160,6 +164,36 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
         />
       </SidebarCardHeaderBlock>
+      {variantFamily && routeSlug && (
+        <div className="mb-3">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[10px] font-bold text-[var(--text-dim)]">Runs with</span>
+            {variantFamily.members.map(m => {
+              const isCurrent = m.shortName === currentRoute.routeShortName;
+              return (
+                <button
+                  key={m.shortName}
+                  type="button"
+                  disabled={isCurrent}
+                  onClick={() => setSelectedRoute(`${routeSlug}::${m.routeId}`)}
+                  className={`text-[10px] font-bold rounded-full px-2 py-0.5 border transition-colors ${
+                    isCurrent
+                      ? 'text-[var(--text-primary)] border-[var(--accent-border)] bg-[var(--bg-app)]'
+                      : 'text-[var(--text-muted)] border-[var(--border-primary)] bg-[var(--bg-app)] hover:text-[var(--accent)] hover:border-[var(--accent-border)] cursor-pointer'
+                  }`}
+                >
+                  {m.shortName}
+                </button>
+              );
+            })}
+          </div>
+          {variantFamily.combinedHeadwayMin != null && (
+            <p className="text-[10px] text-[var(--text-dim)] mt-1.5">
+              Together where they overlap: every ~{variantFamily.combinedHeadwayMin} min
+            </p>
+          )}
+        </div>
+      )}
       {(() => {
         const HOURS = SPARKLINE_HOURS;
         const sparklineDirs = hoveredBranch

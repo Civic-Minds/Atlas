@@ -6,6 +6,7 @@ import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBound
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
+import { findVariantFamily } from '../../utils/routeVariants';
 import { shortenAgencyName } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
@@ -312,6 +313,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       });
     return { ...first, directions, features };
   }, [selectedRoute, nonCorridorLayers, currentDay]);
+
+  // Lettered variant family (GRTC 1/1A/1B/1C style) for the selected route
+  const variantFamily = useMemo(() => {
+    if (!currentRoute) return null;
+    const slug = (currentRoute as any).agencySlug as string | undefined;
+    const fc = slug ? nonCorridorLayers[slug] : undefined;
+    if (!fc) return null;
+    const feats = fc.features
+      .map(f => f.properties as unknown as ShapeProperties)
+      .filter(p => p.routeId && (p.day === undefined || p.day === currentDay));
+    return findVariantFamily(feats, currentRoute.routeShortName ?? null, period);
+  }, [currentRoute, nonCorridorLayers, currentDay, period]);
 
   const liveAgencySlug = useMemo(() => {
     if (!currentRoute) return null;
@@ -850,6 +863,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             ) : (
               <RouteCardHeadway
                 currentRoute={currentRoute}
+                variantFamily={variantFamily}
                 liveRouteInfo={liveRouteInfo}
                 liveStatus={liveStatus}
                 routeSlug={routeSlug}
