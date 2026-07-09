@@ -11,6 +11,7 @@ import {
   SidebarCardShell,
 } from '../cardUi';
 import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
+import LiveStopArrivals from './LiveStopArrivals';
 
 export interface StopBranch {
   rKey: string;
@@ -52,6 +53,8 @@ export interface StopCardProps {
   period: TimePeriod;
   nearbyConnections: NearbyConnection[];
   onDirectFromStop?: () => void;
+  /** Live arrivals lookup — set when the stop belongs to a live-capable agency. */
+  liveStop?: { slug: string; stopId: string } | null;
 }
 
 export const StopCard: React.FC<StopCardProps> = ({
@@ -65,6 +68,7 @@ export const StopCard: React.FC<StopCardProps> = ({
   period,
   nearbyConnections,
   onDirectFromStop,
+  liveStop,
 }) => {
   const openRoute = (rKey: string) => {
     setSelectedStop(null);
@@ -111,6 +115,8 @@ export const StopCard: React.FC<StopCardProps> = ({
           Corridors from here…
         </button>
       )}
+
+      {liveStop && <LiveStopArrivals slug={liveStop.slug} stopId={liveStop.stopId} />}
 
       <SidebarCardList>
         {sortedRoutes.map(route => (

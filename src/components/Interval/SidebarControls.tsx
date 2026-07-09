@@ -791,6 +791,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             filteredStopRoutes={filteredStopRoutes as StopRoute[]}
             period={period}
             nearbyConnections={nearbyConnections as NearbyConnection[]}
+            liveStop={currentStop.agencySlug && currentStop.stopId
+              ? { slug: currentStop.agencySlug as string, stopId: currentStop.stopId as string }
+              : null}
             onDirectFromStop={onDirectFromStop ? () => {
               const stopName = currentStop.stopName as string;
               const agencySlug = currentStop.agencySlug as string;

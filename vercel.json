@@ -13,6 +13,10 @@
       "destination": "/api/live-vehicles.ts"
     },
     {
+      "source": "/api/live-stop",
+      "destination": "/api/live-stop.ts"
+    },
+    {
       "source": "/api/history-adherence",
       "destination": "/api/history-adherence.ts"
     },

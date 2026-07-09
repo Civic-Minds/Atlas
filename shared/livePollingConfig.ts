@@ -314,6 +314,13 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
   },
 ];
 
+/** True when an agency's live feeds are usable (no API key needed, or key configured). */
+export function isLiveEligibleSlug(slug: string): boolean {
+  return LIVE_POLLING_ROUTES.some(
+    r => r.slug === slug && ((!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active),
+  );
+}
+
 export function getLiveRouteConfig(
   slug: string,
   routeShortName: string | null | undefined,
