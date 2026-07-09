@@ -27,6 +27,18 @@ const FEEDS: FeedConfig[] = [
   { slug: 'stm',        url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/tripUpdates', apiKeyHeader: 'STM_API_KEY' },
 ];
 
+interface PositionFeedConfig {
+  slug: string;
+  url: string;
+  /** Only archive vehicles whose route_id matches (e.g. TTC streetcars). */
+  routeFilter: RegExp;
+}
+
+// Vehicle positions archived at positions/{slug}/{date}/{ts}.json for speed analysis
+const POSITION_FEEDS: PositionFeedConfig[] = [
+  { slug: 'ttc', url: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary', routeFilter: /^5(0[1345679]|1[012])$/ },
+];
+
 const MIN_FEED_BYTES = 5_000;
 const RETENTION_DAYS = 30;
 const USER_AGENT = 'atlas-gtfs-rt-archiver/1.0 (https://atlas-gamma-two.vercel.app)';
@@ -68,8 +80,10 @@ function parseMsg(buf: Uint8Array): Map<number, (bigint | Uint8Array)[]> {
       fields.get(fieldNum)!.push(buf.slice(pos, end));
       pos = end;
     } else if (wireType === 1) {
+      fields.get(fieldNum)!.push(buf.slice(pos, pos + 8));
       pos += 8;
     } else if (wireType === 5) {
+      fields.get(fieldNum)!.push(buf.slice(pos, pos + 4));
       pos += 4;
     } else {
       break;
@@ -154,6 +168,82 @@ function parseTripUpdates(raw: ArrayBuffer): TripSummary[] {
   return trips;
 }
 
+function f32(v: bigint | Uint8Array | undefined): number | null {
+  if (!(v instanceof Uint8Array) || v.length !== 4) return null;
+  return new DataView(v.buffer, v.byteOffset, 4).getFloat32(0, true);
+}
+
+interface VehicleSummary {
+  id: string;    // vehicle id
+  r: string;     // route_id
+  lat: number;
+  lon: number;
+  spd: number | null; // km/h
+  brg: number | null; // bearing
+  t: number | null;   // per-vehicle unix timestamp
+}
+
+/**
+ * Parse a raw GTFS-RT VehiclePositions protobuf into compact vehicle summaries.
+ *
+ * GTFS-RT field map (relevant fields only):
+ *   FeedEntity:        vehicle    = field 4
+ *   VehiclePosition:   trip       = field 1
+ *                      position   = field 2
+ *                      timestamp  = field 5 (uint64)
+ *                      vehicle    = field 8 (VehicleDescriptor)
+ *   Position:          latitude   = field 1 (float)
+ *                      longitude  = field 2 (float)
+ *                      bearing    = field 3 (float)
+ *                      speed      = field 5 (float, m/s)
+ *   TripDescriptor:    route_id   = field 5
+ *   VehicleDescriptor: id         = field 1
+ */
+export function parseVehiclePositions(raw: ArrayBuffer, routeFilter: RegExp): VehicleSummary[] {
+  const feed = parseMsg(new Uint8Array(raw));
+  const entities = feed.get(2) ?? [];
+  const vehicles: VehicleSummary[] = [];
+
+  for (const entityBytes of entities) {
+    if (!(entityBytes instanceof Uint8Array)) continue;
+    const entity = parseMsg(entityBytes);
+
+    const vpBytes = entity.get(4)?.[0];
+    if (!(vpBytes instanceof Uint8Array)) continue;
+    const vp = parseMsg(vpBytes);
+
+    const tripBytes = vp.get(1)?.[0];
+    if (!(tripBytes instanceof Uint8Array)) continue;
+    const routeId = str(parseMsg(tripBytes).get(5)?.[0]);
+    if (!routeFilter.test(routeId)) continue;
+
+    const posBytes = vp.get(2)?.[0];
+    if (!(posBytes instanceof Uint8Array)) continue;
+    const pos = parseMsg(posBytes);
+    const lat = f32(pos.get(1)?.[0]);
+    const lon = f32(pos.get(2)?.[0]);
+    if (lat == null || lon == null) continue;
+
+    const speedMs = f32(pos.get(5)?.[0]);
+    const bearing = f32(pos.get(3)?.[0]);
+    const ts = vp.get(5)?.[0];
+    const vdBytes = vp.get(8)?.[0];
+    const vehicleId = vdBytes instanceof Uint8Array ? str(parseMsg(vdBytes).get(1)?.[0]) : '';
+
+    vehicles.push({
+      id: vehicleId,
+      r: routeId,
+      lat: Math.round(lat * 1e5) / 1e5,
+      lon: Math.round(lon * 1e5) / 1e5,
+      spd: speedMs != null ? Math.round(speedMs * 3.6 * 10) / 10 : null,
+      brg: bearing != null ? Math.round(bearing) : null,
+      t: typeof ts === 'bigint' ? Number(ts) : null,
+    });
+  }
+
+  return vehicles;
+}
+
 // ---------------------------------------------------------------------------
 // Retention cleanup — deletes date folders older than RETENTION_DAYS
 // ---------------------------------------------------------------------------
@@ -163,14 +253,18 @@ async function cleanup(bucket: R2Bucket): Promise<void> {
   cutoff.setUTCDate(cutoff.getUTCDate() - RETENTION_DAYS);
   const cutoffDate = cutoff.toISOString().slice(0, 10);
 
-  for (const { slug } of FEEDS) {
+  const basePrefixes = [
+    ...FEEDS.map(f => `${f.slug}/`),
+    ...POSITION_FEEDS.map(f => `positions/${f.slug}/`),
+  ];
+  for (const basePrefix of basePrefixes) {
     const toDelete: string[] = [];
     let cursor: string | undefined;
 
     do {
-      const page = await bucket.list({ prefix: `${slug}/`, delimiter: '/', cursor });
+      const page = await bucket.list({ prefix: basePrefix, delimiter: '/', cursor });
       for (const prefix of page.delimitedPrefixes ?? []) {
-        const date = prefix.replace(`${slug}/`, '').replace('/', '');
+        const date = prefix.replace(basePrefix, '').replace('/', '');
         if (date && date < cutoffDate) {
           let dateCursor: string | undefined;
           do {
@@ -185,7 +279,7 @@ async function cleanup(bucket: R2Bucket): Promise<void> {
 
     if (toDelete.length > 0) {
       await bucket.delete(toDelete);
-      console.log(`cleanup: deleted ${toDelete.length} objects for ${slug} (before ${cutoffDate})`);
+      console.log(`cleanup: deleted ${toDelete.length} objects under ${basePrefix} (before ${cutoffDate})`);
     }
   }
 }
@@ -204,6 +298,29 @@ export default {
     const now = new Date(event.scheduledTime);
     const date = now.toISOString().slice(0, 10);
     const ts = Math.floor(now.getTime() / 1000);
+
+    const positionResults = await Promise.allSettled(
+      POSITION_FEEDS.map(async ({ slug, url, routeFilter }) => {
+        const res = await fetch(url, {
+          headers: { 'User-Agent': USER_AGENT },
+          signal: AbortSignal.timeout(15_000),
+        });
+        if (!res.ok) throw new Error(`positions/${slug}: HTTP ${res.status}`);
+        const buf = await res.arrayBuffer();
+
+        const vehicles = parseVehiclePositions(buf, routeFilter);
+        if (vehicles.length === 0) {
+          return `positions/${slug}: skipped (0 matching vehicles)`;
+        }
+
+        const payload = JSON.stringify({ ts, vehicles });
+        const key = `positions/${slug}/${date}/${ts}.json`;
+        await env.BUCKET.put(key, payload, {
+          httpMetadata: { contentType: 'application/json' },
+        });
+        return `positions/${slug}: ${vehicles.length} vehicles → ${key} (${payload.length} B)`;
+      }),
+    );
 
     const results = await Promise.allSettled(
       FEEDS.map(async ({ slug, url, apiKeyHeader }) => {
@@ -237,7 +354,7 @@ export default {
       }),
     );
 
-    for (const r of results) {
+    for (const r of [...results, ...positionResults]) {
       if (r.status === 'fulfilled') console.log(r.value);
       else console.error(r.reason);
     }
