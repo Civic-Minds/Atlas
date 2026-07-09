@@ -16,7 +16,12 @@
 - **Day filter chip indicator**: Always show the active dot indicator on the Day filter chip to reflect that a day-of-service filter is consistently active (Weekday/Saturday/Sunday).
 - **InfoPanel layout**: Restored the "Feedback" header in the Info panel above the "Send feedback" button.
 
+### Changed
+- **MapCanvas split into layer hooks**: corridor, history, and live-vehicle overlay effects extracted to `src/components/Interval/map/` hooks (~360 lines out of MapCanvas); dead marker refs removed.
+
 ### Fixed
+- **Live vehicle hover tooltip**: reimplemented via manual deck picking driven by MapLibre mouse events (deck canvas stays inert, so gestures keep working); pick radius now accounts for retina displays. Tooltip shows speed and no longer hides for vehicles without delay data.
+- **Streetcars labeled "Bus"**: vehicle rows now use the route's mode (route_type) — Streetcar/Train/Ferry/Bus.
 - **Live map pan/zoom lock**: the deck.gl vehicle canvas grabbed pointer events whenever vehicles were on screen, swallowing all map gestures. Canvas is now always inert (dots had no click behavior — only a cosmetic hover highlight is lost). With the full streetcar network this froze the map permanently in Toronto.
 - **Headway filtering fallback**: derived time-period headways from hourly data (`headwayByHour`) when the selected period is not pre-computed (e.g. for `late` or `overnight` periods on older agency data runs). This prevents routes with high-frequency service from being hidden under period filters (fixes [#146](https://github.com/Civic-Minds/Atlas/issues/146)).
 

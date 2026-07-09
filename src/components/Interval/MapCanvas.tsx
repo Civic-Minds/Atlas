@@ -2,20 +2,17 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { ScatterplotLayer, TextLayer } from 'deck.gl';
 import { LocateFixed } from 'lucide-react';
-import { getTierColor, routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, STATUS_COLORS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
+import { routeKey } from '../../hooks/useIntervalStats';
+import { HEADWAY_TIERS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
-import { useCorridorMapOverlay } from '../../context/CorridorMapOverlay';
-import { useHistoryMapOverlay, type HistoryMapStop } from '../../context/HistoryMapOverlay';
-import { useLiveVehiclesMapOverlay, type LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { useViewport } from '../../context/ViewportContext';
+import { useCorridorLayer } from './map/useCorridorLayer';
+import { useHistoryLayer } from './map/useHistoryLayer';
+import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
-import { StopCardHtml, formatGap, formatDelta } from '../../lib/mapHtml';
-import { cleanRouteShortName } from '../../utils/format';
 import { Z_PANEL } from '../../styles';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
@@ -124,22 +121,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     hintTimerRef.current = setTimeout(() => setMapHint(null), 2500);
   };
 
-  // Keep a ref to onViewChange so the moveend closure (registered once) always
-  const { overlay: corridorOverlay } = useCorridorMapOverlay();
-  const { overlay: historyOverlay } = useHistoryMapOverlay();
-  const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
   const { setBoundsAndZoom } = useViewport();
 
-  const [expandedStop, setExpandedStop] = useState<string | null>(null);
-
-  // Overlay marker references
-  const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
-  const corridorMarkersRef = useRef<maplibregl.Marker[]>([]);
   // Deck.gl overlay for GPU-rendered vehicle markers
   const deckOverlayRef = useRef<MapboxOverlay | null>(null);
-  const liveFittedAgencyRef = useRef<string | null>(null);
-
-  const liveFittedRouteRef = useRef<string | null>(null);
 
   // Refs keep event-handler closures (registered once on map load) from going stale.
   const setSelectedRouteRef = useRef(setSelectedRoute);
@@ -447,44 +432,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         }
       });
 
-      // Deck.gl overlay for GPU-rendered vehicle markers
+      // Deck.gl overlay for GPU-rendered vehicle markers.
+      // Vehicle tooltip lives in useLiveVehiclesLayer (manual picking via map events).
       const deckOverlay = new MapboxOverlay({
         interleaved: false,
         layers: [],
-        getTooltip: (info: any) => {
-          const object = info.object;
-          if (!object || (!object.headsign && object.status === 'no_data')) return null;
-          const delayMin: number | null = object.delayMin;
-          const label = delayMin === null ? null
-            : delayMin <= -1.5 ? `${Math.round(Math.abs(delayMin))}m early`
-            : delayMin >= 5.5  ? `${Math.round(delayMin)}m late`
-            : 'On time';
-          const statusColor: Record<string, string> = {
-            on_time: '#38a169', early: '#3182ce', late: '#e53e3e', no_data: '#718096',
-          };
-          const color = statusColor[object.status] ?? statusColor.no_data;
-          return {
-            html: `
-              <div style="font-family:'Inter',ui-sans-serif,sans-serif;padding:8px 10px;min-width:130px;line-height:1.4;">
-                <div style="font-size:9px;font-weight:800;color:var(--text-dim);letter-spacing:0.4px;text-transform:uppercase;">Route ${cleanRouteShortName(object.routeShortName)}</div>
-                ${object.headsign ? `<div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${object.headsign}</div>` : ''}
-                ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-primary);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${label}</span></div>` : ''}
-              </div>`,
-            style: {
-              background: 'var(--bg-panel)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              borderRadius: '1rem',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-              border: '1px solid var(--border-primary)',
-              padding: '0',
-              color: 'var(--text-primary)',
-            },
-          };
-        },
       });
       map.addControl(deckOverlay as any);
       deckOverlayRef.current = deckOverlay;
+      if (import.meta.env.DEV) {
+        (window as any).__deckOverlay = deckOverlay;
+        (window as any).__map = map;
+      }
 
       setMapLoaded(true);
     });
@@ -831,331 +790,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     resetRoutesLayerDefaultPaint(map);
   }, [selectedRoute, mapLoaded]);
 
-  // Sync corridor static layer visibility
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-    if (map.getLayer('corridor-shapes-layer')) {
-      const corrFilter = showCorridorBand ? null : ['==', 'agencySlug', ''];
-      map.setFilter('corridor-shapes-layer', corrFilter as any);
-    }
-  }, [showCorridorBand, mapLoaded]);
+  // Overlay layers (corridors, history, live vehicles) — extracted to hooks
+  useCorridorLayer(mapRef, mapLoaded, showCorridorBand);
+  useHistoryLayer(mapRef, mapLoaded);
+  useLiveVehiclesLayer(mapRef, deckOverlayRef, mapLoaded);
 
-  // Dynamic corridor overlays
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    const source = map.getSource('corridor-dynamic') as maplibregl.GeoJSONSource;
-    if (!source) return;
-
-    if (corridorOverlay && corridorOverlay.lines.length > 0) {
-      source.setData({
-        type: 'FeatureCollection',
-        features: corridorOverlay.lines.map(line => ({
-          type: 'Feature',
-          geometry: { type: 'LineString', coordinates: line.coordinates },
-          properties: { color: line.color }
-        }))
-      });
-      // Pan to fit corridor bounds
-      if (corridorOverlay.fitPoints.length >= 2) {
-        const bounds = corridorOverlay.fitPoints.map(([lat, lon]) => [lon, lat] as [number, number]);
-        let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-        bounds.forEach(([lng, lat]) => {
-          if (lng < minLng) minLng = lng;
-          if (lng > maxLng) maxLng = lng;
-          if (lat < minLat) minLat = lat;
-          if (lat > maxLat) maxLat = lat;
-        });
-        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 120, bottom: 60, left: 240, right: 60 }, maxZoom: 13 });
-      }
-    } else {
-      source.setData({ type: 'FeatureCollection', features: [] });
-    }
-  }, [corridorOverlay, mapLoaded]);
-
-  // History route shape (historical geometry for selected period, AI-162/AI-161)
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    const source = map.getSource('history-route-shape') as maplibregl.GeoJSONSource;
-    if (!source) return;
-
-    if (historyOverlay && historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
-      source.setData({
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: { type: 'LineString', coordinates: historyOverlay.routeGeometry },
-          properties: { color: '#3b82f6' }
-        }]
-      });
-    } else {
-      source.setData({ type: 'FeatureCollection', features: [] });
-    }
-  }, [historyOverlay, mapLoaded]);
-
-  // History time-scrubber routes (AI-198)
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    const source = map.getSource('history-routes') as maplibregl.GeoJSONSource;
-    if (!source) return;
-
-    if (historyOverlay?.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
-      const features = historyOverlay.historicalRouteGeometries.map(r => ({
-        type: 'Feature' as const,
-        geometry: { type: 'LineString' as const, coordinates: r.coordinates },
-        properties: { color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5))) || '#3b82f6' }
-      }));
-      source.setData({ type: 'FeatureCollection', features });
-    } else {
-      source.setData({ type: 'FeatureCollection', features: [] });
-    }
-  }, [historyOverlay, mapLoaded]);
-
-  // History stop markers overlay
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    // Clear old markers
-    historyMarkersRef.current.forEach(m => m.remove());
-    historyMarkersRef.current = [];
-
-    if (!historyOverlay) return;
-
-    // If we have historical route geometry (from per-period snapshot), fit to it (supports discontinued routes)
-    if (historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
-      const coords = historyOverlay.routeGeometry;
-      let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-      coords.forEach((coord) => {
-        const [lng, lat] = coord;
-        if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
-        if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
-      });
-      if (minLng < maxLng) {
-        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
-      }
-    }
-
-    if (historyOverlay.stops.length === 0) {
-      if (historyOverlay.agencyCenter) {
-        map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 13 });
-        // After the fly completes, try to zoom to the specific route if one is selected
-        if (historyOverlay.routeShortName) {
-          const rsn = historyOverlay.routeShortName;
-          const tryZoom = () => {
-            if (!map.getLayer('routes-layer')) return;
-            const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-              .filter(f => String(f.properties?.routeShortName ?? '') === rsn);
-            if (features.length === 0) return;
-            let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-            features.forEach(f => {
-              const coords = (f.geometry as any).type === 'LineString'
-                ? (f.geometry as any).coordinates
-                : (f.geometry as any).coordinates.flat();
-              coords.forEach(([lng, lat]: [number, number]) => {
-                if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
-                if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
-              });
-            });
-            if (minLng < maxLng) {
-              map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
-            }
-          };
-          map.once('moveend', tryZoom);
-        }
-      }
-      return;
-    }
-
-    let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-
-    historyOverlay.stops.forEach(stop => {
-      if (!stop.lat || !stop.lon) return;
-      const isExpanded = expandedStop === stop.stopId;
-      const html = StopCardHtml(stop, isExpanded);
-
-      const el = document.createElement('div');
-      el.className = 'history-stop-marker-wrapper';
-      el.innerHTML = html;
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setExpandedStop(prev => prev === stop.stopId ? null : stop.stopId);
-      });
-
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat([stop.lon, stop.lat])
-        .addTo(map);
-
-      historyMarkersRef.current.push(marker);
-
-      if (stop.lon < minLng) minLng = stop.lon;
-      if (stop.lon > maxLng) maxLng = stop.lon;
-      if (stop.lat < minLat) minLat = stop.lat;
-      if (stop.lat > maxLat) maxLat = stop.lat;
-    });
-
-    // Zoom to fit stop markers
-    if (historyOverlay.stops.length >= 2) {
-      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
-    }
-  }, [historyOverlay, mapLoaded, expandedStop]);
-
-  // Live vehicles — GPU-rendered via Deck.gl
-  useEffect(() => {
-    const deck = deckOverlayRef.current;
-    if (!deck || !mapLoaded) return;
-
-    const vehicles = (liveOverlay?.vehicles ?? []).filter(v => v.lat && v.lon);
-    const focusedId = liveOverlay?.focusedVehicle?.id ?? null;
-
-    const statusRgb: Record<string, [number, number, number]> = {
-      on_time: [56, 161, 105],
-      early:   [49, 130, 206],
-      late:    [229,  62,  62],
-      no_data: [113, 128, 150],
-    };
-
-    deck.setProps({
-      layers: [
-        // Outer ring (focus highlight)
-        new ScatterplotLayer({
-          id: 'vehicles-focus-ring',
-          data: vehicles.filter(v => v.id === focusedId),
-          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
-          getRadius: 14,
-          getFillColor: [255, 255, 255, 80],
-          stroked: false,
-          radiusUnits: 'pixels',
-        }),
-        // Vehicle dots
-        new ScatterplotLayer({
-          id: 'vehicles-dots',
-          data: vehicles,
-          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
-          getRadius: (v: typeof vehicles[0]) => v.id === focusedId ? 11 : 9,
-          getFillColor: (v: typeof vehicles[0]) => statusRgb[v.status] ?? statusRgb.no_data,
-          stroked: true,
-          getLineColor: [255, 255, 255, 200],
-          getLineWidth: 2,
-          lineWidthUnits: 'pixels',
-          radiusUnits: 'pixels',
-        }),
-        // Route short name labels
-        new TextLayer({
-          id: 'vehicles-labels',
-          data: vehicles,
-          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
-          getText: (v: typeof vehicles[0]) => cleanRouteShortName(v.routeShortName) ?? '',
-          getSize: 9,
-          getColor: [255, 255, 255, 230],
-          fontWeight: 800,
-          fontFamily: '"Inter", ui-sans-serif, sans-serif',
-          getTextAnchor: 'middle',
-          getAlignmentBaseline: 'center',
-          billboard: true,
-        }),
-      ],
-    });
-  }, [liveOverlay, mapLoaded]);
-
-  // Deck.gl's canvas sits above MapLibre; if it ever receives pointer events it
-  // swallows map pan/zoom across the whole viewport. Nothing on the deck layers
-  // needs direct clicks (vehicle dots have no onClick), so keep it inert always.
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    const syncPointerEvents = () => {
-      for (const el of map.getContainer().querySelectorAll<HTMLElement>('canvas')) {
-        if (el.classList.contains('maplibregl-canvas')) continue;
-        el.style.pointerEvents = 'none';
-      }
-    };
-    syncPointerEvents();
-    const obs = new MutationObserver(syncPointerEvents);
-    obs.observe(map.getContainer(), { childList: true, subtree: true });
-    return () => obs.disconnect();
-  }, [mapLoaded]);
-
-  // Live route dynamic shape overlay
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-
-    const source = map.getSource('live-route-shape') as maplibregl.GeoJSONSource;
-    if (!source) return;
-
-    const features = liveOverlay?.routeFeatures ?? [];
-    const routeKey = liveOverlay?.selectedRouteKey ?? null;
-
-    if (features.length > 0) {
-      source.setData({
-        type: 'FeatureCollection',
-        features: features.map(f => ({
-          ...f,
-          properties: {
-            ...f.properties,
-            color: getTierColor((f.properties as any)?.tier ?? null)
-          }
-        }))
-      });
-
-      if (routeKey && liveFittedRouteRef.current !== routeKey) {
-        liveFittedRouteRef.current = routeKey;
-        let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-        features.forEach(f => {
-          const geom = f.geometry as any;
-          const coords = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
-          coords.forEach(([lng, lat]: [number, number]) => {
-            if (lng < minLng) minLng = lng;
-            if (lng > maxLng) maxLng = lng;
-            if (lat < minLat) minLat = lat;
-            if (lat > maxLat) maxLat = lat;
-          });
-        });
-        if (minLng < maxLng) {
-          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 120, bottom: 120, left: 320, right: 80 }, maxZoom: 14 });
-        }
-      }
-    } else {
-      source.setData({ type: 'FeatureCollection', features: [] });
-      // Only reset the fit-ref when the route key actually changes/clears, not on every empty render
-      if (!routeKey) liveFittedRouteRef.current = null;
-    }
-  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded]);
-
-  // Focus vehicle centering — skip if route shape fit will handle positioning
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded || !liveOverlay?.focusedVehicle) return;
-    if (liveOverlay.routeFeatures && liveOverlay.routeFeatures.length > 0) return;
-
-    const { lat, lon } = liveOverlay.focusedVehicle;
-    map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 14) });
-  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded]);
-
-  // Coverage-area fly — live panel requests a jump to an agency's bbox (place list click)
-  useEffect(() => {
-    const map = mapRef.current;
-    const area = liveOverlay?.focusArea;
-    if (!map || !mapLoaded || !area) return;
-    const [w, s, e, n] = area.bounds;
-    const cam = map.cameraForBounds([[w, s], [e, n]], { padding: 64 });
-    if (!cam) return;
-    map.flyTo({ center: cam.center, zoom: Math.max(cam.zoom ?? 0, area.minZoom ?? 0) });
-  }, [liveOverlay?.focusArea, mapLoaded]);
-
-  // Clean overlays on unmount
+  // Clean up deck overlay on unmount
   useEffect(() => {
     return () => {
-      historyMarkersRef.current.forEach(m => m.remove());
-      corridorMarkersRef.current.forEach(m => m.remove());
       deckOverlayRef.current?.finalize();
     };
   }, []);
