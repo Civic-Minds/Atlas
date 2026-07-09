@@ -17,6 +17,7 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 | Brantford Transit | No public GTFS | Metrolinx tmix slug 404; not in MDB; retry periodically |
 | Transit Cape Breton | No public GTFS | Not in MDB / Canadian INF sources; retry periodically |
 | STS Saguenay | No usable public zip | Données Québec “STS” host serves Sherbrooke (sts.qc.ca), not Saguenay |
+| Manchester Transit Authority (NH) | Inactive MDB only | No active public fixed-route GTFS; retry periodically |
 
 ---
 

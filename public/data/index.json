@@ -6551,6 +6551,486 @@
         42.6687,
         -87.7985
       ]
+    },
+    {
+      "slug": "ben-franklin",
+      "name": "Ben Franklin Transit",
+      "center": [
+        46.21,
+        -119.14
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
+      "lastFeedExpiry": "20261212",
+      "lastFeedVersion": "0626 Fixed Rev 1",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Washington",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
+      "bbox": [
+        46.1568,
+        -119.809,
+        46.371,
+        -119.0246
+      ]
+    },
+    {
+      "slug": "asheville",
+      "name": "Asheville Rides Transit",
+      "center": [
+        35.6,
+        -82.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
+      "lastFeedExpiry": "20260630",
+      "lastFeedVersion": "UTC: 16-Jun-2026 19:44",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "North Carolina",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
+      "bbox": [
+        35.4047,
+        -82.6526,
+        35.6641,
+        -82.2991
+      ]
+    },
+    {
+      "slug": "bloomington",
+      "name": "Bloomington Transit",
+      "center": [
+        39.17,
+        -86.53
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
+      "lastFeedExpiry": "20270622",
+      "lastFeedVersion": "97",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Indiana",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
+      "bbox": [
+        39.1013,
+        -86.6192,
+        39.2285,
+        -86.4524
+      ]
+    },
+    {
+      "slug": "athens-acc",
+      "name": "Athens Clarke County Transit",
+      "center": [
+        33.95,
+        -83.38
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
+      "lastFeedExpiry": "20261227",
+      "lastFeedVersion": "20260529",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Georgia",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
+      "bbox": [
+        33.891,
+        -83.4955,
+        34.0491,
+        -83.2828
+      ]
+    },
+    {
+      "slug": "uga",
+      "name": "UGA Campus Transit",
+      "center": [
+        33.95,
+        -83.37
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Georgia",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
+      "bbox": [
+        33.8745,
+        -83.4243,
+        33.9845,
+        -83.3203
+      ]
+    },
+    {
+      "slug": "blacksburg",
+      "name": "Blacksburg Transit",
+      "center": [
+        37.23,
+        -80.41
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Virginia",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
+      "bbox": [
+        37.1065,
+        -80.4734,
+        37.2761,
+        -80.3323
+      ]
+    },
+    {
+      "slug": "cata-state-college",
+      "name": "CATA (State College)",
+      "center": [
+        40.79,
+        -77.86
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
+      "lastFeedExpiry": "20260816",
+      "lastFeedVersion": "20260430",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Pennsylvania",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
+      "bbox": [
+        40.741,
+        -77.9455,
+        40.8581,
+        -77.7763
+      ]
+    },
+    {
+      "slug": "cyride",
+      "name": "CyRide (Ames)",
+      "center": [
+        42.03,
+        -93.63
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip",
+      "lastFeedExpiry": "20260816",
+      "lastFeedVersion": "20260513",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip",
+      "bbox": [
+        41.9701,
+        -93.7158,
+        42.0765,
+        -93.5875
+      ]
+    },
+    {
+      "slug": "iowa-city",
+      "name": "Iowa City Transit",
+      "center": [
+        41.66,
+        -91.53
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "UTC: 29-May-2026 17:46",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
+      "bbox": [
+        41.608,
+        -91.6188,
+        41.7092,
+        -91.4488
+      ]
+    },
+    {
+      "slug": "coralville",
+      "name": "Coralville Transit",
+      "center": [
+        41.68,
+        -91.58
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip",
+      "lastFeedExpiry": "20261230",
+      "lastFeedVersion": "UTC: 25-Jun-2026 14:05",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip",
+      "bbox": [
+        41.6403,
+        -91.6347,
+        41.7705,
+        -91.5148
+      ]
+    },
+    {
+      "slug": "cambus",
+      "name": "CAMBUS (University of Iowa)",
+      "center": [
+        41.66,
+        -91.54
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
+      "lastFeedExpiry": "20260821",
+      "lastFeedVersion": "UTC: 27-Mar-2026 18:02",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
+      "bbox": [
+        41.6359,
+        -91.6249,
+        41.7284,
+        -91.5132
+      ]
+    },
+    {
+      "slug": "lawrence-ku",
+      "name": "Lawrence Transit / KU on Wheels",
+      "center": [
+        38.97,
+        -95.24
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Kansas",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
+      "bbox": [
+        38.9044,
+        -95.3526,
+        39.0234,
+        -95.1615
+      ]
+    },
+    {
+      "slug": "springfield-il",
+      "name": "SMTD (Springfield IL)",
+      "center": [
+        39.78,
+        -89.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "S1000203",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Illinois",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
+      "bbox": [
+        39.6866,
+        -89.7724,
+        39.8801,
+        -89.5745
+      ]
+    },
+    {
+      "slug": "topeka",
+      "name": "Topeka Metro",
+      "center": [
+        39.05,
+        -95.68
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Jul 7, 2026, 2:57 PM",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Kansas",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
+      "bbox": [
+        38.9732,
+        -95.7993,
+        39.1199,
+        -95.5936
+      ]
+    },
+    {
+      "slug": "barta",
+      "name": "BARTA (Reading)",
+      "center": [
+        40.34,
+        -75.93
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2064/latest.zip",
+      "lastFeedExpiry": "20270103",
+      "lastFeedVersion": "20260702",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Pennsylvania",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2064/latest.zip",
+      "bbox": [
+        40.2338,
+        -76.2088,
+        40.5848,
+        -75.7382
+      ]
+    },
+    {
+      "slug": "coast-nh",
+      "name": "COAST (Seacoast NH)",
+      "center": [
+        43.07,
+        -70.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip",
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "New Hampshire",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip",
+      "bbox": [
+        43.0028,
+        -71.105,
+        43.4142,
+        -70.7223
+      ]
+    },
+    {
+      "slug": "advance-transit",
+      "name": "Advance Transit",
+      "center": [
+        43.7,
+        -72.29
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
+      "lastFeedExpiry": "20261201",
+      "lastFeedVersion": "UTC: 26-Jun-2026 03:41",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "New Hampshire",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
+      "bbox": [
+        43.6047,
+        -72.3636,
+        43.7492,
+        -71.9942
+      ]
+    },
+    {
+      "slug": "ccta",
+      "name": "CCTA / Green Mountain Transit",
+      "center": [
+        44.48,
+        -73.21
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
+      "lastFeedExpiry": "20261001",
+      "lastFeedVersion": "UTC: 07-Jul-2026 14:39",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Vermont",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
+      "bbox": [
+        43.9903,
+        -73.3189,
+        45.0175,
+        -72.0007
+      ]
+    },
+    {
+      "slug": "marble-valley",
+      "name": "Marble Valley Transit (Rutland)",
+      "center": [
+        43.61,
+        -72.97
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "UTC: 25-Mar-2026 16:12",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Vermont",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
+      "bbox": [
+        43.1436,
+        -73.296,
+        44.0308,
+        -72.6852
+      ]
+    },
+    {
+      "slug": "bis-man",
+      "name": "Bis-Man Transit",
+      "center": [
+        46.81,
+        -100.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "North Dakota",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
+      "bbox": [
+        46.7054,
+        -100.9244,
+        46.8762,
+        -100.7092
+      ]
+    },
+    {
+      "slug": "bangor",
+      "name": "Bangor Community Connector",
+      "center": [
+        44.8,
+        -68.77
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-7824/latest.zip",
+      "lastFeedExpiry": "20260807",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Maine",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7824/latest.zip",
+      "bbox": [
+        44.705,
+        -68.8826,
+        44.9591,
+        -68.6191
+      ]
+    },
+    {
+      "slug": "brandon",
+      "name": "Brandon Transit",
+      "center": [
+        49.85,
+        -99.95
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
+      "lastFeedExpiry": "20260830",
+      "lastFeedVersion": "2026-05-04 - 2026-08-30",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Manitoba",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
+      "bbox": [
+        49.7931,
+        -100.021,
+        49.9072,
+        -99.8338
+      ]
+    },
+    {
+      "slug": "juneau",
+      "name": "Capital Transit (Juneau)",
+      "center": [
+        58.3,
+        -134.42
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
+      "lastFeedExpiry": "20260920",
+      "lastFeedVersion": "UTC: 21-May-2026 18:51",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Alaska",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
+      "bbox": [
+        58.2549,
+        -134.6643,
+        58.4252,
+        -134.3699
+      ]
+    },
+    {
+      "slug": "annapolis",
+      "name": "Annapolis Transit",
+      "center": [
+        38.98,
+        -76.49
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+      "lastFeedExpiry": "20260930",
+      "lastFeedVersion": "20250923",
+      "lastRefreshedAt": "2026-07-09",
+      "region": "Maryland",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+      "bbox": [
+        38.9283,
+        -76.5771,
+        39.0146,
+        -76.464
+      ]
     }
   ]
 }

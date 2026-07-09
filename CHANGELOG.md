@@ -4,6 +4,7 @@
 
 ### Added
 - **Tier 1–2 coverage**: Springfield MO (City Utilities), Evansville METS, Kenosha Area Transit; Brownsville Metro processed to R2. Tier 1–2 backlog exhausted for public GTFS.
+- **Fixed-route batch (+24)**: Ben Franklin, Asheville, Bloomington, Athens ACC + UGA, Blacksburg, CATA State College, CyRide/Iowa City/Coralville/CAMBUS, Lawrence–KU, SMTD Springfield IL, Topeka, BARTA, COAST NH, Advance Transit, CCTA/GMT + Marble Valley VT, Bis-Man, Bangor, Brandon MB, Juneau, Annapolis. Fills college-town frequency + VT/NH holes.
 
 ### Changed
 - **Day filter chip indicator**: Always show the active dot indicator on the Day filter chip to reflect that a day-of-service filter is consistently active (Weekday/Saturday/Sunday).

@@ -19,7 +19,36 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
-## Recently completed (2026-07-08)
+## Recently completed (2026-07-09)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `ben-franklin` | Ben Franklin Transit | Washington | mdb-2122 Tri-Cities |
+| done | `asheville` | Asheville Rides Transit | North Carolina | mdb-903 |
+| done | `bloomington` | Bloomington Transit | Indiana | mdb-2066 college town |
+| done | `athens-acc` | Athens Clarke County Transit | Georgia | tld-4777 |
+| done | `uga` | UGA Campus Transit | Georgia | tld-2276 |
+| done | `blacksburg` | Blacksburg Transit | Virginia | mdb-1189 |
+| done | `cata-state-college` | CATA (State College) | Pennsylvania | ntd-30054 |
+| done | `cyride` | CyRide (Ames) | Iowa | mdb-923 |
+| done | `iowa-city` | Iowa City Transit | Iowa | mdb-559 |
+| done | `coralville` | Coralville Transit | Iowa | mdb-196 |
+| done | `cambus` | CAMBUS (University of Iowa) | Iowa | mdb-197 |
+| done | `lawrence-ku` | Lawrence Transit / KU on Wheels | Kansas | mdb-2063 |
+| done | `springfield-il` | SMTD (Springfield IL) | Illinois | mdb-3187 |
+| done | `topeka` | Topeka Metro | Kansas | tld-1660_1 |
+| done | `barta` | BARTA (Reading) | Pennsylvania | mdb-2064 |
+| done | `coast-nh` | COAST (Seacoast NH) | New Hampshire | tld-4668 |
+| done | `advance-transit` | Advance Transit | New Hampshire | mdb-631 Upper Valley |
+| done | `ccta` | CCTA / Green Mountain Transit | Vermont | mdb-629 Burlington area |
+| done | `marble-valley` | Marble Valley Transit (Rutland) | Vermont | mdb-430 |
+| done | `bis-man` | Bis-Man Transit | North Dakota | tld-6095 Bismarck |
+| done | `bangor` | Bangor Community Connector | Maine | tld-7824 |
+| done | `brandon` | Brandon Transit | Manitoba | tld-4820 |
+| done | `juneau` | Capital Transit (Juneau) | Alaska | mdb-294 |
+| done | `annapolis` | Annapolis Transit | Maryland | mdb-2285 |
+
+## Previously completed (2026-07-08)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -94,9 +123,11 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
-| todo | `gmt` | Green Mountain Transit | Vermont | Entire state absent |
-| todo | `manchester-nh` | Manchester Transit Authority | New Hampshire | |
-| todo | `coast-nh` | COAST (Seacoast NH) | New Hampshire | |
+| done | `ccta` | CCTA / Green Mountain Transit | Vermont | mdb-629 (GMT brand / Chittenden) |
+| done | `marble-valley` | Marble Valley Transit | Vermont | mdb-430 |
+| done | `coast-nh` | COAST (Seacoast NH) | New Hampshire | tld-4668 |
+| done | `advance-transit` | Advance Transit | New Hampshire | mdb-631 |
+| blocked | `manchester-nh` | Manchester Transit Authority | New Hampshire | MDB inactive only — see KNOWN_ISSUES |
 
 ---
 
