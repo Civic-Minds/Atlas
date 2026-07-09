@@ -11,7 +11,7 @@ import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_R
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
-import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, routeListCompanionName, liveVehicleRowLabel } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 
 interface Props {
   agencies: Agency[];
@@ -404,6 +404,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return (feature?.properties as any)?.routeLongName ?? null;
   }, [selectedGroup, layers, localLayers]);
 
+  // Vehicle word for the selected route's mode ("Streetcar 4508", not "Bus 4508")
+  const selectedRouteModeWord = useMemo(() => {
+    if (!selectedGroup) return 'Bus';
+    const fc = layers[selectedGroup.agencySlug] ?? localLayers[selectedGroup.agencySlug];
+    const feature = fc?.features.find(f => (f.properties as any)?.routeShortName === selectedGroup.routeShortName);
+    return vehicleModeWord((feature?.properties as any)?.routeType);
+  }, [selectedGroup, layers, localLayers]);
+
   // Direction label lookup from GeoJSON features (headsign per directionId)
   const directionLabels = useMemo(() => {
     if (!selectedGroup) return new Map<number, string>();
@@ -603,7 +611,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   return (
                     <div key={v.id} className={`${LIST_ROW} cursor-default hover:bg-transparent`}>
                       <p className={`${LIST_ROW_PRIMARY} flex-1 min-w-0 truncate group-hover:text-[var(--text-primary)]`}>
-                        {liveVehicleRowLabel(v, i)}
+                        {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
                       </p>
                       {v.speedKmh != null && (
                         <span className={`${LIST_ROW_DIM} shrink-0`}>{v.speedKmh} km/h</span>

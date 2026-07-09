@@ -147,19 +147,31 @@ export function routeListCompanionName(
   return displayName;
 }
 
+/** Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry). */
+export function vehicleModeWord(routeType: number | null | undefined): string {
+  switch (routeType) {
+    case 0: return 'Streetcar';
+    case 1:
+    case 2: return 'Train';
+    case 4: return 'Ferry';
+    default: return 'Bus';
+  }
+}
+
 /** Sidebar label for a live vehicle row when headsign is unavailable. */
 export function liveVehicleRowLabel(
   v: { headsign: string | null; id: string; vehicleLabel?: string | null },
-  index: number
+  index: number,
+  modeWord: string = 'Bus'
 ): string {
   if (v.headsign) return v.headsign;
   const fleet = v.vehicleLabel?.trim();
-  if (fleet && !UUID_LIKE.test(fleet)) return `Bus ${fleet}`;
+  if (fleet && !UUID_LIKE.test(fleet)) return `${modeWord} ${fleet}`;
   const id = v.id.trim();
-  if (/^\d{3,7}$/.test(id)) return `Bus ${id}`;
+  if (/^\d{3,7}$/.test(id)) return `${modeWord} ${id}`;
   if (!UUID_LIKE.test(id)) {
     const tail = id.match(/\d{4,}$/)?.[0];
-    if (tail) return `Bus ${tail}`;
+    if (tail) return `${modeWord} ${tail}`;
   }
   return `Vehicle ${index + 1}`;
 }
