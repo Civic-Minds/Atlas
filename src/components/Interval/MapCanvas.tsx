@@ -448,13 +448,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       setMapLoaded(true);
     });
 
-    // Emit initial bounds so LiveVehicles can poll on first load
+    // Emit initial bounds so LiveVehicles can poll and agencies load on first
+    // paint — without the onBoundsChange call, a URL for a new area sits empty
+    // until the user pans (agency loading only listened to moveend).
     map.once('idle', () => {
       const b = map.getBounds();
-      setBoundsAndZoom(
-        { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() },
-        map.getZoom()
-      );
+      const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
+      onBoundsChangeRef.current(bounds);
+      setBoundsAndZoom(bounds, map.getZoom());
     });
 
     return () => {
