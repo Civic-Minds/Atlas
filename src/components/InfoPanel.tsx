@@ -175,7 +175,17 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (!map.has(r)) map.set(r, []);
       map.get(r)!.push(a);
     }
-    return map;
+    // index.json is hand-ordered (Ontario first, etc.) — browse list should be alpha
+    for (const list of map.values()) {
+      list.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    }
+    return new Map(
+      [...map.entries()].sort(([a], [b]) => {
+        if (a === 'Other') return 1;
+        if (b === 'Other') return -1;
+        return a.localeCompare(b, undefined, { sensitivity: 'base' });
+      }),
+    );
   }, [filtered]);
 
   const totalLiveAgencies = liveBySlug.size;
