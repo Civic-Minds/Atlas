@@ -7,7 +7,7 @@ describe('agencyDisplayParts', () => {
     expect(agencyDisplayParts('Calgary Transit')).toEqual({ primary: 'Calgary Transit' });
   });
 
-  it('splits system + place into primary · secondary', () => {
+  it('uses secondary only for place / sector disambiguation', () => {
     expect(agencyDisplayParts('BC Transit (Kelowna)')).toEqual({
       primary: 'BC Transit',
       secondary: 'Kelowna',
@@ -24,21 +24,32 @@ describe('agencyDisplayParts', () => {
       primary: 'DDOT',
       secondary: 'Detroit',
     });
-  });
-
-  it('keeps short brand + acronym as primary · code', () => {
-    expect(agencyDisplayParts('Edmonton Transit (ETS)')).toEqual({
-      primary: 'Edmonton Transit',
-      secondary: 'ETS',
+    expect(agencyDisplayParts("exo (La Presqu'île)")).toEqual({
+      primary: 'exo',
+      secondary: "La Presqu'île",
+    });
+    expect(agencyDisplayParts('exo (Trains)')).toEqual({
+      primary: 'exo',
+      secondary: 'Trains',
+    });
+    // Province abbrev is a place, not a brand code
+    expect(agencyDisplayParts('T3 Transit (PEI)')).toEqual({
+      primary: 'T3 Transit',
+      secondary: 'PEI',
     });
   });
 
-  it('leads with brand code for long legal names', () => {
-    expect(agencyDisplayParts('Bay Area Rapid Transit (BART)')).toEqual({
-      primary: 'BART',
-    });
+  it('never shows acronym as secondary — one brand only', () => {
+    // Everyday callsign
+    expect(agencyDisplayParts('Edmonton Transit Service (ETS)')).toEqual({ primary: 'ETS' });
+    expect(agencyDisplayParts('Edmonton Transit (ETS)')).toEqual({ primary: 'ETS' });
+    expect(agencyDisplayParts('Bay Area Rapid Transit (BART)')).toEqual({ primary: 'BART' });
     expect(
       agencyDisplayParts('San Francisco Municipal Transportation Agency (SFMTA - Muni)'),
     ).toEqual({ primary: 'SFMTA' });
+    // Public brand already short — drop legal acronym
+    expect(agencyDisplayParts('County Connection (CCCTA)')).toEqual({
+      primary: 'County Connection',
+    });
   });
 });

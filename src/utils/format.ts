@@ -177,10 +177,18 @@ export function liveVehicleRowLabel(
 }
 
 /**
- * Split registry names like "BC Transit (Kelowna)" or "Edmonton Transit (ETS)"
- * into a consistent primary + optional secondary for list UIs.
- * Always: main label left, parenthetical qualifier as muted secondary (never mixed parens).
- * Long legal names with a short brand code lead with the code only.
+ * List-label standard for registry names:
+ *
+ *   primary  = the everyday brand people recognize
+ *   secondary = place / sector only (never an acronym)
+ *
+ *   "BC Transit (Kelowna)"              → BC Transit · Kelowna
+ *   "MiWay (Mississauga)"               → MiWay · Mississauga
+ *   "exo (La Presqu'île)"               → exo · La Presqu'île
+ *   "Edmonton Transit Service (ETS)"    → ETS          (acronym is the brand, not a subtitle)
+ *   "Bay Area Rapid Transit (BART)"     → BART
+ *   "County Connection (CCCTA)"         → County Connection
+ *   "TransLink" / "Calgary Transit"     → as-is
  */
 export function agencyDisplayParts(name: string): { primary: string; secondary?: string } {
   const trimmed = name.trim();
@@ -192,34 +200,83 @@ export function agencyDisplayParts(name: string): { primary: string; secondary?:
   if (!outer) return { primary: inner || trimmed };
   if (!inner) return { primary: outer };
 
-  // "Bay Area Rapid Transit (BART)" / long legal names → lead with the code
-  if (looksLikeBrandCode(inner) && outer.length >= 22) {
-    return { primary: normalizeBrandCode(inner) };
+  // Place abbrev (PEI, etc.) counts as location, not brand code
+  if (isPlaceAbbrev(inner)) {
+    return { primary: outer, secondary: inner };
   }
 
+  // Acronym / alt brand → one label only. Never "Edmonton Transit · ETS".
+  if (looksLikeBrandCode(inner)) {
+    // Expanded/legal outer + short code → everyday callsign (ETS, BART, SFMTA)
+    if (isLegalOrLongName(outer) || (isPureAcronym(inner) && looksLikeExpandedName(outer))) {
+      return { primary: normalizeBrandCode(inner) };
+    }
+    // Outer is already the public brand — drop the legal acronym (County Connection, not CCCTA)
+    return { primary: outer };
+  }
+
+  // Geographic / sector disambiguator only
   return { primary: outer, secondary: inner };
 }
 
-/** Short brand / acronym in parens (ETS, BART, SFMTA - Muni) — not place names. */
+/** CA province / US state-style abbrevs used as place, not agency codes. */
+function isPlaceAbbrev(s: string): boolean {
+  return /^(PEI|NL|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)$/i.test(s.trim());
+}
+
+function isPureAcronym(s: string): boolean {
+  return /^[A-Z]{2,8}$/.test(s.trim());
+}
+
+function isLegalOrLongName(s: string): boolean {
+  if (s.length >= 22) return true;
+  return /\b(Authority|District|Agency|Commission|Municipal|Metropolitan|Transportation)\b/i.test(s);
+}
+
+/** "Edmonton Transit Service", "Sonoma County Transit" — expanded form of a callsign. */
+function looksLikeExpandedName(s: string): boolean {
+  return /\b(Transit|Transportation|Metro|Railway|Railroad|Shuttle|Bus)\b/i.test(s)
+    || /\bService$/i.test(s);
+}
+
+/** Short brand / acronym in parens (ETS, BART, SFMTA - Muni, Yolobus) — not place names. */
 function looksLikeBrandCode(s: string): boolean {
   const t = s.trim();
-  if (t.length > 18) return false;
-  // Place-ish multi-word locators
-  if (/\b(Valley|River|County|City|Island|Area|Suburbs|Springs|Beach|Hills?|Heights|Mountain|Lake|Bay|Port|District|Region|Metro(?!\s))\b/i.test(t)
-    && !/^[A-Z]{2,5}(\s|$)/.test(t)) {
+  if (t.length > 22) return false;
+  if (isPlaceAbbrev(t)) return false;
+  // Place-ish multi-word locators (Fraser Valley, Detroit suburbs, St. John's)
+  if (/\b(Valley|River|County|City|Island|Area|Suburbs|Springs|Beach|Hills?|Heights|Mountain|Lake|Bay|Port|District|Region|Okanagan|Presqu|Sud-Ouest|Richelain|Terrebonne|Laurentides)\b/i.test(t)
+    && !/^[A-Z]{2,5}\b/.test(t)) {
     return false;
   }
+  // Title-case multi-word places: "St. John's", "Utica-Rome", "Fort Collins"
+  if (/^[A-Z][a-z]/.test(t) && /[\s'-]/.test(t) && !/^(AC|LA|NICE|FAST|RTD|MTA|RTC|VCTC)\b/.test(t)) {
+    // "San Diego MTS" is a brand hybrid — still brand-like if ends with code
+    if (!/\b(MTS|Bus|Transit|Metro|RIDE)\b/i.test(t) && t !== t.toUpperCase()) {
+      // "The Bus", "Central Florida" — "The Bus" is brand
+      if (/^The\s/i.test(t)) return true;
+      if (!/\b(Bus|Transit|Lines|Metro|Express|RIDE|MTS)\b/i.test(t)) return false;
+    }
+  }
   if (/^[A-Z]{2,8}(\s*[-/]\s*[A-Za-z0-9][\w ./-]*)?$/.test(t)) return true; // BART, ETS, SFMTA - Muni
-  if (/^[A-Z]{2,4}\s+[A-Za-z][\w]*$/.test(t)) return true; // AC Transit, LA Metro
+  if (/^[A-Z]{2,4}\s+[A-Za-z][\w]*$/.test(t)) return true; // AC Transit, LA Metro, NICE Bus
   if (/^[a-z]{2,}[A-Z][A-Za-z]+$/.test(t)) return true; // samTrans
-  if (t.length <= 5 && /[A-Z]{2,}/.test(t)) return true; // PEI
+  if (/^[A-Z][a-z]+[A-Z][a-z]+$/.test(t)) return true; // Yolobus-ish
+  if (/^(Yolobus|samTrans|The Bus)$/i.test(t)) return true;
+  // "San Diego MTS", "RTD Denver", "RTC Washoe", "MTA Maryland"
+  if (/^[A-Z]{2,5}\s+[A-Z][a-z]/.test(t) || /^(San Diego MTS|RTD Denver|RTC Washoe|MTA Maryland|VCTC Intercity|FAST Transit)$/i.test(t)) {
+    return true;
+  }
+  if (isPureAcronym(t)) return true;
   return false;
 }
 
 function normalizeBrandCode(s: string): string {
-  // "SFMTA - Muni" → "SFMTA"; "San Diego MTS" stays
+  // "SFMTA - Muni" → "SFMTA"; "San Diego MTS" / "RTD Denver" stay
   const head = s.split(/\s*[-/]\s*/)[0]?.trim();
-  if (head && head.length >= 2 && head.length <= 10 && /^[A-Za-z0-9]+$/.test(head)) return head;
+  if (head && head.length >= 2 && head.length <= 10 && /^[A-Za-z0-9]+$/.test(head) && head === head.toUpperCase()) {
+    return head;
+  }
   return s.trim();
 }
 
