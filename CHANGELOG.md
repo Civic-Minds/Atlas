@@ -17,6 +17,7 @@
 - **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
 
 ### Changed
+- **Search results polish**: hovering a result spotlights that route on the map (others fade); truncated headers read "showing 10 of N" instead of a bare match count; lettered variant families collapse to one row ("1 · 4 variants") unless a specific variant is typed.
 - **Agency card filter split**: drop redundant “Matching your filters” all-caps header — the outside-filters notice is enough.
 - **Pittsburgh branding**: Port Authority of Allegheny County → Pittsburgh Regional Transit (PRT); slug unchanged.
 - **Browse filter chips**: selected All/Live/History/region chips use a clear dark border + stronger fill (still not solid black pills) so active state is obvious.

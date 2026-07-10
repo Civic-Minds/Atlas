@@ -6,6 +6,7 @@ interface RouteListRowProps {
   name?: string;
   right?: React.ReactNode;  // stats, chevron, headway — caller decides
   onClick?: () => void;
+  onHoverChange?: (hovered: boolean) => void;
   selected?: boolean;
   className?: string;
 }
@@ -15,12 +16,15 @@ export default function RouteListRow({
   name,
   right,
   onClick,
+  onHoverChange,
   selected = false,
   className
 }: RouteListRowProps) {
   return (
     <button
       onClick={onClick}
+      onMouseEnter={onHoverChange ? () => onHoverChange(true) : undefined}
+      onMouseLeave={onHoverChange ? () => onHoverChange(false) : undefined}
       className={`${LIST_ROW} ${selected ? 'bg-[var(--accent-bg)]' : ''} ${className ?? ''}`}
     >
       <p className={`${LIST_ROW_PRIMARY} truncate min-w-0 flex-1 ${selected ? 'text-[var(--accent)]' : ''}`}>

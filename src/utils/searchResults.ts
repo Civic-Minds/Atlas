@@ -11,6 +11,8 @@ export interface RouteSearchResult {
   inView: boolean;
   distanceM: number;
   matchRank: number;
+  /** Set when this row stands in for a collapsed lettered-variant family (1/1A/1B/1C). */
+  variantCount?: number;
 }
 
 export interface SplitSearchResults<T> {
@@ -120,14 +122,59 @@ export interface RouteSearchDisplay {
   truncated: boolean;
 }
 
-/** Agency-slug noise removal, then cap for broad queries (already sorted by relevance). */
+const VARIANT_SUFFIX_RE = /^(\d{1,3})([A-Z])$/;
+
+/** Collapse lettered variant families (1/1A/1B/1C) into one row — they're one route.
+ *  A query that exactly names a variant (e.g. "1b") keeps that variant's row. */
+export function collapseVariantFamilies(
+  routes: RouteSearchResult[],
+  query: string,
+): RouteSearchResult[] {
+  const qNorm = stripLeadingZeros(query.trim().toLowerCase());
+  const groups = new Map<string, RouteSearchResult[]>();
+  const order: (RouteSearchResult | string)[] = [];
+
+  for (const r of routes) {
+    const sn = (r.routeShortName ?? '').toUpperCase();
+    const slug = r.key.split('::')[0];
+    const m = sn.match(VARIANT_SUFFIX_RE);
+    const base = m ? m[1] : (/^\d{1,3}$/.test(sn) ? sn : null);
+    if (!base) { order.push(r); continue; }
+    const gk = `${slug}::${base}`;
+    if (!groups.has(gk)) { groups.set(gk, []); order.push(gk); }
+    groups.get(gk)!.push(r);
+  }
+
+  const out: RouteSearchResult[] = [];
+  for (const item of order) {
+    if (typeof item !== 'string') { out.push(item); continue; }
+    const members = groups.get(item)!;
+    const hasLettered = members.some(r => VARIANT_SUFFIX_RE.test((r.routeShortName ?? '').toUpperCase()));
+    if (members.length < 2 || !hasLettered) { out.push(...members); continue; }
+    const exact = members.find(r => stripLeadingZeros((r.routeShortName ?? '').toLowerCase()) === qNorm);
+    // Typing a specific lettered variant ("1b") keeps that row alone; an exact
+    // base match ("1") still represents — and badges — the whole family.
+    if (exact && VARIANT_SUFFIX_RE.test((exact.routeShortName ?? '').toUpperCase())) {
+      out.push(exact);
+      continue;
+    }
+    const base = item.split('::')[1];
+    const rep = exact
+      ?? members.find(r => (r.routeShortName ?? '').toUpperCase() === base)
+      ?? [...members].sort((a, b) => a.matchRank - b.matchRank || a.distanceM - b.distanceM)[0];
+    out.push({ ...rep, variantCount: members.length });
+  }
+  return out;
+}
+
+/** Agency-slug noise removal, family collapse, then cap (already sorted by relevance). */
 export function prepareRouteResultsForDisplay(
   query: string,
   routes: RouteSearchResult[],
   agencies: AgencySearchGroup[],
   limit = SEARCH_ROUTE_DISPLAY_LIMIT,
 ): RouteSearchDisplay {
-  const filtered = filterRouteResultsForDisplay(query, routes, agencies);
+  const filtered = collapseVariantFamilies(filterRouteResultsForDisplay(query, routes, agencies), query);
   const totalMatches = filtered.length;
   const truncated = totalMatches > limit;
   return {

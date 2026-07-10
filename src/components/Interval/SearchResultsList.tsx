@@ -51,6 +51,8 @@ interface SearchResultsListProps {
   setSearchFocused?: (focused: boolean) => void;
   saveRecentSearch: (q: string) => void;
   headwayForRouteKey: (key: string) => number | null;
+  /** Highlight the hovered result's route on the map (null on leave). */
+  onRouteHover?: (key: string | null) => void;
 }
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
@@ -70,6 +72,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   setSearchFocused,
   saveRecentSearch,
   headwayForRouteKey,
+  onRouteHover,
 }) => {
   const agencyBlock = displayAgencyGroups.length > 0 && setSelectedAgencySlug ? (
     <SearchSplitList
@@ -104,13 +107,18 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       itemKey={(r: RouteSearchResult) => r.key}
       renderItem={(r: RouteSearchResult) => {
         const labels = routeRowLabels(r.routeShortName ?? '', r.routeLongName);
+        const name = r.variantCount && r.variantCount > 1
+          ? `${labels.name ? `${labels.name} · ` : ''}${r.variantCount} variants`
+          : labels.name;
         return (
           <RouteListRow
             shortName={labels.shortName}
-            name={labels.name}
+            name={name}
             selected={selectedRoute === r.key}
             className="border-b-0"
+            onHoverChange={onRouteHover ? (h => onRouteHover(h ? r.key : null)) : undefined}
             onClick={() => {
+              onRouteHover?.(null);
               saveRecentSearch(query);
               setQuery('');
               setSearchFocused?.(false);

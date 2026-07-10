@@ -324,6 +324,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
   }, [period]);
 
+  // Search-result hover → highlight that route on the map, fading the rest
+  const [hoveredSearchRoute, setHoveredSearchRoute] = useState<string | null>(null);
+  useEffect(() => {
+    if (!searchFocused) setHoveredSearchRoute(null);
+  }, [searchFocused]);
+
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
 
@@ -334,6 +340,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         period={period}
         q={q}
         selectedRoute={selectedRoute}
+        hoveredSearchRoute={hoveredSearchRoute}
         hoveredBranch={hoveredBranch}
         setSelectedRoute={setSelectedRoute}
         selectedStop={selectedStop}
@@ -473,6 +480,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         setQuery={setQuery}
         searchFocused={searchFocused}
         setSearchFocused={setSearchFocused}
+        onSearchRouteHover={setHoveredSearchRoute}
         searchMatches={searchMatches}
         searchMatchResults={searchMatchResults}
         maxHeadway={maxHeadway}

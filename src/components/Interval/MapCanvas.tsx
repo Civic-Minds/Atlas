@@ -47,6 +47,8 @@ interface MapCanvasProps {
   period: TimePeriod;
   q: string;
   selectedRoute: string | null;
+  /** Route key hovered in search results — highlighted on the map, others faded. */
+  hoveredSearchRoute?: string | null;
   hoveredBranch?: HoveredBranch | null;
   setSelectedRoute: React.Dispatch<React.SetStateAction<string | null>>;
   selectedStop: string | null;
@@ -85,6 +87,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   period,
   q,
   selectedRoute,
+  hoveredSearchRoute = null,
   hoveredBranch = null,
   setSelectedRoute,
   selectedStop,
@@ -731,6 +734,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             'case', routeMatch, 3.5, 0.5,
           ]);
         }
+      } else if (hoveredSearchRoute) {
+        // Hovering a search result: spotlight that route, fade the rest
+        const hoverMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], hoveredSearchRoute];
+        map.setPaintProperty('routes-layer', 'line-opacity', [
+          'case', hoverMatch, 1.0, 0.12,
+        ]);
+        map.setPaintProperty('routes-layer', 'line-width', [
+          'case', hoverMatch, 3.5, 0.5,
+        ]);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(routesForStop.siblingIdsByAgency);
         map.setPaintProperty('routes-layer', 'line-opacity', [
@@ -782,7 +794,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, tileFilter, fareView]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, tileFilter, fareView]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

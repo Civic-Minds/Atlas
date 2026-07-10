@@ -81,6 +81,7 @@ interface SidebarControlsProps {
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
+  onSearchRouteHover?: (key: string | null) => void;
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({
@@ -123,6 +124,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
+  onSearchRouteHover,
 }) => {
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
@@ -726,7 +728,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     [query, displayRouteResults, matchedAgencyGroups],
   );
   const routeResultsHeadLabel = routeSearchDisplay.truncated
-    ? `Routes (${routeSearchDisplay.totalMatches} matches)`
+    ? `Routes · showing ${routeSearchDisplay.routes.length} of ${routeSearchDisplay.totalMatches}`
     : `Routes (${routeSearchDisplay.totalMatches})`;
   const agencyResultsHeadLabel = agencySearchDisplay.truncated
     ? `Agencies (${agencySearchDisplay.totalMatches} matches)`
@@ -948,6 +950,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             setSearchFocused={setSearchFocused}
             saveRecentSearch={saveRecentSearch}
             headwayForRouteKey={headwayForRouteKey}
+            onRouteHover={onSearchRouteHover}
           />
         )}
 
