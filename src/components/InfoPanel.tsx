@@ -201,8 +201,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   if (!open) return null;
 
+  // Current page title (not the back destination — back is the arrow alone)
   const headerTitle =
-    view === 'agencies' ? 'Data'
+    view === 'agencies' ? 'Agencies'
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view === 'outdated-schedule' ? 'Outdated schedule'
     : view === 'corrected-data' ? 'Corrected data'
@@ -229,9 +230,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             </p>
           </div>
 
-          {/* Back button and dynamic title */}
+          {/* Back (arrow only) + current page title */}
           <div 
-            className={`absolute inset-y-0 left-5 right-12 flex items-center transition-all duration-300 ease-out ${
+            className={`absolute inset-y-0 left-5 right-12 flex items-center gap-1.5 transition-all duration-300 ease-out ${
               view !== 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
             }`}
           >
@@ -240,11 +241,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 if (view === 'agency-detail') setView('agencies');
                 else setView('home');
               }}
-              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors text-left"
+              className="w-7 h-7 -ml-1.5 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] transition-colors shrink-0"
+              aria-label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
             >
-              <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
-              <span className="text-xs font-bold truncate max-w-[240px]">{headerTitle}</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
             </button>
+            <span className="text-xs font-bold text-[var(--text-primary)] truncate min-w-0">
+              {headerTitle}
+            </span>
           </div>
 
           <div className="flex-1" />

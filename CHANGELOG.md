@@ -17,6 +17,7 @@
 - **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
 
 ### Changed
+- **Info panel subpage header**: Back is arrow-only; page title sits beside it (not on the button) so “Agencies” reads as the current page, not a back destination. Browse title is “Agencies” not “Data”.
 - **Browse agencies chips/badges**: Live/History badges and selected filter chips use subtle grey tokens (`accent-bg` / `bg-btn`) instead of solid near-black pills.
 - **Region multi-select**: Browse agencies location chips (province/state) can be multi-selected — e.g. Alberta + British Columbia together. Empty selection still means all regions.
 - **Agency list labels**: Browse/filter lists render `Name (qualifier)` as `Name · qualifier` (e.g. `BC Transit · Kelowna`, `MiWay · Mississauga`) so place vs acronym parentheses share one pattern; long legal names collapse to the short brand (BART, SFMTA).
