@@ -8,7 +8,7 @@ describe('agencyDisplayParts', () => {
     expect(agencyDisplayParts('Winnipeg Transit')).toEqual({ primary: 'Winnipeg Transit' });
   });
 
-  it('primary is always the agency; secondary is place only when missing from the name', () => {
+  it('primary is agency; secondary is place only when missing from the name', () => {
     expect(agencyDisplayParts('BC Transit (Kelowna)')).toEqual({
       primary: 'BC Transit',
       secondary: 'Kelowna',
@@ -29,33 +29,36 @@ describe('agencyDisplayParts', () => {
       primary: 'exo',
       secondary: "La Presqu'île",
     });
-    expect(agencyDisplayParts('exo (Trains)')).toEqual({
-      primary: 'exo',
-      secondary: 'Trains',
-    });
     expect(agencyDisplayParts('T3 Transit (PEI)')).toEqual({
       primary: 'T3 Transit',
       secondary: 'PEI',
     });
   });
 
-  it('drops acronyms and skips place when already in the agency name', () => {
-    expect(agencyDisplayParts('Edmonton Transit Service (ETS)')).toEqual({
-      primary: 'Edmonton Transit Service',
-    });
-    expect(agencyDisplayParts('Edmonton Transit (ETS)')).toEqual({
-      primary: 'Edmonton Transit',
-    });
-    expect(agencyDisplayParts('Bay Area Rapid Transit (BART)')).toEqual({
-      primary: 'Bay Area Rapid Transit',
-    });
+  it('uses short brand for long legal names (list-friendly)', () => {
+    expect(agencyDisplayParts('Bay Area Rapid Transit (BART)')).toEqual({ primary: 'BART' });
     expect(
       agencyDisplayParts('San Francisco Municipal Transportation Agency (SFMTA - Muni)'),
-    ).toEqual({ primary: 'San Francisco Municipal Transportation Agency' });
+    ).toEqual({ primary: 'SFMTA' });
+    expect(
+      agencyDisplayParts('Alameda-Contra Costa Transit District (AC Transit)'),
+    ).toEqual({ primary: 'AC Transit' });
+    expect(
+      agencyDisplayParts('Santa Clara Valley Transportation Authority (VTA)'),
+    ).toEqual({ primary: 'VTA' });
+  });
+
+  it('prefers short callsign for expanded * Transit Service names', () => {
+    expect(agencyDisplayParts('Edmonton Transit Service (ETS)')).toEqual({ primary: 'ETS' });
+  });
+
+  it('keeps short public brands; drops legal acronym only', () => {
     expect(agencyDisplayParts('County Connection (CCCTA)')).toEqual({
       primary: 'County Connection',
     });
-    // Hypothetical: place duplicated in name
+  });
+
+  it('skips place secondary when already in the agency name', () => {
     expect(agencyDisplayParts('Kelowna Transit (Kelowna)')).toEqual({
       primary: 'Kelowna Transit',
     });

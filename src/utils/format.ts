@@ -179,37 +179,79 @@ export function liveVehicleRowLabel(
 /**
  * List-label standard for registry names:
  *
- *   primary   (dark)  = agency name always
- *   secondary (light) = place/sector only when that place is not already in the agency name
+ *   primary   (dark)  = everyday agency name (short brand when legal name + code)
+ *   secondary (light) = place/sector only when not already in the agency name
+ *                       — never an acronym
  *
  *   "BC Transit (Kelowna)"              → BC Transit · Kelowna
  *   "MiWay (Mississauga)"               → MiWay · Mississauga
- *   "Calgary Transit"                   → Calgary Transit          (place already in name)
- *   "Edmonton Transit Service (ETS)"    → Edmonton Transit Service (drop acronym; Edmonton is in name)
- *   "Bay Area Rapid Transit (BART)"     → Bay Area Rapid Transit   (drop acronym)
- *   "County Connection (CCCTA)"         → County Connection
+ *   "Calgary Transit"                   → Calgary Transit
+ *   "Edmonton Transit Service (ETS)"    → ETS   (short brand; place already in legal name)
+ *   "Bay Area Rapid Transit (BART)"     → BART
+ *   "County Connection (CCCTA)"         → County Connection  (outer already short brand)
  *   "T3 Transit (PEI)"                  → T3 Transit · PEI
  */
 export function agencyDisplayParts(name: string): { primary: string; secondary?: string } {
   const trimmed = name.trim();
   const m = trimmed.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
-  if (!m) return { primary: trimmed };
+  if (!m) {
+    return { primary: compactListPrimary(trimmed, trimmed) };
+  }
 
   const outer = m[1].trim();
   const inner = m[2].trim();
-  if (!outer) return { primary: inner || trimmed };
-  if (!inner) return { primary: outer };
+  if (!outer) return { primary: compactListPrimary(trimmed, inner || trimmed) };
+  if (!inner) return { primary: compactListPrimary(trimmed, outer) };
 
-  // Acronym / alt brand in parens is never secondary — agency name is the outer label
+  // Brand / acronym in parens — never secondary
   if (!isPlaceAbbrev(inner) && looksLikeBrandCode(inner)) {
-    return { primary: outer };
+    // Long legal outer + code → everyday callsign (BART, SFMTA, AC Transit)
+    if (isLongLegalName(outer)) {
+      return { primary: normalizeBrandCode(inner) };
+    }
+    // Expanded "… Transit Service (ETS)" → ETS; keep short brands like County Connection
+    if (isPureAcronym(normalizeBrandCode(inner)) && looksLikeExpandedAgencyName(outer)) {
+      return { primary: normalizeBrandCode(inner) };
+    }
+    return { primary: compactListPrimary(trimmed, outer) };
   }
 
   // Place / sector: only if not already embedded in the agency name
   if (placeAlreadyInName(outer, inner)) {
-    return { primary: outer };
+    return { primary: compactListPrimary(trimmed, outer) };
   }
-  return { primary: outer, secondary: inner };
+  return { primary: compactListPrimary(trimmed, outer), secondary: inner };
+}
+
+/** Prefer a known short form when the primary still overflows a narrow list row. */
+function compactListPrimary(fullName: string, primary: string): string {
+  if (primary.length <= 28) return primary;
+  const short = shortenAgencyName(fullName);
+  return short.length > 0 && short.length < primary.length ? short : primary;
+}
+
+/** Legal / formal names that shouldn't fill a narrow list row. */
+function isLongLegalName(s: string): boolean {
+  if (s.length >= 28) return true;
+  return /\b(Authority|District|Agency|Commission|Municipal|Metropolitan|Department of Transportation)\b/i.test(s)
+    && s.length >= 22;
+}
+
+function isPureAcronym(s: string): boolean {
+  return /^[A-Z]{2,8}$/.test(s.trim());
+}
+
+/** "Edmonton Transit Service", "Sonoma County Transit" — expanded form of a callsign. */
+function looksLikeExpandedAgencyName(s: string): boolean {
+  return s.length >= 16
+    && /\b(Transit|Transportation|Metro|Railway|Railroad|Shuttle)\b/i.test(s);
+}
+
+function normalizeBrandCode(s: string): string {
+  // "SFMTA - Muni" → "SFMTA"; "LA Metro" / "AC Transit" stay multi-word
+  const head = s.split(/\s*[-/]\s*/)[0]?.trim();
+  if (head && /^[A-Z]{2,8}$/.test(head) && head.length < s.trim().length) return head;
+  return s.trim();
 }
 
 /** True when place text (or its significant words) already appears in the agency name. */

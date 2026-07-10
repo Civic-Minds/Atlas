@@ -394,11 +394,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
                           const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
                           const { primary, secondary } = agencyDisplayParts(a.name);
+                          const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
                             <button
                               key={a.slug}
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                               className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                              title={a.name !== listLabel ? a.name : undefined}
                             >
                               <span className="text-xs text-[var(--text-primary)] min-w-0 truncate">
                                 {primary}
