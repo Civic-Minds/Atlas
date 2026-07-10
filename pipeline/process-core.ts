@@ -369,6 +369,7 @@ export async function processGtfsBuffer(
       properties: {
         stopId: stop.stop_id,
         stopName: stop.stop_name,
+        stopCode: stop.stop_code || null,
         routeIds,
         isHub,
         isRail,

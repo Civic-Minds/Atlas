@@ -319,16 +319,119 @@ export function routesBeforeAgencies(
 
 export type SearchEnterAction =
   | { type: 'agency'; slug: string }
-  | { type: 'route'; key: string };
+  | { type: 'route'; key: string }
+  | { type: 'stop'; key: string };
 
 /** Enter commits when the dropdown shows exactly one selectable row. */
 export function resolveSearchEnterAction(
   displayAgencyGroups: AgencySearchGroup[],
   displayRouteResults: RouteSearchResult[],
+  displayStopResults: StopSearchResult[] = [],
 ): SearchEnterAction | null {
   const agencyCount = displayAgencyGroups.length;
   const routeCount = displayRouteResults.length;
-  if (agencyCount + routeCount !== 1) return null;
+  const stopCount = displayStopResults.length;
+  if (agencyCount + routeCount + stopCount !== 1) return null;
   if (agencyCount === 1) return { type: 'agency', slug: displayAgencyGroups[0].slug };
-  return { type: 'route', key: displayRouteResults[0].key };
+  if (routeCount === 1) return { type: 'route', key: displayRouteResults[0].key };
+  return { type: 'stop', key: displayStopResults[0].key };
+}
+
+export interface StopSearchResult {
+  key: string;
+  stopId: string;
+  stopName: string;
+  stopCode: string | null;
+  direction?: 'Northbound' | 'Southbound' | 'Eastbound' | 'Westbound' | null;
+  agencyName?: string;
+  agencySlug: string;
+  routes: string[];
+  lat: number;
+  lon: number;
+  inView: boolean;
+  distanceM: number;
+  matchRank: number;
+}
+
+export function matchesStopQuery(
+  stopName: string,
+  stopCode: string | null,
+  query: string
+): number | null {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+
+  const name = stopName.toLowerCase();
+  const code = (stopCode ?? '').toLowerCase();
+
+  if (code === q) return 0;
+  if (code.startsWith(q)) return 1;
+  if (name === q) return 2;
+  if (name.startsWith(q)) return 3;
+  if (name.includes(q)) return 4;
+
+  return null;
+}
+
+export function searchStopResults(
+  features: GeoJSON.Feature[],
+  query: string,
+  bounds: ViewportBounds | null,
+  routeNamesMap: Map<string, string>,
+): StopSearchResult[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+
+  const results: StopSearchResult[] = [];
+
+  for (const f of features) {
+    if (f.geometry.type !== 'Point') continue;
+    const p = f.properties as any;
+    if (!p.stopId) continue;
+
+    const stopName = p.stopName || '';
+    const stopCode = p.stopCode || null;
+    const rank = matchesStopQuery(stopName, stopCode, q);
+    if (rank === null) continue;
+
+    // Convert routeIds to routeShortNames
+    const rIds = (p.routeIds as string[]) || [];
+    const routesSet = new Set<string>();
+    for (const rid of rIds) {
+      const rsn = routeNamesMap.get(`${p.agencySlug}::${rid}`);
+      if (rsn) routesSet.add(rsn);
+    }
+    const routes = Array.from(routesSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+    const inView = bounds ? featureInViewport(f, bounds) : false;
+    const distanceM = featureDistanceM(f, bounds);
+    const [lon, lat] = f.geometry.coordinates;
+
+    results.push({
+      key: `${p.agencySlug}::${p.stopId}`,
+      stopId: p.stopId,
+      stopName,
+      stopCode,
+      direction: p.direction || null,
+      agencyName: p.agencyName,
+      agencySlug: p.agencySlug,
+      routes,
+      lat,
+      lon,
+      inView,
+      distanceM,
+      matchRank: rank,
+    });
+  }
+
+  return results.sort((a, b) => {
+    if (a.inView !== b.inView) return a.inView ? -1 : 1;
+    if (a.matchRank !== b.matchRank) return a.matchRank - b.matchRank;
+    if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
+    return a.stopName.localeCompare(b.stopName);
+  });
+}
+
+export function splitStopResults(stops: StopSearchResult[]): SplitSearchResults<StopSearchResult> {
+  return splitByViewport(stops);
 }

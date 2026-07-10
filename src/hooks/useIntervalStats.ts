@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
-import { matchesRouteQuery, searchRouteResults } from '../utils/searchResults';
+import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSearchResult } from '../utils/searchResults';
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
@@ -342,12 +342,31 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     };
   }, [allFeatures, visibleFeatures, bounds, day]);
 
+  const routeNamesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const f of allFeatures) {
+      if (f.geometry.type !== 'Point' && (f.properties as any).routeId) {
+        const p = f.properties as any;
+        const key = `${p.agencySlug}::${p.routeId}`;
+        if (p.routeShortName) {
+          map.set(key, p.routeShortName);
+        }
+      }
+    }
+    return map;
+  }, [allFeatures]);
+
   const searchMatchResults = useMemo(() => {
     if (q === '') return null;
     return searchRouteResults(allFeatures, q, bounds ?? null);
   }, [allFeatures, q, bounds]);
 
-  const searchMatches = searchMatchResults?.length ?? null;
+  const searchStopMatchResults = useMemo(() => {
+    if (q === '') return null;
+    return searchStopResults(allFeatures, q, bounds ?? null, routeNamesMap);
+  }, [allFeatures, q, bounds, routeNamesMap]);
+
+  const searchMatches = (searchMatchResults?.length ?? 0) + (searchStopMatchResults?.length ?? 0) || null;
 
   // MapLibre tile filter derived from the same inputs as passesRouteFilter.
   // MapCanvas combines this with map-state-specific clauses (zoom gate, search).
@@ -402,5 +421,5 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agencies, day, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
-  return { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
+  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
 }

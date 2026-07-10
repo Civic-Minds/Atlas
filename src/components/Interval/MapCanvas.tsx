@@ -625,6 +625,29 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [selectedRoute, mapLoaded, layers]);
 
+  // Fly to selected stop when chosen
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !selectedStop) return;
+
+    const [stopSlug, stopId] = selectedStop.split('::');
+    const fc = layers?.[stopSlug];
+    if (fc) {
+      const stopFeature = fc.features.find(
+        f => f.geometry.type === 'Point' && (f.properties as any)?.stopId === stopId
+      );
+      if (stopFeature && stopFeature.geometry.type === 'Point') {
+        const [lon, lat] = stopFeature.geometry.coordinates;
+        map.flyTo({
+          center: [lon, lat],
+          zoom: 16,
+          duration: 900,
+          essential: true,
+        });
+      }
+    }
+  }, [selectedStop, mapLoaded, layers]);
+
   // Update Vector Tile Styling & Filters dynamically on parameters change
   useEffect(() => {
     const map = mapRef.current;

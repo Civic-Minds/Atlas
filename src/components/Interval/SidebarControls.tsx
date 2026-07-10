@@ -16,11 +16,13 @@ import { searchAgencyGroups, prepareAgencyGroupsForDisplay, type AgencySearchGro
 import {
   splitAgencyGroups,
   splitRouteResults,
+  splitStopResults,
   filterRouteResultsForDisplay,
   prepareRouteResultsForDisplay,
   resolveSearchEnterAction,
   routesBeforeAgencies,
   type RouteSearchResult,
+  type StopSearchResult,
 } from '../../utils/searchResults';
 import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import RouteListRow from '../RouteListRow';
@@ -48,6 +50,7 @@ interface SidebarControlsProps {
   setSearchFocused?: (focused: boolean) => void;
   searchMatches: number | null;
   searchMatchResults: RouteSearchResult[] | null;
+  searchStopMatchResults: StopSearchResult[] | null;
   maxHeadway: number;
   setMaxHeadway: (h: number) => void;
   agencies: Agency[];
@@ -91,6 +94,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   setSearchFocused,
   searchMatches,
   searchMatchResults,
+  searchStopMatchResults,
   maxHeadway,
   setMaxHeadway,
   agencies,
@@ -703,11 +707,31 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     () => splitRouteResults(displayRouteResults),
     [displayRouteResults],
   );
+  const SEARCH_STOP_DISPLAY_LIMIT = 20;
+  const stopSearchDisplay = useMemo(() => {
+    const list = searchStopMatchResults ?? [];
+    const truncated = list.length > SEARCH_STOP_DISPLAY_LIMIT;
+    return {
+      stops: list.slice(0, SEARCH_STOP_DISPLAY_LIMIT),
+      totalMatches: list.length,
+      truncated,
+    };
+  }, [searchStopMatchResults]);
+
+  const stopResultsHeadLabel = stopSearchDisplay.truncated
+    ? `Stops · showing ${stopSearchDisplay.stops.length} of ${stopSearchDisplay.totalMatches}`
+    : `Stops (${stopSearchDisplay.totalMatches})`;
+
+  const stopSections = useMemo(
+    () => splitStopResults(stopSearchDisplay.stops),
+    [stopSearchDisplay],
+  );
+
   // Populate the Enter-to-select ref so App can trigger it from the search input's onKeyDown.
   useEffect(() => {
     if (!searchEnterRef) return;
     searchEnterRef.current = () => {
-      const action = resolveSearchEnterAction(displayAgencyGroups, displayRouteResults);
+      const action = resolveSearchEnterAction(displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops);
       if (!action) return;
       if (action.type === 'agency' && setSelectedAgencySlug) {
         setSelectedAgencySlug(action.slug);
@@ -718,10 +742,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         setQuery('');
         setSearchFocused?.(false);
         setSelectedRoute(selectedRoute === action.key ? null : action.key);
+      } else if (action.type === 'stop') {
+        saveRecentSearch(query);
+        setQuery('');
+        setSearchFocused?.(false);
+        setSelectedStop(action.key);
       }
     };
     return () => { searchEnterRef.current = null; };
-  }, [searchEnterRef, displayAgencyGroups, displayRouteResults, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute]);
+  }, [searchEnterRef, displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute, setSelectedStop]);
 
   const routesFirst = useMemo(
     () => routesBeforeAgencies(query, displayRouteResults, matchedAgencyGroups),
@@ -736,7 +765,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const searchPanelActive = searchFocused && query !== '';
   const hasSearchResults = searchPanelActive && (
-    fareView ? fareViewMatchedAgencies.length > 0 : searchMatchResults !== null
+    fareView ? fareViewMatchedAgencies.length > 0 : (searchMatchResults !== null || searchStopMatchResults !== null)
   );
 
   const panelStop = currentStop && !query.trim() && !searchFocused;
@@ -932,19 +961,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           </div>
         )}
 
-        {searchPanelActive && !fareView && searchMatchResults !== null && (
+        {searchPanelActive && !fareView && (searchMatchResults !== null || searchStopMatchResults !== null) && (
           <SearchResultsList
             query={query}
             displayAgencyGroups={displayAgencyGroups}
             displayRouteResults={displayRouteResults}
+            displayStopResults={stopSearchDisplay.stops}
             agencySections={agencySections}
             routeSections={routeSections}
+            stopSections={stopSections}
             routesFirst={routesFirst}
             agencyResultsHeadLabel={agencyResultsHeadLabel}
             routeResultsHeadLabel={routeResultsHeadLabel}
+            stopResultsHeadLabel={stopResultsHeadLabel}
             matchedAgencyGroups={matchedAgencyGroups}
             selectedRoute={selectedRoute}
             setSelectedRoute={setSelectedRoute}
+            setSelectedStop={setSelectedStop}
             setSelectedAgencySlug={setSelectedAgencySlug}
             setQuery={setQuery}
             setSearchFocused={setSearchFocused}

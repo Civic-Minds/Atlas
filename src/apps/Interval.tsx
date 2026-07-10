@@ -188,7 +188,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   }, [userLocation, clearUserLocation]);
 
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
-  const { stats, searchMatches, searchMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
+  const { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
     query,
     maxHeadway,
     agencies: selectedAgencies,
@@ -483,6 +483,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onSearchRouteHover={setHoveredSearchRoute}
         searchMatches={searchMatches}
         searchMatchResults={searchMatchResults}
+        searchStopMatchResults={searchStopMatchResults}
         maxHeadway={maxHeadway}
         setMaxHeadway={setMaxHeadway}
         agencies={agencies}

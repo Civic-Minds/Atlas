@@ -1,10 +1,10 @@
 import React from 'react';
 import { PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, LIST_ROW_DIM } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
-import type { RouteSearchResult } from '../../utils/searchResults';
+import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
-import { shortenAgencyName } from '../../utils/format';
+import { shortenAgencyName, titleCase } from '../../utils/format';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -38,14 +38,19 @@ interface SearchResultsListProps {
   query: string;
   displayAgencyGroups: AgencySearchGroup[];
   displayRouteResults: RouteSearchResult[];
+  displayStopResults?: StopSearchResult[];
   agencySections: { inView: AgencySearchGroup[]; elsewhere: AgencySearchGroup[] };
   routeSections: { inView: RouteSearchResult[]; elsewhere: RouteSearchResult[] };
+  stopSections?: { inView: StopSearchResult[]; elsewhere: StopSearchResult[] };
   routesFirst: boolean;
   agencyResultsHeadLabel: string;
   routeResultsHeadLabel: string;
+  stopResultsHeadLabel?: string;
   matchedAgencyGroups: AgencySearchGroup[];
   selectedRoute: string | null;
   setSelectedRoute: (route: string | null) => void;
+  selectedStop?: string | null;
+  setSelectedStop?: (stop: string | null) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
   setQuery: (q: string) => void;
   setSearchFocused?: (focused: boolean) => void;
@@ -59,14 +64,19 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   query,
   displayAgencyGroups,
   displayRouteResults,
+  displayStopResults = [],
   agencySections,
   routeSections,
+  stopSections,
   routesFirst,
   agencyResultsHeadLabel,
   routeResultsHeadLabel,
+  stopResultsHeadLabel = '',
   matchedAgencyGroups,
   selectedRoute,
   setSelectedRoute,
+  selectedStop = null,
+  setSelectedStop,
   setSelectedAgencySlug,
   setQuery,
   setSearchFocused,
@@ -129,23 +139,68 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         );
       }}
     />
-  ) : matchedAgencyGroups.length === 0 ? (
-    <div className="px-4 text-[10px] font-bold text-[var(--text-dim)] py-2">
-      No routes match your search.
-    </div>
   ) : null;
+
+  const stopBlock = displayStopResults.length > 0 && stopSections && setSelectedStop ? (
+    <SearchSplitList
+      headLabel={stopResultsHeadLabel}
+      inView={stopSections.inView}
+      elsewhere={stopSections.elsewhere}
+      itemKey={(s: StopSearchResult) => s.key}
+      renderItem={(s: StopSearchResult) => {
+        const name = `${titleCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
+        return (
+          <RouteListRow
+            shortName={s.stopCode || name}
+            name={name}
+            selected={selectedStop === s.key}
+            className="border-b-0"
+            onClick={() => {
+              saveRecentSearch(query);
+              setQuery('');
+              setSearchFocused?.(false);
+              setSelectedStop(s.key);
+            }}
+            right={
+              <div className="flex flex-col items-end text-right ml-2 shrink-0">
+                {s.routes.length > 0 && (
+                  <span className="text-[9px] font-bold text-[var(--text-secondary)] truncate max-w-[120px]">
+                    {s.routes.join(', ')}
+                  </span>
+                )}
+                <span className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-wider">
+                  {shortenAgencyName(s.agencyName || '')}
+                </span>
+              </div>
+            }
+          />
+        );
+      }}
+    />
+  ) : null;
+
+  const noResults =
+    displayAgencyGroups.length === 0 &&
+    displayRouteResults.length === 0 &&
+    displayStopResults.length === 0;
 
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
-      {routesFirst ? (
+      {noResults ? (
+        <div className="px-4 text-[10px] font-bold text-[var(--text-dim)] py-2">
+          No matches found.
+        </div>
+      ) : routesFirst ? (
         <>
           {routeBlock}
+          {stopBlock && <div className="border-t border-[var(--border-primary)] pt-3">{stopBlock}</div>}
           {agencyBlock && <div className="border-t border-[var(--border-primary)] pt-3">{agencyBlock}</div>}
         </>
       ) : (
         <>
           {agencyBlock}
           {routeBlock && <div className="border-t border-[var(--border-primary)] pt-3">{routeBlock}</div>}
+          {stopBlock && <div className="border-t border-[var(--border-primary)] pt-3">{stopBlock}</div>}
         </>
       )}
     </div>
