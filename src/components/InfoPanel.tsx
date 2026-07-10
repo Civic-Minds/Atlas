@@ -60,7 +60,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [view, setView] = useState<View>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  const [regionFilter, setRegionFilter] = useState<string | null>(null);
+  const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
   const [agencyFeatureFilter, setAgencyFeatureFilter] = useState<InfoFeatureFilter>('all');
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
@@ -112,7 +112,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       setAgencyFeatureFilter(featureFilter);
       setSelectedSlug(null);
     } else {
-      setQuery(''); setRegionFilter(null); setSelectedSlug(null); setAgencyFeatureFilter('all');
+      setQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilter('all');
     }
   }, [open, defaultTab, featureFilter, helpContext]);
 
@@ -152,9 +152,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [agencies, agencyFeatureFilter, liveBySlug, historyBySlug]);
 
   useEffect(() => {
-    if (regionFilter && !regionsInScope.includes(regionFilter)) {
-      setRegionFilter(null);
-    }
+    if (regionFilter.size === 0) return;
+    const next = new Set([...regionFilter].filter(r => regionsInScope.includes(r)));
+    if (next.size !== regionFilter.size) setRegionFilter(next);
   }, [regionFilter, regionsInScope]);
 
   const filtered = useMemo(() => {
@@ -162,7 +162,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     return agencies.filter(a => {
       if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) return false;
       if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) return false;
-      if (regionFilter && (a.region ?? 'Other') !== regionFilter) return false;
+      if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;
       return a.name.toLowerCase().includes(q) || a.slug.includes(q);
     });
@@ -348,9 +348,15 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {regionsInScope.map(r => (
                     <button
                       key={r}
-                      onClick={() => setRegionFilter(prev => prev === r ? null : r)}
+                      onClick={() => setRegionFilter(prev => {
+                        const next = new Set(prev);
+                        if (next.has(r)) next.delete(r);
+                        else next.add(r);
+                        return next;
+                      })}
+                      aria-pressed={regionFilter.has(r)}
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                        regionFilter === r
+                        regionFilter.has(r)
                           ? 'bg-[var(--accent)] text-white border-transparent'
                           : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
                       }`}

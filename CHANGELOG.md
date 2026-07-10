@@ -17,6 +17,7 @@
 - **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
 
 ### Changed
+- **Region multi-select**: Browse agencies location chips (province/state) can be multi-selected — e.g. Alberta + British Columbia together. Empty selection still means all regions.
 - **Agency list labels**: Browse/filter lists render `Name (qualifier)` as `Name · qualifier` (e.g. `BC Transit · Kelowna`, `MiWay · Mississauga`) so place vs acronym parentheses share one pattern; long legal names collapse to the short brand (BART, SFMTA).
 - **Agency list scrollbar**: Browse agencies scrolls only the list — search and filter chips stay fixed so the scrollbar no longer runs beside them.
 - **Live Vehicles empty state**: Replaced the dead-end "Zoom in to start tracking" message (and the static city chips) with a clickable list of live-enabled places — clicking one flies the map to that agency and starts tracking immediately.
