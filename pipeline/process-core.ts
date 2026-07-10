@@ -17,6 +17,7 @@ import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { t2m } from './transit-utils.js';
 import { computePeriodHeadways, headwayToTier, medianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
+import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
@@ -43,6 +44,7 @@ export interface ProcessResult {
   corridorsGeojson: string; // isCorridor features only, served separately
   stopsJson: string; // JSON: Record<stopId, StopEntry> — for Corridors stop search
   tripsJson: string; // JSON: Record<tripId, {d: directionId, h: headsign|null}> for live vehicle enrichment
+  stopsMetaJson: string; // JSON: StopsMetaFile — per-stop facts (routes, direction) for external consumers
   featureCount: number;
   center: [number, number] | null;
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
@@ -703,11 +705,15 @@ export async function processGtfsBuffer(
     tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h };
   }
 
+  onStatus?.('Deriving per-stop metadata (routes, direction)...');
+  const stopsMeta = buildStopsMeta(gtfs);
+
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: mainFeatures }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsLookup),
+    stopsMetaJson: JSON.stringify(stopsMeta),
     featureCount: mainFeatures.length,
     center,
     feedExpiry: feedInfo?.feed_end_date ?? null,

@@ -263,7 +263,7 @@ async function refreshAgency(
     manualBaseFare: manualBaseFareOverride,
   });
 
-  let { geojson, corridorsGeojson, stopsJson, tripsJson, featureCount } = primary;
+  let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
 
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
@@ -273,6 +273,7 @@ async function refreshAgency(
     const corridorFeatures = (JSON.parse(corridorsGeojson) as GeoJsonFc).features;
     const stopsIndex = JSON.parse(stopsJson) as Record<string, unknown>;
     const tripsIndex = JSON.parse(tripsJson) as Record<string, unknown>;
+    const stopsMeta = JSON.parse(stopsMetaJson) as { generatedAt: string; stopCount: number; stops: unknown[] };
 
     for (const suppUrl of agency.supplementalFeedUrls) {
       const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
@@ -289,6 +290,7 @@ async function refreshAgency(
       corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as GeoJsonFc).features);
       Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
       Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
+      stopsMeta.stops.push(...(JSON.parse(supp.stopsMetaJson) as { stops: unknown[] }).stops);
       featureCount += supp.featureCount;
       writeLog(`+${supp.featureCount} features`);
     }
@@ -298,6 +300,8 @@ async function refreshAgency(
     corridorsGeojson = JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures });
     stopsJson = JSON.stringify(stopsIndex);
     tripsJson = JSON.stringify(tripsIndex);
+    stopsMeta.stopCount = stopsMeta.stops.length;
+    stopsMetaJson = JSON.stringify(stopsMeta);
   }
 
   if (featureCount === 0) {
@@ -313,6 +317,7 @@ async function refreshAgency(
     r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
     r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
     r2Put(`atlas/${agency.slug}-trips.json`, tripsJson),
+    r2Put(`atlas/${agency.slug}-stops-meta.json`, stopsMetaJson),
   ];
   if (primary.livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));

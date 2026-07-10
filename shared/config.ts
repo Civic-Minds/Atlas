@@ -35,6 +35,7 @@ export function getAgencyArtifactUrls(slug: string) {
     stopsUrl: `${base}/atlas/${slug}-stops.json`,
     corridorsUrl: `${base}/atlas/${slug}-corridors.json`,
     tripsUrl: `${base}/atlas/${slug}-trips.json`,
+    stopsMetaUrl: `${base}/atlas/${slug}-stops-meta.json`,
     livePollingUrl: `${base}/atlas/live-polling/${slug}.json`,
   };
 }
