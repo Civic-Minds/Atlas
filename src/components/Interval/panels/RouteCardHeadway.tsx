@@ -21,6 +21,7 @@ import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import {
   dirIdNum,
   headsignTrunkHeadway,
+  sparklineSourceDirections,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import type { VariantFamily } from '../../../utils/routeVariants';
@@ -179,8 +180,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           ? currentRoute.directions.filter(
               d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
             )
-          : (primaryMultiBranch?.realTier
-            ?? currentRoute.directions.filter(d => dirIdNum(d.directionId) === 0));
+          : sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
         const merged = sparklineHeadwayByHour(sparklineDirs, HOURS);
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;

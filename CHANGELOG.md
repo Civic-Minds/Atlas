@@ -35,6 +35,7 @@
 - **MapCanvas split into layer hooks**: corridor, history, and live-vehicle overlay effects extracted to `src/components/Interval/map/` hooks (~360 lines out of MapCanvas); dead marker refs removed.
 
 ### Fixed
+- **Anchorage (and dir-1-only) sparklines**: route-card sparkline no longer hard-requires `directionId === 0`. Feeds that only encode dir 1 (People Mover 31/40/41/51, etc.) now show hourly headways.
 - **Live vehicle hover tooltip**: reimplemented via manual deck picking driven by MapLibre mouse events (deck canvas stays inert, so gestures keep working); pick radius now accounts for retina displays. Tooltip shows speed and no longer hides for vehicles without delay data.
 - **Streetcars labeled "Bus"**: vehicle rows now use the route's mode (route_type) — Streetcar/Train/Ferry/Bus.
 - **Agencies now load on shared URLs**: opening a link to a new area loads that area's agencies immediately — previously nothing loaded until the map was panned.

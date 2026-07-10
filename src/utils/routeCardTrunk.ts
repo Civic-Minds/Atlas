@@ -32,6 +32,37 @@ export function dirIdNum(dirId: number | string | undefined | null): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function hourlyNonNullCount(d: ShapeProperties): number {
+  const hh = (d as { headwayByHour?: Record<number | string, number | null> }).headwayByHour;
+  if (!hh) return 0;
+  return Object.values(hh).filter((v): v is number => v != null).length;
+}
+
+/**
+ * Directions to feed the route-card sparkline.
+ * Prefer dir 0 when it has hourly data; otherwise any direction with hourly
+ * data (Anchorage 31/40/41/51 only encode dir 1). Never hard-require dir 0.
+ */
+export function sparklineSourceDirections(
+  directions: ShapeProperties[],
+  primaryMultiBranch?: ShapeProperties[] | null,
+): ShapeProperties[] {
+  if (primaryMultiBranch && primaryMultiBranch.some(d => hourlyNonNullCount(d) > 0)) {
+    return primaryMultiBranch;
+  }
+  const withHours = directions.filter(d => hourlyNonNullCount(d) > 0);
+  if (withHours.length === 0) return directions;
+  const dir0 = withHours.filter(d => dirIdNum(d.directionId) === 0);
+  if (dir0.length > 0) return dir0;
+  // Pick the direction with the richest hourly series
+  const bestDir = withHours.reduce((best, d) => {
+    const id = dirIdNum(d.directionId);
+    return hourlyNonNullCount(d) > hourlyNonNullCount(best) ? d : best;
+  });
+  const id = dirIdNum(bestDir.directionId);
+  return withHours.filter(d => dirIdNum(d.directionId) === id);
+}
+
 /** Combined trunk headway from minStopHeadwayByPeriod (union of deps at shared stops). */
 export function groupTrunkHeadway(branches: ShapeProperties[], period: string): number | null {
   const vals = branches

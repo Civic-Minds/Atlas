@@ -5,6 +5,7 @@ import {
   trunkSparklineByHour,
   headsignTrunkHeadway,
   shouldShowBranchHeadwayRange,
+  sparklineSourceDirections,
 } from '../routeCardTrunk';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
@@ -67,6 +68,31 @@ describe('routeCardTrunk', () => {
       expect(shouldShowBranchHeadwayRange(8, 11, true)).toBe(false);
       expect(shouldShowBranchHeadwayRange(3, 9, true)).toBe(false);
       expect(shouldShowBranchHeadwayRange(5, 25, true)).toBe(false);
+    });
+  });
+
+  describe('sparklineSourceDirections', () => {
+    it('falls back to dir 1 when only dir 1 has hourly data (Anchorage-style)', () => {
+      const dirs = [
+        { directionId: 1, headwayByHour: { 8: 30, 9: 30 } },
+      ] as unknown as ShapeProperties[];
+      expect(sparklineSourceDirections(dirs).map(d => d.directionId)).toEqual([1]);
+    });
+
+    it('prefers dir 0 when it has hourly data', () => {
+      const dirs = [
+        { directionId: 0, headwayByHour: { 8: 15 } },
+        { directionId: 1, headwayByHour: { 8: 20 } },
+      ] as unknown as ShapeProperties[];
+      expect(sparklineSourceDirections(dirs).map(d => d.directionId)).toEqual([0]);
+    });
+
+    it('skips empty dir 0 series in favor of dir 1', () => {
+      const dirs = [
+        { directionId: 0, headwayByHour: { 8: null, 9: null } },
+        { directionId: 1, headwayByHour: { 8: 30 } },
+      ] as unknown as ShapeProperties[];
+      expect(sparklineSourceDirections(dirs).map(d => d.directionId)).toEqual([1]);
     });
   });
 });
