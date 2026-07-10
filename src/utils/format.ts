@@ -359,7 +359,7 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('roaring fork')) return 'RFTA';
   if (lower.includes('river city') || lower.includes('louisville')) return 'TARC';
   if (lower.includes('bee-line') || lower.includes('westchester')) return 'Bee-Line';
-  if (lower.includes('port authority of allegheny')) return 'PAAC';
+  if (lower.includes('port authority of allegheny') || lower.includes('pittsburgh regional')) return 'PRT';
   if (lower.includes('nashville') || lower.includes('wego')) return 'WeGo';
   if (lower.includes('sherbrooke')) return 'STS';
   if (lower.includes('toronto transit')) return 'TTC';
