@@ -700,7 +700,7 @@
     },
     {
       "slug": "exo",
-      "name": "exo",
+      "name": "exo (Trains)",
       "region": "Quebec",
       "center": [
         45.5,
@@ -721,7 +721,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -742,7 +742,7 @@
     },
     {
       "slug": "exo-sudouest",
-      "name": "exo",
+      "name": "exo (Sud-Ouest)",
       "region": "Quebec",
       "center": [
         45.3549,
@@ -763,7 +763,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -784,7 +784,7 @@
     },
     {
       "slug": "exo-laurentides",
-      "name": "exo",
+      "name": "exo (Laurentides)",
       "region": "Quebec",
       "center": [
         45.6611,
@@ -805,7 +805,7 @@
     },
     {
       "slug": "exo-terrebonne",
-      "name": "exo",
+      "name": "exo (Terrebonne-Mascouche)",
       "region": "Quebec",
       "center": [
         45.7032,

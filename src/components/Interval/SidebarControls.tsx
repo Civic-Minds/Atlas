@@ -262,7 +262,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     // Only show agencies loaded for the current viewport — never fall back to the
     // global list. REM/RTL/exo have baseFare:null, so a "has baseFare" filter
     // would drop them all and trigger the global fallback, surfacing TransLink, MBTA, etc.
-    // Dedup by name: exo has 6 sub-agencies all named "exo" — show just one entry.
+    // Dedup by name+region: multi-feed brands that still share a display name collapse to one row.
     const loadedInView = new Set(Object.keys(nonCorridorLayers));
     const seenNames = new Set<string>();
     const result: Array<{ slug: string; name: string }> = [];
