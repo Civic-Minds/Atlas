@@ -306,8 +306,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           )}
 
           {view === 'agencies' && (
-            <div className="flex flex-col h-full overflow-y-auto">
-              <div className="sticky top-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] z-10 space-y-2">
+            <div className="flex flex-col h-full min-h-0 overflow-hidden">
+              <div className="shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)] border-b border-[var(--border-primary)] space-y-2">
                 <div className={SEARCH_PILL}>
                   <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
                   <input
@@ -360,42 +360,44 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   ))}
                 </div>
               </div>
-              {byRegion.size === 0 ? (
-                <p className="px-5 py-6 text-xs text-[var(--text-dim)] text-center">No agencies match.</p>
-              ) : (
-                <div className="py-2">
-                  {[...byRegion.entries()].map(([region, list]) => (
-                    <div key={region}>
-                      <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
-                      {list.map(a => {
-                        const hasLive = liveBySlug.has(a.slug);
-                        const hasHistory = historyBySlug.has(a.slug);
-                        const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
-                        const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
-                        return (
-                          <button
-                            key={a.slug}
-                            onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
-                            className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
-                          >
-                            <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
-                            {(showLiveBadge || showHistoryBadge) && (
-                              <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                                {showLiveBadge && (
-                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live</span>
-                                )}
-                                {showHistoryBadge && (
-                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>
-                                )}
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+                {byRegion.size === 0 ? (
+                  <p className="px-5 py-6 text-xs text-[var(--text-dim)] text-center">No agencies match.</p>
+                ) : (
+                  <div className="py-2">
+                    {[...byRegion.entries()].map(([region, list]) => (
+                      <div key={region}>
+                        <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
+                        {list.map(a => {
+                          const hasLive = liveBySlug.has(a.slug);
+                          const hasHistory = historyBySlug.has(a.slug);
+                          const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
+                          const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
+                          return (
+                            <button
+                              key={a.slug}
+                              onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
+                              className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                            >
+                              <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
+                              {(showLiveBadge || showHistoryBadge) && (
+                                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                  {showLiveBadge && (
+                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live</span>
+                                  )}
+                                  {showHistoryBadge && (
+                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>
+                                  )}
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

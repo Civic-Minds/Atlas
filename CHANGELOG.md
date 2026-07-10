@@ -17,6 +17,7 @@
 - **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
 
 ### Changed
+- **Agency list scrollbar**: Browse agencies scrolls only the list — search and filter chips stay fixed so the scrollbar no longer runs beside them.
 - **Live Vehicles empty state**: Replaced the dead-end "Zoom in to start tracking" message (and the static city chips) with a clickable list of live-enabled places — clicking one flies the map to that agency and starts tracking immediately.
 - **Day filter chip indicator**: Always show the active dot indicator on the Day filter chip to reflect that a day-of-service filter is consistently active (Weekday/Saturday/Sunday).
 - **InfoPanel layout**: Restored the "Feedback" header in the Info panel above the "Send feedback" button.
