@@ -335,7 +335,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                       onClick={() => setAgencyFeatureFilter(id)}
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
                         agencyFeatureFilter === id
-                          ? 'bg-[var(--accent)] text-white border-transparent'
+                          ? 'bg-[var(--accent-bg)] text-[var(--text-primary)] border-[var(--accent-border)]'
                           : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
                       }`}
                     >
@@ -357,7 +357,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                       aria-pressed={regionFilter.has(r)}
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
                         regionFilter.has(r)
-                          ? 'bg-[var(--accent)] text-white border-transparent'
+                          ? 'bg-[var(--accent-bg)] text-[var(--text-primary)] border-[var(--accent-border)]'
                           : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
                       }`}
                     >
@@ -395,10 +395,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               {(showLiveBadge || showHistoryBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
                                   {showLiveBadge && (
-                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live</span>
+                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live</span>
                                   )}
                                   {showHistoryBadge && (
-                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>
+                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">History</span>
                                   )}
                                 </div>
                               )}
@@ -523,7 +523,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedLiveRoutes.length > 0 && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">Live ({selectedLiveRoutes.length})</span>
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live ({selectedLiveRoutes.length})</span>
                       </div>
                       <div className="space-y-1">
                         {selectedLiveRoutes.map(r => (
@@ -543,7 +543,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedHistory && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">History</span>
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">History</span>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
                         Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
