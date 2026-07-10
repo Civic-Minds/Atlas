@@ -136,7 +136,15 @@ export function AgencyFilterChips({
   );
 }
 
-export function CardHelpNotice({ message, onLearnMore }: { message: string; onLearnMore: () => void }) {
+export function CardHelpNotice({
+  message,
+  onLearnMore,
+  actionLabel = 'Learn more →',
+}: {
+  message: string;
+  onLearnMore: () => void;
+  actionLabel?: string;
+}) {
   return (
     <p className="text-[9px] font-bold text-[var(--text-dim)]">
       {message}{' '}
@@ -145,7 +153,7 @@ export function CardHelpNotice({ message, onLearnMore }: { message: string; onLe
         onClick={onLearnMore}
         className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold cursor-pointer"
       >
-        Learn more →
+        {actionLabel}
       </button>
     </p>
   );

@@ -407,24 +407,28 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             )}
             {otherRoutes.length > 0 && (
               <>
-                {!showOthersExpanded ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowOtherRoutes(true)}
-                    className={`${PANEL_SEARCH_SUBHEAD} w-full text-left hover:text-[var(--text-muted)] transition-colors`}
-                  >
-                    {otherRoutes.length} more route{otherRoutes.length !== 1 ? 's' : ''} (outside filters)
-                  </button>
-                ) : (
-                  <>
-                    <div className={PANEL_SEARCH_SUBHEAD}>Other routes</div>
-                    <RouteListSection
-                      routes={otherRoutes}
-                      liveShortNames={liveShortNames}
-                      onRouteSelect={onRouteSelect}
-                      dimmed
+                <div className="px-4 pt-2 pb-1 opacity-80">
+                  {!showOthersExpanded ? (
+                    <CardHelpNotice
+                      message={`${otherRoutes.length} route${otherRoutes.length !== 1 ? 's' : ''} outside your filters.`}
+                      actionLabel="Show →"
+                      onLearnMore={() => setShowOtherRoutes(true)}
                     />
-                  </>
+                  ) : (
+                    <CardHelpNotice
+                      message="Routes outside your filters."
+                      actionLabel="Hide →"
+                      onLearnMore={() => setShowOtherRoutes(false)}
+                    />
+                  )}
+                </div>
+                {showOthersExpanded && (
+                  <RouteListSection
+                    routes={otherRoutes}
+                    liveShortNames={liveShortNames}
+                    onRouteSelect={onRouteSelect}
+                    dimmed
+                  />
                 )}
               </>
             )}
