@@ -179,16 +179,16 @@ export function liveVehicleRowLabel(
 /**
  * List-label standard for registry names:
  *
- *   primary  = the everyday brand people recognize
- *   secondary = place / sector only (never an acronym)
+ *   primary   (dark)  = agency name always
+ *   secondary (light) = place/sector only when that place is not already in the agency name
  *
  *   "BC Transit (Kelowna)"              → BC Transit · Kelowna
  *   "MiWay (Mississauga)"               → MiWay · Mississauga
- *   "exo (La Presqu'île)"               → exo · La Presqu'île
- *   "Edmonton Transit Service (ETS)"    → ETS          (acronym is the brand, not a subtitle)
- *   "Bay Area Rapid Transit (BART)"     → BART
+ *   "Calgary Transit"                   → Calgary Transit          (place already in name)
+ *   "Edmonton Transit Service (ETS)"    → Edmonton Transit Service (drop acronym; Edmonton is in name)
+ *   "Bay Area Rapid Transit (BART)"     → Bay Area Rapid Transit   (drop acronym)
  *   "County Connection (CCCTA)"         → County Connection
- *   "TransLink" / "Calgary Transit"     → as-is
+ *   "T3 Transit (PEI)"                  → T3 Transit · PEI
  */
 export function agencyDisplayParts(name: string): { primary: string; secondary?: string } {
   const trimmed = name.trim();
@@ -200,23 +200,38 @@ export function agencyDisplayParts(name: string): { primary: string; secondary?:
   if (!outer) return { primary: inner || trimmed };
   if (!inner) return { primary: outer };
 
-  // Place abbrev (PEI, etc.) counts as location, not brand code
-  if (isPlaceAbbrev(inner)) {
-    return { primary: outer, secondary: inner };
-  }
-
-  // Acronym / alt brand → one label only. Never "Edmonton Transit · ETS".
-  if (looksLikeBrandCode(inner)) {
-    // Expanded/legal outer + short code → everyday callsign (ETS, BART, SFMTA)
-    if (isLegalOrLongName(outer) || (isPureAcronym(inner) && looksLikeExpandedName(outer))) {
-      return { primary: normalizeBrandCode(inner) };
-    }
-    // Outer is already the public brand — drop the legal acronym (County Connection, not CCCTA)
+  // Acronym / alt brand in parens is never secondary — agency name is the outer label
+  if (!isPlaceAbbrev(inner) && looksLikeBrandCode(inner)) {
     return { primary: outer };
   }
 
-  // Geographic / sector disambiguator only
+  // Place / sector: only if not already embedded in the agency name
+  if (placeAlreadyInName(outer, inner)) {
+    return { primary: outer };
+  }
   return { primary: outer, secondary: inner };
+}
+
+/** True when place text (or its significant words) already appears in the agency name. */
+function placeAlreadyInName(agency: string, place: string): boolean {
+  const norm = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{M}/gu, '')
+      .replace(/['’]/g, '');
+  const a = norm(agency);
+  const p = norm(place);
+  if (!p) return true;
+  if (a.includes(p)) return true;
+  // "South Okanagan-Similkameen" → check tokens longer than 2 chars
+  const tokens = p.split(/[\s\-–—,/]+/).filter(w => w.length > 2);
+  if (tokens.length === 0) return a.includes(p);
+  // Require the distinctive place token(s), not stopwords
+  const stop = new Set(['the', 'and', 'des', 'les', 'sur', 'area', 'region', 'county', 'city']);
+  const meaningful = tokens.filter(t => !stop.has(t));
+  if (meaningful.length === 0) return false;
+  return meaningful.every(t => a.includes(t));
 }
 
 /** CA province / US state-style abbrevs used as place, not agency codes. */
@@ -224,22 +239,7 @@ function isPlaceAbbrev(s: string): boolean {
   return /^(PEI|NL|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)$/i.test(s.trim());
 }
 
-function isPureAcronym(s: string): boolean {
-  return /^[A-Z]{2,8}$/.test(s.trim());
-}
-
-function isLegalOrLongName(s: string): boolean {
-  if (s.length >= 22) return true;
-  return /\b(Authority|District|Agency|Commission|Municipal|Metropolitan|Transportation)\b/i.test(s);
-}
-
-/** "Edmonton Transit Service", "Sonoma County Transit" — expanded form of a callsign. */
-function looksLikeExpandedName(s: string): boolean {
-  return /\b(Transit|Transportation|Metro|Railway|Railroad|Shuttle|Bus)\b/i.test(s)
-    || /\bService$/i.test(s);
-}
-
-/** Short brand / acronym in parens (ETS, BART, SFMTA - Muni, Yolobus) — not place names. */
+/** Short brand / acronym in parens (ETS, BART, SFMTA - Muni) — not place names. */
 function looksLikeBrandCode(s: string): boolean {
   const t = s.trim();
   if (t.length > 22) return false;
@@ -251,9 +251,7 @@ function looksLikeBrandCode(s: string): boolean {
   }
   // Title-case multi-word places: "St. John's", "Utica-Rome", "Fort Collins"
   if (/^[A-Z][a-z]/.test(t) && /[\s'-]/.test(t) && !/^(AC|LA|NICE|FAST|RTD|MTA|RTC|VCTC)\b/.test(t)) {
-    // "San Diego MTS" is a brand hybrid — still brand-like if ends with code
     if (!/\b(MTS|Bus|Transit|Metro|RIDE)\b/i.test(t) && t !== t.toUpperCase()) {
-      // "The Bus", "Central Florida" — "The Bus" is brand
       if (/^The\s/i.test(t)) return true;
       if (!/\b(Bus|Transit|Lines|Metro|Express|RIDE|MTS)\b/i.test(t)) return false;
     }
@@ -261,23 +259,13 @@ function looksLikeBrandCode(s: string): boolean {
   if (/^[A-Z]{2,8}(\s*[-/]\s*[A-Za-z0-9][\w ./-]*)?$/.test(t)) return true; // BART, ETS, SFMTA - Muni
   if (/^[A-Z]{2,4}\s+[A-Za-z][\w]*$/.test(t)) return true; // AC Transit, LA Metro, NICE Bus
   if (/^[a-z]{2,}[A-Z][A-Za-z]+$/.test(t)) return true; // samTrans
-  if (/^[A-Z][a-z]+[A-Z][a-z]+$/.test(t)) return true; // Yolobus-ish
+  if (/^[A-Z][a-z]+[A-Z][a-z]+$/.test(t)) return true;
   if (/^(Yolobus|samTrans|The Bus)$/i.test(t)) return true;
-  // "San Diego MTS", "RTD Denver", "RTC Washoe", "MTA Maryland"
   if (/^[A-Z]{2,5}\s+[A-Z][a-z]/.test(t) || /^(San Diego MTS|RTD Denver|RTC Washoe|MTA Maryland|VCTC Intercity|FAST Transit)$/i.test(t)) {
     return true;
   }
-  if (isPureAcronym(t)) return true;
+  if (/^[A-Z]{2,8}$/.test(t)) return true;
   return false;
-}
-
-function normalizeBrandCode(s: string): string {
-  // "SFMTA - Muni" → "SFMTA"; "San Diego MTS" / "RTD Denver" stay
-  const head = s.split(/\s*[-/]\s*/)[0]?.trim();
-  if (head && head.length >= 2 && head.length <= 10 && /^[A-Za-z0-9]+$/.test(head) && head === head.toUpperCase()) {
-    return head;
-  }
-  return s.trim();
 }
 
 export function shortenAgencyName(name: string): string {
