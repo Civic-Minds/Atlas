@@ -451,6 +451,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     // Find all sibling stop IDs sharing the same stopName under this agency
     // OR physically close (within 120 meters) across any agency to support transit hubs
     const siblingIdsByAgency: Record<string, Set<string>> = {};
+    const routesByAgency: Record<string, Set<string>> = {};
     const stopName = props.stopName;
     const slug = props.agencySlug;
     const [clickLon, clickLat] = stop.geometry.coordinates;
@@ -473,12 +474,23 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           siblingIdsByAgency[p.agencySlug] = new Set();
         }
         siblingIdsByAgency[p.agencySlug].add(p.stopId);
+
+        if (!routesByAgency[p.agencySlug]) {
+          routesByAgency[p.agencySlug] = new Set();
+        }
+        const rIds = p.routeIds as string[] | undefined;
+        if (rIds) {
+          for (const rId of rIds) {
+            routesByAgency[p.agencySlug].add(rId);
+          }
+        }
       }
     }
 
     return {
       ...props,
       siblingIdsByAgency,
+      routesByAgency,
       lat: clickLat,
       lon: clickLon,
     };
@@ -491,21 +503,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
     type Branch = { rKey: string; headsign: string | null; headway: number | null; stopPeriodHw: Partial<Record<string, number>> | undefined; directionId: number };
 
+    const routesByAgency = currentStop.routesByAgency || {};
+
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       const siblingIds = siblingIdsByAgency[slug] || new Set<string>();
       if (siblingIds.size === 0) continue;
 
-      // Collect all routeIds served by any sibling stop in this agency
-      const routeIds = new Set<string>();
-      for (const f of fc.features) {
-        const p = f.properties as any;
-        if (p.stopId && siblingIds.has(p.stopId)) {
-          const rIds = p.routeIds as string[] | undefined;
-          if (rIds) {
-            for (const rId of rIds) routeIds.add(rId);
-          }
-        }
-      }
+      // Get all routeIds served by any sibling stop in this agency directly from currentStop.routesByAgency
+      const routeIds = routesByAgency[slug] || new Set<string>();
 
       for (const f of fc.features) {
         const p = f.properties as unknown as ShapeProperties;
