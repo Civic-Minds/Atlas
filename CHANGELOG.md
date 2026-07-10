@@ -17,6 +17,7 @@
 - **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
 
 ### Changed
+- **Browse filter chips**: selected All/Live/History/region chips use a clear dark border + stronger fill (still not solid black pills) so active state is obvious.
 - **Browse agency long names**: legal names + brand codes show the short callsign (BART, SFMTA, ETS); remaining long primaries compact via `shortenAgencyName`; full registry name on hover `title`.
 - **Shared card notices**: outdated / corrected / outside-filters copy all go through `CardHelpNotice` + style tokens (`CARD_NOTICE`, `CARD_NOTICE_ACTION`, `CARD_NOTICE_FOOTER`, `CARD_NOTICE_INLINE`).
 - **Outside-filters routes control**: “N more routes (outside filters)” now matches the schedule help-notice style (sentence case + Show/Hide →) instead of a loud uppercase section label.

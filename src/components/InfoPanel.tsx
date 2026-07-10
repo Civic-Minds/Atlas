@@ -343,41 +343,48 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     ['all', 'All'],
                     ['live', 'Live'],
                     ['history', 'History'],
-                  ] as const).map(([id, label]) => (
-                    <button
-                      key={id}
-                      onClick={() => setAgencyFeatureFilter(id)}
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                        agencyFeatureFilter === id
-                          ? 'bg-[var(--accent-bg)] text-[var(--text-primary)] border-[var(--accent-border)]'
-                          : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
+                  ] as const).map(([id, label]) => {
+                    const on = agencyFeatureFilter === id;
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => setAgencyFeatureFilter(id)}
+                        aria-pressed={on}
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
+                          on
+                            ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
+                            : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                   {regionsInScope.length > 0 && (
                     <span className="w-px h-3.5 shrink-0 bg-[var(--border-primary)] mx-0.5" aria-hidden />
                   )}
-                  {regionsInScope.map(r => (
-                    <button
-                      key={r}
-                      onClick={() => setRegionFilter(prev => {
-                        const next = new Set(prev);
-                        if (next.has(r)) next.delete(r);
-                        else next.add(r);
-                        return next;
-                      })}
-                      aria-pressed={regionFilter.has(r)}
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                        regionFilter.has(r)
-                          ? 'bg-[var(--accent-bg)] text-[var(--text-primary)] border-[var(--accent-border)]'
-                          : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)]'
-                      }`}
-                    >
-                      {r}
-                    </button>
-                  ))}
+                  {regionsInScope.map(r => {
+                    const on = regionFilter.has(r);
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => setRegionFilter(prev => {
+                          const next = new Set(prev);
+                          if (next.has(r)) next.delete(r);
+                          else next.add(r);
+                          return next;
+                        })}
+                        aria-pressed={on}
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
+                          on
+                            ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
+                            : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
