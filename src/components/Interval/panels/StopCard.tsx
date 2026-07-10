@@ -40,6 +40,7 @@ export interface NearbyConnection {
 
 export interface CurrentStopData {
   stopName: string;
+  direction?: string;
 }
 
 export interface StopCardProps {
@@ -91,7 +92,7 @@ export const StopCard: React.FC<StopCardProps> = ({
         {stopAgencies.length === 1 ? (
           <SidebarCardHeader
             eyebrow={stopAgencies[0]}
-            title={titleCase(currentStop.stopName)}
+            title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
             titleClamp
           />
         ) : (
@@ -101,7 +102,10 @@ export const StopCard: React.FC<StopCardProps> = ({
               selected={stopAgencyFilter}
               onSelect={setStopAgencyFilter}
             />
-            <SidebarCardHeader title={titleCase(currentStop.stopName)} titleClamp />
+            <SidebarCardHeader
+              title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+              titleClamp
+            />
           </>
         )}
       </SidebarCardHeaderBlock>

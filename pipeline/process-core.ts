@@ -247,6 +247,13 @@ export async function processGtfsBuffer(
   }
 
   // Extract stops for clickable stations
+  onStatus?.('Deriving per-stop metadata (routes, direction)...');
+  const stopsMeta = buildStopsMeta(gtfs);
+  const stopDirections = new Map<string, string>();
+  for (const s of stopsMeta.stops) {
+    if (s.direction) stopDirections.set(s.id, s.direction);
+  }
+
   const stopFeatures: GeoJsonFeature[] = [];
   const routesByStop = new Map<string, Set<string>>();
   const tripById = new Map((gtfs.trips ?? []).map(t => [t.trip_id, t]));
@@ -365,6 +372,7 @@ export async function processGtfsBuffer(
         routeIds,
         isHub,
         isRail,
+        direction: stopDirections.get(stop.stop_id) ?? null,
       },
     } as any);
   }
@@ -704,9 +712,6 @@ export async function processGtfsBuffer(
     const h = trip.trip_headsign?.trim() || null;
     tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h };
   }
-
-  onStatus?.('Deriving per-stop metadata (routes, direction)...');
-  const stopsMeta = buildStopsMeta(gtfs);
 
   return {
     geojson: JSON.stringify({ type: 'FeatureCollection', features: mainFeatures }),
