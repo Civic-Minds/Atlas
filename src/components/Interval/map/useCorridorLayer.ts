@@ -15,7 +15,7 @@ export function useCorridorLayer(
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     if (map.getLayer('corridor-shapes-layer')) {
-      const corrFilter = showCorridorBand ? null : ['==', 'agencySlug', ''];
+      const corrFilter = showCorridorBand ? null : ['==', ['get', 'agencySlug'], ''];
       map.setFilter('corridor-shapes-layer', corrFilter as any);
     }
   }, [showCorridorBand, mapLoaded]);

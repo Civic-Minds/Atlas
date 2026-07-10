@@ -324,7 +324,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           'line-width': 3.5,
           'line-opacity': 0.75
         },
-        filter: ['==', 'agencySlug', ''] as any
+        filter: ['==', ['get', 'agencySlug'], ''] as any
       });
 
       // Stops points layer
@@ -662,23 +662,29 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
     // Hide span (irregular) routes from the map when hideSpan is active
 
+    // Substring match as an unambiguous expression — legacy-style ['in', string, …]
+    // makes MapLibre classify the whole combined filter as legacy syntax and reject it.
+    const contains = (prop: string): any =>
+      ['>=', ['index-of', ql, ['downcase', ['coalesce', ['get', prop], '']]], 0];
+    const searchAnyField: any = ['any', contains('routeShortName'), contains('routeId'), contains('agencySlug')];
+
     // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
     // MapCanvas only adds map-state-specific clauses on top.
     let routeFilter: any = null;
     if (!showRouteLayers) {
-      routeFilter = ['==', 'agencySlug', ''];
+      routeFilter = ['==', ['get', 'agencySlug'], ''];
     } else if (fareView) {
       const hasFare = ['has', 'baseFare'];
       const searchClause = ql
         ? (matchedAgencySlug
-            ? ['==', 'agencySlug', matchedAgencySlug]
-            : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]])
+            ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
+            : searchAnyField)
         : null;
       routeFilter = concatFilters(hasFare, searchClause);
     } else if (ql) {
       const searchClause = matchedAgencySlug
-        ? ['==', 'agencySlug', matchedAgencySlug]
-        : ['any', ['in', q, ['get', 'routeShortName']], ['in', q, ['get', 'routeId']], ['in', q, ['get', 'agencySlug']]];
+        ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
+        : searchAnyField;
       routeFilter = concatFilters(tileFilter, searchClause);
     } else {
       routeFilter = tileFilter;
@@ -768,7 +774,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     // Stops visibility
     if (hasStops) {
       if (!showRouteLayers) {
-        map.setFilter('stops-layer', ['==', 'agencySlug', ''] as any);
+        map.setFilter('stops-layer', ['==', ['get', 'agencySlug'], ''] as any);
       } else {
         const showAll = zoom >= 15;
         const showRail = zoom >= 12 && zoom < 15;

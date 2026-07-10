@@ -40,6 +40,7 @@
 - **MapCanvas split into layer hooks**: corridor, history, and live-vehicle overlay effects extracted to `src/components/Interval/map/` hooks (~360 lines out of MapCanvas); dead marker refs removed.
 
 ### Fixed
+- **Map filters were silently dead**: MapLibre rejected the routes-layer filter because legacy-syntax clauses (`['==', 'agencySlug', …]`, `['in', string, …]`) mixed with expression-syntax ones made it classify the whole filter as legacy and fail validation — so frequency, mode, day, and search filtering never applied to the map (only the sidebar). All clauses are now unambiguous expressions (`index-of` for substring matches, `['get', …]` equality). Verified: ≤10 min filter drops downtown Toronto from 115 rendered routes to 39; console filter errors gone.
 - **Anchorage (and dir-1-only) sparklines**: route-card sparkline no longer hard-requires `directionId === 0`. Feeds that only encode dir 1 (People Mover 31/40/41/51, etc.) now show hourly headways.
 - **Live vehicle hover tooltip**: reimplemented via manual deck picking driven by MapLibre mouse events (deck canvas stays inert, so gestures keep working); pick radius now accounts for retina displays. Tooltip shows speed and no longer hides for vehicles without delay data.
 - **Streetcars labeled "Bus"**: vehicle rows now use the route's mode (route_type) — Streetcar/Train/Ferry/Bus.

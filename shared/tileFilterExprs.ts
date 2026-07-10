@@ -36,7 +36,7 @@ export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
         'any',
         ['all', ['==', ['get', 'routeType'], 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
         ['all', ['==', ['get', 'routeType'], 0], ['==', ['slice', longName, 0, 5], 'Line ']],
-        ['all', ['==', ['get', 'routeType'], 2], ['in', 'ION', longName]],
+        ['all', ['==', ['get', 'routeType'], 2], ['>=', ['index-of', 'ION', longName], 0]],
       ]);
     } else if (m === 0) {
       parts.push([
@@ -49,7 +49,7 @@ export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
       parts.push([
         'all',
         ['==', ['get', 'routeType'], 2],
-        ['!', ['in', 'ION', longName]],
+        ['<', ['index-of', 'ION', longName], 0],
       ]);
     } else {
       parts.push(['==', ['get', 'routeType'], m]);
