@@ -17,6 +17,7 @@
 - **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
 
 ### Changed
+- **Agency card filter split**: drop redundant “Matching your filters” all-caps header — the outside-filters notice is enough.
 - **Pittsburgh branding**: Port Authority of Allegheny County → Pittsburgh Regional Transit (PRT); slug unchanged.
 - **Browse filter chips**: selected All/Live/History/region chips use a clear dark border + stronger fill (still not solid black pills) so active state is obvious.
 - **Browse agency long names**: legal names + brand codes show the short callsign (BART, SFMTA, ETS); remaining long primaries compact via `shortenAgencyName`; full registry name on hover `title`.
