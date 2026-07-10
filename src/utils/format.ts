@@ -176,6 +176,53 @@ export function liveVehicleRowLabel(
   return `Vehicle ${index + 1}`;
 }
 
+/**
+ * Split registry names like "BC Transit (Kelowna)" or "Edmonton Transit (ETS)"
+ * into a consistent primary + optional secondary for list UIs.
+ * Always: main label left, parenthetical qualifier as muted secondary (never mixed parens).
+ * Long legal names with a short brand code lead with the code only.
+ */
+export function agencyDisplayParts(name: string): { primary: string; secondary?: string } {
+  const trimmed = name.trim();
+  const m = trimmed.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  if (!m) return { primary: trimmed };
+
+  const outer = m[1].trim();
+  const inner = m[2].trim();
+  if (!outer) return { primary: inner || trimmed };
+  if (!inner) return { primary: outer };
+
+  // "Bay Area Rapid Transit (BART)" / long legal names → lead with the code
+  if (looksLikeBrandCode(inner) && outer.length >= 22) {
+    return { primary: normalizeBrandCode(inner) };
+  }
+
+  return { primary: outer, secondary: inner };
+}
+
+/** Short brand / acronym in parens (ETS, BART, SFMTA - Muni) — not place names. */
+function looksLikeBrandCode(s: string): boolean {
+  const t = s.trim();
+  if (t.length > 18) return false;
+  // Place-ish multi-word locators
+  if (/\b(Valley|River|County|City|Island|Area|Suburbs|Springs|Beach|Hills?|Heights|Mountain|Lake|Bay|Port|District|Region|Metro(?!\s))\b/i.test(t)
+    && !/^[A-Z]{2,5}(\s|$)/.test(t)) {
+    return false;
+  }
+  if (/^[A-Z]{2,8}(\s*[-/]\s*[A-Za-z0-9][\w ./-]*)?$/.test(t)) return true; // BART, ETS, SFMTA - Muni
+  if (/^[A-Z]{2,4}\s+[A-Za-z][\w]*$/.test(t)) return true; // AC Transit, LA Metro
+  if (/^[a-z]{2,}[A-Z][A-Za-z]+$/.test(t)) return true; // samTrans
+  if (t.length <= 5 && /[A-Z]{2,}/.test(t)) return true; // PEI
+  return false;
+}
+
+function normalizeBrandCode(s: string): string {
+  // "SFMTA - Muni" → "SFMTA"; "San Diego MTS" stays
+  const head = s.split(/\s*[-/]\s*/)[0]?.trim();
+  if (head && head.length >= 2 && head.length <= 10 && /^[A-Za-z0-9]+$/.test(head)) return head;
+  return s.trim();
+}
+
 export function shortenAgencyName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';

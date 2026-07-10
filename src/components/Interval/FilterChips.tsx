@@ -6,6 +6,7 @@ import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
@@ -136,6 +137,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
             <p className="px-2 pt-2 pb-0.5 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
+              const { primary, secondary } = agencyDisplayParts(g.name);
               return (
                 <button
                   key={g.name}
@@ -148,7 +150,10 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                   className={rowBtn(active)}
                   aria-label={g.name}
                 >
-                  <span className="truncate flex-1">{g.name}</span>
+                  <span className="truncate flex-1 min-w-0">
+                    {primary}
+                    {secondary && <span className="opacity-60 font-semibold"> · {secondary}</span>}
+                  </span>
                   <span className={`ml-auto w-2 h-2 rounded-full shrink-0 ${active ? 'bg-current' : 'border border-current opacity-30'}`} />
                 </button>
               );

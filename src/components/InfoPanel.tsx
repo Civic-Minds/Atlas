@@ -3,7 +3,7 @@ import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { formatStoredDate } from '../utils/format';
+import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import type { Agency } from '../App';
@@ -373,13 +373,19 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const hasHistory = historyBySlug.has(a.slug);
                           const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
                           const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
+                          const { primary, secondary } = agencyDisplayParts(a.name);
                           return (
                             <button
                               key={a.slug}
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                               className="w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
                             >
-                              <span className="text-xs text-[var(--text-primary)]">{a.name}</span>
+                              <span className="text-xs text-[var(--text-primary)] min-w-0 truncate">
+                                {primary}
+                                {secondary && (
+                                  <span className="text-[var(--text-dim)]"> · {secondary}</span>
+                                )}
+                              </span>
                               {(showLiveBadge || showHistoryBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
                                   {showLiveBadge && (
