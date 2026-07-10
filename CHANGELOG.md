@@ -40,6 +40,8 @@
 - **MapCanvas split into layer hooks**: corridor, history, and live-vehicle overlay effects extracted to `src/components/Interval/map/` hooks (~360 lines out of MapCanvas); dead marker refs removed.
 
 ### Fixed
+- **Dismiss search panel on outside click ([#138](https://github.com/Civic-Minds/Atlas/issues/138))**: Added a document-wide `mousedown` event listener to blur the search input and dismiss the search results/suggestions dropdown when clicking outside the search bar.
+- **Unit tests for stats day-scoping**: Updated the `activeDay` check in `useIntervalStats.ts` stats calculation to allow features with `undefined` day properties (aligning with `passesRouteFilter`), fixing 8 failing stats unit tests.
 - **Map filters were silently dead**: MapLibre rejected the routes-layer filter because legacy-syntax clauses (`['==', 'agencySlug', …]`, `['in', string, …]`) mixed with expression-syntax ones made it classify the whole filter as legacy and fail validation — so frequency, mode, day, and search filtering never applied to the map (only the sidebar). All clauses are now unambiguous expressions (`index-of` for substring matches, `['get', …]` equality). Verified: ≤10 min filter drops downtown Toronto from 115 rendered routes to 39; console filter errors gone.
 - **Anchorage (and dir-1-only) sparklines**: route-card sparkline no longer hard-requires `directionId === 0`. Feeds that only encode dir 1 (People Mover 31/40/41/51, etc.) now show hourly headways.
 - **Live vehicle hover tooltip**: reimplemented via manual deck picking driven by MapLibre mouse events (deck canvas stays inert, so gestures keep working); pick radius now accounts for retina displays. Tooltip shows speed and no longer hides for vehicles without delay data.

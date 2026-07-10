@@ -135,6 +135,18 @@ export default function App() {
 
   const [searchFocused, setSearchFocused] = useState(false);
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function handleMousedown(e: MouseEvent) {
+      if (!searchFocused) return;
+      if (searchBarRef.current?.contains(e.target as Node)) return;
+      searchInputRef.current?.blur();
+    }
+    document.addEventListener('mousedown', handleMousedown);
+    return () => document.removeEventListener('mousedown', handleMousedown);
+  }, [searchFocused]);
+
   const [liveMounted, setLiveMounted] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
     try {
@@ -292,6 +304,7 @@ export default function App() {
         <div className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
           <input
+            ref={searchInputRef}
             type="text"
             value={query}
             aria-label={searchPlaceholder}

@@ -329,7 +329,10 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     // Restrict to the active service day — the map only draws the selected day's features,
     // so counting other days' variants inflates the badge (e.g. weekday-only routes on a Sunday).
     const onScreen = (f: GeoJSON.Feature) => !bounds || (inViewport(f, bounds) && geometryInViewport(f, bounds));
-    const activeDay = (f: GeoJSON.Feature) => (f.properties as any).day === day;
+    const activeDay = (f: GeoJSON.Feature) => {
+      const d = (f.properties as any).day;
+      return d === undefined || d === day;
+    };
     const routesOnly = allFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
     const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
 
