@@ -3,7 +3,7 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_SEARCH_SUBHEAD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_SEARCH_SUBHEAD, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
@@ -374,7 +374,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           </>
           )}
           {agency.excludeRouteShortNames?.length && agency.overrideNote && onInfoOpen && (
-            <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80">
+            <div className={CARD_NOTICE_FOOTER}>
               <CardHelpNotice
                 message="We corrected this data."
                 onLearnMore={() => onInfoOpen('about', {
@@ -407,7 +407,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             )}
             {otherRoutes.length > 0 && (
               <>
-                <div className="px-4 pt-2 pb-1 opacity-80">
+                <div className={CARD_NOTICE_INLINE}>
                   {!showOthersExpanded ? (
                     <CardHelpNotice
                       message={`${otherRoutes.length} route${otherRoutes.length !== 1 ? 's' : ''} outside your filters.`}

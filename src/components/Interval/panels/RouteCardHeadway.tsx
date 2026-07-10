@@ -15,6 +15,7 @@ import {
   SidebarCardList,
   SidebarCardShell,
 } from '../cardUi';
+import { CARD_NOTICE_FOOTER } from '../../../styles';
 import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
 import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import {
@@ -282,7 +283,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           });
         })()}
         {(routeIsStale || (routeAgency?.excludeRouteShortNames?.length && routeAgency.overrideNote)) && onInfoOpen && (
-          <div className="mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80 space-y-1">
+          <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {routeIsStale && (
               <CardHelpNotice
                 message={`This schedule may be outdated${expDateStr ? ` and ended ${expDateStr}` : ''}.`}

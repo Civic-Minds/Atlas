@@ -2,7 +2,7 @@ import React from 'react';
 import { Radio } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
-import { PANEL_ENTER_LEFT } from '../../styles';
+import { CARD_NOTICE, CARD_NOTICE_ACTION, PANEL_ENTER_LEFT } from '../../styles';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -136,6 +136,7 @@ export function AgencyFilterChips({
   );
 }
 
+/** Shared inline notice: muted sentence + action link (outdated, corrected, outside filters, …). */
 export function CardHelpNotice({
   message,
   onLearnMore,
@@ -146,13 +147,9 @@ export function CardHelpNotice({
   actionLabel?: string;
 }) {
   return (
-    <p className="text-[9px] font-bold text-[var(--text-dim)]">
+    <p className={CARD_NOTICE}>
       {message}{' '}
-      <button
-        type="button"
-        onClick={onLearnMore}
-        className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold cursor-pointer"
-      >
+      <button type="button" onClick={onLearnMore} className={CARD_NOTICE_ACTION}>
         {actionLabel}
       </button>
     </p>

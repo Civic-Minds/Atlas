@@ -17,6 +17,7 @@
 - **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
 
 ### Changed
+- **Shared card notices**: outdated / corrected / outside-filters copy all go through `CardHelpNotice` + style tokens (`CARD_NOTICE`, `CARD_NOTICE_ACTION`, `CARD_NOTICE_FOOTER`, `CARD_NOTICE_INLINE`).
 - **Outside-filters routes control**: “N more routes (outside filters)” now matches the schedule help-notice style (sentence case + Show/Hide →) instead of a loud uppercase section label.
 - **Agency list label standard**: dark = agency name; light = place/sector only when not already in the name. Acronyms never as secondary (`Edmonton Transit Service (ETS)` → `Edmonton Transit Service`; `BC Transit (Kelowna)` → `BC Transit · Kelowna`). Registry name for Edmonton set to full “Edmonton Transit Service (ETS)”.
 - **exo sector labels**: Six Quebec exo feeds no longer share the bare name “exo” — labeled by sector (Trains, La Presqu’île, Sud-Ouest, Le Richelain–Roussillon, Laurentides, Terrebonne-Mascouche) so browse/search can tell them apart.

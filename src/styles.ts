@@ -78,6 +78,18 @@ export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';
 /** Empty / loading copy inside a panel row */
 export const PANEL_EMPTY = 'px-4 py-3 text-[11px] text-[var(--text-muted)] font-bold';
 
+/**
+ * Inline notice / warning (outdated schedule, corrected data, outside filters).
+ * Use via CardHelpNotice — these tokens keep one visual language.
+ */
+export const CARD_NOTICE = 'text-[9px] font-bold text-[var(--text-dim)]';
+export const CARD_NOTICE_ACTION =
+  'text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold cursor-pointer';
+/** Footer block under card content (border-t + dim) */
+export const CARD_NOTICE_FOOTER = 'mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80';
+/** In-list notice padding (e.g. outside-filters control) */
+export const CARD_NOTICE_INLINE = 'px-4 pt-2 pb-1 opacity-80';
+
 /** Pill search box wrapper — used inside panels (recessed bg-app background) */
 export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-3 gap-1.5';
 
