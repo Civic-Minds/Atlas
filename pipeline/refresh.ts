@@ -14,6 +14,7 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2
 import JSZip from 'jszip';
 import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
+import { buildAgencyIndex } from './agencyIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
@@ -413,6 +414,18 @@ async function main() {
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
     // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)
+  }
+
+  // Public agency directory (slug/name/region/center/bbox only) — lets consumers
+  // discover slugs instead of hardcoding a per-agency map. Reflects the full
+  // index.json regardless of --only-slug scope, since it's cheap and index.json
+  // barely changes between runs.
+  try {
+    const agencyIndex = buildAgencyIndex(index.agencies);
+    await r2Put('atlas/agencies.json', JSON.stringify(agencyIndex));
+    console.log(`  agencies.json → R2 (${agencyIndex.agencyCount} agencies)`);
+  } catch (e) {
+    console.warn(`  [warn] agencies.json R2 write failed — ${e instanceof Error ? e.message : e}`);
   }
 
   // Last-run timestamp on R2 only — avoids a git commit when feeds are unchanged.
