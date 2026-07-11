@@ -38,8 +38,6 @@
 - **Live Vehicles empty state**: Replaced the dead-end "Zoom in to start tracking" message (and the static city chips) with a clickable list of live-enabled places — clicking one flies the map to that agency and starts tracking immediately.
 - **Day filter chip indicator**: Always show the active dot indicator on the Day filter chip to reflect that a day-of-service filter is consistently active (Weekday/Saturday/Sunday).
 - **InfoPanel layout**: Restored the "Feedback" header in the Info panel above the "Send feedback" button.
-
-### Changed
 - **Stop card routes resolution ([#163](https://github.com/Civic-Minds/Atlas/issues/163))**: Extracted the routes serving a stop directly from the stop-level properties (`routesByAgency` populated in the single-pass stop scanner) instead of performing a fragile double-scan GeoJSON join over all map-rendering features.
 - **MapCanvas split into layer hooks**: corridor, history, and live-vehicle overlay effects extracted to `src/components/Interval/map/` hooks (~360 lines out of MapCanvas); dead marker refs removed.
 

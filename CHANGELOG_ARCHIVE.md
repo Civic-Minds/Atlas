@@ -171,7 +171,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Station stop grouping**: sibling stops grouped by name; multi-agency proximity grouping within 120m; major station hubs shown at zoom 12–15
 
 
-## [2.3.1] - 2026-06-22
+## [2.3.1] — 2026-06-22
 
 ### Fixed
 - **NFTA feeds failing weekly refresh**: `metro.nfta.com` has a broken SSL cert that fails certificate verification in CI. Switched `nfta` and `nfta-rail` `feedUrl` to the Mobility Database stable mirror (MDB #465).
@@ -268,7 +268,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Stop clicks clear disambiguation picker**: clicking a station while the disambiguation panel was open left it visible.
 - **Corridor features excluded from disambiguation spatial query**: corridors were being included in nearby-route detection, generating invalid keys.
 
-## [2.2.0] - 2026-06-17
+## [2.2.0] — 2026-06-17
 
 ### Added
 - **Burlington history snapshots (AI-83)**: on each refresh, the pipeline writes a compact headway snapshot to `atlas-history/burlington/<YYYY-WW>.json` containing the Weekday headway + tier per route short name. No frontend yet — snapshots accumulate until there are enough data points to build a meaningful timeline UI.
@@ -296,8 +296,6 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Initial map view uses last saved position**: the map restores last center and zoom from `localStorage` on every visit. Falls back to geolocation, then GTHA default.
 - **GeoJSON browser caching (AI-75)**: agency files fetch with a weekly `?v=YYYYWW` query param. Cache busts automatically when the Monday refresh runs.
 - **Lazy-load fallback uses saved view**: the pre-`moveend` fallback bounds derives from the last saved map position instead of always assuming Toronto.
-
-### Improved
 - **Filter chip labels**: all chips now reflect their current state. Mode shows the mode name when exactly 1 is selected, "N modes" when multiple. Frequency shows the active tier label instead of always "Frequency".
 - **Live polling UX**: routes with live GTFS-RT data (Burlington 1/10, Hamilton 01/10) now show a green dot in the stop panel route list. Live box no longer shows "fetching…" indefinitely — hides entirely when no active trips are detected, pulsing dot is dimmed while pending vs solid when live.
 - **Terminal / hub stop display at overview zoom**: when zoomed out, only major hubs (3+ routes or location_type=1 stations) and rail stops show as stop markers. Full per-bay detail at zoom ≥15.
@@ -316,7 +314,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Sticky tooltip on agency filter buttons**: same fix applied to agency name buttons in the Agencies chip dropdown.
 - **All-caps route labels (Stratford and others)**: `getRouteLabel` output wrapped with `titleCase` so agencies that store `route_long_name` in all-caps display correctly.
 
-## [2.1.0] - 2026-06-17
+## [2.1.0] — 2026-06-17
 
 ### Added
 - **Agency name is clickable in route panel**: clicking the agency name below the route title filters the map to show only that agency's routes. Click again to clear. (Now uses the correct agency slug so the filter actually works.)
@@ -339,7 +337,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Search results panel two-tone background**: the search results container used `bg-[var(--accent-bg)]` creating a visually nested box inside the panel. Removed the background and border so results blend cleanly.
 - **DRT and GO data refreshed**: re-downloaded feeds to pick up schedule changes.
 
-## [2.0.0] - 2026-06-17
+## [2.0.0] — 2026-06-17
 
 ### Added
 - **Combined-frequency corridors toggle**: added a "Show combined corridors" toggle in the Settings panel. This surfaces segments where multiple overlapping routes provide higher aggregate frequency (e.g. 504 King + 501 Queen on Queen St). To reduce noise, corridors are only shown if they have 3+ overlapping routes or provide high frequency (<= 15 min).
@@ -374,16 +372,50 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Consolidated Niagara Data**: Removed the redundant "Niagara (Legacy)" entry from the registry in favor of the working unified "Niagara Region Transit" feed.
 - **Universal Headsign Deduplication**: Updated the GeoJSON deduplication key to include headsigns for all agencies, preventing separate directions or terminus patterns from being collapsed into a single feature.
 
-## [1.32.0] - 2026-06-15
+## [1.32.0] — 2026-06-15
 
-### Fixed
-- **Split `span` into `span` (peak-only) and `infrequent` (all-day slow)**: routes with short service windows or low coverage (< 40% of analysis window) stay `span` and are hidden by "Hide limited routes." Routes that pass those thresholds but can't sustain any frequency tier (e.g. Barrie line, GO Route 11) now get `tier='infrequent'` — shown on the map at Frequency = All, hidden at any specific frequency tier. Tooltip shows "infrequent service."
-- **Proportional grace period for tier classification**: `determineTier` now computes grace as `max(5, round(T × 0.15))` instead of a flat 5 min. Tier=60 gets 9-min grace (max gap 69 min), tighter tiers keep 5 min. Fixes routes like GO 12 (Niagara Falls) that have one or two gaps slightly over 60 min being misclassified as `span`.
-- **Percentage-based grace violation allowance**: max grace violations is now `max(2, floor(gaps × 0.30))` instead of a flat 2. Routes with more trips in the analysis window can have proportionally more minor violations before failing a tier. Fixes GO 12 weekday: 4 violations out of 14 gaps (~29%) now passes tier=60.
-- **Agencies chip label**: chip now reads "Agencies" when all agencies are on (was "All agencies"), consistent with the other chip labels (Frequency, Day, Mode).
-- **Locate button shape**: button was `rounded-xl` (square corners), now `rounded-full` to match the FilterPanel buttons.
-- **Grace/violation config extracted to AnalysisCriteria**: `gracePercent` and `violationPercent` are now explicit fields on `AnalysisCriteria` and `DEFAULT_CRITERIA` (0.15 and 0.30), replacing magic numbers hardcoded in `determineTier`. The `graceMinutes`/`maxGraceViolations` fields are now floors rather than absolute values.
-- **Logo button resets map view**: clicking the map logo in the top-left now flies back to the default GTHA view (centre 43.65, -79.45, zoom 10). Uses a `resetViewKey` counter threaded through App → Interval → MapCanvas → `ResetViewControl` (inner component using `useMap`).
+### Added
+- **Station View agency filter pills**: when a stop is served by more than one agency (e.g. a GO/TTC interchange stop), filter pills appear above the route list so the user can narrow to one agency at a time. Pills reset when a new stop is selected.
+- **Accent CSS variable system**: all accent colours now come from `--accent`, `--accent-bg`, and `--accent-border` CSS variables (light/dark values in `index.css`). Replaced every scattered `indigo-*` Tailwind class across the UI. Changing the two `:root` colour values repaints the entire app.
+- **Zoom-based stop visibility**: stop markers now show at three levels — all stops at zoom ≥ 14, hub stops only (4+ routes) at zoom 13, none below 13. Hub stops render slightly larger (radius 4 vs 3). Stops and route lines are mounted on separate Leaflet layers so zoom changes don't remount the (much larger) route layer.
+- **Smooth map zooming**: `zoomSnap={0.25}`, `zoomDelta={0.5}`, `wheelPxPerZoomLevel={120}` on `MapContainer` for sub-integer zoom steps and slower mouse-wheel panning.
+- **Live polling filter in useIntervalStats**: `livePollingOnly` filter prop hides all routes not covered by Atlas's GTFS-RT adherence polling. Driven by `src/utils/livePolling.ts`, which lists the covered agency/route pairs.
+- **Real-Time GTFS Proxy**: Added `api/gtfs-rt.ts` to proxy and parse binary GTFS-RT TripUpdates into JSON for easier consumption.
+- **Schedule Adherence Polling**: Implemented `api/cron/poll.ts` to record predicted vs. scheduled arrivals for Burlington Route 1 and Hamilton B-Line every minute. Each snapshot now includes per-stop headway-vs-scheduled diff (`headwayDeltaMin`) and per-trip segment drift (`entryDelayMin`, `exitDelayMin`, `driftMin`) to detect bunching and early running.
+- **Vercel Cron Configuration**: Added `vercel.json` to manage the minute-by-minute polling schedule and API rewrites.
+- **Live adherence display**: Selecting Burlington Route 1 or Hamilton Route 1 in the route panel now shows a pulsing "Live" badge with current avg headway delta vs. schedule and a per-trip on-time/late/early breakdown, via a new `api/live-status.ts` Blob proxy and `useLiveAdherence` hook (60s polling).
+- **Headsign-based direction labels**: route panel directions now show "to {headsign}" (e.g. "to Whitby Station") instead of generic "Direction 1"/"Direction 2", with light normalization stripping agency branch-letter prefixes (e.g. DRT's "A - Windfields Farm" → "Windfields Farm").
+- **Hide irregular/peak-only routes toggle**: new advanced filter to hide routes with no sustained frequency tier (school runs, shuttles, rush-hour-only express routes) — the existing max-headway slider doesn't catch these since they fall back to raw average headway.
+- **Light mode default**: map now defaults to light mode; dark mode still available via the toggle.
+- **Auto day-type**: day selector (Weekday/Saturday/Sunday) now initialises to today's actual day instead of always defaulting to Weekday.
+- **GO Transit rail**: 7 rail lines (Lakeshore East/West, Kitchener, Barrie, Stouffville, Richmond Hill, Milton) added to the map using a rail-only filtered feed. Routes use actual shape geometry (longest shape per direction, not most-frequent short-turn pattern).
+- **Stop dots hidden at regional zoom**: transit stop markers now only appear at zoom ≥ 13; at the regional overview zoom they were covering the entire map in thousands of overlapping circles. Stops mount as a separate Leaflet layer so zooming in/out doesn't remount route lines.
+- **Combined frequency corridors (AI-17)**: overlapping routes on shared stop-to-stop links now emit corridor features with *combined* (union) headway. These render as slightly thicker overlays on top of the per-route lines, so corridor segments visually show the effective frequency provided by multiple routes (e.g. two 12 min routes → ~6 min combined corridor in the tighter color tier). Day and headway filters apply to corridors; station selection filters to corridors involving the stop's routes; search matches corridors via participating route IDs/names.
+- **Route info panel (AI-18)**: clicking a route opens a detail panel in the sidebar — route name, agency, and per-direction headways with tier dots. The hover tooltip slims down to route name + headway; the click is now the way to get full detail.
+- **Clickable Stations**: Users can now click on transit hubs and stations to discover all routes departing from that location.
+  - **Spatial Discovery**: Clicking a station filters the regional map to show only the specific routes serving that hub.
+  - **Station View HUD**: Added a dedicated sidebar panel that displays the station name and route count when a hub is selected.
+  - **Visual Feedback**: Selected stations are highlighted with an indigo pulse and white border for clear spatial focus.
+  - **Integrated Reset**: Station selection is automatically cleared when global filters are reset or the map background is clicked.
+- **Advanced Map Filtering**: Implemented a comprehensive multi-dimensional filtering system.
+  - **Agency Filtering**: Toggle visibility for each of the 13 GTHA agencies (TTC, GO Transit, MiWay, etc.).
+  - **Mode Filtering**: Filter routes by vehicle type (Subway, Streetcar, Rail, Bus).
+  - **Day Selection**: Support for switching between Weekday, Saturday, and Sunday service levels.
+  - **Collapsible UI**: Added an "Advanced Filters" section in the sidebar with active filter indicators and a Reset button.
+- **Unit Testing Suite**: Integrated Vitest, JSDOM, and React Testing Library.
+  - Added high-coverage tests for `useIntervalStats` hook and color mapping utilities.
+- **Clickable Stations (Roadmap)**: Logged feature request for station-level route discovery via spatial mapping.
+- **Greater Golden Horseshoe expansion**: Barrie Transit, Grand River Transit, Guelph Transit, and Niagara Region Transit join the map — 13 agencies total. Bradford was evaluated but BWG Transit is on-demand only (no GTFS exists). GRT and Niagara use the Mobility Database stable mirror because their official URLs are dead or unreliable.
+- **Single regional map**: all 9 GTHA networks load in parallel onto one continuous map — pan between cities like Google Maps, no agency switcher. Tooltips show the operating agency.
+- **Route search**: search box filters routes by number or name across the whole region; matches highlight while everything else dims, with a live match count.
+- **GTHA coverage**: 9 agencies live — TTC, Brampton, Burlington, Durham Region, Hamilton, Milton, MiWay, Oakville, YRT.
+- **Pipeline → Blob architecture**: `pipeline/process-core.ts` turns a GTFS zip into GeoJSON (route shapes + weekday headway tiers); data is stored in Vercel Blob, keeping the repo at ~80 KB regardless of agency count.
+- **`npm run refresh`**: re-downloads every agency's verified `feedUrl` and rebuilds its Blob data. All 9 source URLs tested live.
+- **Weekly automation**: GitHub Action refreshes all feeds every Monday and commits index changes.
+- **Production deploy**: https://atlas-gamma-two.vercel.app
+- **Route selection**: clicking a route highlights it at full color/weight and dims all other routes to dark grey; click the same route or the map background to deselect.
+- **"All" frequency filter**: new button alongside the existing headway thresholds shows every route including infrequent ones (>60m), rendered in the existing Infrequent grey tier.
+- **Light mode**: sun/moon toggle in the panel header switches between dark (CartoDB dark) and light (CartoDB light) map tiles with a fully adapted panel theme.
 
 ### Changed
 - **Route panel groups directions and collapses limited patterns**: directions are now grouped by `directionId` so outbound and inbound appear in separate sections with a thin separator. Multiple `span`/limited patterns within the same direction group (e.g. Kitchener GO, Mount Pleasant GO, Georgetown GO all going westbound) are collapsed into one row listing the termini separated by `·`, instead of three separate "limited" rows. Single real-tier patterns still show their individual headway. Applies to all agencies — GO rail, BRT (VIVA Blue), rapid bus (HSR Line 1), etc.
@@ -399,24 +431,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Rail lines visually heavier than bus (AI-54)**: `routeType=2` (GO rail) lines now render at weight 3 (vs 1–2 for bus) in normal state, 5 when selected (vs 4), and stay slightly more visible when dimmed. Matches standard transit map convention where rail lines dominate the visual hierarchy.
 - **TTC multi-word headsign prefix stripping (AI-60)**: the branch-code prefix regex now also strips directional words like "East - " and "West - " in addition to single-letter codes ("A - ") and short codes ("KI - "). Fixes TTC route 954 showing "East - 954 Lawrence East Express towards Starspray" instead of "Starspray".
 - **Oakville 86B showing "every 5 min"**: 86B has 3 trips total; the 5-min gap between its 2 in-window trips was previously escaping the `isLimitedService` guard in older pipeline builds. Current pipeline correctly classifies it as `span`. Resolved on next refresh (AI-62).
-
-### Added
-- **Station View agency filter pills**: when a stop is served by more than one agency (e.g. a GO/TTC interchange stop), filter pills appear above the route list so the user can narrow to one agency at a time. Pills reset when a new stop is selected.
-
-### Changed
 - **Filter dropdown layout unified**: Mode and Agencies dropdowns now use the same `flex wrap` pill layout as Frequency and Day — Mode was a 2×2 grid, Agencies was a full-width stacked list, both are now pill rows consistent with the rest of the filter chips.
-
-### Fixed
-- **GO Transit rail headway using midday window**: full-day analysis (7am–10pm) clusters peak trains every 8–10 min and drags the median to ~16 min even when midday service is every 30 min. Rail `dir=0` (outbound from hub) now computes display headway from a 09:30–14:30 midday window. Tier classification still uses the full window so peak-only lines (Milton, Richmond Hill) correctly get `span`.
-- **GO weekday rollup inflated by outlier days**: the Weekday rollup was merging all 5 days' departure times into a union set. When one day has a different schedule (e.g. extra Friday trains, event-day service), those extra trips inflate the apparent midday frequency. The rollup now picks the single most-representative day — the one whose midday trip count is closest to the median across all weekdays — and computes stats from that day's times only.
-
-### Added
-- **Accent CSS variable system**: all accent colours now come from `--accent`, `--accent-bg`, and `--accent-border` CSS variables (light/dark values in `index.css`). Replaced every scattered `indigo-*` Tailwind class across the UI. Changing the two `:root` colour values repaints the entire app.
-- **Zoom-based stop visibility**: stop markers now show at three levels — all stops at zoom ≥ 14, hub stops only (4+ routes) at zoom 13, none below 13. Hub stops render slightly larger (radius 4 vs 3). Stops and route lines are mounted on separate Leaflet layers so zoom changes don't remount the (much larger) route layer.
-- **Smooth map zooming**: `zoomSnap={0.25}`, `zoomDelta={0.5}`, `wheelPxPerZoomLevel={120}` on `MapContainer` for sub-integer zoom steps and slower mouse-wheel panning.
-- **Live polling filter in useIntervalStats**: `livePollingOnly` filter prop hides all routes not covered by Atlas's GTFS-RT adherence polling. Driven by `src/utils/livePolling.ts`, which lists the covered agency/route pairs.
-
-### Changed
 - **Route panel direction rows**: headsign ("to Aldershot GO") moves to the top of each direction row; the tier dot + "every X min" line sits below it. Gives destination context before frequency number.
 - **Route and stop name title-casing**: GTFS long names and stop names are now display-cased at render time (e.g. "KING STREET WEST" → "King Street West"). Applied in the route panel header, station view header, and stop tooltip.
 - **Station View is text-based**: routes at a stop are now listed as text entries (bold route number, indented `→ Headsign` lines) instead of the previous blob-badge layout. Headsigns are cleaned of agency prefix codes (e.g. "LW - Aldershot GO" → "Aldershot GO").
@@ -424,32 +439,41 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Stop tooltip**: removed the "X routes serve this hub" count (it was derived from raw `routeIds` and didn't match the deduplicated count shown in the panel); tooltip now just shows "Station" + title-cased stop name.
 - **GO Transit rail headway uses median**: `process-core.ts` now uses `medianHeadway` (instead of `avgHeadway`) for `route_type=2` (rail) routes. GO peak trains cluster heavily and drag the mean down to ~11 min even when midday service is every 30 min; median gives the representative off-peak figure.
 - **Hide irregular routes on by default**: `hideSpan` now initialises to `true` so span-only (peak/school/shuttle) routes are hidden on first load.
-
-### Fixed
-- **Stop and route panels showing simultaneously**: clicking a stop didn't clear the selected route (and vice versa), so both panels rendered at once. Fixed with mutual-exclusivity logic in `MapCanvas` click handlers.
-- **Stop tooltip route count didn't match panel**: tooltip said "4 routes" but the panel showed 2 because the panel deduplicates by `routeShortName` while the tooltip used raw `routeIds.length`. Removed the count from the tooltip entirely.
-
-### Added
-- **Real-Time GTFS Proxy**: Added `api/gtfs-rt.ts` to proxy and parse binary GTFS-RT TripUpdates into JSON for easier consumption.
-- **Schedule Adherence Polling**: Implemented `api/cron/poll.ts` to record predicted vs. scheduled arrivals for Burlington Route 1 and Hamilton B-Line every minute. Each snapshot now includes per-stop headway-vs-scheduled diff (`headwayDeltaMin`) and per-trip segment drift (`entryDelayMin`, `exitDelayMin`, `driftMin`) to detect bunching and early running.
-- **Vercel Cron Configuration**: Added `vercel.json` to manage the minute-by-minute polling schedule and API rewrites.
-- **Live adherence display**: Selecting Burlington Route 1 or Hamilton Route 1 in the route panel now shows a pulsing "Live" badge with current avg headway delta vs. schedule and a per-trip on-time/late/early breakdown, via a new `api/live-status.ts` Blob proxy and `useLiveAdherence` hook (60s polling).
-
-### Changed
 - **Google Maps-style floating UI**: replaced the spanning header bar with independent floating pills — logo, search, on-screen/coverage stats (top-left) and filter chips, settings, dark-mode toggle (top-right) — instead of one combined header bar or combined controls. Stripped remaining all-caps text and decorative icons from the filter UI.
 - **Frequency/Mode/Day/Agencies filters broken out into chips**: all four filters now live as standalone pill buttons beside the settings button (Maps' category-chip pattern) instead of inside a single dropdown. Each chip keeps a static label (e.g. "Frequency") with a small dot indicator, and opens its own small dropdown to change the value. Frequency and Day always show their dot/active styling since neither has a true "no filter" default (60 min still excludes Infrequent routes; Weekday still excludes weekend service); Mode and Agencies only show it once something is actually selected. Live polling and hide-irregular are the only toggles left in the (now renamed) Settings popover.
 - **On screen / Coverage stats as pills**: lifted out of the sidebar panel entirely and shown as small inline pills next to the search bar (via a new `onStatsChange` callback from `Interval` up to `App`), instead of boxy stat cards inside the sidebar. Coverage percentage no longer uses indigo coloring, since the color didn't correspond to anything meaningful.
 - **Sidebar detail panel decluttered and flattened**: removed the "Interval" title/description text and the standalone Reset button (clicking outside the panel already closes it). Route/stop detail blocks no longer render as a nested card-in-card — the inner background/border wrapper was removed so they sit directly on the panel surface. The panel itself now renders nothing (instead of an empty shell) when there's no stop/route selected and no active search.
 - **Sidebar panel aligned with search bar**: width matched to the search pill (`w-64`) and left-aligned with the search bar's left edge instead of the outer page margin, so the panel doesn't appear to start further left than the search bar above it.
+- **Viewport-scoped stats (AI-19)**: the "On screen" and Coverage numbers now reflect the current map view instead of the whole region — they recompute as you pan/zoom, using cached per-feature bounding boxes.
+- **Clickable legend (AI-20)**: merged the redundant "Show up to" buttons and Legend swatches into one control — each legend tier row is now the frequency filter; tiers above the active threshold dim to show they're hidden. The wordmark also no longer renders all-caps (AI-16).
+- **Search Relocation**: Moved the route search bar from the sidebar to the global header for better UI space utilization and a more standard navigation experience.
+- **Color Logic Extraction**: Moved all headway tiering and color mapping logic into a dedicated `src/utils/colors.ts` for better testability and reuse.
+- **Modular 'Clean Architecture' Refactor**: Deconstructed the monolithic `Interval.tsx` into a modern modular structure.
+  - Extracted data fetching and processing into `useAgencyData` hook.
+  - Extracted search, filtering logic, and statistics into `useIntervalStats` hook.
+  - Split UI into `MapCanvas` (Leaflet logic) and `SidebarControls` (HUD/filtering) components.
+  - Reduced primary application logic from 14KB to <50 lines, significantly improving maintainability for future filtering features.
+- **Full reset to the original premise**: a hosted map of how frequent transit service is. Deleted the OCI server, v0 realtime backend, Express API, router, Zustand, and Firebase. Atlas is now a static Vite + React + Leaflet app with no server and no database.
+- Thinner line weights (frequent routes 3→2, others 1.5→1) for a less cluttered map at regional zoom.
+- Canvas rendering for the ~1,000 simultaneous polylines.
 
 ### Fixed
+- **Split `span` into `span` (peak-only) and `infrequent` (all-day slow)**: routes with short service windows or low coverage (< 40% of analysis window) stay `span` and are hidden by "Hide limited routes." Routes that pass those thresholds but can't sustain any frequency tier (e.g. Barrie line, GO Route 11) now get `tier='infrequent'` — shown on the map at Frequency = All, hidden at any specific frequency tier. Tooltip shows "infrequent service."
+- **Proportional grace period for tier classification**: `determineTier` now computes grace as `max(5, round(T × 0.15))` instead of a flat 5 min. Tier=60 gets 9-min grace (max gap 69 min), tighter tiers keep 5 min. Fixes routes like GO 12 (Niagara Falls) that have one or two gaps slightly over 60 min being misclassified as `span`.
+- **Percentage-based grace violation allowance**: max grace violations is now `max(2, floor(gaps × 0.30))` instead of a flat 2. Routes with more trips in the analysis window can have proportionally more minor violations before failing a tier. Fixes GO 12 weekday: 4 violations out of 14 gaps (~29%) now passes tier=60.
+- **Agencies chip label**: chip now reads "Agencies" when all agencies are on (was "All agencies"), consistent with the other chip labels (Frequency, Day, Mode).
+- **Locate button shape**: button was `rounded-xl` (square corners), now `rounded-full` to match the FilterPanel buttons.
+- **Grace/violation config extracted to AnalysisCriteria**: `gracePercent` and `violationPercent` are now explicit fields on `AnalysisCriteria` and `DEFAULT_CRITERIA` (0.15 and 0.30), replacing magic numbers hardcoded in `determineTier`. The `graceMinutes`/`maxGraceViolations` fields are now floors rather than absolute values.
+- **Logo button resets map view**: clicking the map logo in the top-left now flies back to the default GTHA view (centre 43.65, -79.45, zoom 10). Uses a `resetViewKey` counter threaded through App → Interval → MapCanvas → `ResetViewControl` (inner component using `useMap`).
+- **GO Transit rail headway using midday window**: full-day analysis (7am–10pm) clusters peak trains every 8–10 min and drags the median to ~16 min even when midday service is every 30 min. Rail `dir=0` (outbound from hub) now computes display headway from a 09:30–14:30 midday window. Tier classification still uses the full window so peak-only lines (Milton, Richmond Hill) correctly get `span`.
+- **GO weekday rollup inflated by outlier days**: the Weekday rollup was merging all 5 days' departure times into a union set. When one day has a different schedule (e.g. extra Friday trains, event-day service), those extra trips inflate the apparent midday frequency. The rollup now picks the single most-representative day — the one whose midday trip count is closest to the median across all weekdays — and computes stats from that day's times only.
+- **Stop and route panels showing simultaneously**: clicking a stop didn't clear the selected route (and vice versa), so both panels rendered at once. Fixed with mutual-exclusivity logic in `MapCanvas` click handlers.
+- **Stop tooltip route count didn't match panel**: tooltip said "4 routes" but the panel showed 2 because the panel deduplicates by `routeShortName` while the tooltip used raw `routeIds.length`. Removed the count from the tooltip entirely.
 - **GO Milton (MI) showing false all-day frequency**: Milton line is rush-hour-only — each direction runs a short AM or PM peak window covering less than 40% of the weekday analysis window, but was classified as tier 15/60 with headways like "every 15 min." Routes whose active span covers less than 40% of the day window (or ≤90 minutes total) are now classified as `span` with null headway, same as school runs and shuttles.
 - **GO refresh taking 30+ minutes locally**: stop-to-route indexing in `process-core.ts` was O(stop_times × trips) via repeated `.find()` calls, plus O(stops × routes) reverse lookups. Replaced with trip/stop maps for O(1) lookups so large feeds like GO Transit refresh in a few minutes instead of hanging the machine.
 - **Redundant TTC headsigns**: stripped redundant "Line X (Name) towards" prefixes and identical-to-line-name headsigns from the display labels, specifically fixing TTC subway directions (e.g., "to Line 4 (Sheppard) towards Don Mills" now shows as "to Don Mills").
 - **Filter chip dropdowns clipped off-screen**: dropdowns were anchored `left-0` on their trigger chip, which overflows the viewport since the chip row sits at the right edge of the screen. Anchored to `right-0` instead so they open leftward.
 - **Station View only showed a route count, not route names**: clicking a stop showed "N routes depart from here" with no way to see which routes. Stop features only carry raw `routeIds`, not names — names are now cross-referenced from route features in `layers` and shown as badges.
-
-### Fixed
 - **Sidebar panel couldn't scroll to the bottom**: the scrollable panel was a flex child with no `min-h-0`/`flex-1`, so it grew to fit its content instead of being constrained by the parent's max-height — `overflow-y-auto` never actually kicked in. Agency list (and anything below it) was unreachable when the panel content exceeded the viewport. Fixed by making the scroll container a proper shrinking flex child.
 - **Route lines very hard to click**: thin route lines (1–4px) had a click hit-area equal to their visual width, since Leaflet's Canvas renderer ties click tolerance directly to stroke `weight`. Added an invisible 16px-wide "hit" line under each route purely for click/tap detection, so thin lines stay visually unobtrusive but are much easier to select.
 - **Search results showed only a count, not which routes matched**: typing a query surfaced "N routes match" with no way to see or jump to them. The match list now shows each matching route's number and agency, clickable to open its detail panel directly.
@@ -467,80 +491,18 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Burlington holiday service inflating weekday frequency**: Burlington Transit encodes holiday service (e.g. Victoria Day) in `calendar.txt` with `start_date === end_date` and all DOW flags set to `1`. These single-day entries were being included alongside regular multi-day weekday service, nearly doubling trip counts and halving the apparent headway (Route 1 appeared to run every 10 min instead of ~30 min). `getActiveServiceIds` Step 1 now uses the same two-pass approach as Step 2: multi-day services in Pass A; single-day entries only in Pass B if Pass A found nothing.
 - **Shape filter built from wrong service period (DRT)**: DRT encodes schedule version in shape IDs (e.g. `-2026-04` vs `-2026-06`). The dominant-shape calculation was counting across ALL trips, including future-period trips, which selected a shape ID that no current-period trip matched — silently dropping every trip and producing missing or wildly incorrect headways. Shape counts are now built only from trips whose `service_id` is active in the current period (`detectReferenceDate` + `getActiveServiceIds` across Mon/Sat/Sun). Fixes DRT 905 and any other agency with versioned shape IDs.
 - **GO rail lines in wrong tier or hidden**: Rail short-turn trips (e.g. GO Union→Bramalea) were being excluded by the dominant-shape filter, leaving only the handful of end-to-end trips and inflating computed headways by ~6×. Rail routes now bypass the phase-1 shape filter entirely — all trips count toward frequency, while the longest shape is still used for display geometry. Additionally, the rail tier array was missing `60`, so any rail route averaging >30 min fell into `tier=span` and was hidden by default. Added `60` to `modeTierOverrides.rail`.
-
-### Added
-- **Headsign-based direction labels**: route panel directions now show "to {headsign}" (e.g. "to Whitby Station") instead of generic "Direction 1"/"Direction 2", with light normalization stripping agency branch-letter prefixes (e.g. DRT's "A - Windfields Farm" → "Windfields Farm").
-- **Hide irregular/peak-only routes toggle**: new advanced filter to hide routes with no sustained frequency tier (school runs, shuttles, rush-hour-only express routes) — the existing max-headway slider doesn't catch these since they fall back to raw average headway.
-- **Light mode default**: map now defaults to light mode; dark mode still available via the toggle.
-- **Auto day-type**: day selector (Weekday/Saturday/Sunday) now initialises to today's actual day instead of always defaulting to Weekday.
-- **GO Transit rail**: 7 rail lines (Lakeshore East/West, Kitchener, Barrie, Stouffville, Richmond Hill, Milton) added to the map using a rail-only filtered feed. Routes use actual shape geometry (longest shape per direction, not most-frequent short-turn pattern).
-- **Stop dots hidden at regional zoom**: transit stop markers now only appear at zoom ≥ 13; at the regional overview zoom they were covering the entire map in thousands of overlapping circles. Stops mount as a separate Leaflet layer so zooming in/out doesn't remount route lines.
-
-### Added
-- **Combined frequency corridors (AI-17)**: overlapping routes on shared stop-to-stop links now emit corridor features with *combined* (union) headway. These render as slightly thicker overlays on top of the per-route lines, so corridor segments visually show the effective frequency provided by multiple routes (e.g. two 12 min routes → ~6 min combined corridor in the tighter color tier). Day and headway filters apply to corridors; station selection filters to corridors involving the stop's routes; search matches corridors via participating route IDs/names.
-- **Route info panel (AI-18)**: clicking a route opens a detail panel in the sidebar — route name, agency, and per-direction headways with tier dots. The hover tooltip slims down to route name + headway; the click is now the way to get full detail.
-
-### Changed
-- **Viewport-scoped stats (AI-19)**: the "On screen" and Coverage numbers now reflect the current map view instead of the whole region — they recompute as you pan/zoom, using cached per-feature bounding boxes.
-- **Clickable legend (AI-20)**: merged the redundant "Show up to" buttons and Legend swatches into one control — each legend tier row is now the frequency filter; tiers above the active threshold dim to show they're hidden. The wordmark also no longer renders all-caps (AI-16).
-
-### Added
-- **Clickable Stations**: Users can now click on transit hubs and stations to discover all routes departing from that location.
-  - **Spatial Discovery**: Clicking a station filters the regional map to show only the specific routes serving that hub.
-  - **Station View HUD**: Added a dedicated sidebar panel that displays the station name and route count when a hub is selected.
-  - **Visual Feedback**: Selected stations are highlighted with an indigo pulse and white border for clear spatial focus.
-  - **Integrated Reset**: Station selection is automatically cleared when global filters are reset or the map background is clicked.
-- **Advanced Map Filtering**: Implemented a comprehensive multi-dimensional filtering system.
-  - **Agency Filtering**: Toggle visibility for each of the 13 GTHA agencies (TTC, GO Transit, MiWay, etc.).
-  - **Mode Filtering**: Filter routes by vehicle type (Subway, Streetcar, Rail, Bus).
-  - **Day Selection**: Support for switching between Weekday, Saturday, and Sunday service levels.
-  - **Collapsible UI**: Added an "Advanced Filters" section in the sidebar with active filter indicators and a Reset button.
-- **Unit Testing Suite**: Integrated Vitest, JSDOM, and React Testing Library.
-  - Added high-coverage tests for `useIntervalStats` hook and color mapping utilities.
-- **Clickable Stations (Roadmap)**: Logged feature request for station-level route discovery via spatial mapping.
-
-### Fixed
 - **Theme Architecture Refactor**: Centralized all UI colors into CSS variables with a robust `data-theme` switching mechanism on the document root.
 - **Persistent Light Mode**: Implemented theme persistence via `localStorage` and synchronized it across the header, map tiles, and side panel.
 - **Dynamic Tooltip Colors**: Refactored route overlays to use CSS classes and theme variables, resolving the bug where tooltips remained in dark mode when the app was set to light mode.
 - **Header Cleanup**: Removed the hardcoded "Greater Toronto & Hamilton Area" label from the masthead to reflect the expanded regional coverage.
 - **Header Theme Consistency**: Fixed the menu bar/header failing to update colors in light mode by linking its background and text to the new theme architecture.
-
-### Changed
-- **Search Relocation**: Moved the route search bar from the sidebar to the global header for better UI space utilization and a more standard navigation experience.
-- **Color Logic Extraction**: Moved all headway tiering and color mapping logic into a dedicated `src/utils/colors.ts` for better testability and reuse.
-- **Modular 'Clean Architecture' Refactor**: Deconstructed the monolithic `Interval.tsx` into a modern modular structure.
-  - Extracted data fetching and processing into `useAgencyData` hook.
-  - Extracted search, filtering logic, and statistics into `useIntervalStats` hook.
-  - Split UI into `MapCanvas` (Leaflet logic) and `SidebarControls` (HUD/filtering) components.
-  - Reduced primary application logic from 14KB to <50 lines, significantly improving maintainability for future filtering features.
-- **Full reset to the original premise**: a hosted map of how frequent transit service is. Deleted the OCI server, v0 realtime backend, Express API, router, Zustand, and Firebase. Atlas is now a static Vite + React + Leaflet app with no server and no database.
-- Thinner line weights (frequent routes 3→2, others 1.5→1) for a less cluttered map at regional zoom.
-- Canvas rendering for the ~1,000 simultaneous polylines.
-
-### Added
-- **Greater Golden Horseshoe expansion**: Barrie Transit, Grand River Transit, Guelph Transit, and Niagara Region Transit join the map — 13 agencies total. Bradford was evaluated but BWG Transit is on-demand only (no GTFS exists). GRT and Niagara use the Mobility Database stable mirror because their official URLs are dead or unreliable.
-- **Single regional map**: all 9 GTHA networks load in parallel onto one continuous map — pan between cities like Google Maps, no agency switcher. Tooltips show the operating agency.
-- **Route search**: search box filters routes by number or name across the whole region; matches highlight while everything else dims, with a live match count.
-- **GTHA coverage**: 9 agencies live — TTC, Brampton, Burlington, Durham Region, Hamilton, Milton, MiWay, Oakville, YRT.
-- **Pipeline → Blob architecture**: `pipeline/process-core.ts` turns a GTFS zip into GeoJSON (route shapes + weekday headway tiers); data is stored in Vercel Blob, keeping the repo at ~80 KB regardless of agency count.
-- **`npm run refresh`**: re-downloads every agency's verified `feedUrl` and rebuilds its Blob data. All 9 source URLs tested live.
-- **Weekly automation**: GitHub Action refreshes all feeds every Monday and commits index changes.
-- **Production deploy**: https://atlas-gamma-two.vercel.app
-
-### Fixed
 - Brampton and Hamilton were built from expired local GTFS zips; both rebuilt from current published feeds.
 - Cross-platform lockfile drift (`@emnapi/*`) that broke `npm ci` on Linux CI.
 - Tooltip white border: stripped Leaflet's default tooltip background, border, and arrow via `.atlas-tooltip` CSS overrides so only the custom dark popup renders.
 - Frequency filter showing routes above threshold: routes with `headway: null` were unconditionally passing the visibility check and rendering at any filter level. Null-headway routes are now hidden unless the filter is set to All.
 - Short-turn trips inflating headway: the pipeline was computing headway across all trips for a route+direction, including short-turn variants that only cover part of the corridor. Phase 1 now accepts a shape filter and process-core passes the dominant shape per route+direction, so headway is computed only from trips that run the full pattern. Verified on Guelph Route 99 Mainline: corrected from 8m → 10m.
 
-### Added
-- **Route selection**: clicking a route highlights it at full color/weight and dims all other routes to dark grey; click the same route or the map background to deselect.
-- **"All" frequency filter**: new button alongside the existing headway thresholds shows every route including infrequent ones (>60m), rendered in the existing Infrequent grey tier.
-- **Light mode**: sun/moon toggle in the panel header switches between dark (CartoDB dark) and light (CartoDB light) map tiles with a fully adapted panel theme.
-
-## [0.22.5] - 2026-05-12
+## [0.22.5] — 2026-05-12
 
 ### Added
 - **Stops & Connections API**: Added new backend endpoints to support spatial intelligence:
@@ -550,7 +512,7 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 ### Fixed
 - **Deployment Script Restoration**: Restored the `scripts/deploy.sh` script to the repository root. It was accidentally moved to `v0/scripts/` during the V0 archive, which was causing the `npm run deploy` command to fail with a missing file error.
 
-## [0.22.4] - 2026-05-12
+## [0.22.4] — 2026-05-12
 
 ### Fixed
 - **CodeQL Security**: Addressed 4 security vulnerabilities identified by CodeQL and Dependabot:
@@ -559,19 +521,19 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
   - Set explicit `contents: read` permissions for the `GITHUB_TOKEN` in the `.github/workflows/ci.yml` workflow.
   - Re-generated `v0/backend/package-lock.json` to properly reflect the patched `@tootallnate/once` `>=3.0.1` dependency override.
 
-## [0.22.3] - 2026-05-12
+## [0.22.3] — 2026-05-12
 
 ### Fixed
 - **SQL Injection Hardening**: Refactored multiple backend services (`VehicleService`, `IntelligenceService`, `import-routes`) to eliminate dynamic SQL string construction, resolving 3 CodeQL security alerts.
 - **Vulnerability Remediation**: Patched `@tootallnate/once` to `>=3.0.1` via package overrides to resolve a low-severity security finding.
 - **Git Hygiene**: Updated `.gitignore` to exclude agent-specific context files (`CLAUDE.md`, `GEMINI.md`, `ATLASLOG.md`) and session handoff documents.
 
-## [0.22.2] - 2026-05-12
+## [0.22.2] — 2026-05-12
 
 ### Fixed
 - **Root Lockfile Sync**: Explicitly installed `@emnapi/core` and `@emnapi/runtime` to resolve a persistent `npm ci` failure in GitHub Actions caused by missing peer dependencies for `firebase`.
 
-## [0.19.3] - 2026-05-06
+## [0.19.3] — 2026-05-06
 
 ### Added
 - **Strategic Audit in Analyze**: Added a new strategic audit workflow and supporting shared module UI primitives to tighten the Core 5 consolidation across analysis surfaces.
@@ -587,52 +549,15 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 - **Legacy Intelligence module**: Removed the old standalone Intelligence view and stylesheet in favor of the consolidated Analyze flow.
 - **Deprecated server lab scripts**: Removed `server/scripts/discovery-lab.ts` and `server/scripts/setup-lab.ts`.
 
-## [0.19.2] - 2026-05-04
-
-### Fixed
-- **OCI server weekly OOM crash / SSH unreachable**: Root cause was 1GB RAM being exhausted by Postgres (~300MB) + Redis loading 410MB RDB dump + Node.js heap. Fix: permanently disabled Redis (`systemctl disable redis`, deleted dump.rdb) and removed BullMQ entirely from the ingestion path. Poller now calls `matchPositions` + DB writes directly as fire-and-forget async ops. Redis freed ~300–500MB; server has been stable since.
-- **PM2 wrong cwd → env vars undefined**: PM2 was started without `--cwd /home/ubuntu/atlas-server`, so `dotenv/config` loaded from the wrong directory and all API keys resolved as `undefined`. Fixed by restarting with explicit `--cwd` flag.
-- **Matcher hang — static DB queries blocking indefinitely**: Two root causes: (1) initial LRU fill queries for large agencies (MBTA: 137 trips → 52–82s on cold Postgres) and (2) per-route fallback queries (~10s each for TTC with 100+ unmatched routes) were exhausting the static DB connection pool and holding match slots forever. Fixes: initial LRU fill wrapped in `Promise.race` with 20s timeout (returns 0 matches for the cycle; subsequent cycles progressively warm the Postgres buffer cache); per-route fallback query wrapped in `Promise.race` with 7s timeout; 25s total fallback budget per agency; static pool capped at `max: 3` with `connectionTimeoutMillis: 180000`; `MAX_CONCURRENT_MATCH` reduced from 4 → 2; `MAX_CACHE_SIZE` increased from 500 → 3000 so trip schedules aren't evicted across 18 agencies.
-- **matcher.ts log noise**: Replaced hundreds of `console.log` debug lines in the matcher and fallback loop with structured `log.info/warn` calls. PM2 out.log is now a usable diagnostic surface instead of an unreadable wall of text.
-- **`Promise.race` static pool connection leak — permanent backpressure**: `Promise.race` returned a timeout sentinel but the underlying DB query kept running and holding the pool connection for 82–131s. With `max: 3` and 18 agencies all cold-starting simultaneously, the pool was permanently exhausted. Fix: replaced `Promise.race` with dedicated `client.connect()` + `SET statement_timeout = N` so Postgres actually cancels the query and releases the connection after the deadline. Applied to both LRU fill (20s) and `getRouteScheduleAroundTime` (7s).
-- **LRU cache cleared on every agency — 0% match rate**: `scheduleCache` was a single Map keyed by `tripId` with a module-level `lastFeedVersion`. Each of the 18 agencies has a different `versionId`, so every agency call set `lastFeedVersion` to its own value and cleared the entire shared cache. No agency could accumulate cached trips. Fix: re-keyed cache as `${versionId}:${tripId}` and removed the `lastFeedVersion` clear — version upgrades now age out naturally via LRU eviction.
-- **Zombie DB queries accumulating across restarts**: Before `statement_timeout` was added, every `pm2 restart` left in-flight LRU fill queries running in Postgres indefinitely. After several restarts, 24+ zombie queries were holding all static pool slots, causing permanent `connectionTimeout` on new connections. Fix: killed all existing zombies with `pg_terminate_backend`; new `statement_timeout` prevents future accumulation.
-- **Halifax delay values systematically wrong (−25 hours)**: GTFS extended-time convention: trips that run past midnight use arrival_times > 1440 minutes (e.g. 25:10 = 1510 min). `localSecondsFromMidnight` returns 0–86399 for the current calendar day, so for a 1:10 AM observation against a 25:10 scheduled stop, `delay = 4200 − 90600 = −86400s`. Fix: after computing the raw delay, if `rawDelay < −43200`, add 86400 to observedSeconds to align with the schedule's service day.
-- **Halifax missing timezone — delays off by 1 hour**: Halifax fell back to `America/Toronto` (UTC−4) instead of `America/Halifax` (UTC−3). Added explicit `timezone: 'America/Halifax'` to the Halifax agency config.
-- **Benchmark query timing out every 15 min (>300s on full 24h window)**: `vehicle_positions` had no index on `(agency_id, observed_at)` — every benchmark run was a full sequential scan of a multi-million-row table. Fix: added `vehicle_positions_agency_time_idx` (CONCURRENTLY); reduced benchmark window from 24h → 6h; refresh interval 15 min → 30 min.
-- **`stop-adherence` endpoint including stale trip data**: Added `ABS(delay_seconds) < 3600` filter to the stop-adherence query so readings from vehicles stuck reporting a finished trip's ID (e.g. STA showing +3h delays) are excluded.
-- **Server build not compiled on deploy**: Root `npm run build` only builds the Vite frontend (`noEmit: true` in root tsconfig). Server changes to `server/src/` require `cd server && npm run build` before rsyncing `server/dist/`. Updated `CLAUDE.md` with explicit two-step build instructions.
-- **Frontend unreachable in production**: End users were previously unable to access the dashboard because the UI wasn't deployed anywhere (it required running `npm run dev` locally with an SSH tunnel). Fix: Made the OCI Express server a full-stack host. It now statically serves the compiled Vite `dist/` folder and handles React Router SPA fallbacks via `app.get('/{*splat}')` (updated for Express 5 routing). Opened port 3001 in iptables so the app is now publicly accessible.
+## [0.19.2] — 2026-05-04
 
 ### Added
 - **Single-command deployment**: Created `scripts/deploy.sh` (mapped to `npm run deploy`) which builds both the Vite frontend and Node server, rsyncs them to OCI, ensures firewall port 3001 is open, and restarts PM2 automatically.
 - **`GET /api/intelligence/stop-adherence`**: Per-stop schedule adherence endpoint. Params: `agency`, `route`, `hours` (1–72, default 24). Aggregates `vehicle_positions.delay_seconds` (match_confidence ≥ 0.7) grouped by `(stop_id, stop_sequence)`, returning `avgDelaySeconds`, `medianDelaySeconds`, `onTimePct`, `earlyCount`, `lateCount`, `sampleCount` per stop. Secondary lookup against static DB for `stop_name`, `stop_lat`, `stop_lon`. No new schema — uses existing `vehicle_positions` data.
+- **`tsconfig.scripts.json`**: Separate TypeScript config for compiling `server/scripts/` with `rootDir: "."` and `outDir: "./dist-scripts"`. Lets import scripts be compiled and deployed to OCI independently of the main server build.
 
 ### Changed
 - **Ingestion pipeline — Redis/BullMQ removed**: `poller.ts` no longer enqueues jobs to Redis. `startPositionWorker` removed from `server.ts`. `position-queue.ts` and `position-worker.ts` remain as dead code (unused, harmless). The queue layer was the single point of failure during Redis LOADING state hangs and is now completely absent from the data path.
-
-### Fixed
-- **Halifax matching (0% match rate)**: Root cause was missing stop_times — Halifax was imported in March before stop_times streaming was added to the importer. Re-imported 2026-04-20 via `https://gtfs.halifax.ca/Static/google_transit.zip` to populate stop_times. RT trip IDs (4306xxx) don't match static (4301xxx) but route IDs do — time-based spatial fallback handles matching.
-- **Importer silent stop_times failure**: Added post-write verification that `COUNT(*) > 0` in `stop_times` for the new feed version. Import now throws explicitly if stop_times produced 0 rows instead of silently creating a broken feed version.
-- **AGENCIES.md tiering**: Restructured to reflect the actual beta state — Tier 1 (full-network + static: Halifax, STA), Tier 2 (partial + static: TTC), Tier 3 (partial, data collection only: all others). Previously listed all agencies as equivalent.
-
-### Added
-- **`tsconfig.scripts.json`**: Separate TypeScript config for compiling `server/scripts/` with `rootDir: "."` and `outDir: "./dist-scripts"`. Lets import scripts be compiled and deployed to OCI independently of the main server build.
-
-### Fixed
-- **PerformanceView `Cannot read properties of undefined`**: Added extensive defensive handling (`?? []`) to all `PerformanceView` tabs to ensure `.map()` and `.length` calls are safe if API responses are empty or missing expected arrays.
-- **PerformanceView `as any` casts**: Replaced four unsafe casts in `OverviewTab`'s `Promise.all` catch fallbacks with properly typed `BottleneckResponse`, `NetworkPulseResponse`, `GhostResponse`, and `MatchingStatsResponse` returns.
-- **PerformanceView duplicate loading/error JSX**: Extracted shared `TabLoading` and `TabError` components and replaced 7 identical inline spinner/error blocks across all tab components.
-- **SimulatorView JSX and structure**: Resolved critical structural errors in `src/modules/simulator/SimulatorView.tsx` where extra closing div tags and syntax discrepancies were breaking the Vite/Babel build process.
-- **PerformanceView type safety**: Fixed a TypeScript assignment error in `src/modules/performance/PerformanceView.tsx` by correctly typing the navigation `TABS` constant with `LucideIcon` and resolving `ComponentType` incompatibilities.
-- **Stale local/cloud runtime ambiguity**: Removed the leftover local Discovery Lab poller entrypoints (`server/scripts/discovery-lab.ts`, `server/scripts/setup-lab.ts`) that were causing agents and docs to conflate old local experiments with the live OCI runtime.
-- **Spokane polling docs drift**: Updated `docs/AGENCIES.md` to match the actual config — STA is now documented as full-system polling (`ROUTE_FILTER.sta = null`), not a partial route subset.
-- **Agency switcher dropdown persistence**: The TopNav agency menu now closes on route change and on outside click instead of staying open across pages.
-- **Broken import/runtime errors**: Fixed stale relative imports in `StrategicAudit.tsx`, added the missing `useViewAs` import in `ScreenerView.tsx`, and repaired `SimulatorView.tsx` JSX syntax errors that were breaking Vite parsing.
-- **Performance KPI mislabeling**: Reworked the misleading Performance overview cards so feed-quality scoring is no longer presented as generic "health", live reporting is counted as vehicles instead of a confusing route fraction, and the duplicate route-gap table was removed from Performance instead of shadowing Pulse.
-- **Performance overview signal**: Added a plain-English "What Matters Now" summary band at the top of Performance so the page now leads with an operational readout instead of forcing users to infer the situation from abstract KPI cards.
-
-### Changed
 - **Production runtime documentation**: Added an explicit OCI runtime statement to `README.md`, `CLAUDE.md`, `GEMINI.md`, `docs/NOTION_REGISTRY.md`, `gtfs-test-log.md`, and `server/src/intelligence/notion-sync.ts` so the repo now clearly states that live vehicle data is cloud-backed and not dependent on a local machine.
 - **TopNav simplification**: Removed the theme toggle and promoted Map to a first-class top-level nav item.
 - **Map UI redesign**: Reworked `MapView.tsx` around stronger operational context with a live summary panel, route activity list, vehicle inspector, lighter basemap styling, and clearer failure diagnostics instead of low-signal status chrome.
@@ -660,8 +585,36 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
     - `Alerts` $\rightarrow$ **Network Friction** (MRI Card)
     - `Intelligence / Monitor` $\rightarrow$ **Strategic Audit** (Analyze Tab)
 
+### Fixed
+- **OCI server weekly OOM crash / SSH unreachable**: Root cause was 1GB RAM being exhausted by Postgres (~300MB) + Redis loading 410MB RDB dump + Node.js heap. Fix: permanently disabled Redis (`systemctl disable redis`, deleted dump.rdb) and removed BullMQ entirely from the ingestion path. Poller now calls `matchPositions` + DB writes directly as fire-and-forget async ops. Redis freed ~300–500MB; server has been stable since.
+- **PM2 wrong cwd → env vars undefined**: PM2 was started without `--cwd /home/ubuntu/atlas-server`, so `dotenv/config` loaded from the wrong directory and all API keys resolved as `undefined`. Fixed by restarting with explicit `--cwd` flag.
+- **Matcher hang — static DB queries blocking indefinitely**: Two root causes: (1) initial LRU fill queries for large agencies (MBTA: 137 trips → 52–82s on cold Postgres) and (2) per-route fallback queries (~10s each for TTC with 100+ unmatched routes) were exhausting the static DB connection pool and holding match slots forever. Fixes: initial LRU fill wrapped in `Promise.race` with 20s timeout (returns 0 matches for the cycle; subsequent cycles progressively warm the Postgres buffer cache); per-route fallback query wrapped in `Promise.race` with 7s timeout; 25s total fallback budget per agency; static pool capped at `max: 3` with `connectionTimeoutMillis: 180000`; `MAX_CONCURRENT_MATCH` reduced from 4 → 2; `MAX_CACHE_SIZE` increased from 500 → 3000 so trip schedules aren't evicted across 18 agencies.
+- **matcher.ts log noise**: Replaced hundreds of `console.log` debug lines in the matcher and fallback loop with structured `log.info/warn` calls. PM2 out.log is now a usable diagnostic surface instead of an unreadable wall of text.
+- **`Promise.race` static pool connection leak — permanent backpressure**: `Promise.race` returned a timeout sentinel but the underlying DB query kept running and holding the pool connection for 82–131s. With `max: 3` and 18 agencies all cold-starting simultaneously, the pool was permanently exhausted. Fix: replaced `Promise.race` with dedicated `client.connect()` + `SET statement_timeout = N` so Postgres actually cancels the query and releases the connection after the deadline. Applied to both LRU fill (20s) and `getRouteScheduleAroundTime` (7s).
+- **LRU cache cleared on every agency — 0% match rate**: `scheduleCache` was a single Map keyed by `tripId` with a module-level `lastFeedVersion`. Each of the 18 agencies has a different `versionId`, so every agency call set `lastFeedVersion` to its own value and cleared the entire shared cache. No agency could accumulate cached trips. Fix: re-keyed cache as `${versionId}:${tripId}` and removed the `lastFeedVersion` clear — version upgrades now age out naturally via LRU eviction.
+- **Zombie DB queries accumulating across restarts**: Before `statement_timeout` was added, every `pm2 restart` left in-flight LRU fill queries running in Postgres indefinitely. After several restarts, 24+ zombie queries were holding all static pool slots, causing permanent `connectionTimeout` on new connections. Fix: killed all existing zombies with `pg_terminate_backend`; new `statement_timeout` prevents future accumulation.
+- **Halifax delay values systematically wrong (−25 hours)**: GTFS extended-time convention: trips that run past midnight use arrival_times > 1440 minutes (e.g. 25:10 = 1510 min). `localSecondsFromMidnight` returns 0–86399 for the current calendar day, so for a 1:10 AM observation against a 25:10 scheduled stop, `delay = 4200 − 90600 = −86400s`. Fix: after computing the raw delay, if `rawDelay < −43200`, add 86400 to observedSeconds to align with the schedule's service day.
+- **Halifax missing timezone — delays off by 1 hour**: Halifax fell back to `America/Toronto` (UTC−4) instead of `America/Halifax` (UTC−3). Added explicit `timezone: 'America/Halifax'` to the Halifax agency config.
+- **Benchmark query timing out every 15 min (>300s on full 24h window)**: `vehicle_positions` had no index on `(agency_id, observed_at)` — every benchmark run was a full sequential scan of a multi-million-row table. Fix: added `vehicle_positions_agency_time_idx` (CONCURRENTLY); reduced benchmark window from 24h → 6h; refresh interval 15 min → 30 min.
+- **`stop-adherence` endpoint including stale trip data**: Added `ABS(delay_seconds) < 3600` filter to the stop-adherence query so readings from vehicles stuck reporting a finished trip's ID (e.g. STA showing +3h delays) are excluded.
+- **Server build not compiled on deploy**: Root `npm run build` only builds the Vite frontend (`noEmit: true` in root tsconfig). Server changes to `server/src/` require `cd server && npm run build` before rsyncing `server/dist/`. Updated `CLAUDE.md` with explicit two-step build instructions.
+- **Frontend unreachable in production**: End users were previously unable to access the dashboard because the UI wasn't deployed anywhere (it required running `npm run dev` locally with an SSH tunnel). Fix: Made the OCI Express server a full-stack host. It now statically serves the compiled Vite `dist/` folder and handles React Router SPA fallbacks via `app.get('/{*splat}')` (updated for Express 5 routing). Opened port 3001 in iptables so the app is now publicly accessible.
+- **Halifax matching (0% match rate)**: Root cause was missing stop_times — Halifax was imported in March before stop_times streaming was added to the importer. Re-imported 2026-04-20 via `https://gtfs.halifax.ca/Static/google_transit.zip` to populate stop_times. RT trip IDs (4306xxx) don't match static (4301xxx) but route IDs do — time-based spatial fallback handles matching.
+- **Importer silent stop_times failure**: Added post-write verification that `COUNT(*) > 0` in `stop_times` for the new feed version. Import now throws explicitly if stop_times produced 0 rows instead of silently creating a broken feed version.
+- **AGENCIES.md tiering**: Restructured to reflect the actual beta state — Tier 1 (full-network + static: Halifax, STA), Tier 2 (partial + static: TTC), Tier 3 (partial, data collection only: all others). Previously listed all agencies as equivalent.
+- **PerformanceView `Cannot read properties of undefined`**: Added extensive defensive handling (`?? []`) to all `PerformanceView` tabs to ensure `.map()` and `.length` calls are safe if API responses are empty or missing expected arrays.
+- **PerformanceView `as any` casts**: Replaced four unsafe casts in `OverviewTab`'s `Promise.all` catch fallbacks with properly typed `BottleneckResponse`, `NetworkPulseResponse`, `GhostResponse`, and `MatchingStatsResponse` returns.
+- **PerformanceView duplicate loading/error JSX**: Extracted shared `TabLoading` and `TabError` components and replaced 7 identical inline spinner/error blocks across all tab components.
+- **SimulatorView JSX and structure**: Resolved critical structural errors in `src/modules/simulator/SimulatorView.tsx` where extra closing div tags and syntax discrepancies were breaking the Vite/Babel build process.
+- **PerformanceView type safety**: Fixed a TypeScript assignment error in `src/modules/performance/PerformanceView.tsx` by correctly typing the navigation `TABS` constant with `LucideIcon` and resolving `ComponentType` incompatibilities.
+- **Stale local/cloud runtime ambiguity**: Removed the leftover local Discovery Lab poller entrypoints (`server/scripts/discovery-lab.ts`, `server/scripts/setup-lab.ts`) that were causing agents and docs to conflate old local experiments with the live OCI runtime.
+- **Spokane polling docs drift**: Updated `docs/AGENCIES.md` to match the actual config — STA is now documented as full-system polling (`ROUTE_FILTER.sta = null`), not a partial route subset.
+- **Agency switcher dropdown persistence**: The TopNav agency menu now closes on route change and on outside click instead of staying open across pages.
+- **Broken import/runtime errors**: Fixed stale relative imports in `StrategicAudit.tsx`, added the missing `useViewAs` import in `ScreenerView.tsx`, and repaired `SimulatorView.tsx` JSX syntax errors that were breaking Vite parsing.
+- **Performance KPI mislabeling**: Reworked the misleading Performance overview cards so feed-quality scoring is no longer presented as generic "health", live reporting is counted as vehicles instead of a confusing route fraction, and the duplicate route-gap table was removed from Performance instead of shadowing Pulse.
+- **Performance overview signal**: Added a plain-English "What Matters Now" summary band at the top of Performance so the page now leads with an operational readout instead of forcing users to infer the situation from abstract KPI cards.
 
-## [0.13.0] - 2026-03-30
+## [0.13.0] — 2026-03-30
 
 ### Added
 - **Corridor Analysis**: Identifies shared transit corridors and computes combined headways.
@@ -676,24 +629,10 @@ All legacy release notes for Atlas are preserved here. For recent changes, see [
 ---
 *Legacy entries from 0.1.0 to 0.12.0 continue below...*
 
-## [0.10.0] - 2026-03-09
+## [0.10.0] — 2026-03-09
 
 ### Added
 - **View as Agency**: Admins can now select any agency from the OCI static database via a nav dropdown. Selecting an agency loads their full route catalog (Weekday/Saturday/Sunday) from the `/api/screen` endpoint and populates all modules — no GTFS re-upload needed. A pill indicator shows the active agency with a one-click exit.
-
-### Changed
-- **Module renames**: Strategy → Analyze, Intelligence → Monitor. Routes updated accordingly (`/analyze`, `/monitor`).
-- **Optimize removed**: The frequency network map is now a Map tab inside Analyze, eliminating a redundant standalone module.
-- **Nav cleanup**: Removed circle avatar; replaced with display name + Log out. Nav items moved back to right-justified position.
-- **Homepage**: Restored original design (city hero, animated heading, 400px feature cards). Module cards updated to reflect new names and 5-module structure.
-- **Map error handling**: Real-time feed errors now stop the retry loop and show a quiet inline banner with a manual Retry button instead of a pulsing red alert.
-
-## Accumulated unreleased changes (moved from main CHANGELOG.md on 2026-07-04)
-
-The following entries were in [Unreleased] but represented a large backlog of ~200+ commits' worth of work. Moved to keep main CHANGELOG.md focused on current pending changes only.
-
-
-### Added
 - **Static agency expansion — 16 agencies (total: 296)**: NYC borough bus splits, Hampton Roads, Wilmington (DE + NC), Tallahassee, Birmingham, Montgomery, Charleston SC, Savannah, Tulsa.
   - **New York**: MTA NYCT Bus split by borough — Manhattan (mdb-513), Brooklyn (mdb-512), Queens (mdb-520), Bronx (mdb-528), Staten Island (mdb-514)
   - **Virginia**: Hampton Roads Transit / HRT (mdb-473), Bay Transit (mdb-224), Williamsburg Area Transit Authority / WATA (mdb-474)
@@ -838,6 +777,13 @@ The following entries were in [Unreleased] but represented a large backlog of ~2
 - **`R2_LIVE_BUCKET_NAME` added to Vercel env**: production environment variable set explicitly; other environments fall back to `'atlas-live'` default in code.
 
 ### Changed
+- **Module renames**: Strategy → Analyze, Intelligence → Monitor. Routes updated accordingly (`/analyze`, `/monitor`).
+- **Optimize removed**: The frequency network map is now a Map tab inside Analyze, eliminating a redundant standalone module.
+- **Nav cleanup**: Removed circle avatar; replaced with display name + Log out. Nav items moved back to right-justified position.
+- **Homepage**: Restored original design (city hero, animated heading, 400px feature cards). Module cards updated to reflect new names and 5-module structure.
+- **Map error handling**: Real-time feed errors now stop the retry loop and show a quiet inline banner with a manual Retry button instead of a pulsing red alert.
+## Accumulated unreleased changes (moved from main CHANGELOG.md on 2026-07-04)
+The following entries were in [Unreleased] but represented a large backlog of ~200+ commits' worth of work. Moved to keep main CHANGELOG.md focused on current pending changes only.
 - **MapCanvas: remove dead `selectedAgencies` prop and `hideSpan` effect dependency**: after the tile filter centralization, `selectedAgencies` was no longer wired to anything in MapCanvas (covered by `tileFilter`) and `hideSpan` was still in the effect dep array despite not being referenced in filter construction (also covered by `tileFilter`). Removed the unused prop and cleaned the dep array.
 - **Agency filter: "None" now deselects only in-viewport agencies**: previously "None" globally emptied `selectedAgencies` regardless of viewport, hiding all agencies everywhere (e.g. deselecting Seattle would also hide Denver). It now only removes in-viewport agencies from the selected set, matching the scoped behavior of "All".
 - **Agency filter: replace `layers`-based "in view" check with bbox/center intersection**: the agency list was showing agencies that had ever been fetched during the session (accumulated in `layers`) rather than agencies whose geographic area overlaps the current viewport. Now uses the agency `bbox` field (if present) or `center` ± 0.5° as a fallback to determine visibility. Agencies panel no longer needs `layers` passed in.
@@ -1137,5 +1083,7 @@ The following entries were in [Unreleased] but represented a large backlog of ~2
 - **`atlas-live` R2 lifecycle rule added**: 30-day TTL on all objects (`delete-old-snapshots` rule) so .pb snapshots don't accumulate forever.
 - **CI workflow missing `R2_ARCHIVE_BUCKET_NAME`**: the secret was set but never injected into the workflow env block, so every weekly run that encountered a changed feed was marking the agency as FAILED and writing no archive.
 - **Silent skip when feed has no archive key**: feeds without `feed_end_date` or `feed_version` now log a warning instead of silently skipping the archive step.
+
 ### Removed
 - **One-off Burlington backfill script**: Removed `pipeline/backfill-burlington-history.ts` (hardcoded local paths). Superseded by `backfill-mdb-history.ts`.
+
