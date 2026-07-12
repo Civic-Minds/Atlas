@@ -111,11 +111,11 @@ We can rename later.
 - Success metrics (internal use? external engagement? planner time saved?)?
 
 ## Related Reading
-- [Product Roadmap](ROADMAP_PRODUCT.md)
-- [Technical Roadmap](ROADMAP_TECHNICAL.md)
-- [Research](RESEARCH.md) (especially evidence gaps for planning)
+- [Product Roadmap](PRODUCT.md)
+- [Technical Roadmap](TECHNICAL.md)
+- [Research](../RESEARCH.md) (especially evidence gaps for planning)
 - [History app work](https://github.com/Civic-Minds/Atlas) and recent geometry + scrubber improvements
 
 ---
 
-[Back to Roadmap](../ROADMAP.md)
+[Back to Roadmap](./ROADMAP.md)

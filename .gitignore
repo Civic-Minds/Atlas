@@ -13,9 +13,6 @@ dist-ssr
 tmp
 *.local
 
-# Claude Code local settings (personal hooks/config, not for commit)
-.claude/settings.local.json
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -40,7 +37,7 @@ server/.env
 HANDOFF.md
 handoff.txt
 
-# Issue filing guidelines (local agent reference — see also CLAUDE.md)
+# Issue filing guidelines (local reference)
 docs/ISSUES.md
 
 # Planning and integration docs
@@ -48,17 +45,6 @@ INTEGRATION.md
 release-notes.txt
 ATLASLOG.md
 
-# AI Rules and Context (personal AI assistant instructions — do not commit)
-AGENTS.md
-Agents.md
-CLAUDE.md
-Claude.md
-GEMINI.md
-.grok/
-.cursor/
-.claude/
-.conductor/
-_agents/
 scratch/
 gtfs-test-log.md
 .vercel
@@ -68,14 +54,7 @@ public/data/*.json
 !public/data/index.schema.json
 !public/data/feed-refresh.json
 
-# Personal AI instruction overrides / local variants
-CLAUDE.local.md
-AGENTS.local.md
-
 # Wrangler local dev state and captured feed samples
 workers/**/.wrangler/
 workers/gtfs-rt-archiver/burlington/
 workers/gtfs-rt-archiver/hamilton/
-
-# Gemini Agents config
-.agents/

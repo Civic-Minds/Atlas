@@ -15,7 +15,7 @@ User experience and the workflow of a transit professional using Atlas.
 
 **Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or filter.
 
-See [Atlas Factbook roadmap](ROADMAP_FACTBOOK.md) for details on computation, AI-assisted narratives, and surfacing.
+See [Atlas Factbook roadmap](FACTBOOK.md) for details on computation, AI-assisted narratives, and surfacing.
 
 ---
 
@@ -43,4 +43,4 @@ See [Atlas Factbook roadmap](ROADMAP_FACTBOOK.md) for details on computation, AI
 
 ---
 
-[Back to Roadmap](../ROADMAP.md)
+[Back to Roadmap](./ROADMAP.md)
