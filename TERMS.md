@@ -1,7 +1,5 @@
 # Terms of Service
 
-**This is a starting point, not legal advice.** Self-drafted for a small personal project. If Atlas ever takes on paying customers, an API with rate-limited keys, or other real liability exposure, have an actual lawyer review this before relying on it.
-
 Last updated: July 2026.
 
 ## What this is
