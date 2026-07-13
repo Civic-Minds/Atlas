@@ -7,6 +7,7 @@ import {
   explicitTripDelaySec,
   serviceDayStartEpoch,
 } from '../shared/liveVehicleDelay.js';
+import { isRateLimited } from '../shared/rateLimit.js';
 
 export const config = {
   maxDuration: 60,
@@ -62,6 +63,17 @@ async function fetchProtoFeed(
 }
 
 export default async function handler(req: Request) {
+  const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
+  if (isRateLimited(ip)) {
+    return new Response(JSON.stringify({ error: 'Too many requests' }), {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': '60',
+      },
+    });
+  }
+
   const agencySlug = queryParams(req).get('agency');
 
   if (!agencySlug) {
