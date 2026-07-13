@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [3.1.1] — 2026-07-13
+
+### Added
+- **Security Policy (`SECURITY.md`)**: Added a standard vulnerability disclosure policy pointing to `ryan@ryanisnota.pro`.
+
+### Changed
+- **API Rate Limiting**: Added in-memory rate limiting to `/api/live-vehicles` and `/api/history-adherence` serverless endpoints to protect against client hammering and reduce R2/upstream fetch costs.
+
 ## [3.1.0] — 2026-07-11
 
 ### Added
