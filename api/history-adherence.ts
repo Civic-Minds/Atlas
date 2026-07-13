@@ -2,6 +2,7 @@ import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/clien
 import { getLiveRouteConfig, LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { computeHistoryAdherence, type Snapshot } from '../shared/computeHistoryAdherence.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
+import { isRateLimited } from '../shared/rateLimit.js';
 
 export const config = { maxDuration: 60 };
 
@@ -79,6 +80,17 @@ async function fetchSidecar(agency: string): Promise<Record<string, any> | null>
 }
 
 export default async function handler(req: Request) {
+  const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
+  if (isRateLimited(ip)) {
+    return new Response(JSON.stringify({ error: 'Too many requests' }), {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': '60',
+      },
+    });
+  }
+
   const params = queryParams(req);
   const agency = params.get('agency');
   const route = params.get('route');
