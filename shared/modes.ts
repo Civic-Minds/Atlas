@@ -15,7 +15,7 @@ export interface EffectiveModeInput {
 /** Agency feeds whose route_type=0 entries are rail rather than streetcars. */
 export const VIRTUAL_LRT_AGENCIES = ['calgary', 'edmonton', 'rem', 'octranspo'] as const;
 
-const LRT_NAME_RE = /(?:CTrain|Capital Line|Metro Line|Valley Line|Valley Metro Rail|Metro [A-Z] Line)/i;
+const LRT_NAME_RE = /(?:CTrain|Capital Line|Metro Line|Valley Line|Valley Metro Rail|Metro [A-Za-z]+ Line)/i;
 const SAN_DIEGO_RAIL_RE = /^(?:Blue|Copper|Green|Orange|Silver)$/i;
 
 /** Coerce GeoJSON / MVT routeType to a GTFS base type (defaults to bus). */
@@ -114,6 +114,7 @@ export function buildEffectiveModeExpression(): unknown[] {
         ['>=', ['index-of', 'Valley Line', longName], 0],
         ['>=', ['index-of', 'Valley Metro Rail', longName], 0],
         ['>=', ['index-of', 'Metro ', longName], 0],
+        ['>=', ['index-of', 'METRO ', longName], 0],
       ]],
       ['all', ['==', routeType, 0], ['==', agency, 'sdmts'], ['any',
         ...['Blue', 'Copper', 'Green', 'Orange', 'Silver'].map(name => ['==', shortName, name]),

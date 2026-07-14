@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Fixed
+- **LRT filter parity**: Map rendering now applies the same Minneapolis METRO LRT classification as the sidebar.
 - **City search aliases**: Searches now surface agencies by known city names even when the agency's display name is an acronym or legal name without the city.
 - **LRT mode classification**: Recognized route_type=0 rail feeds across Calgary, Edmonton, Los Angeles, Phoenix, San Diego, Minneapolis, and Montreal so their rail lines no longer appear as streetcars.
 - **Responsive search bar**: The header search field now uses available space in medium-width browser windows instead of staying at a narrow fixed width.
