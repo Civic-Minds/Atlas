@@ -32,7 +32,7 @@ export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
 /** Top-bar pill surface (search bar, headway filter row) */
 export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shadow-lg`;
 /** Shared responsive width used by the top search bar */
-export const SEARCH_BAR_WIDTH = 'w-full sm:w-44 lg:w-56 xl:w-72';
+export const SEARCH_BAR_WIDTH = 'w-full sm:flex-1 lg:flex-none lg:w-56 xl:w-72';
 
 /** Width constant for panels and cards, matching search bar on desktop but wider on mobile */
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-44 lg:w-56 xl:w-72 max-w-sm';

@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Fixed
+- **Responsive search bar**: The header search field now uses available space in medium-width browser windows instead of staying at a narrow fixed width.
 - **Agency mode labels**: Agency cards now distinguish streetcars from virtual LRT routes instead of showing both as “Light Rail.”
 - **Headway consistency**: Agency cards and Near You now use the same active-period route headway shown on route cards instead of filter-oriented minimum-stop values.
 - **Recent route headways**: Recent routes now matches the active-period headway shown on the route card instead of retaining an all-day value.
