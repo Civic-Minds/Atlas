@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+### Added
+- **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
+
 ### Fixed
 - **LRT filter parity**: Map rendering now applies the same Minneapolis METRO LRT classification as the sidebar.
 - **City search aliases**: Searches now surface agencies by known city names even when the agency's display name is an acronym or legal name without the city.
@@ -18,7 +21,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [3.1.1] — 2026-07-13
 
 ### Added
-- **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 - **Security Policy (`SECURITY.md`)**: Added a standard vulnerability disclosure policy pointing to `ryan@ryanisnota.pro`.
 
 ### Changed
