@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
 import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
-import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
+import { routeCardDisplayHeadway } from '../utils/effectiveHeadway';
 
 const NEARBY_RADIUS_M = 500;
 const EARTH_R = 6371000;
@@ -87,7 +87,7 @@ export function useNearbyRoutes(
         const shortName = p.routeShortName || p.routeId;
         const mapKey = `${slug}::${shortName}`;
         const rk = routeKey({ ...p, agencySlug: slug } as any);
-        const headway = effectiveRouteHeadway(p, period);
+        const headway = routeCardDisplayHeadway(p, period);
 
         if (!routeMap.has(mapKey)) {
           routeMap.set(mapKey, {

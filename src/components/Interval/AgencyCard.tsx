@@ -9,7 +9,7 @@ import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../..
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
-import { effectiveRouteHeadway } from '../../utils/effectiveHeadway';
+import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice } from './cardUi';
 
 interface RouteRow {
@@ -61,7 +61,10 @@ function getRoutes(
     // Allow both directions so routes with 15min in one dir show in filters.
 
     const key = p.routeShortName;
-    const h = effectiveRouteHeadway(p, period);
+    // Keep the filter metric separate from the value shown to users. The card's
+    // displayed headway must match the route card; minimum-stop values are only
+    // appropriate for deciding whether a route passes the frequency filter.
+    const h = routeCardDisplayHeadway(p, period);
     const matchesFilter = passesRouteFilter(p, slug, agencyFilters, null);
     const existing = best.get(key);
     if (!existing || (h !== null && (existing.headway === null || h < existing.headway))) {

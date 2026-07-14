@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Fixed
+- **Headway consistency**: Agency cards and Near You now use the same active-period route headway shown on route cards instead of filter-oriented minimum-stop values.
 - **Recent route headways**: Recent routes now matches the active-period headway shown on the route card instead of retaining an all-day value.
 
 ## [3.1.1] — 2026-07-13
@@ -452,4 +453,3 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **App drawer cursor flickering**: added `cursor-default` to dropdown panel wrapper; `button:disabled { cursor: not-allowed }` as global CSS rule
 - **InfoPanel slide carousel offset**: replaced fragile horizontal slide container with clean conditional rendering; fixed margin/clipping bugs
 - **Station stop grouping**: sibling stops grouped by name; multi-agency proximity grouping within 120m; major station hubs shown at zoom 12–15
-
