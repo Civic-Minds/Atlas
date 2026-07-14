@@ -1,6 +1,6 @@
 import type { PeriodKey } from './config.js';
 import { periodHeadwayFlatKeys } from './pmtilesProps.js';
-import { VIRTUAL_LRT_MODE } from './modes.js';
+import { buildEffectiveModeExpression, VIRTUAL_LRT_MODE } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
 
@@ -28,23 +28,14 @@ export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
   if (!modes || modes.size === 0) return null;
 
   const longName: unknown[] = ['coalesce', ['get', 'routeLongName'], ''];
+  const effectiveMode: unknown[] = buildEffectiveModeExpression();
   const parts: unknown[] = [];
 
   for (const m of modes) {
     if (m === VIRTUAL_LRT_MODE) {
-      parts.push([
-        'any',
-        ['all', ['==', ['get', 'routeType'], 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
-        ['all', ['==', ['get', 'routeType'], 0], ['==', ['slice', longName, 0, 5], 'Line ']],
-        ['all', ['==', ['get', 'routeType'], 2], ['>=', ['index-of', 'ION', longName], 0]],
-      ]);
+      parts.push(['==', effectiveMode, VIRTUAL_LRT_MODE]);
     } else if (m === 0) {
-      parts.push([
-        'all',
-        ['==', ['get', 'routeType'], 0],
-        ['!=', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo'],
-        ['!=', ['slice', longName, 0, 5], 'Line '],
-      ]);
+      parts.push(['all', ['==', ['get', 'routeType'], 0], ['!=', effectiveMode, VIRTUAL_LRT_MODE]]);
     } else if (m === 2) {
       parts.push([
         'all',

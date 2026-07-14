@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Fixed
+- **LRT mode classification**: Recognized route_type=0 rail feeds across Calgary, Edmonton, Los Angeles, Phoenix, San Diego, Minneapolis, and Montreal so their rail lines no longer appear as streetcars.
 - **Responsive search bar**: The header search field now uses available space in medium-width browser windows instead of staying at a narrow fixed width.
 - **Agency mode labels**: Agency cards now distinguish streetcars from virtual LRT routes instead of showing both as “Light Rail.”
 - **Headway consistency**: Agency cards and Near You now use the same active-period route headway shown on route cards instead of filter-oriented minimum-stop values.

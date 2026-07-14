@@ -8,8 +8,15 @@ export const VIRTUAL_LRT_MODE = 100;
 export interface EffectiveModeInput {
   routeType?: number | string | null;
   routeLongName?: string | null;
+  routeShortName?: string | null;
   agencySlug?: string;
 }
+
+/** Agency feeds whose route_type=0 entries are rail rather than streetcars. */
+export const VIRTUAL_LRT_AGENCIES = ['calgary', 'edmonton', 'rem', 'octranspo'] as const;
+
+const LRT_NAME_RE = /(?:CTrain|Capital Line|Metro Line|Valley Line|Valley Metro Rail|Metro [A-Z] Line)/i;
+const SAN_DIEGO_RAIL_RE = /^(?:Blue|Copper|Green|Orange|Silver)$/i;
 
 /** Coerce GeoJSON / MVT routeType to a GTFS base type (defaults to bus). */
 export function normalizeRouteType(routeType: unknown): number {
@@ -18,12 +25,21 @@ export function normalizeRouteType(routeType: unknown): number {
   return Number.isFinite(n) ? n : 3;
 }
 
+export function isVirtualLrt(p: EffectiveModeInput): boolean {
+  const rt = normalizeRouteType(p.routeType);
+  const longName = p.routeLongName ?? '';
+  const shortName = p.routeShortName ?? '';
+  if (rt === 0 && VIRTUAL_LRT_AGENCIES.includes(p.agencySlug as typeof VIRTUAL_LRT_AGENCIES[number])) return true;
+  if (rt === 0 && /^Line \d/i.test(longName)) return true;
+  if (rt === 0 && LRT_NAME_RE.test(longName)) return true;
+  if (rt === 0 && p.agencySlug === 'sdmts' && SAN_DIEGO_RAIL_RE.test(shortName)) return true;
+  if (rt === 2 && /\bION\b/i.test(longName)) return true;
+  return false;
+}
+
 export function effectiveMode(p: EffectiveModeInput): number {
   const rt = normalizeRouteType(p.routeType);
-  if (rt === 0 && p.routeLongName && /^Line \d/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
-  if (rt === 0 && p.agencySlug === 'octranspo') return VIRTUAL_LRT_MODE;
-  if (rt === 2 && p.routeLongName && /\bION\b/i.test(p.routeLongName)) return VIRTUAL_LRT_MODE;
-  return rt;
+  return isVirtualLrt(p) ? VIRTUAL_LRT_MODE : rt;
 }
 
 /** Mode filter chip options (Frequency Map). */
@@ -84,13 +100,26 @@ export function getGtfsModeName(routeType: string | number): string {
 export function buildEffectiveModeExpression(): unknown[] {
   const routeType: unknown[] = ['to-number', ['coalesce', ['get', 'routeType'], 3]];
   const longName: unknown[] = ['coalesce', ['get', 'routeLongName'], ''];
+  const shortName: unknown[] = ['coalesce', ['get', 'routeShortName'], ''];
+  const agency: unknown[] = ['coalesce', ['get', 'agencySlug'], ''];
   return [
     'case',
-    ['all', ['==', routeType, 0], ['==', ['coalesce', ['get', 'agencySlug'], ''], 'octranspo']],
-    VIRTUAL_LRT_MODE,
-    ['all', ['==', routeType, 0], ['==', ['slice', longName, 0, 5], 'Line ']],
-    VIRTUAL_LRT_MODE,
-    ['all', ['==', routeType, 2], ['>=', ['index-of', 'ION', longName], 0]],
+    ['any',
+      ['all', ['==', routeType, 0], ['any', ...VIRTUAL_LRT_AGENCIES.map(slug => ['==', agency, slug])]],
+      ['all', ['==', routeType, 0], ['==', ['slice', longName, 0, 5], 'Line ']],
+      ['all', ['==', routeType, 0], ['any',
+        ['>=', ['index-of', 'CTrain', longName], 0],
+        ['>=', ['index-of', 'Capital Line', longName], 0],
+        ['>=', ['index-of', 'Metro Line', longName], 0],
+        ['>=', ['index-of', 'Valley Line', longName], 0],
+        ['>=', ['index-of', 'Valley Metro Rail', longName], 0],
+        ['>=', ['index-of', 'Metro ', longName], 0],
+      ]],
+      ['all', ['==', routeType, 0], ['==', agency, 'sdmts'], ['any',
+        ...['Blue', 'Copper', 'Green', 'Orange', 'Silver'].map(name => ['==', shortName, name]),
+      ]],
+      ['all', ['==', routeType, 2], ['>=', ['index-of', 'ION', longName], 0]],
+    ],
     VIRTUAL_LRT_MODE,
     routeType,
   ];

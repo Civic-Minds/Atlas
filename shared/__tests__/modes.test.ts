@@ -41,4 +41,11 @@ describe('effectiveMode', () => {
       agencySlug: 'ttc',
     })).toBe(0);
   });
+
+  it('classifies known route_type=0 LRT feeds', () => {
+    expect(effectiveMode({ routeType: 0, agencySlug: 'calgary', routeLongName: 'Red Line - Somerset - Bridlewood/Tuscany CTrain' })).toBe(VIRTUAL_LRT_MODE);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'edmonton', routeLongName: 'Capital Line' })).toBe(VIRTUAL_LRT_MODE);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'valleymetro', routeLongName: 'Valley Metro Rail A Line' })).toBe(VIRTUAL_LRT_MODE);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'sdmts', routeShortName: 'Blue', routeLongName: 'San Ysidro - UTC' })).toBe(VIRTUAL_LRT_MODE);
+  });
 });
