@@ -17,6 +17,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [3.1.1] — 2026-07-13
 
 ### Added
+- **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 - **Security Policy (`SECURITY.md`)**: Added a standard vulnerability disclosure policy pointing to `ryan@ryanisnota.pro`.
 
 ### Changed

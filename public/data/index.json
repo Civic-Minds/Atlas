@@ -142,7 +142,11 @@
     {
       "slug": "grt",
       "name": "Grand River Transit",
-      "searchAliases": ["Kitchener", "Waterloo", "Cambridge"],
+      "searchAliases": [
+        "Kitchener",
+        "Waterloo",
+        "Cambridge"
+      ],
       "region": "Ontario",
       "center": [
         43.4516,
@@ -183,7 +187,9 @@
     {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
-      "searchAliases": ["Hamilton"],
+      "searchAliases": [
+        "Hamilton"
+      ],
       "region": "Ontario",
       "center": [
         43.2557,
@@ -309,7 +315,9 @@
     {
       "slug": "octranspo",
       "name": "OC Transpo",
-      "searchAliases": ["Ottawa"],
+      "searchAliases": [
+        "Ottawa"
+      ],
       "region": "Ontario",
       "center": [
         45.32,
@@ -405,7 +413,9 @@
     {
       "slug": "ttc",
       "name": "Toronto Transit Commission",
-      "searchAliases": ["Toronto"],
+      "searchAliases": [
+        "Toronto"
+      ],
       "region": "Ontario",
       "center": [
         43.6532,
@@ -524,7 +534,9 @@
     {
       "slug": "rem",
       "name": "REM",
-      "searchAliases": ["Montreal"],
+      "searchAliases": [
+        "Montreal"
+      ],
       "region": "Quebec",
       "center": [
         45.5,
@@ -625,7 +637,9 @@
     {
       "slug": "stm",
       "name": "STM",
-      "searchAliases": ["Montreal"],
+      "searchAliases": [
+        "Montreal"
+      ],
       "region": "Quebec",
       "center": [
         45.5017,
@@ -7076,6 +7090,19 @@
         60.8076,
         -134.9969
       ]
+    },
+    {
+      "slug": "santa-cruz-metro",
+      "name": "Santa Cruz METRO",
+      "searchAliases": ["Santa Cruz", "Capitola", "Watsonville"],
+      "center": [
+        36.9741,
+        -122.0308
+      ],
+      "feedUrl": "https://developer.scmetro.org/gtfs.zip",
+      "lastFeedExpiry": "20260909",
+      "lastFeedVersion": "S1000116",
+      "lastRefreshedAt": "2026-07-14"
     }
   ]
 }
