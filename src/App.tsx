@@ -49,6 +49,7 @@ export interface Agency {
   gtfsFares?: boolean;
   fareUrl?: string;
   websiteUrl?: string;
+  searchAliases?: string[];
   // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
   feedUrl?: string | null;
   mdbFeedUrl?: string;

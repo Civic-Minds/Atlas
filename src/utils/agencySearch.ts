@@ -53,7 +53,8 @@ export function searchAgencyGroups(
   const raw = agencies.filter(a =>
     a.name.toLowerCase().includes(q)
     || a.slug.startsWith(q)
-    || (a.region || '').toLowerCase().includes(q),
+    || (a.region || '').toLowerCase().includes(q)
+    || (a.searchAliases ?? []).some(alias => alias.toLowerCase().includes(q)),
   );
 
   const byKey = new Map<string, {

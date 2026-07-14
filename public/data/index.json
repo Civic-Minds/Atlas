@@ -142,6 +142,7 @@
     {
       "slug": "grt",
       "name": "Grand River Transit",
+      "searchAliases": ["Kitchener", "Waterloo", "Cambridge"],
       "region": "Ontario",
       "center": [
         43.4516,
@@ -182,6 +183,7 @@
     {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
+      "searchAliases": ["Hamilton"],
       "region": "Ontario",
       "center": [
         43.2557,
@@ -307,6 +309,7 @@
     {
       "slug": "octranspo",
       "name": "OC Transpo",
+      "searchAliases": ["Ottawa"],
       "region": "Ontario",
       "center": [
         45.32,
@@ -402,6 +405,7 @@
     {
       "slug": "ttc",
       "name": "Toronto Transit Commission",
+      "searchAliases": ["Toronto"],
       "region": "Ontario",
       "center": [
         43.6532,
@@ -520,6 +524,7 @@
     {
       "slug": "rem",
       "name": "REM",
+      "searchAliases": ["Montreal"],
       "region": "Quebec",
       "center": [
         45.5,
@@ -620,6 +625,7 @@
     {
       "slug": "stm",
       "name": "STM",
+      "searchAliases": ["Montreal"],
       "region": "Quebec",
       "center": [
         45.5017,

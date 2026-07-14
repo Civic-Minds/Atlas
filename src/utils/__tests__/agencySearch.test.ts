@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { prepareAgencyGroupsForDisplay } from '../agencySearch';
+import { prepareAgencyGroupsForDisplay, searchAgencyGroups } from '../agencySearch';
 
 describe('agencySearch', () => {
   it('caps agency lists for display', () => {
@@ -15,5 +15,19 @@ describe('agencySearch', () => {
     expect(prepared.totalMatches).toBe(12);
     expect(prepared.groups).toHaveLength(5);
     expect(prepared.truncated).toBe(true);
+  });
+
+  it('matches city aliases for agencies whose names omit the city', () => {
+    const groups = searchAgencyGroups([
+      {
+        slug: 'octranspo',
+        name: 'OC Transpo',
+        region: 'Ontario',
+        center: [45.32, -75.69],
+        url: '',
+        searchAliases: ['Ottawa'],
+      },
+    ], 'ottawa', null);
+    expect(groups.map(g => g.slug)).toEqual(['octranspo']);
   });
 });
