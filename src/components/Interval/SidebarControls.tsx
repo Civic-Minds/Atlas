@@ -216,7 +216,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
         const recents: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }> = recentsRaw ? JSON.parse(recentsRaw) : [];
         const filtered = recents.filter(r => r.key !== selectedRoute);
-        filtered.unshift({ key: selectedRoute, shortName, longName, agencyName, headway: p.headway ?? undefined });
+        filtered.unshift({
+          key: selectedRoute,
+          shortName,
+          longName,
+          agencyName,
+          headway: routeCardDisplayHeadway(p, period) ?? undefined,
+        });
         const limited = filtered.slice(0, 5);
         localStorage.setItem('atlas_recently_viewed_routes', JSON.stringify(limited));
         setRecentlyViewed(limited);
@@ -224,7 +230,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         console.error(e);
       }
     }
-  }, [selectedRoute, nonCorridorLayers]);
+  }, [selectedRoute, nonCorridorLayers, period]);
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {

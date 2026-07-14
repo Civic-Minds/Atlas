@@ -147,7 +147,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway ?? headwayForRouteKey(r.key))}
+                      right={routeRowRight(r.agencyName, headwayForRouteKey(r.key) ?? r.headway)}
                       onClick={() => pickRoute(r.key)}
                       className="border-b-0"
                     />
