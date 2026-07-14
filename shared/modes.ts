@@ -52,7 +52,7 @@ export const GTFS_BASE_MODE_LABELS: Record<number, string> = {
 
 /** Rail-like base types for agency card mode summaries. */
 export const GTFS_RAIL_MODE_LABELS: Record<number, string> = {
-  0: 'light rail',
+  0: 'streetcar',
   1: 'subway',
   2: 'commuter rail',
   4: 'ferry',

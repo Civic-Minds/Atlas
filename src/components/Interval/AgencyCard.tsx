@@ -111,7 +111,7 @@ function railBlurbLabel(route: RouteRow): string | null {
     routeLongName: route.longName,
     agencySlug: route.agencySlug,
   });
-  if (mode === VIRTUAL_LRT_MODE) return 'light rail';
+  if (mode === VIRTUAL_LRT_MODE) return 'LRT';
   return GTFS_RAIL_MODE_LABELS[mode] ?? null;
 }
 

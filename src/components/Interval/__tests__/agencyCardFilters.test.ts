@@ -22,6 +22,17 @@ describe('agency card filters', () => {
     expect(express.map(r => r.shortName)).toEqual(['900']);
   });
 
+  it('keeps streetcar and virtual LRT chips distinct', () => {
+    const chips = buildAgencyRouteFilters([
+      { routeId: '501', agencySlug: 'ttc', shortName: '501', longName: 'Queen', headway: 8, tier: '10', routeType: 0, busSubType: undefined, matchesFilter: true },
+      { routeId: '5', agencySlug: 'ttc', shortName: '5', longName: 'Line 5 Eglinton', headway: 6, tier: '10', routeType: 0, busSubType: undefined, matchesFilter: true },
+    ]);
+    expect(chips).toEqual([
+      { key: 'mode:0', label: 'Streetcar', count: 1 },
+      { key: 'mode:100', label: 'LRT', count: 1 },
+    ]);
+  });
+
   it('summarizes matching routes for active frequency filter', () => {
     expect(buildHeaderSummary(routes, 60)).toBe('4 routes · 3 match ≤60m');
     expect(buildHeaderSummary(routes, Infinity)).toBe('4 routes');
