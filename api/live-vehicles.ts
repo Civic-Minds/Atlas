@@ -22,6 +22,16 @@ function queryParams(req: Request & { url?: string }): URLSearchParams {
   return new URLSearchParams(qs);
 }
 
+/** Read a request header from either Fetch's Headers or Vercel's Node headers. */
+function requestHeader(req: Request & { headers: Headers | Record<string, string | string[] | undefined> }, name: string): string | null {
+  const headers = req.headers;
+  if (typeof (headers as Headers).get === 'function') {
+    return (headers as Headers).get(name);
+  }
+  const value = (headers as Record<string, string | string[] | undefined>)[name.toLowerCase()];
+  return Array.isArray(value) ? value[0] ?? null : value ?? null;
+}
+
 async function fetchProtoFeed(
   url: string,
   opts?: { apiKeyParam?: string; apiKeyHeader?: string }
@@ -121,7 +131,7 @@ async function fetchTtcShapes(): Promise<Map<string, GeoJSON.Feature>> {
 }
 
 export default async function handler(req: Request) {
-  const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
+  const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) {
     return new Response(JSON.stringify({ error: 'Too many requests' }), {
       status: 429,

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+### Fixed
+- **Live vehicle feed**: Restored the Live map on Vercel by handling its Node-style request headers in the serverless API.
+
 ## [3.2.0] - 2026-07-14
 
 ### Added
