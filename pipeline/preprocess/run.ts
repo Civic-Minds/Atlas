@@ -2,10 +2,10 @@ import type { GtfsData } from '../../types/gtfs.js';
 import { filterGtfsByExcludedShortNames, filterGtfsByRouteTypes } from '../filterGtfs.js';
 import { synthesizeMissingDirections } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
-import { mergeNrtDayNightRoutes } from '../transforms/nrt-day-night.js';
+import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
 import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
 
-export type GtfsPreprocess = 'nrt-day-night' | 'london-route-names';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names';
 
 export interface GtfsTransformOptions {
   routeTypes?: number[];
@@ -47,6 +47,13 @@ export function normalizeGtfs(
     for (const warning of result.shapeWarnings) {
       onStatus?.(`NRT shape audit: ${warning}`);
     }
+  }
+  if (options?.preprocess === 'nrt-cleanup') {
+    const { gtfs: cleaned, result } = sanitizeNrtFeed(gtfs);
+    gtfs = cleaned;
+    onStatus?.(
+      `NRT cleanup: ${result.shortTurnTripsDropped} malformed short-turn artifacts removed; day/night route numbers preserved`,
+    );
   }
   if (options?.preprocess === 'london-route-names') {
     gtfs = synthesizeLondonRouteNames(gtfs);

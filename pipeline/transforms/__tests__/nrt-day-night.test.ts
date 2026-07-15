@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { GtfsData } from '../../../types/gtfs';
-import { mergeNrtDayNightRoutes } from '../nrt-day-night';
+import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../nrt-day-night';
 
 function minimalGtfs(overrides: Partial<GtfsData> = {}): GtfsData {
   return {
@@ -110,5 +110,23 @@ describe('mergeNrtDayNightRoutes', () => {
     expect(result.shortTurnTripsDropped).toBe(2);
     expect(out.trips.map(t => t.trip_id)).toEqual(['full209']);
     expect(out.stopTimes.every(st => st.trip_id === 'full209')).toBe(true);
+  });
+
+  it('preserves published day/night route numbers during cleanup', () => {
+    const gtfs = minimalGtfs({
+      routes: [
+        { route_id: 'r316', route_short_name: '316', route_long_name: 'Brock - Glenridge', route_type: '3' },
+        { route_id: 'r416', route_short_name: '416', route_long_name: 'Brock - Glenridge', route_type: '3' },
+      ],
+      trips: [
+        { trip_id: 'day', route_id: 'r316', service_id: 'wd' },
+        { trip_id: 'night', route_id: 'r416', service_id: 'night' },
+      ],
+    });
+
+    const { gtfs: out, result } = sanitizeNrtFeed(gtfs);
+    expect(result.shortTurnTripsDropped).toBe(0);
+    expect(out.routes.map(r => r.route_short_name)).toEqual(['316', '416']);
+    expect(out.trips.map(t => t.route_id)).toEqual(['r316', 'r416']);
   });
 });

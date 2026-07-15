@@ -302,7 +302,7 @@
         -78.75
       ],
       "feedUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
-      "preprocess": "nrt-day-night",
+      "preprocess": "nrt-cleanup",
       "excludeRouteShortNames": [
         "RED",
         "BLUE"

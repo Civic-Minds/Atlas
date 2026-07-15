@@ -9,6 +9,10 @@ export interface NrtDayNightMergeResult {
   shapeWarnings: string[];
 }
 
+export interface NrtCleanupResult {
+  shortTurnTripsDropped: number;
+}
+
 function normalizeLongName(name: string | undefined): string {
   return (name ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
@@ -156,4 +160,10 @@ function removeNrtShortTurnArtifacts(gtfs: GtfsData): { gtfs: GtfsData; dropped:
     },
     dropped: droppedTripIds.size,
   };
+}
+
+/** Keep NRT's published day/night route numbers separate while removing known bad auxiliary trips. */
+export function sanitizeNrtFeed(gtfs: GtfsData): { gtfs: GtfsData; result: NrtCleanupResult } {
+  const cleaned = removeNrtShortTurnArtifacts(gtfs);
+  return { gtfs: cleaned.gtfs, result: { shortTurnTripsDropped: cleaned.dropped } };
 }

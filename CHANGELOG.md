@@ -16,6 +16,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Stack route metadata below the route name so agencies and frequencies remain readable.
 - Exclude malformed Niagara 209/216 short-turn records so published route frequencies are not overstated.
 - Link corrected-data explanations to their technical GitHub issue for deeper context.
+- Keep Niagara’s daytime and nighttime route numbers separate so their frequencies are not combined.
+- Scope stop-level headways to each route branch so shared stops do not make routes appear more frequent than scheduled.
 ### Fixed
 - **Live vehicle feed**: Restored the Live map on Vercel by handling its Node-style request headers in the serverless API.
 - **Live agency picker**: Replaced heavy row dividers with lighter spacing so the coverage list reads as grouped places.

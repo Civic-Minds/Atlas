@@ -381,8 +381,9 @@ export async function processGtfsBuffer(
   }
 
   // Resolve per-stop headways + stopOrder onto route features.
-  // stopDepsByGroup is keyed at route+direction level (all headsigns combined), so stopHeadways
-  // naturally reflect combined service from overlapping headsigns (e.g. VIVA Blue Bernard + Newmarket).
+  // Use headsign-scoped departures for a feature whenever available. The route-level map is
+  // still the fallback for feeds without usable headsigns, but combining branches at shared
+  // stops can make a 30-minute route appear to run every 10–15 minutes (NRT 306/318).
   // We project stops onto the specific feature shape and filter by proximity to exclude stops that
   // belong to a different headsign's extension (e.g. Newmarket stops projected onto Bernard Terminal
   // shape would land far off — ~1 km — and get filtered out).
@@ -396,12 +397,17 @@ export async function processGtfsBuffer(
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) continue;
+    const featureHeadsign = feature.properties.headsign as string | null;
+    const headsignMap = featureHeadsign
+      ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`)
+      : undefined;
+    const metricStopMap = headsignMap ?? stopMap;
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
     const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
     const allStopHourHw: Record<string, HeadwayByHour> = {};
-    for (const [stopId, times] of stopMap) {
+    for (const [stopId, times] of metricStopMap) {
       times.sort((a, b) => a - b);
       // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
       // An all-day median is skewed by peak clusters: Halifax 330 inbound has 9 AM trips

@@ -43,8 +43,8 @@ GO Transit buses frequently show headways like 55 min instead of 60 min. This is
 ### Corridors headway is at the FROM stop
 The Corridors app shows frequency at the departure stop (where the user waits), not the destination. At major hubs like Square One, many patterns converge and the TO-stop headway is artificially low — GO route 41 showed 7 min at Square One but 30 min at Hamilton GO, where the user actually boards.
 
-### NRT day/night service merge
-Niagara Transit (Niagara Region Transit) runs a separate "night" service under a different route ID that overlaps with the daytime route on the same corridor. The pipeline merges them by selecting the feature with the lower headway. Apparent headways on some NRT corridors may reflect the combined day+night service level.
+### NRT day/night route pairs
+Niagara Transit (Niagara Region Transit) publishes separate daytime and nighttime route numbers (for example, 316 and 416, or 309 and 409). Atlas keeps those published route numbers separate so nighttime service does not make the daytime route appear more frequent than its schedule.
 
 ### NRT 209/216 auxiliary GTFS trips
 The NRT feed includes two- and three-stop records for routes 209 and 216 that are marked as ordinary passenger trips but are not part of the published route frequency. Atlas removes those malformed auxiliary patterns during preprocessing so routes 209 and 216 do not appear to run every 1–5 minutes. See [#194](https://github.com/Civic-Minds/Atlas/issues/194), linked to the broader route-service metrics issue [#186](https://github.com/Civic-Minds/Atlas/issues/186).
