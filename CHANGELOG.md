@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.1] - 2026-07-15
 
 - **Canary live-data contract**: Atlas R2 GTFS-RT snapshots now carry a versioned normalized envelope, and TTC trip updates join the existing canary archive without expanding route coverage. Vehicle snapshots retain operational fields needed by downstream consumers.
 - **Canary snapshot API**: Added an R2-backed `/api/live-snapshot` endpoint with versioned records, route filtering, freshness states, and explicit unavailable responses for downstream consumers.
