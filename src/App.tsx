@@ -106,6 +106,7 @@ export default function App() {
       lastRefreshedAt: opts.lastRefreshedAt,
       websiteUrl: opts.websiteUrl,
       overrideNote: opts.overrideNote,
+      issueUrl: opts.issueUrl,
     } : null);
     setInfoOpen(true);
   }, []);

@@ -378,7 +378,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           </>
           )}
-          {agency.excludeRouteShortNames?.length && agency.overrideNote && onInfoOpen && (
+          {agency.overrideNote && onInfoOpen && (
             <div className={CARD_NOTICE_FOOTER}>
               <CardHelpNotice
                 message="We corrected this data."
@@ -386,6 +386,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   helpTopic: 'corrected-data',
                   agencyName: agency.name,
                   overrideNote: agency.overrideNote,
+                  issueUrl: agency.issueUrl,
                 })}
               />
             </div>

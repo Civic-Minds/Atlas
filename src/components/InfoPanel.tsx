@@ -21,6 +21,7 @@ export type HelpContext = {
   lastRefreshedAt?: string;
   websiteUrl?: string;
   overrideNote?: string;
+  issueUrl?: string;
 };
 export type OpenInfoOptions = {
   featureFilter?: 'live' | 'history';
@@ -30,6 +31,7 @@ export type OpenInfoOptions = {
   lastRefreshedAt?: string;
   websiteUrl?: string;
   overrideNote?: string;
+  issueUrl?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
@@ -521,6 +523,17 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 Sometimes agencies publish incorrect data in their GTFS feed. When we find a known problem, we filter it out during processing so the map reflects real service.
               </p>
+              {helpContext?.issueUrl && (
+                <a
+                  href={helpContext.issueUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Technical details</span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
+              )}
               <a
                 href="mailto:hey@ryanisnota.pro?subject=Atlas%20data%20feedback"
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"

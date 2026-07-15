@@ -4,6 +4,7 @@ import { auditNrtMergedPairShapes, type NrtMergedPair } from './nrt-shape-audit.
 export interface NrtDayNightMergeResult {
   mergedPairs: Array<{ dayShort: string; eveShort: string; longName: string }>;
   tripsReassigned: number;
+  shortTurnTripsDropped: number;
   orphanEveRoutes: string[];
   shapeWarnings: string[];
 }
@@ -81,11 +82,13 @@ export function mergeNrtDayNightRoutes(gtfs: GtfsData): { gtfs: GtfsData; result
   const shapeWarnings = pairsForAudit.length > 0 ? auditNrtMergedPairShapes(gtfs, pairsForAudit) : [];
 
   if (eveToDayRouteId.size === 0) {
+    const cleaned = removeNrtShortTurnArtifacts(gtfs);
     return {
-      gtfs,
+      gtfs: cleaned.gtfs,
       result: {
         mergedPairs: pairsForAudit.map(({ dayShort, eveShort, longName }) => ({ dayShort, eveShort, longName })),
         tripsReassigned: 0,
+        shortTurnTripsDropped: cleaned.dropped,
         orphanEveRoutes,
         shapeWarnings,
       },
@@ -102,17 +105,55 @@ export function mergeNrtDayNightRoutes(gtfs: GtfsData): { gtfs: GtfsData; result
     return { ...trip, route_id: target };
   });
 
+  const cleaned = removeNrtShortTurnArtifacts({
+    ...gtfs,
+    routes: routes.filter(r => !removedRouteIds.has(r.route_id)),
+    trips,
+  });
+
   return {
-    gtfs: {
-      ...gtfs,
-      routes: routes.filter(r => !removedRouteIds.has(r.route_id)),
-      trips,
-    },
+    gtfs: cleaned.gtfs,
     result: {
       mergedPairs: pairsForAudit.map(({ dayShort, eveShort, longName }) => ({ dayShort, eveShort, longName })),
       tripsReassigned,
+      shortTurnTripsDropped: cleaned.dropped,
       orphanEveRoutes,
       shapeWarnings,
     },
+  };
+}
+
+/**
+ * NRT's 209/216 feed includes two- and three-stop auxiliary patterns marked as
+ * normal passenger trips. They are not the published route service and make
+ * the full route appear to run every 1–5 minutes at shared stops.
+ */
+function removeNrtShortTurnArtifacts(gtfs: GtfsData): { gtfs: GtfsData; dropped: number } {
+  const nrtRouteIds = new Set(
+    gtfs.routes
+      .filter(route => route.route_short_name === '209' || route.route_short_name === '216')
+      .map(route => route.route_id),
+  );
+  if (nrtRouteIds.size === 0) return { gtfs, dropped: 0 };
+
+  const stopCountByTrip = new Map<string, number>();
+  for (const stopTime of gtfs.stopTimes) {
+    stopCountByTrip.set(stopTime.trip_id, (stopCountByTrip.get(stopTime.trip_id) ?? 0) + 1);
+  }
+  const droppedTripIds = new Set(
+    gtfs.trips
+      .filter(trip => nrtRouteIds.has(trip.route_id) && (stopCountByTrip.get(trip.trip_id) ?? 0) <= 3)
+      .map(trip => trip.trip_id),
+  );
+  if (droppedTripIds.size === 0) return { gtfs, dropped: 0 };
+
+  return {
+    gtfs: {
+      ...gtfs,
+      trips: gtfs.trips.filter(trip => !droppedTripIds.has(trip.trip_id)),
+      stopTimes: gtfs.stopTimes.filter(stopTime => !droppedTripIds.has(stopTime.trip_id)),
+      frequencies: gtfs.frequencies?.filter(freq => !droppedTripIds.has(freq.trip_id)),
+    },
+    dropped: droppedTripIds.size,
   };
 }

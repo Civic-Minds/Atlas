@@ -40,6 +40,7 @@ export function normalizeGtfs(
     gtfs = merged;
     onStatus?.(
       `NRT day/night merge: ${result.mergedPairs.length} pairs, ${result.tripsReassigned} trips reassigned` +
+        (result.shortTurnTripsDropped ? `, ${result.shortTurnTripsDropped} short-turn artifacts removed` : '') +
         (result.orphanEveRoutes.length ? `, ${result.orphanEveRoutes.length} unmatched 4xx` : '') +
         (result.shapeWarnings.length ? `, ${result.shapeWarnings.length} shape warnings` : ''),
     );

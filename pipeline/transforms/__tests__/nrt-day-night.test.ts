@@ -33,6 +33,7 @@ describe('mergeNrtDayNightRoutes', () => {
 
     expect(result.mergedPairs).toHaveLength(1);
     expect(result.tripsReassigned).toBe(1);
+    expect(result.shortTurnTripsDropped).toBe(0);
     expect(result.shapeWarnings).toEqual([]);
     expect(out.routes).toHaveLength(1);
     expect(out.routes[0].route_short_name).toBe('301');
@@ -79,5 +80,35 @@ describe('mergeNrtDayNightRoutes', () => {
     const { result } = mergeNrtDayNightRoutes(gtfs);
     expect(result.orphanEveRoutes).toContain('499');
     expect(result.mergedPairs).toHaveLength(0);
+  });
+
+  it('drops NRT 209/216 auxiliary trips with three or fewer stops', () => {
+    const gtfs = minimalGtfs({
+      routes: [
+        { route_id: 'r209', route_short_name: '209', route_long_name: 'Thorold Stone', route_type: '3' },
+        { route_id: 'r216', route_short_name: '216', route_long_name: "Lundy's Ln.", route_type: '3' },
+      ],
+      trips: [
+        { trip_id: 'short209', route_id: 'r209', service_id: 'wd' },
+        { trip_id: 'full209', route_id: 'r209', service_id: 'wd' },
+        { trip_id: 'short216', route_id: 'r216', service_id: 'wd' },
+      ],
+      stopTimes: [
+        { trip_id: 'short209', arrival_time: '18:00:00', departure_time: '18:00:00', stop_id: 'a', stop_sequence: '1' },
+        { trip_id: 'short209', arrival_time: '18:02:00', departure_time: '18:02:00', stop_id: 'b', stop_sequence: '2' },
+        { trip_id: 'full209', arrival_time: '18:00:00', departure_time: '18:00:00', stop_id: 'a', stop_sequence: '1' },
+        { trip_id: 'full209', arrival_time: '18:15:00', departure_time: '18:15:00', stop_id: 'b', stop_sequence: '2' },
+        { trip_id: 'full209', arrival_time: '18:30:00', departure_time: '18:30:00', stop_id: 'c', stop_sequence: '3' },
+        { trip_id: 'full209', arrival_time: '18:45:00', departure_time: '18:45:00', stop_id: 'd', stop_sequence: '4' },
+        { trip_id: 'short216', arrival_time: '19:00:00', departure_time: '19:00:00', stop_id: 'e', stop_sequence: '1' },
+        { trip_id: 'short216', arrival_time: '19:04:00', departure_time: '19:04:00', stop_id: 'f', stop_sequence: '2' },
+        { trip_id: 'short216', arrival_time: '19:08:00', departure_time: '19:08:00', stop_id: 'g', stop_sequence: '3' },
+      ],
+    });
+
+    const { gtfs: out, result } = mergeNrtDayNightRoutes(gtfs);
+    expect(result.shortTurnTripsDropped).toBe(2);
+    expect(out.trips.map(t => t.trip_id)).toEqual(['full209']);
+    expect(out.stopTimes.every(st => st.trip_id === 'full209')).toBe(true);
   });
 });

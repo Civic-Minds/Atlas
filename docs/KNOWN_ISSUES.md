@@ -46,6 +46,9 @@ The Corridors app shows frequency at the departure stop (where the user waits), 
 ### NRT day/night service merge
 Niagara Transit (Niagara Region Transit) runs a separate "night" service under a different route ID that overlaps with the daytime route on the same corridor. The pipeline merges them by selecting the feature with the lower headway. Apparent headways on some NRT corridors may reflect the combined day+night service level.
 
+### NRT 209/216 auxiliary GTFS trips
+The NRT feed includes two- and three-stop records for routes 209 and 216 that are marked as ordinary passenger trips but are not part of the published route frequency. Atlas removes those malformed auxiliary patterns during preprocessing so routes 209 and 216 do not appear to run every 1–5 minutes. See [#194](https://github.com/Civic-Minds/Atlas/issues/194), linked to the broader route-service metrics issue [#186](https://github.com/Civic-Minds/Atlas/issues/186).
+
 ### Commuter rail shape selection
 GO Rail routes have multiple shape variants (local vs express, different terminal branches). The pipeline selects the shape associated with the most-common headsign per direction. Shapes for minor branches (e.g. Barrie South short-turns) may not render.
 

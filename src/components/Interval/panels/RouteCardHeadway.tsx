@@ -287,7 +287,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(routeIsStale || (routeAgency?.excludeRouteShortNames?.length && routeAgency.overrideNote)) && onInfoOpen && (
+        {(routeIsStale || routeAgency?.overrideNote) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {routeIsStale && (
               <CardHelpNotice
@@ -301,13 +301,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 })}
               />
             )}
-            {routeAgency?.excludeRouteShortNames?.length && routeAgency.overrideNote && (
+            {routeAgency?.overrideNote && (
               <CardHelpNotice
                 message="We corrected this data."
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'corrected-data',
                   agencyName: routeAgency.name,
                   overrideNote: routeAgency.overrideNote,
+                  issueUrl: routeAgency.issueUrl,
                 })}
               />
             )}
