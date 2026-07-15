@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Added
+- **University / campus-adjacent systems (+10)**: U-M Transit, NCSU Wolfline, Clemson CATbus, CityBus Lafayette, Duke Transit, Streamline (Bozeman), Athens OH, Connect Transit (Bloomington–Normal), DeKalb Public Transit, and Radford Transit — public fixed-route feeds with working GTFS.
 - **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 
 ### Fixed
