@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Canary live-data contract**: Atlas R2 GTFS-RT snapshots now carry a versioned normalized envelope, and TTC trip updates join the existing canary archive without expanding route coverage. Vehicle snapshots retain operational fields needed by downstream consumers.
 - Give route search names more room so long route destinations are easier to scan.
 - Stack route metadata below the route name so agencies and frequencies remain readable.
 ### Fixed

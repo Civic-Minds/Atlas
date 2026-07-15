@@ -11,6 +11,8 @@
  * Also runs a daily cleanup at 04:00 UTC to delete data older than 30 days.
  */
 
+import { LIVE_SNAPSHOT_SCHEMA_VERSION } from '../../../shared/liveContract';
+
 interface Env {
   BUCKET: R2Bucket;
   STM_API_KEY?: string;
@@ -23,6 +25,7 @@ interface FeedConfig {
 }
 
 const FEEDS: FeedConfig[] = [
+  { slug: 'ttc',        url: 'https://gtfsrt.ttc.ca/trips/update?format=binary' },
   { slug: 'burlington', url: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb' },
   { slug: 'hamilton',   url: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb' },
   { slug: 'stm',        url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/tripUpdates', apiKeyHeader: 'STM_API_KEY' },
@@ -106,7 +109,7 @@ function toInt32(v: bigint | undefined): number | null {
 interface TripSummary {
   id: string;    // trip_id
   r: string;     // route_id
-  d: number;     // direction_id
+  d: number | null; // direction_id
   delay: number | null; // seconds late (negative = early)
 }
 
@@ -147,7 +150,8 @@ function parseTripUpdates(raw: ArrayBuffer): TripSummary[] {
     if (!tripId) continue;
 
     const routeId = str(td.get(5)?.[0]);
-    const directionId = Number(td.get(6)?.[0] ?? 0n);
+    const directionIdValue = td.get(6)?.[0];
+    const directionId = directionIdValue === undefined ? null : Number(directionIdValue);
 
     // Prefer trip-level delay (field 5); fall back to first stop's arrival delay
     let delay = toInt32(tu.get(5)?.[0] as bigint | undefined);
@@ -177,10 +181,15 @@ function f32(v: bigint | Uint8Array | undefined): number | null {
 interface VehicleSummary {
   id: string;    // vehicle id
   r: string;     // route_id
+  tripId: string;
+  d: number | null; // direction_id
   lat: number;
   lon: number;
   spd: number | null; // km/h
   brg: number | null; // bearing
+  stopId: string | null;
+  stopSequence: number | null;
+  currentStatus: number | null;
   t: number | null;   // per-vehicle unix timestamp
 }
 
@@ -215,7 +224,9 @@ export function parseVehiclePositions(raw: ArrayBuffer, routeFilter: RegExp): Ve
 
     const tripBytes = vp.get(1)?.[0];
     if (!(tripBytes instanceof Uint8Array)) continue;
-    const routeId = str(parseMsg(tripBytes).get(5)?.[0]);
+    const trip = parseMsg(tripBytes);
+    const tripId = str(trip.get(1)?.[0]);
+    const routeId = str(trip.get(5)?.[0]);
     if (!routeFilter.test(routeId)) continue;
 
     const posBytes = vp.get(2)?.[0];
@@ -228,16 +239,25 @@ export function parseVehiclePositions(raw: ArrayBuffer, routeFilter: RegExp): Ve
     const speedMs = f32(pos.get(5)?.[0]);
     const bearing = f32(pos.get(3)?.[0]);
     const ts = vp.get(5)?.[0];
+    const stopSequence = toInt32(vp.get(3)?.[0] as bigint | undefined);
+    const currentStatus = toInt32(vp.get(4)?.[0] as bigint | undefined);
+    const stopId = str(vp.get(6)?.[0]) || null;
+    const directionIdValue = trip.get(6)?.[0];
     const vdBytes = vp.get(8)?.[0];
     const vehicleId = vdBytes instanceof Uint8Array ? str(parseMsg(vdBytes).get(1)?.[0]) : '';
 
     vehicles.push({
       id: vehicleId,
       r: routeId,
+      tripId,
+      d: directionIdValue === undefined ? null : Number(directionIdValue),
       lat: Math.round(lat * 1e5) / 1e5,
       lon: Math.round(lon * 1e5) / 1e5,
       spd: speedMs != null ? Math.round(speedMs * 3.6 * 10) / 10 : null,
       brg: bearing != null ? Math.round(bearing) : null,
+      stopId,
+      stopSequence,
+      currentStatus,
       t: typeof ts === 'bigint' ? Number(ts) : null,
     });
   }
@@ -314,7 +334,18 @@ export default {
           return `positions/${slug}: skipped (0 matching vehicles)`;
         }
 
-        const payload = JSON.stringify({ ts, vehicles });
+        const payload = JSON.stringify({
+          schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION,
+          agency: slug,
+          feedType: 'vehicle_positions',
+          capturedAt: ts,
+          sourceTimestamp: vehicles.reduce<number | null>((latest, vehicle) =>
+            vehicle.t == null ? latest : Math.max(latest ?? 0, vehicle.t), null),
+          records: vehicles,
+          // Keep the legacy field during the canary migration window.
+          ts,
+          vehicles,
+        });
         const key = `positions/${slug}/${date}/${ts}.json`;
         await env.BUCKET.put(key, payload, {
           httpMetadata: { contentType: 'application/json' },
@@ -347,7 +378,17 @@ export default {
           return `${slug}: skipped (0 trips parsed)`;
         }
 
-        const payload = JSON.stringify({ ts, trips });
+        const payload = JSON.stringify({
+          schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION,
+          agency: slug,
+          feedType: 'trip_updates',
+          capturedAt: ts,
+          sourceTimestamp: null,
+          records: trips,
+          // Keep the legacy field during the canary migration window.
+          ts,
+          trips,
+        });
         const key = `${slug}/${date}/${ts}.json`;
         await env.BUCKET.put(key, payload, {
           httpMetadata: { contentType: 'application/json' },
