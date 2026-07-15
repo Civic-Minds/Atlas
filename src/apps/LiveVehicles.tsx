@@ -639,7 +639,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   <button
                     key={p.slug}
                     onClick={() => handlePlaceClick(p.slug)}
-                    className={LIST_ROW}
+                    className={`${LIST_ROW} border-b-0 mb-0.5`}
                   >
                     <div className="min-w-0 flex-1">
                       <p className={`${LIST_ROW_PRIMARY} truncate`}>{p.place}</p>

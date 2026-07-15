@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 - **Live vehicle feed**: Restored the Live map on Vercel by handling its Node-style request headers in the serverless API.
+- **Live agency picker**: Replaced heavy row dividers with lighter spacing so the coverage list reads as grouped places.
 
 ## [3.2.0] - 2026-07-14
 
