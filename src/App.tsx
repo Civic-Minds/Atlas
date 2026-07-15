@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map as MapIcon, Search, X, Info, ArrowLeftRight } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
 import Interval from './apps/Interval';
@@ -349,15 +349,6 @@ export default function App() {
         >
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-white animate-pulse' : 'bg-[var(--text-dim)]'}`} />
           <span>Live</span>
-        </button>
-
-        <button
-          onClick={() => setActiveApp(inCorridors ? 'frequency' : 'corridors')}
-          aria-label={inCorridors ? 'Back to frequency map' : 'Corridors — routes between two stations'}
-          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inCorridors ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
-        >
-          <ArrowLeftRight className="w-3.5 h-3.5 shrink-0" />
-          <span>Corridors</span>
         </button>
 
         </div>
