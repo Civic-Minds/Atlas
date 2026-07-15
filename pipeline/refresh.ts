@@ -25,7 +25,9 @@ import {
   formatOverrideResolvedLog,
   reconcileExcludeRouteShortNames,
   routeShortNamesInGtfsZip,
+  upstreamFeedChanged,
 } from './overrideAudit.js';
+import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
 
 config({ path: resolve('.env.local') });
@@ -159,6 +161,7 @@ interface AgencyEntry {
   fare?: number;
   issueUrl?: string;
   overrideNote?: string;
+  feedReviewStatus?: 'review' | 'verified';
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -243,6 +246,10 @@ async function refreshAgency(
   }
 
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
+  const feedChanged = upstreamFeedChanged(agency, peekedExpiry, peekedVersion);
+  if (feedChanged) {
+    agency.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[agency.slug] ?? []) ? 'review' : undefined;
+  }
   if (clearedOverrideNote) {
     writeLog(`\n  ${formatOverrideUserFacingClearedLog(agency.slug)}\n  `);
   }
@@ -375,6 +382,11 @@ function bumpCacheBuild(): void {
   );
 }
 
+function writeAgencySource(agency: AgencyEntry): void {
+  const sourcePath = resolve('config/agencies', `${agency.slug}.json`);
+  writeFileSync(sourcePath, JSON.stringify(agency, null, 2) + '\n');
+}
+
 async function main() {
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: AgencyEntry[] } = JSON.parse(readFileSync(indexPath, 'utf8'));
@@ -414,6 +426,7 @@ async function main() {
       if (agency.staged) delete agency.staged;
       // Write after each agency so a mid-run crash doesn't lose lastFeedExpiry for completed ones.
       writeFileSync(indexPath, JSON.stringify(index, null, 2));
+      writeAgencySource(agency);
     } catch (e) {
       failures++;
       console.log(`  ${agency.slug.padEnd(12)} ... FAILED — ${e instanceof Error ? e.message : e}${logBuffer}`);

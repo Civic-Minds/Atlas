@@ -287,7 +287,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(routeIsStale || routeAgency?.overrideNote) && onInfoOpen && (
+        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeAgency?.overrideNote) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {routeIsStale && (
               <CardHelpNotice
@@ -298,6 +298,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   expDateStr: expDateStr || undefined,
                   lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
                   websiteUrl: routeAgency?.websiteUrl ?? undefined,
+                })}
+              />
+            )}
+            {routeAgency?.feedReviewStatus === 'review' && !routeAgency.overrideNote && (
+              <CardHelpNotice
+                message="New schedule data is being verified."
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'new-schedule-data',
+                  agencyName: routeAgency.name,
+                  lastRefreshedAt: routeAgency.lastRefreshedAt ?? undefined,
+                  websiteUrl: routeAgency.websiteUrl ?? undefined,
                 })}
               />
             )}

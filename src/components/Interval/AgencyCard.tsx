@@ -378,17 +378,30 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           </>
           )}
-          {agency.overrideNote && onInfoOpen && (
-            <div className={CARD_NOTICE_FOOTER}>
-              <CardHelpNotice
-                message="We corrected this data."
-                onLearnMore={() => onInfoOpen('about', {
-                  helpTopic: 'corrected-data',
-                  agencyName: agency.name,
-                  overrideNote: agency.overrideNote,
-                  issueUrl: agency.issueUrl,
-                })}
-              />
+          {(agency.feedReviewStatus === 'review' || agency.overrideNote) && onInfoOpen && (
+            <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+              {agency.feedReviewStatus === 'review' && !agency.overrideNote && (
+                <CardHelpNotice
+                  message="New schedule data is being verified."
+                  onLearnMore={() => onInfoOpen('about', {
+                    helpTopic: 'new-schedule-data',
+                    agencyName: agency.name,
+                    lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
+                    websiteUrl: agency.websiteUrl,
+                  })}
+                />
+              )}
+              {agency.overrideNote && (
+                <CardHelpNotice
+                  message="We corrected this data."
+                  onLearnMore={() => onInfoOpen('about', {
+                    helpTopic: 'corrected-data',
+                    agencyName: agency.name,
+                    overrideNote: agency.overrideNote,
+                    issueUrl: agency.issueUrl,
+                  })}
+                />
+              )}
             </div>
           )}
         </div>

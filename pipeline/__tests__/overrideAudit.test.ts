@@ -8,6 +8,27 @@ import {
   reconcileExcludeRouteShortNames,
   upstreamFeedChanged,
 } from '../overrideAudit.js';
+import { shouldReviewNextFeed } from '../feedReview.js';
+
+describe('data quality review threshold', () => {
+  it('reviews the next feed after two flagged feeds in the last ten', () => {
+    const records = Array.from({ length: 10 }, (_, i) => ({ result: i === 2 || i === 8 ? 'issue' as const : 'clean' as const }));
+    expect(shouldReviewNextFeed(records)).toBe(true);
+  });
+
+  it('does not review after one flagged feed or with too little history', () => {
+    expect(shouldReviewNextFeed([{ result: 'issue' }])).toBe(false);
+    expect(shouldReviewNextFeed([
+      { result: 'issue' }, { result: 'clean' }, { result: 'clean' }, { result: 'clean' },
+    ])).toBe(false);
+  });
+
+  it('only counts the ten most recent reviewed feeds', () => {
+    const records = Array.from({ length: 10 }, () => ({ result: 'clean' as const }));
+    records.unshift({ result: 'issue' });
+    expect(shouldReviewNextFeed(records)).toBe(false);
+  });
+});
 
 describe('reconcileExcludeRouteShortNames', () => {
   it('flags exclusions still present in the feed', () => {

@@ -20,6 +20,7 @@ import {
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
 } from './overrideAudit.js';
+import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 
 config({ path: resolve('.env.local') });
@@ -32,6 +33,11 @@ const centerArg = process.argv[5];
 if (!input || !slug) {
   console.error('Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon]');
   process.exit(1);
+}
+
+function writeAgencySource(agency: Record<string, unknown>): void {
+  const sourcePath = resolve('config/agencies', `${String(agency.slug)}.json`);
+  writeFileSync(sourcePath, JSON.stringify(agency, null, 2) + '\n');
 }
 
 if (!process.env.R2_ACCESS_KEY_ID) {
@@ -159,16 +165,19 @@ async function main() {
       lastFeedVersion: feedVersion,
       lastRefreshedAt: todayUtcYmd(),
     };
-    if ((prev.issueUrl || prev.overrideNote) && upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
+    if (upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
+      updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
       delete updated.issueUrl;
       delete updated.overrideNote;
-      console.log(`  ${formatOverrideUserFacingClearedLog(slug)}`);
+      if (prev.issueUrl || prev.overrideNote) console.log(`  ${formatOverrideUserFacingClearedLog(slug)}`);
     }
     index.agencies[existing] = updated;
   } else {
     index.agencies.push({ slug, name: agencyName, center, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd() });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
+  const savedAgency = index.agencies.find(a => a.slug === slug);
+  if (savedAgency) writeAgencySource(savedAgency);
   console.log(`  index.json updated\n`);
 }
 

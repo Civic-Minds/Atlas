@@ -10,10 +10,10 @@ import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'corrected-data' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
-export type HelpTopic = 'outdated-schedule' | 'corrected-data';
+export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data';
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
@@ -108,6 +108,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     if (open) {
       setView(
         helpContext?.topic === 'outdated-schedule' ? 'outdated-schedule'
+        : helpContext?.topic === 'new-schedule-data' ? 'new-schedule-data'
         : helpContext?.topic === 'corrected-data' ? 'corrected-data'
         : tabToView(defaultTab ?? 'about'),
       );
@@ -218,6 +219,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     view === 'agencies' ? 'Agencies'
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view === 'outdated-schedule' ? 'Outdated schedule'
+    : view === 'new-schedule-data' ? 'New schedule data'
     : view === 'corrected-data' ? 'Corrected data'
     : view === 'sources' ? 'Sources'
     : null;
@@ -510,6 +512,31 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
                 <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
+            </div>
+          )}
+
+          {view === 'new-schedule-data' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              {helpContext?.agencyName && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                  {helpContext.agencyName} recently published new schedule data.
+                  {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
+                    ? ` Atlas published it on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
+                    : ''}
+                </p>
+              )}
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                Atlas publishes new feeds automatically so the map stays current. We&apos;re checking this feed for missing service and data-quality problems before treating it as verified.
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                This notice is temporary. It will disappear after review, or become a correction notice if we find a known problem.
+              </p>
+              {helpContext?.websiteUrl && (
+                <a href={helpContext.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Check current schedules</span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
+              )}
             </div>
           )}
 

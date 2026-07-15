@@ -46,6 +46,7 @@ export interface Agency {
   staged?: boolean;
   issueUrl?: string;
   overrideNote?: string;
+  feedReviewStatus?: 'review' | 'verified';
   fare?: number;
   gtfsFares?: boolean;
   fareUrl?: string;
