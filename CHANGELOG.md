@@ -7,9 +7,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Added
+- **Secondary cities batch (+13)**: Sioux Falls SAM, Wilmington Wave, Yakima, Grand Forks CAT, St. George SunTran, Grand Valley Transit, Greeley-Evans GET, Greater Bridgeport Transit, Davenport CitiBus, Bettendorf Transit, Dubuque The Jule, Pocatello Regional Transit, and Albany GA Transit — fills midsize metro holes (incl. first SD coverage).
 - **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 
 ### Fixed
+- **Route search recents**: Selecting a route now records it only in Recent routes, where its shared route metadata provides the name and agency consistently.
+- **University / campus-adjacent systems (+10)**: U-M Transit, NCSU Wolfline, Clemson CATbus, CityBus Lafayette, Duke Transit, Streamline (Bozeman), Athens OH, Connect Transit (Bloomington–Normal), DeKalb Public Transit, and Radford Transit — public fixed-route feeds with working GTFS.
+- **Frequency audit reproducibility**: The scheduled-frequency audit now accepts a configurable GTFS directory and seed so findings can be rerun consistently.
 - **Variant shared sections**: Selecting a lettered route family now highlights only that family’s combined corridor segments on the map.
 - **Sparse route sparklines**: Hourly headway points now require three departures, preventing isolated departure clusters from appearing as frequent service.
 - **Stop churn visibility**: Weekly refreshes now log agency stop additions, removals, renames, moves, and route-membership changes against the prior snapshot.

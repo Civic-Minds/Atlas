@@ -19,6 +19,39 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
+## Recently completed (2026-07-14 — secondary cities batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `sioux-falls` | Sioux Area Metro (SAM) | South Dakota | mdb-192 first SD agency |
+| done | `wilmington-nc` | Wave Transit (Wilmington) | North Carolina | mdb-1110 (MDB mirror; agency URL 404) |
+| done | `yakima` | Yakima Transit | Washington | mdb-276 |
+| done | `grand-forks` | Cities Area Transit (Grand Forks) | North Dakota | mdb-2199 |
+| done | `st-george` | SunTran (St. George) | Utah | mdb-111 (MDB mirror; fivecounty 404) |
+| done | `grand-junction` | Grand Valley Transit | Colorado | mdb-161 |
+| done | `greeley` | Greeley-Evans Transit (GET) | Colorado | mdb-2076 |
+| done | `bridgeport-gbt` | Greater Bridgeport Transit | Connecticut | mdb-530 |
+| done | `davenport` | Davenport CitiBus | Iowa | mdb-2304 Quad Cities |
+| done | `bettendorf` | Bettendorf Transit | Iowa | mdb-1826 Quad Cities |
+| done | `dubuque` | The Jule (Dubuque) | Iowa | mdb-2083 |
+| done | `pocatello` | Pocatello Regional Transit | Idaho | mdb-171 |
+| done | `albany-ga` | Albany Transit System | Georgia | mdb-2146 |
+
+## Recently completed (2026-07-14 — university / campus batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `um-transit` | University of Michigan Transit Services | Michigan | mdb-2072 free open public |
+| done | `ncsu-wolfline` | NCSU Wolfline | North Carolina | mdb-2245 free open public |
+| done | `clemson-cat` | Clemson Area Transit (CATbus) | South Carolina | mdb-798 stale calendar ~2020 |
+| done | `citybus-lafayette` | CityBus of Greater Lafayette | Indiana | mdb-391 Purdue metro |
+| done | `duke` | Duke University Transit | North Carolina | mdb-378 calendar expired 2025-08 |
+| done | `streamline` | Streamline (Bozeman) | Montana | mdb-295 Montana State |
+| done | `athens-oh` | Athens Public Transit | Ohio | mdb-1973 stale calendar ~2024 |
+| done | `connect-transit` | Connect Transit (Bloomington-Normal) | Illinois | mdb-2267 ISU twin cities |
+| done | `dekalb` | DeKalb Public Transit | Illinois | mdb-308 NIU area |
+| done | `radford` | Radford Transit | Virginia | mdb-2415 |
+
 ## Recently completed (2026-07-09)
 
 | Status | Slug | Agency | Region | Notes |

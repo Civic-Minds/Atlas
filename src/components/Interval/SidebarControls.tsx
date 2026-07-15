@@ -749,7 +749,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         setQuery('');
         setSearchFocused?.(false);
       } else if (action.type === 'route') {
-        saveRecentSearch(query);
         setQuery('');
         setSearchFocused?.(false);
         setSelectedRoute(selectedRoute === action.key ? null : action.key);

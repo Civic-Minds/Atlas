@@ -19,7 +19,17 @@ const AGENCIES: AgencyConfig[] = [
   { slug: 'oakville', file: 'Oakville Transit.zip', name: 'Oakville Transit' },
 ];
 
-const GTFS_DIR = '/Users/ryan/Desktop/Data/GTFS/Files/Canada/Ontario/';
+const GTFS_DIR = process.env.GTFS_DIR ?? process.argv.find(arg => !arg.startsWith('--') && arg !== process.argv[0] && arg !== process.argv[1]);
+
+function seededRandom(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6D2B79F5) | 0;
+    let t = Math.imul(state ^ state >>> 15, 1 | state);
+    t ^= t + Math.imul(t ^ t >>> 7, 61 | t);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
 
 interface RouteDirectionCombo {
   agencySlug: string;
@@ -33,6 +43,19 @@ interface RouteDirectionCombo {
 }
 
 async function main() {
+  if (!GTFS_DIR) {
+    console.error('Usage: GTFS_DIR=/path/to/gtfs npm run audit-frequency -- --seed=20260714');
+    process.exitCode = 2;
+    return;
+  }
+  const seedArg = process.argv.find(arg => arg.startsWith('--seed='));
+  const seed = seedArg ? Number(seedArg.slice('--seed='.length)) : Date.now();
+  if (!Number.isInteger(seed)) {
+    console.error(`Invalid seed: ${seedArg}`);
+    process.exitCode = 2;
+    return;
+  }
+  const random = seededRandom(seed);
   const allCombos: RouteDirectionCombo[] = [];
 
   for (const agency of AGENCIES) {
@@ -85,7 +108,7 @@ async function main() {
   }
 
   // Shuffle and pick 10 random combos
-  const shuffled = [...allCombos].sort(() => 0.5 - Math.random());
+  const shuffled = [...allCombos].sort(() => 0.5 - random());
   const selected = shuffled.slice(0, 10);
 
   // Sort them by agency then route name for a clean checklist table
@@ -94,7 +117,7 @@ async function main() {
     return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true, sensitivity: 'base' });
   });
 
-  console.log('\n--- Selected 10 Routes for Audit ---\n');
+  console.log(`\n--- Selected 10 Routes for Audit (seed ${seed}) ---\n`);
   
   let mdTable = '| Verification | Agency | Route | Direction | Headsign | Scheduled Midday Headway |\n';
   mdTable += '| :---: | :--- | :--- | :---: | :--- | :---: |\n';
