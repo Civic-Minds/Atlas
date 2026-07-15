@@ -302,6 +302,7 @@ export default function App() {
 
         {/* AppDrawer hidden — History/Fares remain URL-only; Corridors + Live use header toggles. */}
 
+        <div className="flex items-center gap-2 flex-1 min-w-0">
         <div ref={searchBarRef} className="flex-1 min-w-0 sm:flex">
         <div className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -344,7 +345,7 @@ export default function App() {
         <button
           onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
           aria-label="Live vehicles"
-          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-white animate-pulse' : 'bg-[var(--text-dim)]'}`} />
           <span>Live</span>
@@ -353,12 +354,13 @@ export default function App() {
         <button
           onClick={() => setActiveApp(inCorridors ? 'frequency' : 'corridors')}
           aria-label={inCorridors ? 'Back to frequency map' : 'Corridors — routes between two stations'}
-          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full transition-colors text-xs font-bold ${inCorridors ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inCorridors ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
           <ArrowLeftRight className="w-3.5 h-3.5 shrink-0" />
           <span>Corridors</span>
         </button>
 
+        </div>
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className="flex items-center gap-2 pointer-events-auto">

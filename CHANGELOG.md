@@ -12,6 +12,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Corridors mode**: Restored the From/To station panel so the Corridors header button opens a usable route comparison experience.
 - **Stop search results**: Made stop names the primary readable label, moving stop codes and agency metadata below and beside them.
 - **Place search navigation**: Agency results now move the map immediately, even while map layers are still initializing.
+- **Header controls**: Kept Live and Corridors beside Search as a single left-side group, separate from the Filters controls.
 
 ## [3.2.0] - 2026-07-14
 
