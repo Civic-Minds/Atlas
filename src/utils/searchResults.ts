@@ -2,6 +2,7 @@ import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import type { AgencySearchGroup } from './agencySearch';
+import { buildRouteFacts } from './routeFacts';
 
 export interface RouteSearchResult {
   key: string;
@@ -218,11 +219,6 @@ export function matchesRouteQuery(p: ShapeProperties, query: string): boolean {
   return agencySlug.startsWith(q);
 }
 
-function routeResultKey(p: ShapeProperties): string {
-  const agencySlug = (p as { agencySlug?: string }).agencySlug ?? p.agencyName ?? '';
-  return `${agencySlug}::${p.routeId}`;
-}
-
 export function searchRouteResults(
   features: GeoJSON.Feature[],
   query: string,
@@ -243,13 +239,14 @@ export function searchRouteResults(
   for (const f of features) {
     if (!(f.properties as { routeId?: string }).routeId) continue;
     const p = f.properties as unknown as ShapeProperties;
+    const facts = buildRouteFacts(p);
     if (!matchesRouteQuery(p, q)) continue;
 
-    const displayKey = `${(p as { agencySlug?: string }).agencySlug ?? p.agencyName ?? ''}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`;
+    const displayKey = `${facts.agencySlug}::${facts.shortName}::${facts.longName ?? ''}`;
     const inView = bounds ? featureInViewport(f, bounds) : false;
     const distanceM = featureDistanceM(f, bounds);
     const matchRank = routeQueryMatchRank(p, q);
-    const key = routeResultKey(p);
+    const key = facts.key;
     const existing = byDisplay.get(displayKey);
 
     if (!existing) {
@@ -265,15 +262,18 @@ export function searchRouteResults(
   }
 
   return [...byDisplay.values()]
-    .map(({ p, inView, key, matchRank, distanceM }) => ({
-      key,
-      routeShortName: p.routeShortName ?? p.routeId,
-      routeLongName: p.routeLongName,
-      agencyName: p.agencyName,
-      inView,
-      distanceM,
-      matchRank,
-    }))
+    .map(({ p, inView, key, matchRank, distanceM }) => {
+      const facts = buildRouteFacts(p);
+      return {
+        key,
+        routeShortName: facts.shortName,
+        routeLongName: facts.longName,
+        agencyName: facts.agencyName,
+        inView,
+        distanceM,
+        matchRank,
+      };
+    })
     .sort((a, b) => {
       if (a.inView !== b.inView) return a.inView ? -1 : 1;
       if (a.matchRank !== b.matchRank) return a.matchRank - b.matchRank;

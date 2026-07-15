@@ -35,6 +35,7 @@ import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
+import { buildRouteFacts } from '../../utils/routeFacts';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -207,10 +208,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return p.routeId === routeId;
     });
     if (feat) {
-      const p = feat.properties as any;
-      const shortName = p.routeShortName || p.routeId || '';
-      const longName = p.routeLongName || '';
-      const agencyName = shortenAgencyName(p.agencyName || slug);
+      const facts = buildRouteFacts(feat.properties as ShapeProperties, slug);
+      const shortName = facts.shortName;
+      const longName = facts.longName || '';
+      const agencyName = shortenAgencyName(facts.agencyName);
 
       try {
         const recentsRaw = localStorage.getItem('atlas_recently_viewed_routes');
@@ -221,7 +222,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           shortName,
           longName,
           agencyName,
-          headway: routeCardDisplayHeadway(p, period) ?? undefined,
+          headway: routeCardDisplayHeadway(feat.properties as ShapeProperties, period) ?? undefined,
         });
         const limited = filtered.slice(0, 5);
         localStorage.setItem('atlas_recently_viewed_routes', JSON.stringify(limited));
@@ -238,14 +239,15 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
-        const p = f.properties as any;
+        const p = f.properties as ShapeProperties;
         if (!p.routeId || p.stopId) continue;
-        const key = routeKey({ ...p, agencySlug: slug } as any);
+        const facts = buildRouteFacts(p, slug);
+        const key = facts.key;
         if (routes.some(r => r.key === key)) continue;
         const headway = routeCardDisplayHeadway(p, period) ?? 999;
-        const shortName = p.routeShortName || p.routeId;
-        const longName = p.routeLongName || '';
-        const agencyName = shortenAgencyName(p.agencyName || slug);
+        const shortName = facts.shortName;
+        const longName = facts.longName || '';
+        const agencyName = shortenAgencyName(facts.agencyName);
         routes.push({ key, shortName, longName, agencyName, headway });
       }
     }

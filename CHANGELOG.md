@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 
 ### Fixed
+- **Route identity consistency**: Search, Recent routes, and route suggestions now derive route names, agency identity, and keys from one shared route-facts record.
 - **Route search recents**: Selecting a route now records it only in Recent routes, where its shared route metadata provides the name and agency consistently.
 - **University / campus-adjacent systems (+10)**: U-M Transit, NCSU Wolfline, Clemson CATbus, CityBus Lafayette, Duke Transit, Streamline (Bozeman), Athens OH, Connect Transit (Bloomington–Normal), DeKalb Public Transit, and Radford Transit — public fixed-route feeds with working GTFS.
 - **Frequency audit reproducibility**: The scheduled-frequency audit now accepts a configurable GTFS directory and seed so findings can be rerun consistently.
