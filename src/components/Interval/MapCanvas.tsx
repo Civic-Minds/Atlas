@@ -552,7 +552,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   // Fly to selected agency when chosen from lists/panels (e.g. Data list in InfoPanel)
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || !selectedAgencySlug) return;
+    if (!map || !selectedAgencySlug) return;
     const agency = agencies.find(a => a.slug === selectedAgencySlug);
     if (agency?.center) {
       const [lat, lon] = agency.center;
