@@ -309,9 +309,9 @@
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/194",
       "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
-      "lastFeedExpiry": "20260718",
-      "lastFeedVersion": "S1000281",
-      "lastRefreshedAt": "2026-07-13",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "S1000282",
+      "lastRefreshedAt": "2026-07-15",
       "websiteUrl": "https://nrtransit.ca/"
     },
     {
