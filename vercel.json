@@ -13,6 +13,10 @@
       "destination": "/api/live-vehicles.ts"
     },
     {
+      "source": "/api/live-snapshot",
+      "destination": "/api/live-snapshot.ts"
+    },
+    {
       "source": "/api/live-stop",
       "destination": "/api/live-stop.ts"
     },
