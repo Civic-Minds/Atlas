@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.0] - 2026-07-14
 
 ### Added
 - **Secondary cities batch (+13)**: Sioux Falls SAM, Wilmington Wave, Yakima, Grand Forks CAT, St. George SunTran, Grand Valley Transit, Greeley-Evans GET, Greater Bridgeport Transit, Davenport CitiBus, Bettendorf Transit, Dubuque The Jule, Pocatello Regional Transit, and Albany GA Transit — fills midsize metro holes (incl. first SD coverage).
