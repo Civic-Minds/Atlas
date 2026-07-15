@@ -11,8 +11,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Canary snapshot lookup**: Paginated live R2 listings so the latest snapshot remains discoverable after a high-volume day.
 - **Canary replay API**: Added bounded `/api/live-replay` access so downstream consumers can validate the existing cohort against historical Atlas snapshots without private R2 access.
 - **Replay pagination**: Added deterministic `offset`/`limit` paging for ranges containing more snapshots than one response.
+- **Canary verification command**: Added `npm run verify:live-contract` to check deployed snapshot freshness, schema, and replay availability before coverage expansion.
 - Give route search names more room so long route destinations are easier to scan.
 - Stack route metadata below the route name so agencies and frequencies remain readable.
+- Exclude malformed Niagara 209/216 short-turn records so published route frequencies are not overstated.
+- Link corrected-data explanations to their technical GitHub issue for deeper context.
 ### Fixed
 - **Live vehicle feed**: Restored the Live map on Vercel by handling its Node-style request headers in the serverless API.
 - **Live agency picker**: Replaced heavy row dividers with lighter spacing so the coverage list reads as grouped places.

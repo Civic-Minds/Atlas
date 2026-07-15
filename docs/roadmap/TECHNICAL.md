@@ -25,6 +25,7 @@ surface; derived operational semantics remain in consumers unless broadly reusab
 - [x] **Versioned canary snapshots**: publish normalized VehiclePositions and TripUpdates envelopes with freshness/error states.
 - [x] **Replay access**: expose bounded snapshot history for deterministic consumer validation.
 - [ ] **Canary validation**: verify feed health, schema, replay completeness, and Bridge integration before adding routes or agencies.
+- [x] **Canary verification command**: `npm run verify:live-contract` checks the deployed provider contract and fails closed when live or replay data is unavailable.
 - [ ] **Consumer contract tests**: run Atlas fixtures through Bridge's adapter and analysis boundary.
 - [ ] **Add Neon Postgres**: serverless Postgres for structured adherence events — (agency, route, stop, scheduled time, actual time, day of week, period). Neon scales to zero when idle, no always-on instance needed.
 - [ ] **Trip-matching logic**: match observed vehicle positions to scheduled trips using GTFS static data to derive delay in seconds per stop visit
