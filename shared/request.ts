@@ -1,6 +1,11 @@
+export type ApiRequest = {
+  url?: string;
+  headers: Headers | Record<string, string | string[] | undefined>;
+};
+
 /** Read a request header from either Fetch's Headers or Vercel's Node headers. */
 export function requestHeader(
-  req: { headers: Headers | Record<string, string | string[] | undefined> },
+  req: ApiRequest,
   name: string,
 ): string | null {
   const headers = req.headers;
