@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- **Live replay build compatibility**: Fixed the Node-handler URL parsing type so the replay API builds successfully in Vercel.
+
 ## [3.2.3] - 2026-07-15
 
 - **Live provider response handling**: Atlas canary snapshot and replay endpoints now return correctly through Vercel’s Node function interface.

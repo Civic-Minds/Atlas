@@ -14,7 +14,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
   const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) return jsonResponse(res, { error: 'Too many requests' }, 429);
 
-  const params = new URL(req.url).searchParams;
+  const params = new URL(req.url ?? '', 'https://atlas.invalid').searchParams;
   const agency = params.get('agency');
   const feedType: LiveFeedType = params.get('feed') === 'trips' ? 'trip_updates' : 'vehicle_positions';
   const route = params.get('route');
