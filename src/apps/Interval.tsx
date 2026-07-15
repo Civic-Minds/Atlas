@@ -17,6 +17,7 @@ import type { Agency, FareOverride } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
+import { findVariantFamily } from '../utils/routeVariants';
 
 interface Props {
   agencies: Agency[];
@@ -170,6 +171,26 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     showCorridorBand,
     searchQuery: searchFocused ? query : '',
   });
+
+  const selectedCorridorFamily = useMemo(() => {
+    if (!selectedRoute) return null;
+    const separator = selectedRoute.indexOf('::');
+    if (separator < 0) return null;
+    const agencySlug = selectedRoute.slice(0, separator);
+    const routeId = selectedRoute.slice(separator + 2);
+    const features = layers[agencySlug]?.features ?? [];
+    const props = features
+      .map(f => f.properties as ShapeProperties)
+      .filter(p => p?.routeId && p.routeShortName);
+    const selected = props.find(p => String(p.routeId) === routeId);
+    if (!selected) return null;
+    const family = findVariantFamily(props, selected.routeShortName, period);
+    if (!family || family.members.length < 2) return null;
+    return {
+      agencySlug,
+      routeIds: family.members.map(member => member.routeId),
+    };
+  }, [layers, period, selectedRoute]);
 
   useEffect(() => {
     onLayersChange?.(layers);
@@ -354,6 +375,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onLocate={onLocate}
         showRouteLayers={showRouteLayers}
         showCorridorBand={showCorridorBand}
+        selectedCorridorFamily={selectedCorridorFamily}
         hideSpan={hideSpan}
         filterToAgencies={filterToAgencies}
         onHistoryRouteClick={onHistoryRouteClick}

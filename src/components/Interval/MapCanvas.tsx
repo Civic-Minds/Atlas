@@ -67,6 +67,7 @@ interface MapCanvasProps {
   } | null;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
+  selectedCorridorFamily?: { agencySlug: string; routeIds: string[] } | null;
   hideSpan?: boolean;
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
@@ -101,6 +102,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   routesForStop,
   showRouteLayers = true,
   showCorridorBand = false,
+  selectedCorridorFamily = null,
   hideSpan = false,
   filterToAgencies = false,
   onHistoryRouteClick,
@@ -833,7 +835,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   }, [selectedRoute, mapLoaded]);
 
   // Overlay layers (corridors, history, live vehicles) — extracted to hooks
-  useCorridorLayer(mapRef, mapLoaded, showCorridorBand);
+  useCorridorLayer(mapRef, mapLoaded, showCorridorBand, selectedCorridorFamily);
   useHistoryLayer(mapRef, mapLoaded);
   useLiveVehiclesLayer(mapRef, deckOverlayRef, mapLoaded);
 

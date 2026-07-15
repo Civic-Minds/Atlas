@@ -7,6 +7,7 @@ export function useCorridorLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
   showCorridorBand: boolean,
+  selectedFamily?: { agencySlug: string; routeIds: string[] } | null,
 ) {
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
 
@@ -15,10 +16,16 @@ export function useCorridorLayer(
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     if (map.getLayer('corridor-shapes-layer')) {
-      const corrFilter = showCorridorBand ? null : ['==', ['get', 'agencySlug'], ''];
+      const familyFilter = selectedFamily && selectedFamily.routeIds.length > 1
+        ? ['all',
+            ['==', ['get', 'agencySlug'], selectedFamily.agencySlug],
+            ['any', ...selectedFamily.routeIds.map(id => ['in', id, ['get', 'routeIds']])],
+          ]
+        : null;
+      const corrFilter = familyFilter ?? (showCorridorBand ? null : ['==', ['get', 'agencySlug'], '']);
       map.setFilter('corridor-shapes-layer', corrFilter as any);
     }
-  }, [showCorridorBand, mapLoaded]);
+  }, [showCorridorBand, mapLoaded, selectedFamily]);
 
   // Dynamic corridor overlays
   useEffect(() => {
