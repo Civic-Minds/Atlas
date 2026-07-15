@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 
 ### Fixed
+- **Route search recents**: Selecting a route now records it only in Recent routes, where its shared route metadata provides the name and agency consistently.
 - **Variant shared sections**: Selecting a lettered route family now highlights only that family’s combined corridor segments on the map.
 - **Sparse route sparklines**: Hourly headway points now require three departures, preventing isolated departure clusters from appearing as frequent service.
 - **Stop churn visibility**: Weekly refreshes now log agency stop additions, removals, renames, moves, and route-membership changes against the prior snapshot.
