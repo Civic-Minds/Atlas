@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Canary snapshot API**: Added an R2-backed `/api/live-snapshot` endpoint with versioned records, route filtering, freshness states, and explicit unavailable responses for downstream consumers.
 - **Canary snapshot lookup**: Paginated live R2 listings so the latest snapshot remains discoverable after a high-volume day.
 - **Canary replay API**: Added bounded `/api/live-replay` access so downstream consumers can validate the existing cohort against historical Atlas snapshots without private R2 access.
+- **Replay pagination**: Added deterministic `offset`/`limit` paging for ranges containing more snapshots than one response.
 - Give route search names more room so long route destinations are easier to scan.
 - Stack route metadata below the route name so agencies and frequencies remain readable.
 ### Fixed

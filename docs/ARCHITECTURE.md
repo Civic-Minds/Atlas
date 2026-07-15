@@ -38,7 +38,8 @@ canary cohort is deliberately limited to the feeds already used for live testing
 
 Written by: Cloudflare Worker (`workers/gtfs-rt-archiver/`)
 Read by: Atlas provider APIs (`/api/live-snapshot` and `/api/live-replay`) and the
-existing History aggregation. Consumers must use those APIs rather than private R2.
+existing History aggregation. Replay supports bounded `start`, `end`, `offset`, and
+`limit` queries. Consumers must use those APIs rather than private R2.
 
 30-day retention enforced by the Worker's daily cleanup cron.
 

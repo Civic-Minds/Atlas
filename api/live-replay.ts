@@ -22,27 +22,28 @@ export default async function handler(req: Request) {
   const end = Number(params.get('end') ?? Math.floor(Date.now() / 1000));
   const start = Number(params.get('start') ?? end - 60 * 60);
   const limit = Math.min(MAX_SNAPSHOTS, Math.max(1, Number(params.get('limit') ?? 60)));
+  const offset = Math.max(0, Number(params.get('offset') ?? 0));
   const knownAgency = LIVE_POLLING_ROUTES.some(config => config.slug === agency);
 
-  if (!agency || !knownAgency || !Number.isFinite(start) || !Number.isFinite(end) || start > end || end - start > MAX_RANGE_SECONDS) {
+  if (!agency || !knownAgency || !Number.isFinite(start) || !Number.isFinite(end) || !Number.isInteger(offset) || start > end || end - start > MAX_RANGE_SECONDS) {
     return json({ error: 'Invalid agency or replay range' }, 400);
   }
 
   try {
     const client = getR2Client();
     const keys = await listKeys(client, feedType, agency, start, end);
-    const selected = keys
+    const candidates = keys
       .map(key => ({ key, capturedAt: Number(key.match(/(\d{10})\.json$/)?.[1] ?? 0) }))
       .filter(item => item.capturedAt >= start && item.capturedAt <= end)
-      .sort((a, b) => a.capturedAt - b.capturedAt)
-      .slice(0, limit);
+      .sort((a, b) => a.capturedAt - b.capturedAt);
+    const selected = candidates.slice(offset, offset + limit);
     const snapshots = [];
     for (const item of selected) {
       const snapshot = await readSnapshot(client, item.key, feedType, agency);
       snapshots.push({ ...snapshot, snapshotKey: item.key, records: route ? snapshot.records.filter((record: any) => record.routeId === route) : snapshot.records });
     }
     if (!snapshots.length) return json({ schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: 'No live snapshots in requested range' }, 404);
-    return json({ schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'available', start, end, returned: snapshots.length, hasMore: selected.length < keys.length, snapshots });
+    return json({ schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'available', start, end, offset, limit, returned: snapshots.length, total: candidates.length, hasMore: offset + selected.length < candidates.length, snapshots });
   } catch (error) {
     return json({ schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: (error as Error).message }, 503);
   }
