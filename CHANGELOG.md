@@ -11,7 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 
 ### Fixed
-- **Route service metrics**: Route cards, filters, sparklines, and shared-section summaries now project named metrics from one canonical route service summary, preventing conflicting headways across surfaces.
+- **Route service metrics**: Route cards, filters, sparklines, shared sections, and stop panels now project named metrics from one canonical route service summary, preventing conflicting headways across surfaces.
 - **Route panel identity consistency**: Agency cards, selected routes, stop panels, nearby routes, and disambiguation now use the shared route-facts identity and display fallbacks.
 - **Route identity consistency**: Search, Recent routes, and route suggestions now derive route names, agency identity, and keys from one shared route-facts record.
 - **Route search recents**: Selecting a route now records it only in Recent routes, where its shared route metadata provides the name and agency consistently.

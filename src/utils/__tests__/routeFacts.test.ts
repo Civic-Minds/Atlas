@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRouteFacts, buildRouteServiceSummary, routeFactsFromFeature } from '../routeFacts';
+import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, routeFactsFromFeature } from '../routeFacts';
 
 describe('routeFacts', () => {
   it('provides one stable identity and consistent fallbacks', () => {
@@ -63,5 +63,21 @@ describe('routeFacts', () => {
     expect(summary.filter).toMatchObject({ value: 8, byPeriod: { midday: 3 }, provenance: 'worst-direction' });
     expect(summary.branch.value).toBe(6);
     expect(summary.shared).toMatchObject({ value: 3, byPeriod: { midday: 3 }, byHeadsignPeriod: { midday: 4 } });
+  });
+
+  it('projects a stop metric without losing the route-level service record', () => {
+    const p = {
+      routeId: '900', directionId: 0, tier: '5', headway: 9,
+      routeShortName: '900', routeLongName: 'Airport Express', agencyName: 'TTC',
+      stopHeadways: { 'airport-terminal': 3 },
+      stopPeriodHeadways: { 'airport-terminal': { pmPeak: 3 } },
+    } as any;
+
+    expect(buildRouteStopMetric(p, 'airport-terminal')).toMatchObject({
+      value: 3,
+      byPeriod: { pmPeak: 3 },
+      provenance: 'stop-specific',
+    });
+    expect(buildRouteServiceSummary(p).display.value).toBe(9);
   });
 });

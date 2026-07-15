@@ -34,7 +34,7 @@ import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { buildRouteFacts } from '../../utils/routeFacts';
+import { buildRouteFacts, buildRouteStopMetric } from '../../utils/routeFacts';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -512,7 +512,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const siblingIdsByAgency = currentStop.siblingIdsByAgency || {};
 
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
-    type Branch = { rKey: string; headsign: string | null; headway: number | null; stopPeriodHw: Partial<Record<string, number>> | undefined; directionId: number };
+    type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; directionId: number };
 
     const routesByAgency = currentStop.routesByAgency || {};
 
@@ -555,14 +555,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const entry = routeMap.get(routeShortName)!;
         const branchKey = `${dirId}::${p.headsign ?? ''}`;
         // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
-        const newHeadway = stopHw ?? p.headway ?? null;
+        const service = buildRouteStopMetric(p, matchingStopId);
+        const newHeadway = service.value ?? p.headway ?? null;
         const existing = entry.branches.get(branchKey);
-        if (!existing || (newHeadway != null && (existing.headway == null || newHeadway < existing.headway))) {
+        if (!existing || (newHeadway != null && (existing.service.value == null || newHeadway < existing.service.value))) {
           entry.branches.set(branchKey, {
             rKey: facts.key,
             headsign: p.headsign ?? null,
-            headway: newHeadway,
-            stopPeriodHw: (p as any).stopPeriodHeadways?.[matchingStopId] as Partial<Record<string, number>> | undefined,
+            service: service.value == null && p.headway != null
+              ? { ...service, value: p.headway, provenance: 'all-day-summary' }
+              : service,
             directionId: dirId,
           });
         }
@@ -575,8 +577,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         longName: v.longName,
         agencyName: v.agencyName,
         branches: Array.from(v.branches.values())
-          .sort((a, b) => a.directionId - b.directionId || (a.headway ?? Infinity) - (b.headway ?? Infinity))
-          .map(b => ({ rKey: b.rKey, headsign: b.headsign, headway: b.headway, stopPeriodHw: b.stopPeriodHw, directionId: b.directionId })),
+          .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
+          .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, directionId: b.directionId })),
       }));
   }, [currentStop, nonCorridorLayers, currentDay]);
 
@@ -646,13 +648,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             routeShortName: facts.shortName,
             routeLongName: facts.longName || '',
             agencyName: shortenAgencyName(facts.agencyName),
-            headway: p.headway ?? null,
+            headway: facts.service.display.value,
             nearestStopName: closest.stopName,
             distanceMeters: closest.dist,
           });
         } else {
-          if (p.headway != null && (existing.headway === null || p.headway < existing.headway)) {
-            existing.headway = p.headway;
+          if (facts.service.display.value != null && (existing.headway === null || facts.service.display.value < existing.headway)) {
+            existing.headway = facts.service.display.value;
           }
           if (closest.dist < existing.distanceMeters) {
             existing.distanceMeters = closest.dist;

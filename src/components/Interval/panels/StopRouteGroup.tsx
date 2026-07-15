@@ -12,7 +12,7 @@ import {
 import type { StopBranch } from './StopCard';
 
 function branchHeadway(branch: StopBranch, period: TimePeriod): number | null {
-  return (period !== 'all' ? branch.stopPeriodHw?.[period] : undefined) ?? branch.headway;
+  return (period !== 'all' ? branch.service.byPeriod?.[period] : undefined) ?? branch.service.value;
 }
 
 interface Props {

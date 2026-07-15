@@ -43,4 +43,25 @@ describe('effectiveRouteHeadway', () => {
     } as ShapeProperties;
     expect(effectiveRouteHeadway(p, 'all')).toBe(12);
   });
+
+  it('keeps the TTC 900 display metric consistent across route cards and lists', () => {
+    const p = {
+      ...base,
+      routeId: '900',
+      routeShortName: '900',
+      routeLongName: 'Airport Express',
+      headway: 9,
+      headwayByPeriod: { pmPeak: 9 },
+      minStopHeadway: 1,
+      minStopHeadwayByPeriod: { pmPeak: 1 },
+      worstDirectionHeadway: 9,
+    } as ShapeProperties;
+
+    // #180/#181: agency and Recent routes use the same display projection as the route card.
+    expect(routeCardDisplayHeadway(p, 'pmPeak')).toBe(9);
+    expect(routeCardDisplayHeadway(p, 'all')).toBe(9);
+    // #166 remains an explicit filter projection: the best qualifying stop is separate.
+    expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(1);
+    expect(effectiveRouteHeadway(p, 'all')).toBe(9);
+  });
 });

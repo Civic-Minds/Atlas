@@ -7,6 +7,7 @@ export type HeadwayProvenance =
   | 'all-day-summary'
   | 'worst-direction'
   | 'minimum-stop'
+  | 'stop-specific'
   | 'none';
 
 export interface HeadwayMetric {
@@ -89,6 +90,20 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
       byHeadsignPeriod: p.headsignMinStopHeadwayByPeriod,
     },
   };
+}
+
+/** Stop-specific projection of the canonical route service record. */
+export function buildRouteStopMetric(p: ShapeProperties, stopId: string): HeadwayMetric {
+  const stopHeadways = (p as ShapeProperties & {
+    stopHeadways?: Record<string, number | null>;
+    stopPeriodHeadways?: Record<string, ShapeProperties['headwayByPeriod']>;
+  }).stopHeadways;
+  const stopPeriodHeadways = (p as ShapeProperties & {
+    stopPeriodHeadways?: Record<string, ShapeProperties['headwayByPeriod']>;
+  }).stopPeriodHeadways;
+  const byPeriod = stopPeriodHeadways?.[stopId];
+  const value = stopHeadways?.[stopId] ?? null;
+  return metric(value, byPeriod, undefined, value != null || byPeriod ? 'stop-specific' : 'none');
 }
 
 /**

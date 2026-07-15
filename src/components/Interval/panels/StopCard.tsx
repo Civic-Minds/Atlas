@@ -12,12 +12,12 @@ import {
 } from '../cardUi';
 import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
 import LiveStopArrivals from './LiveStopArrivals';
+import type { HeadwayMetric } from '../../../utils/routeFacts';
 
 export interface StopBranch {
   rKey: string;
   headsign: string | null;
-  headway: number | null;
-  stopPeriodHw: Partial<Record<string, number>> | undefined;
+  service: HeadwayMetric;
   directionId: number;
 }
 
