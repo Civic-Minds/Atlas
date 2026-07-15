@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { buildStopsMeta, headsignDirection, nameSuffixDirection } from '../stopsMeta.js';
 import type { GtfsData } from '../../types/gtfs.js';
+import { compareStopSnapshots, formatStopAuditLog } from '../stopAudit.js';
 
 function feed(partial: Partial<GtfsData>): GtfsData {
   return {
@@ -110,5 +111,27 @@ describe('buildStopsMeta', () => {
     expect(meta.stops.map(s => s.id)).toEqual(['F']);
     expect(meta.stops[0].name).toBe('  Weird   Official-Name (Platform 2)');
     expect(meta.stopCount).toBe(1);
+  });
+});
+
+describe('compareStopSnapshots', () => {
+  it('counts stop churn without treating small GPS noise as a move', () => {
+    const previous = [
+      { id: 'a', name: 'Old Name', lat: 43.65, lon: -79.38, routes: ['1'] },
+      { id: 'b', name: 'B', lat: 43.66, lon: -79.38, routes: ['2'] },
+    ];
+    const current = [
+      { id: 'a', name: 'New Name', lat: 43.6501, lon: -79.38, routes: ['1', '3'] },
+      { id: 'c', name: 'C', lat: 43.67, lon: -79.38, routes: ['4'] },
+    ];
+    expect(compareStopSnapshots(previous, current)).toEqual({
+      added: 1, removed: 1, renamed: 1, moved: 0, routeChanges: 1,
+      totalPrevious: 2, totalCurrent: 2,
+    });
+  });
+
+  it('formats a compact refresh log line', () => {
+    expect(formatStopAuditLog('demo', { added: 1, removed: 2, renamed: 3, moved: 4, routeChanges: 5, totalPrevious: 10, totalCurrent: 9 }))
+      .toContain('[stops] demo: 9 current vs 10 previous');
   });
 });

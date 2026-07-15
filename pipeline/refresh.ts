@@ -26,6 +26,7 @@ import {
   reconcileExcludeRouteShortNames,
   routeShortNamesInGtfsZip,
 } from './overrideAudit.js';
+import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
 
 config({ path: resolve('.env.local') });
 
@@ -313,6 +314,15 @@ async function refreshAgency(
     return '0 features, skipped';
   }
 
+  const currentStops = (JSON.parse(stopsMetaJson) as { stops?: AuditedStop[] }).stops ?? [];
+  const stopBaselineKey = `stops-meta/${agency.slug}/latest.json`;
+  let previousStops: AuditedStop[] | null = null;
+  try {
+    const raw = await r2GetArchive(stopBaselineKey);
+    if (raw) previousStops = (JSON.parse(raw) as { stops?: AuditedStop[] }).stops ?? null;
+  } catch { /* first audit run for this agency */ }
+  if (previousStops) writeLog(`  ${formatStopAuditLog(agency.slug, compareStopSnapshots(previousStops, currentStops))}\n`);
+
   const uploads: Promise<any>[] = [
     r2Put(`atlas/${agency.slug}.json`, geojson),
     r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
@@ -326,6 +336,13 @@ async function refreshAgency(
   // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
   // The uploads still happen so the files exist on R2.
   await Promise.all(uploads);
+
+  const stopsSnapshot = JSON.stringify({ generatedAt: new Date().toISOString(), stops: currentStops });
+  const stopSnapshotKey = `stops-meta/${agency.slug}/${feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion ?? today}.json`;
+  await Promise.all([
+    r2PutArchiveJson(stopSnapshotKey, stopsSnapshot),
+    r2PutArchiveJson(stopBaselineKey, stopsSnapshot),
+  ]);
 
   // Archive the raw zip to the private atlas-archive bucket, keyed by service end date.
   const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;

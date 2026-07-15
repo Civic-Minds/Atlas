@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 
 ### Fixed
+- **Stop churn visibility**: Weekly refreshes now log agency stop additions, removals, renames, moves, and route-membership changes against the prior snapshot.
 - **Branched route sparklines**: Route cards now show labeled, stacked branch contributions when branches combine into more frequent shared-section service.
 - **TTC vehicle status**: TTC vehicles now show an observed headway gap instead of “No data” when the feed cannot be joined to scheduled trips.
 - **LRT filter parity**: Map rendering now applies the same Minneapolis METRO LRT classification as the sidebar.
