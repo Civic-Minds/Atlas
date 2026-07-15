@@ -12,6 +12,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
 import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
+import { buildRouteServiceSummary } from '../utils/routeFacts';
 
 interface Props {
   agencies: Agency[];
@@ -488,7 +489,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const p = f.properties as any;
         if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
         if (p.day && p.day !== day) continue;
-        const hw = p.headwayByHour?.[hour] ?? p.headway;
+        const service = buildRouteServiceSummary(p);
+        const hw = service.display.byHour?.[hour] ?? service.display.value;
         if (hw != null && (scheduled === null || Number(hw) < scheduled)) scheduled = Number(hw);
       }
     }

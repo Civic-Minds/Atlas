@@ -99,7 +99,7 @@ export function medianTerminalHeadway(branches: ShapeProperties[], period: TimeP
           ?? periodHeadwayFromByHour(branch.byHour, period)
           ?? null;
       }
-      return d.headway;
+      return buildRouteServiceSummary(d).branch.value;
     })
     .filter((v): v is number => v != null);
   return vals.length ? medianHeadway(vals) : null;
