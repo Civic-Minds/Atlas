@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 ### Added
+- **Secondary cities batch (+13)**: Sioux Falls SAM, Wilmington Wave, Yakima, Grand Forks CAT, St. George SunTran, Grand Valley Transit, Greeley-Evans GET, Greater Bridgeport Transit, Davenport CitiBus, Bettendorf Transit, Dubuque The Jule, Pocatello Regional Transit, and Albany GA Transit — fills midsize metro holes (incl. first SD coverage).
 - **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
 
 ### Fixed

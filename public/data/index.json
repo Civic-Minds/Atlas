@@ -556,7 +556,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -616,7 +616,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -740,7 +740,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -782,7 +782,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -2017,7 +2017,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -5981,7 +5981,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {
@@ -7094,7 +7094,11 @@
     {
       "slug": "santa-cruz-metro",
       "name": "Santa Cruz METRO",
-      "searchAliases": ["Santa Cruz", "Capitola", "Watsonville"],
+      "searchAliases": [
+        "Santa Cruz",
+        "Capitola",
+        "Watsonville"
+      ],
       "center": [
         36.9741,
         -122.0308
@@ -7103,6 +7107,266 @@
       "lastFeedExpiry": "20260909",
       "lastFeedVersion": "S1000116",
       "lastRefreshedAt": "2026-07-14"
+    },
+    {
+      "slug": "sioux-falls",
+      "name": "Sioux Area Metro (SAM)",
+      "center": [
+        43.54,
+        -96.73
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip",
+      "lastFeedExpiry": "20240401",
+      "lastFeedVersion": "UTC: 01-Nov-2023 21:05",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "South Dakota",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-192/latest.zip",
+      "bbox": [
+        43.4802,
+        -96.8308,
+        43.623,
+        -96.633
+      ]
+    },
+    {
+      "slug": "yakima",
+      "name": "Yakima Transit",
+      "center": [
+        46.6,
+        -120.51
+      ],
+      "feedUrl": "https://yakimatransit.org/gtfs/yakima_gtfs.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Washington",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-276/latest.zip",
+      "bbox": [
+        46.5429,
+        -120.6559,
+        46.6438,
+        -120.4574
+      ]
+    },
+    {
+      "slug": "grand-forks",
+      "name": "Cities Area Transit (Grand Forks)",
+      "center": [
+        47.93,
+        -97.03
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/cityofgrandforks-nd-us/cityofgrandforks-nd-us.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "UTC: 12-Dec-2025 16:45",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "North Dakota",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2199/latest.zip",
+      "bbox": [
+        47.8549,
+        -97.1297,
+        47.9691,
+        -96.9906
+      ]
+    },
+    {
+      "slug": "greeley",
+      "name": "Greeley-Evans Transit (GET)",
+      "center": [
+        40.42,
+        -104.71
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/greeleyevans-co-us/greeleyevans-co-us.zip",
+      "lastFeedExpiry": "20260831",
+      "lastFeedVersion": "UTC: 23-Feb-2026 11:20",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2076/latest.zip",
+      "bbox": [
+        40.356,
+        -105.1056,
+        40.6015,
+        -104.6573
+      ]
+    },
+    {
+      "slug": "bridgeport-gbt",
+      "name": "Greater Bridgeport Transit",
+      "center": [
+        41.18,
+        -73.19
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip",
+      "lastFeedExpiry": "20261227",
+      "lastFeedVersion": "UTC: 17-Jun-2026 15:39",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Connecticut",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-530/latest.zip",
+      "bbox": [
+        41.0979,
+        -73.4351,
+        41.3404,
+        -73.0124
+      ]
+    },
+    {
+      "slug": "davenport",
+      "name": "Davenport CitiBus",
+      "center": [
+        41.52,
+        -90.58
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/davenport-ia-us/davenport-ia-us.zip",
+      "lastFeedExpiry": "20241231",
+      "lastFeedVersion": "UTC: 29-May-2024 19:01",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
+      "bbox": [
+        41.4838,
+        -90.6572,
+        41.615,
+        -90.494
+      ]
+    },
+    {
+      "slug": "bettendorf",
+      "name": "Bettendorf Transit",
+      "center": [
+        41.53,
+        -90.51
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/bettendorf-ia-us/bettendorf-ia-us.zip",
+      "lastFeedExpiry": "20261001",
+      "lastFeedVersion": "UTC: 27-Feb-2026 21:22",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1826/latest.zip",
+      "bbox": [
+        41.4868,
+        -90.5428,
+        41.6101,
+        -90.4226
+      ]
+    },
+    {
+      "slug": "dubuque",
+      "name": "The Jule (Dubuque)",
+      "center": [
+        42.5,
+        -90.69
+      ],
+      "feedUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20270930",
+      "lastFeedVersion": "2026_05_06",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2083/latest.zip",
+      "bbox": [
+        42.4555,
+        -90.7956,
+        42.5914,
+        -90.6247
+      ]
+    },
+    {
+      "slug": "pocatello",
+      "name": "Pocatello Regional Transit",
+      "center": [
+        42.87,
+        -112.45
+      ],
+      "feedUrl": "https://pocatellotransit.com/gtfs/pocatello-regional-transit-gtfs.zip?v=current",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "14FEB26",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Idaho",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-171/latest.zip",
+      "bbox": [
+        42.7457,
+        -112.9421,
+        42.955,
+        -112.3447
+      ]
+    },
+    {
+      "slug": "albany-ga",
+      "name": "Albany Transit System",
+      "center": [
+        31.58,
+        -84.16
+      ],
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11834/ats_albany_ga_us(2).zip",
+      "lastFeedExpiry": "20240630",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Georgia",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2146/latest.zip",
+      "bbox": [
+        31.5113,
+        -84.2457,
+        31.6399,
+        -84.0333
+      ]
+    },
+    {
+      "slug": "wilmington-nc",
+      "name": "Wave Transit (Wilmington)",
+      "center": [
+        34.23,
+        -77.94
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20250617",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "North Carolina",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1110/latest.zip",
+      "bbox": [
+        34.1216,
+        -77.9695,
+        34.2717,
+        -77.8088
+      ]
+    },
+    {
+      "slug": "st-george",
+      "name": "SunTran (St. George)",
+      "center": [
+        37.1,
+        -113.58
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Utah",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
+      "bbox": [
+        37.0419,
+        -113.6997,
+        37.208,
+        -113.4708
+      ]
+    },
+    {
+      "slug": "grand-junction",
+      "name": "Grand Valley Transit",
+      "center": [
+        39.07,
+        -108.55
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "lastFeedExpiry": "20251105",
+      "lastFeedVersion": "Nov_05_2024",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "bbox": [
+        39.0109,
+        -108.7584,
+        39.1844,
+        -108.3284
+      ]
     }
   ]
 }

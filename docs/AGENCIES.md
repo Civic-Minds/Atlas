@@ -6,7 +6,7 @@ Reference for Atlas agency coverage across static data, live polling, and histor
 
 ## Static Coverage
 
-414 agencies as of July 9, 2026.
+428 agencies as of July 14, 2026.
 
 Source of truth: [`public/data/index.json`](../public/data/index.json)
 

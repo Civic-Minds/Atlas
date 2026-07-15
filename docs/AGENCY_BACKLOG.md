@@ -19,6 +19,24 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
+## Recently completed (2026-07-14 — secondary cities batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `sioux-falls` | Sioux Area Metro (SAM) | South Dakota | mdb-192 first SD agency |
+| done | `wilmington-nc` | Wave Transit (Wilmington) | North Carolina | mdb-1110 (MDB mirror; agency URL 404) |
+| done | `yakima` | Yakima Transit | Washington | mdb-276 |
+| done | `grand-forks` | Cities Area Transit (Grand Forks) | North Dakota | mdb-2199 |
+| done | `st-george` | SunTran (St. George) | Utah | mdb-111 (MDB mirror; fivecounty 404) |
+| done | `grand-junction` | Grand Valley Transit | Colorado | mdb-161 |
+| done | `greeley` | Greeley-Evans Transit (GET) | Colorado | mdb-2076 |
+| done | `bridgeport-gbt` | Greater Bridgeport Transit | Connecticut | mdb-530 |
+| done | `davenport` | Davenport CitiBus | Iowa | mdb-2304 Quad Cities |
+| done | `bettendorf` | Bettendorf Transit | Iowa | mdb-1826 Quad Cities |
+| done | `dubuque` | The Jule (Dubuque) | Iowa | mdb-2083 |
+| done | `pocatello` | Pocatello Regional Transit | Idaho | mdb-171 |
+| done | `albany-ga` | Albany Transit System | Georgia | mdb-2146 |
+
 ## Recently completed (2026-07-09)
 
 | Status | Slug | Agency | Region | Notes |
