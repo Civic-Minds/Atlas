@@ -1,0 +1,20 @@
+{
+  "slug": "fort-bend",
+  "name": "Fort Bend County Transit",
+  "region": "Texas",
+  "center": [
+    29.64,
+    -95.6
+  ],
+  "bbox": [
+    29.472,
+    -95.859,
+    29.803,
+    -95.341
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60103/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60103/latest.zip",
+  "lastFeedExpiry": "20281230",
+  "lastFeedVersion": "1",
+  "lastRefreshedAt": "2026-07-06"
+}

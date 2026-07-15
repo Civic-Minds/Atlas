@@ -1,0 +1,13 @@
+{
+  "slug": "valleymetro",
+  "name": "Valley Metro (Phoenix)",
+  "center": [
+    33.45,
+    -112.07
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-147/mdb-147-202606300020/mdb-147-202606300020.zip",
+  "lastFeedExpiry": "20261025",
+  "lastFeedVersion": "GTFS_v4.5_20260616",
+  "region": "Arizona",
+  "lastRefreshedAt": "2026-07-06"
+}

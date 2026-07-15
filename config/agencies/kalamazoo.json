@@ -1,0 +1,14 @@
+{
+  "slug": "kalamazoo",
+  "name": "Kalamazoo Metro Transit",
+  "center": [
+    42.29,
+    -85.59
+  ],
+  "feedUrl": "https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx",
+  "region": "Michigan",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-674/latest.zip",
+  "lastFeedExpiry": "20260928",
+  "lastFeedVersion": "20260705",
+  "lastRefreshedAt": "2026-07-06"
+}

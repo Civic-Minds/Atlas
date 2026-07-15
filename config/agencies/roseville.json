@@ -1,0 +1,20 @@
+{
+  "slug": "roseville",
+  "name": "Roseville Transit",
+  "center": [
+    38.745,
+    -121.3033
+  ],
+  "region": "California",
+  "bbox": [
+    38.57,
+    -121.5,
+    38.81,
+    -121.21
+  ],
+  "feedUrl": "https://iportal.sacrt.com/gtfs/Roseville/google_transit.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-roseville-transit-gtfs-1067.zip?alt=media",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Roseville_April_2025-26",
+  "lastRefreshedAt": "2026-07-06"
+}

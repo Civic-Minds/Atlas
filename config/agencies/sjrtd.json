@@ -1,0 +1,13 @@
+{
+  "slug": "sjrtd",
+  "name": "San Joaquin RTD",
+  "center": [
+    37.96,
+    -121.29
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-886/mdb-886-202606020047/mdb-886-202606020047.zip",
+  "lastFeedExpiry": "20260725",
+  "lastFeedVersion": "20260531-20260725",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

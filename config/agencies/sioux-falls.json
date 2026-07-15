@@ -1,0 +1,20 @@
+{
+  "slug": "sioux-falls",
+  "name": "Sioux Area Metro (SAM)",
+  "center": [
+    43.54,
+    -96.73
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip",
+  "lastFeedExpiry": "20240401",
+  "lastFeedVersion": "UTC: 01-Nov-2023 21:05",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "South Dakota",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-192/latest.zip",
+  "bbox": [
+    43.4802,
+    -96.8308,
+    43.623,
+    -96.633
+  ]
+}

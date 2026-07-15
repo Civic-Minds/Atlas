@@ -1,0 +1,13 @@
+{
+  "slug": "ripta",
+  "name": "Rhode Island Public Transit Authority (RIPTA)",
+  "center": [
+    41.82,
+    -71.42
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-624/mdb-624-202606210030/mdb-624-202606210030.zip",
+  "lastFeedExpiry": "20260828",
+  "lastFeedVersion": null,
+  "region": "Rhode Island",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "rts",
+  "name": "RTS (Gainesville)",
+  "center": [
+    29.64,
+    -82.33
+  ],
+  "bbox": [
+    29.4,
+    -82.7,
+    29.85,
+    -82
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2412/latest.zip",
+  "region": "Florida",
+  "lastFeedExpiry": "20250817",
+  "lastFeedVersion": "2501",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.go-rts.com/"
+}

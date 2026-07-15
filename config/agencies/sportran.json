@@ -1,0 +1,19 @@
+{
+  "slug": "sportran",
+  "name": "SporTran (Shreveport)",
+  "center": [
+    32.51,
+    -93.74
+  ],
+  "bbox": [
+    32.4,
+    -93.9,
+    32.6,
+    -93.5
+  ],
+  "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
+  "region": "Louisiana",
+  "lastFeedExpiry": "20260802",
+  "lastFeedVersion": "20260428",
+  "lastRefreshedAt": "2026-07-06"
+}

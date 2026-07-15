@@ -1,0 +1,20 @@
+{
+  "slug": "terrebonne-parish",
+  "name": "Good Earth Transit (Houma)",
+  "region": "Louisiana",
+  "center": [
+    29.69,
+    -90.75
+  ],
+  "bbox": [
+    29.514,
+    -90.897,
+    29.861,
+    -90.597
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
+  "lastFeedExpiry": "20261005",
+  "lastFeedVersion": "382",
+  "lastRefreshedAt": "2026-07-13"
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "rtcsnv",
+  "name": "Regional Transportation Commission of Southern Nevada (RTC)",
+  "center": [
+    36.17,
+    -115.14
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/mdb-2351-202606300119/mdb-2351-202606300119.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "October 2025_20260302",
+  "region": "Nevada",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "cyride",
+  "name": "CyRide (Ames)",
+  "center": [
+    42.03,
+    -93.63
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip",
+  "lastFeedExpiry": "20260816",
+  "lastFeedVersion": "20260513",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Iowa",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip",
+  "bbox": [
+    41.9701,
+    -93.7158,
+    42.0765,
+    -93.5875
+  ]
+}

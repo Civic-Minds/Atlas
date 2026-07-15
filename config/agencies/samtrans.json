@@ -1,0 +1,20 @@
+{
+  "slug": "samtrans",
+  "name": "San Mateo County Transit District (samTrans)",
+  "center": [
+    37.5672,
+    -122.3439
+  ],
+  "region": "California",
+  "bbox": [
+    37.37,
+    -122.52,
+    37.79,
+    -122.13
+  ],
+  "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-mateo-county-transit-district-samtrans-gtfs-49.zip?alt=media",
+  "lastFeedExpiry": "20260801",
+  "lastFeedVersion": "Initial",
+  "lastRefreshedAt": "2026-07-06"
+}

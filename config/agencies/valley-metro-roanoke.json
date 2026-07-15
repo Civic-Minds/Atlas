@@ -1,0 +1,19 @@
+{
+  "slug": "valley-metro-roanoke",
+  "name": "Valley Metro (Roanoke, VA)",
+  "center": [
+    37.229,
+    -80.154
+  ],
+  "bbox": [
+    37.133,
+    -80.425,
+    37.324,
+    -79.882
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
+  "region": "Virginia",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "04/06/26",
+  "lastRefreshedAt": "2026-07-06"
+}

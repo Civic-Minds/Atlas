@@ -1,0 +1,20 @@
+{
+  "slug": "ccta",
+  "name": "CCTA / Green Mountain Transit",
+  "center": [
+    44.48,
+    -73.21
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
+  "lastFeedExpiry": "20261001",
+  "lastFeedVersion": "UTC: 07-Jul-2026 14:39",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Vermont",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
+  "bbox": [
+    43.9903,
+    -73.3189,
+    45.0175,
+    -72.0007
+  ]
+}

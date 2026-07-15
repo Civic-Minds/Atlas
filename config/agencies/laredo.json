@@ -1,0 +1,14 @@
+{
+  "slug": "laredo",
+  "name": "El Metro (Laredo)",
+  "center": [
+    26.2,
+    -99.52
+  ],
+  "feedUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip",
+  "region": "Texas",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7038/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: May 6, 2026, 8:37 AM",
+  "lastRefreshedAt": "2026-07-06"
+}

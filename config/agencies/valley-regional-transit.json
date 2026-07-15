@@ -1,0 +1,13 @@
+{
+  "slug": "valley-regional-transit",
+  "name": "Valley Regional Transit (Boise)",
+  "center": [
+    43.62,
+    -116.2
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-142/mdb-142-202606100102/mdb-142-202606100102.zip",
+  "lastFeedExpiry": "20270609",
+  "lastFeedVersion": "457",
+  "region": "Idaho",
+  "lastRefreshedAt": "2026-07-06"
+}

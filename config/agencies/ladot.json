@@ -1,0 +1,13 @@
+{
+  "slug": "ladot",
+  "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+  "center": [
+    34.05,
+    -118.24
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1210/mdb-1210-202607030056/mdb-1210-202607030056.zip",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-CE 423 Changes v3,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

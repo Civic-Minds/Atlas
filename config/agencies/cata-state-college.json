@@ -1,0 +1,20 @@
+{
+  "slug": "cata-state-college",
+  "name": "CATA (State College)",
+  "center": [
+    40.79,
+    -77.86
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
+  "lastFeedExpiry": "20260816",
+  "lastFeedVersion": "20260430",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Pennsylvania",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
+  "bbox": [
+    40.741,
+    -77.9455,
+    40.8581,
+    -77.7763
+  ]
+}

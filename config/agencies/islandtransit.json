@@ -1,0 +1,19 @@
+{
+  "slug": "islandtransit",
+  "name": "Island Transit",
+  "center": [
+    48.22,
+    -122.65
+  ],
+  "region": "Washington",
+  "bbox": [
+    47.9,
+    -122.9,
+    48.5,
+    -122.3
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media",
+  "lastFeedExpiry": "20261001",
+  "lastFeedVersion": "UTC: 06-May-2026 16:22",
+  "lastRefreshedAt": "2026-07-06"
+}

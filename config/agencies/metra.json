@@ -1,0 +1,13 @@
+{
+  "slug": "metra",
+  "name": "Metra",
+  "center": [
+    41.8781,
+    -87.6298
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2854/mdb-2854-202606280011/mdb-2854-202606280011.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Illinois",
+  "lastRefreshedAt": "2026-07-13"
+}

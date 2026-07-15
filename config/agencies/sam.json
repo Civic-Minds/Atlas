@@ -1,0 +1,20 @@
+{
+  "slug": "sam",
+  "name": "Sandy Area Metro (SAM)",
+  "center": [
+    45.3855,
+    -122.2992
+  ],
+  "region": "Oregon",
+  "bbox": [
+    45.29,
+    -122.57,
+    45.5,
+    -121.71
+  ],
+  "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-sandy-area-metro-sam-gtfs-261.zip?alt=media",
+  "lastFeedExpiry": "20261201",
+  "lastFeedVersion": "UTC: 17-Jun-2026 18:57",
+  "lastRefreshedAt": "2026-07-06"
+}

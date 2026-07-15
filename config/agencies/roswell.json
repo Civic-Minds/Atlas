@@ -1,0 +1,20 @@
+{
+  "slug": "roswell",
+  "name": "Roswell Transit",
+  "region": "New Mexico",
+  "center": [
+    33.39,
+    -104.52
+  ],
+  "bbox": [
+    33.257,
+    -104.573,
+    33.499,
+    -104.47
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60167/ntd-60167-202412090027/ntd-60167-202412090027.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60167/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "modesto",
+  "name": "Modesto Area Express",
+  "center": [
+    37.64,
+    -120.99
+  ],
+  "feedUrl": "https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2273/latest.zip",
+  "region": "California",
+  "lastFeedExpiry": "20270630",
+  "lastFeedVersion": "20260602",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "carta-chattanooga",
+  "name": "Chattanooga Area Regional Transportation Authority",
+  "center": [
+    35.05,
+    -85.31
+  ],
+  "bbox": [
+    34.8,
+    -85.6,
+    35.3,
+    -85
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-71/latest.zip",
+  "region": "Tennessee",
+  "lastFeedExpiry": "20260110",
+  "lastFeedVersion": "UTC: 24-Jul-2025 22:32",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://marintransit.org"
+}

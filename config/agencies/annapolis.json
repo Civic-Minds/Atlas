@@ -1,0 +1,20 @@
+{
+  "slug": "annapolis",
+  "name": "Annapolis Transit",
+  "center": [
+    38.98,
+    -76.49
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+  "lastFeedExpiry": "20260930",
+  "lastFeedVersion": "20250923",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Maryland",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+  "bbox": [
+    38.9283,
+    -76.5771,
+    39.0146,
+    -76.464
+  ]
+}

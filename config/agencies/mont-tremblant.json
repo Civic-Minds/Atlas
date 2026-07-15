@@ -1,0 +1,20 @@
+{
+  "slug": "mont-tremblant",
+  "name": "Mont-Tremblant",
+  "region": "Quebec",
+  "center": [
+    46.15,
+    -74.6
+  ],
+  "bbox": [
+    45.95,
+    -74.9,
+    46.45,
+    -74.3
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
+  "lastFeedExpiry": "20260907",
+  "lastFeedVersion": "1783353110630",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.villedemont-tremblant.qc.ca"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "codiac",
+  "name": "Codiac Transpo (Moncton)",
+  "region": "New Brunswick",
+  "center": [
+    46.0878,
+    -64.7782
+  ],
+  "bbox": [
+    46.01,
+    -64.97,
+    46.18,
+    -64.55
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-codiac-transport-gtfs-1111.zip?alt=media",
+  "lastFeedExpiry": "20260630",
+  "lastFeedVersion": "2026 02 28  Bid5 V2",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.codiactranspo.ca/"
+}

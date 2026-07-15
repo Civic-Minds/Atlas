@@ -1,0 +1,13 @@
+{
+  "slug": "cobblinc",
+  "name": "CobbLinc",
+  "center": [
+    33.9,
+    -84.55
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3193/mdb-3193-202607020158/mdb-3193-202607020158.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260701",
+  "region": "Georgia",
+  "lastRefreshedAt": "2026-07-06"
+}

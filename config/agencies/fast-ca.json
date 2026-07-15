@@ -1,0 +1,21 @@
+{
+  "slug": "fast-ca",
+  "name": "Fairfield and Suisun Transit (FAST Transit)",
+  "center": [
+    38.2564,
+    -122.0281
+  ],
+  "region": "California",
+  "bbox": [
+    37.91,
+    -122.32,
+    38.58,
+    -121.5
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-fairfield-and-suisun-transit-fast-transit-gtfs-76.zip?alt=media",
+  "lastFeedExpiry": "20260630",
+  "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.fasttransit.org/"
+}

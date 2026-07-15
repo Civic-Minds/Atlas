@@ -1,0 +1,14 @@
+{
+  "slug": "psta",
+  "name": "Pinellas Suncoast Transit Authority (PSTA)",
+  "center": [
+    27.9,
+    -82.7
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-326/mdb-326-202511300039/mdb-326-202511300039.zip",
+  "lastFeedExpiry": "20260606",
+  "lastFeedVersion": "S1000242",
+  "region": "Florida",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.psta.net"
+}

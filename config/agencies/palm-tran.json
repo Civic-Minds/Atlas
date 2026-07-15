@@ -1,0 +1,13 @@
+{
+  "slug": "palm-tran",
+  "name": "Palm Tran",
+  "center": [
+    26.7,
+    -80.1
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-332/mdb-332-202605190002/mdb-332-202605190002.zip",
+  "lastFeedExpiry": "20260919",
+  "lastFeedVersion": "20260511",
+  "region": "Florida",
+  "lastRefreshedAt": "2026-07-06"
+}

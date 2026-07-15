@@ -1,0 +1,20 @@
+{
+  "slug": "fredericton",
+  "name": "Fredericton Transit",
+  "region": "New Brunswick",
+  "center": [
+    45.9636,
+    -66.6431
+  ],
+  "bbox": [
+    45.89,
+    -66.8,
+    46.04,
+    -66.49
+  ],
+  "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "202606290/20260628 23:30:00/20260629 04:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-fredericton-transit-gtfs-764.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

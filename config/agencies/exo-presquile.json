@@ -1,0 +1,21 @@
+{
+  "slug": "exo-presquile",
+  "name": "exo (La Presqu'île)",
+  "region": "Quebec",
+  "center": [
+    45.406,
+    -74.0382
+  ],
+  "bbox": [
+    45.01,
+    -74.54,
+    45.81,
+    -73.54
+  ],
+  "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-la-presquile-gtfs-743.zip?alt=media",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

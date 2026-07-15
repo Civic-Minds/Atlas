@@ -1,0 +1,19 @@
+{
+  "slug": "hrt",
+  "name": "Hampton Roads Transit",
+  "center": [
+    37,
+    -76.34
+  ],
+  "bbox": [
+    36.71,
+    -76.71,
+    37.29,
+    -75.97
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-473/latest.zip",
+  "region": "Virginia",
+  "lastFeedExpiry": "20261024",
+  "lastFeedVersion": "1",
+  "lastRefreshedAt": "2026-07-06"
+}

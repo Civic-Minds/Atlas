@@ -1,0 +1,19 @@
+{
+  "slug": "saskatoon",
+  "name": "Saskatoon Transit",
+  "center": [
+    52.1332,
+    -106.67
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-saskatoon-transit-gtfs-716.zip?alt=media",
+  "region": "Saskatchewan",
+  "bbox": [
+    52.03,
+    -106.85,
+    52.24,
+    -106.5
+  ],
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

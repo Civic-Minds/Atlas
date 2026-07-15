@@ -1,0 +1,13 @@
+{
+  "slug": "bigbluebus",
+  "name": "Big Blue Bus",
+  "center": [
+    34.01,
+    -118.49
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-37/mdb-37-202604070127/mdb-37-202604070127.zip",
+  "lastFeedExpiry": "20260808",
+  "lastFeedVersion": "2026-04 (Apr)_20260319",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

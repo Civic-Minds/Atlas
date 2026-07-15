@@ -1,0 +1,13 @@
+{
+  "slug": "via",
+  "name": "VIA Metropolitan Transit (San Antonio)",
+  "center": [
+    29.42,
+    -98.49
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-217/tld-217-202607030139/tld-217-202607030139.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": "May 2026_20260701",
+  "region": "Texas",
+  "lastRefreshedAt": "2026-07-06"
+}

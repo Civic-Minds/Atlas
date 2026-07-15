@@ -1,0 +1,20 @@
+{
+  "slug": "sto",
+  "name": "STO (Gatineau)",
+  "region": "Quebec",
+  "center": [
+    45.487,
+    -75.641
+  ],
+  "bbox": [
+    45.381,
+    -75.89,
+    45.593,
+    -75.391
+  ],
+  "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13"
+}

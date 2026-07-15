@@ -1,0 +1,20 @@
+{
+  "slug": "st-george",
+  "name": "SunTran (St. George)",
+  "center": [
+    37.1,
+    -113.58
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Utah",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
+  "bbox": [
+    37.0419,
+    -113.6997,
+    37.208,
+    -113.4708
+  ]
+}

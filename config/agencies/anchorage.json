@@ -1,0 +1,14 @@
+{
+  "slug": "anchorage",
+  "name": "Anchorage People Mover",
+  "center": [
+    61.22,
+    -149.77
+  ],
+  "feedUrl": "http://gtfs.muni.org/People_Mover.gtfs.zip",
+  "region": "Alaska",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-225/latest.zip",
+  "lastFeedExpiry": "20270531",
+  "lastFeedVersion": "20260528",
+  "lastRefreshedAt": "2026-07-06"
+}

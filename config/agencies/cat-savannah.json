@@ -1,0 +1,20 @@
+{
+  "slug": "cat-savannah",
+  "name": "Chatham Area Transit (CAT)",
+  "center": [
+    32.095,
+    -81.121
+  ],
+  "bbox": [
+    31.969,
+    -81.283,
+    32.221,
+    -80.959
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2080/latest.zip",
+  "region": "Georgia",
+  "lastFeedExpiry": "20250727",
+  "lastFeedVersion": "S1000046",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.catchacat.org"
+}

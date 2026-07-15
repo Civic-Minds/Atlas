@@ -1,0 +1,13 @@
+{
+  "slug": "chapel-hill-transit",
+  "name": "Chapel Hill Transit",
+  "center": [
+    35.91,
+    -79.05
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-89/tld-89-202607040106/tld-89-202607040106.zip",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Summer 2026",
+  "region": "North Carolina",
+  "lastRefreshedAt": "2026-07-06"
+}

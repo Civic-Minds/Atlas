@@ -1,0 +1,13 @@
+{
+  "slug": "abqride",
+  "name": "ABQ RIDE (Albuquerque)",
+  "center": [
+    35.09,
+    -106.65
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-166/mdb-166-202606060001/mdb-166-202606060001.zip",
+  "lastFeedExpiry": "20260904",
+  "lastFeedVersion": "2026-05_20260605",
+  "region": "New Mexico",
+  "lastRefreshedAt": "2026-07-06"
+}

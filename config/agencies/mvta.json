@@ -1,0 +1,13 @@
+{
+  "slug": "mvta",
+  "name": "Minnesota Valley Transit Authority (MVTA)",
+  "center": [
+    44.6,
+    -93.3
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202606230010/mdb-206-202606230010.zip",
+  "lastFeedExpiry": "20260809",
+  "lastFeedVersion": "20260622",
+  "region": "Minnesota",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "kingston",
+  "name": "Kingston Transit",
+  "region": "Ontario",
+  "center": [
+    44.2312,
+    -76.486
+  ],
+  "bbox": [
+    43.83,
+    -76.99,
+    44.63,
+    -75.99
+  ],
+  "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
+  "lastFeedExpiry": "20270706",
+  "lastFeedVersion": "1/20260706 15:49:22/20260707 04:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-kingston-transit-gtfs-733.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13"
+}

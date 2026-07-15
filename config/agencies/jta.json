@@ -1,0 +1,13 @@
+{
+  "slug": "jta",
+  "name": "Jacksonville Transportation Authority (JTA)",
+  "center": [
+    30.33,
+    -81.65
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-764/tld-764-202606200015/tld-764-202606200015.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Florida",
+  "lastRefreshedAt": "2026-07-13"
+}

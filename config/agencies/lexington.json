@@ -1,0 +1,14 @@
+{
+  "slug": "lexington",
+  "name": "Lextran",
+  "center": [
+    38.05,
+    -84.5
+  ],
+  "feedUrl": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx",
+  "region": "Kentucky",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2067/latest.zip",
+  "lastFeedExpiry": "20260815",
+  "lastFeedVersion": "20260612",
+  "lastRefreshedAt": "2026-07-06"
+}

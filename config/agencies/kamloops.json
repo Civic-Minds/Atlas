@@ -1,0 +1,14 @@
+{
+  "slug": "kamloops",
+  "name": "BC Transit (Kamloops)",
+  "region": "British Columbia",
+  "center": [
+    50.674,
+    -120.327
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-kamloops-transit-system-gtfs-707.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

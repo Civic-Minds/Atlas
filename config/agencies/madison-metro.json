@@ -1,0 +1,14 @@
+{
+  "slug": "madison-metro",
+  "name": "Madison Metro Transit",
+  "center": [
+    43.07,
+    -89.4
+  ],
+  "feedUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-394/latest.zip",
+  "region": "Wisconsin",
+  "lastFeedExpiry": "20260815",
+  "lastFeedVersion": "S070_202605050858",
+  "lastRefreshedAt": "2026-07-06"
+}

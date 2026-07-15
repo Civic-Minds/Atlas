@@ -1,0 +1,19 @@
+{
+  "slug": "hocts",
+  "name": "HOCTS (Utica-Rome)",
+  "center": [
+    43.1,
+    -75.23
+  ],
+  "region": "New York",
+  "bbox": [
+    42.9,
+    -75.6,
+    43.4,
+    -74.9
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-herkimer-oneida-counties-transportation-study-hocts-gtfs-588.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

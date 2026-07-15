@@ -1,0 +1,13 @@
+{
+  "slug": "riverside",
+  "name": "Riverside Transit Agency",
+  "center": [
+    33.98,
+    -117.37
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-98/mdb-98-202605110136/mdb-98-202605110136.zip",
+  "lastFeedExpiry": "20260912",
+  "lastFeedVersion": "S1000245",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

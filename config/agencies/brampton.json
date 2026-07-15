@@ -1,0 +1,20 @@
+{
+  "slug": "brampton",
+  "name": "Brampton Transit",
+  "region": "Ontario",
+  "center": [
+    43.7315,
+    -79.7624
+  ],
+  "bbox": [
+    43.33,
+    -80.26,
+    44.13,
+    -79.26
+  ],
+  "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
+  "lastFeedExpiry": "20260802",
+  "lastFeedVersion": "20260629",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-brampton-transit-gtfs-729.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

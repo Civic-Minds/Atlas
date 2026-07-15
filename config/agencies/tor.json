@@ -1,0 +1,20 @@
+{
+  "slug": "tor",
+  "name": "Transport of Rockland (TOR)",
+  "region": "New York",
+  "center": [
+    41.1,
+    -73.9
+  ],
+  "bbox": [
+    41.0188,
+    -74.1936,
+    41.2506,
+    -73.9196
+  ],
+  "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip",
+  "lastFeedExpiry": "20260630",
+  "lastFeedVersion": "TRANSDEV-v1",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://rocklandgov.com/departments/public-transportation/transport-of-rockland/"
+}

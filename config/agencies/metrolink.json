@@ -1,0 +1,13 @@
+{
+  "slug": "metrolink",
+  "name": "Metrolink",
+  "center": [
+    34.05,
+    -118.24
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-96/mdb-96-202605230122/mdb-96-202605230122.zip",
+  "lastFeedExpiry": "20360501",
+  "lastFeedVersion": "20260505",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

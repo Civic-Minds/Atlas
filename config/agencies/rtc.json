@@ -1,0 +1,19 @@
+{
+  "slug": "rtc",
+  "name": "RTC (Québec)",
+  "region": "Quebec",
+  "center": [
+    46.8139,
+    -71.2082
+  ],
+  "bbox": [
+    46.6,
+    -71.5,
+    47,
+    -71
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-la-capitale-gtfs-757.zip?alt=media",
+  "lastFeedExpiry": "20260821",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-06"
+}

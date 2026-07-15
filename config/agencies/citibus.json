@@ -1,0 +1,19 @@
+{
+  "slug": "citibus",
+  "name": "Citibus (Lubbock)",
+  "center": [
+    33.59,
+    -101.87
+  ],
+  "bbox": [
+    33.52,
+    -101.95,
+    33.66,
+    -101.8
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-569/latest.zip",
+  "region": "Texas",
+  "lastFeedExpiry": "20260807",
+  "lastFeedVersion": "UTC: 11-Mar-2026 20:19",
+  "lastRefreshedAt": "2026-07-06"
+}

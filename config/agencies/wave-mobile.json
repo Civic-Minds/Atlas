@@ -1,0 +1,19 @@
+{
+  "slug": "wave-mobile",
+  "name": "Wave Transit (Mobile)",
+  "center": [
+    30.68,
+    -88.1
+  ],
+  "bbox": [
+    30.56,
+    -88.24,
+    30.79,
+    -87.97
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-6773/latest.zip",
+  "region": "Alabama",
+  "lastFeedExpiry": "20281231",
+  "lastFeedVersion": "20260319",
+  "lastRefreshedAt": "2026-07-06"
+}

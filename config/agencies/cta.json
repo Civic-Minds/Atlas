@@ -1,0 +1,13 @@
+{
+  "slug": "cta",
+  "name": "Chicago Transit Authority (CTA)",
+  "center": [
+    41.8781,
+    -87.6298
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-389/mdb-389-202605300003/mdb-389-202605300003.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Illinois",
+  "lastRefreshedAt": "2026-07-13"
+}

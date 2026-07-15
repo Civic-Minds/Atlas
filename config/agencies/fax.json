@@ -1,0 +1,13 @@
+{
+  "slug": "fax",
+  "name": "Fresno Area Express (FAX)",
+  "center": [
+    36.74,
+    -119.78
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202605220140/mdb-90-202605220140.zip",
+  "lastFeedExpiry": "20260809",
+  "lastFeedVersion": "6.1.26 Production_20260515",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "springfield-il",
+  "name": "SMTD (Springfield IL)",
+  "center": [
+    39.78,
+    -89.65
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "S1000203",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Illinois",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
+  "bbox": [
+    39.6866,
+    -89.7724,
+    39.8801,
+    -89.5745
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "squamish",
+  "name": "BC Transit (Squamish)",
+  "region": "British Columbia",
+  "center": [
+    49.702,
+    -123.155
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
+  "lastFeedExpiry": "20260907",
+  "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-squamish-gtfs-701.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

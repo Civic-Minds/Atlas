@@ -1,0 +1,20 @@
+{
+  "slug": "brownsville",
+  "name": "Brownsville Metro",
+  "region": "Texas",
+  "center": [
+    25.9017,
+    -97.4975
+  ],
+  "bbox": [
+    25.8458,
+    -97.5629,
+    26.024,
+    -97.3871
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

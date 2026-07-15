@@ -1,0 +1,14 @@
+{
+  "slug": "ddot",
+  "name": "DDOT (Detroit)",
+  "region": "Michigan",
+  "center": [
+    42.3314,
+    -83.0458
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-department-of-transportation-ddot-gtfs-464.zip?alt=media",
+  "lastFeedExpiry": "20260703",
+  "lastFeedVersion": "S1000180",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://DetroitMI.gov/DDOT"
+}

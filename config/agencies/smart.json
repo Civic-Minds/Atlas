@@ -1,0 +1,14 @@
+{
+  "slug": "smart",
+  "name": "SMART (Detroit suburbs)",
+  "region": "Michigan",
+  "center": [
+    42.4,
+    -83.1
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-suburban-mobility-authority-for-regional-transit-smart-gtfs-414.zip?alt=media",
+  "lastFeedExpiry": "20260621",
+  "lastFeedVersion": "S1000139",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://smartbus.org"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "whitehorse",
+  "name": "Whitehorse Transit",
+  "center": [
+    60.72,
+    -135.05
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13",
+  "region": "Yukon",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
+  "bbox": [
+    60.6639,
+    -135.1889,
+    60.8076,
+    -134.9969
+  ]
+}

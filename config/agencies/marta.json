@@ -1,0 +1,13 @@
+{
+  "slug": "marta",
+  "name": "MARTA",
+  "center": [
+    33.749,
+    -84.388
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-368/mdb-368-202604190110/mdb-368-202604190110.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Georgia",
+  "lastRefreshedAt": "2026-07-13"
+}

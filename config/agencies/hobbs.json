@@ -1,0 +1,20 @@
+{
+  "slug": "hobbs",
+  "name": "City of Hobbs Transit",
+  "region": "New Mexico",
+  "center": [
+    32.7,
+    -103.14
+  ],
+  "bbox": [
+    32.643,
+    -103.239,
+    32.825,
+    -103.063
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60190/ntd-60190-202601240120/ntd-60190-202601240120.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60190/latest.zip",
+  "lastFeedExpiry": "20270331",
+  "lastFeedVersion": "20230901",
+  "lastRefreshedAt": "2026-07-06"
+}

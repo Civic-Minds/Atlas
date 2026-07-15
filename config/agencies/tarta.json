@@ -1,0 +1,14 @@
+{
+  "slug": "tarta",
+  "name": "TARTA (Toledo)",
+  "center": [
+    41.66,
+    -83.56
+  ],
+  "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
+  "region": "Ohio",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1716_1/latest.zip",
+  "lastFeedExpiry": "20270710",
+  "lastFeedVersion": "402",
+  "lastRefreshedAt": "2026-07-13"
+}

@@ -18,6 +18,7 @@
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
     "validate-index": "npx tsx pipeline/validate-index.ts",
+    "build:agency-index": "npx tsx scripts/build-agency-index.ts",
     "verify:live-contract": "npx tsx scripts/verify-live-contract.ts",
     "sync-feed-refresh-meta": "npx tsx scripts/sync-feed-refresh-meta.ts",
     "audit-frequency": "npx tsx scripts/audit-frequency.ts",

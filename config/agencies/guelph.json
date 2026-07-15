@@ -1,0 +1,21 @@
+{
+  "slug": "guelph",
+  "name": "Guelph Transit",
+  "region": "Ontario",
+  "center": [
+    43.5448,
+    -80.2482
+  ],
+  "bbox": [
+    43.14,
+    -80.75,
+    43.94,
+    -79.75
+  ],
+  "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip",
+  "lastFeedExpiry": "20250830",
+  "lastFeedVersion": "2025 May _20250801",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.guelphtransit.ca"
+}

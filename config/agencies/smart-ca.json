@@ -1,0 +1,20 @@
+{
+  "slug": "smart-ca",
+  "name": "Sonoma-Marin Area Rail Transit (SMART)",
+  "center": [
+    38.2384,
+    -122.6407
+  ],
+  "region": "California",
+  "bbox": [
+    37.95,
+    -122.82,
+    38.55,
+    -122.51
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-marin-area-rail-transit-smart-gtfs-815.zip?alt=media",
+  "lastFeedExpiry": "20270110",
+  "lastFeedVersion": "UTC: 14-Apr-2026 15:07",
+  "lastRefreshedAt": "2026-07-06"
+}

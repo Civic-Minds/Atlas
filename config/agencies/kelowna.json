@@ -1,0 +1,14 @@
+{
+  "slug": "kelowna",
+  "name": "BC Transit (Kelowna)",
+  "region": "British Columbia",
+  "center": [
+    49.888,
+    -119.496
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-kelowna-regional-transit-system-gtfs-2555.zip?alt=media",
+  "lastFeedExpiry": "20260627",
+  "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.bctransit.com/"
+}

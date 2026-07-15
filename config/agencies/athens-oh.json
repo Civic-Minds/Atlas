@@ -1,0 +1,20 @@
+{
+  "slug": "athens-oh",
+  "name": "Athens Public Transit",
+  "center": [
+    39.33,
+    -82.1
+  ],
+  "feedUrl": "https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip",
+  "lastFeedExpiry": "20231231",
+  "lastFeedVersion": "1.0 - Jan 9, 2023",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Ohio",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1973/latest.zip",
+  "bbox": [
+    39.2039,
+    -82.2706,
+    39.49,
+    -82.008
+  ]
+}

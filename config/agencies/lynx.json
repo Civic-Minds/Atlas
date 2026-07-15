@@ -1,0 +1,13 @@
+{
+  "slug": "lynx",
+  "name": "LYNX (Central Florida)",
+  "center": [
+    28.54,
+    -81.38
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-347/mdb-347-202606060124/mdb-347-202606060124.zip",
+  "lastFeedExpiry": "20260808",
+  "lastFeedVersion": null,
+  "region": "Florida",
+  "lastRefreshedAt": "2026-07-06"
+}

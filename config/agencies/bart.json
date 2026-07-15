@@ -1,0 +1,20 @@
+{
+  "slug": "bart",
+  "name": "Bay Area Rapid Transit (BART)",
+  "center": [
+    37.768,
+    -122.2314
+  ],
+  "region": "California",
+  "bbox": [
+    37.37,
+    -122.47,
+    38.02,
+    -121.78
+  ],
+  "feedUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-bay-area-rapid-transit-bart-gtfs-53.zip?alt=media",
+  "lastFeedExpiry": "20260807",
+  "lastFeedVersion": "72",
+  "lastRefreshedAt": "2026-07-06"
+}

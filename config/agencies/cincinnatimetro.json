@@ -1,0 +1,13 @@
+{
+  "slug": "cincinnatimetro",
+  "name": "Cincinnati Metro (SORTA)",
+  "center": [
+    39.1,
+    -84.51
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-307/mdb-307-202607010002/mdb-307-202607010002.zip",
+  "lastFeedExpiry": "20260815",
+  "lastFeedVersion": "gtfs_20260531-20260815_20260626",
+  "region": "Ohio",
+  "lastRefreshedAt": "2026-07-06"
+}

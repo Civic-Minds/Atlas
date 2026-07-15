@@ -1,0 +1,20 @@
+{
+  "slug": "san-angelo",
+  "name": "Concho Valley Transit (San Angelo)",
+  "region": "Texas",
+  "center": [
+    31.46,
+    -100.44
+  ],
+  "bbox": [
+    31.354,
+    -100.562,
+    31.559,
+    -100.33
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-5864/tld-5864-202607070159/tld-5864-202607070159.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5864/latest.zip",
+  "lastFeedExpiry": "20260805",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-06"
+}

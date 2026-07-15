@@ -1,0 +1,19 @@
+{
+  "slug": "nyct-bus-bronx",
+  "name": "MTA NYCT Bus (Bronx)",
+  "center": [
+    40.845,
+    -73.866
+  ],
+  "bbox": [
+    40.785,
+    -73.934,
+    40.916,
+    -73.765
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
+  "region": "New York",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "gtfs_bx_20260611T155333Z",
+  "lastRefreshedAt": "2026-07-06"
+}

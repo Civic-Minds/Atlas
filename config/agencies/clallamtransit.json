@@ -1,0 +1,19 @@
+{
+  "slug": "clallamtransit",
+  "name": "Clallam Transit System",
+  "center": [
+    48.1,
+    -123.4
+  ],
+  "region": "Washington",
+  "bbox": [
+    47.8,
+    -124.8,
+    48.4,
+    -122.9
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-clallam-transit-system-gtfs-279.zip?alt=media",
+  "lastFeedExpiry": "20270522",
+  "lastFeedVersion": "Updated: Mar 16, 2026, 12:30 PM",
+  "lastRefreshedAt": "2026-07-06"
+}

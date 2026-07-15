@@ -1,0 +1,14 @@
+{
+  "slug": "sarnia",
+  "name": "Sarnia Transit",
+  "center": [
+    42.97,
+    -82.4
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-sarnia.zip",
+  "region": "Ontario",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4738/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "1/20260705 22:00:00/20260706 00:00:00",
+  "lastRefreshedAt": "2026-07-06"
+}

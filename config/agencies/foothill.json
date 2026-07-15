@@ -1,0 +1,13 @@
+{
+  "slug": "foothill",
+  "name": "Foothill Transit",
+  "center": [
+    34.06,
+    -117.75
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-101/mdb-101-202607020124/mdb-101-202607020124.zip",
+  "lastFeedExpiry": "20261031",
+  "lastFeedVersion": "20260701",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

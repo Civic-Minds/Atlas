@@ -1,0 +1,13 @@
+{
+  "slug": "dart",
+  "name": "Dallas Area Rapid Transit (DART)",
+  "center": [
+    32.78,
+    -96.8
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202606120106/mdb-152-202606120106.zip",
+  "lastFeedExpiry": "20260719",
+  "lastFeedVersion": "V702-215-214-20260608",
+  "region": "Texas",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "petaluma",
+  "name": "Petaluma Transit",
+  "center": [
+    38.247,
+    -122.629
+  ],
+  "region": "California",
+  "bbox": [
+    38.22,
+    -122.67,
+    38.28,
+    -122.59
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/petalumatransit-petaluma-ca-us/petalumatransit-petaluma-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-petaluma-transit-gtfs-72.zip?alt=media",
+  "lastFeedExpiry": "20230630",
+  "lastFeedVersion": "UTC: 01-Dec-2022 01:48",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://cityofpetaluma.net/pubworks/transit-sub.html"
+}

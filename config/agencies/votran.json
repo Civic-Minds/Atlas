@@ -1,0 +1,14 @@
+{
+  "slug": "votran",
+  "name": "Votran (Volusia County)",
+  "center": [
+    29,
+    -81
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-349/mdb-349-202605300114/mdb-349-202605300114.zip",
+  "lastFeedExpiry": "20220115",
+  "lastFeedVersion": "20210223",
+  "region": "Florida",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.votran.org"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "njt-rail",
+  "name": "NJ Transit Rail",
+  "region": "New Jersey",
+  "center": [
+    40.7,
+    -74.2
+  ],
+  "bbox": [
+    39.3633,
+    -75.198,
+    41.4887,
+    -73.9883
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-509/mdb-509-202607010038/mdb-509-202607010038.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

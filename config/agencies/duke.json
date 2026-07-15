@@ -1,0 +1,20 @@
+{
+  "slug": "duke",
+  "name": "Duke University Transit",
+  "center": [
+    36,
+    -78.94
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip",
+  "lastFeedExpiry": "20250810",
+  "lastFeedVersion": "UTC: 05-May-2025 09:20",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "North Carolina",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-378/latest.zip",
+  "bbox": [
+    35.9588,
+    -78.9779,
+    36.041,
+    -78.8837
+  ]
+}

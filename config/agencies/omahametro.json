@@ -1,0 +1,13 @@
+{
+  "slug": "omahametro",
+  "name": "Omaha Metro",
+  "center": [
+    41.26,
+    -96
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2261/mdb-2261-202604230118/mdb-2261-202604230118.zip",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "OMAHA 2604 V1",
+  "region": "Nebraska",
+  "lastRefreshedAt": "2026-07-06"
+}

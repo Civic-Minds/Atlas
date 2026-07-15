@@ -1,0 +1,20 @@
+{
+  "slug": "yakima",
+  "name": "Yakima Transit",
+  "center": [
+    46.6,
+    -120.51
+  ],
+  "feedUrl": "https://yakimatransit.org/gtfs/yakima_gtfs.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Washington",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-276/latest.zip",
+  "bbox": [
+    46.5429,
+    -120.6559,
+    46.6438,
+    -120.4574
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "part",
+  "name": "Putnam Area Rapid Transit (PART)",
+  "region": "New York",
+  "center": [
+    41.4,
+    -73.7
+  ],
+  "bbox": [
+    41.3267,
+    -73.9641,
+    41.5091,
+    -73.5352
+  ],
+  "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "2026",
+  "lastRefreshedAt": "2026-07-06"
+}

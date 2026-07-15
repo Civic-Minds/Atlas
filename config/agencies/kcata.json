@@ -1,0 +1,13 @@
+{
+  "slug": "kcata",
+  "name": "Kansas City Area Transportation Authority (KCATA)",
+  "center": [
+    39.1,
+    -94.58
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-187/mdb-187-202607020106/mdb-187-202607020106.zip",
+  "lastFeedExpiry": "20260711",
+  "lastFeedVersion": "June 2026_20260630",
+  "region": "Missouri",
+  "lastRefreshedAt": "2026-07-13"
+}

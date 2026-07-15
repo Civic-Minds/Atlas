@@ -1,0 +1,13 @@
+{
+  "slug": "glendalebeeline",
+  "name": "Glendale Beeline",
+  "center": [
+    34.14,
+    -118.26
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13"
+}

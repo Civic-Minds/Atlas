@@ -1,0 +1,19 @@
+{
+  "slug": "bustang",
+  "name": "Bustang (CDOT)",
+  "center": [
+    39.71,
+    -106.68
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip",
+  "region": "Colorado",
+  "bbox": [
+    38.8,
+    -108.6,
+    40.6,
+    -104.8
+  ],
+  "lastFeedExpiry": "20260926",
+  "lastFeedVersion": "Jun26-36807-13-20-20260704-040323",
+  "lastRefreshedAt": "2026-07-06"
+}

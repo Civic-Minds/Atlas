@@ -1,0 +1,13 @@
+{
+  "slug": "comox-valley",
+  "name": "BC Transit (Comox Valley)",
+  "region": "British Columbia",
+  "center": [
+    49.687,
+    -124.993
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
+  "lastFeedExpiry": "20260906",
+  "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
+  "lastRefreshedAt": "2026-07-06"
+}

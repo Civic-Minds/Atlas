@@ -1,0 +1,20 @@
+{
+  "slug": "connect-transit",
+  "name": "Connect Transit (Bloomington-Normal)",
+  "center": [
+    40.48,
+    -88.99
+  ],
+  "feedUrl": "https://rideconnecttransit.com/gtfs",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "New Pink Stop",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Illinois",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2267/latest.zip",
+  "bbox": [
+    40.4285,
+    -89.0761,
+    40.5567,
+    -88.8901
+  ]
+}

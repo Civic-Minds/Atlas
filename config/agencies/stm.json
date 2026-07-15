@@ -1,0 +1,25 @@
+{
+  "slug": "stm",
+  "name": "STM",
+  "searchAliases": [
+    "Montreal"
+  ],
+  "region": "Quebec",
+  "center": [
+    45.5017,
+    -73.5673
+  ],
+  "bbox": [
+    45.1,
+    -74.07,
+    45.9,
+    -73.07
+  ],
+  "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": "20260602153030_26U",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media",
+  "gtfsFares": true,
+  "fareUrl": "https://www.stm.info/en/info/fares",
+  "lastRefreshedAt": "2026-07-06"
+}

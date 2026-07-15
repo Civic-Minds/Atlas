@@ -1,0 +1,19 @@
+{
+  "slug": "kingcountymetro",
+  "name": "King County Metro",
+  "center": [
+    47.5,
+    -122.3
+  ],
+  "region": "Washington",
+  "bbox": [
+    47.1,
+    -122.7,
+    47.9,
+    -121.8
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-king-county-metro-gtfs-1330.zip?alt=media",
+  "lastFeedExpiry": "20260828",
+  "lastFeedVersion": "SPR26-160.3-MetroDayShuttleUpdate",
+  "lastRefreshedAt": "2026-07-06"
+}

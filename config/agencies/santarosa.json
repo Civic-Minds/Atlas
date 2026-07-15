@@ -1,0 +1,20 @@
+{
+  "slug": "santarosa",
+  "name": "Santa Rosa CityBus",
+  "center": [
+    38.4456,
+    -122.7182
+  ],
+  "region": "California",
+  "bbox": [
+    38.4,
+    -122.77,
+    38.49,
+    -122.65
+  ],
+  "feedUrl": "https://srcity.org/DocumentCenter/View/21635/google_transit",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-rosa-citybus-gtfs-73.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "the-rapid",
+  "name": "The Rapid",
+  "region": "Michigan",
+  "center": [
+    42.963,
+    -85.668
+  ],
+  "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
+  "lastFeedExpiry": "20260830",
+  "lastFeedVersion": "20260604",
+  "lastRefreshedAt": "2026-07-06"
+}

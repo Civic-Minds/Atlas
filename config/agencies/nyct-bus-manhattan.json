@@ -1,0 +1,19 @@
+{
+  "slug": "nyct-bus-manhattan",
+  "name": "MTA NYCT Bus (Manhattan)",
+  "center": [
+    40.776,
+    -73.971
+  ],
+  "bbox": [
+    40.7,
+    -74.02,
+    40.878,
+    -73.907
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-513/latest.zip",
+  "region": "New York",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "gtfs_m_20260611T155328Z",
+  "lastRefreshedAt": "2026-07-06"
+}

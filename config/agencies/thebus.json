@@ -1,0 +1,13 @@
+{
+  "slug": "thebus",
+  "name": "TheBus (Honolulu)",
+  "center": [
+    21.31,
+    -157.86
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/mdb-2350-202605210014/mdb-2350-202605210014.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "(2605_v5_BusRail_MERGED_Landlines)",
+  "region": "Hawaii",
+  "lastRefreshedAt": "2026-07-06"
+}

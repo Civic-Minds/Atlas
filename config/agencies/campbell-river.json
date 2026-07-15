@@ -1,0 +1,13 @@
+{
+  "slug": "campbell-river",
+  "name": "BC Transit (Campbell River)",
+  "region": "British Columbia",
+  "center": [
+    50.022,
+    -125.244
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
+  "lastFeedExpiry": "20270905",
+  "lastFeedVersion": "202607040/20260703 21:00:00/20260704 04:00:00",
+  "lastRefreshedAt": "2026-07-06"
+}

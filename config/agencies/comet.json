@@ -1,0 +1,20 @@
+{
+  "slug": "comet",
+  "name": "The COMET (Columbia, SC)",
+  "center": [
+    34,
+    -81.03
+  ],
+  "bbox": [
+    33.8,
+    -81.3,
+    34.2,
+    -80.8
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-60/latest.zip",
+  "region": "South Carolina",
+  "lastFeedExpiry": "20231231",
+  "lastFeedVersion": "UTC: 26-May-2023 21:22",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://mvgo.org/"
+}

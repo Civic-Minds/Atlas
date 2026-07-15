@@ -1,0 +1,13 @@
+{
+  "slug": "santaclarita",
+  "name": "Santa Clarita Transit",
+  "center": [
+    34.41,
+    -118.55
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-1256/tld-1256-202606250025/tld-1256-202606250025.zip",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260624",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "piercetransit",
+  "name": "Pierce Transit",
+  "center": [
+    47.25,
+    -122.45
+  ],
+  "region": "Washington",
+  "bbox": [
+    47,
+    -122.7,
+    47.5,
+    -122
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-pierce-transit-gtfs-265.zip?alt=media",
+  "lastFeedExpiry": "20260606",
+  "lastFeedVersion": "S1000129",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.piercetransit.org"
+}

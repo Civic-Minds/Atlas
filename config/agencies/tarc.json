@@ -1,0 +1,13 @@
+{
+  "slug": "tarc",
+  "name": "Transit Authority of River City (Louisville)",
+  "center": [
+    38.25,
+    -85.76
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202604170127/mdb-2662-202604170127.zip",
+  "lastFeedExpiry": "20260801",
+  "lastFeedVersion": "20260416",
+  "region": "Kentucky",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "rtl",
+  "name": "RTL",
+  "region": "Quebec",
+  "center": [
+    45.538,
+    -73.465
+  ],
+  "bbox": [
+    45.14,
+    -73.97,
+    45.94,
+    -72.97
+  ],
+  "feedUrl": "https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": "202606181332",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-longueuil-gtfs-751.zip?alt=media",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "thunder-bay",
+  "name": "Thunder Bay Transit",
+  "center": [
+    48.41,
+    -89.25
+  ],
+  "feedUrl": "http://api.nextlift.ca/gtfs.zip",
+  "region": "Ontario",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-736/latest.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "1/20260629 12:26:31/20260630 04:00:00",
+  "lastRefreshedAt": "2026-07-06"
+}

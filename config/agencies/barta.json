@@ -1,0 +1,20 @@
+{
+  "slug": "barta",
+  "name": "BARTA (Reading)",
+  "center": [
+    40.34,
+    -75.93
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2064/latest.zip",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "20260702",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Pennsylvania",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2064/latest.zip",
+  "bbox": [
+    40.2338,
+    -76.2088,
+    40.5848,
+    -75.7382
+  ]
+}

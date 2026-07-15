@@ -1,0 +1,13 @@
+{
+  "slug": "start",
+  "name": "Stanislaus Regional Transit (StaRT)",
+  "center": [
+    37.64,
+    -120.99
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2273/mdb-2273-202606030124/mdb-2273-202606030124.zip",
+  "lastFeedExpiry": "20270630",
+  "lastFeedVersion": "20260602",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

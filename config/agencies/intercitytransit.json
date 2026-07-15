@@ -1,0 +1,19 @@
+{
+  "slug": "intercitytransit",
+  "name": "Intercity Transit",
+  "center": [
+    47.05,
+    -122.9
+  ],
+  "region": "Washington",
+  "bbox": [
+    46.8,
+    -123.2,
+    47.3,
+    -122.5
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-intercity-transit-gtfs-266.zip?alt=media",
+  "lastFeedExpiry": "20260912",
+  "lastFeedVersion": "20260602",
+  "lastRefreshedAt": "2026-07-06"
+}

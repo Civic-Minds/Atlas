@@ -1,0 +1,20 @@
+{
+  "slug": "calgary",
+  "name": "Calgary Transit",
+  "region": "Alberta",
+  "center": [
+    51.0447,
+    -114.0719
+  ],
+  "bbox": [
+    50.84,
+    -114.42,
+    51.27,
+    -113.72
+  ],
+  "feedUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-calgary-transit-gtfs-712.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13"
+}

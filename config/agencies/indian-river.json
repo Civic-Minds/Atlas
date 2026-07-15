@@ -1,0 +1,20 @@
+{
+  "slug": "indian-river",
+  "name": "Indian River Transit",
+  "region": "Florida",
+  "center": [
+    27.63,
+    -80.48
+  ],
+  "bbox": [
+    27.366,
+    -80.657,
+    27.895,
+    -80.306
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40104/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

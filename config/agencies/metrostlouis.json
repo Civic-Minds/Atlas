@@ -1,0 +1,13 @@
+{
+  "slug": "metrostlouis",
+  "name": "Metro St. Louis",
+  "center": [
+    38.63,
+    -90.2
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Missouri",
+  "lastRefreshedAt": "2026-07-13"
+}

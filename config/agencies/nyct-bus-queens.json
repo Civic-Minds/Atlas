@@ -1,0 +1,19 @@
+{
+  "slug": "nyct-bus-queens",
+  "name": "MTA NYCT Bus (Queens)",
+  "center": [
+    40.728,
+    -73.794
+  ],
+  "bbox": [
+    40.541,
+    -73.962,
+    40.8,
+    -73.7
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-520/latest.zip",
+  "region": "New York",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "gtfs_q_20260611T155317Z",
+  "lastRefreshedAt": "2026-07-06"
+}

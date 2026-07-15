@@ -1,0 +1,20 @@
+{
+  "slug": "bis-man",
+  "name": "Bis-Man Transit",
+  "center": [
+    46.81,
+    -100.78
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
+  "lastFeedExpiry": "20260811",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "North Dakota",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
+  "bbox": [
+    46.7054,
+    -100.9244,
+    46.8762,
+    -100.7092
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "cornwall",
+  "name": "Cornwall Transit",
+  "region": "Ontario",
+  "center": [
+    45.018,
+    -74.728
+  ],
+  "bbox": [
+    45.01,
+    -74.771,
+    45.063,
+    -74.674
+  ],
+  "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-cornwall-transit-gtfs-718.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

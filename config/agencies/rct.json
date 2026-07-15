@@ -1,0 +1,21 @@
+{
+  "slug": "rct",
+  "name": "Redwood Coast Transit (RCT)",
+  "center": [
+    41.6724,
+    -124.1549
+  ],
+  "region": "California",
+  "bbox": [
+    40.78,
+    -124.22,
+    41.96,
+    -123.97
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redwood-coast-transit-rct-gtfs-20.zip?alt=media",
+  "lastFeedExpiry": "20260523",
+  "lastFeedVersion": "UTC: 20-Jan-2026 15:30",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.redwoodcoasttransit.org/"
+}

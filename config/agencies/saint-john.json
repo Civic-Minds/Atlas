@@ -1,0 +1,19 @@
+{
+  "slug": "saint-john",
+  "name": "Saint John Transit",
+  "region": "New Brunswick",
+  "center": [
+    45.2733,
+    -66.0633
+  ],
+  "bbox": [
+    45.19,
+    -66.24,
+    45.38,
+    -65.89
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-saint-john-transit-gtfs-2131.zip?alt=media",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "a5193e57-6986-42e9-9310-bf35d76fe078",
+  "lastRefreshedAt": "2026-07-06"
+}

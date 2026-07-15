@@ -1,0 +1,19 @@
+{
+  "slug": "sct",
+  "name": "Suffolk County Transit (SCT)",
+  "region": "New York",
+  "center": [
+    40.85,
+    -73
+  ],
+  "bbox": [
+    40.6229,
+    -73.429,
+    41.1559,
+    -72.1918
+  ],
+  "feedUrl": "https://suffolkcountyny.gov/Portals/0/formsdocs/publicworks/Zip/google_transit.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

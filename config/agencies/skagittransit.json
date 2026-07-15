@@ -1,0 +1,19 @@
+{
+  "slug": "skagittransit",
+  "name": "Skagit Transit",
+  "center": [
+    48.42,
+    -122.33
+  ],
+  "region": "Washington",
+  "bbox": [
+    48.2,
+    -122.6,
+    48.7,
+    -121.9
+  ],
+  "feedUrl": "https://www.skagittransit.org/gtfs/google_transit.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

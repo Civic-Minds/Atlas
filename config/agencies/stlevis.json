@@ -1,0 +1,20 @@
+{
+  "slug": "stlevis",
+  "name": "STLévis",
+  "region": "Quebec",
+  "center": [
+    46.8,
+    -71.177
+  ],
+  "bbox": [
+    46.552,
+    -71.41,
+    46.828,
+    -71.099
+  ],
+  "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": "20260615",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-levis-gtfs-763.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "exo-sudouest",
+  "name": "exo (Sud-Ouest)",
+  "region": "Quebec",
+  "center": [
+    45.3549,
+    -73.7643
+  ],
+  "bbox": [
+    44.95,
+    -74.26,
+    45.75,
+    -73.26
+  ],
+  "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
+  "lastFeedExpiry": "20260802",
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

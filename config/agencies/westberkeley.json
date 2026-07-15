@@ -1,0 +1,20 @@
+{
+  "slug": "westberkeley",
+  "name": "West Berkeley Shuttle",
+  "center": [
+    37.8553,
+    -122.291
+  ],
+  "region": "California",
+  "bbox": [
+    37.85,
+    -122.3,
+    37.86,
+    -122.27
+  ],
+  "feedUrl": "https://gtfs.calitp.org/production/WestBerkeleyShuttleGTFS.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-west-berkeley-shuttle-gtfs-2238.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

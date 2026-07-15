@@ -1,0 +1,20 @@
+{
+  "slug": "miway",
+  "name": "MiWay (Mississauga)",
+  "region": "Ontario",
+  "center": [
+    43.589,
+    -79.6441
+  ],
+  "bbox": [
+    43.19,
+    -80.14,
+    43.99,
+    -79.14
+  ],
+  "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
+  "lastFeedExpiry": "20260906",
+  "lastFeedVersion": "1",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-miway-gtfs-730.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

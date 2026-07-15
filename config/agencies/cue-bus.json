@@ -1,0 +1,13 @@
+{
+  "slug": "cue-bus",
+  "name": "CUE Bus (Fairfax)",
+  "center": [
+    38.85,
+    -77.35
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2885/mdb-2885-202511251947/mdb-2885-202511251947.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Virginia",
+  "lastRefreshedAt": "2026-07-13"
+}

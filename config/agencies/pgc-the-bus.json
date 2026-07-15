@@ -1,0 +1,13 @@
+{
+  "slug": "pgc-the-bus",
+  "name": "Prince George's County (The Bus)",
+  "center": [
+    38.85,
+    -76.85
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-477/mdb-477-202605010139/mdb-477-202605010139.zip",
+  "lastFeedExpiry": "20260901",
+  "lastFeedVersion": "UTC: 30-Apr-2026 18:15",
+  "region": "Maryland",
+  "lastRefreshedAt": "2026-07-06"
+}

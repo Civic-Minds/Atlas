@@ -1,0 +1,20 @@
+{
+  "slug": "evansville",
+  "name": "METS (Evansville)",
+  "center": [
+    37.9716,
+    -87.5711
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
+  "lastFeedExpiry": "20250115",
+  "lastFeedVersion": "20240618",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "Indiana",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
+  "bbox": [
+    37.9235,
+    -87.6991,
+    38.0509,
+    -87.4227
+  ]
+}

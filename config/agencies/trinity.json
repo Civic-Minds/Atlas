@@ -1,0 +1,20 @@
+{
+  "slug": "trinity",
+  "name": "Trinity Transit",
+  "center": [
+    40.7172,
+    -123.0823
+  ],
+  "region": "California",
+  "bbox": [
+    40.55,
+    -123.63,
+    40.94,
+    -122.32
+  ],
+  "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-trinity-transit-gtfs-2709.zip?alt=media",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Feb 3, 2026, 1:10 PM",
+  "lastRefreshedAt": "2026-07-06"
+}

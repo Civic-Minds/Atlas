@@ -1,0 +1,14 @@
+{
+  "slug": "cat-harrisburg",
+  "name": "Capital Area Transit (Harrisburg)",
+  "center": [
+    40.27,
+    -76.88
+  ],
+  "feedUrl": "https://cat.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "region": "Pennsylvania",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4298/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260511",
+  "lastRefreshedAt": "2026-07-06"
+}

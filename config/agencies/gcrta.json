@@ -1,0 +1,13 @@
+{
+  "slug": "gcrta",
+  "name": "GCRTA (Cleveland)",
+  "region": "Ohio",
+  "center": [
+    41.4993,
+    -81.6944
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-greater-cleveland-regional-transit-authority-gtfs-406.zip?alt=media",
+  "lastFeedExpiry": "20260801",
+  "lastFeedVersion": "2606a",
+  "lastRefreshedAt": "2026-07-06"
+}

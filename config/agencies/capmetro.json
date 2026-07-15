@@ -1,0 +1,13 @@
+{
+  "slug": "capmetro",
+  "name": "Capital Metro (Austin)",
+  "center": [
+    30.27,
+    -97.74
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-150/mdb-150-202607020147/mdb-150-202607020147.zip",
+  "lastFeedExpiry": "20260815",
+  "lastFeedVersion": "260630_1449",
+  "region": "Texas",
+  "lastRefreshedAt": "2026-07-06"
+}

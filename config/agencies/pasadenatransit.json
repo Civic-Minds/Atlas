@@ -1,0 +1,13 @@
+{
+  "slug": "pasadenatransit",
+  "name": "Pasadena Transit",
+  "center": [
+    34.15,
+    -118.13
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-41/mdb-41-202606270117/mdb-41-202606270117.zip",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260626",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "des-moines",
+  "name": "Des Moines Area Regional Transit Authority (DART)",
+  "region": "Iowa",
+  "center": [
+    41.59,
+    -93.62
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "2026.06_20260514",
+  "lastRefreshedAt": "2026-07-06"
+}

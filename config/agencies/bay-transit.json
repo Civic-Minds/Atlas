@@ -1,0 +1,19 @@
+{
+  "slug": "bay-transit",
+  "name": "Bay Transit",
+  "center": [
+    37.77,
+    -76.67
+  ],
+  "bbox": [
+    37.26,
+    -76.99,
+    38.27,
+    -76.35
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-224/latest.zip",
+  "region": "Virginia",
+  "lastFeedExpiry": "20261101",
+  "lastFeedVersion": "UTC: 12-Jun-2026 22:21",
+  "lastRefreshedAt": "2026-07-06"
+}

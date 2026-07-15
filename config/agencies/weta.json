@@ -1,0 +1,20 @@
+{
+  "slug": "weta",
+  "name": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+  "center": [
+    37.8167,
+    -122.3506
+  ],
+  "region": "California",
+  "bbox": [
+    37.66,
+    -122.41,
+    38.1,
+    -122.26
+  ],
+  "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-francisco-bay-area-water-emergency-transportation-authority-gtfs-3143.zip?alt=media",
+  "lastFeedExpiry": "20261101",
+  "lastFeedVersion": "UTC: 24-Jun-2026 19:51",
+  "lastRefreshedAt": "2026-07-06"
+}

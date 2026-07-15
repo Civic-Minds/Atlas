@@ -1,0 +1,20 @@
+{
+  "slug": "albany-ga",
+  "name": "Albany Transit System",
+  "center": [
+    31.58,
+    -84.16
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11834/ats_albany_ga_us(2).zip",
+  "lastFeedExpiry": "20240630",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Georgia",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2146/latest.zip",
+  "bbox": [
+    31.5113,
+    -84.2457,
+    31.6399,
+    -84.0333
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "patco",
+  "name": "PATCO Speedline",
+  "center": [
+    39.95,
+    -75.12
+  ],
+  "region": "New Jersey",
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "15",
+  "lastRefreshedAt": "2026-07-06"
+}

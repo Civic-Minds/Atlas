@@ -1,0 +1,20 @@
+{
+  "slug": "grtc",
+  "name": "GRTC Transit (Richmond, VA)",
+  "center": [
+    37.445,
+    -77.474
+  ],
+  "bbox": [
+    37.226,
+    -77.645,
+    37.664,
+    -77.303
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-902/latest.zip",
+  "region": "Virginia",
+  "lastFeedExpiry": "20240518",
+  "lastFeedVersion": "S1000151",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.ridegrtc.com"
+}

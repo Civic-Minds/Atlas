@@ -1,0 +1,20 @@
+{
+  "slug": "vta",
+  "name": "Santa Clara Valley Transportation Authority (VTA)",
+  "center": [
+    37.3241,
+    -121.9208
+  ],
+  "region": "California",
+  "bbox": [
+    36.97,
+    -122.17,
+    37.46,
+    -121.55
+  ],
+  "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-clara-valley-transportation-authority-vta-gtfs-57.zip?alt=media",
+  "lastFeedExpiry": "20260809",
+  "lastFeedVersion": "2026-06-01_10:34",
+  "lastRefreshedAt": "2026-07-06"
+}

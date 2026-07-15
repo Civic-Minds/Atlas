@@ -1,0 +1,15 @@
+{
+  "slug": "greensboro",
+  "name": "Greensboro Transit Authority",
+  "center": [
+    36.07,
+    -79.79
+  ],
+  "feedUrl": "https://app.mecatran.com/urb/ws/feed/c2l0ZT1ncmVlbnNib3JvO2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT00ZDQ3MDYyMjNiNjI3ZjFmMTU1YzFiNGIxNTY0Mzg0ZDFjNzYyOTQy",
+  "region": "North Carolina",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
+  "lastFeedExpiry": "20250228",
+  "lastFeedVersion": "2024-06-28T20:55:07Z",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180"
+}

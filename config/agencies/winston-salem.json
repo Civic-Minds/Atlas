@@ -1,0 +1,14 @@
+{
+  "slug": "winston-salem",
+  "name": "Winston-Salem Transit Authority (WSTA)",
+  "center": [
+    36.1,
+    -80.24
+  ],
+  "feedUrl": "https://ridewsta.com/gtfs",
+  "region": "North Carolina",
+  "mdbFeedUrl": "https://ridewsta.com/gtfs",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Jan 4th 2026 GTFS",
+  "lastRefreshedAt": "2026-07-06"
+}

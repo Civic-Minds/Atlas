@@ -1,0 +1,21 @@
+{
+  "slug": "unioncity",
+  "name": "Union City Transit",
+  "center": [
+    37.5929,
+    -122.05
+  ],
+  "region": "California",
+  "bbox": [
+    37.57,
+    -122.08,
+    37.61,
+    -122
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/unioncity-ca-us/unioncity-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
+  "lastFeedExpiry": "20230927",
+  "lastFeedVersion": "UTC: 14-Mar-2023 23:56",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.uctransit.org"
+}

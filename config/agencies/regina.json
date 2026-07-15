@@ -1,0 +1,19 @@
+{
+  "slug": "regina",
+  "name": "Regina Transit",
+  "region": "Saskatchewan",
+  "center": [
+    50.4452,
+    -104.6189
+  ],
+  "bbox": [
+    50.37,
+    -104.8,
+    50.52,
+    -104.44
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-city-of-regina-gtfs-715.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

@@ -1,0 +1,15 @@
+{
+  "slug": "green-bay",
+  "name": "Green Bay Metro",
+  "region": "Wisconsin",
+  "center": [
+    44.51,
+    -88.01
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
+  "lastFeedExpiry": "20201231",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit"
+}

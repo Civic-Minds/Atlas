@@ -1,0 +1,14 @@
+{
+  "slug": "augusta",
+  "name": "Augusta Transit",
+  "center": [
+    33.45,
+    -82.02
+  ],
+  "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
+  "region": "Georgia",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

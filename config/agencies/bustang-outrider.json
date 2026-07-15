@@ -1,0 +1,19 @@
+{
+  "slug": "bustang-outrider",
+  "name": "Bustang Outrider",
+  "center": [
+    38.5,
+    -104.9
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
+  "region": "Colorado",
+  "bbox": [
+    37.1,
+    -105,
+    38.3,
+    -104.4
+  ],
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 08-Jul-2026 18:21",
+  "lastRefreshedAt": "2026-07-13"
+}

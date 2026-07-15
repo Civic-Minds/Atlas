@@ -1,0 +1,14 @@
+{
+  "slug": "jackson-ms",
+  "name": "City of Jackson (JTRAN)",
+  "center": [
+    32.3,
+    -90.18
+  ],
+  "feedUrl": "https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip",
+  "region": "Mississippi",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2652/latest.zip",
+  "lastFeedExpiry": "20260812",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13"
+}

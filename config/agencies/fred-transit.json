@@ -1,0 +1,13 @@
+{
+  "slug": "fred-transit",
+  "name": "Fredericksburg Regional Transit",
+  "center": [
+    38.3,
+    -77.46
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Virginia",
+  "lastRefreshedAt": "2026-07-13"
+}

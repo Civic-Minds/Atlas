@@ -1,0 +1,19 @@
+{
+  "slug": "b-line",
+  "name": "B-Line (Corpus Christi RTA)",
+  "center": [
+    27.76,
+    -97.37
+  ],
+  "bbox": [
+    27.6,
+    -97.69,
+    27.91,
+    -97.05
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
+  "region": "Texas",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

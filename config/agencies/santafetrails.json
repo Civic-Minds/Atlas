@@ -1,0 +1,14 @@
+{
+  "slug": "santafetrails",
+  "name": "Santa Fe Trails",
+  "center": [
+    35.69,
+    -105.94
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-839/mdb-839-202412160115/mdb-839-202412160115.zip",
+  "lastFeedExpiry": "20260330",
+  "lastFeedVersion": "2024-12-14T14:31:44Z",
+  "region": "New Mexico",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.santafenm.gov/transit"
+}

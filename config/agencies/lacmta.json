@@ -1,0 +1,13 @@
+{
+  "slug": "lacmta",
+  "name": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+  "center": [
+    34.05,
+    -118.24
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202606070210/mdb-29-202606070210.zip",
+  "lastFeedExpiry": "20261212",
+  "lastFeedVersion": "",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

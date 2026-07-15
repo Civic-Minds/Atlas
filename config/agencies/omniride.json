@@ -1,0 +1,13 @@
+{
+  "slug": "omniride",
+  "name": "OmniRide (PRTC)",
+  "center": [
+    38.5,
+    -77.3
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1156/mdb-1156-202604020037/mdb-1156-202604020037.zip",
+  "lastFeedExpiry": "20260725",
+  "lastFeedVersion": "2026 March_20260326",
+  "region": "Virginia",
+  "lastRefreshedAt": "2026-07-06"
+}

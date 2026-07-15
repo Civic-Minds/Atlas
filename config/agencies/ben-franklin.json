@@ -1,0 +1,20 @@
+{
+  "slug": "ben-franklin",
+  "name": "Ben Franklin Transit",
+  "center": [
+    46.21,
+    -119.14
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
+  "lastFeedExpiry": "20261212",
+  "lastFeedVersion": "0626 Fixed Rev 1",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Washington",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
+  "bbox": [
+    46.1568,
+    -119.809,
+    46.371,
+    -119.0246
+  ]
+}

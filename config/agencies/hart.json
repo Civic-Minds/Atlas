@@ -1,0 +1,13 @@
+{
+  "slug": "hart",
+  "name": "Hillsborough Area Regional Transit (HART)",
+  "center": [
+    27.96,
+    -82.46
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
+  "lastFeedExpiry": "20260815",
+  "lastFeedVersion": "2606.2",
+  "region": "Florida",
+  "lastRefreshedAt": "2026-07-06"
+}

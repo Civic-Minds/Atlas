@@ -1,0 +1,20 @@
+{
+  "slug": "bangor",
+  "name": "Bangor Community Connector",
+  "center": [
+    44.8,
+    -68.77
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-7824/latest.zip",
+  "lastFeedExpiry": "20260811",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "Maine",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7824/latest.zip",
+  "bbox": [
+    44.705,
+    -68.8826,
+    44.9591,
+    -68.6191
+  ]
+}

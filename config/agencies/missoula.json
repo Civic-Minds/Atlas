@@ -1,0 +1,19 @@
+{
+  "slug": "missoula",
+  "name": "Mountain Line (Missoula)",
+  "center": [
+    46.87,
+    -114.03
+  ],
+  "bbox": [
+    46.82,
+    -114.09,
+    46.92,
+    -113.87
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-292/latest.zip",
+  "region": "Montana",
+  "lastFeedExpiry": "20270215",
+  "lastFeedVersion": "S1000051",
+  "lastRefreshedAt": "2026-07-06"
+}

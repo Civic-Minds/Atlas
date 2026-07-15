@@ -1,0 +1,13 @@
+{
+  "slug": "sunline",
+  "name": "SunLine Transit Agency",
+  "center": [
+    33.87,
+    -116.54
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-461/tld-461-202606060105/tld-461-202606060105.zip",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "6/5/2026",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

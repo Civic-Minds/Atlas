@@ -1,0 +1,19 @@
+{
+  "slug": "fairfax",
+  "name": "Fairfax Connector",
+  "region": "Virginia",
+  "center": [
+    38.85,
+    -77.3
+  ],
+  "bbox": [
+    38.687,
+    -77.4653,
+    39.0291,
+    -77.0219
+  ],
+  "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
+  "lastFeedExpiry": "20280930",
+  "lastFeedVersion": "S1000208",
+  "lastRefreshedAt": "2026-07-06"
+}

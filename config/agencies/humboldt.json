@@ -1,0 +1,20 @@
+{
+  "slug": "humboldt",
+  "name": "Humboldt Transit Authority",
+  "center": [
+    40.7249,
+    -124.0976
+  ],
+  "region": "California",
+  "bbox": [
+    39.15,
+    -124.22,
+    41.06,
+    -123.2
+  ],
+  "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-humboldt-county-gtfs-3032.zip?alt=media",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 04-Jun-2026 22:50",
+  "lastRefreshedAt": "2026-07-06"
+}

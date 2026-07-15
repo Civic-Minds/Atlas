@@ -1,0 +1,14 @@
+{
+  "slug": "cdta",
+  "name": "Capital District Transportation Authority",
+  "region": "New York",
+  "center": [
+    42.652,
+    -73.756
+  ],
+  "feedUrl": "https://www.cdta.org/schedules/google_transit.zip",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "Major",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-capital-district-transportation-authority-cdta-gtfs-538.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

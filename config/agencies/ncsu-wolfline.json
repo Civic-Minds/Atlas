@@ -1,0 +1,20 @@
+{
+  "slug": "ncsu-wolfline",
+  "name": "NCSU Wolfline",
+  "center": [
+    35.78,
+    -78.67
+  ],
+  "feedUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
+  "lastFeedExpiry": "20260813",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "North Carolina",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2245/latest.zip",
+  "bbox": [
+    35.7462,
+    -78.7408,
+    35.8224,
+    -78.6438
+  ]
+}

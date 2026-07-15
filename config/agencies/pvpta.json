@@ -1,0 +1,13 @@
+{
+  "slug": "pvpta",
+  "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+  "center": [
+    33.74,
+    -118.39
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-35/mdb-35-202607030136/mdb-35-202607030136.zip",
+  "lastFeedExpiry": "20260723",
+  "lastFeedVersion": "UTC: 02-Jul-2026 21:43",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

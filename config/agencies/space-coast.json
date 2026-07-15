@@ -1,0 +1,20 @@
+{
+  "slug": "space-coast",
+  "name": "Space Coast Area Transit",
+  "region": "Florida",
+  "center": [
+    28.35,
+    -80.72
+  ],
+  "bbox": [
+    27.9,
+    -80.924,
+    28.805,
+    -80.517
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-40063/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40063/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

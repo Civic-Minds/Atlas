@@ -1,0 +1,14 @@
+{
+  "slug": "port-huron",
+  "name": "Blue Water Area Transit",
+  "center": [
+    42.97,
+    -82.42
+  ],
+  "feedUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip",
+  "region": "Michigan",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7035/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Jun 2, 2026, 11:45 AM",
+  "lastRefreshedAt": "2026-07-06"
+}

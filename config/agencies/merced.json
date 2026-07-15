@@ -1,0 +1,13 @@
+{
+  "slug": "merced",
+  "name": "Merced County Transit (The Bus)",
+  "center": [
+    37.3,
+    -120.48
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/mdb-3117-202607030020/mdb-3117-202607030020.zip",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "PASAT 8 Route Update",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

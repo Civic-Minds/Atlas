@@ -1,0 +1,19 @@
+{
+  "slug": "dart-first-state",
+  "name": "DART First State",
+  "center": [
+    39.1,
+    -75.54
+  ],
+  "bbox": [
+    38.45,
+    -75.77,
+    39.83,
+    -75.05
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1235/latest.zip",
+  "region": "Delaware",
+  "lastFeedExpiry": "20261114",
+  "lastFeedVersion": "May 2026_20260429",
+  "lastRefreshedAt": "2026-07-06"
+}

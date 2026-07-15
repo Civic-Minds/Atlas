@@ -1,0 +1,13 @@
+{
+  "slug": "mountain-line",
+  "name": "Mountain Line Transit Authority (Morgantown)",
+  "center": [
+    39.63,
+    -79.95
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-407/latest.zip",
+  "region": "West Virginia",
+  "lastFeedExpiry": "20301231",
+  "lastFeedVersion": "1.0-2.7.19",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "exo-laurentides",
+  "name": "exo (Laurentides)",
+  "region": "Quebec",
+  "center": [
+    45.6611,
+    -73.9029
+  ],
+  "bbox": [
+    45.26,
+    -74.4,
+    46.06,
+    -73.4
+  ],
+  "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

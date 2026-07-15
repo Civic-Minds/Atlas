@@ -1,0 +1,13 @@
+{
+  "slug": "octa",
+  "name": "Orange County Transportation Authority (OCTA)",
+  "center": [
+    33.84,
+    -117.91
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-15/mdb-15-202605100002/mdb-15-202605100002.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13"
+}

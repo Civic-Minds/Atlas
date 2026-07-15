@@ -1,0 +1,13 @@
+{
+  "slug": "gotriangle",
+  "name": "GoTriangle",
+  "center": [
+    35.99,
+    -78.9
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3183/mdb-3183-202605281945/mdb-3183-202605281945.zip",
+  "lastFeedExpiry": "20260801",
+  "lastFeedVersion": "2026-03 service V1",
+  "region": "North Carolina",
+  "lastRefreshedAt": "2026-07-06"
+}

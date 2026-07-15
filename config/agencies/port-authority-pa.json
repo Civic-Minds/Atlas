@@ -1,0 +1,13 @@
+{
+  "slug": "port-authority-pa",
+  "name": "Pittsburgh Regional Transit",
+  "center": [
+    40.44,
+    -79.99
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-409/mdb-409-202606280112/mdb-409-202606280112.zip",
+  "lastFeedExpiry": "20261024",
+  "lastFeedVersion": "2606-Merged_Clever_2606",
+  "region": "Pennsylvania",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "clemson-cat",
+  "name": "Clemson Area Transit (CATbus)",
+  "center": [
+    34.68,
+    -82.84
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip",
+  "lastFeedExpiry": "20191213",
+  "lastFeedVersion": "UTC: 29-Apr-2019 14:52",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "South Carolina",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
+  "bbox": [
+    34.5352,
+    -83.0178,
+    34.7466,
+    -82.6584
+  ]
+}

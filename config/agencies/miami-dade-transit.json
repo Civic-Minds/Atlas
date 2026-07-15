@@ -1,0 +1,13 @@
+{
+  "slug": "miami-dade-transit",
+  "name": "Miami-Dade Transit",
+  "center": [
+    25.7617,
+    -80.1918
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Florida",
+  "lastRefreshedAt": "2026-07-13"
+}

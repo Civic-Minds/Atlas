@@ -1,0 +1,13 @@
+{
+  "slug": "slorta",
+  "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
+  "center": [
+    35.28,
+    -120.66
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-43/mdb-43-202606120140/mdb-43-202606120140.zip",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260611",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

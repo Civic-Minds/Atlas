@@ -1,0 +1,19 @@
+{
+  "slug": "marc",
+  "name": "MARC Train (MTA Maryland)",
+  "region": "Maryland",
+  "center": [
+    39,
+    -77
+  ],
+  "bbox": [
+    38.899,
+    -77.9617,
+    39.5582,
+    -76.0733
+  ],
+  "feedUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

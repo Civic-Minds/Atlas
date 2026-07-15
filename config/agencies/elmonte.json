@@ -1,0 +1,14 @@
+{
+  "slug": "elmonte",
+  "name": "El Monte Transit",
+  "center": [
+    34.07,
+    -118.03
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-103/mdb-103-202403040057/mdb-103-202403040057.zip",
+  "lastFeedExpiry": "20251031",
+  "lastFeedVersion": "UTC: 29-Feb-2024 18:42",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx"
+}

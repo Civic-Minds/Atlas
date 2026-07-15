@@ -1,0 +1,20 @@
+{
+  "slug": "southportlandme",
+  "name": "South Portland Bus Service",
+  "center": [
+    43.63,
+    -70.28
+  ],
+  "region": "Maine",
+  "bbox": [
+    43.55,
+    -70.35,
+    43.7,
+    -70.2
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-south-portland-gtfs-2641.zip?alt=media",
+  "lastFeedExpiry": "20251005",
+  "lastFeedVersion": "Updated: Aug 25, 2025, 10:00 AM",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.southportland.org/departments/bus-transportation/"
+}

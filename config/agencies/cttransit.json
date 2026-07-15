@@ -1,0 +1,13 @@
+{
+  "slug": "cttransit",
+  "name": "CTtransit",
+  "region": "Connecticut",
+  "center": [
+    41.765,
+    -72.682
+  ],
+  "feedUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

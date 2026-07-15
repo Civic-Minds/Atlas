@@ -1,0 +1,13 @@
+{
+  "slug": "trinitymetro",
+  "name": "Trinity Metro (Fort Worth)",
+  "center": [
+    32.73,
+    -97.29
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
+  "lastFeedExpiry": "20260926",
+  "lastFeedVersion": "MAY 26_20260526",
+  "region": "Texas",
+  "lastRefreshedAt": "2026-07-06"
+}

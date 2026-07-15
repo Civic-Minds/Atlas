@@ -1,0 +1,23 @@
+{
+  "slug": "nfta",
+  "name": "NFTA (Buffalo)",
+  "region": "New York",
+  "center": [
+    42.8864,
+    -78.8784
+  ],
+  "bbox": [
+    42.49,
+    -79.38,
+    43.29,
+    -78.38
+  ],
+  "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "supplementalFeedUrls": [
+    "https://metro.nfta.com/__googletransit/rail/google_transit.zip"
+  ],
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

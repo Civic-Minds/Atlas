@@ -1,0 +1,20 @@
+{
+  "slug": "bloomington",
+  "name": "Bloomington Transit",
+  "center": [
+    39.17,
+    -86.53
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
+  "lastFeedExpiry": "20270622",
+  "lastFeedVersion": "97",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Indiana",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
+  "bbox": [
+    39.1013,
+    -86.6192,
+    39.2285,
+    -86.4524
+  ]
+}

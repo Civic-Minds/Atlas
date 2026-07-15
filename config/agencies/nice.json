@@ -1,0 +1,19 @@
+{
+  "slug": "nice",
+  "name": "Nassau Inter-County Express (NICE Bus)",
+  "region": "New York",
+  "center": [
+    40.73,
+    -73.6
+  ],
+  "bbox": [
+    40.586,
+    -73.8302,
+    40.8642,
+    -73.4087
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-521/mdb-521-202606070009/mdb-521-202606070009.zip",
+  "lastFeedExpiry": "20260912",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-07-06"
+}

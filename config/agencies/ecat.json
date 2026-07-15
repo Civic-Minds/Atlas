@@ -1,0 +1,20 @@
+{
+  "slug": "ecat",
+  "name": "ECAT (Escambia County)",
+  "center": [
+    30.42,
+    -87.27
+  ],
+  "bbox": [
+    30.2,
+    -87.5,
+    30.65,
+    -86.95
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip",
+  "region": "Florida",
+  "lastFeedExpiry": "20221101",
+  "lastFeedVersion": "UTC: 24-Feb-2022 22:06",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://goecat.com/"
+}

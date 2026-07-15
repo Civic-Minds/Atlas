@@ -1,0 +1,14 @@
+{
+  "slug": "vctc",
+  "name": "Ventura County Transportation Commission (VCTC Intercity)",
+  "center": [
+    34.27,
+    -119.23
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-31/mdb-31-202507150038/mdb-31-202507150038.zip",
+  "lastFeedExpiry": "20250815",
+  "lastFeedVersion": "UTC: 07-May-2025 21:06",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.goventura.org/"
+}

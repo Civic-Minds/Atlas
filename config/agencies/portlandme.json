@@ -1,0 +1,19 @@
+{
+  "slug": "portlandme",
+  "name": "Greater Portland Metro",
+  "center": [
+    43.66,
+    -70.26
+  ],
+  "region": "Maine",
+  "bbox": [
+    43.5,
+    -70.5,
+    43.9,
+    -70
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-greater-portland-metro-bus-gtfs-2642.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

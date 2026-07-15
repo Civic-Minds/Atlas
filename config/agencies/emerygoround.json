@@ -1,0 +1,20 @@
+{
+  "slug": "emerygoround",
+  "name": "Emery Go-Round",
+  "center": [
+    37.8371,
+    -122.29
+  ],
+  "region": "California",
+  "bbox": [
+    37.83,
+    -122.31,
+    37.85,
+    -122.27
+  ],
+  "feedUrl": "https://emerygoround.com/data/emerygoround-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-emery-go-round-gtfs-2224.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

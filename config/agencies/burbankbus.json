@@ -1,0 +1,13 @@
+{
+  "slug": "burbankbus",
+  "name": "BurbankBus",
+  "center": [
+    34.18,
+    -118.31
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/mdb-2149-202607030052/mdb-2149-202607030052.zip",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "1/12/2024",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

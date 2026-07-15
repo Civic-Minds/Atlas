@@ -1,0 +1,13 @@
+{
+  "slug": "rtd-denver",
+  "name": "Regional Transportation District (RTD Denver)",
+  "center": [
+    39.74,
+    -104.98
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-178/latest.zip",
+  "region": "Colorado",
+  "lastFeedExpiry": "20260926",
+  "lastFeedVersion": "Jun26-36807-13-20-20260704-030232",
+  "lastRefreshedAt": "2026-07-06"
+}

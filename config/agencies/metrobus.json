@@ -1,0 +1,19 @@
+{
+  "slug": "metrobus",
+  "name": "Metrobus (St. John's)",
+  "region": "Newfoundland",
+  "center": [
+    47.5615,
+    -52.7126
+  ],
+  "bbox": [
+    47.48,
+    -52.85,
+    47.65,
+    -52.57
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-newfoundland-metrobus-transit-gtfs-758.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

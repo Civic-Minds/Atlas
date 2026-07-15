@@ -1,0 +1,13 @@
+{
+  "slug": "norta",
+  "name": "New Orleans Regional Transit Authority (NORTA)",
+  "center": [
+    29.95,
+    -90.07
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60032/ntd-60032-202605140120/ntd-60032-202605140120.zip",
+  "lastFeedExpiry": "20270124",
+  "lastFeedVersion": "S1000253",
+  "region": "Louisiana",
+  "lastRefreshedAt": "2026-07-06"
+}

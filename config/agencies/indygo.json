@@ -1,0 +1,14 @@
+{
+  "slug": "indygo",
+  "name": "IndyGo (Indianapolis)",
+  "center": [
+    39.77,
+    -86.16
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-50050/ntd-50050-202503060058/ntd-50050-202503060058.zip",
+  "lastFeedExpiry": "20250607",
+  "lastFeedVersion": "20250305",
+  "region": "Indiana",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.indygo.net"
+}

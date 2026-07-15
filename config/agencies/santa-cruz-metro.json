@@ -1,0 +1,17 @@
+{
+  "slug": "santa-cruz-metro",
+  "name": "Santa Cruz METRO",
+  "searchAliases": [
+    "Santa Cruz",
+    "Capitola",
+    "Watsonville"
+  ],
+  "center": [
+    36.9741,
+    -122.0308
+  ],
+  "feedUrl": "https://developer.scmetro.org/gtfs.zip",
+  "lastFeedExpiry": "20260909",
+  "lastFeedVersion": "S1000116",
+  "lastRefreshedAt": "2026-07-14"
+}

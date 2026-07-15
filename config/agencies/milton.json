@@ -1,0 +1,20 @@
+{
+  "slug": "milton",
+  "name": "Milton Transit",
+  "region": "Ontario",
+  "center": [
+    43.5183,
+    -79.8774
+  ],
+  "bbox": [
+    43.12,
+    -80.38,
+    43.92,
+    -79.38
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
+  "lastFeedExpiry": "20260906",
+  "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-milton-transit-gtfs-759.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

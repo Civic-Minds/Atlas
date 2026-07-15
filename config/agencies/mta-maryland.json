@@ -1,0 +1,13 @@
+{
+  "slug": "mta-maryland",
+  "name": "Maryland Transit Administration (MTA Maryland)",
+  "center": [
+    39.29,
+    -76.61
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-466/mdb-466-202607030053/mdb-466-202607030053.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "20260701",
+  "region": "Maryland",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "watertowncitibus",
+  "name": "Watertown Citibus",
+  "center": [
+    43.97,
+    -75.91
+  ],
+  "region": "New York",
+  "bbox": [
+    43.8,
+    -76.1,
+    44.1,
+    -75.7
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-watertown-citibus-gtfs-2881.zip?alt=media",
+  "lastFeedExpiry": "20260703",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://passiotech.com/"
+}

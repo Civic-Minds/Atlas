@@ -1,0 +1,14 @@
+{
+  "slug": "moose-jaw",
+  "name": "Moose Jaw Transit",
+  "region": "Saskatchewan",
+  "center": [
+    50.393,
+    -105.535
+  ],
+  "feedUrl": "https://moosejaw.ca/wp-content/uploads/2023/11/moosejaw-GTFS.zip",
+  "lastFeedExpiry": "20240331",
+  "lastFeedVersion": "1",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://moosejaw.ca"
+}

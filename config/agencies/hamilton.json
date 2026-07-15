@@ -1,0 +1,22 @@
+{
+  "slug": "hamilton",
+  "name": "Hamilton Street Railway",
+  "searchAliases": [
+    "Hamilton"
+  ],
+  "region": "Ontario",
+  "center": [
+    43.2557,
+    -79.8711
+  ],
+  "bbox": [
+    42.86,
+    -80.37,
+    43.66,
+    -79.37
+  ],
+  "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "2026 Spring & 2026 Summer Merged",
+  "lastRefreshedAt": "2026-07-06"
+}

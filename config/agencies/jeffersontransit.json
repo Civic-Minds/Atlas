@@ -1,0 +1,19 @@
+{
+  "slug": "jeffersontransit",
+  "name": "Jefferson Transit",
+  "center": [
+    47.98,
+    -122.9
+  ],
+  "region": "Washington",
+  "bbox": [
+    47.6,
+    -123.2,
+    48.2,
+    -122.5
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-jefferson-transit-authority-gtfs-838.zip?alt=media",
+  "lastFeedExpiry": "20270501",
+  "lastFeedVersion": "20260602",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "linter",
+  "name": "L'Inter des Laurentides",
+  "region": "Quebec",
+  "center": [
+    45.98,
+    -74.23
+  ],
+  "bbox": [
+    45.58,
+    -74.73,
+    46.38,
+    -73.73
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
+  "lastFeedExpiry": "20260802",
+  "lastFeedVersion": "1771259558641",
+  "lastRefreshedAt": "2026-07-06"
+}

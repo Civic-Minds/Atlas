@@ -1,0 +1,20 @@
+{
+  "slug": "cambus",
+  "name": "CAMBUS (University of Iowa)",
+  "center": [
+    41.66,
+    -91.54
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
+  "lastFeedExpiry": "20260821",
+  "lastFeedVersion": "UTC: 27-Mar-2026 18:02",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Iowa",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
+  "bbox": [
+    41.6359,
+    -91.6249,
+    41.7284,
+    -91.5132
+  ]
+}

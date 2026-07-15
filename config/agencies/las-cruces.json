@@ -1,0 +1,20 @@
+{
+  "slug": "las-cruces",
+  "name": "RoadRUNNER Transit (Las Cruces)",
+  "region": "New Mexico",
+  "center": [
+    32.31,
+    -106.78
+  ],
+  "bbox": [
+    32.221,
+    -106.866,
+    32.44,
+    -106.651
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2075/mdb-2075-202607070135/mdb-2075-202607070135.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2075/latest.zip",
+  "lastFeedExpiry": "20260805",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "lcta",
+  "name": "Luzerne County Transportation Authority",
+  "center": [
+    41.25,
+    -75.88
+  ],
+  "feedUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "region": "Pennsylvania",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4555/latest.zip",
+  "lastFeedExpiry": "20301214",
+  "lastFeedVersion": "20260609",
+  "lastRefreshedAt": "2026-07-06"
+}

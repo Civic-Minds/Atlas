@@ -1,0 +1,15 @@
+{
+  "slug": "waukesha-metro",
+  "name": "Waukesha Metro Transit",
+  "center": [
+    43.01,
+    -88.23
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
+  "region": "Wisconsin",
+  "lastFeedExpiry": "20250601",
+  "lastFeedVersion": "UTC: 22-Jan-2025 18:29",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.waukesha-wi.gov/residents/getting_around/public-transportation.php"
+}

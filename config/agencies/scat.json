@@ -1,0 +1,19 @@
+{
+  "slug": "scat",
+  "name": "SCAT (Sarasota County)",
+  "center": [
+    27.34,
+    -82.53
+  ],
+  "bbox": [
+    27,
+    -82.9,
+    27.7,
+    -82.1
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-327/latest.zip",
+  "region": "Florida",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

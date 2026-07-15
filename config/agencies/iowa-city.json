@@ -1,0 +1,20 @@
+{
+  "slug": "iowa-city",
+  "name": "Iowa City Transit",
+  "center": [
+    41.66,
+    -91.53
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
+  "lastFeedExpiry": "20260831",
+  "lastFeedVersion": "UTC: 29-May-2026 17:46",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Iowa",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
+  "bbox": [
+    41.608,
+    -91.6188,
+    41.7092,
+    -91.4488
+  ]
+}

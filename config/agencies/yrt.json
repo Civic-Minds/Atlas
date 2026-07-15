@@ -1,0 +1,20 @@
+{
+  "slug": "yrt",
+  "name": "York Region Transit",
+  "region": "Ontario",
+  "center": [
+    43.8828,
+    -79.4403
+  ],
+  "bbox": [
+    43.48,
+    -79.94,
+    44.28,
+    -78.94
+  ],
+  "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "2026.06.28_June_20260611",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-york-region-transit-gtfs-728.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

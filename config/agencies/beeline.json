@@ -1,0 +1,19 @@
+{
+  "slug": "beeline",
+  "name": "Westchester County Bee-Line System (BeeLine)",
+  "region": "New York",
+  "center": [
+    41,
+    -73.8
+  ],
+  "bbox": [
+    40.741,
+    -73.99,
+    41.4222,
+    -73.6597
+  ],
+  "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
+  "lastFeedExpiry": "20261019",
+  "lastFeedVersion": "20260703_180756",
+  "lastRefreshedAt": "2026-07-06"
+}

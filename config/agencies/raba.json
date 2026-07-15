@@ -1,0 +1,20 @@
+{
+  "slug": "raba",
+  "name": "Redding Area Bus Authority",
+  "center": [
+    40.5695,
+    -122.3429
+  ],
+  "region": "California",
+  "bbox": [
+    39.72,
+    -122.41,
+    40.94,
+    -121.61
+  ],
+  "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redding-redding-area-bu-gtfs-3031.zip?alt=media",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Jun 25, 2026, 7:10 PM",
+  "lastRefreshedAt": "2026-07-06"
+}

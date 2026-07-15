@@ -1,0 +1,13 @@
+{
+  "slug": "slotransit",
+  "name": "City of San Luis Obispo Transit",
+  "center": [
+    35.28,
+    -120.66
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-44/mdb-44-202603280107/mdb-44-202603280107.zip",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "2026-03-27T18:13:21Z",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

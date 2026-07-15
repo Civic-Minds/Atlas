@@ -1,0 +1,14 @@
+{
+  "slug": "racine",
+  "name": "Ryde Racine",
+  "center": [
+    42.73,
+    -87.78
+  ],
+  "feedUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx",
+  "region": "Wisconsin",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2246/latest.zip",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260329",
+  "lastRefreshedAt": "2026-07-06"
+}

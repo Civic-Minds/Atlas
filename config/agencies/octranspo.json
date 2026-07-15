@@ -1,0 +1,22 @@
+{
+  "slug": "octranspo",
+  "name": "OC Transpo",
+  "searchAliases": [
+    "Ottawa"
+  ],
+  "region": "Ontario",
+  "center": [
+    45.32,
+    -75.69
+  ],
+  "bbox": [
+    45.13,
+    -76.043,
+    45.52,
+    -75.343
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "S1000499-",
+  "lastRefreshedAt": "2026-07-06"
+}

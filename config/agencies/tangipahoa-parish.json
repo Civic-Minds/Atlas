@@ -1,0 +1,20 @@
+{
+  "slug": "tangipahoa-parish",
+  "name": "Tangipahoa Transit (Hammond)",
+  "region": "Louisiana",
+  "center": [
+    30.53,
+    -90.47
+  ],
+  "bbox": [
+    30.374,
+    -90.559,
+    30.684,
+    -90.373
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "20251212",
+  "lastRefreshedAt": "2026-07-06"
+}

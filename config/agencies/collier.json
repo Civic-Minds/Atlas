@@ -1,0 +1,20 @@
+{
+  "slug": "collier",
+  "name": "Collier Area Transit (Naples)",
+  "region": "Florida",
+  "center": [
+    26.14,
+    -81.79
+  ],
+  "bbox": [
+    25.862,
+    -81.876,
+    26.492,
+    -81.332
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

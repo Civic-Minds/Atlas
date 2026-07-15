@@ -1,0 +1,14 @@
+{
+  "slug": "colts",
+  "name": "County of Lackawanna Transit System (COLTS)",
+  "center": [
+    41.41,
+    -75.66
+  ],
+  "feedUrl": "https://coltsivl.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "region": "Pennsylvania",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4553/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260706",
+  "lastRefreshedAt": "2026-07-06"
+}

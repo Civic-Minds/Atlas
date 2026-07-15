@@ -1,0 +1,14 @@
+{
+  "slug": "tulare-county-transit",
+  "name": "Tulare County Area Transit (TCAT)",
+  "center": [
+    36.33,
+    -119.3
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-646/mdb-646-202602190016/mdb-646-202602190016.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-646/mdb-646-202602190016/mdb-646-202602190016.zip",
+  "region": "California",
+  "lastFeedExpiry": "20261001",
+  "lastFeedVersion": "UTC: 18-Feb-2026 15:22",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "billings",
+  "name": "MET Transit (Billings)",
+  "center": [
+    45.78,
+    -108.51
+  ],
+  "bbox": [
+    45.73,
+    -108.63,
+    45.84,
+    -108.45
+  ],
+  "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
+  "region": "Montana",
+  "lastFeedExpiry": "20260812",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "juneau",
+  "name": "Capital Transit (Juneau)",
+  "center": [
+    58.3,
+    -134.42
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
+  "lastFeedExpiry": "20260920",
+  "lastFeedVersion": "UTC: 21-May-2026 18:51",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Alaska",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
+  "bbox": [
+    58.2549,
+    -134.6643,
+    58.4252,
+    -134.3699
+  ]
+}

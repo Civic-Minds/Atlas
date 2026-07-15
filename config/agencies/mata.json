@@ -1,0 +1,13 @@
+{
+  "slug": "mata",
+  "name": "Memphis Area Transit Authority",
+  "center": [
+    35.15,
+    -90.05
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2352/mdb-2352-202502100036/mdb-2352-202502100036.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Tennessee",
+  "lastRefreshedAt": "2026-07-13"
+}

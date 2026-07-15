@@ -1,0 +1,24 @@
+{
+  "slug": "wmata",
+  "name": "WMATA",
+  "region": "Washington DC",
+  "center": [
+    38.9072,
+    -77.0369
+  ],
+  "bbox": [
+    38.6915,
+    -77.3663,
+    39.1562,
+    -76.7167
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1846.zip?alt=media",
+  "supplementalFeedUrls": [
+    "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1847.zip?alt=media"
+  ],
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1846.zip?alt=media",
+  "lastFeedExpiry": "20241221",
+  "lastFeedVersion": "S1000219",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.wmata.com"
+}

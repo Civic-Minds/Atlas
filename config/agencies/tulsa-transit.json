@@ -1,0 +1,20 @@
+{
+  "slug": "tulsa-transit",
+  "name": "Tulsa Transit (MTTA)",
+  "center": [
+    36.12,
+    -95.96
+  ],
+  "bbox": [
+    35.99,
+    -96.12,
+    36.25,
+    -95.79
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-184/latest.zip",
+  "region": "Oklahoma",
+  "lastFeedExpiry": "20230819",
+  "lastFeedVersion": "APRIL 2023_20230317",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.tulsatransit.org"
+}

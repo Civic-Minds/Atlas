@@ -1,0 +1,19 @@
+{
+  "slug": "t3-transit",
+  "name": "T3 Transit (PEI)",
+  "region": "Prince Edward Island",
+  "center": [
+    46.2382,
+    -63.1311
+  ],
+  "bbox": [
+    46.15,
+    -63.3,
+    46.33,
+    -62.96
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-prince-edward-island-t3-transit-gtfs-2132.zip?alt=media",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 14-May-2026 15:14",
+  "lastRefreshedAt": "2026-07-06"
+}

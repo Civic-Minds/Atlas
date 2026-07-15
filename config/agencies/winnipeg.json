@@ -1,0 +1,20 @@
+{
+  "slug": "winnipeg",
+  "name": "Winnipeg Transit",
+  "region": "Manitoba",
+  "center": [
+    49.8951,
+    -97.1384
+  ],
+  "bbox": [
+    49.76,
+    -97.44,
+    50.02,
+    -96.86
+  ],
+  "feedUrl": "https://gtfs.winnipegtransit.com/google_transit.zip",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-manitoba-winnipeg-transit-gtfs-717.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

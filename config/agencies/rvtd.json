@@ -1,0 +1,20 @@
+{
+  "slug": "rvtd",
+  "name": "Rogue Valley Transportation District (RVTD)",
+  "center": [
+    42.328,
+    -122.8424
+  ],
+  "region": "Oregon",
+  "bbox": [
+    42.18,
+    -122.97,
+    42.48,
+    -122.66
+  ],
+  "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-rogue-valley-transportation-district-rvtd-gtfs-3219.zip?alt=media",
+  "lastFeedExpiry": "20261122",
+  "lastFeedVersion": "06-29-26  02:35",
+  "lastRefreshedAt": "2026-07-06"
+}

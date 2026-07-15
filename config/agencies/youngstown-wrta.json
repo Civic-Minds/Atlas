@@ -1,0 +1,20 @@
+{
+  "slug": "youngstown-wrta",
+  "name": "Western Reserve Transit Authority (Youngstown)",
+  "center": [
+    41.1,
+    -80.65
+  ],
+  "bbox": [
+    40.85,
+    -81.1,
+    41.35,
+    -80.2
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-922/latest.zip",
+  "region": "Ohio",
+  "lastFeedExpiry": "20201205",
+  "lastFeedVersion": "20200909",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.wrtaonline.com/"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "art",
+  "name": "Arlington Transit (ART)",
+  "region": "Virginia",
+  "center": [
+    38.88,
+    -77.1
+  ],
+  "bbox": [
+    38.839,
+    -77.1625,
+    38.9266,
+    -77.0491
+  ],
+  "feedUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
+  "lastFeedExpiry": "20270531",
+  "lastFeedVersion": "S1000054",
+  "lastRefreshedAt": "2026-07-06"
+}

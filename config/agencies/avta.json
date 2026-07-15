@@ -1,0 +1,14 @@
+{
+  "slug": "avta",
+  "name": "Antelope Valley Transit Authority (AVTA)",
+  "center": [
+    34.58,
+    -118.12
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-214/mdb-214-202406071534/mdb-214-202406071534.zip",
+  "lastFeedExpiry": "20210801",
+  "lastFeedVersion": "20210503",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.avta.com"
+}

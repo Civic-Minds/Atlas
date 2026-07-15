@@ -1,0 +1,13 @@
+{
+  "slug": "mountainline",
+  "name": "Mountain Line (Flagstaff)",
+  "center": [
+    35.2,
+    -111.65
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/mdb-1979-202607030141/mdb-1979-202607030141.zip",
+  "lastFeedExpiry": "20261230",
+  "lastFeedVersion": "No deviations",
+  "region": "Arizona",
+  "lastRefreshedAt": "2026-07-06"
+}

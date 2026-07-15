@@ -1,0 +1,19 @@
+{
+  "slug": "whatcomtransit",
+  "name": "Whatcom Transportation Authority",
+  "center": [
+    48.75,
+    -122.47
+  ],
+  "region": "Washington",
+  "bbox": [
+    48.5,
+    -122.8,
+    49,
+    -122
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-whatcom-transportation-authority-gtfs-284.zip?alt=media",
+  "lastFeedExpiry": "20260919",
+  "lastFeedVersion": "S1000173-S1000174",
+  "lastRefreshedAt": "2026-07-06"
+}

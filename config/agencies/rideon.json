@@ -1,0 +1,19 @@
+{
+  "slug": "rideon",
+  "name": "Ride On (Montgomery County)",
+  "region": "Maryland",
+  "center": [
+    39.15,
+    -77.2
+  ],
+  "bbox": [
+    38.9357,
+    -77.4187,
+    39.2885,
+    -76.9286
+  ],
+  "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "13-May 3, 2026_20260423",
+  "lastRefreshedAt": "2026-07-06"
+}

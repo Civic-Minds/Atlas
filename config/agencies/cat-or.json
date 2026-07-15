@@ -1,0 +1,20 @@
+{
+  "slug": "cat-or",
+  "name": "Canby Area Transit (CAT)",
+  "center": [
+    45.2591,
+    -122.7019
+  ],
+  "region": "Oregon",
+  "bbox": [
+    45.15,
+    -122.83,
+    45.36,
+    -122.6
+  ],
+  "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-canby-area-transit-cat-gtfs-252.zip?alt=media",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 09-Jun-2026 21:37",
+  "lastRefreshedAt": "2026-07-06"
+}

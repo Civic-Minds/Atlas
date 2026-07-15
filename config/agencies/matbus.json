@@ -1,0 +1,19 @@
+{
+  "slug": "matbus",
+  "name": "MATBUS (Fargo, ND)",
+  "center": [
+    46.877,
+    -96.79
+  ],
+  "bbox": [
+    46.7,
+    -97,
+    47,
+    -96.5
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1285/latest.zip",
+  "region": "North Dakota",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

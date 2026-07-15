@@ -1,0 +1,14 @@
+{
+  "slug": "qline",
+  "name": "QLine (Detroit)",
+  "region": "Michigan",
+  "center": [
+    42.34,
+    -83.056
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-qline-detroit-gtfs-802.zip?alt=media",
+  "lastFeedExpiry": "20251231",
+  "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://qlinedetroit.com/"
+}

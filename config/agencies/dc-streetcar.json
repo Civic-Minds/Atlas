@@ -1,0 +1,14 @@
+{
+  "slug": "dc-streetcar",
+  "name": "DC Streetcar",
+  "center": [
+    38.9,
+    -77
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2223/mdb-2223-202411271818/mdb-2223-202411271818.zip",
+  "lastFeedExpiry": "20250630",
+  "lastFeedVersion": "20230718",
+  "region": "Washington DC",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.dcstreetcar.com/"
+}

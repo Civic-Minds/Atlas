@@ -1,0 +1,20 @@
+{
+  "slug": "topeka",
+  "name": "Topeka Metro",
+  "center": [
+    39.05,
+    -95.68
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Jul 7, 2026, 2:57 PM",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Kansas",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
+  "bbox": [
+    38.9732,
+    -95.7993,
+    39.1199,
+    -95.5936
+  ]
+}

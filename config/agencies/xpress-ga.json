@@ -1,0 +1,14 @@
+{
+  "slug": "xpress-ga",
+  "name": "Xpress (Georgia Regional)",
+  "center": [
+    33.7,
+    -84.4
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip",
+  "lastFeedExpiry": "20250705",
+  "lastFeedVersion": "S1000101",
+  "region": "Georgia",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.xpressga.com/"
+}

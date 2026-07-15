@@ -1,0 +1,19 @@
+{
+  "slug": "springfield-mo",
+  "name": "City Utilities Transit (Springfield)",
+  "center": [
+    37.209,
+    -93.2923
+  ],
+  "feedUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip",
+  "lastFeedExpiry": "20261003",
+  "lastFeedVersion": "2026 CU Q3 1",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Missouri",
+  "bbox": [
+    37.1082,
+    -93.3827,
+    37.2738,
+    -93.1752
+  ]
+}

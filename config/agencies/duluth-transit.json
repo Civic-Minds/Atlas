@@ -1,0 +1,19 @@
+{
+  "slug": "duluth-transit",
+  "name": "Duluth Transit Authority",
+  "center": [
+    46.782,
+    -92.106
+  ],
+  "bbox": [
+    46.5,
+    -92.3,
+    47.1,
+    -91.9
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-301/latest.zip",
+  "region": "Minnesota",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "20260507094754",
+  "lastRefreshedAt": "2026-07-06"
+}

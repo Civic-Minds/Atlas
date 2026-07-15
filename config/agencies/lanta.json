@@ -1,0 +1,14 @@
+{
+  "slug": "lanta",
+  "name": "Lehigh and Northampton Transportation Authority (LANTA)",
+  "center": [
+    40.6,
+    -75.47
+  ],
+  "feedUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "region": "Pennsylvania",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": "20260622",
+  "lastRefreshedAt": "2026-07-06"
+}

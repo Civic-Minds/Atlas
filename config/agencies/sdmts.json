@@ -1,0 +1,13 @@
+{
+  "slug": "sdmts",
+  "name": "Metropolitan Transit System (San Diego MTS)",
+  "center": [
+    32.72,
+    -117.16
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-13/mdb-13-202605270056/mdb-13-202605270056.zip",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

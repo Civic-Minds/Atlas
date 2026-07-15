@@ -1,0 +1,20 @@
+{
+  "slug": "longview",
+  "name": "City of Longview Transit",
+  "region": "Texas",
+  "center": [
+    32.49,
+    -94.75
+  ],
+  "bbox": [
+    32.386,
+    -94.862,
+    32.6,
+    -94.643
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
+  "lastFeedExpiry": "20260930",
+  "lastFeedVersion": "2.0",
+  "lastRefreshedAt": "2026-07-06"
+}

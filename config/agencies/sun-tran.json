@@ -1,0 +1,19 @@
+{
+  "slug": "sun-tran",
+  "name": "Sun Tran (Tucson)",
+  "center": [
+    32.22,
+    -110.93
+  ],
+  "bbox": [
+    31.9,
+    -111.3,
+    32.5,
+    -110.6
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-43/latest.zip",
+  "region": "Arizona",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260611",
+  "lastRefreshedAt": "2026-07-06"
+}

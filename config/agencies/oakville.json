@@ -1,0 +1,20 @@
+{
+  "slug": "oakville",
+  "name": "Oakville Transit",
+  "region": "Ontario",
+  "center": [
+    43.4675,
+    -79.6877
+  ],
+  "bbox": [
+    43.07,
+    -80.19,
+    43.87,
+    -79.19
+  ],
+  "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-oakville-transit-gtfs-725.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13"
+}

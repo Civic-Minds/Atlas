@@ -1,0 +1,19 @@
+{
+  "slug": "mnr",
+  "name": "Metro-North Railroad (MNR)",
+  "region": "New York",
+  "center": [
+    40.8,
+    -73.9
+  ],
+  "bbox": [
+    40.753,
+    -73.9856,
+    41.8147,
+    -72.9218
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-524/mdb-524-202607030002/mdb-524-202607030002.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

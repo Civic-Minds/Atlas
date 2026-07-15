@@ -1,0 +1,20 @@
+{
+  "slug": "corvallis",
+  "name": "Corvallis Transit System",
+  "center": [
+    44.5746,
+    -123.2746
+  ],
+  "region": "Oregon",
+  "bbox": [
+    44.53,
+    -123.32,
+    44.61,
+    -123.23
+  ],
+  "feedUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-city-of-corvallis-gtfs-2283.zip?alt=media",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260625",
+  "lastRefreshedAt": "2026-07-06"
+}

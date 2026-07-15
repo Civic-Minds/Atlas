@@ -1,0 +1,14 @@
+{
+  "slug": "cota",
+  "name": "Central Ohio Transit Authority (COTA)",
+  "region": "Ohio",
+  "center": [
+    39.96,
+    -82.99
+  ],
+  "feedUrl": "https://www.cota.com/data/cota.gtfs.zip",
+  "mdbFeedUrl": "https://www.cota.com/data/cota.gtfs.zip",
+  "lastFeedExpiry": "20260906",
+  "lastFeedVersion": "2026-MAY-04-BB_20260630",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "mountain-transit-ca",
+  "name": "Mountain Transit (Big Bear Lake)",
+  "region": "California",
+  "center": [
+    34.24,
+    -116.91
+  ],
+  "bbox": [
+    34.05,
+    -117.376,
+    34.322,
+    -116.741
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-107/mdb-107-202606300014/mdb-107-202606300014.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-107/latest.zip",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 29-Jun-2026 16:59",
+  "lastRefreshedAt": "2026-07-06"
+}

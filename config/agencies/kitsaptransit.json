@@ -1,0 +1,20 @@
+{
+  "slug": "kitsaptransit",
+  "name": "Kitsap Transit",
+  "center": [
+    47.6,
+    -122.65
+  ],
+  "region": "Washington",
+  "bbox": [
+    47.3,
+    -122.9,
+    47.9,
+    -122.3
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-kitsap-transit-gtfs-1304.zip?alt=media",
+  "lastFeedExpiry": "20211231",
+  "lastFeedVersion": "20210606",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.kitsaptransit.com"
+}

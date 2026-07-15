@@ -1,0 +1,20 @@
+{
+  "slug": "burlington",
+  "name": "Burlington Transit",
+  "region": "Ontario",
+  "center": [
+    43.3255,
+    -79.799
+  ],
+  "bbox": [
+    42.93,
+    -80.3,
+    43.73,
+    -79.3
+  ],
+  "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-burlington-transit-gtfs-724.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

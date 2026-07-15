@@ -1,0 +1,13 @@
+{
+  "slug": "longbeach",
+  "name": "Long Beach Transit",
+  "center": [
+    33.77,
+    -118.19
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/mdb-1198-202606170039/mdb-1198-202606170039.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": null,
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

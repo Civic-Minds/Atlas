@@ -1,0 +1,14 @@
+{
+  "slug": "wichita",
+  "name": "Wichita Transit",
+  "region": "Kansas",
+  "center": [
+    37.69,
+    -97.34
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-185/mdb-185-202402080052/mdb-185-202402080052.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-185/mdb-185-202402080052/mdb-185-202402080052.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

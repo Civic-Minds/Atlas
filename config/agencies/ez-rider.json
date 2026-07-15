@@ -1,0 +1,20 @@
+{
+  "slug": "ez-rider",
+  "name": "EZ Rider (Midland/Odessa)",
+  "region": "Texas",
+  "center": [
+    31.85,
+    -102.37
+  ],
+  "bbox": [
+    31.78,
+    -102.462,
+    32.088,
+    -102.004
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2634/mdb-2634-202505211819/mdb-2634-202505211819.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2634/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

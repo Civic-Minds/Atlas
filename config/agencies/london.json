@@ -1,0 +1,21 @@
+{
+  "slug": "london",
+  "name": "London Transit",
+  "region": "Ontario",
+  "preprocess": "london-route-names",
+  "center": [
+    42.9849,
+    -81.2453
+  ],
+  "bbox": [
+    42.59,
+    -81.75,
+    43.39,
+    -80.75
+  ],
+  "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "2026 Summer_20260615",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-london-transit-commission-gtfs-2.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

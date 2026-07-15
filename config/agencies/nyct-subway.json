@@ -1,0 +1,19 @@
+{
+  "slug": "nyct-subway",
+  "name": "MTA NYCT Subway",
+  "region": "New York",
+  "center": [
+    40.71,
+    -74.01
+  ],
+  "bbox": [
+    40.5128,
+    -74.252,
+    40.9031,
+    -73.7554
+  ],
+  "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
+  "lastFeedExpiry": "20260907",
+  "lastFeedVersion": "20260526",
+  "lastRefreshedAt": "2026-07-06"
+}

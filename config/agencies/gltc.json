@@ -1,0 +1,19 @@
+{
+  "slug": "gltc",
+  "name": "Greater Lynchburg Transit Company",
+  "center": [
+    37.398,
+    -79.169
+  ],
+  "bbox": [
+    37.33,
+    -79.253,
+    37.467,
+    -79.085
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-381/latest.zip",
+  "region": "Virginia",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 01-May-2026 16:41",
+  "lastRefreshedAt": "2026-07-06"
+}

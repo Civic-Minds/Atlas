@@ -1,0 +1,20 @@
+{
+  "slug": "um-transit",
+  "name": "University of Michigan Transit Services",
+  "center": [
+    42.28,
+    -83.74
+  ],
+  "feedUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "S1000095",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Michigan",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2072/latest.zip",
+  "bbox": [
+    42.2444,
+    -83.7675,
+    42.3411,
+    -83.654
+  ]
+}

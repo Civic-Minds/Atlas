@@ -1,0 +1,14 @@
+{
+  "slug": "bc-fraser-valley",
+  "name": "BC Transit (Fraser Valley)",
+  "region": "British Columbia",
+  "center": [
+    49.05,
+    -122.3
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-fraser-valley-region-gtfs-1991.zip?alt=media",
+  "lastFeedExpiry": "20260627",
+  "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://www.bctransit.com/"
+}

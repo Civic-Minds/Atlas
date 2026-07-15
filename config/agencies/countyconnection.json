@@ -1,0 +1,20 @@
+{
+  "slug": "countyconnection",
+  "name": "County Connection (CCCTA)",
+  "center": [
+    37.9068,
+    -122.0383
+  ],
+  "region": "California",
+  "bbox": [
+    37.66,
+    -122.19,
+    38.02,
+    -121.78
+  ],
+  "feedUrl": "https://countyconnection.com/GTFS/google_transit.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-county-connection-gtfs-2421.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

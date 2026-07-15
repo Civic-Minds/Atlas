@@ -1,0 +1,19 @@
+{
+  "slug": "dayton",
+  "name": "Greater Dayton RTA",
+  "center": [
+    39.76,
+    -84.19
+  ],
+  "bbox": [
+    39.5,
+    -84.5,
+    39.95,
+    -83.9
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-403/latest.zip",
+  "region": "Ohio",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "S1000325",
+  "lastRefreshedAt": "2026-07-06"
+}

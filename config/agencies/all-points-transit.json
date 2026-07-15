@@ -1,0 +1,13 @@
+{
+  "slug": "all-points-transit",
+  "name": "All Points Transit (Montrose)",
+  "center": [
+    38.47,
+    -107.87
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-212/latest.zip",
+  "region": "Colorado",
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 10-Jul-2026 16:26",
+  "lastRefreshedAt": "2026-07-13"
+}

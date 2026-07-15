@@ -1,0 +1,13 @@
+{
+  "slug": "cats",
+  "name": "Charlotte Area Transit System (CATS)",
+  "center": [
+    35.23,
+    -80.84
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2265/mdb-2265-202606120001/mdb-2265-202606120001.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "North Carolina",
+  "lastRefreshedAt": "2026-07-13"
+}

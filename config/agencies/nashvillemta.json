@@ -1,0 +1,13 @@
+{
+  "slug": "nashvillemta",
+  "name": "Nashville MTA WeGo Public Transit",
+  "center": [
+    36.16,
+    -86.78
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202606200107/mdb-360-202606200107.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Tennessee",
+  "lastRefreshedAt": "2026-07-13"
+}

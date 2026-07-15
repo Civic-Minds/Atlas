@@ -1,0 +1,14 @@
+{
+  "slug": "sarta",
+  "name": "Stark Area Regional Transit Authority",
+  "region": "Ohio",
+  "center": [
+    40.798,
+    -81.379
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
+  "lastFeedExpiry": "20260808",
+  "lastFeedVersion": "MAY 2026_20260409",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-stark-area-regional-transit-authority-sarta-gtfs-818.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

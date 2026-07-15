@@ -1,0 +1,20 @@
+{
+  "slug": "goldengate",
+  "name": "Golden Gate Transit",
+  "center": [
+    37.9841,
+    -122.5174
+  ],
+  "region": "California",
+  "bbox": [
+    37.78,
+    -122.74,
+    38.47,
+    -122.32
+  ],
+  "feedUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-golden-gate-transit-gtfs-67.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

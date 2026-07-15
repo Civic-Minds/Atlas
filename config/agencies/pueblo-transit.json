@@ -1,0 +1,13 @@
+{
+  "slug": "pueblo-transit",
+  "name": "Pueblo Transit",
+  "center": [
+    38.25,
+    -104.61
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2232/latest.zip",
+  "region": "Colorado",
+  "lastFeedExpiry": "20270301",
+  "lastFeedVersion": "UTC: 24-Apr-2026 17:32",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "mst",
+  "name": "Monterey-Salinas Transit (MST)",
+  "center": [
+    36.6,
+    -121.89
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-56/mdb-56-202606240122/mdb-56-202606240122.zip",
+  "lastFeedExpiry": "20260828",
+  "lastFeedVersion": "202602v33",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

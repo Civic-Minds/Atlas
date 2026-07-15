@@ -1,0 +1,19 @@
+{
+  "slug": "montgomery-transit",
+  "name": "Montgomery Transit (The M)",
+  "center": [
+    32.37,
+    -86.25
+  ],
+  "bbox": [
+    32.25,
+    -86.35,
+    32.5,
+    -86.15
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/montgomerytransit-al-us/montgomerytransit-al-us.zip",
+  "region": "Alabama",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 08-Jan-2026 10:11",
+  "lastRefreshedAt": "2026-07-06"
+}

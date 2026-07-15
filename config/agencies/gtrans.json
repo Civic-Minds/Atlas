@@ -1,0 +1,13 @@
+{
+  "slug": "gtrans",
+  "name": "GTrans (Gardena Municipal Bus Lines)",
+  "center": [
+    33.89,
+    -118.31
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2270/mdb-2270-202606300031/mdb-2270-202606300031.zip",
+  "lastFeedExpiry": "20260718",
+  "lastFeedVersion": "S1000131",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

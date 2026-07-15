@@ -1,0 +1,20 @@
+{
+  "slug": "grand-forks",
+  "name": "Cities Area Transit (Grand Forks)",
+  "center": [
+    47.93,
+    -97.03
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/cityofgrandforks-nd-us/cityofgrandforks-nd-us.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 12-Dec-2025 16:45",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "North Dakota",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2199/latest.zip",
+  "bbox": [
+    47.8549,
+    -97.1297,
+    47.9691,
+    -96.9906
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "go",
+  "name": "GO Transit",
+  "region": "Ontario",
+  "center": [
+    43.645,
+    -79.38
+  ],
+  "bbox": [
+    42.3,
+    -81.5,
+    44.8,
+    -77.5
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
+  "lastFeedExpiry": "20260904",
+  "lastFeedVersion": "20260529182459",
+  "lastRefreshedAt": "2026-07-06"
+}

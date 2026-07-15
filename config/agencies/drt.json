@@ -1,0 +1,20 @@
+{
+  "slug": "drt",
+  "name": "Durham Region Transit",
+  "region": "Ontario",
+  "center": [
+    43.9,
+    -78.85
+  ],
+  "bbox": [
+    43.5,
+    -79.35,
+    44.3,
+    -78.35
+  ],
+  "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-durham-region-transit-gtfs-726.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13"
+}

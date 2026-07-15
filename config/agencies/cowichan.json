@@ -1,0 +1,14 @@
+{
+  "slug": "cowichan",
+  "name": "BC Transit (Cowichan Valley)",
+  "region": "British Columbia",
+  "center": [
+    48.781,
+    -123.709
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-cowichan-valley-regional-transit-system-gtfs-694.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "huntsville",
+  "name": "Huntsville Shuttle",
+  "center": [
+    34.73,
+    -86.59
+  ],
+  "bbox": [
+    34.62,
+    -86.74,
+    34.84,
+    -86.44
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2081/latest.zip",
+  "region": "Alabama",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

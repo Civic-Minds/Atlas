@@ -1,0 +1,20 @@
+{
+  "slug": "coast-nh",
+  "name": "COAST (Seacoast NH)",
+  "center": [
+    43.07,
+    -70.78
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip",
+  "lastFeedExpiry": "20260811",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "New Hampshire",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip",
+  "bbox": [
+    43.0028,
+    -71.105,
+    43.4142,
+    -70.7223
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "bts-or",
+  "name": "Basin Transit Service (BTS)",
+  "center": [
+    42.2598,
+    -121.7542
+  ],
+  "region": "Oregon",
+  "bbox": [
+    42.01,
+    -122.21,
+    44.06,
+    -121.04
+  ],
+  "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-basin-transit-service-bts-gtfs-125.zip?alt=media",
+  "lastFeedExpiry": "20260831",
+  "lastFeedVersion": "UTC: 30-Apr-2026 20:28",
+  "lastRefreshedAt": "2026-07-06"
+}

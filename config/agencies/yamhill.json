@@ -1,0 +1,20 @@
+{
+  "slug": "yamhill",
+  "name": "Yamhill County Transit Area",
+  "center": [
+    45.2276,
+    -123.1747
+  ],
+  "region": "Oregon",
+  "bbox": [
+    44.95,
+    -123.62,
+    45.52,
+    -122.77
+  ],
+  "feedUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-yamhill-county-transit-area-gtfs-250.zip?alt=media",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260619",
+  "lastRefreshedAt": "2026-07-06"
+}

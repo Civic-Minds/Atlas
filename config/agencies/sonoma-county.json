@@ -1,0 +1,20 @@
+{
+  "slug": "sonoma-county",
+  "name": "Sonoma County Transit (SCT)",
+  "center": [
+    38.4307,
+    -122.742
+  ],
+  "region": "California",
+  "bbox": [
+    37.97,
+    -123.13,
+    38.81,
+    -122.46
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-county-transit-sct-gtfs-70.zip?alt=media",
+  "lastFeedExpiry": "20260808",
+  "lastFeedVersion": "UTC: 01-Jul-2026 17:39",
+  "lastRefreshedAt": "2026-07-06"
+}

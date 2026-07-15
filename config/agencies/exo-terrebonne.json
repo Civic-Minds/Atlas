@@ -1,0 +1,21 @@
+{
+  "slug": "exo-terrebonne",
+  "name": "exo (Terrebonne-Mascouche)",
+  "region": "Quebec",
+  "center": [
+    45.7032,
+    -73.6487
+  ],
+  "bbox": [
+    45.3,
+    -74.15,
+    46.1,
+    -73.15
+  ],
+  "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

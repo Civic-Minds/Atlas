@@ -1,0 +1,14 @@
+{
+  "slug": "knoxville",
+  "name": "Knoxville Area Transit",
+  "center": [
+    35.96,
+    -83.92
+  ],
+  "feedUrl": "http://www.knoxvilletn.gov/UserFiles/Servers/Server_109478/File/KAT/gtfs-kat.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1121/latest.zip",
+  "region": "Tennessee",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "MARCH 3/14",
+  "lastRefreshedAt": "2026-07-06"
+}

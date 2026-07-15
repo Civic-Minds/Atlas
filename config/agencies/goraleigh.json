@@ -1,0 +1,13 @@
+{
+  "slug": "goraleigh",
+  "name": "GoRaleigh (Capital Area Transit)",
+  "center": [
+    35.78,
+    -78.64
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2074/mdb-2074-202607010046/mdb-2074-202607010046.zip",
+  "lastFeedExpiry": "20260831",
+  "lastFeedVersion": "S1000094",
+  "region": "North Carolina",
+  "lastRefreshedAt": "2026-07-06"
+}

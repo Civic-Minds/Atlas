@@ -1,0 +1,19 @@
+{
+  "slug": "citilink-fw",
+  "name": "Citilink (Fort Wayne, IN)",
+  "center": [
+    41.135,
+    -85.136
+  ],
+  "bbox": [
+    40.7,
+    -85.5,
+    41.5,
+    -84.7
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2266/latest.zip",
+  "region": "Indiana",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Jun 18, 2026, 2:17 PM",
+  "lastRefreshedAt": "2026-07-06"
+}

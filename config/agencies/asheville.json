@@ -1,0 +1,20 @@
+{
+  "slug": "asheville",
+  "name": "Asheville Rides Transit",
+  "center": [
+    35.6,
+    -82.55
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 10-Jul-2026 16:58",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "North Carolina",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
+  "bbox": [
+    35.4047,
+    -82.6526,
+    35.6641,
+    -82.2991
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "tridelta",
+  "name": "Tri Delta Transit",
+  "center": [
+    37.9967,
+    -121.8336
+  ],
+  "region": "California",
+  "bbox": [
+    37.92,
+    -122.14,
+    38.04,
+    -121.69
+  ],
+  "feedUrl": "https://transitfeeds.com/p/tri-delta-transit/1148/latest/download",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-tri-delta-transit-gtfs-1323.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

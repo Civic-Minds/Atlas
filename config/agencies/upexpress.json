@@ -1,0 +1,19 @@
+{
+  "slug": "upexpress",
+  "name": "UP Express",
+  "region": "Ontario",
+  "center": [
+    43.6532,
+    -79.3832
+  ],
+  "bbox": [
+    43.55,
+    -79.65,
+    43.75,
+    -79.3
+  ],
+  "feedUrl": "https://assets.metrolinx.com/raw/upload/v1/Documents/Metrolinx/Open%20Data/UP-GTFS.zip",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "20260707085359",
+  "lastRefreshedAt": "2026-07-13"
+}

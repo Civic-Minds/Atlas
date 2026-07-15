@@ -1,0 +1,19 @@
+{
+  "slug": "nyct-bus-brooklyn",
+  "name": "MTA NYCT Bus (Brooklyn)",
+  "center": [
+    40.65,
+    -73.949
+  ],
+  "bbox": [
+    40.551,
+    -74.042,
+    40.739,
+    -73.833
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
+  "region": "New York",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "gtfs_b_20260611T155327Z",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "montebello",
+  "name": "Montebello Bus Lines",
+  "center": [
+    34.01,
+    -118.11
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2201/mdb-2201-202606270133/mdb-2201-202606270133.zip",
+  "lastFeedExpiry": "20260906",
+  "lastFeedVersion": "20260626",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

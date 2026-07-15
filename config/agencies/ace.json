@@ -1,0 +1,21 @@
+{
+  "slug": "ace",
+  "name": "Altamont Corridor Express",
+  "center": [
+    37.2902,
+    -121.0684
+  ],
+  "region": "California",
+  "bbox": [
+    34.06,
+    -122.35,
+    38.58,
+    -118.24
+  ],
+  "feedUrl": "https://transitfeeds.com/p/altamont-corridor-express/823/latest/download",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-altamont-corridor-express-gtfs-1133.zip?alt=media",
+  "lastFeedExpiry": "20241231",
+  "lastFeedVersion": "20231226",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://acerail.com/"
+}

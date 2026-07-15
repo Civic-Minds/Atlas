@@ -1,0 +1,23 @@
+{
+  "slug": "septa",
+  "name": "SEPTA",
+  "region": "Pennsylvania",
+  "center": [
+    39.9526,
+    -75.1652
+  ],
+  "bbox": [
+    39.8036,
+    -75.8351,
+    40.3349,
+    -74.7521
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
+  "supplementalFeedUrls": [
+    "https://files.mobilitydatabase.org/mdb-503/mdb-503-202607030135/mdb-503-202607030135.zip"
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
+  "lastFeedExpiry": "20260801",
+  "lastFeedVersion": "v202606282",
+  "lastRefreshedAt": "2026-07-13"
+}

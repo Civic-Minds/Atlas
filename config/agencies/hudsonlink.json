@@ -1,0 +1,19 @@
+{
+  "slug": "hudsonlink",
+  "name": "Hudson Link",
+  "center": [
+    41.73,
+    -73.94
+  ],
+  "region": "New York",
+  "bbox": [
+    41.5,
+    -74.2,
+    41.9,
+    -73.7
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-hudson-link-gtfs-2312.zip?alt=media",
+  "lastFeedExpiry": "20261001",
+  "lastFeedVersion": "UTC: 25-Mar-2026 23:59",
+  "lastRefreshedAt": "2026-07-06"
+}

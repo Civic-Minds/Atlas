@@ -1,0 +1,14 @@
+{
+  "slug": "mtd-champaign",
+  "name": "Champaign-Urbana MTD",
+  "center": [
+    40.11,
+    -88.24
+  ],
+  "feedUrl": "https://developer.mtd.org/gtfs/google_transit.zip",
+  "region": "Illinois",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
+  "lastFeedExpiry": "20260808",
+  "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+  "lastRefreshedAt": "2026-07-06"
+}

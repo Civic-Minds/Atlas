@@ -1,0 +1,20 @@
+{
+  "slug": "bridgeport-gbt",
+  "name": "Greater Bridgeport Transit",
+  "center": [
+    41.18,
+    -73.19
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip",
+  "lastFeedExpiry": "20261227",
+  "lastFeedVersion": "UTC: 17-Jun-2026 15:39",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Connecticut",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-530/latest.zip",
+  "bbox": [
+    41.0979,
+    -73.4351,
+    41.3404,
+    -73.0124
+  ]
+}

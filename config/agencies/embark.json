@@ -1,0 +1,13 @@
+{
+  "slug": "embark",
+  "name": "Embark (Oklahoma City)",
+  "center": [
+    35.47,
+    -97.52
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/mdb-2062-202607030109/mdb-2062-202607030109.zip",
+  "lastFeedExpiry": "20270702",
+  "lastFeedVersion": "01/07/2026-22:30",
+  "region": "Oklahoma",
+  "lastRefreshedAt": "2026-07-06"
+}

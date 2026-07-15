@@ -1,0 +1,21 @@
+{
+  "slug": "vacaville",
+  "name": "City Coach",
+  "center": [
+    38.3568,
+    -121.9708
+  ],
+  "region": "California",
+  "bbox": [
+    38.33,
+    -122.01,
+    38.4,
+    -121.93
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
+  "lastFeedExpiry": "20260630",
+  "lastFeedVersion": "2.2.26",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://citycoach.com/"
+}

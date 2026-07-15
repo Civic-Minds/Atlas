@@ -1,0 +1,20 @@
+{
+  "slug": "edmonton",
+  "name": "Edmonton Transit Service (ETS)",
+  "region": "Alberta",
+  "center": [
+    53.5461,
+    -113.4938
+  ],
+  "bbox": [
+    53.35,
+    -113.88,
+    53.75,
+    -113.15
+  ],
+  "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "260623_1347",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-edmonton-transit-system-gtfs-714.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

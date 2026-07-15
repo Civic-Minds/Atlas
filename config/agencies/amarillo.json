@@ -1,0 +1,20 @@
+{
+  "slug": "amarillo",
+  "name": "Amarillo City Transit",
+  "center": [
+    35.2,
+    -101.85
+  ],
+  "bbox": [
+    35.15,
+    -101.94,
+    35.25,
+    -101.76
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-213/latest.zip",
+  "region": "Texas",
+  "lastFeedExpiry": "20211231",
+  "lastFeedVersion": "1.0",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://amarillo.gov/departments/community-services/transit"
+}

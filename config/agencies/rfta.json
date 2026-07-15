@@ -1,0 +1,13 @@
+{
+  "slug": "rfta",
+  "name": "Roaring Fork Transportation Authority (RFTA)",
+  "center": [
+    39.4,
+    -107.1
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip",
+  "region": "Colorado",
+  "lastFeedExpiry": "20260920",
+  "lastFeedVersion": "S1000163",
+  "lastRefreshedAt": "2026-07-06"
+}

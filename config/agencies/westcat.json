@@ -1,0 +1,20 @@
+{
+  "slug": "westcat",
+  "name": "WestCAT",
+  "center": [
+    38.0027,
+    -122.2636
+  ],
+  "region": "California",
+  "bbox": [
+    37.79,
+    -122.4,
+    38.06,
+    -122.11
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-westcat-gtfs-78.zip?alt=media",
+  "lastFeedExpiry": "20260831",
+  "lastFeedVersion": "UTC: 25-Jun-2026 20:50",
+  "lastRefreshedAt": "2026-07-06"
+}

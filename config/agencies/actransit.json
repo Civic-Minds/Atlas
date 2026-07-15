@@ -1,0 +1,21 @@
+{
+  "slug": "actransit",
+  "name": "Alameda-Contra Costa Transit District (AC Transit)",
+  "center": [
+    37.7688,
+    -122.1937
+  ],
+  "region": "California",
+  "bbox": [
+    37.41,
+    -122.42,
+    38.02,
+    -121.89
+  ],
+  "feedUrl": "https://api.actransit.org/transit/gtfs/download",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-alameda-contra-costa-transit-district-ac-transit-gtfs-1244.zip?alt=media",
+  "lastFeedExpiry": "20240302",
+  "lastFeedVersion": "S1000222",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.actransit.org"
+}

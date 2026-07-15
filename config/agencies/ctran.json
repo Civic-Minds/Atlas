@@ -1,0 +1,20 @@
+{
+  "slug": "ctran",
+  "name": "C-TRAN",
+  "center": [
+    45.6513,
+    -122.5972
+  ],
+  "region": "Washington",
+  "bbox": [
+    45.5,
+    -122.71,
+    45.87,
+    -122.32
+  ],
+  "feedUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-c-tran-gtfs-258.zip?alt=media",
+  "lastFeedExpiry": "20260912",
+  "lastFeedVersion": "20260510-20260912",
+  "lastRefreshedAt": "2026-07-06"
+}

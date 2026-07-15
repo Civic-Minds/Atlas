@@ -1,0 +1,13 @@
+{
+  "slug": "durango-transit",
+  "name": "Durango Transit",
+  "center": [
+    37.27,
+    -107.88
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2290/latest.zip",
+  "lastFeedExpiry": "20261201",
+  "region": "Colorado",
+  "lastFeedVersion": "UTC: 21-May-2026 20:09",
+  "lastRefreshedAt": "2026-07-06"
+}

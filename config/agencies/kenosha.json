@@ -1,0 +1,19 @@
+{
+  "slug": "kenosha",
+  "name": "Kenosha Area Transit",
+  "center": [
+    42.5847,
+    -87.8212
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/kenosha-wi-us/kenosha-wi-us.zip",
+  "lastFeedExpiry": "20240901",
+  "lastFeedVersion": "UTC: 04-Aug-2023 15:47",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "Wisconsin",
+  "bbox": [
+    42.4973,
+    -87.9747,
+    42.6687,
+    -87.7985
+  ]
+}

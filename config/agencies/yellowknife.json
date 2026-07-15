@@ -1,0 +1,20 @@
+{
+  "slug": "yellowknife",
+  "name": "Yellowknife Transit",
+  "center": [
+    62.45,
+    -114.37
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-4708/latest.zip",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "Northwest Territories",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4708/latest.zip",
+  "bbox": [
+    62.4038,
+    -114.4539,
+    62.4952,
+    -114.3161
+  ]
+}

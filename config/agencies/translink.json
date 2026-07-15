@@ -1,0 +1,20 @@
+{
+  "slug": "translink",
+  "name": "TransLink",
+  "region": "British Columbia",
+  "center": [
+    49.2827,
+    -123.1207
+  ],
+  "bbox": [
+    49,
+    -123.5,
+    49.5,
+    -122.2
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-translink-vancouver-gtfs-1222.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-13"
+}

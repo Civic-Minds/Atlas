@@ -1,0 +1,20 @@
+{
+  "slug": "lassen",
+  "name": "Lassen Rural Bus (LRB)",
+  "center": [
+    40.3588,
+    -120.6344
+  ],
+  "region": "California",
+  "bbox": [
+    40.03,
+    -121.34,
+    40.44,
+    -120.1
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-lassen-rural-bus-lrb-gtfs-118.zip?alt=media",
+  "lastFeedExpiry": "20261130",
+  "lastFeedVersion": "UTC: 22-May-2026 15:35",
+  "lastRefreshedAt": "2026-07-06"
+}

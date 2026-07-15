@@ -1,0 +1,20 @@
+{
+  "slug": "radford",
+  "name": "Radford Transit",
+  "center": [
+    37.13,
+    -80.58
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip",
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 08-Jul-2026 17:43",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Virginia",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2415/latest.zip",
+  "bbox": [
+    37.0857,
+    -80.7163,
+    37.252,
+    -80.3802
+  ]
+}

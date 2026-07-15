@@ -1,0 +1,14 @@
+{
+  "slug": "cats-baton",
+  "name": "Capital Area Transit System (Baton Rouge)",
+  "center": [
+    30.45,
+    -91.19
+  ],
+  "feedUrl": "https://cats.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2065/latest.zip",
+  "region": "Louisiana",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260619",
+  "lastRefreshedAt": "2026-07-06"
+}

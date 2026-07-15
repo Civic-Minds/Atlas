@@ -1,0 +1,21 @@
+{
+  "slug": "exo-lrrs",
+  "name": "exo (Le Richelain–Roussillon)",
+  "region": "Quebec",
+  "center": [
+    45.4086,
+    -73.5026
+  ],
+  "bbox": [
+    45.01,
+    -74,
+    45.81,
+    -73
+  ],
+  "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

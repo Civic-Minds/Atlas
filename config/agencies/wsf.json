@@ -1,0 +1,19 @@
+{
+  "slug": "wsf",
+  "name": "Washington State Ferries",
+  "center": [
+    47.9248,
+    -122.5928
+  ],
+  "region": "Washington",
+  "bbox": [
+    47.31,
+    -123.01,
+    48.6,
+    -122.3
+  ],
+  "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": "PDT: 05-Jun-2026 11:08",
+  "lastRefreshedAt": "2026-07-06"
+}

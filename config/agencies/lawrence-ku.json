@@ -1,0 +1,20 @@
+{
+  "slug": "lawrence-ku",
+  "name": "Lawrence Transit / KU on Wheels",
+  "center": [
+    38.97,
+    -95.24
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
+  "lastFeedExpiry": "20260811",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "Kansas",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
+  "bbox": [
+    38.9044,
+    -95.3526,
+    39.0234,
+    -95.1615
+  ]
+}

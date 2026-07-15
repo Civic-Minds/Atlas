@@ -1,0 +1,14 @@
+{
+  "slug": "vvta",
+  "name": "Victor Valley Transit Authority (VVTA)",
+  "center": [
+    34.54,
+    -117.29
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-99/mdb-99-202410070003/mdb-99-202410070003.zip",
+  "lastFeedExpiry": "20250329",
+  "lastFeedVersion": "2024.09",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://vvta.org/"
+}

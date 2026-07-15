@@ -1,0 +1,20 @@
+{
+  "slug": "trimet",
+  "name": "TriMet",
+  "center": [
+    45.494,
+    -122.6593
+  ],
+  "region": "Oregon",
+  "bbox": [
+    45.29,
+    -123.12,
+    45.64,
+    -122.33
+  ],
+  "feedUrl": "http://developer.trimet.org/schedule/gtfs.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-trimet-portland-streetcar-gtfs-247.zip?alt=media",
+  "lastFeedExpiry": "20261128",
+  "lastFeedVersion": "20260531-20260624-2100",
+  "lastRefreshedAt": "2026-07-06"
+}

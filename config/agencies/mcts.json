@@ -1,0 +1,13 @@
+{
+  "slug": "mcts",
+  "name": "Milwaukee County Transit System (MCTS)",
+  "center": [
+    43.04,
+    -87.91
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "region": "Wisconsin",
+  "lastRefreshedAt": "2026-07-13"
+}

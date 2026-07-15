@@ -1,0 +1,13 @@
+{
+  "slug": "norwalktransit",
+  "name": "Norwalk Transit System",
+  "center": [
+    33.9,
+    -118.08
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-881/tld-881-202511280046/tld-881-202511280046.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20251126",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

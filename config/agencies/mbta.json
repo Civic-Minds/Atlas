@@ -1,0 +1,15 @@
+{
+  "slug": "mbta",
+  "name": "Massachusetts Bay Transportation Authority",
+  "region": "Massachusetts",
+  "center": [
+    42.361,
+    -71.057
+  ],
+  "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "Summer 2026, 2026-06-26T19:57:52+00:00, version D",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

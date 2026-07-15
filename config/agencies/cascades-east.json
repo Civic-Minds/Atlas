@@ -1,0 +1,20 @@
+{
+  "slug": "cascades-east",
+  "name": "Cascades East Transit",
+  "region": "Oregon",
+  "center": [
+    44.06,
+    -121.32
+  ],
+  "bbox": [
+    43.62,
+    -121.729,
+    45.023,
+    -120.792
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-170/tld-170-202607070151/tld-170-202607070151.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-170/latest.zip",
+  "lastFeedExpiry": "20260805",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-06"
+}

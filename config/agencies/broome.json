@@ -1,0 +1,15 @@
+{
+  "slug": "broome",
+  "name": "Broome County Transit",
+  "region": "New York",
+  "center": [
+    42.097,
+    -75.917
+  ],
+  "feedUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260709",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-broome-county-transit-bc-transit-gtfs-239.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "https://gobroomecounty.com/transit"
+}

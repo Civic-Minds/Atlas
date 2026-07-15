@@ -1,0 +1,20 @@
+{
+  "slug": "sun-metro",
+  "name": "Sun Metro (El Paso)",
+  "center": [
+    31.77,
+    -106.42
+  ],
+  "bbox": [
+    31.58,
+    -106.62,
+    31.96,
+    -106.22
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-148/latest.zip",
+  "region": "Texas",
+  "lastFeedExpiry": "20260613",
+  "lastFeedVersion": "November 16, 2025_20260409",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.sunmetro.net"
+}

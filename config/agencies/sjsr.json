@@ -1,0 +1,19 @@
+{
+  "slug": "sjsr",
+  "name": "Saint-Jean-sur-Richelieu",
+  "region": "Quebec",
+  "center": [
+    45.31,
+    -73.27
+  ],
+  "bbox": [
+    45.11,
+    -73.47,
+    45.51,
+    -73.07
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "1778686364253",
+  "lastRefreshedAt": "2026-07-06"
+}

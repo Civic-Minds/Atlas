@@ -1,0 +1,23 @@
+{
+  "slug": "stratford",
+  "name": "Stratford Transit",
+  "region": "Ontario",
+  "center": [
+    43.3688,
+    -80.9818
+  ],
+  "bbox": [
+    43.17,
+    -81.23,
+    43.57,
+    -80.73
+  ],
+  "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
+  "lastFeedExpiry": "20270506",
+  "lastFeedVersion": "1/20260622 22:00:00/20260623 00:00:00",
+  "excludeRouteShortNames": [
+    "LOS"
+  ],
+  "overrideNote": "The \"Lights On Stratford\" shuttle is a seasonal hop-on hop-off route that only runs mid-December to mid-January, but it was showing up on the map year-round. We've hidden it until the transit agency fixes their schedule data.",
+  "lastRefreshedAt": "2026-07-06"
+}

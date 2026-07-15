@@ -1,0 +1,20 @@
+{
+  "slug": "mendocino",
+  "name": "Mendocino Transit Authority",
+  "center": [
+    39.1417,
+    -123.3321
+  ],
+  "region": "California",
+  "bbox": [
+    38.32,
+    -123.82,
+    39.45,
+    -122.71
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-mendocino-transit-authority-gtfs-69.zip?alt=media",
+  "lastFeedExpiry": "20260831",
+  "lastFeedVersion": "UTC: 16-Jun-2026 17:58",
+  "lastRefreshedAt": "2026-07-06"
+}

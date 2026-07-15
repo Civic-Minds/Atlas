@@ -1,0 +1,20 @@
+{
+  "slug": "dubuque",
+  "name": "The Jule (Dubuque)",
+  "center": [
+    42.5,
+    -90.69
+  ],
+  "feedUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
+  "lastFeedExpiry": "20270930",
+  "lastFeedVersion": "2026_05_06",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Iowa",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2083/latest.zip",
+  "bbox": [
+    42.4555,
+    -90.7956,
+    42.5914,
+    -90.6247
+  ]
+}

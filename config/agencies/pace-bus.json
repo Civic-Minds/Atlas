@@ -1,0 +1,13 @@
+{
+  "slug": "pace-bus",
+  "name": "Pace Bus",
+  "center": [
+    41.9,
+    -87.8
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2347/mdb-2347-202605290102/mdb-2347-202605290102.zip",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "20260531",
+  "region": "Illinois",
+  "lastRefreshedAt": "2026-07-06"
+}

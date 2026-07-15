@@ -1,0 +1,14 @@
+{
+  "slug": "nanaimo",
+  "name": "BC Transit (Nanaimo)",
+  "region": "British Columbia",
+  "center": [
+    49.165,
+    -123.936
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-nanaimo-gtfs-2473.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

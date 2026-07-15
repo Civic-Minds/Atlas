@@ -1,0 +1,13 @@
+{
+  "slug": "get",
+  "name": "Golden Empire Transit District (GET)",
+  "center": [
+    35.37,
+    -119.02
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-46/mdb-46-202606130139/mdb-46-202606130139.zip",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260612",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "saint-hyacinthe",
+  "name": "Ville de Saint-Hyacinthe",
+  "region": "Quebec",
+  "center": [
+    45.63,
+    -72.95
+  ],
+  "bbox": [
+    45.43,
+    -73.15,
+    45.83,
+    -72.75
+  ],
+  "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

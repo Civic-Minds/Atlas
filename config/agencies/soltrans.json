@@ -1,0 +1,20 @@
+{
+  "slug": "soltrans",
+  "name": "SolTrans",
+  "center": [
+    38.1087,
+    -122.2233
+  ],
+  "region": "California",
+  "bbox": [
+    37.8,
+    -122.4,
+    38.53,
+    -121.75
+  ],
+  "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-soltrans-gtfs-80.zip?alt=media",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260612",
+  "lastRefreshedAt": "2026-07-06"
+}

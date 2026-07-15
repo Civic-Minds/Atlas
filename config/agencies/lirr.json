@@ -1,0 +1,19 @@
+{
+  "slug": "lirr",
+  "name": "MTA Long Island Rail Road",
+  "region": "New York",
+  "center": [
+    40.75,
+    -73.6
+  ],
+  "bbox": [
+    40.5891,
+    -73.9951,
+    41.1,
+    -71.9532
+  ],
+  "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": "GO201_26",
+  "lastRefreshedAt": "2026-07-13"
+}

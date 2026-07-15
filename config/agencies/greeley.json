@@ -1,0 +1,20 @@
+{
+  "slug": "greeley",
+  "name": "Greeley-Evans Transit (GET)",
+  "center": [
+    40.42,
+    -104.71
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/greeleyevans-co-us/greeleyevans-co-us.zip",
+  "lastFeedExpiry": "20260831",
+  "lastFeedVersion": "UTC: 23-Feb-2026 11:20",
+  "lastRefreshedAt": "2026-07-15",
+  "region": "Colorado",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2076/latest.zip",
+  "bbox": [
+    40.356,
+    -105.1056,
+    40.6015,
+    -104.6573
+  ]
+}

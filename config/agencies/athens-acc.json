@@ -1,0 +1,20 @@
+{
+  "slug": "athens-acc",
+  "name": "Athens Clarke County Transit",
+  "center": [
+    33.95,
+    -83.38
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
+  "lastFeedExpiry": "20261227",
+  "lastFeedVersion": "20260529",
+  "lastRefreshedAt": "2026-07-09",
+  "region": "Georgia",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4777/latest.zip",
+  "bbox": [
+    33.891,
+    -83.4955,
+    34.0491,
+    -83.2828
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "communitytransit",
+  "name": "Community Transit",
+  "center": [
+    47.9,
+    -122.1
+  ],
+  "region": "Washington",
+  "bbox": [
+    47.7,
+    -122.5,
+    48.2,
+    -121.7
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-community-transit-ct-gtfs-287.zip?alt=media",
+  "lastFeedExpiry": "20260828",
+  "lastFeedVersion": "20260522-20260828",
+  "lastRefreshedAt": "2026-07-06"
+}

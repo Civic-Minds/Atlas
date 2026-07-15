@@ -1,0 +1,19 @@
+{
+  "slug": "sherbrooke",
+  "name": "Société de transport de Sherbrooke",
+  "center": [
+    45.398,
+    -71.9181
+  ],
+  "region": "Quebec",
+  "bbox": [
+    45.31,
+    -72.08,
+    45.48,
+    -71.82
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-sherbrooke-gtfs-1996.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

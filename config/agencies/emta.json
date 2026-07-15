@@ -1,0 +1,14 @@
+{
+  "slug": "emta",
+  "name": "Erie Metropolitan Transit Authority",
+  "region": "Pennsylvania",
+  "center": [
+    42.129,
+    -80.085
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip",
+  "lastFeedExpiry": "20231101",
+  "lastFeedVersion": "UTC: 22-Jun-2023 22:03",
+  "lastRefreshedAt": "2026-07-13",
+  "websiteUrl": "http://www.ride-the-e.com/"
+}

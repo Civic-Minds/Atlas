@@ -1,0 +1,20 @@
+{
+  "slug": "cherriots",
+  "name": "Cherriots",
+  "center": [
+    44.9377,
+    -123.0187
+  ],
+  "region": "Oregon",
+  "bbox": [
+    44.75,
+    -123.32,
+    45.31,
+    -122.42
+  ],
+  "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

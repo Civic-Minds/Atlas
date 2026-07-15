@@ -1,0 +1,20 @@
+{
+  "slug": "texarkana",
+  "name": "Texarkana T-Line",
+  "region": "Texas",
+  "center": [
+    33.44,
+    -94.07
+  ],
+  "bbox": [
+    33.347,
+    -94.181,
+    33.541,
+    -93.949
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
+  "lastFeedExpiry": "20280131",
+  "lastFeedVersion": "02-2025",
+  "lastRefreshedAt": "2026-07-06"
+}

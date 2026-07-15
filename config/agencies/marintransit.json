@@ -1,0 +1,20 @@
+{
+  "slug": "marintransit",
+  "name": "Marin Transit",
+  "center": [
+    37.9841,
+    -122.545
+  ],
+  "region": "California",
+  "bbox": [
+    37.86,
+    -122.85,
+    38.12,
+    -122.46
+  ],
+  "feedUrl": "https://marintransit.gov/data/google_transit.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-marin-transit-gtfs-2937.zip?alt=media",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "UTC: 04-Feb-2026 00:08",
+  "lastRefreshedAt": "2026-07-06"
+}

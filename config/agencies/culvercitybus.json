@@ -1,0 +1,13 @@
+{
+  "slug": "culvercitybus",
+  "name": "Culver City Bus",
+  "center": [
+    34,
+    -118.4
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-38/mdb-38-202605300008/mdb-38-202605300008.zip",
+  "lastFeedExpiry": "20260712",
+  "lastFeedVersion": "S1000250_2026.01.09",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13"
+}

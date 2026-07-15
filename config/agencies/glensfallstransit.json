@@ -1,0 +1,19 @@
+{
+  "slug": "glensfallstransit",
+  "name": "Greater Glens Falls Transit",
+  "center": [
+    43.31,
+    -73.64
+  ],
+  "region": "New York",
+  "bbox": [
+    43.1,
+    -73.9,
+    43.6,
+    -73.4
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-07-13"
+}

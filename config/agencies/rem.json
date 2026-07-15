@@ -1,0 +1,23 @@
+{
+  "slug": "rem",
+  "name": "REM",
+  "searchAliases": [
+    "Montreal"
+  ],
+  "region": "Quebec",
+  "center": [
+    45.5,
+    -73.57
+  ],
+  "bbox": [
+    45.1,
+    -74.07,
+    45.9,
+    -73.07
+  ],
+  "feedUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260520",
+  "gtfsFares": true,
+  "lastRefreshedAt": "2026-07-06"
+}

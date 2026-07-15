@@ -1,0 +1,23 @@
+{
+  "slug": "ttc",
+  "name": "Toronto Transit Commission",
+  "searchAliases": [
+    "Toronto"
+  ],
+  "region": "Ontario",
+  "center": [
+    43.6532,
+    -79.3832
+  ],
+  "bbox": [
+    43.25,
+    -79.88,
+    44.05,
+    -78.88
+  ],
+  "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
+  "lastRefreshedAt": "2026-07-13"
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "smat",
+  "name": "Santa Maria Area Transit",
+  "center": [
+    34.95,
+    -120.44
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2272/mdb-2272-202607030002/mdb-2272-202607030002.zip",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-13"
+}

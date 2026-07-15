@@ -1,0 +1,20 @@
+{
+  "slug": "uga",
+  "name": "UGA Campus Transit",
+  "center": [
+    33.95,
+    -83.37
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
+  "lastFeedExpiry": "20260811",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-07-13",
+  "region": "Georgia",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
+  "bbox": [
+    33.8745,
+    -83.4243,
+    33.9845,
+    -83.3203
+  ]
+}

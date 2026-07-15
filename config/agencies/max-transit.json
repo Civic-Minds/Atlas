@@ -1,0 +1,19 @@
+{
+  "slug": "max-transit",
+  "name": "MAX Transit (Birmingham)",
+  "center": [
+    33.51,
+    -86.84
+  ],
+  "bbox": [
+    33.362,
+    -87.01,
+    33.653,
+    -86.677
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2263/latest.zip",
+  "region": "Alabama",
+  "lastFeedExpiry": "20350201",
+  "lastFeedVersion": "20240531",
+  "lastRefreshedAt": "2026-07-06"
+}

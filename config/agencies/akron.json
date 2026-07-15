@@ -1,0 +1,14 @@
+{
+  "slug": "akron",
+  "name": "Akron Metro Regional Transit Authority",
+  "region": "Ohio",
+  "center": [
+    41.081,
+    -81.519
+  ],
+  "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "Updated: Jun 29, 2026, 10:39 AM",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-akron-metro-regional-transit-authority-metro-gtfs-411.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

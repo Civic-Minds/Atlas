@@ -1,0 +1,19 @@
+{
+  "slug": "citylink-peoria",
+  "name": "CityLink (Peoria, IL)",
+  "center": [
+    40.694,
+    -89.589
+  ],
+  "bbox": [
+    40.4,
+    -90,
+    40.9,
+    -89.1
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2208/latest.zip",
+  "region": "Illinois",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "20260602",
+  "lastRefreshedAt": "2026-07-06"
+}

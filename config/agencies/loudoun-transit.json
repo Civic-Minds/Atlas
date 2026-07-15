@@ -1,0 +1,13 @@
+{
+  "slug": "loudoun-transit",
+  "name": "Loudoun County Transit",
+  "center": [
+    39.08,
+    -77.65
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1053/mdb-1053-202604210103/mdb-1053-202604210103.zip",
+  "lastFeedExpiry": "20260926",
+  "lastFeedVersion": "S1000079",
+  "region": "Virginia",
+  "lastRefreshedAt": "2026-07-06"
+}

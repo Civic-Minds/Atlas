@@ -1,0 +1,13 @@
+{
+  "slug": "nctd",
+  "name": "North County Transit District (NCTD)",
+  "center": [
+    33.2,
+    -117.39
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": "Version_20250205",
+  "region": "California",
+  "lastRefreshedAt": "2026-07-06"
+}

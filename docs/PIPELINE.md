@@ -84,14 +84,18 @@ To manually add an agency to Atlas:
    ```bash
    npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]"
    ```
-3. Edit `public/data/index.json` to add the metadata:
+3. Add or edit the agency source file in `config/agencies/<slug>.json`:
    - Configure `region`, `feedUrl`, `mdbFeedUrl`, and `bbox` (bounding box).
    - Note: Artifact URLs are derived from the slug at runtime; do not hardcode them.
-4. Run the refresh script to pull supplemental feeds and setup history config:
+4. Generate the runtime index:
+   ```bash
+   npm run build:agency-index
+   ```
+5. Run the refresh script to pull supplemental feeds and setup history config:
    ```bash
    npm run refresh -- <slug> --force
    ```
-5. Commit the updated `public/data/index.json` file.
+6. Commit the source agency file and regenerated `public/data/index.json`.
 
 ### Protocol B: Querying the Mobility Database
 To search for an agency in the Mobility Database catalog:
@@ -117,7 +121,7 @@ This script identifies uncovered feeds, ranks them by metropolitan population, a
 Because rebuilding PMTiles is resource-intensive, process new agencies in batches:
 1. Identify candidates using **Protocol C**.
 2. Run `npm run process` for each candidate.
-3. Update `public/data/index.json` with the new entries.
+3. Add the new entries under `config/agencies/`, then run `npm run build:agency-index`.
 4. Refresh all new slugs in a single command:
    ```bash
    npm run refresh -- slug1 slug2 slug3 --force

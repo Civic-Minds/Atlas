@@ -1,0 +1,19 @@
+{
+  "slug": "wata",
+  "name": "Williamsburg Area Transit Authority",
+  "center": [
+    37.3,
+    -76.67
+  ],
+  "bbox": [
+    37.19,
+    -76.82,
+    37.41,
+    -76.52
+  ],
+  "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
+  "region": "Virginia",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-13"
+}

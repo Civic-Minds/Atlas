@@ -1,0 +1,19 @@
+{
+  "slug": "nyct-bus-si",
+  "name": "MTA NYCT Bus (Staten Island)",
+  "center": [
+    40.634,
+    -74.11
+  ],
+  "bbox": [
+    40.503,
+    -74.252,
+    40.766,
+    -73.969
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
+  "region": "New York",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "gtfs_si_20260611T155316Z",
+  "lastRefreshedAt": "2026-07-06"
+}

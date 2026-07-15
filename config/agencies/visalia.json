@@ -1,0 +1,14 @@
+{
+  "slug": "visalia",
+  "name": "Visalia Transit",
+  "region": "California",
+  "center": [
+    36.33,
+    -119.29
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-90091/ntd-90091-202501060017/ntd-90091-202501060017.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-90091/ntd-90091-202501060017/ntd-90091-202501060017.zip",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "20250102",
+  "lastRefreshedAt": "2026-07-06"
+}

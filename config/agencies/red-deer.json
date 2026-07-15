@@ -1,0 +1,13 @@
+{
+  "slug": "red-deer",
+  "name": "Red Deer Transit",
+  "region": "Alberta",
+  "center": [
+    52.268,
+    -113.811
+  ],
+  "feedUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "S1000149",
+  "lastRefreshedAt": "2026-07-06"
+}

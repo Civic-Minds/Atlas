@@ -1,0 +1,20 @@
+{
+  "slug": "stl",
+  "name": "STL",
+  "region": "Quebec",
+  "center": [
+    45.61,
+    -73.71
+  ],
+  "bbox": [
+    45.21,
+    -74.21,
+    46.01,
+    -73.21
+  ],
+  "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
+  "lastFeedExpiry": "20260821",
+  "lastFeedVersion": "20260629044624",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media",
+  "lastRefreshedAt": "2026-07-06"
+}

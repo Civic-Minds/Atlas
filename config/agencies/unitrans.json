@@ -1,0 +1,20 @@
+{
+  "slug": "unitrans",
+  "name": "Unitrans",
+  "center": [
+    38.5529,
+    -121.7393
+  ],
+  "region": "California",
+  "bbox": [
+    38.53,
+    -121.79,
+    38.69,
+    -121.59
+  ],
+  "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-unitrans-gtfs-82.zip?alt=media",
+  "lastFeedExpiry": "20260922",
+  "lastFeedVersion": "SS1-SS2_2026_V1",
+  "lastRefreshedAt": "2026-07-06"
+}

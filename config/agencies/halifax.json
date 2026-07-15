@@ -1,0 +1,19 @@
+{
+  "slug": "halifax",
+  "name": "Halifax Transit",
+  "region": "Nova Scotia",
+  "center": [
+    44.6488,
+    -63.5752
+  ],
+  "bbox": [
+    44.52,
+    -63.9,
+    44.9,
+    -63.27
+  ],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-nova-scotia-halifax-transit-gtfs-734.zip?alt=media",
+  "lastFeedExpiry": "20260823",
+  "lastFeedVersion": "2026_05_May_20260428",
+  "lastRefreshedAt": "2026-07-06"
+}

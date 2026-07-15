@@ -1,0 +1,19 @@
+{
+  "slug": "dash",
+  "name": "DASH (Alexandria)",
+  "region": "Virginia",
+  "center": [
+    38.82,
+    -77.05
+  ],
+  "bbox": [
+    38.7977,
+    -77.1433,
+    38.8697,
+    -77.0406
+  ],
+  "feedUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
+  "lastFeedExpiry": "20260831",
+  "lastFeedVersion": "S1000234",
+  "lastRefreshedAt": "2026-07-06"
+}

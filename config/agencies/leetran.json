@@ -1,0 +1,19 @@
+{
+  "slug": "leetran",
+  "name": "LeeTran (Fort Myers)",
+  "center": [
+    26.64,
+    -81.87
+  ],
+  "bbox": [
+    26.3,
+    -82.2,
+    27,
+    -81.45
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-324/latest.zip",
+  "region": "Florida",
+  "lastFeedExpiry": "20261118",
+  "lastFeedVersion": "S1000223",
+  "lastRefreshedAt": "2026-07-06"
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "tcat",
+  "name": "Tompkins Consolidated Area Transit",
+  "region": "New York",
+  "center": [
+    42.443,
+    -76.501
+  ],
+  "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
+  "lastFeedExpiry": "20260815",
+  "lastFeedVersion": "20260625",
+  "lastRefreshedAt": "2026-07-06"
+}

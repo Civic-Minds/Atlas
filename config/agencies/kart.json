@@ -1,0 +1,13 @@
+{
+  "slug": "kart",
+  "name": "Kings Area Rural Transit",
+  "center": [
+    36.33,
+    -119.95
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
+  "region": "California",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260704",
+  "lastRefreshedAt": "2026-07-06"
+}
