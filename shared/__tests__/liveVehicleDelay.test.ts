@@ -7,6 +7,7 @@ import {
   scheduledDelaySec,
   serviceDayStartEpoch,
 } from '../liveVehicleDelay';
+import { vehicleHeadwayGapMin } from '../liveHeadway';
 
 describe('liveVehicleDelay', () => {
   it('parses GTFS times past midnight', () => {
@@ -57,5 +58,18 @@ describe('liveVehicleDelay', () => {
     expect(start).toBeLessThan(1_705_324_800);
     expect(1_705_324_800 - start).toBeGreaterThan(0);
     expect(1_705_324_800 - start).toBeLessThan(24 * 3600);
+  });
+
+  it('computes the gap to the next vehicle on a route shape', () => {
+    const shape = { coordinates: [[0, 0], [0.01, 0]] as [number, number][] };
+    const gap = vehicleHeadwayGapMin(
+      { id: 'a', lat: 0, lon: 0, speedKmh: 30, directionId: 0 },
+      [
+        { id: 'a', lat: 0, lon: 0, speedKmh: 30, directionId: 0 },
+        { id: 'b', lat: 0, lon: 0.007, speedKmh: 30, directionId: 0 },
+      ],
+      shape,
+    );
+    expect(gap).toBeCloseTo(2.2, 1);
   });
 });

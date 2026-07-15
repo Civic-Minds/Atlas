@@ -44,6 +44,7 @@ const ELIGIBLE_SLUGS = new Set(
 );
 
 function delayLabel(v: LiveVehicle): string {
+  if (v.statusLabel) return v.statusLabel;
   if (v.delayMin === null) return 'No data';
   if (v.delayMin <= -1.5) return `${Math.round(Math.abs(v.delayMin))}m early`;
   if (v.delayMin >= 5.5) return `${Math.round(v.delayMin)}m late`;

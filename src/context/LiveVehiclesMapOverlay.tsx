@@ -15,6 +15,8 @@ export interface LiveVehicle {
   directionId: number | null;
   vehicleLabel: string | null;
   status: 'no_data' | 'early' | 'late' | 'on_time';
+  statusLabel?: string | null;
+  headwayGapMin?: number | null;
   agencySlug: string; // tagged on frontend after fetch
 }
 

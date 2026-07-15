@@ -1,4 +1,5 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
+import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_TIMEZONES } from '../shared/livePollingConfig.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
@@ -8,6 +9,7 @@ import {
   serviceDayStartEpoch,
 } from '../shared/liveVehicleDelay.js';
 import { isRateLimited } from '../shared/rateLimit.js';
+import { vehicleHeadwayGapMin } from '../shared/liveHeadway.js';
 
 export const config = {
   maxDuration: 60,
@@ -62,6 +64,61 @@ async function fetchProtoFeed(
   }
 }
 
+function liveArchiveClient(): S3Client | null {
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+  if (!accountId || !accessKeyId || !secretAccessKey) return null;
+  return new S3Client({
+    region: 'auto',
+    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    credentials: { accessKeyId, secretAccessKey },
+  });
+}
+
+async function fetchRecentTtcArchive(): Promise<any[] | null> {
+  const client = liveArchiveClient();
+  if (!client) return null;
+  const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto' }).format(new Date());
+  try {
+    const listed = await client.send(new ListObjectsV2Command({
+      Bucket: process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live',
+      Prefix: `positions/ttc/${date}/`,
+    }));
+    const keys = (listed.Contents ?? []).filter(o => o.Key).sort((a, b) => String(b.Key).localeCompare(String(a.Key))).slice(0, 3);
+    const snapshots = await Promise.all(keys.map(async ({ Key }) => {
+      const object = await client.send(new GetObjectCommand({
+        Bucket: process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live',
+        Key: Key!,
+      }));
+      return JSON.parse(await object.Body!.transformToString());
+    }));
+    return snapshots.flatMap(snapshot => snapshot.vehicles ?? []);
+  } catch {
+    return null;
+  }
+}
+
+async function fetchTtcShapes(): Promise<Map<string, GeoJSON.Feature>> {
+  const shapes = new Map<string, GeoJSON.Feature>();
+  try {
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/ttc.json`);
+    if (!res.ok) return shapes;
+    const data = await res.json() as { features?: GeoJSON.Feature[] };
+    for (const feature of data.features ?? []) {
+      const p = feature.properties as Record<string, unknown> | null;
+      if (!p?.routeShortName || feature.geometry?.type !== 'LineString') continue;
+      const key = `${p.routeShortName}::${p.directionId ?? 0}`;
+      const existing = shapes.get(key);
+      const length = feature.geometry.coordinates.length;
+      if (!existing || length > (existing.geometry as GeoJSON.LineString).coordinates.length) shapes.set(key, feature);
+    }
+  } catch {
+    // Headway status is optional; live positions still render if shapes are unavailable.
+  }
+  return shapes;
+}
+
 export default async function handler(req: Request) {
   const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) {
@@ -103,7 +160,7 @@ export default async function handler(req: Request) {
 
   try {
     // Fetch positions, trip updates, and static trips lookup in parallel
-    const [positionsFeed, updatesFeed, tripsLookup, liveSidecar] = await Promise.all([
+    const [positionsFeed, updatesFeed, tripsLookup, liveSidecar, archivedPositions, ttcShapes] = await Promise.all([
       fetchProtoFeed(vehiclePositionsUrl, fetchOpts),
       fetchProtoFeed(tripUpdatesUrl, fetchOpts),
       fetch(`${R2_PUBLIC_URL}/atlas/${agencySlug}-trips.json`)
@@ -112,6 +169,8 @@ export default async function handler(req: Request) {
       fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${encodeURIComponent(agencySlug)}.json`)
         .then(r => r.ok ? r.json() as Promise<Record<string, { tripStopTimes?: Record<string, Record<string, number>> }>> : null)
         .catch(() => null),
+      agencySlug === 'ttc' ? fetchRecentTtcArchive() : Promise.resolve(null),
+      agencySlug === 'ttc' ? fetchTtcShapes() : Promise.resolve(new Map<string, GeoJSON.Feature>()),
     ]);
 
     if (!positionsFeed) {
@@ -236,6 +295,21 @@ export default async function handler(req: Request) {
 
     // Compile active vehicles list
     const vehicles: any[] = [];
+    const currentPositionPeers = ((positionsFeed.entity ?? []) as any[]).flatMap(e => {
+      const v = e.vehicle;
+      const routeId = v?.trip?.routeId;
+      const lat = v?.position?.latitude;
+      const lon = v?.position?.longitude;
+      if (!routeId || lat == null || lon == null || !routeIdToShortName.has(routeId)) return [];
+      return [{
+        id: v.vehicle?.id || v.trip?.tripId || `${lat}-${lon}`,
+        routeId,
+        lat: Number(lat),
+        lon: Number(lon),
+        speedKmh: v.position?.speed != null ? Number(v.position.speed) * 3.6 : null,
+        directionId: v.trip?.directionId != null ? Number(v.trip.directionId) : null,
+      }];
+    });
     if (positionsFeed.entity) {
       for (const e of (positionsFeed.entity as any[])) {
         const vp = e.vehicle;
@@ -276,6 +350,36 @@ export default async function handler(req: Request) {
         const directionId = rtDirectionId ?? (staticTrip ? staticTrip.d : null);
 
         let status = 'no_data';
+        let statusLabel: string | null = null;
+        let headwayGapMin: number | null = null;
+        if (agencySlug === 'ttc') {
+          const shapeFeature = ttcShapes.get(`${routeShortName}::${directionId ?? 0}`)
+            ?? [...ttcShapes.entries()].find(([key]) => key.startsWith(`${routeShortName}::`))?.[1];
+          const shape = shapeFeature?.geometry?.type === 'LineString'
+            ? { coordinates: shapeFeature.geometry.coordinates as [number, number][] }
+            : null;
+          if (shape) {
+            const peers = currentPositionPeers
+              .filter(v => v.routeId === routeId)
+              .map(v => ({ id: v.id, lat: v.lat, lon: v.lon, speedKmh: v.speedKmh, directionId: v.directionId }));
+            // Include the latest archived positions as a short-lived fallback when a
+            // vehicle is absent from the current feed during a feed refresh.
+            for (const archived of archivedPositions ?? []) {
+              if (archived.r !== routeId || currentPositionPeers.some(v => v.id === archived.id)) continue;
+              peers.push({ id: archived.id, lat: archived.lat, lon: archived.lon, speedKmh: archived.spd, directionId: null });
+            }
+            headwayGapMin = vehicleHeadwayGapMin(
+              { id: vp.vehicle?.id || tripId || `${lat}-${lon}`, lat: Number(lat), lon: Number(lon), speedKmh: vp.position?.speed != null ? Number(vp.position.speed) * 3.6 : null, directionId },
+              peers,
+              shape,
+            );
+            if (headwayGapMin != null) {
+              statusLabel = `${Math.round(headwayGapMin)}m gap`;
+              const scheduled = configs.find(c => c.displayRouteShortName === routeShortName)?.scheduledHeadwayMin ?? 10;
+              delayMin = Math.round((headwayGapMin - scheduled) * 10) / 10;
+            }
+          }
+        }
         if (delayMin != null) {
           if (delayMin <= -1.5) status = 'early';
           else if (delayMin >= 5.5) status = 'late';
@@ -298,6 +402,8 @@ export default async function handler(req: Request) {
           directionId,
           vehicleLabel: vp.vehicle?.label ?? null,
           status,
+          statusLabel,
+          headwayGapMin,
         });
       }
     }
