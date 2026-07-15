@@ -183,10 +183,19 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
             )
           : sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
-        const showTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
+        const showTrunkSparkline = !hoveredBranch && !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
         const merged = showTrunkSparkline
           ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS)
           : sparklineHeadwayByHour(sparklineDirs, HOURS);
+        const stackedByHour = showTrunkSparkline
+          ? Object.fromEntries(HOURS.map(h => [h, primaryMultiBranch!.realTier
+              .map((branch, i) => ({
+                label: branch.headsign ?? `Branch ${i + 1}`,
+                headway: (branch as ShapeProperties & { headwayByHour?: Record<number, number | null> }).headwayByHour?.[h] ?? null,
+                color: ['#2563eb', '#db2777', '#059669', '#d97706'][i % 4],
+              }))
+              .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)]))
+          : undefined;
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (
@@ -196,7 +205,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 Shared section
               </p>
             )}
-            <HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
+            <HeadwaySparkline byHour={merged} stackedByHour={stackedByHour} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
           </>
         );
       })()}

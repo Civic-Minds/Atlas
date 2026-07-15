@@ -31,12 +31,13 @@ const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = (() => {
 
 interface HourlySparklineProps {
   byHour: HeadwayByHour;
+  stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
   period?: string;
   onPeriodChange?: (period: string) => void;
   onPeriodHover?: (period: string | null) => void;
 }
 
-export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover }: HourlySparklineProps) {
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredTooltip, setHoveredTooltip] = useState<{ hour: number; x: number } | null>(null);
 
@@ -131,6 +132,8 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
               : true;
             const inHovered = hoveredPeriod ? HOUR_TO_PERIOD[h] === hoveredPeriod : false;
             const isTooltipHover = hoveredTooltip?.hour === h;
+            const segments = stackedByHour?.[h] ?? [];
+            const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
             // Hovered-but-inactive bars show their tier color at reduced opacity as a preview
             const barColor = hasValue
               ? (inActivePeriod || inHovered ? headwayToTierColor(hw) : 'var(--border-primary)')
@@ -143,10 +146,21 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
               <div key={h} className="flex-1 min-w-0 flex flex-col items-center">
                 <div style={{ height: H }} className="flex items-end justify-center w-full">
                   {hasValue && (
-                    <div
-                      style={{ height: barH, background: barColor }}
-                      className={`w-[7px] rounded-sm transition-[background,opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}
-                    />
+                    segments.length > 0 && segmentTotalFreq > 0 ? (
+                      <div className={`w-[7px] flex flex-col-reverse overflow-hidden rounded-sm transition-[opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}>
+                        {segments.map(segment => (
+                          <div
+                            key={segment.label}
+                            style={{ height: Math.max(2, barH * ((1 / segment.headway) / segmentTotalFreq)), background: segment.color }}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div
+                        style={{ height: barH, background: barColor }}
+                        className={`w-[7px] rounded-sm transition-[background,opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}
+                      />
+                    )
                   )}
                 </div>
               </div>
@@ -158,6 +172,7 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
         {hoveredTooltip && (() => {
           const hw = byHour[hoveredTooltip.hour];
           if (hw == null) return null;
+          const segments = stackedByHour?.[hoveredTooltip.hour] ?? [];
           const xPct = hoveredTooltip.x * 100;
           const transform = xPct < 12 ? 'translate(0, -100%)' : xPct > 88 ? 'translate(-100%, -100%)' : 'translate(-50%, -100%)';
           return (
@@ -170,6 +185,11 @@ export function HeadwaySparkline({ byHour, period, onPeriodChange, onPeriodHover
               }}
             >
               {formatHour(hoveredTooltip.hour)} · every {hw} min
+              {segments.length > 0 && (
+                <span className="block font-semibold text-[var(--text-dim)]">
+                  {segments.map(segment => `${segment.label}: ${segment.headway} min`).join(' · ')}
+                </span>
+              )}
             </div>
           );
         })()}
