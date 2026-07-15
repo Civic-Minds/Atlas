@@ -125,6 +125,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
           <RouteListRow
             shortName={labels.shortName}
             name={name}
+            stacked
             selected={selectedRoute === r.key}
             className="border-b-0"
             onHoverChange={onRouteHover ? (h => onRouteHover(h ? r.key : null)) : undefined}
@@ -134,7 +135,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
               setSearchFocused?.(false);
               setSelectedRoute(selectedRoute === r.key ? null : r.key);
             }}
-            right={routeRowRight(r.agencyName || '', headwayForRouteKey(r.key))}
+            right={routeRowRight(r.agencyName || '', headwayForRouteKey(r.key), true)}
           />
         );
       }}

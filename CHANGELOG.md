@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Give route search names more room so long route destinations are easier to scan.
+- Stack route metadata below the route name so agencies and frequencies remain readable.
 ### Fixed
 - **Live vehicle feed**: Restored the Live map on Vercel by handling its Node-style request headers in the serverless API.
 - **Live agency picker**: Replaced heavy row dividers with lighter spacing so the coverage list reads as grouped places.

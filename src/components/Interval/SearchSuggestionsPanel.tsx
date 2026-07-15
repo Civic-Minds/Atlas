@@ -53,11 +53,14 @@ export function routeRowLabels(shortName: string, longName: string | null) {
   };
 }
 
-export function routeRowRight(agencyName: string, headway?: number | null) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false) {
   const agency = shortenAgencyName(agencyName);
+  const layout = stacked
+    ? 'block max-w-full truncate mt-1 ml-0 text-left'
+    : 'min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right';
   if (headway != null && headway < 999) {
     return (
-      <span className={`${LIST_ROW_DIM} min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right whitespace-nowrap`}>
+      <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
         every {headway}m
@@ -65,7 +68,7 @@ export function routeRowRight(agencyName: string, headway?: number | null) {
     );
   }
   return (
-    <span className={`${LIST_ROW_DIM} min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right`}>{agency}</span>
+    <span className={`${LIST_ROW_DIM} ${layout}`}>{agency}</span>
   );
 }
 
@@ -147,7 +150,8 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, headwayForRouteKey(r.key) ?? r.headway)}
+                      right={routeRowRight(r.agencyName, headwayForRouteKey(r.key) ?? r.headway, true)}
+                      stacked
                       onClick={() => pickRoute(r.key)}
                       className="border-b-0"
                     />
@@ -169,7 +173,8 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway)}
+                      right={routeRowRight(r.agencyName, r.headway, true)}
+                      stacked
                       onClick={() => pickRoute(r.key)}
                       className="border-b-0"
                     />
