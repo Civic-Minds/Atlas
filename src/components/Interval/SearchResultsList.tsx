@@ -25,7 +25,7 @@ export function SearchSplitList<T>({
   const split = inView.length > 0 && elsewhere.length > 0;
   return (
     <div className="flex flex-col">
-      <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)] mb-1`}>{headLabel}</div>
+      <div className={`${PANEL_SECTION_HEAD} mb-1`}>{headLabel}</div>
       {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-2 pb-1`}>In this area</div>}
       {inView.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
       {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-4 pb-1`}>Elsewhere</div>}
@@ -160,7 +160,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             }}
           >
             <div className="min-w-0 flex-1">
-              <p className={`${LIST_ROW_PRIMARY} truncate ${selectedStop === s.key ? 'text-[var(--accent)]' : ''}`}>{name}</p>
+              <p className={`${LIST_ROW_PRIMARY} line-clamp-2 leading-snug ${selectedStop === s.key ? 'text-[var(--accent)]' : ''}`}>{name}</p>
               {s.stopCode && <p className={`${LIST_ROW_DIM} truncate mt-0.5`}>Stop {s.stopCode}</p>}
             </div>
             <div className="flex flex-col items-end text-right ml-2 shrink-0 max-w-[96px]">
@@ -193,14 +193,14 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       ) : routesFirst ? (
         <>
           {routeBlock}
-          {stopBlock && <div className="border-t border-[var(--border-primary)] pt-3">{stopBlock}</div>}
-          {agencyBlock && <div className="border-t border-[var(--border-primary)] pt-3">{agencyBlock}</div>}
+          {stopBlock && <div className="pt-3">{stopBlock}</div>}
+          {agencyBlock && <div className="pt-3">{agencyBlock}</div>}
         </>
       ) : (
         <>
           {agencyBlock}
-          {routeBlock && <div className="border-t border-[var(--border-primary)] pt-3">{routeBlock}</div>}
-          {stopBlock && <div className="border-t border-[var(--border-primary)] pt-3">{stopBlock}</div>}
+          {routeBlock && <div className="pt-3">{routeBlock}</div>}
+          {stopBlock && <div className="pt-3">{stopBlock}</div>}
         </>
       )}
     </div>

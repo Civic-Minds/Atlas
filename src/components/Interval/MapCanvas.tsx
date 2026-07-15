@@ -565,6 +565,23 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [selectedAgencySlug, agencies, mapLoaded]);
 
+  // A unique city/agency query should navigate the map even before the user
+  // selects the agency result. Keep the result list visible for route/stop
+  // selection, but make place search useful on its own.
+  useEffect(() => {
+    const map = mapRef.current;
+    const query = q.trim().toLowerCase();
+    if (!map || query.length < 4 || selectedAgencySlug) return;
+    const matches = agencies.filter(agency => {
+      const fields = [agency.name, agency.region ?? '', ...(agency.searchAliases ?? [])]
+        .map(value => value.toLowerCase());
+      return fields.some(value => value === query || value.includes(query));
+    });
+    if (matches.length !== 1) return;
+    const [lat, lon] = matches[0].center;
+    map.flyTo({ center: [lon, lat], zoom: 12, duration: 900, essential: true });
+  }, [q, agencies, selectedAgencySlug]);
+
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
     const map = mapRef.current;

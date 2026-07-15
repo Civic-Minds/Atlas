@@ -14,6 +14,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Place search navigation**: Agency results now move the map immediately, even while map layers are still initializing.
 - **Header controls**: Kept Live and Corridors beside Search as a single left-side group, separate from the Filters controls.
 - **Corridors navigation**: Hid the unclear network-analysis mode from primary navigation while preserving the underlying tool for future refinement.
+- **Header spacing**: Kept Live immediately beside Search instead of letting the flexible search group push it toward the Filters controls.
+- **Search navigation**: Unique city and agency queries now move the map automatically while keeping route and stop results available.
+- **Search result layout**: Reduced divider noise and constrained metadata so route and stop results remain readable on narrow screens.
 
 ## [3.2.0] - 2026-07-14
 
