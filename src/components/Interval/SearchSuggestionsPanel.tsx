@@ -57,7 +57,7 @@ export function routeRowRight(agencyName: string, headway?: number | null) {
   const agency = shortenAgencyName(agencyName);
   if (headway != null && headway < 999) {
     return (
-      <span className={`${LIST_ROW_DIM} min-w-0 max-w-[42%] truncate shrink-0 ml-2 text-right whitespace-nowrap`}>
+      <span className={`${LIST_ROW_DIM} min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
         every {headway}m
@@ -65,7 +65,7 @@ export function routeRowRight(agencyName: string, headway?: number | null) {
     );
   }
   return (
-    <span className={`${LIST_ROW_DIM} min-w-0 max-w-[42%] truncate shrink-0 ml-2 text-right`}>{agency}</span>
+    <span className={`${LIST_ROW_DIM} min-w-0 max-w-[34%] truncate shrink-0 ml-2 text-right`}>{agency}</span>
   );
 }
 

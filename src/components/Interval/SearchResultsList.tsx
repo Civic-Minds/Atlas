@@ -164,10 +164,10 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
               <p className={`${LIST_ROW_PRIMARY} line-clamp-2 leading-snug ${selectedStop === s.key ? 'text-[var(--accent)]' : ''}`}>{name}</p>
               {s.stopCode && <p className={`${LIST_ROW_DIM} truncate mt-0.5`}>Stop {s.stopCode}</p>}
             </div>
-            <div className="flex flex-col items-end text-right ml-2 shrink-0 max-w-[96px]">
+            <div className="flex flex-col items-end text-right ml-2 shrink-0 min-w-0 max-w-[34%]">
               {s.routes.length > 0 && (
                 <span className="text-[9px] font-bold text-[var(--text-secondary)] truncate max-w-full">
-                  {s.routes.join(', ')}
+                  {s.routes.length === 1 ? `Route ${s.routes[0]}` : `Routes ${s.routes.join(', ')}`}
                 </span>
               )}
               <span className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-wider truncate max-w-full">
