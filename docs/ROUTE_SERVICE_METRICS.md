@@ -26,9 +26,9 @@ If one of these surfaces needs a rider-facing route cadence, it should project t
 
 ## Filter semantics decision (#166)
 
-The current product behavior remains **best qualifying stop during the active period**. This preserves section clipping: a route appears when a useful high-frequency section meets the selected threshold, even if an outer terminal or destination is slower. The route card continues to show destination/branch cadence, so the two values must remain explicitly labeled as display versus filter metrics.
+The settled product behavior is **best qualifying stop during the active period**. This preserves section clipping: a route appears when a useful high-frequency section meets the selected threshold, even if an outer terminal or destination is slower. The route card continues to show destination/branch cadence, so the two values must remain explicitly labeled as display versus filter metrics.
 
-Changing this to median-stop, percentage-of-stops, destination, or worst-direction semantics is a separate product decision tracked in #166 and should not be folded into the #186 consistency fix.
+The original decision is implemented and documented by #166's existing commits. Changing it to median-stop, percentage-of-stops, destination, or worst-direction semantics would be a new product request, not remaining work for #166 or the #186 consistency fix.
 
 ## Post-deploy verification
 
