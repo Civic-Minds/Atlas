@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, routeFactsFromFeature } from '../routeFacts';
+import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod, routeFactsFromFeature } from '../routeFacts';
 
 describe('routeFacts', () => {
   it('provides one stable identity and consistent fallbacks', () => {
@@ -79,5 +79,26 @@ describe('routeFacts', () => {
       provenance: 'stop-specific',
     });
     expect(buildRouteServiceSummary(p).display.value).toBe(9);
+  });
+
+  it('uses one period fallback order for every metric projection', () => {
+    expect(metricValueForPeriod({
+      value: 20,
+      byPeriod: {},
+      byHour: { 10: 12 },
+      provenance: 'period-summary',
+    }, 'midday')).toBe(12);
+    expect(metricValueForPeriod({
+      value: 20,
+      byPeriod: {},
+      byHour: {},
+      provenance: 'period-summary',
+    }, 'midday')).toBe(20);
+    expect(metricValueForPeriod({
+      value: 20,
+      byPeriod: { midday: 15 },
+      byHour: { 10: 12 },
+      provenance: 'period-summary',
+    }, 'midday')).toBe(15);
   });
 });

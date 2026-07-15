@@ -34,7 +34,7 @@ import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { buildRouteFacts, buildRouteStopMetric } from '../../utils/routeFacts';
+import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric } from '../../utils/routeFacts';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -385,7 +385,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const dirId = d.directionId ?? 0;
       if (!map.has(dirId)) map.set(dirId, { dirId, realTier: [], span: [] });
       const g = map.get(dirId)!;
-      if (d.headway != null) g.realTier.push(d);
+      if (buildRouteServiceSummary(d).branch.value != null) g.realTier.push(d);
       else g.span.push(d);
     }
     // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
@@ -397,7 +397,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         // Normalize for dedup (post-clean from data) to handle any remaining variants
         const key = (d.headsign ?? '').trim().toLowerCase();
         const existing = seen.get(key);
-        if (!existing || (d.headway ?? Infinity) < (existing.headway ?? Infinity)) seen.set(key, d);
+        const branchValue = buildRouteServiceSummary(d).branch.value ?? Infinity;
+        const existingValue = existing ? buildRouteServiceSummary(existing).branch.value ?? Infinity : Infinity;
+        if (!existing || branchValue < existingValue) seen.set(key, d);
       }
       g.realTier = Array.from(seen.values());
     }

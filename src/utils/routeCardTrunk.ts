@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { TIME_PERIODS, periodKeyForHour } from '../../shared/config';
-import { buildRouteServiceSummary } from './routeFacts';
+import { periodKeyForHour } from '../../shared/config';
+import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -69,21 +69,6 @@ export function groupTrunkHeadway(branches: ShapeProperties[], period: string): 
   return vals.length ? Math.min(...vals) : null;
 }
 
-function periodHeadwayFromByHour(
-  byHour: Partial<Record<number, number | null>> | undefined,
-  periodKey: string,
-): number | null {
-  if (!byHour) return null;
-  const p = TIME_PERIODS.find(t => t.key === periodKey);
-  if (!p) return null;
-  let best: number | null = null;
-  for (let h = p.startHour; h < p.endHour; h++) {
-    const v = byHour[h];
-    if (v != null && (best === null || v < best)) best = v;
-  }
-  return best;
-}
-
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
@@ -94,10 +79,7 @@ export function medianTerminalHeadway(branches: ShapeProperties[], period: TimeP
   const vals = branches
     .map(d => {
       if (period !== 'all') {
-        const branch = buildRouteServiceSummary(d).branch;
-        return branch.byPeriod?.[period as keyof NonNullable<typeof branch.byPeriod>]
-          ?? periodHeadwayFromByHour(branch.byHour, period)
-          ?? null;
+        return metricValueForPeriod(buildRouteServiceSummary(d).branch, period as TimePeriod);
       }
       return buildRouteServiceSummary(d).branch.value;
     })

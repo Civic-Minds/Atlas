@@ -1,5 +1,8 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
+import { TIME_PERIODS, type PeriodKey } from '../../shared/config';
+
+export type ServicePeriod = PeriodKey | 'all';
 
 export type HeadwayProvenance =
   | 'period-summary'
@@ -37,6 +40,29 @@ function metric(
   provenance: HeadwayProvenance,
 ): HeadwayMetric {
   return { value, byPeriod, byHour, provenance };
+}
+
+function periodHeadwayFromByHour(
+  byHour: ShapeProperties['headwayByHour'] | undefined,
+  period: PeriodKey,
+): number | null {
+  if (!byHour) return null;
+  const config = TIME_PERIODS.find(item => item.key === period);
+  if (!config) return null;
+  let best: number | null = null;
+  for (let hour = config.startHour; hour < config.endHour; hour++) {
+    const value = byHour[hour];
+    if (value != null && (best == null || value < best)) best = value;
+  }
+  return best;
+}
+
+/** Resolve one named metric using the canonical period/hour fallback order. */
+export function metricValueForPeriod(metricValue: HeadwayMetric, period: ServicePeriod): number | null {
+  if (period !== 'all') {
+    return metricValue.byPeriod?.[period] ?? periodHeadwayFromByHour(metricValue.byHour, period) ?? metricValue.value;
+  }
+  return metricValue.value;
 }
 
 function firstAvailableByPeriod(
@@ -94,15 +120,8 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
 
 /** Stop-specific projection of the canonical route service record. */
 export function buildRouteStopMetric(p: ShapeProperties, stopId: string): HeadwayMetric {
-  const stopHeadways = (p as ShapeProperties & {
-    stopHeadways?: Record<string, number | null>;
-    stopPeriodHeadways?: Record<string, ShapeProperties['headwayByPeriod']>;
-  }).stopHeadways;
-  const stopPeriodHeadways = (p as ShapeProperties & {
-    stopPeriodHeadways?: Record<string, ShapeProperties['headwayByPeriod']>;
-  }).stopPeriodHeadways;
-  const byPeriod = stopPeriodHeadways?.[stopId];
-  const value = stopHeadways?.[stopId] ?? null;
+  const byPeriod = p.stopPeriodHeadways?.[stopId];
+  const value = p.stopHeadways?.[stopId] ?? null;
   return metric(value, byPeriod, undefined, value != null || byPeriod ? 'stop-specific' : 'none');
 }
 

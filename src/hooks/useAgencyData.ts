@@ -26,6 +26,9 @@ export interface ShapeProperties {
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
+  /** Per-stop service projections used by stop cards and corridor legs. */
+  stopHeadways?: Record<string, number | null>;
+  stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
 }
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;

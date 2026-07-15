@@ -16,9 +16,9 @@ import {
   SidebarCardShell,
 } from '../cardUi';
 import { CARD_NOTICE_FOOTER } from '../../../styles';
-import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
+import { SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
 import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
-import { buildRouteServiceSummary } from '../../../utils/routeFacts';
+import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import {
   dirIdNum,
   headsignTrunkHeadway,
@@ -29,30 +29,11 @@ import {
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import type { VariantFamily } from '../../../utils/routeVariants';
 
-// Derive a period headway from headwayByHour when headwayByPeriod doesn't have it yet.
-// Takes the best (lowest) non-null headway across the period's hours.
-function periodHeadwayFromByHour(
-  byHour: Record<number, number | null> | undefined,
-  periodKey: string,
-): number | null {
-  if (!byHour) return null;
-  const p = TIME_PERIODS.find(t => t.key === periodKey);
-  if (!p) return null;
-  let best: number | null = null;
-  for (let h = p.startHour; h < p.endHour; h++) {
-    const v = byHour[h];
-    if (v != null && (best === null || v < best)) best = v;
-  }
-  return best;
-}
-
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 }
-
-type ExtShape = ShapeProperties & { minStopHeadway?: number };
 
 /** Merge hourly headways across branches — median per hour avoids min-spike artifacts (#98). */
 function mergeHeadwayByHour(
@@ -82,7 +63,7 @@ function sparklineHeadwayByHour(
     const pk = periodKeyForHour(h);
     if (!pk) { out[h] = hw; continue; }
     const periodVals = directions
-      .map(d => buildRouteServiceSummary(d).branch.byPeriod?.[pk as keyof HeadwayByPeriod])
+      .map(d => metricValueForPeriod(buildRouteServiceSummary(d).branch, pk as keyof HeadwayByPeriod))
       .filter((v): v is number => v != null);
     if (periodVals.length === 0) { out[h] = hw; continue; }
     const periodRep = periodVals.length === 1 ? periodVals[0] : medianHeadway(periodVals);
@@ -213,7 +194,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       <SidebarCardList>
         {(() => {
           const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
-          const groupHeadway = (g: DirectionGroup) => g.realTier[0]?.headway ?? null;
+          const groupHeadway = (g: DirectionGroup) => g.realTier[0]
+            ? buildRouteServiceSummary(g.realTier[0]).branch.value
+            : null;
           const collapseGroups = allLackHeadsigns && directionGroups.length > 1 &&
             directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
           const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
