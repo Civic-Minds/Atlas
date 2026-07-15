@@ -11,16 +11,21 @@ Engineering direction for Atlas infrastructure and the live data layer.
 | Frontend | React + MapLibre GL JS (GPU-rendered), hosted on Vercel | Live |
 | Route data | GTFS → PMTiles pipeline, served from Cloudflare R2 | Live |
 | Weekly refresh | GitHub Actions cron → `npm run refresh` | Live |
-| GTFS-RT archiving | Cloudflare Worker → raw `.pb` snapshots to `atlas-live` R2 bucket | Live (Burlington + Hamilton) |
-| Live adherence panel | On-demand TripUpdates fetch when a covered route is selected | Live (Burlington 1/10, Hamilton 01/10) |
+| GTFS-RT archiving | Cloudflare Worker → versioned normalized snapshots to `atlas-live` R2 bucket | Canary only; existing cohort |
+| Live provider API | `/api/live-snapshot` latest data + `/api/live-replay` bounded replay | Implemented for canary validation |
 
 ---
 
 ## Next: Live Data Infrastructure
 
-The goal is to move from storing raw GTFS-RT blobs to storing queryable events — so questions like "is this bus always late on Tuesday mornings at this stop" become answerable without downloading and scanning hundreds of files.
+The goal is to make Atlas a stable live-data provider for multiple products without
+forcing each consumer to poll GTFS-RT or access private R2. Replay is the validation
+surface; derived operational semantics remain in consumers unless broadly reusable.
 
-- [ ] **Extend GTFS-RT Worker to capture VehiclePositions**: write `{slug}/vehicles/latest.json` per agency to R2 on each poll; frontend polls R2 every 30s for the live map
+- [x] **Versioned canary snapshots**: publish normalized VehiclePositions and TripUpdates envelopes with freshness/error states.
+- [x] **Replay access**: expose bounded snapshot history for deterministic consumer validation.
+- [ ] **Canary validation**: verify feed health, schema, replay completeness, and Bridge integration before adding routes or agencies.
+- [ ] **Consumer contract tests**: run Atlas fixtures through Bridge's adapter and analysis boundary.
 - [ ] **Add Neon Postgres**: serverless Postgres for structured adherence events — (agency, route, stop, scheduled time, actual time, day of week, period). Neon scales to zero when idle, no always-on instance needed.
 - [ ] **Trip-matching logic**: match observed vehicle positions to scheduled trips using GTFS static data to derive delay in seconds per stop visit
 - [ ] **Adherence event writer**: on each poll, derive stop-level delay and write rows to Postgres alongside the raw R2 archive
@@ -32,7 +37,7 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 ## Later
 
 - [ ] **Data retention**: define pruning window for raw R2 `.pb` files; aggregate into daily summaries after 90 days
-- [ ] **Expand Worker coverage**: add more agencies beyond Burlington and Hamilton once the pipeline is validated
+- [ ] **Expand Worker coverage**: add routes/agencies only after the canary expansion gate passes
 - [ ] **Trip-matching confidence score**: flag observations where the vehicle-to-trip match is uncertain, so low-quality matches don't pollute performance metrics
 
 ---

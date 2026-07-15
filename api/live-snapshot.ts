@@ -1,91 +1,21 @@
-import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { LIVE_SNAPSHOT_SCHEMA_VERSION, type LiveFeedType } from '../shared/liveContract.js';
 import { isRateLimited } from '../shared/rateLimit.js';
+import { getR2Client, listKeys, readSnapshot, statusForAge } from './liveStore.js';
+import type { S3Client } from '@aws-sdk/client-s3';
 
 export const config = { maxDuration: 30 };
-
-const BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live';
 
 function queryParams(req: Request & { url?: string }): URLSearchParams {
   const raw = req.url ?? '';
   return new URLSearchParams(raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : '');
 }
 
-function getR2Client(): S3Client {
-  if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
-    throw new Error('Live snapshot storage is not configured');
-  }
-  return new S3Client({
-    region: 'auto',
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-    },
-  });
-}
-
-function dateString(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function prefixFor(feedType: LiveFeedType, agency: string, date: string): string {
-  return feedType === 'vehicle_positions'
-    ? `positions/${agency}/${date}/`
-    : `${agency}/${date}/`;
-}
-
 async function latestKey(client: S3Client, feedType: LiveFeedType, agency: string): Promise<string | null> {
-  const dates = [new Date(), new Date(Date.now() - 24 * 60 * 60 * 1000)];
-  const keys: string[] = [];
-  for (const date of dates) {
-    let cursor: string | undefined;
-    do {
-      const result = await client.send(new ListObjectsV2Command({
-        Bucket: BUCKET,
-        Prefix: prefixFor(feedType, agency, dateString(date)),
-        ContinuationToken: cursor,
-      }));
-      for (const object of result.Contents ?? []) {
-        if (object.Key) keys.push(object.Key);
-      }
-      cursor = result.IsTruncated ? result.NextContinuationToken : undefined;
-    } while (cursor);
-  }
+  const end = Math.floor(Date.now() / 1000);
+  const keys = await listKeys(client, feedType, agency, end - 24 * 60 * 60, end);
   keys.sort((a, b) => b.localeCompare(a));
   return keys[0] ?? null;
-}
-
-function statusForAge(ageSeconds: number): 'fresh' | 'degraded' | 'stale' | 'unavailable' {
-  if (ageSeconds <= 90) return 'fresh';
-  if (ageSeconds <= 300) return 'degraded';
-  if (ageSeconds <= 900) return 'stale';
-  return 'unavailable';
-}
-
-function normalizeSnapshot(raw: any, feedType: LiveFeedType, agency: string, key: string) {
-  const capturedAt = Number(raw.capturedAt ?? raw.ts ?? key.match(/(\d{10})\.json$/)?.[1] ?? 0);
-  const records = raw.records ?? (feedType === 'vehicle_positions'
-    ? (raw.vehicles ?? []).map((v: any) => ({
-        id: v.id ?? '', routeId: v.r ?? '', tripId: v.tripId ?? '', directionId: v.d ?? null,
-        lat: v.lat, lon: v.lon, speedKmh: v.spd ?? null, bearing: v.brg ?? null,
-        stopId: v.stopId ?? null, stopSequence: v.stopSequence ?? null,
-        currentStatus: v.currentStatus ?? null, reportedAt: v.t ?? null,
-      }))
-    : (raw.trips ?? []).map((t: any) => ({
-        tripId: t.id ?? '', routeId: t.r ?? '', directionId: t.d ?? null,
-        delaySeconds: t.delay ?? null,
-      })));
-
-  return {
-    schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION,
-    agency,
-    feedType,
-    capturedAt,
-    sourceTimestamp: raw.sourceTimestamp ?? null,
-    records,
-  };
 }
 
 export default async function handler(req: Request) {
@@ -113,9 +43,7 @@ export default async function handler(req: Request) {
       return new Response(JSON.stringify({ schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: 'No live snapshot available' }), { status: 503, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const object = await client.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
-    const raw = JSON.parse(await object.Body!.transformToString());
-    const snapshot = normalizeSnapshot(raw, feedType, agency, key);
+    const snapshot = await readSnapshot(client, key, feedType, agency);
     const ageSeconds = Math.max(0, Math.round(Date.now() / 1000 - snapshot.capturedAt));
     const status = statusForAge(ageSeconds);
     const records = route

@@ -29,37 +29,41 @@ Read by: `pipeline/refresh.ts` only (reads `history/{slug}/latest.json` to detec
 
 ### atlas-live (private)
 
-Real-time GTFS-RT trip delay snapshots from the Cloudflare Worker archiver.
+Real-time GTFS-RT snapshots from the Cloudflare Worker archiver. The current
+canary cohort is deliberately limited to the feeds already used for live testing.
 
-- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — compact trip delay JSON, written every 5 minutes
+- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — versioned vehicle-position snapshots
+- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — versioned trip-update snapshots
+- Both formats use the `atlas.live.v1` normalized envelope; legacy fields remain during migration.
 
-Written by: Cloudflare Worker (`workers/gtfs-rt-archiver/`) — currently archives Burlington and Hamilton only
-Read by: `api/history-adherence.ts` (Vercel serverless function), which aggregates these into the History tab view
+Written by: Cloudflare Worker (`workers/gtfs-rt-archiver/`)
+Read by: Atlas provider APIs (`/api/live-snapshot` and `/api/live-replay`) and the
+existing History aggregation. Consumers must use those APIs rather than private R2.
 
 30-day retention enforced by the Worker's daily cleanup cron.
 
 
-## Live Polling: Two Separate Systems
+## Live Polling: Provider and consumer surfaces
 
 These are independent and often confused.
 
-### 1. Client-side live polling (frontend, on-demand)
+### 1. Atlas provider polling and archiving
 
-When a user opens the app and clicks a live-tracked route, `useLiveAdherence.ts` polls the agency's GTFS-RT TripUpdates feed directly from the browser every ~30 seconds. Active only while the app is open and a live route is selected.
+The Worker polls the configured canary feeds and writes normalized snapshots to R2. It
+does not expand coverage until feed health, schema validation, replay, and consumer
+verification pass for the existing cohort.
 
 Configured in: `shared/livePollingConfig.ts` (LIVE_POLLING_ROUTES)
 Current routes: Burlington 1+10, Hamilton 01+10, Edmonton 004, YRT VIVA Blue, Halifax 1, TTC 503, TTC 504, TransLink 099 (key-gated), STM 55 (key-gated)
 
-This powers the "Live" badge and schedule adherence cards in the sidebar.
+### 2. Atlas consumers
 
-### 2. Background archiving (Cloudflare Worker, always-on)
+Atlas serves current data with `/api/live-snapshot` and bounded historical data with
+`/api/live-replay`. Bridge consumes those contracts and owns bunching, gap, dwell,
+recommendation, policy, approval, and webhook behavior.
 
-The Cloudflare Worker (`workers/gtfs-rt-archiver/`) runs every 5 minutes and writes compact trip summaries to `atlas-live`. This is what the History tab reads — it shows patterns across days and weeks, not just the current moment.
-
-Currently archives: Burlington, Hamilton
-Does NOT archive: all other live-polled routes
-
-This means the History tab only has data for Burlington and Hamilton. All other routes show "no data" in the History view even though they have client-side live polling.
+The frontend may retain its route-specific on-demand adherence behavior while it is
+migrated to the same provider contract; it is not a second owner of GTFS-RT ingestion.
 
 
 ## Data Flow: Weekly Refresh
@@ -83,7 +87,9 @@ Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
 
 `/api/*` routes are Vercel serverless functions — they do NOT run in the Vite dev server. Use `vercel dev` to test them locally.
 
-- `/api/live-adherence` — proxies GTFS-RT feeds for live route polling (injects API keys from env vars for key-gated feeds)
+- `/api/live-adherence` — legacy/on-demand adherence surface during migration
+- `/api/live-snapshot` — latest versioned canary snapshot with freshness state
+- `/api/live-replay` — bounded versioned snapshot replay for validation and consumers
 - `/api/history-adherence` — reads from `atlas-live`, aggregates trip delay snapshots into hourly buckets for the History tab
 
 

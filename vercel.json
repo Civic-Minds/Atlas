@@ -17,6 +17,10 @@
       "destination": "/api/live-snapshot.ts"
     },
     {
+      "source": "/api/live-replay",
+      "destination": "/api/live-replay.ts"
+    },
+    {
       "source": "/api/live-stop",
       "destination": "/api/live-stop.ts"
     },
