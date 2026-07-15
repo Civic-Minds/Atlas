@@ -1,7 +1,6 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { getTierColor, getFareColor } from '../../utils/colors';
-import { routeKey } from '../../hooks/useIntervalStats';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
@@ -315,9 +314,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const p = f.properties as unknown as ShapeProperties;
         return p.routeId && (p.day === undefined || p.day === currentDay);
       });
-    let features = all.filter(f => routeKey(f.properties as unknown as ShapeProperties) === selectedRoute);
+    let features = all.filter(f => {
+      const p = f.properties as unknown as ShapeProperties;
+      return buildRouteFacts(p).key === selectedRoute;
+    });
     if (features.length === 0) return null;
     const first = features[0].properties as unknown as ShapeProperties;
+    const firstFacts = buildRouteFacts(first);
 
     // Lettered variants (1/1A/1B/1C) are the same route: fold siblings' features in
     // so the destinations list and combined headways cover the whole family.
@@ -346,7 +349,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (aH !== bH) return aH - bH;
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
-    return { ...first, directions, features };
+    return { ...first, routeShortName: firstFacts.shortName, routeLongName: firstFacts.longName, directions, features };
   }, [selectedRoute, nonCorridorLayers, currentDay, period]);
 
   // Lettered variant family (GRTC 1/1A/1B/1C style) for the selected route
@@ -538,24 +541,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         }
         if (stopHw == null || !matchingStopId) continue;
 
-        const shortName = p.routeShortName || p.routeId;
         const dirId = (p as any).directionId ?? 0;
-        if (!routeMap.has(shortName)) {
-          routeMap.set(shortName, {
-            shortName,
-            longName: p.routeLongName || '',
-            agencyName: shortenAgencyName(p.agencyName || slug),
+        const facts = buildRouteFacts(p, slug);
+        const routeShortName = facts.shortName;
+        if (!routeMap.has(routeShortName)) {
+          routeMap.set(routeShortName, {
+            shortName: routeShortName,
+            longName: facts.longName || '',
+            agencyName: shortenAgencyName(facts.agencyName),
             branches: new Map(),
           });
         }
-        const entry = routeMap.get(shortName)!;
+        const entry = routeMap.get(routeShortName)!;
         const branchKey = `${dirId}::${p.headsign ?? ''}`;
         // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
         const newHeadway = stopHw ?? p.headway ?? null;
         const existing = entry.branches.get(branchKey);
         if (!existing || (newHeadway != null && (existing.headway == null || newHeadway < existing.headway))) {
           entry.branches.set(branchKey, {
-            rKey: routeKey({ ...p, agencySlug: slug } as any),
+            rKey: facts.key,
             headsign: p.headsign ?? null,
             headway: newHeadway,
             stopPeriodHw: (p as any).stopPeriodHeadways?.[matchingStopId] as Partial<Record<string, number>> | undefined,
@@ -632,16 +636,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (!p.routeId || !routeIdToClosest.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
 
-        const shortName = p.routeShortName || p.routeId;
-        const mapKey = `${slug}::${shortName}`;
+        const facts = buildRouteFacts(p, slug);
+        const mapKey = facts.key;
         const closest = routeIdToClosest.get(p.routeId)!;
         const existing = seen.get(mapKey);
         if (!existing) {
           seen.set(mapKey, {
-            rKey: routeKey({ ...p, agencySlug: slug } as any),
-            routeShortName: shortName,
-            routeLongName: p.routeLongName || '',
-            agencyName: shortenAgencyName(p.agencyName || slug),
+            rKey: facts.key,
+            routeShortName: facts.shortName,
+            routeLongName: facts.longName || '',
+            agencyName: shortenAgencyName(facts.agencyName),
             headway: p.headway ?? null,
             nearestStopName: closest.stopName,
             distanceMeters: closest.dist,
@@ -673,11 +677,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
           const f = fc.features.find(feat => {
             const p = feat.properties as any;
-            return routeKey({ ...p, agencySlug: slug } as any) === key;
+            return buildRouteFacts(p, slug).key === key;
           });
           if (f) {
             const p = f.properties as any;
-            return { key, shortName: p.routeShortName ?? key, longName: p.routeLongName ?? '', agencyName: shortenAgencyName(p.agencyName || slug), color: getTierColor(p.tier) };
+            const facts = buildRouteFacts(p, slug);
+            return { key: facts.key, shortName: facts.shortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), color: getTierColor(p.tier) };
           }
         }
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };

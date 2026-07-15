@@ -11,6 +11,7 @@ import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useInterv
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice } from './cardUi';
+import { buildRouteFacts } from '../../utils/routeFacts';
 
 interface RouteRow {
   routeId: string;
@@ -56,11 +57,12 @@ function getRoutes(
   const best = new Map<string, RouteRow>();
   for (const f of fc.features) {
     const p = f.properties as ShapeProperties;
-    if (!p.routeId || !p.routeShortName || (p as { stopId?: string }).stopId) continue;
+    const facts = p.routeId ? buildRouteFacts(p, slug) : null;
+    if (!facts || (p as { stopId?: string }).stopId) continue;
     if (p.day && p.day !== day) continue;
     // Allow both directions so routes with 15min in one dir show in filters.
 
-    const key = p.routeShortName;
+    const key = facts.shortName;
     // Keep the filter metric separate from the value shown to users. The card's
     // displayed headway must match the route card; minimum-stop values are only
     // appropriate for deciding whether a route passes the frequency filter.
@@ -69,12 +71,12 @@ function getRoutes(
     const existing = best.get(key);
     if (!existing || (h !== null && (existing.headway === null || h < existing.headway))) {
       best.set(key, {
-        routeId: p.routeId,
-        agencySlug: p.agencySlug ?? slug,
-        shortName: p.routeShortName,
-        longName: p.routeLongName ?? null,
+        routeId: facts.routeId,
+        agencySlug: facts.agencySlug,
+        shortName: facts.shortName,
+        longName: facts.longName,
         headway: h,
-        tier: p.tier ?? null,
+        tier: facts.tier,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
         busSubType: p.busSubType ?? undefined,
         matchesFilter,
