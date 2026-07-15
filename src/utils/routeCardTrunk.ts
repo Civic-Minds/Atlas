@@ -1,17 +1,12 @@
-import type { HeadwayByPeriod } from '../hooks/useAgencyData';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { TIME_PERIODS, periodKeyForHour } from '../../shared/config';
-
-type ExtShape = ShapeProperties & {
-  minStopHeadway?: number;
-  headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
-};
+import { buildRouteServiceSummary } from './routeFacts';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
-  const ext = d as ExtShape;
-  if (period === 'all') return ext.minStopHeadway ?? null;
-  return ext.headsignMinStopHeadwayByPeriod?.[period] ?? null;
+  const shared = buildRouteServiceSummary(d).shared;
+  if (period === 'all') return shared.value;
+  return shared.byHeadsignPeriod?.[period] ?? null;
 }
 
 /** Show `every X–Y min` only when trunk wait is materially better than destination wait. */
@@ -33,7 +28,7 @@ export function dirIdNum(dirId: number | string | undefined | null): number {
 }
 
 function hourlyNonNullCount(d: ShapeProperties): number {
-  const hh = (d as { headwayByHour?: Record<number | string, number | null> }).headwayByHour;
+  const hh = buildRouteServiceSummary(d).branch.byHour;
   if (!hh) return 0;
   return Object.values(hh).filter((v): v is number => v != null).length;
 }
@@ -67,16 +62,15 @@ export function sparklineSourceDirections(
 export function groupTrunkHeadway(branches: ShapeProperties[], period: string): number | null {
   const vals = branches
     .map(d => {
-      const ext = d as ExtShape;
-      if (period === 'all') return ext.minStopHeadway ?? null;
-      return ext.minStopHeadwayByPeriod?.[period] ?? ext.minStopHeadway ?? null;
+      const shared = buildRouteServiceSummary(d).shared;
+      return shared.byPeriod?.[period as keyof NonNullable<typeof shared.byPeriod>] ?? shared.value;
     })
     .filter((v): v is number => v != null);
   return vals.length ? Math.min(...vals) : null;
 }
 
 function periodHeadwayFromByHour(
-  byHour: Record<number, number | null> | undefined,
+  byHour: Partial<Record<number, number | null>> | undefined,
   periodKey: string,
 ): number | null {
   if (!byHour) return null;
@@ -100,10 +94,9 @@ export function medianTerminalHeadway(branches: ShapeProperties[], period: TimeP
   const vals = branches
     .map(d => {
       if (period !== 'all') {
-        const byPeriod = d.headwayByPeriod as HeadwayByPeriod | undefined;
-        const byHour = (d as { headwayByHour?: Record<number, number | null> }).headwayByHour;
-        return byPeriod?.[period as keyof HeadwayByPeriod]
-          ?? periodHeadwayFromByHour(byHour, period)
+        const branch = buildRouteServiceSummary(d).branch;
+        return branch.byPeriod?.[period as keyof NonNullable<typeof branch.byPeriod>]
+          ?? periodHeadwayFromByHour(branch.byHour, period)
           ?? null;
       }
       return d.headway;

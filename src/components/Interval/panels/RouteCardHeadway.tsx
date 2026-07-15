@@ -18,6 +18,7 @@ import {
 import { CARD_NOTICE_FOOTER } from '../../../styles';
 import { TIME_PERIODS, SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
 import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
+import { buildRouteServiceSummary } from '../../../utils/routeFacts';
 import {
   dirIdNum,
   headsignTrunkHeadway,
@@ -61,7 +62,7 @@ function mergeHeadwayByHour(
   const merged: Record<number, number | null> = {};
   for (const h of hours) {
     const values = directions
-      .map(d => (d as { headwayByHour?: Record<number, number | null> }).headwayByHour?.[h])
+      .map(d => buildRouteServiceSummary(d).branch.byHour?.[h])
       .filter((v): v is number => v != null);
     merged[h] = values.length === 0 ? null : values.length === 1 ? values[0] : medianHeadway(values);
   }
@@ -81,7 +82,7 @@ function sparklineHeadwayByHour(
     const pk = periodKeyForHour(h);
     if (!pk) { out[h] = hw; continue; }
     const periodVals = directions
-      .map(d => (d.headwayByPeriod as HeadwayByPeriod | undefined)?.[pk as keyof HeadwayByPeriod])
+      .map(d => buildRouteServiceSummary(d).branch.byPeriod?.[pk as keyof HeadwayByPeriod])
       .filter((v): v is number => v != null);
     if (periodVals.length === 0) { out[h] = hw; continue; }
     const periodRep = periodVals.length === 1 ? periodVals[0] : medianHeadway(periodVals);
@@ -191,7 +192,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           ? Object.fromEntries(HOURS.map(h => [h, primaryMultiBranch!.realTier
               .map((branch, i) => ({
                 label: branch.headsign ?? `Branch ${i + 1}`,
-                headway: (branch as ShapeProperties & { headwayByHour?: Record<number, number | null> }).headwayByHour?.[h] ?? null,
+                headway: buildRouteServiceSummary(branch).branch.byHour?.[h] ?? null,
                 color: ['#2563eb', '#db2777', '#059669', '#d97706'][i % 4],
               }))
               .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)]))
@@ -262,8 +263,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 )}
                 <div className="space-y-2">
                   {group.realTier.map((d, i) => {
-                    const minStopHw = (d as any).minStopHeadway as number | undefined;
-                    const dimmed = maxHeadway !== Infinity && (minStopHw ?? d.headway ?? Infinity) > maxHeadway;
+                    const filterHw = buildRouteServiceSummary(d).filter;
+                    const dimmed = maxHeadway !== Infinity && (filterHw.value ?? Infinity) > maxHeadway;
                     return (() => {
                       const displayH = routeCardDisplayHeadway(d, period);
                       const label = branchLabel(group, d.headsign, gi);

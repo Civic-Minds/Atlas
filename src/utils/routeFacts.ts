@@ -1,6 +1,96 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 
+export type HeadwayProvenance =
+  | 'period-summary'
+  | 'hourly-summary'
+  | 'all-day-summary'
+  | 'worst-direction'
+  | 'minimum-stop'
+  | 'none';
+
+export interface HeadwayMetric {
+  value: number | null;
+  byPeriod?: ShapeProperties['headwayByPeriod'];
+  byHour?: ShapeProperties['headwayByHour'];
+  provenance: HeadwayProvenance;
+}
+
+export interface RouteServiceSummary {
+  /** Cadence intentionally shown to users on route rows/cards. */
+  display: HeadwayMetric;
+  /** Cadence used to decide whether a route qualifies for the frequency filter. */
+  filter: HeadwayMetric;
+  /** Destination/branch service, excluding combined shared-section frequency. */
+  branch: HeadwayMetric;
+  /** Combined service on shared stops/sections, when the feed provides it. */
+  shared: HeadwayMetric & {
+    byHeadsignPeriod?: Partial<Record<string, number>>;
+  };
+}
+
+function metric(
+  value: number | null,
+  byPeriod: ShapeProperties['headwayByPeriod'] | undefined,
+  byHour: ShapeProperties['headwayByHour'] | undefined,
+  provenance: HeadwayProvenance,
+): HeadwayMetric {
+  return { value, byPeriod, byHour, provenance };
+}
+
+function firstAvailableByPeriod(
+  ...sources: Array<ShapeProperties['headwayByPeriod'] | undefined>
+): ShapeProperties['headwayByPeriod'] | undefined {
+  const keys = new Set<string>();
+  for (const source of sources) {
+    if (source) Object.keys(source).forEach(key => keys.add(key));
+  }
+  if (keys.size === 0) return undefined;
+  const merged: Record<string, number | null> = {};
+  for (const key of keys) {
+    const value = sources.map(source => source?.[key as keyof typeof source]).find(v => v != null);
+    if (value != null) merged[key] = value;
+  }
+  return merged as ShapeProperties['headwayByPeriod'];
+}
+
+/**
+ * Select all route-service metrics once. Consumers should use these named
+ * projections instead of independently choosing among raw GeoJSON fields.
+ */
+export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
+  const branchValue = p.headway ?? null;
+  const branchProvenance: HeadwayProvenance = p.headwayByPeriod
+    ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
+  const displayValue = branchValue;
+  const displayProvenance: HeadwayProvenance = p.headwayByPeriod
+    ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
+  const filterValue = p.worstDirectionHeadway ?? p.minStopHeadway ?? branchValue;
+  const filterProvenance: HeadwayProvenance = p.worstDirectionHeadway != null
+    ? 'worst-direction'
+    : p.minStopHeadway != null ? 'minimum-stop' : branchProvenance;
+
+  return {
+    display: metric(displayValue, p.headwayByPeriod, p.headwayByHour, displayProvenance),
+    filter: metric(
+      filterValue,
+      firstAvailableByPeriod(
+        p.minStopHeadwayByPeriod as ShapeProperties['headwayByPeriod'] | undefined,
+        p.headwayByPeriod,
+        p.worstDirectionHeadwayByPeriod,
+      ),
+      p.headwayByHour,
+      filterProvenance,
+    ),
+    branch: metric(branchValue, p.headwayByPeriod, p.headwayByHour, branchProvenance),
+    shared: {
+      ...metric(p.minStopHeadway ?? null, p.minStopHeadwayByPeriod, undefined,
+        p.minStopHeadway != null ? 'minimum-stop' : 'none'),
+      byHeadsignPeriod: p.headsignMinStopHeadwayByPeriod,
+    },
+  };
+}
+
 /**
  * The canonical route record used by frontend features.
  *
@@ -21,6 +111,7 @@ export interface RouteFacts {
   headwayByPeriod?: ShapeProperties['headwayByPeriod'];
   headwayByHour?: ShapeProperties['headwayByHour'];
   tier: string | null;
+  service: RouteServiceSummary;
 }
 
 export function buildRouteFacts(p: ShapeProperties, agencySlug?: string): RouteFacts {
@@ -41,6 +132,7 @@ export function buildRouteFacts(p: ShapeProperties, agencySlug?: string): RouteF
     headwayByPeriod: p.headwayByPeriod,
     headwayByHour: p.headwayByHour,
     tier: p.tier ?? null,
+    service: buildRouteServiceSummary(p),
   };
 }
 

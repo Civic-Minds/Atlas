@@ -1,15 +1,7 @@
 import { TIME_PERIODS } from '../../shared/config';
 import type { HeadwayByPeriod } from '../hooks/useAgencyData';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-
-type HeadwayProps = ShapeProperties & {
-  minStopHeadwayByPeriod?: Partial<Record<string, number>>;
-  worstDirectionHeadwayByPeriod?: Partial<Record<string, number>>;
-  headwayByPeriod?: Partial<Record<string, number>>;
-  headwayByHour?: Partial<Record<number, number | null>>;
-  worstDirectionHeadway?: number;
-  minStopHeadway?: number;
-};
+import { buildRouteServiceSummary } from './routeFacts';
 
 export function periodHeadwayFromByHour(
   byHour: Partial<Record<number, number | null>> | undefined,
@@ -28,29 +20,23 @@ export function periodHeadwayFromByHour(
 
 /** Headway shown on route card rows and route lists — period summary, not min-stop filter headway. */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
+  const display = buildRouteServiceSummary(p).display;
   if (period !== 'all') {
-    const ext = p as HeadwayProps;
-    const ph = ext.headwayByPeriod?.[period as keyof HeadwayByPeriod]
-      ?? periodHeadwayFromByHour(ext.headwayByHour, period);
+    const ph = display.byPeriod?.[period as keyof HeadwayByPeriod]
+      ?? periodHeadwayFromByHour(display.byHour, period);
     if (ph != null) return ph;
   }
-  return p.headway ?? null;
+  return display.value;
 }
 
 /** Headway for display/filtering — mirrors passesRouteFilter period + all-day fallback. */
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
-  const ext = p as HeadwayProps;
+  const service = buildRouteServiceSummary(p);
 
   if (period !== 'all') {
-    const periodHw =
-      ext.minStopHeadwayByPeriod?.[period]
-      ?? ext.headwayByPeriod?.[period]
-      ?? ext.worstDirectionHeadwayByPeriod?.[period]
-      ?? periodHeadwayFromByHour(ext.headwayByHour, period);
+    const periodHw = service.filter.byPeriod?.[period]
+      ?? (service.filter.byHour ? periodHeadwayFromByHour(service.filter.byHour, period) : null);
     if (periodHw != null) return periodHw;
   }
-
-  if (ext.worstDirectionHeadway != null) return ext.worstDirectionHeadway;
-  if (ext.minStopHeadway != null) return ext.minStopHeadway;
-  return p.headway ?? null;
+  return service.filter.value;
 }

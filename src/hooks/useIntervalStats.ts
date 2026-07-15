@@ -6,7 +6,7 @@ import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../../shared/tileFilterExprs';
 import { effectiveMode } from '../../shared/modes';
-import { periodHeadwayFromByHour } from '../utils/effectiveHeadway';
+import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -136,10 +136,7 @@ export function passesRouteFilter(
   // pass the filter even if the all-day median doesn't meet the threshold — AI-97 clipping then
   // visually restricts the displayed geometry to the qualifying section.
   if (filters.period && filters.period !== 'all') {
-    const minStopPeriodHw = (p as any).minStopHeadwayByPeriod?.[filters.period] as number | undefined;
-    const headByPeriod = (p as any).headwayByPeriod?.[filters.period] as number | undefined;
-    const worstPeriodHw = (p as any).worstDirectionHeadwayByPeriod?.[filters.period] as number | undefined;
-    const periodHw = minStopPeriodHw ?? headByPeriod ?? worstPeriodHw ?? periodHeadwayFromByHour((p as any).headwayByHour, filters.period);
+    const periodHw = effectiveRouteHeadway(p, filters.period);
     if (periodHw != null) {
       if (periodHw > filters.maxHeadway) return false;
       return true;
@@ -148,12 +145,9 @@ export function passesRouteFilter(
   }
   // All-day check: use worst-direction headway (AI-182) so both directions must qualify.
   // Falls back to minStopHeadway for routes without bidirectional data.
-  const worstDirHw = (p as any).worstDirectionHeadway as number | undefined;
-  const minStopHw = (p as any).minStopHeadway as number | undefined;
-  if (worstDirHw != null) {
-    if (worstDirHw > filters.maxHeadway) return false;
-  } else if (minStopHw != null) {
-    if (minStopHw > filters.maxHeadway) return false;
+  const filterHw = effectiveRouteHeadway(p, 'all');
+  if (filterHw != null) {
+    if (filterHw > filters.maxHeadway) return false;
   } else {
     const tierVal = resolveTierVal(p);
     if (tierVal != null) {
