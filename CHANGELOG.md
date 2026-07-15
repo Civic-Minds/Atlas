@@ -17,6 +17,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Header spacing**: Kept Live immediately beside Search instead of letting the flexible search group push it toward the Filters controls.
 - **Search navigation**: Unique city and agency queries now move the map automatically while keeping route and stop results available.
 - **Search result layout**: Reduced divider noise and constrained metadata so route and stop results remain readable on narrow screens.
+- **Search results redesign**: Unified in-area and elsewhere results into one ranked list, standardized the visible cap at 10, and added a shared Show more results control.
 
 ## [3.2.0] - 2026-07-14
 

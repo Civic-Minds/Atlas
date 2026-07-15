@@ -109,7 +109,7 @@ export function searchAgencyGroups(
 }
 
 /** Max agency rows in the search dropdown. */
-export const SEARCH_AGENCY_DISPLAY_LIMIT = 5;
+export const SEARCH_AGENCY_DISPLAY_LIMIT = 10;
 
 export interface AgencySearchDisplay {
   groups: AgencySearchGroup[];

@@ -11,13 +11,14 @@ import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
-import { searchAgencyGroups, prepareAgencyGroupsForDisplay, type AgencySearchGroup } from '../../utils/agencySearch';
+import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT, type AgencySearchGroup } from '../../utils/agencySearch';
 import {
   splitAgencyGroups,
   splitRouteResults,
   splitStopResults,
   filterRouteResultsForDisplay,
   prepareRouteResultsForDisplay,
+  SEARCH_ROUTE_DISPLAY_LIMIT,
   resolveSearchEnterAction,
   routesBeforeAgencies,
   type RouteSearchResult,
@@ -147,6 +148,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
+  const [showAllSearchResults, setShowAllSearchResults] = useState(false);
 
   const pickRoute = useCallback((key: string) => {
     setSearchFocused?.(false);
@@ -170,6 +172,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       loadRecents();
     }
   }, [searchFocused, loadRecents]);
+
+  useEffect(() => {
+    setShowAllSearchResults(false);
+  }, [query]);
 
   const saveRecentSearch = useCallback((q: string) => {
     const trimmed = q.trim();
@@ -715,34 +721,42 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [agencies, query, bounds, fareView, layers, searchFocused]);
 
   const agencySearchDisplay = useMemo(
-    () => prepareAgencyGroupsForDisplay(matchedAgencyGroups),
-    [matchedAgencyGroups],
+    () => prepareAgencyGroupsForDisplay(
+      matchedAgencyGroups,
+      showAllSearchResults ? matchedAgencyGroups.length : SEARCH_AGENCY_DISPLAY_LIMIT,
+    ),
+    [matchedAgencyGroups, showAllSearchResults],
   );
   const displayAgencyGroups = agencySearchDisplay.groups;
   const agencySections = useMemo(() => splitAgencyGroups(displayAgencyGroups), [displayAgencyGroups]);
   const routeSearchDisplay = useMemo(
-    () => prepareRouteResultsForDisplay(query, searchMatchResults ?? [], matchedAgencyGroups),
-    [query, searchMatchResults, matchedAgencyGroups],
+    () => prepareRouteResultsForDisplay(
+      query,
+      searchMatchResults ?? [],
+      matchedAgencyGroups,
+      showAllSearchResults ? Number.MAX_SAFE_INTEGER : SEARCH_ROUTE_DISPLAY_LIMIT,
+    ),
+    [query, searchMatchResults, matchedAgencyGroups, showAllSearchResults],
   );
   const displayRouteResults = routeSearchDisplay.routes;
   const routeSections = useMemo(
     () => splitRouteResults(displayRouteResults),
     [displayRouteResults],
   );
-  const SEARCH_STOP_DISPLAY_LIMIT = 20;
+  const SEARCH_STOP_DISPLAY_LIMIT = 10;
   const stopSearchDisplay = useMemo(() => {
     const list = searchStopMatchResults ?? [];
     const truncated = list.length > SEARCH_STOP_DISPLAY_LIMIT;
     return {
-      stops: list.slice(0, SEARCH_STOP_DISPLAY_LIMIT),
+      stops: list.slice(0, showAllSearchResults ? list.length : SEARCH_STOP_DISPLAY_LIMIT),
       totalMatches: list.length,
       truncated,
     };
-  }, [searchStopMatchResults]);
+  }, [searchStopMatchResults, showAllSearchResults]);
 
   const stopResultsHeadLabel = stopSearchDisplay.truncated
-    ? `Stops · showing ${stopSearchDisplay.stops.length} of ${stopSearchDisplay.totalMatches}`
-    : `Stops (${stopSearchDisplay.totalMatches})`;
+    ? `Stops · ${stopSearchDisplay.stops.length} of ${stopSearchDisplay.totalMatches} matches`
+    : `Stops · ${stopSearchDisplay.totalMatches} matches`;
 
   const stopSections = useMemo(
     () => splitStopResults(stopSearchDisplay.stops),
@@ -778,11 +792,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     [query, displayRouteResults, matchedAgencyGroups],
   );
   const routeResultsHeadLabel = routeSearchDisplay.truncated
-    ? `Routes · showing ${routeSearchDisplay.routes.length} of ${routeSearchDisplay.totalMatches}`
-    : `Routes (${routeSearchDisplay.totalMatches})`;
-  const agencyResultsHeadLabel = agencySearchDisplay.truncated
-    ? `Agencies (${agencySearchDisplay.totalMatches} matches)`
-    : `Agencies (${agencySearchDisplay.totalMatches})`;
+    ? `Routes · ${routeSearchDisplay.routes.length} of ${routeSearchDisplay.totalMatches} matches`
+    : `Routes · ${routeSearchDisplay.totalMatches} matches`;
+  const agencyResultsHeadLabel = `Agencies · ${agencySearchDisplay.totalMatches} matches`;
+  const hasMoreSearchResults = agencySearchDisplay.truncated
+    || routeSearchDisplay.truncated
+    || stopSearchDisplay.truncated;
 
   const searchPanelActive = searchFocused && query !== '';
   const hasSearchResults = searchPanelActive && (
@@ -1005,6 +1020,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             saveRecentSearch={saveRecentSearch}
             headwayForRouteKey={headwayForRouteKey}
             onRouteHover={onSearchRouteHover}
+            hasMoreResults={hasMoreSearchResults}
+            onShowMoreResults={() => setShowAllSearchResults(true)}
           />
         )}
 

@@ -13,7 +13,7 @@ describe('agencySearch', () => {
     }));
     const prepared = prepareAgencyGroupsForDisplay(groups);
     expect(prepared.totalMatches).toBe(12);
-    expect(prepared.groups).toHaveLength(5);
+    expect(prepared.groups).toHaveLength(10);
     expect(prepared.truncated).toBe(true);
   });
 

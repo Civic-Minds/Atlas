@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
+import { PANEL_SECTION_HEAD, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -22,14 +22,11 @@ export function SearchSplitList<T>({
   renderItem,
 }: SearchSplitListProps<T>) {
   if (inView.length === 0 && elsewhere.length === 0) return null;
-  const split = inView.length > 0 && elsewhere.length > 0;
+  const items = [...inView, ...elsewhere];
   return (
     <div className="flex flex-col">
       <div className={`${PANEL_SECTION_HEAD} mb-1`}>{headLabel}</div>
-      {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-2 pb-1`}>In this area</div>}
-      {inView.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
-      {split && <div className={`${PANEL_SEARCH_SUBHEAD} pt-4 pb-1`}>Elsewhere</div>}
-      {elsewhere.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
+      {items.map(item => <React.Fragment key={itemKey(item)}>{renderItem(item)}</React.Fragment>)}
     </div>
   );
 }
@@ -58,6 +55,8 @@ interface SearchResultsListProps {
   headwayForRouteKey: (key: string) => number | null;
   /** Highlight the hovered result's route on the map (null on leave). */
   onRouteHover?: (key: string | null) => void;
+  hasMoreResults?: boolean;
+  onShowMoreResults?: () => void;
 }
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
@@ -83,6 +82,8 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   saveRecentSearch,
   headwayForRouteKey,
   onRouteHover,
+  hasMoreResults = false,
+  onShowMoreResults,
 }) => {
   const agencyBlock = displayAgencyGroups.length > 0 && setSelectedAgencySlug ? (
     <SearchSplitList
@@ -202,6 +203,15 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
           {routeBlock && <div className="pt-3">{routeBlock}</div>}
           {stopBlock && <div className="pt-3">{stopBlock}</div>}
         </>
+      )}
+      {hasMoreResults && onShowMoreResults && (
+        <button
+          type="button"
+          onClick={onShowMoreResults}
+          className="mx-4 mt-2 rounded-lg bg-[var(--bg-btn-hover)] px-3 py-2 text-[10px] font-black text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
+        >
+          Show more results
+        </button>
       )}
     </div>
   );
