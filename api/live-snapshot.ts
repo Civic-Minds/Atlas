@@ -1,6 +1,7 @@
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { LIVE_SNAPSHOT_SCHEMA_VERSION, type LiveFeedType } from '../shared/liveContract.js';
 import { isRateLimited } from '../shared/rateLimit.js';
+import { requestHeader } from '../shared/request.js';
 import { getR2Client, listKeys, readSnapshot, statusForAge } from './liveStore.js';
 import type { S3Client } from '@aws-sdk/client-s3';
 
@@ -19,7 +20,7 @@ async function latestKey(client: S3Client, feedType: LiveFeedType, agency: strin
 }
 
 export default async function handler(req: Request) {
-  const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
+  const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) {
     return new Response(JSON.stringify({ error: 'Too many requests' }), {
       status: 429,

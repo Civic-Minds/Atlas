@@ -1,6 +1,7 @@
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { LIVE_SNAPSHOT_SCHEMA_VERSION, type LiveFeedType } from '../shared/liveContract.js';
 import { isRateLimited } from '../shared/rateLimit.js';
+import { requestHeader } from '../shared/request.js';
 import { getR2Client, LIVE_BUCKET, listKeys, readSnapshot } from './liveStore.js';
 
 export const config = { maxDuration: 30 };
@@ -12,7 +13,7 @@ function json(body: unknown, status = 200) {
 }
 
 export default async function handler(req: Request) {
-  const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
+  const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) return json({ error: 'Too many requests' }, 429);
 
   const params = new URL(req.url).searchParams;
