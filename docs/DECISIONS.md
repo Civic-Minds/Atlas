@@ -16,6 +16,17 @@ Atlas must not change canonical data semantics merely to make one downstream
 integration easier. This preserves Atlas as a dependable platform, in the same way
 that a search provider does not reorder its canonical results for every client.
 
+## 2026-07-02 — Support GTFS Fares V2 alongside V1
+
+Atlas parses both GTFS Fares V2 and legacy Fares V1. When both are available,
+route base fares use the lowest applicable adult V2 product; V1 fare attributes
+and rules remain the fallback for older feeds, followed by an explicit manual
+override when an agency’s feed does not provide usable fare data.
+
+This is intentionally limited to deriving a route’s base fare for the Fares map.
+It is not a claim that Atlas can calculate every rider’s complete fare, transfer,
+zone, or concession outcome.
+
 ## 2026-07-15 — Operational consumers own operational decisions
 
 Atlas provides live and historical transit context but does not own product-specific
