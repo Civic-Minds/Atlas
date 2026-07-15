@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.2] - 2026-07-15
 
 - **Feed data-quality review**: Agencies with repeated GTFS problems now get a temporary verification notice when a new feed arrives, without carrying old feed-specific corrections forward.
 - **Live provider runtime compatibility**: Fixed canary snapshot and replay APIs failing on Vercel’s Node-style request headers.
