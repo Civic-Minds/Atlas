@@ -4,6 +4,7 @@ import { Map as MapIcon, Search, X, Info, ArrowLeftRight } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
 import Interval from './apps/Interval';
+import Corridors from './apps/Corridors';
 import type { StopEntry } from './apps/corridor-search';
 import History from './apps/History';
 import LiveVehicles from './apps/LiveVehicles';
@@ -448,6 +449,12 @@ export default function App() {
               headerPortalContainer={headerPortalEl}
               sidebarLeft={sidebarLeft}
               searchEnterRef={searchEnterRef}
+            />
+            <Corridors
+              agencies={agencies}
+              day={day}
+              active={inCorridors}
+              sidebarLeft={sidebarLeft}
             />
             <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
             {liveMounted && (
