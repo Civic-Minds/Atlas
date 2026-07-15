@@ -1,4 +1,5 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
+import type { GeoJSON } from 'geojson';
 import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_TIMEZONES } from '../shared/livePollingConfig.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
