@@ -7367,6 +7367,206 @@
         39.1844,
         -108.3284
       ]
+    },
+    {
+      "slug": "um-transit",
+      "name": "University of Michigan Transit Services",
+      "center": [
+        42.28,
+        -83.74
+      ],
+      "feedUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip",
+      "lastFeedExpiry": "20260822",
+      "lastFeedVersion": "S1000095",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Michigan",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2072/latest.zip",
+      "bbox": [
+        42.2444,
+        -83.7675,
+        42.3411,
+        -83.654
+      ]
+    },
+    {
+      "slug": "ncsu-wolfline",
+      "name": "NCSU Wolfline",
+      "center": [
+        35.78,
+        -78.67
+      ],
+      "feedUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20260813",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "North Carolina",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2245/latest.zip",
+      "bbox": [
+        35.7462,
+        -78.7408,
+        35.8224,
+        -78.6438
+      ]
+    },
+    {
+      "slug": "clemson-cat",
+      "name": "Clemson Area Transit (CATbus)",
+      "center": [
+        34.68,
+        -82.84
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip",
+      "lastFeedExpiry": "20191213",
+      "lastFeedVersion": "UTC: 29-Apr-2019 14:52",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "South Carolina",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
+      "bbox": [
+        34.5352,
+        -83.0178,
+        34.7466,
+        -82.6584
+      ]
+    },
+    {
+      "slug": "citybus-lafayette",
+      "name": "CityBus of Greater Lafayette",
+      "center": [
+        40.42,
+        -86.91
+      ],
+      "feedUrl": "https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip",
+      "lastFeedExpiry": "20260823",
+      "lastFeedVersion": "2026.2.3",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Indiana",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-391/latest.zip",
+      "bbox": [
+        40.3452,
+        -86.9822,
+        40.5008,
+        -86.7848
+      ]
+    },
+    {
+      "slug": "duke",
+      "name": "Duke University Transit",
+      "center": [
+        36,
+        -78.94
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip",
+      "lastFeedExpiry": "20250810",
+      "lastFeedVersion": "UTC: 05-May-2025 09:20",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "North Carolina",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-378/latest.zip",
+      "bbox": [
+        35.9588,
+        -78.9779,
+        36.041,
+        -78.8837
+      ]
+    },
+    {
+      "slug": "streamline",
+      "name": "Streamline (Bozeman)",
+      "center": [
+        45.68,
+        -111.04
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip",
+      "lastFeedExpiry": "20281231",
+      "lastFeedVersion": "UTC: 23-Jan-2025 11:14",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Montana",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-295/latest.zip",
+      "bbox": [
+        45.6354,
+        -111.2156,
+        45.8027,
+        -110.5413
+      ]
+    },
+    {
+      "slug": "athens-oh",
+      "name": "Athens Public Transit",
+      "center": [
+        39.33,
+        -82.1
+      ],
+      "feedUrl": "https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip",
+      "lastFeedExpiry": "20231231",
+      "lastFeedVersion": "1.0 - Jan 9, 2023",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Ohio",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1973/latest.zip",
+      "bbox": [
+        39.2039,
+        -82.2706,
+        39.49,
+        -82.008
+      ]
+    },
+    {
+      "slug": "connect-transit",
+      "name": "Connect Transit (Bloomington-Normal)",
+      "center": [
+        40.48,
+        -88.99
+      ],
+      "feedUrl": "https://rideconnecttransit.com/gtfs",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "New Pink Stop",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Illinois",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2267/latest.zip",
+      "bbox": [
+        40.4285,
+        -89.0761,
+        40.5567,
+        -88.8901
+      ]
+    },
+    {
+      "slug": "dekalb",
+      "name": "DeKalb Public Transit",
+      "center": [
+        41.93,
+        -88.75
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/cityofdekalb-il-us/cityofdekalb-il-us.zip",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "UTC: 01-May-2026 18:38",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Illinois",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-308/latest.zip",
+      "bbox": [
+        41.8705,
+        -88.8081,
+        42.0119,
+        -88.4443
+      ]
+    },
+    {
+      "slug": "radford",
+      "name": "Radford Transit",
+      "center": [
+        37.13,
+        -80.58
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "UTC: 08-Jul-2026 17:43",
+      "lastRefreshedAt": "2026-07-15",
+      "region": "Virginia",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2415/latest.zip",
+      "bbox": [
+        37.0857,
+        -80.7163,
+        37.252,
+        -80.3802
+      ]
     }
   ]
 }

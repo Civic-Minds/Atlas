@@ -37,6 +37,21 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | done | `pocatello` | Pocatello Regional Transit | Idaho | mdb-171 |
 | done | `albany-ga` | Albany Transit System | Georgia | mdb-2146 |
 
+## Recently completed (2026-07-14 — university / campus batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `um-transit` | University of Michigan Transit Services | Michigan | mdb-2072 free open public |
+| done | `ncsu-wolfline` | NCSU Wolfline | North Carolina | mdb-2245 free open public |
+| done | `clemson-cat` | Clemson Area Transit (CATbus) | South Carolina | mdb-798 stale calendar ~2020 |
+| done | `citybus-lafayette` | CityBus of Greater Lafayette | Indiana | mdb-391 Purdue metro |
+| done | `duke` | Duke University Transit | North Carolina | mdb-378 calendar expired 2025-08 |
+| done | `streamline` | Streamline (Bozeman) | Montana | mdb-295 Montana State |
+| done | `athens-oh` | Athens Public Transit | Ohio | mdb-1973 stale calendar ~2024 |
+| done | `connect-transit` | Connect Transit (Bloomington-Normal) | Illinois | mdb-2267 ISU twin cities |
+| done | `dekalb` | DeKalb Public Transit | Illinois | mdb-308 NIU area |
+| done | `radford` | Radford Transit | Virginia | mdb-2415 |
+
 ## Recently completed (2026-07-09)
 
 | Status | Slug | Agency | Region | Notes |
