@@ -214,7 +214,9 @@ export async function processGtfsBuffer(
         headwayByHour: (() => {
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {
-            byHour[h] = medianHeadwayInWindow(result.times, h * 60, h * 60 + 90, 2);
+            // Two departures can be an accidental cluster on a sparse route (e.g. HRT 967).
+            // Require three before exposing an hourly sparkline headway.
+            byHour[h] = medianHeadwayInWindow(result.times, h * 60, h * 60 + 90, 3);
           }
           return byHour;
         })(),
@@ -418,7 +420,7 @@ export async function processGtfsBuffer(
       // Hourly: use a 90-min window [h*60, h*60+90] so 30-min routes show up with ≥3 departures.
       const byHour: HeadwayByHour = {};
       for (const h of SPARKLINE_HOURS) {
-        const hh = medianHeadwayInWindow(times, h * 60, h * 60 + 90, 2);
+        const hh = medianHeadwayInWindow(times, h * 60, h * 60 + 90, 3);
         byHour[h] = hh;
       }
       allStopHourHw[stopId] = byHour;
@@ -727,4 +729,3 @@ export async function processGtfsBuffer(
     livePollingSidecar,
   };
 }
-
