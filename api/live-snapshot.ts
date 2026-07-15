@@ -40,13 +40,18 @@ async function latestKey(client: S3Client, feedType: LiveFeedType, agency: strin
   const dates = [new Date(), new Date(Date.now() - 24 * 60 * 60 * 1000)];
   const keys: string[] = [];
   for (const date of dates) {
-    const result = await client.send(new ListObjectsV2Command({
-      Bucket: BUCKET,
-      Prefix: prefixFor(feedType, agency, dateString(date)),
-    }));
-    for (const object of result.Contents ?? []) {
-      if (object.Key) keys.push(object.Key);
-    }
+    let cursor: string | undefined;
+    do {
+      const result = await client.send(new ListObjectsV2Command({
+        Bucket: BUCKET,
+        Prefix: prefixFor(feedType, agency, dateString(date)),
+        ContinuationToken: cursor,
+      }));
+      for (const object of result.Contents ?? []) {
+        if (object.Key) keys.push(object.Key);
+      }
+      cursor = result.IsTruncated ? result.NextContinuationToken : undefined;
+    } while (cursor);
   }
   keys.sort((a, b) => b.localeCompare(a));
   return keys[0] ?? null;
