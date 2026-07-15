@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, LIST_ROW_DIM } from '../../styles';
+import { PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -149,30 +149,31 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       renderItem={(s: StopSearchResult) => {
         const name = `${titleCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
         return (
-          <RouteListRow
-            shortName={s.stopCode || name}
-            name={name}
-            selected={selectedStop === s.key}
-            className="border-b-0"
+          <button
+            type="button"
+            className={`${LIST_ROW} border-b-0 items-start gap-3 ${selectedStop === s.key ? 'bg-[var(--accent-bg)]' : ''}`}
             onClick={() => {
               saveRecentSearch(query);
               setQuery('');
               setSearchFocused?.(false);
               setSelectedStop(s.key);
             }}
-            right={
-              <div className="flex flex-col items-end text-right ml-2 shrink-0">
-                {s.routes.length > 0 && (
-                  <span className="text-[9px] font-bold text-[var(--text-secondary)] truncate max-w-[120px]">
-                    {s.routes.join(', ')}
-                  </span>
-                )}
-                <span className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-wider">
-                  {shortenAgencyName(s.agencyName || '')}
+          >
+            <div className="min-w-0 flex-1">
+              <p className={`${LIST_ROW_PRIMARY} truncate ${selectedStop === s.key ? 'text-[var(--accent)]' : ''}`}>{name}</p>
+              {s.stopCode && <p className={`${LIST_ROW_DIM} truncate mt-0.5`}>Stop {s.stopCode}</p>}
+            </div>
+            <div className="flex flex-col items-end text-right ml-2 shrink-0 max-w-[96px]">
+              {s.routes.length > 0 && (
+                <span className="text-[9px] font-bold text-[var(--text-secondary)] truncate max-w-full">
+                  {s.routes.join(', ')}
                 </span>
-              </div>
-            }
-          />
+              )}
+              <span className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-wider truncate max-w-full">
+                {shortenAgencyName(s.agencyName || '')}
+              </span>
+            </div>
+          </button>
         );
       }}
     />

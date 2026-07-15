@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live vehicle feed**: Restored the Live map on Vercel by handling its Node-style request headers in the serverless API.
 - **Live agency picker**: Replaced heavy row dividers with lighter spacing so the coverage list reads as grouped places.
 - **Corridors mode**: Restored the From/To station panel so the Corridors header button opens a usable route comparison experience.
+- **Stop search results**: Made stop names the primary readable label, moving stop codes and agency metadata below and beside them.
 
 ## [3.2.0] - 2026-07-14
 
