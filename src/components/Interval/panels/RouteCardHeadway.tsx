@@ -22,6 +22,8 @@ import {
   dirIdNum,
   headsignTrunkHeadway,
   sparklineSourceDirections,
+  shouldShowTrunkSummary,
+  trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import type { VariantFamily } from '../../../utils/routeVariants';
@@ -181,11 +183,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
             )
           : sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
-        const merged = sparklineHeadwayByHour(sparklineDirs, HOURS);
+        const showTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
+        const merged = showTrunkSparkline
+          ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS)
+          : sparklineHeadwayByHour(sparklineDirs, HOURS);
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (
-          <HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
+          <>
+            {showTrunkSparkline && (
+              <p className="text-[9px] font-bold text-[var(--text-dim)] mt-6 mb-[-1rem]">
+                Shared section
+              </p>
+            )}
+            <HeadwaySparkline byHour={merged} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
+          </>
         );
       })()}
       <SidebarCardList>
