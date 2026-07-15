@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [3.2.3] - 2026-07-15
+
+- **Live provider response handling**: Atlas canary snapshot and replay endpoints now return correctly through Vercel’s Node function interface.
+
 ## [3.2.2] - 2026-07-15
 
 - **Feed data-quality review**: Agencies with repeated GTFS problems now get a temporary verification notice when a new feed arrives, without carrying old feed-specific corrections forward.
