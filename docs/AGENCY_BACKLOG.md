@@ -19,6 +19,17 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
+## Recently completed (2026-07-16 — SoCal secondary batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `imperial-valley` | Imperial Valley Transit | California | tld-5547 Imperial County |
+| done | `kern-transit` | Kern Transit | California | mdb-47 county rural (not GET) |
+| done | `banning` | Banning Connect | California | mdb-220 Pass area |
+| done | `beaumont-ca` | Beaumont Transit | California | Trillium beaumont-ca-us |
+| done | `corona` | Corona Cruiser | California | Trillium corona-ca-us |
+| blocked | `anaheim-art` | Anaheim Resort Transportation | California | MDB feed has empty calendar — unusable until upstream fixed |
+
 ## Recently completed (2026-07-14 — secondary cities batch)
 
 | Status | Slug | Agency | Region | Notes |

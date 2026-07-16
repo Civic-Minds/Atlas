@@ -308,7 +308,7 @@
         "BLUE"
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/194",
-      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
+      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-15",
@@ -558,7 +558,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -618,7 +618,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -742,7 +742,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -784,7 +784,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -2019,7 +2019,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -5986,7 +5986,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {
@@ -7572,6 +7572,102 @@
         37.252,
         -80.3802
       ]
+    },
+    {
+      "slug": "imperial-valley",
+      "name": "Imperial Valley Transit",
+      "region": "California",
+      "center": [
+        32.8667,
+        -115.5497
+      ],
+      "bbox": [
+        32.6176,
+        -116.0445,
+        33.4744,
+        -115.3224
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "kern-transit",
+      "name": "Kern Transit",
+      "region": "California",
+      "center": [
+        35.3802,
+        -118.6695
+      ],
+      "bbox": [
+        34.3637,
+        -119.7441,
+        35.8253,
+        -117.5963
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-47/mdb-47-202607160119/mdb-47-202607160119.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-47/mdb-47-202607160119/mdb-47-202607160119.zip",
+      "lastFeedExpiry": "20270130",
+      "lastFeedVersion": "UTC: 15-Jul-2026 14:20",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "banning",
+      "name": "Banning Connect",
+      "region": "California",
+      "center": [
+        33.926,
+        -116.8889
+      ],
+      "bbox": [
+        33.8505,
+        -117.0019,
+        33.9932,
+        -116.7043
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-220/mdb-220-202607110120/mdb-220-202607110120.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-220/mdb-220-202607110120/mdb-220-202607110120.zip",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "UTC: 10-Jul-2026 16:23",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "beaumont-ca",
+      "name": "Beaumont Transit",
+      "region": "California",
+      "center": [
+        33.9465,
+        -116.9848
+      ],
+      "bbox": [
+        33.8633,
+        -117.3465,
+        34.1503,
+        -116.7499
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 25-Feb-2026 12:23",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "corona",
+      "name": "Corona Cruiser",
+      "region": "California",
+      "center": [
+        33.8657,
+        -117.5579
+      ],
+      "bbox": [
+        33.764,
+        -117.6514,
+        33.949,
+        -117.4563
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
+      "lastFeedExpiry": "20270228",
+      "lastFeedVersion": "UTC: 27-Jan-2026 10:04",
+      "lastRefreshedAt": "2026-07-16"
     }
   ]
 }

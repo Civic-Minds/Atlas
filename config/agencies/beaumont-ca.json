@@ -1,0 +1,19 @@
+{
+  "slug": "beaumont-ca",
+  "name": "Beaumont Transit",
+  "region": "California",
+  "center": [
+    33.9465,
+    -116.9848
+  ],
+  "bbox": [
+    33.8633,
+    -117.3465,
+    34.1503,
+    -116.7499
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 25-Feb-2026 12:23",
+  "lastRefreshedAt": "2026-07-16"
+}
