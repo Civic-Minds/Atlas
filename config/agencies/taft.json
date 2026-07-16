@@ -1,0 +1,16 @@
+{
+  "slug": "taft",
+  "name": "Taft Area Transit",
+  "region": "California",
+  "center": [
+    35.1119,
+    -119.4369
+  ],
+  "bbox": [
+    35.0059,
+    -119.5154,
+    35.2004,
+    -119.3487
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip"
+}

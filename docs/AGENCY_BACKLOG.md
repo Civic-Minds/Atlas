@@ -33,6 +33,11 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | done | `camarillo` | Camarillo Area Transit | California | Trillium camarillo-ca-us — config only |
 | done | `basin-transit` | Basin Transit | California | Trillium morongobasin-ca-us — config only |
 | done | `needles` | Needles Area Transit | California | Trillium needles-ca-us — config only |
+| done | `arvin` | Arvin Transit | California | Trillium arvin-ca-us — config only |
+| done | `moorpark` | Moorpark City Transit | California | Trillium moorparkcitytransit-ca-us — config only |
+| done | `valley-express` | Valley Express | California | Trillium valleyexpress-ca-us — config only |
+| done | `laguna-beach` | Laguna Beach Transit | California | Trillium lagunabeach-ca-us — config only |
+| done | `taft` | Taft Area Transit | California | Trillium taft-ca-us — config only (Ojai/Palo Verde lacked public zip) |
 | blocked | `anaheim-art` | Anaheim Resort Transportation | California | MDB feed has empty calendar — unusable until upstream fixed |
 
 ## Recently completed (2026-07-14 — secondary cities batch)

@@ -1,0 +1,16 @@
+{
+  "slug": "moorpark",
+  "name": "Moorpark City Transit",
+  "region": "California",
+  "center": [
+    34.2807,
+    -118.8727
+  ],
+  "bbox": [
+    34.2133,
+    -118.951,
+    34.3521,
+    -118.7852
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip"
+}

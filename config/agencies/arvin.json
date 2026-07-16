@@ -1,0 +1,16 @@
+{
+  "slug": "arvin",
+  "name": "Arvin Transit",
+  "region": "California",
+  "center": [
+    35.238,
+    -118.8859
+  ],
+  "bbox": [
+    34.9263,
+    -119.0886,
+    35.4599,
+    -118.7743
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip"
+}

@@ -3122,7 +3122,7 @@
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
       "bbox": [
-        34,
+        34.0,
         -119.5,
         34.4,
         -118.8
@@ -7744,7 +7744,10 @@
         34.3353,
         -118.7657
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip"
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 10-Jul-2026 20:16",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "simi-valley",
@@ -7760,7 +7763,10 @@
         34.3521,
         -118.5489
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip"
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
+      "lastFeedExpiry": "20230601",
+      "lastFeedVersion": "UTC: 02-Nov-2022 23:01",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "camarillo",
@@ -7776,7 +7782,10 @@
         34.293,
         -118.9246
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip"
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "UTC: 10-Jul-2026 15:49",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "basin-transit",
@@ -7792,7 +7801,10 @@
         34.3163,
         -115.9861
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip"
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 11-Jul-2026 00:25",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "needles",
@@ -7808,7 +7820,90 @@
         34.9011,
         -114.5452
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip"
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip",
+      "lastFeedExpiry": "20270701",
+      "lastFeedVersion": "UTC: 12-Jun-2026 18:10",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "arvin",
+      "name": "Arvin Transit",
+      "region": "California",
+      "center": [
+        35.238,
+        -118.8859
+      ],
+      "bbox": [
+        34.9263,
+        -119.0886,
+        35.4599,
+        -118.7743
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip"
+    },
+    {
+      "slug": "moorpark",
+      "name": "Moorpark City Transit",
+      "region": "California",
+      "center": [
+        34.2807,
+        -118.8727
+      ],
+      "bbox": [
+        34.2133,
+        -118.951,
+        34.3521,
+        -118.7852
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip"
+    },
+    {
+      "slug": "valley-express",
+      "name": "Valley Express",
+      "region": "California",
+      "center": [
+        34.3714,
+        -118.9892
+      ],
+      "bbox": [
+        34.2279,
+        -119.1554,
+        34.4654,
+        -118.7353
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/valleyexpress-ca-us/valleyexpress-ca-us.zip"
+    },
+    {
+      "slug": "laguna-beach",
+      "name": "Laguna Beach Transit",
+      "region": "California",
+      "center": [
+        33.5298,
+        -117.7669
+      ],
+      "bbox": [
+        33.4263,
+        -117.8499,
+        33.7064,
+        -117.6668
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip"
+    },
+    {
+      "slug": "taft",
+      "name": "Taft Area Transit",
+      "region": "California",
+      "center": [
+        35.1119,
+        -119.4369
+      ],
+      "bbox": [
+        35.0059,
+        -119.5154,
+        35.2004,
+        -119.3487
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip"
     }
   ]
 }
