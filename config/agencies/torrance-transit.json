@@ -1,0 +1,9 @@
+{
+  "slug": "torrance-transit",
+  "name": "Torrance Transit",
+  "center": [33.8358, -118.3406],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-torrance-transit-gtfs-34.zip?alt=media",
+  "lastFeedExpiry": "20240113",
+  "lastFeedVersion": "S1000154",
+  "lastRefreshedAt": "2026-07-16"
+}

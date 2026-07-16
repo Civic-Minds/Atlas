@@ -4,8 +4,9 @@ import { synthesizeMissingDirections } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
 import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
+import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes';
 
 export interface GtfsTransformOptions {
   routeTypes?: number[];
@@ -58,6 +59,12 @@ export function normalizeGtfs(
   if (options?.preprocess === 'london-route-names') {
     gtfs = synthesizeLondonRouteNames(gtfs);
     onStatus?.('Synthesized descriptive route long names from trip headsigns');
+  }
+  if (options?.preprocess === 'metrolink-shapes') {
+    const before = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
+    gtfs = linkMetrolinkShapes(gtfs);
+    const after = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
+    onStatus?.(`Metrolink shape linkage: ${after - before} trips linked`);
   }
   return synthesizeMissingDirections(gtfs);
 }

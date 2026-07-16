@@ -3071,10 +3071,65 @@
         -118.24
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-96/mdb-96-202605230122/mdb-96-202605230122.zip",
+      "preprocess": "metrolink-shapes",
       "lastFeedExpiry": "20360501",
       "lastFeedVersion": "20260505",
       "region": "California",
       "lastRefreshedAt": "2026-07-06"
+    },
+    {
+      "slug": "torrance-transit",
+      "name": "Torrance Transit",
+      "center": [
+        33.8358,
+        -118.3406
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-torrance-transit-gtfs-34.zip?alt=media",
+      "lastFeedExpiry": "20240113",
+      "lastFeedVersion": "S1000154",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "beach-cities-transit",
+      "name": "Beach Cities Transit",
+      "center": [
+        33.8492,
+        -118.3884
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-beach-cities-transit-gtfs-1999.zip?alt=media",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Transit Center Trip Split",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "carson-circuit",
+      "name": "Carson Circuit",
+      "center": [
+        33.8314,
+        -118.282
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
+      "lastFeedExpiry": "20210701",
+      "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "gold-coast",
+      "name": "Gold Coast Transit District",
+      "center": [
+        34.1975,
+        -119.177
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
+      "bbox": [
+        34,
+        -119.5,
+        34.4,
+        -118.8
+      ],
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "bigbluebus",
@@ -3317,6 +3372,12 @@
       "center": [
         33.87,
         -116.54
+      ],
+      "bbox": [
+        33.65,
+        -117.45,
+        34.3,
+        -116.1
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-461/tld-461-202606060105/tld-461-202606060105.zip",
       "lastFeedExpiry": "",

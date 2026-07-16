@@ -7,7 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **SoCal secondary agencies**: Added Imperial Valley Transit, Kern Transit, Banning Connect, Beaumont Transit, Corona Cruiser, Thousand Oaks Transit, Simi Valley Transit, Camarillo Area Transit, Basin Transit (Morongo Basin), and Needles Area Transit — fills major IE / Imperial / Kern / Ventura / high-desert gaps outside the big regionals.
-- **Southern California coverage**: Added Torrance Transit, Beach Cities Transit, Carson Circuit, and Gold Coast Transit District, restored Metrolink route geometry, and expanded SunLine bounds so regional Route 10 appears through San Bernardino.
+- **Southern California coverage**: Added Torrance Transit, Beach Cities Transit, Carson Circuit, and Gold Coast Transit District, repaired Metrolink's missing trip-to-shape links, and expanded SunLine bounds so regional Route 10 appears through San Bernardino.
 - **Recent searches**: Picking a route from search results now also saves the query to Recent searches (previously only Recent routes updated), so Recent searches no longer shows a stale, older query after a route pick.
 - **PMTiles coverage check**: New `npm run verify-pmtiles-coverage` compares every agency in `index.json` against the deployed PMTiles and fails loudly on any agency with zero route features rendered — catches a `build-pmtiles`/upload step that was silently skipped (confirmed 43 agencies affected, including GTrans, CTA, Metra, MARTA, and Metrolink, all present in search/sidebar with real data but invisible on the map).
 - **Live vehicle API types**: Keep the no-TTC shape fallback typed like the TTC shape map so API typechecking succeeds for all agencies.
