@@ -9,7 +9,7 @@ import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../..
 import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
-import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
+import { routeListDisplayHeadway } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice } from './cardUi';
 import { buildRouteFacts } from '../../utils/routeFacts';
 
@@ -54,41 +54,67 @@ function getRoutes(
     selectedRoute: null,
   };
 
-  const best = new Map<string, RouteRow>();
+  // Group all direction/branch features by short name first, then take the same
+  // list display metric used by Recent/Suggested (#181/#198) so the agency list
+  // never picks a lone feature's filter-oriented field (#180).
+  type Acc = {
+    props: ShapeProperties[];
+    routeId: string;
+    agencySlug: string;
+    shortName: string;
+    longName: string | null;
+    tier: string | null;
+    routeType: number;
+    busSubType: string | undefined;
+    matchesFilter: boolean;
+  };
+  const byShort = new Map<string, Acc>();
+
   for (const f of fc.features) {
     const p = f.properties as ShapeProperties;
     const facts = p.routeId ? buildRouteFacts(p, slug) : null;
     if (!facts || (p as { stopId?: string }).stopId) continue;
     if (p.day && p.day !== day) continue;
-    // Allow both directions so routes with 15min in one dir show in filters.
 
     const key = facts.shortName;
-    // Keep the filter metric separate from the value shown to users. The card's
-    // displayed headway must match the route card; minimum-stop values are only
-    // appropriate for deciding whether a route passes the frequency filter.
-    const h = routeCardDisplayHeadway(p, period);
     const matchesFilter = passesRouteFilter(p, slug, agencyFilters, null);
-    const existing = best.get(key);
-    if (!existing || (h !== null && (existing.headway === null || h < existing.headway))) {
-      best.set(key, {
+    const existing = byShort.get(key);
+    if (!existing) {
+      byShort.set(key, {
+        props: [p],
         routeId: facts.routeId,
         agencySlug: facts.agencySlug,
         shortName: facts.shortName,
         longName: facts.longName,
-        headway: h,
         tier: facts.tier,
         routeType: typeof p.routeType === 'number' ? p.routeType : 3,
         busSubType: p.busSubType ?? undefined,
         matchesFilter,
       });
+    } else {
+      existing.props.push(p);
+      // Any direction matching the filter keeps the route in the matching bucket.
+      if (matchesFilter) existing.matchesFilter = true;
     }
   }
 
-  return [...best.values()].sort((a, b) => {
-    if (a.headway === null) return 1;
-    if (b.headway === null) return -1;
-    return a.headway - b.headway;
-  });
+  return [...byShort.values()]
+    .map((row): RouteRow => ({
+      routeId: row.routeId,
+      agencySlug: row.agencySlug,
+      shortName: row.shortName,
+      longName: row.longName,
+      headway: routeListDisplayHeadway(row.props, period),
+      tier: row.tier,
+      routeType: row.routeType,
+      busSubType: row.busSubType,
+      matchesFilter: row.matchesFilter,
+    }))
+    .sort((a, b) => {
+      if (a.headway === null) return 1;
+      if (b.headway === null) return -1;
+      return a.headway - b.headway;
+    });
 }
 
 function frequencyFilterLabel(maxHeadway: number): string | null {

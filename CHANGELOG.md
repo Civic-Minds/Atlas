@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Agency list headways**: Agency card route rows use the same list display cadence as Recent/Suggested (best active-period destination headway across branches), not a filter-oriented min-stop value.
 - **Route-service metrics**: Keep route lists, nearby/transfer cards, route grouping, stop service, and live scheduled comparisons on the active period’s canonical display cadence instead of stale day, branch, or all-day values.
 - **Route suggestion hierarchy**: Reduced stacked dividers in Recent and Suggested routes so section spacing carries more of the grouping.
 - **Map selection hint**: Align the zoom-in notice with the bottom map status pills so it reads as part of the same map chrome.
