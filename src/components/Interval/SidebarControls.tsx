@@ -405,7 +405,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const dirId = d.directionId ?? 0;
       if (!map.has(dirId)) map.set(dirId, { dirId, realTier: [], span: [] });
       const g = map.get(dirId)!;
-      if (metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null) g.realTier.push(d);
+      // A span branch can still contain a numeric period gap when a few
+      // short-turn trips are clustered together (e.g. LA Metro 182). The
+      // pipeline marks that pattern as limited service; do not promote it to
+      // a normal route-card row just because the gap is numerically defined.
+      if (d.tier !== 'span' && metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null) g.realTier.push(d);
       else g.span.push(d);
     }
     // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
