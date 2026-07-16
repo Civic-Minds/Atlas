@@ -12,5 +12,8 @@
     34.3163,
     -115.9861
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip"
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 11-Jul-2026 00:25",
+  "lastRefreshedAt": "2026-07-16"
 }

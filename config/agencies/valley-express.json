@@ -12,5 +12,8 @@
     34.4654,
     -118.7353
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/valleyexpress-ca-us/valleyexpress-ca-us.zip"
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/valleyexpress-ca-us/valleyexpress-ca-us.zip",
+  "lastFeedExpiry": "20250815",
+  "lastFeedVersion": "UTC: 25-Feb-2025 03:38",
+  "lastRefreshedAt": "2026-07-16"
 }
