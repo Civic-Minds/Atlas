@@ -28,6 +28,11 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | done | `banning` | Banning Connect | California | mdb-220 Pass area |
 | done | `beaumont-ca` | Beaumont Transit | California | Trillium beaumont-ca-us |
 | done | `corona` | Corona Cruiser | California | Trillium corona-ca-us |
+| done | `thousand-oaks` | Thousand Oaks Transit | California | Trillium thousandoaks-ca-us — config only |
+| done | `simi-valley` | Simi Valley Transit | California | Trillium simivalley-ca-us — config only |
+| done | `camarillo` | Camarillo Area Transit | California | Trillium camarillo-ca-us — config only |
+| done | `basin-transit` | Basin Transit | California | Trillium morongobasin-ca-us — config only |
+| done | `needles` | Needles Area Transit | California | Trillium needles-ca-us — config only |
 | blocked | `anaheim-art` | Anaheim Resort Transportation | California | MDB feed has empty calendar — unusable until upstream fixed |
 
 ## Recently completed (2026-07-14 — secondary cities batch)

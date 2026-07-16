@@ -7668,6 +7668,86 @@
       "lastFeedExpiry": "20270228",
       "lastFeedVersion": "UTC: 27-Jan-2026 10:04",
       "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "thousand-oaks",
+      "name": "Thousand Oaks Transit",
+      "region": "California",
+      "center": [
+        34.1875,
+        -118.8824
+      ],
+      "bbox": [
+        33.9714,
+        -119.3169,
+        34.3353,
+        -118.7657
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip"
+    },
+    {
+      "slug": "simi-valley",
+      "name": "Simi Valley Transit",
+      "region": "California",
+      "center": [
+        34.273,
+        -118.7405
+      ],
+      "bbox": [
+        34.1796,
+        -118.8864,
+        34.3521,
+        -118.5489
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip"
+    },
+    {
+      "slug": "camarillo",
+      "name": "Camarillo Area Transit",
+      "region": "California",
+      "center": [
+        34.2246,
+        -119.0211
+      ],
+      "bbox": [
+        34.1661,
+        -119.1242,
+        34.293,
+        -118.9246
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip"
+    },
+    {
+      "slug": "basin-transit",
+      "name": "Basin Transit",
+      "region": "California",
+      "center": [
+        34.1262,
+        -116.243
+      ],
+      "bbox": [
+        33.7741,
+        -116.6336,
+        34.3163,
+        -115.9861
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip"
+    },
+    {
+      "slug": "needles",
+      "name": "Needles Area Transit",
+      "region": "California",
+      "center": [
+        34.8375,
+        -114.6108
+      ],
+      "bbox": [
+        34.7719,
+        -114.6742,
+        34.9011,
+        -114.5452
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip"
     }
   ]
 }

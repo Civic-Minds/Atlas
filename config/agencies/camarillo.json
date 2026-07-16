@@ -1,0 +1,16 @@
+{
+  "slug": "camarillo",
+  "name": "Camarillo Area Transit",
+  "region": "California",
+  "center": [
+    34.2246,
+    -119.0211
+  ],
+  "bbox": [
+    34.1661,
+    -119.1242,
+    34.293,
+    -118.9246
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip"
+}

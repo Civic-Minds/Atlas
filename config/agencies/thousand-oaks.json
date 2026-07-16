@@ -1,0 +1,16 @@
+{
+  "slug": "thousand-oaks",
+  "name": "Thousand Oaks Transit",
+  "region": "California",
+  "center": [
+    34.1875,
+    -118.8824
+  ],
+  "bbox": [
+    33.9714,
+    -119.3169,
+    34.3353,
+    -118.7657
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip"
+}

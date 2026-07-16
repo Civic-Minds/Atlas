@@ -1,0 +1,16 @@
+{
+  "slug": "basin-transit",
+  "name": "Basin Transit",
+  "region": "California",
+  "center": [
+    34.1262,
+    -116.243
+  ],
+  "bbox": [
+    33.7741,
+    -116.6336,
+    34.3163,
+    -115.9861
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip"
+}
