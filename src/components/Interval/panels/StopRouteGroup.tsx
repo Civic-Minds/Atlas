@@ -1,6 +1,7 @@
 import React from 'react';
 import { isLivePollingRoute } from '../../../utils/livePolling';
 import { titleCase, getRouteLabel, resolveBranchLabel } from '../../../utils/format';
+import { metricValueForPeriod } from '../../../utils/routeFacts';
 import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import {
   CardDirectionRow,
@@ -12,7 +13,7 @@ import {
 import type { StopBranch } from './StopCard';
 
 function branchHeadway(branch: StopBranch, period: TimePeriod): number | null {
-  return (period !== 'all' ? branch.service.byPeriod?.[period] : undefined) ?? branch.service.value;
+  return metricValueForPeriod(branch.service, period);
 }
 
 interface Props {
