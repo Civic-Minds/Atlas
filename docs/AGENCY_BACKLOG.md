@@ -19,6 +19,14 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
+## Recently completed (2026-07-16 — Seattle specialty)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| todo | `seattle-streetcar` | Seattle Streetcar | Washington | KCM multi-agency zip (`agency_id` 23); must filter on process |
+| todo | `seattle-monorail` | Seattle Center Monorail | Washington | Trillium seattlemonorail-wa-us — config only |
+| todo | `snoqualmie-valley` | Snoqualmie Valley Transportation | Washington | Trillium snoqualmie-wa-us — config only |
+
 ## Recently completed (2026-07-16 — SoCal secondary batch)
 
 | Status | Slug | Agency | Region | Notes |

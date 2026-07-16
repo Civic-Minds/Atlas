@@ -308,7 +308,7 @@
         "BLUE"
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/194",
-      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
+      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-15",
@@ -558,7 +558,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -618,7 +618,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -742,7 +742,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -784,7 +784,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -2019,7 +2019,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -3122,7 +3122,7 @@
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
       "bbox": [
-        34,
+        34.0,
         -119.5,
         34.4,
         -118.8
@@ -6047,7 +6047,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {
@@ -7919,6 +7919,55 @@
       "lastFeedExpiry": "20211231",
       "lastFeedVersion": "UTC: 17-Feb-2021 22:17",
       "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "seattle-monorail",
+      "name": "Seattle Center Monorail",
+      "region": "Washington",
+      "center": [
+        47.6166,
+        -122.3433
+      ],
+      "bbox": [
+        47.592,
+        -122.3697,
+        47.6413,
+        -122.3169
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip"
+    },
+    {
+      "slug": "snoqualmie-valley",
+      "name": "Snoqualmie Valley Transportation",
+      "region": "Washington",
+      "center": [
+        47.6035,
+        -121.8701
+      ],
+      "bbox": [
+        47.4132,
+        -122.0294,
+        47.8881,
+        -121.7323
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip"
+    },
+    {
+      "slug": "seattle-streetcar",
+      "name": "Seattle Streetcar",
+      "region": "Washington",
+      "center": [
+        47.6114,
+        -122.3277
+      ],
+      "bbox": [
+        47.5791,
+        -122.3586,
+        47.6477,
+        -122.294
+      ],
+      "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
+      "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST."
     }
   ]
 }

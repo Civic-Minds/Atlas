@@ -1,0 +1,17 @@
+{
+  "slug": "seattle-streetcar",
+  "name": "Seattle Streetcar",
+  "region": "Washington",
+  "center": [
+    47.6114,
+    -122.3277
+  ],
+  "bbox": [
+    47.5791,
+    -122.3586,
+    47.6477,
+    -122.294
+  ],
+  "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
+  "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST."
+}
