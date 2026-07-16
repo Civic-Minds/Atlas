@@ -899,7 +899,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Zoom Control Overlay */}
-      <div className={`absolute bottom-20 right-3 ${Z_PANEL} flex flex-col rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md overflow-hidden pointer-events-auto`}>
+      <div className={`absolute bottom-16 right-3 ${Z_PANEL} flex flex-col rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md overflow-hidden pointer-events-auto`}>
         <button
           onClick={() => mapRef.current?.zoomIn({ duration: 200 })}
           aria-label="Zoom in"

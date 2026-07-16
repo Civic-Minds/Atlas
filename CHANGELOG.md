@@ -21,6 +21,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live feed errors**: "Feed unavailable" now shows the actual reason (timed out, unreachable, unreadable data) and which agency, instead of one generic message for everything. A feed that's been down for multiple retries in a row says so instead of implying it'll definitely recover. A partial failure (trip delay data down but positions still working) no longer degrades silently.
 - **Recently seen at this stop (TTC)**: The stop card's live section now also shows recently observed passages from GPS position history, alongside the predicted arrivals — "what actually happened" next to "what the feed predicts."
 - **Map cursor**: Hovering a clickable stop or route now shows a pointer instead of the default cursor.
+- **Map control spacing**: Tightened the gap between the zoom buttons and the locate button to match the spacing already used elsewhere in the same corner.
 
 ## [3.2.5] - 2026-07-16
 
