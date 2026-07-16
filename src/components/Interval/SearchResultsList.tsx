@@ -4,7 +4,7 @@ import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
-import { shortenAgencyName, titleCase } from '../../utils/format';
+import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -91,22 +91,25 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       inView={agencySections.inView}
       elsewhere={agencySections.elsewhere}
       itemKey={(g: AgencySearchGroup) => g.key}
-      renderItem={(g: AgencySearchGroup) => (
-        <RouteListRow
-          shortName={shortenAgencyName(g.name)}
-          className="border-b-0"
-          onClick={() => {
-            setSelectedAgencySlug?.(g.slug);
-            setQuery('');
-            setSearchFocused?.(false);
-          }}
-          right={
-            <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
-              {g.region}
-            </span>
-          }
-        />
-      )}
+      renderItem={(g: AgencySearchGroup) => {
+        const { primary, secondary } = agencyDisplayParts(g.name);
+        return (
+          <RouteListRow
+            shortName={primary}
+            className="border-b-0"
+            onClick={() => {
+              setSelectedAgencySlug?.(g.slug);
+              setQuery('');
+              setSearchFocused?.(false);
+            }}
+            right={secondary && (
+              <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
+                {secondary}
+              </span>
+            )}
+          />
+        );
+      }}
     />
   ) : null;
 

@@ -22,6 +22,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Recently seen at this stop (TTC)**: The stop card's live section now also shows recently observed passages from GPS position history, alongside the predicted arrivals — "what actually happened" next to "what the feed predicts."
 - **Map cursor**: Hovering a clickable stop or route now shows a pointer instead of the default cursor.
 - **Map control spacing**: Tightened the gap between the zoom buttons and the locate button to match the spacing already used elsewhere in the same corner.
+- **Agency search results**: Search and the agency card now use the same name/place logic as the agency browse list — a place shows next to the name only when the name doesn't already say it, instead of repeating the same region on every row (searching "California" no longer shows "California" 78 times in a row).
 
 ## [3.2.5] - 2026-07-16
 

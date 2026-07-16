@@ -6,7 +6,7 @@ import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
-import { getRouteLabel, shortenAgencyName, titleCase } from '../../utils/format';
+import { agencyDisplayParts, getRouteLabel, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { routeListDisplayHeadway } from '../../utils/effectiveHeadway';
@@ -319,6 +319,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     [agency.slug]
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
+  const { primary: agencyNamePrimary, secondary: agencyNameSecondary } = useMemo(
+    () => agencyDisplayParts(agency.name),
+    [agency.name],
+  );
 
   return (
     <div
@@ -328,7 +332,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     >
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="min-w-0">
-          <p className={`${CARD_TITLE} mb-0`}>{shortenAgencyName(agency.name)}</p>
+          <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
           {fareView ? (
             <>
               {fareOverride?.free ? (
@@ -376,7 +380,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           <>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
             {[
-              agency.region,
+              agencyNameSecondary,
               buildHeaderSummary(visibleRoutes, maxHeadway),
             ].filter(Boolean).join(' · ')}
           </p>
