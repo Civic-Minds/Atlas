@@ -909,7 +909,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             period={period}
             nearbyConnections={nearbyConnections as NearbyConnection[]}
             liveStop={currentStop.agencySlug && currentStop.stopId
-              ? { slug: currentStop.agencySlug as string, stopId: currentStop.stopId as string }
+              ? { slug: currentStop.agencySlug as string, stopId: currentStop.stopId as string, lat: currentStop.lat as number, lon: currentStop.lon as number }
               : null}
             onDirectFromStop={onDirectFromStop ? () => {
               const stopName = currentStop.stopName as string;

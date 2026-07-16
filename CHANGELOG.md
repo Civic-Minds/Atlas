@@ -13,6 +13,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **TTC streetcar live gap status**: Fixed shape-matching that silently degraded to "no data" on routes with multiple branch/diversion shapes — position projection now interpolates along the nearest segment instead of snapping to the nearest vertex, and picks whichever shape candidate vehicles actually match instead of assuming the longest one.
 - **Live Vehicles list dividers**: Vehicle and route rows now use the lighter spacing already applied to the agency picker, instead of a heavy border on every row.
 - **Live feed errors**: "Feed unavailable" now shows the actual reason (timed out, unreachable, unreadable data) and which agency, instead of one generic message for everything. A feed that's been down for multiple retries in a row says so instead of implying it'll definitely recover. A partial failure (trip delay data down but positions still working) no longer degrades silently.
+- **Recently seen at this stop (TTC)**: The stop card's live section now also shows recently observed passages from GPS position history, alongside the predicted arrivals — "what actually happened" next to "what the feed predicts."
 
 ## [3.2.5] - 2026-07-16
 

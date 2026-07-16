@@ -1,6 +1,5 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import type { GeoJSON } from 'geojson';
-import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_TIMEZONES } from '../shared/livePollingConfig.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
@@ -12,6 +11,7 @@ import {
 import { isRateLimited } from '../shared/rateLimit.js';
 import { vehicleHeadwayGapMinFromShape } from '../shared/liveHeadway.js';
 import { pickBestShape, shapesFromGeometry, type Shape } from '../shared/shapeProjection.js';
+import { fetchRecentPositions } from '../shared/liveArchive.js';
 
 export const config = {
   maxDuration: 60,
@@ -105,39 +105,12 @@ async function fetchProtoFeed(
   }
 }
 
-function liveArchiveClient(): S3Client | null {
-  const accountId = process.env.R2_ACCOUNT_ID;
-  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-  if (!accountId || !accessKeyId || !secretAccessKey) return null;
-  return new S3Client({
-    region: 'auto',
-    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
-    credentials: { accessKeyId, secretAccessKey },
-  });
-}
-
 async function fetchRecentTtcArchive(): Promise<any[] | null> {
-  const client = liveArchiveClient();
-  if (!client) return null;
-  const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto' }).format(new Date());
-  try {
-    const listed = await client.send(new ListObjectsV2Command({
-      Bucket: process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live',
-      Prefix: `positions/ttc/${date}/`,
-    }));
-    const keys = (listed.Contents ?? []).filter(o => o.Key).sort((a, b) => String(b.Key).localeCompare(String(a.Key))).slice(0, 3);
-    const snapshots = await Promise.all(keys.map(async ({ Key }) => {
-      const object = await client.send(new GetObjectCommand({
-        Bucket: process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live',
-        Key: Key!,
-      }));
-      return JSON.parse(await object.Body!.transformToString());
-    }));
-    return snapshots.flatMap(snapshot => snapshot.vehicles ?? []);
-  } catch {
-    return null;
-  }
+  // Short window — this is a short-lived fallback for a vehicle missing from
+  // the *current* feed during a refresh, not a historical query.
+  const snapshots = await fetchRecentPositions('ttc', 3);
+  if (snapshots.length === 0) return null;
+  return snapshots.flatMap(s => s.vehicles);
 }
 
 async function fetchTtcShapes(): Promise<Map<string, Shape[]>> {

@@ -1,20 +1,71 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
+import { fetchRecentPositions } from '../shared/liveArchive.js';
+import { haversineM } from '../shared/shapeProjection.js';
 
 export const config = {
-  maxDuration: 30,
+  maxDuration: 60,
 };
+
+// Archived positions are TTC streetcars only, so this only ever applies there.
+const OBSERVED_ARRIVALS_SLUG = 'ttc';
+const OBSERVED_WINDOW_MINUTES = 60;
+const STOP_MATCH_MAX_DIST_M = 80;
+
+interface ObservedArrival {
+  route: string;
+  epoch: number;
+}
+
+/**
+ * Estimate recent passage times at a stop from archived GPS positions:
+ * for each vehicle, the sample closest to the stop (within ~80m) is treated
+ * as its passage moment. This is "what actually happened," distinct from
+ * the predicted arrivals below ("what the schedule/RT feed says should").
+ */
+async function fetchObservedArrivals(
+  routeIdToShortName: Map<string, string>,
+  stopLat: number,
+  stopLon: number,
+): Promise<ObservedArrival[]> {
+  const snapshots = await fetchRecentPositions(OBSERVED_ARRIVALS_SLUG, OBSERVED_WINDOW_MINUTES);
+
+  const bestByVehicle = new Map<string, { distM: number; epoch: number; route: string }>();
+  for (const { capturedAt, vehicles } of snapshots) {
+    for (const v of vehicles) {
+      const routeShortName = routeIdToShortName.get(v.r);
+      if (!routeShortName) continue;
+      const distM = haversineM(v.lat, v.lon, stopLat, stopLon);
+      if (distM > STOP_MATCH_MAX_DIST_M) continue;
+      const epoch = v.t ?? capturedAt;
+      const existing = bestByVehicle.get(v.id);
+      if (!existing || distM < existing.distM) {
+        bestByVehicle.set(v.id, { distM, epoch, route: routeShortName });
+      }
+    }
+  }
+
+  return [...bestByVehicle.values()]
+    .map(({ epoch, route }) => ({ route, epoch }))
+    .sort((a, b) => b.epoch - a.epoch)
+    .slice(0, 8);
+}
 
 /**
  * Live arrivals at a single stop, from the agency's GTFS-RT TripUpdates:
  * upcoming predicted arrivals across all live-configured routes serving it,
  * plus the observed gap between them ("coming every ~N min right now").
+ * When stop coordinates are supplied and the agency has archived positions
+ * (TTC only today), also returns recently *observed* passages from GPS —
+ * what actually happened, not just what the feed predicts.
  */
 export default async function handler(req: Request) {
   const raw = req.url ?? '';
   const qs = new URLSearchParams(raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : raw);
   const agencySlug = qs.get('agency');
   const stopId = qs.get('stop');
+  const stopLat = qs.get('lat') != null ? Number(qs.get('lat')) : null;
+  const stopLon = qs.get('lon') != null ? Number(qs.get('lon')) : null;
 
   if (!agencySlug || !stopId) {
     return new Response(JSON.stringify({ error: 'agency and stop are required' }), {
@@ -46,6 +97,11 @@ export default async function handler(req: Request) {
   for (const c of configs) {
     for (const rid of c.routeIds) routeIdToShortName.set(rid, c.displayRouteShortName);
   }
+
+  const measuredArrivalsPromise: Promise<ObservedArrival[]> =
+    agencySlug === OBSERVED_ARRIVALS_SLUG && stopLat != null && stopLon != null && Number.isFinite(stopLat) && Number.isFinite(stopLon)
+      ? fetchObservedArrivals(routeIdToShortName, stopLat, stopLon).catch(() => [])
+      : Promise.resolve([]);
 
   try {
     const res = await fetch(url, { headers, signal: AbortSignal.timeout(15_000) });
@@ -90,8 +146,10 @@ export default async function handler(req: Request) {
       }
     }
 
+    const measuredArrivals = await measuredArrivalsPromise;
+
     return new Response(
-      JSON.stringify({ now, arrivals: arrivals.slice(0, 8), observedGapMin }),
+      JSON.stringify({ now, arrivals: arrivals.slice(0, 8), observedGapMin, measuredArrivals }),
       {
         status: 200,
         headers: {
