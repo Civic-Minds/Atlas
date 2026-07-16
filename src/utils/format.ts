@@ -313,7 +313,7 @@ function looksLikeBrandCode(s: string): boolean {
 export function shortenAgencyName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';
-  if (lower.includes('sfmta') || lower.includes('muni')) return 'SFMTA';
+  if (lower.includes('sfmta') || /\bmuni\b/.test(lower)) return 'SFMTA';
   if (lower.includes('bart')) return 'BART';
   if (lower.includes('caltrain')) return 'Caltrain';
   if (lower.includes('samtrans')) return 'SamTrans';

@@ -25,6 +25,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Search suggestions dividers**: "Recent searches" was the only section header with its own trailing divider, so a single recent search read as boxed in between two lines close together. All section dividers now come from the same side (leading, above the next header) and are inset from the panel edges instead of full-width.
 - **Recent search text weight**: A recent search query was rendered at the heaviest available weight, heavier than even route codes in the same panel. Brought down a step to match its role as a label, not a code.
 - **Agency search results**: Search and the agency card now use the same name/place logic as the agency browse list — a place shows next to the name only when the name doesn't already say it, instead of repeating the same region on every row (searching "California" no longer shows "California" 78 times in a row).
+- **Agency name mislabeling**: Any agency whose name contains "Municipal" or "Community" (e.g. Gardena Municipal Bus Lines) was mislabeled "SFMTA" in route search results — a substring check meant to catch San Francisco's "Muni" brand matched "muni" inside unrelated words. Now matches "Muni" as a whole word only.
 
 ## [3.2.5] - 2026-07-16
 
