@@ -870,7 +870,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       {/* Geolocate Button Control Overlay */}
       {mapHint && (
-        <div className={`absolute bottom-20 left-1/2 -translate-x-1/2 ${Z_PANEL} px-3 py-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-xs text-[var(--text-muted)] shadow-lg pointer-events-none`}>
+        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} px-3 py-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-xs text-[var(--text-muted)] shadow-lg pointer-events-none`}>
           {mapHint}
         </div>
       )}
