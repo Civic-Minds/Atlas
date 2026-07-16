@@ -1,0 +1,17 @@
+{
+  "slug": "jfk-airtrain",
+  "name": "JFK AirTrain",
+  "region": "New York",
+  "center": [
+    40.6553,
+    -73.7977
+  ],
+  "bbox": [
+    40.612,
+    -73.8596,
+    40.7289,
+    -73.7501
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-522/latest.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media"
+}

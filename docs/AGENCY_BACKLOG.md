@@ -19,6 +19,18 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 
 ---
 
+## Recently completed (2026-07-16 — continent specialty batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| todo | `jfk-airtrain` | JFK AirTrain | New York | mdb-522 — config only |
+| todo | `staten-island-ferry` | Staten Island Ferry | New York | mdb-518 — config only |
+| todo | `nyc-ferry` | NYC Ferry | New York | mdb-515 — config only |
+| todo | `rioc-tram` | Roosevelt Island Tramway | New York | mdb-1109 — config only |
+| todo | `guadalajara` | Mi Transporte (Guadalajara) | Jalisco | mdb-2366 first MX — config only |
+| blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
+| blocked | `cheyenne` / `casper` / `rapid-city` | Wyoming / Rapid City SD | — | No public GTFS in MDB |
+
 ## Recently completed (2026-07-14 — secondary cities batch)
 
 | Status | Slug | Agency | Region | Notes |

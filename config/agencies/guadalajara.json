@@ -1,0 +1,17 @@
+{
+  "slug": "guadalajara",
+  "name": "Mi Transporte (Guadalajara)",
+  "region": "Jalisco",
+  "center": [
+    20.6432,
+    -103.3595
+  ],
+  "bbox": [
+    20.3852,
+    -103.5947,
+    20.8891,
+    -103.1204
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2366/latest.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media"
+}

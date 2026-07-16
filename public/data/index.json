@@ -308,7 +308,7 @@
         "BLUE"
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/194",
-      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
+      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-15",
@@ -558,7 +558,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -618,7 +618,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -742,7 +742,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -784,7 +784,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -2019,7 +2019,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -5986,7 +5986,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {
@@ -7572,6 +7572,91 @@
         37.252,
         -80.3802
       ]
+    },
+    {
+      "slug": "jfk-airtrain",
+      "name": "JFK AirTrain",
+      "region": "New York",
+      "center": [
+        40.6553,
+        -73.7977
+      ],
+      "bbox": [
+        40.612,
+        -73.8596,
+        40.7289,
+        -73.7501
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-522/latest.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media"
+    },
+    {
+      "slug": "staten-island-ferry",
+      "name": "Staten Island Ferry",
+      "region": "New York",
+      "center": [
+        40.6728,
+        -74.0424
+      ],
+      "bbox": [
+        40.6142,
+        -74.1022,
+        40.7314,
+        -73.9827
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-518/latest.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-staten-island-ferry-gtfs-518.zip?alt=media"
+    },
+    {
+      "slug": "nyc-ferry",
+      "name": "NYC Ferry",
+      "region": "New York",
+      "center": [
+        40.6499,
+        -73.8963
+      ],
+      "bbox": [
+        40.5362,
+        -74.1042,
+        40.8355,
+        -73.7391
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media"
+    },
+    {
+      "slug": "rioc-tram",
+      "name": "Roosevelt Island Tramway",
+      "region": "New York",
+      "center": [
+        40.7611,
+        -73.9512
+      ],
+      "bbox": [
+        40.7234,
+        -73.9942,
+        40.7989,
+        -73.9129
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1109/latest.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-roosevelt-island-operating-corporation-tramway-rioc-tramway-gtfs-1109.zip?alt=media"
+    },
+    {
+      "slug": "guadalajara",
+      "name": "Mi Transporte (Guadalajara)",
+      "region": "Jalisco",
+      "center": [
+        20.6432,
+        -103.3595
+      ],
+      "bbox": [
+        20.3852,
+        -103.5947,
+        20.8891,
+        -103.1204
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2366/latest.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media"
     }
   ]
 }

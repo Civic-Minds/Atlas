@@ -1,0 +1,17 @@
+{
+  "slug": "nyc-ferry",
+  "name": "NYC Ferry",
+  "region": "New York",
+  "center": [
+    40.6499,
+    -73.8963
+  ],
+  "bbox": [
+    40.5362,
+    -74.1042,
+    40.8355,
+    -73.7391
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media"
+}

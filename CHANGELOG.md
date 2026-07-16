@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Continent specialty agencies**: Added JFK AirTrain, Staten Island Ferry, NYC Ferry, Roosevelt Island Tramway, and Guadalajara Mi Transporte — NYC water/airport specialties plus first Mexico coverage. Config only.
 - **Recent searches**: Picking a route from search results now also saves the query to Recent searches (previously only Recent routes updated), so Recent searches no longer shows a stale, older query after a route pick.
 - **PMTiles coverage check**: New `npm run verify-pmtiles-coverage` compares every agency in `index.json` against the deployed PMTiles and fails loudly on any agency with zero route features rendered — catches a `build-pmtiles`/upload step that was silently skipped (confirmed 43 agencies affected, including GTrans, CTA, Metra, MARTA, and Metrolink, all present in search/sidebar with real data but invisible on the map).
 - **Live vehicle API types**: Keep the no-TTC shape fallback typed like the TTC shape map so API typechecking succeeds for all agencies.

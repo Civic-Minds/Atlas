@@ -1,0 +1,17 @@
+{
+  "slug": "rioc-tram",
+  "name": "Roosevelt Island Tramway",
+  "region": "New York",
+  "center": [
+    40.7611,
+    -73.9512
+  ],
+  "bbox": [
+    40.7234,
+    -73.9942,
+    40.7989,
+    -73.9129
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1109/latest.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-roosevelt-island-operating-corporation-tramway-rioc-tramway-gtfs-1109.zip?alt=media"
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "staten-island-ferry",
+  "name": "Staten Island Ferry",
+  "region": "New York",
+  "center": [
+    40.6728,
+    -74.0424
+  ],
+  "bbox": [
+    40.6142,
+    -74.1022,
+    40.7314,
+    -73.9827
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-518/latest.zip",
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-staten-island-ferry-gtfs-518.zip?alt=media"
+}
