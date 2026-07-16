@@ -11,7 +11,7 @@ import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_R
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
-import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { buildRouteServiceSummary } from '../utils/routeFacts';
 
 interface Props {
@@ -36,6 +36,9 @@ interface RouteGroup {
 }
 
 const POLL_INTERVAL_MS = 15_000;
+// After this many consecutive failures (~45s), stop implying the feed will
+// definitely recover — it may be structurally broken, not a transient blip.
+const STUCK_FAIL_THRESHOLD = 3;
 
 // Eligible slugs: no API key required, or explicitly marked active
 const ELIGIBLE_SLUGS = new Set(
@@ -77,6 +80,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const [headwaysBySlug, setHeadwaysBySlug] = useState<Record<string, Record<string, { gapMin: number; samples: number }>>>({});
   const [loadingBySlug, setLoadingBySlug] = useState<Record<string, boolean>>({});
   const [errorBySlug, setErrorBySlug] = useState<Record<string, string | null>>({});
+  // Consecutive failures per slug — used to soften "will retry automatically"
+  // once a feed has clearly been down for a while, not just a blip.
+  const [failCountBySlug, setFailCountBySlug] = useState<Record<string, number>>({});
+  const [degradedBySlug, setDegradedBySlug] = useState<Record<string, string | null>>({});
 
   // Locally-fetched agency GeoJSON (fallback when Interval layers haven't loaded yet)
   const [localLayers, setLocalLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
@@ -107,15 +114,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const res = await fetch(`/api/live-vehicles?agency=${slug}`);
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `HTTP ${res.status}`);
+        throw new Error(errData.error || "Can't reach this feed right now.");
       }
       const data = await res.json();
       const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
       setVehiclesBySlug(prev => ({ ...prev, [slug]: tagged }));
       setHeadwaysBySlug(prev => ({ ...prev, [slug]: data.headways || {} }));
       setErrorBySlug(prev => ({ ...prev, [slug]: null }));
+      setFailCountBySlug(prev => (prev[slug] ? { ...prev, [slug]: 0 } : prev));
+      setDegradedBySlug(prev => ({ ...prev, [slug]: data.degraded ? (data.degradedReason ?? 'Some data unavailable') : null }));
     } catch (err: any) {
       setErrorBySlug(prev => ({ ...prev, [slug]: err.message || 'Feed unavailable' }));
+      setFailCountBySlug(prev => ({ ...prev, [slug]: (prev[slug] ?? 0) + 1 }));
     }
   }, []);
 
@@ -126,6 +136,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       setHeadwaysBySlug({});
       setLoadingBySlug({});
       setErrorBySlug({});
+      setFailCountBySlug({});
+      setDegradedBySlug({});
       return;
     }
 
@@ -170,6 +182,21 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const allVehicles = useMemo(() => Object.values(vehiclesBySlug).flat(), [vehiclesBySlug]);
   const isLoading = Object.values(loadingBySlug).some(Boolean);
   const errors = Object.values(errorBySlug).filter(Boolean) as string[];
+
+  // Group failing agencies by identical message+stuck-state so "everyone's down
+  // for the same reason" reads as one line instead of repeating per agency.
+  const errorGroups = useMemo(() => {
+    const groups = new Map<string, { message: string; stuck: boolean; agencyNames: string[] }>();
+    for (const [slug, message] of Object.entries(errorBySlug)) {
+      if (!message) continue;
+      const stuck = (failCountBySlug[slug] ?? 0) >= STUCK_FAIL_THRESHOLD;
+      const key = `${message}::${stuck}`;
+      const agencyName = agencyDisplayName(agencies, slug);
+      if (!groups.has(key)) groups.set(key, { message, stuck, agencyNames: [] });
+      groups.get(key)!.agencyNames.push(agencyName);
+    }
+    return Array.from(groups.values());
+  }, [errorBySlug, failCountBySlug, agencies]);
 
   // Fetch GeoJSON for any visible agency that has live vehicles and isn't loaded yet
   useEffect(() => {
@@ -659,12 +686,34 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             ) : hasAnyError ? (
               <div className="py-6 text-center px-4 flex flex-col items-center gap-3">
                 <WifiOff className="w-5 h-5 text-[var(--text-dim)]" />
-                <div>
-                  <p className="text-xs font-bold text-[var(--text-primary)]">Feed unavailable</p>
-                  <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">
-                    Unable to reach the live feed. It will retry automatically.
-                  </p>
-                </div>
+                {(() => {
+                  const totalFailing = errorGroups.reduce((n, g) => n + g.agencyNames.length, 0);
+                  const allStuck = errorGroups.every(g => g.stuck);
+                  // Naming every agency only helps when there's one to name — once
+                  // everything in view is down, a single generic line reads cleaner.
+                  if (totalFailing === 1) {
+                    const { message, stuck, agencyNames } = errorGroups[0];
+                    return (
+                      <div>
+                        <p className="text-xs font-bold text-[var(--text-primary)]">{agencyNames[0]}</p>
+                        <p className="text-[10px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
+                          {message}
+                          {stuck ? ' — still trying, but this has been down for a while.' : ' It will retry automatically.'}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div>
+                      <p className="text-xs font-bold text-[var(--text-primary)]">Live feeds unavailable</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
+                        {allStuck
+                          ? 'Still trying, but these have been down for a while.'
+                          : "Can't reach the live feeds in this area right now. They'll retry automatically."}
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
             ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
               query ? (
@@ -699,6 +748,17 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               )
             ) : (
               <>
+                {errors.length > 0 && (
+                  <div className="flex items-center gap-1.5 px-4 py-2 border-b border-[var(--border-primary)] text-[10px] font-bold text-amber-500">
+                    <WifiOff className="w-3 h-3 shrink-0" />
+                    <span className="truncate">
+                      {Object.entries(errorBySlug)
+                        .filter((entry): entry is [string, string] => Boolean(entry[1]))
+                        .map(([slug]) => agencies.find(a => a.slug === slug)?.name ?? slug)
+                        .join(', ')} unreachable
+                    </span>
+                  </div>
+                )}
                 {offScreenOnly && !query && (
                   <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
                     Outside this view · {totalVehicles} vehicle{totalVehicles === 1 ? '' : 's'}

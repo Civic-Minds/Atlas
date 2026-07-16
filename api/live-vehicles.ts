@@ -36,10 +36,25 @@ function requestHeader(req: Request & { headers: Headers | Record<string, string
   return Array.isArray(value) ? value[0] ?? null : value ?? null;
 }
 
+type FeedFailureReason = 'timeout' | 'http-error' | 'decode-error';
+
+type FeedFetchResult =
+  | { ok: true; data: any }
+  | { ok: false; reason: FeedFailureReason; detail: string };
+
+// Frontend already shows the agency name as a heading above this message,
+// so these stay agency-agnostic and plain — no jargon, no repeating "live feed".
+const FEED_FAILURE_MESSAGES: Record<FeedFailureReason, string> = {
+  timeout: "This feed is taking too long to respond.",
+  'http-error': "Can't reach this feed right now.",
+  'decode-error': "This feed sent back data we can't read.",
+};
+
 async function fetchProtoFeed(
   url: string,
+  label: string,
   opts?: { apiKeyParam?: string; apiKeyHeader?: string }
-) {
+): Promise<FeedFetchResult> {
   let finalUrl = url;
   const headers: Record<string, string> = {
     'User-Agent': 'atlas-live-vehicles/1.0 (https://atlas.civicminds.org)',
@@ -61,19 +76,30 @@ async function fetchProtoFeed(
       signal: controller.signal,
     });
     if (!res.ok) {
-      console.warn(`Feed fetch failed: HTTP ${res.status} for ${url}`);
-      return null;
+      console.warn(`[live-vehicles] ${label} feed HTTP ${res.status}: ${url}`);
+      return { ok: false, reason: 'http-error', detail: `upstream returned HTTP ${res.status}` };
     }
     const buffer = await res.arrayBuffer();
-    const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
-    return GtfsRealtimeBindings.transit_realtime.FeedMessage.toObject(feed, {
-      longs: String,
-      enums: String,
-      bytes: String,
-    });
+    try {
+      const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
+      const data = GtfsRealtimeBindings.transit_realtime.FeedMessage.toObject(feed, {
+        longs: String,
+        enums: String,
+        bytes: String,
+      });
+      return { ok: true, data };
+    } catch (decodeErr) {
+      console.error(`[live-vehicles] ${label} feed failed to decode: ${url}`, decodeErr);
+      return { ok: false, reason: 'decode-error', detail: 'upstream returned unreadable data' };
+    }
   } catch (err) {
-    console.error(`Failed to fetch proto feed from ${url}:`, err);
-    return null;
+    const timedOut = err instanceof Error && err.name === 'AbortError';
+    console.error(`[live-vehicles] ${label} feed ${timedOut ? 'timed out' : 'fetch failed'}: ${url}`, err);
+    return {
+      ok: false,
+      reason: timedOut ? 'timeout' : 'http-error',
+      detail: timedOut ? 'upstream timed out' : 'could not reach upstream',
+    };
   } finally {
     clearTimeout(timeout);
   }
@@ -176,9 +202,9 @@ export default async function handler(req: Request) {
 
   try {
     // Fetch positions, trip updates, and static trips lookup in parallel
-    const [positionsFeed, updatesFeed, tripsLookup, liveSidecar, archivedPositions, ttcShapes] = await Promise.all([
-      fetchProtoFeed(vehiclePositionsUrl, fetchOpts),
-      fetchProtoFeed(tripUpdatesUrl, fetchOpts),
+    const [positionsResult, updatesResult, tripsLookup, liveSidecar, archivedPositions, ttcShapes] = await Promise.all([
+      fetchProtoFeed(vehiclePositionsUrl, `${agencySlug} positions`, fetchOpts),
+      fetchProtoFeed(tripUpdatesUrl, `${agencySlug} updates`, fetchOpts),
       fetch(`${R2_PUBLIC_URL}/atlas/${agencySlug}-trips.json`)
         .then(r => r.ok ? r.json() as Promise<Record<string, { d: number; h: string | null }>> : null)
         .catch(() => null),
@@ -189,15 +215,30 @@ export default async function handler(req: Request) {
       agencySlug === 'ttc' ? fetchTtcShapes() : Promise.resolve(new Map<string, GeoJSON.Feature>()),
     ]);
 
-    if (!positionsFeed) {
+    if (!positionsResult.ok) {
       return new Response(
-        JSON.stringify({ error: `Could not load vehicle positions for agency: ${agencySlug}` }),
+        JSON.stringify({
+          error: FEED_FAILURE_MESSAGES[positionsResult.reason],
+          reason: positionsResult.reason,
+        }),
         {
           status: 502,
           headers: { 'Content-Type': 'application/json' },
         }
       );
     }
+    const positionsFeed = positionsResult.data;
+
+    // Trip updates are optional context (delay/headsign) — a failure here degrades
+    // data quality rather than blocking positions, but it shouldn't be silent.
+    const degraded = !updatesResult.ok;
+    const degradedReason = updatesResult.ok
+      ? null
+      : "Arrival time and delay info isn't available right now.";
+    if (!updatesResult.ok) {
+      console.warn(`[live-vehicles] ${agencySlug}: trip updates unavailable (${updatesResult.reason}), continuing with positions only`);
+    }
+    const updatesFeed = updatesResult.ok ? updatesResult.data : null;
 
     // Map live routeIds to their display names
     const routeIdToShortName = new Map<string, string>();
@@ -429,7 +470,7 @@ export default async function handler(req: Request) {
       }
     }
 
-    return new Response(JSON.stringify({ vehicles, headways }), {
+    return new Response(JSON.stringify({ vehicles, headways, degraded, degradedReason }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -437,7 +478,7 @@ export default async function handler(req: Request) {
       },
     });
   } catch (err: unknown) {
-    console.error('[live-vehicles]', err);
+    console.error(`[live-vehicles] agency=${agencySlug}`, err);
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

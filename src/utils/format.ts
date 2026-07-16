@@ -403,6 +403,16 @@ export function shortenAgencyName(name: string): string {
   return name;
 }
 
+/**
+ * Look up an agency's display name by slug and shorten it in one step.
+ * Prefer this over `agencies.find(a => a.slug === slug)?.name` — the raw
+ * lookup is easy to reach for and easy to forget to shorten.
+ */
+export function agencyDisplayName(agencies: { slug: string; name: string }[], slug: string): string {
+  const agency = agencies.find(a => a.slug === slug);
+  return agency ? shortenAgencyName(agency.name) : slug;
+}
+
 /** Destination label for route/stop cards — matches route card `to …` convention. */
 function withToPrefix(label: string): string {
   if (!label) return '';
