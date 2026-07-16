@@ -7689,6 +7689,23 @@
         -103.1417
       ],
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13102/rts_corc_gtfs.zip"
+    },
+    {
+      "slug": "sioux-city",
+      "name": "Sioux City Transit",
+      "region": "Iowa",
+      "center": [
+        42.4955,
+        -96.3987
+      ],
+      "bbox": [
+        42.342,
+        -96.5278,
+        42.5752,
+        -96.2992
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-191/latest.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-iowa-sioux-city-transit-system-gtfs-191.zip?alt=media"
     }
   ]
 }

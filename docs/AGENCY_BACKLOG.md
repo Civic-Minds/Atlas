@@ -30,6 +30,7 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | todo | `guadalajara` | Mi Transporte (Guadalajara) | Jalisco | mdb-2366 first MX — config only |
 | todo | `cheyenne` | Cheyenne Transit Program | Wyoming | National RTAP CTP_gtfs — first WY — config only |
 | todo | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs — config only |
+| todo | `sioux-city` | Sioux City Transit System | Iowa | mdb-191 — config only |
 | blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
 | todo | `casper` | Casper Area Transit | Wyoming | ntd-80013 inactive but has zip — not added yet |
 
