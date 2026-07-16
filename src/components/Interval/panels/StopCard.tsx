@@ -55,7 +55,7 @@ export interface StopCardProps {
   nearbyConnections: NearbyConnection[];
   onDirectFromStop?: () => void;
   /** Live arrivals lookup — set when the stop belongs to a live-capable agency. */
-  liveStop?: { slug: string; stopId: string } | null;
+  liveStop?: { slug: string; stopId: string; lat: number; lon: number } | null;
 }
 
 export const StopCard: React.FC<StopCardProps> = ({
@@ -120,7 +120,7 @@ export const StopCard: React.FC<StopCardProps> = ({
         </button>
       )}
 
-      {liveStop && <LiveStopArrivals slug={liveStop.slug} stopId={liveStop.stopId} />}
+      {liveStop && <LiveStopArrivals slug={liveStop.slug} stopId={liveStop.stopId} lat={liveStop.lat} lon={liveStop.lon} />}
 
       <SidebarCardList>
         {sortedRoutes.map(route => (
