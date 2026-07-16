@@ -36,17 +36,18 @@ export function statusForAge(ageSeconds: number): 'fresh' | 'degraded' | 'stale'
 
 export function normalizeSnapshot(raw: any, feedType: LiveFeedType, agency: string, key: string) {
   const capturedAt = Number(raw.capturedAt ?? raw.ts ?? key.match(/(\d{10})\.json$/)?.[1] ?? 0);
-  const records = raw.records ?? (feedType === 'vehicle_positions'
-    ? (raw.vehicles ?? []).map((v: any) => ({
-        id: v.id ?? '', routeId: v.r ?? '', tripId: v.tripId ?? '', directionId: v.d ?? null,
-        lat: v.lat, lon: v.lon, speedKmh: v.spd ?? null, bearing: v.brg ?? null,
+  const sourceRecords = raw.records ?? (feedType === 'vehicle_positions' ? raw.vehicles : raw.trips) ?? [];
+  const records = feedType === 'vehicle_positions'
+    ? sourceRecords.map((v: any) => ({
+        id: v.id ?? '', routeId: v.routeId ?? v.r ?? '', tripId: v.tripId ?? '', directionId: v.directionId ?? v.d ?? null,
+        lat: v.lat, lon: v.lon, speedKmh: v.speedKmh ?? v.spd ?? null, bearing: v.bearing ?? v.brg ?? null,
         stopId: v.stopId ?? null, stopSequence: v.stopSequence ?? null,
-        currentStatus: v.currentStatus ?? null, reportedAt: v.t ?? null,
+        currentStatus: v.currentStatus ?? null, reportedAt: v.reportedAt ?? v.t ?? null,
       }))
-    : (raw.trips ?? []).map((t: any) => ({
-        tripId: t.id ?? '', routeId: t.r ?? '', directionId: t.d ?? null,
-        delaySeconds: t.delay ?? null,
-      })));
+    : sourceRecords.map((t: any) => ({
+        tripId: t.tripId ?? t.id ?? '', routeId: t.routeId ?? t.r ?? '', directionId: t.directionId ?? t.d ?? null,
+        delaySeconds: t.delaySeconds ?? t.delay ?? null,
+      }));
 
   return {
     schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION,

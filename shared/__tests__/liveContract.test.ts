@@ -12,6 +12,15 @@ describe('Atlas live provider contract', () => {
     expect(snapshot.records[0]).toMatchObject({ id: 'v1', routeId: '510', speedKmh: 12, reportedAt: 1_699_999_999 });
   });
 
+  it('normalizes compact records written by the live archiver', () => {
+    const snapshot = normalizeSnapshot({
+      capturedAt: 1_700_000_000,
+      records: [{ id: 'v2', r: '504', d: '0', lat: 43.7, lon: -79.3, spd: 24, brg: 180, t: 1_699_999_998 }],
+    }, 'vehicle_positions', 'ttc', 'positions/ttc/2023-11-14/1700000000.json');
+
+    expect(snapshot.records[0]).toMatchObject({ id: 'v2', routeId: '504', directionId: '0', speedKmh: 24, bearing: 180, reportedAt: 1_699_999_998 });
+  });
+
   it('keeps freshness thresholds explicit', () => {
     expect(statusForAge(90)).toBe('fresh');
     expect(statusForAge(300)).toBe('degraded');
