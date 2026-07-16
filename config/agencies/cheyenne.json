@@ -1,0 +1,16 @@
+{
+  "slug": "cheyenne",
+  "name": "Cheyenne Transit Program",
+  "region": "Wyoming",
+  "center": [
+    41.1387,
+    -104.7953
+  ],
+  "bbox": [
+    41.0798,
+    -104.86,
+    41.1944,
+    -104.7193
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip"
+}

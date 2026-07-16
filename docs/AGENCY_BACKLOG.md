@@ -28,8 +28,10 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | todo | `nyc-ferry` | NYC Ferry | New York | mdb-515 — config only |
 | todo | `rioc-tram` | Roosevelt Island Tramway | New York | mdb-1109 — config only |
 | todo | `guadalajara` | Mi Transporte (Guadalajara) | Jalisco | mdb-2366 first MX — config only |
+| todo | `cheyenne` | Cheyenne Transit Program | Wyoming | National RTAP CTP_gtfs — first WY — config only |
+| todo | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs — config only |
 | blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
-| blocked | `cheyenne` / `casper` / `rapid-city` | Wyoming / Rapid City SD | — | No public GTFS in MDB |
+| todo | `casper` | Casper Area Transit | Wyoming | ntd-80013 inactive but has zip — not added yet |
 
 ## Recently completed (2026-07-14 — secondary cities batch)
 

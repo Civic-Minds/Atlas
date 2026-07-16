@@ -7657,6 +7657,38 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2366/latest.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media"
+    },
+    {
+      "slug": "cheyenne",
+      "name": "Cheyenne Transit Program",
+      "region": "Wyoming",
+      "center": [
+        41.1387,
+        -104.7953
+      ],
+      "bbox": [
+        41.0798,
+        -104.86,
+        41.1944,
+        -104.7193
+      ],
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip"
+    },
+    {
+      "slug": "rapid-city",
+      "name": "Rapid Transit System",
+      "region": "South Dakota",
+      "center": [
+        44.0773,
+        -103.2264
+      ],
+      "bbox": [
+        44.0029,
+        -103.3224,
+        44.1411,
+        -103.1417
+      ],
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13102/rts_corc_gtfs.zip"
     }
   ]
 }

@@ -1,0 +1,16 @@
+{
+  "slug": "rapid-city",
+  "name": "Rapid Transit System",
+  "region": "South Dakota",
+  "center": [
+    44.0773,
+    -103.2264
+  ],
+  "bbox": [
+    44.0029,
+    -103.3224,
+    44.1411,
+    -103.1417
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13102/rts_corc_gtfs.zip"
+}
