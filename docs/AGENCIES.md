@@ -4,6 +4,19 @@ Reference for Atlas agency coverage across static data, live polling, and histor
 
 ---
 
+## Display Naming
+
+Two rules, applied together wherever an agency name renders in the UI:
+
+1. **Name**: use `shortenAgencyName()` (`src/utils/format.ts`) — never the raw `index.json` name directly. It collapses known long-form/legal names to the callsign riders actually use (e.g. "Bay Area Rapid Transit (BART)" → "BART").
+2. **Secondary text**: if the (shortened) name doesn't already contain the city/place, show the city as secondary text next to it. If the name already contains it (e.g. "Edmonton Transit Service" → "ETS" — city's implied by the source name even after shortening), don't repeat it.
+
+Prefer `agencyDisplayName(agencies, slug)` (`src/utils/format.ts`) over a raw `agencies.find(a => a.slug === slug)?.name` lookup — it's the lookup+shorten combined so rule 1 can't be forgotten at a new call site. Rule 2 (secondary text) still needs to be applied explicitly per component, since not every surface has room for a second line.
+
+**Known violations as of 2026-07-16** (found during a Live-feature session, not yet fixed): TransLink shows with no city/province secondary text; Big Blue Bus shows with no city; some agencies get abbreviated inconsistently relative to others in the same list. Worth an audit pass across `SearchResultsList.tsx`, `LiveVehicles.tsx`, `AgencyCard.tsx`, and `History.tsx` — the places agency name + secondary text render together.
+
+---
+
 ## Static Coverage
 
 438 agencies as of July 15, 2026.
