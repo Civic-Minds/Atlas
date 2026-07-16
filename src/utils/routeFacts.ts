@@ -60,7 +60,14 @@ function periodHeadwayFromByHour(
 /** Resolve one named metric using the canonical period/hour fallback order. */
 export function metricValueForPeriod(metricValue: HeadwayMetric, period: ServicePeriod): number | null {
   if (period !== 'all') {
-    return metricValue.byPeriod?.[period] ?? periodHeadwayFromByHour(metricValue.byHour, period) ?? metricValue.value;
+    // Explicit null in byPeriod means "no service / not computed for this period".
+    // Do not fall through to raw hourly mins — those can be bunching spikes
+    // (e.g. TTC 506 hour 26 = 2 min while overnight period summary is null → #206).
+    if (metricValue.byPeriod && Object.prototype.hasOwnProperty.call(metricValue.byPeriod, period)) {
+      const periodValue = metricValue.byPeriod[period as keyof NonNullable<typeof metricValue.byPeriod>];
+      return periodValue ?? null;
+    }
+    return periodHeadwayFromByHour(metricValue.byHour, period) ?? metricValue.value;
   }
   return metricValue.value;
 }

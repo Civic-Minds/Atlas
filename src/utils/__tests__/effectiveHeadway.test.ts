@@ -109,4 +109,26 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([outbound, inbound], 'pmPeak')).toBe(9);
     expect(effectiveRouteHeadway(inbound, 'pmPeak')).toBe(1);
   });
+
+  it('Near You does not show overnight hourly spikes when period summary is null (#206)', () => {
+    const p = {
+      ...base,
+      routeShortName: '506',
+      routeLongName: 'Carlton',
+      headway: 10,
+      headwayByPeriod: {
+        amPeak: 10,
+        midday: 10,
+        pmPeak: 10,
+        evening: 10,
+        late: 10,
+        overnight: null,
+      },
+      headwayByHour: { 26: 2 },
+    } as ShapeProperties;
+
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBeNull();
+    expect(routeListDisplayHeadway([p], 'overnight')).toBeNull();
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
+  });
 });
