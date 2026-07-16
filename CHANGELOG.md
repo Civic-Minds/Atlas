@@ -22,6 +22,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Recently seen at this stop (TTC)**: The stop card's live section now also shows recently observed passages from GPS position history, alongside the predicted arrivals — "what actually happened" next to "what the feed predicts."
 - **Map cursor**: Hovering a clickable stop or route now shows a pointer instead of the default cursor.
 - **Map control spacing**: Tightened the gap between the zoom buttons and the locate button to match the spacing already used elsewhere in the same corner.
+- **Search suggestions dividers**: "Recent searches" was the only section header with its own trailing divider, so a single recent search read as boxed in between two lines close together. All section dividers now come from the same side (leading, above the next header) and are inset from the panel edges instead of full-width.
+- **Recent search text weight**: A recent search query was rendered at the heaviest available weight, heavier than even route codes in the same panel. Brought down a step to match its role as a label, not a code.
 - **Agency search results**: Search and the agency card now use the same name/place logic as the agency browse list — a place shows next to the name only when the name doesn't already say it, instead of repeating the same region on every row (searching "California" no longer shows "California" 78 times in a row).
 
 ## [3.2.5] - 2026-07-16

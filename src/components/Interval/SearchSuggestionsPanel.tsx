@@ -87,7 +87,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
     <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
       {recentSearches.length > 0 && (
         <>
-          <div className={`flex items-center justify-between border-b border-[var(--border-primary)] ${PANEL_SECTION_HEAD}`}>
+          <div className={`flex items-center justify-between ${PANEL_SECTION_HEAD}`}>
             <span>Recent searches</span>
             <button
               onClick={clearRecentSearches}
@@ -103,7 +103,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                 onClick={() => setQuery(s)}
                 className={`${LIST_ROW} border-b-0`}
               >
-                <span className={LIST_ROW_PRIMARY}>{s}</span>
+                <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">{s}</span>
                 <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
               </button>
             ))}
@@ -115,7 +115,8 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
         <>
           {suggestedFareAgencies.length > 0 && (
             <>
-              <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : ''}`}>
+              {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
+              <div className={PANEL_SECTION_HEAD}>
                 Suggested agencies
               </div>
               <div>
@@ -139,7 +140,8 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
         <>
           {recentlyViewed.length > 0 && (
             <>
-              <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+              {recentSearches.length > 0 && <div className="mx-4 border-t border-[var(--border-primary)]" />}
+              <div className={PANEL_SECTION_HEAD}>
                 Recent routes
               </div>
               <div>
@@ -162,7 +164,8 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
           )}
           {suggestedRoutes.length > 0 && (
             <>
-              <div className={`${PANEL_SECTION_HEAD} ${(recentSearches.length > 0 || recentlyViewed.length > 0) ? 'border-t border-[var(--border-primary)]' : ''}`}>
+              {(recentSearches.length > 0 || recentlyViewed.length > 0) && <div className="mx-4 border-t border-[var(--border-primary)]" />}
+              <div className={PANEL_SECTION_HEAD}>
                 Suggested routes
               </div>
               <div>
