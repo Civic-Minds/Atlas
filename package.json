@@ -28,6 +28,7 @@
     "find-mdb": "npx tsx pipeline/find-mdb-feed.ts",
     "discover-gaps": "npx tsx pipeline/discover-gaps.ts",
     "upload-pmtiles": "npx tsx pipeline/upload-pmtiles.ts",
+    "verify-pmtiles-coverage": "npx tsx pipeline/verify-pmtiles-coverage.ts",
     "sync-agency-count": "node -e \"const fs=require('fs');const count=JSON.parse(fs.readFileSync('public/data/index.json','utf8')).agencies.length;const p='docs/AGENCIES.md';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace(/^(\\d+) agencies as of/m,count+' agencies as of'));console.log('Updated AGENCIES.md: '+count+' agencies');\""
   },
   "dependencies": {
@@ -53,6 +54,7 @@
   "devDependencies": {
     "@emnapi/core": "1.11.2",
     "@emnapi/runtime": "1.11.2",
+    "@mapbox/vector-tile": "^3.0.0",
     "@tailwindcss/vite": "^4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -63,6 +65,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "esbuild": "0.28.1",
     "jsdom": "^29.1.1",
+    "pbf": "^5.1.2",
     "postcss": "^8.5.19",
     "tailwindcss": "^4.3.2",
     "tsx": "^4.23.1",
