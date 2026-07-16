@@ -10,11 +10,15 @@ import {
   serviceDayStartEpoch,
 } from '../shared/liveVehicleDelay.js';
 import { isRateLimited } from '../shared/rateLimit.js';
-import { vehicleHeadwayGapMin } from '../shared/liveHeadway.js';
+import { vehicleHeadwayGapMinFromShape } from '../shared/liveHeadway.js';
+import { pickBestShape, shapesFromGeometry, type Shape } from '../shared/shapeProjection.js';
 
 export const config = {
   maxDuration: 60,
 };
+
+// Same threshold used by scripts/streetcar-headways.ts for consistency.
+const TTC_SHAPE_MATCH_MAX_DIST_M = 120;
 
 function queryParams(req: Request & { url?: string }): URLSearchParams {
   const raw = req.url ?? '';
@@ -110,19 +114,20 @@ async function fetchRecentTtcArchive(): Promise<any[] | null> {
   }
 }
 
-async function fetchTtcShapes(): Promise<Map<string, GeoJSON.Feature>> {
-  const shapes = new Map<string, GeoJSON.Feature>();
+async function fetchTtcShapes(): Promise<Map<string, Shape[]>> {
+  const shapes = new Map<string, Shape[]>();
   try {
     const res = await fetch(`${R2_PUBLIC_URL}/atlas/ttc.json`);
     if (!res.ok) return shapes;
     const data = await res.json() as { features?: GeoJSON.Feature[] };
     for (const feature of data.features ?? []) {
       const p = feature.properties as Record<string, unknown> | null;
-      if (!p?.routeShortName || feature.geometry?.type !== 'LineString') continue;
+      if (!p?.routeShortName) continue;
+      const parts = shapesFromGeometry(feature.geometry as { type: string; coordinates: unknown } | null);
+      if (parts.length === 0) continue;
       const key = `${p.routeShortName}::${p.directionId ?? 0}`;
-      const existing = shapes.get(key);
-      const length = feature.geometry.coordinates.length;
-      if (!existing || length > (existing.geometry as GeoJSON.LineString).coordinates.length) shapes.set(key, feature);
+      if (!shapes.has(key)) shapes.set(key, []);
+      shapes.get(key)!.push(...parts);
     }
   } catch {
     // Headway status is optional; live positions still render if shapes are unavailable.
@@ -364,12 +369,9 @@ export default async function handler(req: Request) {
         let statusLabel: string | null = null;
         let headwayGapMin: number | null = null;
         if (agencySlug === 'ttc') {
-          const shapeFeature = ttcShapes.get(`${routeShortName}::${directionId ?? 0}`)
+          const candidates = ttcShapes.get(`${routeShortName}::${directionId ?? 0}`)
             ?? [...ttcShapes.entries()].find(([key]) => key.startsWith(`${routeShortName}::`))?.[1];
-          const shape = shapeFeature?.geometry?.type === 'LineString'
-            ? { coordinates: shapeFeature.geometry.coordinates as [number, number][] }
-            : null;
-          if (shape) {
+          if (candidates && candidates.length > 0) {
             const peers = currentPositionPeers
               .filter(v => v.routeId === routeId)
               .map(v => ({ id: v.id, lat: v.lat, lon: v.lon, speedKmh: v.speedKmh, directionId: v.directionId }));
@@ -379,15 +381,23 @@ export default async function handler(req: Request) {
               if (archived.r !== routeId || currentPositionPeers.some(v => v.id === archived.id)) continue;
               peers.push({ id: archived.id, lat: archived.lat, lon: archived.lon, speedKmh: archived.spd, directionId: null });
             }
-            headwayGapMin = vehicleHeadwayGapMin(
-              { id: vp.vehicle?.id || tripId || `${lat}-${lon}`, lat: Number(lat), lon: Number(lon), speedKmh: vp.position?.speed != null ? Number(vp.position.speed) * 3.6 : null, directionId },
-              peers,
-              shape,
-            );
-            if (headwayGapMin != null) {
-              statusLabel = `${Math.round(headwayGapMin)}m gap`;
-              const scheduled = configs.find(c => c.displayRouteShortName === routeShortName)?.scheduledHeadwayMin ?? 10;
-              delayMin = Math.round((headwayGapMin - scheduled) * 10) / 10;
+            // When a route+direction has multiple shape candidates (branches,
+            // diversions, or MultiLineString parts), pick whichever one this
+            // vehicle and its peers actually sit closest to.
+            const shape = candidates.length === 1
+              ? candidates[0]
+              : pickBestShape(candidates, s => s, [{ lat: Number(lat), lon: Number(lon) }, ...peers], TTC_SHAPE_MATCH_MAX_DIST_M);
+            if (shape) {
+              headwayGapMin = vehicleHeadwayGapMinFromShape(
+                { id: vp.vehicle?.id || tripId || `${lat}-${lon}`, lat: Number(lat), lon: Number(lon), speedKmh: vp.position?.speed != null ? Number(vp.position.speed) * 3.6 : null, directionId },
+                peers,
+                shape,
+              );
+              if (headwayGapMin != null) {
+                statusLabel = `${Math.round(headwayGapMin)}m gap`;
+                const scheduled = configs.find(c => c.displayRouteShortName === routeShortName)?.scheduledHeadwayMin ?? 10;
+                delayMin = Math.round((headwayGapMin - scheduled) * 10) / 10;
+              }
             }
           }
         }

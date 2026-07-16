@@ -66,10 +66,13 @@ describe('liveVehicleDelay', () => {
       { id: 'a', lat: 0, lon: 0, speedKmh: 30, directionId: 0 },
       [
         { id: 'a', lat: 0, lon: 0, speedKmh: 30, directionId: 0 },
+        // Sits 70% of the way along the only segment (lon 0 -> 0.01); with
+        // segment-interpolated projection this should resolve to ~70% of the
+        // segment's ~1112m length (~778m), not snap to either endpoint.
         { id: 'b', lat: 0, lon: 0.007, speedKmh: 30, directionId: 0 },
       ],
       shape,
     );
-    expect(gap).toBeCloseTo(2.2, 1);
+    expect(gap).toBeCloseTo(1.6, 1);
   });
 });

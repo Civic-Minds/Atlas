@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Map zoom controls**: Added +/- buttons for zooming the map, since scroll/pinch was the only way to zoom before.
+- **TTC streetcar live gap status**: Fixed shape-matching that silently degraded to "no data" on routes with multiple branch/diversion shapes — position projection now interpolates along the nearest segment instead of snapping to the nearest vertex, and picks whichever shape candidate vehicles actually match instead of assuming the longest one.
 
 ## [3.2.5] - 2026-07-16
 
