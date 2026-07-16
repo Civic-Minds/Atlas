@@ -359,6 +359,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             name={routeListCompanionName(g.displayName, g.routeShortName)}
             selected={isSelected}
             onClick={() => handleRouteClick(key)}
+            className="border-b-0 mb-0.5"
             right={
               <div className="flex items-center gap-1.5 shrink-0 ml-3">
                 <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
@@ -578,7 +579,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     <button
                       key={dirKey}
                       onClick={() => setSelectedDirection(dirKey)}
-                      className={LIST_ROW}
+                      className={`${LIST_ROW} border-b-0 mb-0.5`}
                     >
                       <div className="min-w-0 flex-1">
                         <p className={`${LIST_ROW_PRIMARY} truncate`}>{label}</p>
@@ -612,7 +613,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   const label = delayLabel(v);
                   const colors = STATUS_COLORS[v.status];
                   return (
-                    <div key={v.id} className={`${LIST_ROW} cursor-default hover:bg-transparent`}>
+                    <div key={v.id} className={`${LIST_ROW} border-b-0 mb-0.5 cursor-default hover:bg-transparent`}>
                       <p className={`${LIST_ROW_PRIMARY} flex-1 min-w-0 truncate group-hover:text-[var(--text-primary)]`}>
                         {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
                       </p>
