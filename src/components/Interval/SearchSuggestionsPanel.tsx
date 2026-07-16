@@ -115,7 +115,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
         <>
           {suggestedFareAgencies.length > 0 && (
             <>
-              <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+              <div className={`${PANEL_SECTION_HEAD} ${recentSearches.length > 0 ? 'border-t border-[var(--border-primary)]' : ''}`}>
                 Suggested agencies
               </div>
               <div>
@@ -162,7 +162,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
           )}
           {suggestedRoutes.length > 0 && (
             <>
-              <div className={`${PANEL_SECTION_HEAD} ${(recentSearches.length > 0 || recentlyViewed.length > 0) ? 'border-t border-[var(--border-primary)]' : 'border-b border-[var(--border-primary)]'}`}>
+              <div className={`${PANEL_SECTION_HEAD} ${(recentSearches.length > 0 || recentlyViewed.length > 0) ? 'border-t border-[var(--border-primary)]' : ''}`}>
                 Suggested routes
               </div>
               <div>
