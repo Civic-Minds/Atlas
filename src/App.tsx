@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useDeferredValue } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, Info } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
@@ -88,6 +88,8 @@ export default function App() {
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [query, setQuery] = useState('');
+  // Search scans / map filters / prefetch run from this so keystrokes can paint first.
+  const deferredQuery = useDeferredValue(query);
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -418,7 +420,7 @@ export default function App() {
               }
               lightMode={lightMode}
               setLightMode={setLightMode}
-              query={query}
+              query={deferredQuery}
               setQuery={setQuery}
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
@@ -451,7 +453,7 @@ export default function App() {
               active={inCorridors}
               sidebarLeft={sidebarLeft}
             />
-            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={query} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
             {liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <LiveVehicles
@@ -460,7 +462,7 @@ export default function App() {
                   setLightMode={setLightMode}
                   active={inLive}
                   onInfoOpen={openInfo}
-                  query={query}
+                  query={deferredQuery}
                   layers={layers}
                   sidebarLeft={sidebarLeft}
                 />

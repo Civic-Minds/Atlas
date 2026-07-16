@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Search typing lag**: Keep the search field on immediate local state and defer full route/stop scans (plus cache geometry bboxes) so keystrokes paint without waiting for multi-agency search work.
 - **Route-service metrics**: Keep route lists, nearby/transfer cards, route grouping, stop service, and live scheduled comparisons on the active period’s canonical display cadence instead of stale day, branch, or all-day values.
 - **Route suggestion hierarchy**: Reduced stacked dividers in Recent and Suggested routes so section spacing carries more of the grouping.
 - **Map selection hint**: Align the zoom-in notice with the bottom map status pills so it reads as part of the same map chrome.
