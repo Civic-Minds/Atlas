@@ -101,4 +101,29 @@ describe('routeFacts', () => {
       provenance: 'period-summary',
     }, 'midday')).toBe(15);
   });
+
+  it('does not treat explicit null period summaries as missing (issue #206)', () => {
+    // TTC 506: overnight period is null but hour 26 has a 2-min bunching spike.
+    expect(metricValueForPeriod({
+      value: 10,
+      byPeriod: {
+        amPeak: 10,
+        midday: 10,
+        pmPeak: 10,
+        evening: 10,
+        late: 10,
+        overnight: null,
+      },
+      byHour: { 26: 2 },
+      provenance: 'period-summary',
+    }, 'overnight')).toBeNull();
+
+    // Still fall back to hourly/all-day when the period key is absent entirely.
+    expect(metricValueForPeriod({
+      value: 10,
+      byPeriod: { midday: 10 },
+      byHour: { 26: 2 },
+      provenance: 'period-summary',
+    }, 'overnight')).toBe(2);
+  });
 });

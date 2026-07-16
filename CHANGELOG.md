@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Near You / period headways**: When a period summary is explicitly null (no service), stop falling through to raw hourly mins that can be bunching spikes (e.g. “every 2 min” overnight).
 - **Route-service metrics**: Keep route lists, nearby/transfer cards, route grouping, stop service, and live scheduled comparisons on the active period’s canonical display cadence instead of stale day, branch, or all-day values.
 - **Route suggestion hierarchy**: Reduced stacked dividers in Recent and Suggested routes so section spacing carries more of the grouping.
 - **Map selection hint**: Align the zoom-in notice with the bottom map status pills so it reads as part of the same map chrome.
