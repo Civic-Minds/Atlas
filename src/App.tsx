@@ -302,7 +302,7 @@ export default function App() {
           <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        {/* AppDrawer hidden — History/Fares remain URL-only; Corridors + Live use header toggles. */}
+        {/* AppDrawer hidden — History/Fares/Corridors are URL-only; Corridors is reached via a stop card's "Corridors from here…" link; Live uses the header toggle. */}
 
         <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div ref={searchBarRef} className="flex-1 min-w-0 sm:flex">

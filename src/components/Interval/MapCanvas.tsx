@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { LocateFixed } from 'lucide-react';
+import { LocateFixed, Plus, Minus } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
@@ -874,12 +874,30 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           {mapHint}
         </div>
       )}
+
+      {/* Zoom Control Overlay */}
+      <div className={`absolute bottom-20 right-3 ${Z_PANEL} flex flex-col rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md overflow-hidden pointer-events-auto`}>
+        <button
+          onClick={() => mapRef.current?.zoomIn({ duration: 200 })}
+          aria-label="Zoom in"
+          className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] border-b border-[var(--border-primary)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => mapRef.current?.zoomOut({ duration: 200 })}
+          aria-label="Zoom out"
+          className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+        >
+          <Minus className="w-3.5 h-3.5" />
+        </button>
+      </div>
       <button
         onClick={locateUser}
         aria-label="Go to my location"
-        className={`absolute bottom-6 right-3 ${Z_PANEL} w-9 h-9 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
+        className={`absolute bottom-6 right-3 ${Z_PANEL} w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
       >
-        <LocateFixed className="w-4 h-4" />
+        <LocateFixed className="w-3.5 h-3.5" />
       </button>
 
     </div>
