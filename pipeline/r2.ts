@@ -12,6 +12,7 @@
  */
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { promisify } from 'node:util';
 
 function requireEnv(key: string): string {
   const v = process.env[key];
@@ -45,6 +46,33 @@ function sleep(ms: number): Promise<void> {
 function isRetryableR2Error(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
   return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up|EPIPE/i.test(msg);
+}
+
+async function rclonePutFile(key: string, filePath: string, bucket: string): Promise<void> {
+  const { mkdtemp, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { execFile } = await import('node:child_process');
+  const execFileAsync = promisify(execFile);
+  const configDir = await mkdtemp(`${tmpdir()}/atlas-rclone-`);
+  const configPath = `${configDir}/rclone.conf`;
+  const accountId = requireEnv('R2_ACCOUNT_ID');
+
+  await writeFile(configPath, `[atlas]\ntype = s3\nprovider = Cloudflare\naccess_key_id = ${requireEnv('R2_ACCESS_KEY_ID')}\nsecret_access_key = ${requireEnv('R2_SECRET_ACCESS_KEY')}\nendpoint = https://${accountId}.r2.cloudflarestorage.com\n`, { mode: 0o600 });
+  try {
+    console.warn('  Falling back to rclone for the large R2 upload...');
+    await execFileAsync('rclone', [
+      'copyto', filePath, `atlas:${bucket}/${key}`,
+      '--config', configPath,
+      '--s3-chunk-size', '32M',
+      '--s3-upload-concurrency', '1',
+      '--no-check-dest',
+      '--retries', '10',
+      '--low-level-retries', '20',
+    ], { maxBuffer: 2 * 1024 * 1024 });
+  } finally {
+    await rm(configDir, { recursive: true, force: true });
+  }
+  console.log(`  rclone upload complete: ${key}`);
 }
 
 async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string, contentLength?: number): Promise<void> {
@@ -93,7 +121,7 @@ export async function r2PutFile(key: string, filePath: string, contentType: stri
   if (size >= 100 * 1024 * 1024) {
     // Multipart upload — tolerates transient SSL errors per part
     const client = getR2Client();
-    const maxPartRetries = 5;
+    const maxPartRetries = 2;
     // Retry the whole multipart upload on transient SSL errors
     for (let attempt = 1; attempt <= maxPartRetries; attempt++) {
       const up = new Upload({
@@ -120,6 +148,10 @@ export async function r2PutFile(key: string, filePath: string, contentType: stri
           console.warn(`\n  multipart upload error (attempt ${attempt}), retrying...`);
           await new Promise(r => setTimeout(r, 1000 * attempt));
           continue;
+        }
+        if (isRetryableR2Error(err)) {
+          await rclonePutFile(key, filePath, bucket);
+          return r2PublicUrl(key);
         }
         throw err;
       }

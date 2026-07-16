@@ -3071,10 +3071,65 @@
         -118.24
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-96/mdb-96-202605230122/mdb-96-202605230122.zip",
+      "preprocess": "metrolink-shapes",
       "lastFeedExpiry": "20360501",
       "lastFeedVersion": "20260505",
       "region": "California",
       "lastRefreshedAt": "2026-07-06"
+    },
+    {
+      "slug": "torrance-transit",
+      "name": "Torrance Transit",
+      "center": [
+        33.8358,
+        -118.3406
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-torrance-transit-gtfs-34.zip?alt=media",
+      "lastFeedExpiry": "20240113",
+      "lastFeedVersion": "S1000154",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "beach-cities-transit",
+      "name": "Beach Cities Transit",
+      "center": [
+        33.8492,
+        -118.3884
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-beach-cities-transit-gtfs-1999.zip?alt=media",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Transit Center Trip Split",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "carson-circuit",
+      "name": "Carson Circuit",
+      "center": [
+        33.8314,
+        -118.282
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
+      "lastFeedExpiry": "20210701",
+      "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "gold-coast",
+      "name": "Gold Coast Transit District",
+      "center": [
+        34.1975,
+        -119.177
+      ],
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
+      "bbox": [
+        34.0,
+        -119.5,
+        34.4,
+        -118.8
+      ],
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "bigbluebus",
@@ -3317,6 +3372,12 @@
       "center": [
         33.87,
         -116.54
+      ],
+      "bbox": [
+        33.65,
+        -117.45,
+        34.3,
+        -116.1
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-461/tld-461-202606060105/tld-461-202606060105.zip",
       "lastFeedExpiry": "",
@@ -7706,6 +7767,341 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-191/latest.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-iowa-sioux-city-transit-system-gtfs-191.zip?alt=media"
+    },
+    {
+      "slug": "imperial-valley",
+      "name": "Imperial Valley Transit",
+      "region": "California",
+      "center": [
+        32.8667,
+        -115.5497
+      ],
+      "bbox": [
+        32.6176,
+        -116.0445,
+        33.4744,
+        -115.3224
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "kern-transit",
+      "name": "Kern Transit",
+      "region": "California",
+      "center": [
+        35.3802,
+        -118.6695
+      ],
+      "bbox": [
+        34.3637,
+        -119.7441,
+        35.8253,
+        -117.5963
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-47/mdb-47-202607160119/mdb-47-202607160119.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-47/mdb-47-202607160119/mdb-47-202607160119.zip",
+      "lastFeedExpiry": "20270130",
+      "lastFeedVersion": "UTC: 15-Jul-2026 14:20",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "banning",
+      "name": "Banning Connect",
+      "region": "California",
+      "center": [
+        33.926,
+        -116.8889
+      ],
+      "bbox": [
+        33.8505,
+        -117.0019,
+        33.9932,
+        -116.7043
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-220/mdb-220-202607110120/mdb-220-202607110120.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-220/mdb-220-202607110120/mdb-220-202607110120.zip",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "UTC: 10-Jul-2026 16:23",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "beaumont-ca",
+      "name": "Beaumont Transit",
+      "region": "California",
+      "center": [
+        33.9465,
+        -116.9848
+      ],
+      "bbox": [
+        33.8633,
+        -117.3465,
+        34.1503,
+        -116.7499
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 25-Feb-2026 12:23",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "corona",
+      "name": "Corona Cruiser",
+      "region": "California",
+      "center": [
+        33.8657,
+        -117.5579
+      ],
+      "bbox": [
+        33.764,
+        -117.6514,
+        33.949,
+        -117.4563
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
+      "lastFeedExpiry": "20270228",
+      "lastFeedVersion": "UTC: 27-Jan-2026 10:04",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "thousand-oaks",
+      "name": "Thousand Oaks Transit",
+      "region": "California",
+      "center": [
+        34.1875,
+        -118.8824
+      ],
+      "bbox": [
+        33.9714,
+        -119.3169,
+        34.3353,
+        -118.7657
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 10-Jul-2026 20:16",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "simi-valley",
+      "name": "Simi Valley Transit",
+      "region": "California",
+      "center": [
+        34.273,
+        -118.7405
+      ],
+      "bbox": [
+        34.1796,
+        -118.8864,
+        34.3521,
+        -118.5489
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
+      "lastFeedExpiry": "20230601",
+      "lastFeedVersion": "UTC: 02-Nov-2022 23:01",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "camarillo",
+      "name": "Camarillo Area Transit",
+      "region": "California",
+      "center": [
+        34.2246,
+        -119.0211
+      ],
+      "bbox": [
+        34.1661,
+        -119.1242,
+        34.293,
+        -118.9246
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "UTC: 10-Jul-2026 15:49",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "basin-transit",
+      "name": "Basin Transit",
+      "region": "California",
+      "center": [
+        34.1262,
+        -116.243
+      ],
+      "bbox": [
+        33.7741,
+        -116.6336,
+        34.3163,
+        -115.9861
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 11-Jul-2026 00:25",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "needles",
+      "name": "Needles Area Transit",
+      "region": "California",
+      "center": [
+        34.8375,
+        -114.6108
+      ],
+      "bbox": [
+        34.7719,
+        -114.6742,
+        34.9011,
+        -114.5452
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip",
+      "lastFeedExpiry": "20270701",
+      "lastFeedVersion": "UTC: 12-Jun-2026 18:10",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "arvin",
+      "name": "Arvin Transit",
+      "region": "California",
+      "center": [
+        35.238,
+        -118.8859
+      ],
+      "bbox": [
+        34.9263,
+        -119.0886,
+        35.4599,
+        -118.7743
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip",
+      "lastFeedExpiry": "20211231",
+      "lastFeedVersion": "UTC: 22-Nov-2021 17:16",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "moorpark",
+      "name": "Moorpark City Transit",
+      "region": "California",
+      "center": [
+        34.2807,
+        -118.8727
+      ],
+      "bbox": [
+        34.2133,
+        -118.951,
+        34.3521,
+        -118.7852
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip",
+      "lastFeedExpiry": "20260901",
+      "lastFeedVersion": "UTC: 18-Dec-2025 21:10",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "valley-express",
+      "name": "Valley Express",
+      "region": "California",
+      "center": [
+        34.3714,
+        -118.9892
+      ],
+      "bbox": [
+        34.2279,
+        -119.1554,
+        34.4654,
+        -118.7353
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/valleyexpress-ca-us/valleyexpress-ca-us.zip",
+      "lastFeedExpiry": "20250815",
+      "lastFeedVersion": "UTC: 25-Feb-2025 03:38",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "laguna-beach",
+      "name": "Laguna Beach Transit",
+      "region": "California",
+      "center": [
+        33.5298,
+        -117.7669
+      ],
+      "bbox": [
+        33.4263,
+        -117.8499,
+        33.7064,
+        -117.6668
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip",
+      "lastFeedExpiry": "20261223",
+      "lastFeedVersion": "UTC: 25-Jun-2026 14:36",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "taft",
+      "name": "Taft Area Transit",
+      "region": "California",
+      "center": [
+        35.1119,
+        -119.4369
+      ],
+      "bbox": [
+        35.0059,
+        -119.5154,
+        35.2004,
+        -119.3487
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip",
+      "lastFeedExpiry": "20211231",
+      "lastFeedVersion": "UTC: 17-Feb-2021 22:17",
+      "lastRefreshedAt": "2026-07-16"
+    },
+    {
+      "slug": "seattle-monorail",
+      "name": "Seattle Center Monorail",
+      "region": "Washington",
+      "center": [
+        47.6166,
+        -122.3433
+      ],
+      "bbox": [
+        47.592,
+        -122.3697,
+        47.6413,
+        -122.3169
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip"
+    },
+    {
+      "slug": "snoqualmie-valley",
+      "name": "Snoqualmie Valley Transportation",
+      "region": "Washington",
+      "center": [
+        47.6035,
+        -121.8701
+      ],
+      "bbox": [
+        47.4132,
+        -122.0294,
+        47.8881,
+        -121.7323
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip"
+    },
+    {
+      "slug": "seattle-streetcar",
+      "name": "Seattle Streetcar",
+      "region": "Washington",
+      "center": [
+        47.6114,
+        -122.3277
+      ],
+      "bbox": [
+        47.5791,
+        -122.3586,
+        47.6477,
+        -122.294
+      ],
+      "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
+      "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST."
     }
   ]
 }

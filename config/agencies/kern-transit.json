@@ -1,0 +1,20 @@
+{
+  "slug": "kern-transit",
+  "name": "Kern Transit",
+  "region": "California",
+  "center": [
+    35.3802,
+    -118.6695
+  ],
+  "bbox": [
+    34.3637,
+    -119.7441,
+    35.8253,
+    -117.5963
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-47/mdb-47-202607160119/mdb-47-202607160119.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-47/mdb-47-202607160119/mdb-47-202607160119.zip",
+  "lastFeedExpiry": "20270130",
+  "lastFeedVersion": "UTC: 15-Jul-2026 14:20",
+  "lastRefreshedAt": "2026-07-16"
+}

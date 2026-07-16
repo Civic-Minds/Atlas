@@ -19,7 +19,7 @@ Prefer `agencyDisplayName(agencies, slug)` (`src/utils/format.ts`) over a raw `a
 
 ## Static Coverage
 
-446 agencies as of July 16, 2026.
+468 agencies as of July 16, 2026.
 
 Source of truth: [`public/data/index.json`](../public/data/index.json)
 

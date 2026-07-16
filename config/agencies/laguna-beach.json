@@ -1,0 +1,19 @@
+{
+  "slug": "laguna-beach",
+  "name": "Laguna Beach Transit",
+  "region": "California",
+  "center": [
+    33.5298,
+    -117.7669
+  ],
+  "bbox": [
+    33.4263,
+    -117.8499,
+    33.7064,
+    -117.6668
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip",
+  "lastFeedExpiry": "20261223",
+  "lastFeedVersion": "UTC: 25-Jun-2026 14:36",
+  "lastRefreshedAt": "2026-07-16"
+}

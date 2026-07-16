@@ -1,0 +1,9 @@
+{
+  "slug": "carson-circuit",
+  "name": "Carson Circuit",
+  "center": [33.8314, -118.282],
+  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
+  "lastFeedExpiry": "20210701",
+  "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
+  "lastRefreshedAt": "2026-07-16"
+}

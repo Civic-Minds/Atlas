@@ -34,6 +34,35 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
 | todo | `casper` | Casper Area Transit | Wyoming | ntd-80013 inactive but has zip — not added yet |
 
+## Recently completed (2026-07-16 — Seattle specialty)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| todo | `seattle-streetcar` | Seattle Streetcar | Washington | KCM multi-agency zip (`agency_id` 23); must filter on process |
+| todo | `seattle-monorail` | Seattle Center Monorail | Washington | Trillium seattlemonorail-wa-us — config only |
+| todo | `snoqualmie-valley` | Snoqualmie Valley Transportation | Washington | Trillium snoqualmie-wa-us — config only |
+
+## Recently completed (2026-07-16 — SoCal secondary batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `imperial-valley` | Imperial Valley Transit | California | tld-5547 Imperial County |
+| done | `kern-transit` | Kern Transit | California | mdb-47 county rural (not GET) |
+| done | `banning` | Banning Connect | California | mdb-220 Pass area |
+| done | `beaumont-ca` | Beaumont Transit | California | Trillium beaumont-ca-us |
+| done | `corona` | Corona Cruiser | California | Trillium corona-ca-us |
+| done | `thousand-oaks` | Thousand Oaks Transit | California | Trillium thousandoaks-ca-us — config only |
+| done | `simi-valley` | Simi Valley Transit | California | Trillium simivalley-ca-us — config only |
+| done | `camarillo` | Camarillo Area Transit | California | Trillium camarillo-ca-us — config only |
+| done | `basin-transit` | Basin Transit | California | Trillium morongobasin-ca-us — config only |
+| done | `needles` | Needles Area Transit | California | Trillium needles-ca-us — config only |
+| done | `arvin` | Arvin Transit | California | Trillium arvin-ca-us — config only |
+| done | `moorpark` | Moorpark City Transit | California | Trillium moorparkcitytransit-ca-us — config only |
+| done | `valley-express` | Valley Express | California | Trillium valleyexpress-ca-us — config only |
+| done | `laguna-beach` | Laguna Beach Transit | California | Trillium lagunabeach-ca-us — config only |
+| done | `taft` | Taft Area Transit | California | Trillium taft-ca-us — config only (Ojai/Palo Verde lacked public zip) |
+| blocked | `anaheim-art` | Anaheim Resort Transportation | California | MDB feed has empty calendar — unusable until upstream fixed |
+
 ## Recently completed (2026-07-14 — secondary cities batch)
 
 | Status | Slug | Agency | Region | Notes |

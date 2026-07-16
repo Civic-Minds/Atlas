@@ -1,0 +1,19 @@
+{
+  "slug": "simi-valley",
+  "name": "Simi Valley Transit",
+  "region": "California",
+  "center": [
+    34.273,
+    -118.7405
+  ],
+  "bbox": [
+    34.1796,
+    -118.8864,
+    34.3521,
+    -118.5489
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
+  "lastFeedExpiry": "20230601",
+  "lastFeedVersion": "UTC: 02-Nov-2022 23:01",
+  "lastRefreshedAt": "2026-07-16"
+}

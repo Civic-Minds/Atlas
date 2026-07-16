@@ -1,0 +1,20 @@
+{
+  "slug": "banning",
+  "name": "Banning Connect",
+  "region": "California",
+  "center": [
+    33.926,
+    -116.8889
+  ],
+  "bbox": [
+    33.8505,
+    -117.0019,
+    33.9932,
+    -116.7043
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-220/mdb-220-202607110120/mdb-220-202607110120.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-220/mdb-220-202607110120/mdb-220-202607110120.zip",
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 10-Jul-2026 16:23",
+  "lastRefreshedAt": "2026-07-16"
+}

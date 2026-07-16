@@ -1,0 +1,19 @@
+{
+  "slug": "needles",
+  "name": "Needles Area Transit",
+  "region": "California",
+  "center": [
+    34.8375,
+    -114.6108
+  ],
+  "bbox": [
+    34.7719,
+    -114.6742,
+    34.9011,
+    -114.5452
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip",
+  "lastFeedExpiry": "20270701",
+  "lastFeedVersion": "UTC: 12-Jun-2026 18:10",
+  "lastRefreshedAt": "2026-07-16"
+}

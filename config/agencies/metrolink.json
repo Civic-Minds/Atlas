@@ -6,6 +6,7 @@
     -118.24
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-96/mdb-96-202605230122/mdb-96-202605230122.zip",
+  "preprocess": "metrolink-shapes",
   "lastFeedExpiry": "20360501",
   "lastFeedVersion": "20260505",
   "region": "California",

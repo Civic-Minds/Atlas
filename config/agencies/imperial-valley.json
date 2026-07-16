@@ -1,0 +1,18 @@
+{
+  "slug": "imperial-valley",
+  "name": "Imperial Valley Transit",
+  "region": "California",
+  "center": [
+    32.8667,
+    -115.5497
+  ],
+  "bbox": [
+    32.6176,
+    -116.0445,
+    33.4744,
+    -115.3224
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+  "lastRefreshedAt": "2026-07-16"
+}

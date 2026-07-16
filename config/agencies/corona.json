@@ -1,0 +1,19 @@
+{
+  "slug": "corona",
+  "name": "Corona Cruiser",
+  "region": "California",
+  "center": [
+    33.8657,
+    -117.5579
+  ],
+  "bbox": [
+    33.764,
+    -117.6514,
+    33.949,
+    -117.4563
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
+  "lastFeedExpiry": "20270228",
+  "lastFeedVersion": "UTC: 27-Jan-2026 10:04",
+  "lastRefreshedAt": "2026-07-16"
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "seattle-monorail",
+  "name": "Seattle Center Monorail",
+  "region": "Washington",
+  "center": [
+    47.6166,
+    -122.3433
+  ],
+  "bbox": [
+    47.592,
+    -122.3697,
+    47.6413,
+    -122.3169
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip"
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "snoqualmie-valley",
+  "name": "Snoqualmie Valley Transportation",
+  "region": "Washington",
+  "center": [
+    47.6035,
+    -121.8701
+  ],
+  "bbox": [
+    47.4132,
+    -122.0294,
+    47.8881,
+    -121.7323
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip"
+}
