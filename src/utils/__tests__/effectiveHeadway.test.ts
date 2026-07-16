@@ -23,6 +23,19 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(5);
   });
 
+  it('does not expose clustered period gaps from limited-service branches', () => {
+    const p = {
+      ...base,
+      tier: 'span',
+      headway: null,
+      headwayByPeriod: { midday: 2, pmPeak: 1 },
+      headwayByHour: { 13: 2, 15: 1 },
+    } as ShapeProperties;
+
+    expect(routeCardDisplayHeadway(p, 'midday')).toBeNull();
+    expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
+  });
+
   it('routeCardDisplayHeadway uses period summary not min-stop filter headway', () => {
     const p = {
       ...base,

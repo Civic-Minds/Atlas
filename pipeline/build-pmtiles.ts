@@ -28,14 +28,16 @@ async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | 
       if (!res.ok) {
         console.warn(`fetch ${url} not ok ${res.status}, retry ${i+1}`);
         const retryAfter = Number(res.headers.get('retry-after'));
-        const delay = Number.isFinite(retryAfter) ? retryAfter * 1000 : 500 * 2 ** i;
-        await new Promise(r => setTimeout(r, delay));
+        const delayMs = Number.isFinite(retryAfter) && retryAfter > 0
+          ? retryAfter * 1000
+          : 1000 * 2 ** i;
+        await new Promise(r => setTimeout(r, delayMs));
         continue;
       }
       return await res.json() as FeatureCollection;
     } catch (e) {
       console.error(`Error fetching ${url} (try ${i+1}):`, e);
-      await new Promise(r => setTimeout(r, 500 * 2 ** i));
+      await new Promise(r => setTimeout(r, 1000 * 2 ** i));
     }
   }
   return null;
@@ -66,8 +68,7 @@ async function main() {
 
     // 1. Routes
     if (url) {
-      const data = await fetchJson(url);
-      if (!data) failedRouteFetches.push(`${slug}: ${url}`);
+      const data = await fetchJson(url, 5);
       if (data && data.features) {
         data.features.forEach(f => {
           if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
@@ -76,6 +77,8 @@ async function main() {
           flattenPeriodHeadwayProps(f.properties);
           allRoutes.push(f);
         });
+      } else if (!data) {
+        failedRouteFetches.push(`${slug}: ${url}`);
       }
     }
 
@@ -119,11 +122,16 @@ async function main() {
     }
   });
 
-  console.log(`Downloading routes, stops, and corridors for ${agencies.length} agencies in parallel (concurrency 6)...`);
+  // R2 can return 429s when all agency artifacts are fetched at once. Keep
+  // this deliberately below the verification command's concurrency and fail
+  // before upload if a route artifact still cannot be fetched.
   await runWithConcurrency(downloadTasks, 6);
 
   if (failedRouteFetches.length > 0) {
-    throw new Error(`Could not fetch ${failedRouteFetches.length} route artifact(s); refusing to upload incomplete PMTiles:\n${failedRouteFetches.join('\n')}`);
+    throw new Error(
+      `Could not fetch ${failedRouteFetches.length} route artifact(s); refusing to upload incomplete PMTiles:\n` +
+      failedRouteFetches.join('\n'),
+    );
   }
 
   console.log(`Collected features — routes: ${allRoutes.length}, stops: ${allStops.length}, corridors: ${allCorridors.length}`);

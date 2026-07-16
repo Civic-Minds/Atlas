@@ -3,6 +3,9 @@ import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headway shown on route card rows and route lists — period summary, not min-stop filter headway. */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
+  // A numeric gap inside a short-turn/peak-only cluster is not sustained route
+  // service. Keep limited branches out of normal route-card/list cadence rows.
+  if (p.tier === 'span') return null;
   return metricValueForPeriod(buildRouteServiceSummary(p).display, period);
 }
 
