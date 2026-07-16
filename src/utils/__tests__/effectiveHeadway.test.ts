@@ -80,4 +80,33 @@ describe('effectiveRouteHeadway', () => {
     } as ShapeProperties;
     expect(routeListDisplayHeadway([p], 'pmPeak')).toBe(9);
   });
+
+  it('agency list metric matches route card for TTC 900 (issue #180)', () => {
+    const outbound = {
+      ...base,
+      routeId: '900',
+      routeShortName: '900',
+      directionId: 0,
+      headway: 9,
+      headwayByPeriod: { pmPeak: 9 },
+      minStopHeadway: 9,
+      minStopHeadwayByPeriod: { pmPeak: 9 },
+    } as ShapeProperties;
+    const inbound = {
+      ...base,
+      routeId: '900',
+      routeShortName: '900',
+      directionId: 1,
+      headway: 9,
+      headwayByPeriod: { pmPeak: 9 },
+      minStopHeadway: 1,
+      minStopHeadwayByPeriod: { pmPeak: 1 },
+    } as ShapeProperties;
+
+    expect(routeCardDisplayHeadway(outbound, 'pmPeak')).toBe(9);
+    expect(routeCardDisplayHeadway(inbound, 'pmPeak')).toBe(9);
+    // Agency list collapses directions — must still be 9, never the 1-min min-stop.
+    expect(routeListDisplayHeadway([outbound, inbound], 'pmPeak')).toBe(9);
+    expect(effectiveRouteHeadway(inbound, 'pmPeak')).toBe(1);
+  });
 });
