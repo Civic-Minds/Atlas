@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.5] - 2026-07-16
 
 - **Live provider compatibility**: Normalize compact archived GTFS-RT records so downstream consumers receive the documented Atlas contract.
 
