@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, routeCardDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -63,5 +63,21 @@ describe('effectiveRouteHeadway', () => {
     // #166 remains an explicit filter projection: the best qualifying stop is separate.
     expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(1);
     expect(effectiveRouteHeadway(p, 'all')).toBe(9);
+  });
+
+  it('uses the best active-period display cadence across route directions', () => {
+    const slower = { ...base, headway: 9, headwayByPeriod: { pmPeak: 9 } } as ShapeProperties;
+    const faster = { ...base, headway: 3, headwayByPeriod: { pmPeak: 3 } } as ShapeProperties;
+    expect(routeListDisplayHeadway([slower, faster], 'pmPeak')).toBe(3);
+  });
+
+  it('keeps list aggregation separate from the filter metric', () => {
+    const p = {
+      ...base,
+      headway: 9,
+      headwayByPeriod: { pmPeak: 9 },
+      minStopHeadwayByPeriod: { pmPeak: 1 },
+    } as ShapeProperties;
+    expect(routeListDisplayHeadway([p], 'pmPeak')).toBe(9);
   });
 });

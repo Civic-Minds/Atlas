@@ -12,7 +12,8 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
 import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
-import { buildRouteServiceSummary } from '../utils/routeFacts';
+import { buildRouteServiceSummary, metricValueForPeriod } from '../utils/routeFacts';
+import { periodKeyForHour } from '../../shared/config';
 
 interface Props {
   agencies: Agency[];
@@ -513,12 +514,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const now = new Date();
       const day = now.getDay() === 0 ? 'Sunday' : now.getDay() === 6 ? 'Saturday' : 'Weekday';
       const hour = now.getHours();
+      const vehicleHeadsigns = new Set(selectedGroup.vehicles.map(v => v.headsign).filter((h): h is string => !!h));
       for (const f of fc.features) {
         const p = f.properties as any;
         if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
         if (p.day && p.day !== day) continue;
+        if (vehicleHeadsigns.size > 0 && p.headsign && !vehicleHeadsigns.has(p.headsign)) continue;
         const service = buildRouteServiceSummary(p);
-        const hw = service.display.byHour?.[hour] ?? service.display.value;
+        const hw = metricValueForPeriod(service.branch, periodKeyForHour(hour) ?? 'all');
         if (hw != null && (scheduled === null || Number(hw) < scheduled)) scheduled = Number(hw);
       }
     }

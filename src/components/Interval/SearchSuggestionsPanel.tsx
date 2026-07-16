@@ -150,7 +150,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, headwayForRouteKey(r.key) ?? r.headway, true)}
+                      right={routeRowRight(r.agencyName, headwayForRouteKey(r.key), true)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                       className="border-b-0"

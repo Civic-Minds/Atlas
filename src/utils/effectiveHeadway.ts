@@ -6,6 +6,14 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   return metricValueForPeriod(buildRouteServiceSummary(p).display, period);
 }
 
+/** Display the best active-period cadence across a route's direction/branch rows. */
+export function routeListDisplayHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
+  const values = features
+    .map(feature => routeCardDisplayHeadway(feature, period))
+    .filter((value): value is number => value != null);
+  return values.length > 0 ? Math.min(...values) : null;
+}
+
 /** Headway for display/filtering — mirrors passesRouteFilter period + all-day fallback. */
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   return metricValueForPeriod(buildRouteServiceSummary(p).filter, period);

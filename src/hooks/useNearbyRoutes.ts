@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
 import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
-import { routeCardDisplayHeadway } from '../utils/effectiveHeadway';
+import { routeCardDisplayHeadway, routeListDisplayHeadway } from '../utils/effectiveHeadway';
 
 const NEARBY_RADIUS_M = 500;
 const EARTH_R = 6371000;
@@ -70,7 +70,8 @@ export function useNearbyRoutes(
 
     nearbyStops.sort((a, b) => a.distanceMeters - b.distanceMeters);
 
-    // Build route map keyed by agencySlug::routeShortName
+    // Build route map keyed by agencySlug::routeShortName. Include every active
+    // direction/branch so the summary matches the route card's best display metric.
     const routeMap = new Map<string, NearbyRoute>();
 
     for (const stop of nearbyStops) {
@@ -82,12 +83,19 @@ export function useNearbyRoutes(
         const p = f.properties as unknown as ShapeProperties;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
-        if (p.directionId !== undefined && p.directionId !== 0) continue;
 
         const shortName = p.routeShortName || p.routeId;
         const mapKey = `${slug}::${shortName}`;
         const rk = routeKey({ ...p, agencySlug: slug } as any);
-        const headway = routeCardDisplayHeadway(p, period);
+        const routeFeatures = (layers[slug]?.features ?? [])
+          .filter(candidate => {
+            const candidateProps = candidate.properties as unknown as ShapeProperties;
+            return candidate.geometry.type !== 'Point' &&
+              candidateProps.routeId === p.routeId &&
+              (candidateProps.day === undefined || candidateProps.day === currentDay);
+          })
+          .map(candidate => candidate.properties as unknown as ShapeProperties);
+        const headway = routeListDisplayHeadway(routeFeatures, period);
 
         if (!routeMap.has(mapKey)) {
           routeMap.set(mapKey, {

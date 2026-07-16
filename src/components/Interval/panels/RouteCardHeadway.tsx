@@ -247,7 +247,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 <div className="space-y-2">
                   {group.realTier.map((d, i) => {
                     const filterHw = buildRouteServiceSummary(d).filter;
-                    const dimmed = maxHeadway !== Infinity && (filterHw.value ?? Infinity) > maxHeadway;
+                    const dimmed = maxHeadway !== Infinity && (metricValueForPeriod(filterHw, period) ?? Infinity) > maxHeadway;
                     return (() => {
                       const displayH = routeCardDisplayHeadway(d, period);
                       const label = branchLabel(group, d.headsign, gi);

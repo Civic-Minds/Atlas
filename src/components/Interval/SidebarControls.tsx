@@ -9,7 +9,7 @@ import { findVariantFamily } from '../../utils/routeVariants';
 import { shortenAgencyName } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
-import { routeCardDisplayHeadway } from '../../utils/effectiveHeadway';
+import { routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT, type AgencySearchGroup } from '../../utils/agencySearch';
 import {
@@ -35,7 +35,7 @@ import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric } from '../../utils/routeFacts';
+import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
 
 function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = (lat1 + lat2) * Math.PI / 360;
@@ -210,7 +210,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!fc) return;
     const feat = fc.features.find(f => {
       const p = f.properties as any;
-      return p.routeId === routeId;
+      return p.routeId === routeId && (p.day === undefined || p.day === currentDay);
     });
     if (feat) {
       const facts = buildRouteFacts(feat.properties as ShapeProperties, slug);
@@ -236,7 +236,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         console.error(e);
       }
     }
-  }, [selectedRoute, nonCorridorLayers, period]);
+  }, [selectedRoute, nonCorridorLayers, period, currentDay]);
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {
@@ -245,11 +245,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       if (!fc?.features) continue;
       for (const f of fc.features) {
         const p = f.properties as ShapeProperties;
-        if (!p.routeId || p.stopId) continue;
+        if (!p.routeId || p.stopId || (p.day !== undefined && p.day !== currentDay)) continue;
         const facts = buildRouteFacts(p, slug);
         const key = facts.key;
         if (routes.some(r => r.key === key)) continue;
-        const headway = routeCardDisplayHeadway(p, period) ?? 999;
+        const routeFeatures = fc.features
+          .filter(candidate => {
+            const candidateProps = candidate.properties as ShapeProperties;
+            return !candidateProps.stopId &&
+              (candidateProps.day === undefined || candidateProps.day === currentDay) &&
+              buildRouteFacts(candidateProps, slug).key === key;
+          })
+          .map(candidate => candidate.properties as ShapeProperties);
+        const headway = routeListDisplayHeadway(routeFeatures, period) ?? 999;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
@@ -257,7 +265,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
     return routes.sort((a, b) => a.headway - b.headway).slice(0, 5);
-  }, [nonCorridorLayers, period]);
+  }, [nonCorridorLayers, period, currentDay]);
 
   const suggestedRoutes = useMemo(() => {
     const viewedKeys = new Set(recentlyViewed.map(r => r.key));
@@ -272,8 +280,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return null;
-    return routeCardDisplayHeadway(feat.properties as ShapeProperties, period);
-  }, [nonCorridorLayers, period]);
+    const routeFeatures = fc?.features
+      .filter(candidate => {
+        const p = candidate.properties as ShapeProperties;
+        return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === currentDay);
+      })
+      .map(candidate => candidate.properties as ShapeProperties) ?? [];
+    return routeListDisplayHeadway(routeFeatures, period);
+  }, [nonCorridorLayers, period, currentDay]);
 
   const suggestedFareAgencies = useMemo(() => {
     if (!fareView) return [];
@@ -347,11 +361,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ];
     }
 
-    const directions = features
+      const directions = features
       .map(f => f.properties as unknown as ShapeProperties)
       .sort((a, b) => {
-        const aH = a.headway ?? Infinity;
-        const bH = b.headway ?? Infinity;
+        const aH = metricValueForPeriod(buildRouteServiceSummary(a).branch, period) ?? Infinity;
+        const bH = metricValueForPeriod(buildRouteServiceSummary(b).branch, period) ?? Infinity;
         if (aH !== bH) return aH - bH;
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
@@ -391,7 +405,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const dirId = d.directionId ?? 0;
       if (!map.has(dirId)) map.set(dirId, { dirId, realTier: [], span: [] });
       const g = map.get(dirId)!;
-      if (buildRouteServiceSummary(d).branch.value != null) g.realTier.push(d);
+      if (metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null) g.realTier.push(d);
       else g.span.push(d);
     }
     // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
@@ -403,8 +417,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         // Normalize for dedup (post-clean from data) to handle any remaining variants
         const key = (d.headsign ?? '').trim().toLowerCase();
         const existing = seen.get(key);
-        const branchValue = buildRouteServiceSummary(d).branch.value ?? Infinity;
-        const existingValue = existing ? buildRouteServiceSummary(existing).branch.value ?? Infinity : Infinity;
+        const branchValue = metricValueForPeriod(buildRouteServiceSummary(d).branch, period) ?? Infinity;
+        const existingValue = existing ? metricValueForPeriod(buildRouteServiceSummary(existing).branch, period) ?? Infinity : Infinity;
         if (!existing || branchValue < existingValue) seen.set(key, d);
       }
       g.realTier = Array.from(seen.values());
@@ -424,7 +438,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       dedupeCrossDirectionHeadsigns(groups, routeFeatures);
     }
     return groups;
-  }, [currentRoute]);
+  }, [currentRoute, period]);
 
   const liveRouteInfo = useMemo(() => {
     if (!currentRoute) return null;
@@ -540,7 +554,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         let stopHw: number | undefined = undefined;
         let matchingStopId: string | undefined = undefined;
         for (const sId of siblingIds) {
-          const hw = (p as any).stopHeadways?.[sId];
+          const service = buildRouteStopMetric(p, sId);
+          const hw = metricValueForPeriod(service, period);
           if (hw != null) {
             stopHw = hw;
             matchingStopId = sId;
@@ -656,13 +671,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             routeShortName: facts.shortName,
             routeLongName: facts.longName || '',
             agencyName: shortenAgencyName(facts.agencyName),
-            headway: facts.service.display.value,
+            headway: routeCardDisplayHeadway(p, period),
             nearestStopName: closest.stopName,
             distanceMeters: closest.dist,
           });
         } else {
-          if (facts.service.display.value != null && (existing.headway === null || facts.service.display.value < existing.headway)) {
-            existing.headway = facts.service.display.value;
+          const headway = routeCardDisplayHeadway(p, period);
+          if (headway != null && (existing.headway === null || headway < existing.headway)) {
+            existing.headway = headway;
           }
           if (closest.dist < existing.distanceMeters) {
             existing.distanceMeters = closest.dist;
@@ -678,7 +694,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       if (b.headway !== null) return 1;
       return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
     });
-  }, [currentStop, nonCorridorLayers, currentDay]);
+  }, [currentStop, nonCorridorLayers, currentDay, period]);
 
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
