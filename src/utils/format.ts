@@ -310,16 +310,27 @@ function looksLikeBrandCode(s: string): boolean {
   return false;
 }
 
+/**
+ * Match a short acronym as a whole word, not as a substring inside an
+ * unrelated word — e.g. "vta" must not match inside "AVTA" or "VVTA".
+ * Bare acronym checks (≤6 letters, no spaces) are exactly the ones at risk
+ * of hiding inside a different agency's legal name; longer/multi-word
+ * checks below are specific enough that this isn't needed.
+ */
+function hasWord(haystack: string, word: string): boolean {
+  return new RegExp(`\\b${word}\\b`).test(haystack);
+}
+
 export function shortenAgencyName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';
-  if (lower.includes('sfmta') || /\bmuni\b/.test(lower)) return 'SFMTA';
-  if (lower.includes('bart')) return 'BART';
+  if (lower.includes('sfmta') || hasWord(lower, 'muni')) return 'SFMTA';
+  if (hasWord(lower, 'bart')) return 'BART';
   if (lower.includes('caltrain')) return 'Caltrain';
   if (lower.includes('samtrans')) return 'SamTrans';
-  if (lower.includes('minnesota valley') || lower.includes('mvta')) return 'MVTA';
-  if (lower.includes('vta')) return 'VTA';
-  if (lower.includes('weta')) return 'WETA';
+  if (lower.includes('minnesota valley') || hasWord(lower, 'mvta')) return 'MVTA';
+  if (hasWord(lower, 'vta')) return 'VTA';
+  if (hasWord(lower, 'weta')) return 'WETA';
   if (lower.includes('county connection')) return 'County Connection';
   if (lower.includes('westcat')) return 'WestCAT';
   if (lower.includes('soltrans')) return 'SolTrans';
@@ -329,11 +340,11 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('mountain metropolitan')) return 'Mountain Metro';
 
   // Long " * Transit/Transportation Authority" names — map to common short/acronym forms used in UI
-  if (lower.includes('massachusetts bay') || lower.includes('mbta')) return 'MBTA';
-  if (lower.includes('capital district') || lower.includes('cdta')) return 'CDTA';
-  if (lower.includes('rochester-genesee') || lower.includes('rgrta')) return 'RGRTA';
-  if (lower.includes('pioneer valley') || lower.includes('pvta')) return 'PVTA';
-  if (lower.includes('worcester regional') || lower.includes('wrta')) return 'WRTA';
+  if (lower.includes('massachusetts bay') || hasWord(lower, 'mbta')) return 'MBTA';
+  if (lower.includes('capital district') || hasWord(lower, 'cdta')) return 'CDTA';
+  if (lower.includes('rochester-genesee') || hasWord(lower, 'rgrta')) return 'RGRTA';
+  if (lower.includes('pioneer valley') || hasWord(lower, 'pvta')) return 'PVTA';
+  if (lower.includes('worcester regional') || hasWord(lower, 'wrta')) return 'WRTA';
   if (lower.includes('chattanooga')) return 'CARTA';
   if (lower.includes('livermore amador')) return 'LAVTA';
   if (lower.includes('ventura county')) return 'VCTC';
@@ -355,12 +366,12 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('glens falls')) return 'GGFT';
   if (lower.includes('mendocino')) return 'Mendocino Transit';
   if (lower.includes('yamhill')) return 'YCTA';
-  if (lower.includes('metropolitan transit system') || lower.includes('sdmts')) return 'MTS';
+  if (lower.includes('metropolitan transit system') || hasWord(lower, 'sdmts')) return 'MTS';
   if (lower.includes('roaring fork')) return 'RFTA';
   if (lower.includes('river city') || lower.includes('louisville')) return 'TARC';
   if (lower.includes('bee-line') || lower.includes('westchester')) return 'Bee-Line';
   if (lower.includes('port authority of allegheny') || lower.includes('pittsburgh regional')) return 'PRT';
-  if (lower.includes('nashville') || lower.includes('wego')) return 'WeGo';
+  if (lower.includes('nashville') || hasWord(lower, 'wego')) return 'WeGo';
   if (lower.includes('sherbrooke')) return 'STS';
   if (lower.includes('toronto transit')) return 'TTC';
   if (lower.includes('spokane')) return 'Spokane Transit';
@@ -376,15 +387,22 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('gwinnett county')) return 'Gwinnett Transit';
   if (lower.includes('santa maria area')) return 'SMAT';
   if (lower.includes('redding area')) return 'RABA';
-  if (lower.includes('rockford mass') || lower.includes('rmtd')) return 'RMTD';
+  if (lower.includes('rockford mass') || hasWord(lower, 'rmtd')) return 'RMTD';
 
-  // General fallback: use parenthetical if short abbrev; otherwise strip long (City/Region) parens for compact display
+  // General fallback: prefer whichever of {outer text, parenthetical} is
+  // already compact — the parenthetical isn't always a brand abbreviation,
+  // sometimes it's just a city qualifier (e.g. "DDOT (Detroit)" should stay
+  // "DDOT", not become "Detroit" and collide with every other Detroit-area
+  // operator's parenthetical). Preferring outer first also fixes that case
+  // without needing a per-agency exception.
   const match = name.match(/\(([^)]+)\)/);
   if (match) {
     const abbrev = match[1].trim();
+    const outer = name.replace(/\s*\([^)]+\)\s*$/, '').trim();
+    if (outer.length <= 10 && outer.length < name.length) return outer;
     if (abbrev.length <= 10) return abbrev;
     // Strip long locator parens (e.g. "(Colorado Springs)", "(Mississauga)")
-    return name.replace(/\s*\([^)]+\)\s*$/, '').trim();
+    return outer;
   }
 
   // Last-resort strip for any remaining very long "* Transit/Transportation Authority" style names
