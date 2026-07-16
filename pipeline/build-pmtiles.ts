@@ -27,13 +27,17 @@ async function fetchJson(url: string, retries = 3): Promise<FeatureCollection | 
       const res = await fetch(url);
       if (!res.ok) {
         console.warn(`fetch ${url} not ok ${res.status}, retry ${i+1}`);
-        await new Promise(r => setTimeout(r, 500 * (i+1)));
+        const retryAfter = Number(res.headers.get('retry-after'));
+        const delayMs = Number.isFinite(retryAfter) && retryAfter > 0
+          ? retryAfter * 1000
+          : 1000 * 2 ** i;
+        await new Promise(r => setTimeout(r, delayMs));
         continue;
       }
       return await res.json() as FeatureCollection;
     } catch (e) {
       console.error(`Error fetching ${url} (try ${i+1}):`, e);
-      await new Promise(r => setTimeout(r, 500 * (i+1)));
+      await new Promise(r => setTimeout(r, 1000 * 2 ** i));
     }
   }
   return null;
@@ -52,6 +56,7 @@ async function main() {
   const allRoutes: Feature[] = [];
   const allStops: Feature[] = [];
   const allCorridors: Feature[] = [];
+  const failedRouteFetches: string[] = [];
 
   const downloadTasks = agencies.map(agency => async () => {
     const slug = agency.slug;
@@ -63,7 +68,7 @@ async function main() {
 
     // 1. Routes
     if (url) {
-      const data = await fetchJson(url);
+      const data = await fetchJson(url, 5);
       if (data && data.features) {
         data.features.forEach(f => {
           if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
@@ -72,6 +77,8 @@ async function main() {
           flattenPeriodHeadwayProps(f.properties);
           allRoutes.push(f);
         });
+      } else if (!data) {
+        failedRouteFetches.push(`${slug}: ${url}`);
       }
     }
 
@@ -115,8 +122,18 @@ async function main() {
     }
   });
 
-  console.log(`Downloading routes, stops, and corridors for ${agencies.length} agencies in parallel (concurrency 20)...`);
-  await runWithConcurrency(downloadTasks, 20);
+  console.log(`Downloading routes, stops, and corridors for ${agencies.length} agencies in parallel (concurrency 6)...`);
+  // R2 can return 429s when all agency artifacts are fetched at once. Keep
+  // this deliberately below the verification command's concurrency and fail
+  // before upload if a route artifact still cannot be fetched.
+  await runWithConcurrency(downloadTasks, 6);
+
+  if (failedRouteFetches.length > 0) {
+    throw new Error(
+      `Could not fetch ${failedRouteFetches.length} route artifact(s); refusing to upload incomplete PMTiles:\n` +
+      failedRouteFetches.join('\n'),
+    );
+  }
 
   console.log(`Collected features — routes: ${allRoutes.length}, stops: ${allStops.length}, corridors: ${allCorridors.length}`);
   if (allRoutes.length === 0) console.warn("WARNING: 0 routes features — routes layer will be missing from PMTiles!");
