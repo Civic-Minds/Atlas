@@ -478,6 +478,29 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     return () => { map.off('click', onClick); };
   }, [mapLoaded]);
 
+  // Pointer cursor over clickable stops/routes — same hit layers the click handler queries.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onMouseMove = (e: maplibregl.MapMouseEvent) => {
+      const stopHits = map.getLayer('stops-layer')
+        ? map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] })
+        : [];
+      const routeHits = stopHits.length === 0 && map.getLayer('routes-hit-layer')
+        ? map.queryRenderedFeatures(
+            [[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]],
+            { layers: ['routes-hit-layer'] },
+          )
+        : [];
+      map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 ? 'pointer' : '';
+    };
+    map.on('mousemove', onMouseMove);
+    return () => {
+      map.off('mousemove', onMouseMove);
+      map.getCanvas().style.cursor = '';
+    };
+  }, [mapLoaded]);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
