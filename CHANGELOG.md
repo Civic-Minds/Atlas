@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live vehicle API types**: Keep the no-TTC shape fallback typed like the TTC shape map so API typechecking succeeds for all agencies.
+- **Live Vehicles resilience**: Bound optional archive, shape, and sidecar lookups so a stalled enrichment request cannot make the live feed endpoint time out.
+- **Search typing lag**: Keep the search field on immediate local state and defer full route/stop scans (plus cache geometry bboxes) so keystrokes paint without waiting for multi-agency search work.
+- **LA Metro rail**: Ingest the separate Metro Rail GTFS as a supplemental feed so A/B/C/D/E/K lines appear with bus, not bus-only mdb-29.
 - **Route-service metrics**: Keep route lists, nearby/transfer cards, route grouping, stop service, and live scheduled comparisons on the active period’s canonical display cadence instead of stale day, branch, or all-day values.
 - **Route suggestion hierarchy**: Reduced stacked dividers in Recent and Suggested routes so section spacing carries more of the grouping.
 - **Map selection hint**: Align the zoom-in notice with the bottom map status pills so it reads as part of the same map chrome.

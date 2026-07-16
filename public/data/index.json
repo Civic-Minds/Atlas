@@ -308,7 +308,7 @@
         "BLUE"
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/194",
-      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
+      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-15",
@@ -558,7 +558,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Qu\u00e9bec)",
+      "name": "RTC (Québec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -618,7 +618,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STL\u00e9vis",
+      "name": "STLévis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -742,7 +742,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'\u00eele)",
+      "name": "exo (La Presqu'île)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -784,7 +784,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain\u2013Roussillon)",
+      "name": "exo (Le Richelain–Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -2019,7 +2019,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
+      "name": "Société de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -3058,7 +3058,10 @@
       "lastFeedExpiry": "20261212",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-07-06"
+      "lastRefreshedAt": "2026-07-16",
+      "supplementalFeedUrls": [
+        "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
+      ]
     },
     {
       "slug": "metrolink",
@@ -5983,7 +5986,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {

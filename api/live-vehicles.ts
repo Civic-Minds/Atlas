@@ -42,6 +42,14 @@ type FeedFetchResult =
   | { ok: true; data: any }
   | { ok: false; reason: FeedFailureReason; detail: string };
 
+/** Keep optional enrichment from holding the whole live response until Vercel's timeout. */
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>(resolve => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 // Frontend already shows the agency name as a heading above this message,
 // so these stay agency-agnostic and plain — no jargon, no repeating "live feed".
 const FEED_FAILURE_MESSAGES: Record<FeedFailureReason, string> = {
@@ -178,14 +186,22 @@ export default async function handler(req: Request) {
     const [positionsResult, updatesResult, tripsLookup, liveSidecar, archivedPositions, ttcShapes] = await Promise.all([
       fetchProtoFeed(vehiclePositionsUrl, `${agencySlug} positions`, fetchOpts),
       fetchProtoFeed(tripUpdatesUrl, `${agencySlug} updates`, fetchOpts),
-      fetch(`${R2_PUBLIC_URL}/atlas/${agencySlug}-trips.json`)
-        .then(r => r.ok ? r.json() as Promise<Record<string, { d: number; h: string | null }>> : null)
-        .catch(() => null),
-      fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${encodeURIComponent(agencySlug)}.json`)
-        .then(r => r.ok ? r.json() as Promise<Record<string, { tripStopTimes?: Record<string, Record<string, number>> }>> : null)
-        .catch(() => null),
-      agencySlug === 'ttc' ? fetchRecentTtcArchive() : Promise.resolve(null),
-      agencySlug === 'ttc' ? fetchTtcShapes() : Promise.resolve(new Map<string, GeoJSON.Feature>()),
+      withTimeout(
+        fetch(`${R2_PUBLIC_URL}/atlas/${agencySlug}-trips.json`)
+          .then(r => r.ok ? r.json() as Promise<Record<string, { d: number; h: string | null }>> : null)
+          .catch(() => null),
+        8_000,
+        null,
+      ),
+      withTimeout(
+        fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${encodeURIComponent(agencySlug)}.json`)
+          .then(r => r.ok ? r.json() as Promise<Record<string, { tripStopTimes?: Record<string, Record<string, number>> }>> : null)
+          .catch(() => null),
+        8_000,
+        null,
+      ),
+      agencySlug === 'ttc' ? withTimeout(fetchRecentTtcArchive(), 8_000, null) : Promise.resolve(null),
+      agencySlug === 'ttc' ? withTimeout(fetchTtcShapes(), 8_000, new Map<string, Shape[]>()) : Promise.resolve(new Map<string, Shape[]>()),
     ]);
 
     if (!positionsResult.ok) {

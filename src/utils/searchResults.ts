@@ -32,24 +32,34 @@ function distanceMeters(lat1: number, lon1: number, lat2: number, lon2: number):
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+/** Geometry bbox cache — search sorts by distance and must not re-walk every LineString on each keystroke. */
+const featureBboxCache = new WeakMap<GeoJSON.Feature, [number, number, number, number]>();
+
 function featureBbox(f: GeoJSON.Feature): [number, number, number, number] {
+  const cached = featureBboxCache.get(f);
+  if (cached) return cached;
+
+  let bbox: [number, number, number, number];
   if (f.geometry.type === 'Point') {
     const [lon, lat] = f.geometry.coordinates;
-    return [lon, lat, lon, lat];
+    bbox = [lon, lat, lon, lat];
+  } else {
+    let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
+    const coords = f.geometry.type === 'LineString'
+      ? f.geometry.coordinates
+      : f.geometry.type === 'MultiLineString'
+        ? f.geometry.coordinates.flat()
+        : [];
+    for (const [lon, lat] of coords) {
+      if (lon < minLon) minLon = lon;
+      if (lat < minLat) minLat = lat;
+      if (lon > maxLon) maxLon = lon;
+      if (lat > maxLat) maxLat = lat;
+    }
+    bbox = [minLon, minLat, maxLon, maxLat];
   }
-  let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
-  const coords = f.geometry.type === 'LineString'
-    ? f.geometry.coordinates
-    : f.geometry.type === 'MultiLineString'
-      ? f.geometry.coordinates.flat()
-      : [];
-  for (const [lon, lat] of coords) {
-    if (lon < minLon) minLon = lon;
-    if (lat < minLat) minLat = lat;
-    if (lon > maxLon) maxLon = lon;
-    if (lat > maxLat) maxLat = lat;
-  }
-  return [minLon, minLat, maxLon, maxLat];
+  featureBboxCache.set(f, bbox);
+  return bbox;
 }
 
 function featureInViewport(f: GeoJSON.Feature, bounds: ViewportBounds): boolean {
