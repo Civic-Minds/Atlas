@@ -32,8 +32,8 @@
     "sync-agency-count": "node -e \"const fs=require('fs');const count=JSON.parse(fs.readFileSync('public/data/index.json','utf8')).agencies.length;const p='docs/AGENCIES.md';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace(/^(\\d+) agencies as of/m,count+' agencies as of'));console.log('Updated AGENCIES.md: '+count+' agencies');\""
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1085.0",
-    "@aws-sdk/lib-storage": "^3.1085.0",
+    "@aws-sdk/client-s3": "^3.1089.0",
+    "@aws-sdk/lib-storage": "^3.1089.0",
     "@deck.gl/mapbox": "^9.3.6",
     "deck.gl": "^9.3.6",
     "dotenv": "^17.4.2",

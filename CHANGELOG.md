@@ -7,7 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Seattle specialty agencies**: Added Seattle Streetcar, Seattle Center Monorail, and Snoqualmie Valley Transportation (SVT) — config only; Streetcar uses KCM multi-agency feed (filter agency_id 23 on process).
-- **PMTiles builds**: Retry throttled R2 artifact downloads and refuse to upload when any agency route data is unavailable, preventing incomplete map tiles.
+- **PMTiles builds**: Retry throttled R2 artifact downloads, refuse incomplete uploads, and fall back to rclone when Node’s large-file R2 transport fails.
 - **SoCal secondary agencies**: Added Imperial Valley Transit, Kern Transit, Banning Connect, Beaumont Transit, Corona Cruiser, Thousand Oaks Transit, Simi Valley Transit, Camarillo Area Transit, Basin Transit (Morongo Basin), Needles Area Transit, Arvin Transit, Moorpark City Transit, Valley Express, Laguna Beach Transit, and Taft Area Transit — fills major IE / Imperial / Kern / Ventura / high-desert / OC city gaps outside the big regionals.
 - **Southern California coverage**: Added Torrance Transit, Beach Cities Transit, Carson Circuit, and Gold Coast Transit District, repaired Metrolink's missing trip-to-shape links, and expanded SunLine bounds so regional Route 10 appears through San Bernardino.
 - **Recent searches**: Picking a route from search results now also saves the query to Recent searches (previously only Recent routes updated), so Recent searches no longer shows a stale, older query after a route pick.
