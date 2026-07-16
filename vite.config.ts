@@ -16,9 +16,11 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
     ],
     server: {
+      port: 5100,
+      strictPort: true,
       proxy: {
         '/api': {
-          target: 'http://localhost:3010',
+          target: 'http://localhost:5001',
           changeOrigin: true,
         },
         // R2 blocks browser CORS from localhost — proxy artifact fetches in dev.
@@ -32,4 +34,3 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
-
