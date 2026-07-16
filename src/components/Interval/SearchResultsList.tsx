@@ -134,6 +134,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             onHoverChange={onRouteHover ? (h => onRouteHover(h ? r.key : null)) : undefined}
             onClick={() => {
               onRouteHover?.(null);
+              saveRecentSearch(query);
               setQuery('');
               setSearchFocused?.(false);
               setSelectedRoute(selectedRoute === r.key ? null : r.key);
