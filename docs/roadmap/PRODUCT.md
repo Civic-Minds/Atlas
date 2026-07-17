@@ -4,16 +4,19 @@ User experience and the workflow of a transit professional using Atlas.
 
 ---
 
-## Map Apps
+## Current app surfaces
 
-| App | Status | Question it answers |
-|-----|--------|---------------------|
-| **Frequency Map** | Live | Where is service frequent or infrequent? |
-| **Corridors** | Live | What runs directly between these two stations? |
-| **History** | Limited | How did service change across schedule periods? |
-| **Factbook / Insights** | Proposed | What surprising or useful stories does the data contain? |
+- **Frequency Map — Live:** Where is service frequent or infrequent?
+- **Live Vehicles — Live:** Where are supported vehicles now, and how are routes performing?
+- **History — Limited:** How did service change across schedule periods?
+- **Corridors — Contextual:** Which routes connect two selected stations? Available from stop-level interactions rather than primary navigation.
+- **Fares — Paused:** What base fare is associated with a route?
 
-**Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or filter.
+**Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or contextual mode.
+
+## Future product concepts
+
+- **Factbook / Insights — Proposed:** What surprising or useful stories does the data contain?
 
 See [Atlas Factbook roadmap](FACTBOOK.md) for details on computation, AI-assisted narratives, and surfacing.
 
