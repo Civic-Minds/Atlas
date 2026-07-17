@@ -17,4 +17,10 @@ Long-term direction for Atlas as a tool for transit planning and public accounta
 
 ---
 
+## Feed Data Confidence
+
+- [ ] **Per-agency data confidence indicator**: surface feed health per agency (known override count, feed staleness via `lastRefreshedAt`, `feedReviewStatus`, `pmtilesPending`) as a transparency signal, not a comparative leaderboard — the messiest feeds are usually small/volunteer-run agencies, not incompetent ones. Idea prompted by the Niagara 301/401 investigation (#241/#242/#243), which surfaced several data-encoding quirks in one feed.
+
+---
+
 [Back to Roadmap](./ROADMAP.md)
