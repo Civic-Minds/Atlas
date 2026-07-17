@@ -29,6 +29,9 @@ export const dropdownAnim = (visible: boolean) =>
 /** Generic floating card (dropdown menus, small overlays) */
 export const FLOATING_CARD = `${SURFACE} rounded-2xl shadow-2xl`;
 
+/** Shared shell for a scrollable sidebar card. */
+export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
+
 /** Top-bar pill surface (search bar, headway filter row) */
 export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shadow-lg`;
 /** Shared responsive width used by the top search bar */
@@ -47,6 +50,9 @@ export const MAP_BADGE_LABEL = 'text-[10px] font-bold text-[var(--text-muted)]';
 
 /** Full-width border-b list row — suggestion lists, route lists, any clickable row inside a panel */
 export const LIST_ROW = 'flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group';
+
+/** Card-style list row: uses whitespace instead of a browser-like divider. */
+export const LIST_ROW_SPACED = 'flex items-center justify-between w-full px-4 py-2.5 mb-0.5 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group';
 
 /** Primary text inside a LIST_ROW */
 export const LIST_ROW_PRIMARY = 'text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight';
@@ -104,6 +110,9 @@ export const Z_DROPDOWN  = 'z-[1200]';    // Autocomplete dropdowns, app drawer 
 export const Z_MODAL_BG  = 'z-[1400]';    // InfoPanel backdrop
 export const Z_MODAL_TOP = 'z-[1500]';    // FilterPanel backdrop (above InfoPanel)
 export const PANEL_Z_INDEX = 1000;         // Numeric for inline styles (e.g. NearbyRoutesPanel)
+
+/** Shared sidebar placement below the top search controls. */
+export const PANEL_SIDEBAR = `absolute top-[68px] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL}`;
 
 /** Fallback sidebar left offset (px) — used until ResizeObserver measures the real position */
 export const SIDEBAR_LEFT_FALLBACK = 182;

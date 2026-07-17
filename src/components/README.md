@@ -4,7 +4,7 @@ Reuse these components before creating new panel markup or Tailwind class combin
 
 ## Surfaces and structure
 
-- `../styles.ts` contains structural tokens such as `SURFACE`, `FLOATING_CARD`, `LIST_ROW`, `PANEL_BODY`, and the shared z-index values.
+- `../styles.ts` contains structural tokens such as `SURFACE`, `FLOATING_CARD`, `PANEL_SHELL`, `PANEL_SIDEBAR`, `LIST_ROW`, `LIST_ROW_SPACED`, `PANEL_BODY`, and the shared z-index values.
 - Use `FLOATING_CARD` for map overlays and standalone floating panels.
 - Use `PANEL_TITLE_BAR`, `PANEL_CARD_HEADER`, and `PANEL_BODY` for compact app panels that need a fixed header and scrolling content.
 
@@ -12,7 +12,7 @@ Reuse these components before creating new panel markup or Tailwind class combin
 
 - `Interval/cardUi.tsx` contains route-card primitives: `SidebarCardShell`, `SidebarCardHeaderBlock`, `SidebarCardList`, `SidebarCardListRows`, `CardDirectionRow`, `CardSummaryRow`, `CardSublineButton`, `CardSectionLabel`, and `CardHelpNotice`.
 - `RouteCardTitle` is the shared agency eyebrow + route title treatment.
-- `RouteListRow` is the shared route-list row for agency/search surfaces.
+- `RouteListRow` is the shared route-list row for agency/search surfaces. Use its default `divided` variant for browsing/search lists; use `variant="spaced"` for card-style content where whitespace separates rows.
 
 ## Rules for new UI
 

@@ -7,7 +7,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { getAgencyArtifactUrls } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, Z_PANEL, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { PANEL_SHELL, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { STATUS_COLORS } from '../utils/colors';
@@ -408,7 +408,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             name={routeListCompanionName(g.displayName, g.routeShortName)}
             selected={isSelected}
             onClick={() => handleRouteClick(key)}
-            className="border-b-0 mb-0.5"
+            variant="divided"
             right={
               <div className="flex items-center gap-1.5 shrink-0 ml-3">
                 <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
@@ -561,10 +561,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
-        className={`absolute top-[68px] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
+        className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
-        <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
+        <div className={`${PANEL_SHELL} ${PANEL_ENTER}`}>
 
           {/* Header */}
           {selectedGroup ? (
@@ -676,17 +676,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   Live in these places
                 </div>
                 {livePlaces.map(p => (
-                  <button
+                  <RouteListRow
                     key={p.slug}
+                    shortName={p.place}
+                    name={p.agencyName}
                     onClick={() => handlePlaceClick(p.slug)}
-                    className={`${LIST_ROW} border-b-0 mb-0.5`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className={`${LIST_ROW_PRIMARY} truncate`}>{p.place}</p>
-                      {p.agencyName && <p className={`${LIST_ROW_DIM} truncate mt-0.5`}>{p.agencyName}</p>}
-                    </div>
-                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                  </button>
+                    right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
+                  />
                 ))}
                 <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
               </>

@@ -96,7 +96,6 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         return (
           <RouteListRow
             shortName={primary}
-            className="border-b-0"
             onClick={() => {
               setSelectedAgencySlug?.(g.slug);
               setQuery('');
@@ -130,7 +129,6 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             name={name}
             stacked
             selected={selectedRoute === r.key}
-            className="border-b-0"
             onHoverChange={onRouteHover ? (h => onRouteHover(h ? r.key : null)) : undefined}
             onClick={() => {
               onRouteHover?.(null);
@@ -157,7 +155,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         return (
           <button
             type="button"
-            className={`${LIST_ROW} border-b-0 items-start gap-3 ${selectedStop === s.key ? 'bg-[var(--accent-bg)]' : ''}`}
+            className={`${LIST_ROW} items-start gap-3 ${selectedStop === s.key ? 'bg-[var(--accent-bg)]' : ''}`}
             onClick={() => {
               saveRecentSearch(query);
               setQuery('');
