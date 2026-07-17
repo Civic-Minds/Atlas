@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Niagara Transit 301/401: Hospital stop no longer shows misleadingly high frequency**: NRT's feed doesn't consistently use direction to mean outbound vs. inbound — one direction bucket mixed a Port Dalhousie-bound trip with an unrelated Downtown-bound trip under the same generic headsign, so a bus finishing one run and a different bus departing a few minutes later were counted as combined 6-minute service on a route that actually runs every 30 minutes. Per-stop frequency now scopes to each route feature's own shape instead of pooling by headsign alone, which also fixed the same pattern on several other NRT routes.
+- **Niagara Transit 301: removed a phantom "Port Dalhousie" row that never actually went there**: a real short-turn trip was mislabeled with a headsign copy-pasted from the full route (missing one space), so it showed as a near-duplicate westbound destination alongside the genuine Port Dalhousie service. It now shows its real destination instead.
 - **Frequency-filtered map lines now use the same headway metric for color and visibility**: routes that qualify through effective service data no longer retain a misleading slower tier color.
 - **Live control now uses the same light selected state as the rest of the interface**: the active pill no longer becomes a heavy dark block.
 - **Live vehicle markers are less dominant at city scale**: smaller dots and lighter outlines keep clusters readable without losing hover targets or selected-vehicle emphasis.

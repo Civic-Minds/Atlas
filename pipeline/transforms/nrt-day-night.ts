@@ -162,8 +162,63 @@ function removeNrtShortTurnArtifacts(gtfs: GtfsData): { gtfs: GtfsData; dropped:
   };
 }
 
+/**
+ * NRT 301 westbound: a real short-turn pattern is labeled with a headsign copy-pasted
+ * from the full Port Dalhousie route, missing one space ("HOSPITAL -PORT DALHOUSIE" vs
+ * the real pattern's "HOSPITAL - PORT DALHOUSIE"). These trips genuinely run, but
+ * terminate at the Hospital, never reaching Port Dalhousie — unlike the 209/216
+ * artifacts above, this is real service, so we clear the bad headsign rather than drop
+ * the trips, falling back to the existing last-stop-derived headsign used for any feed
+ * that omits trip_headsign entirely (#242).
+ */
+function relabelNrt301MislabeledShortTurn(gtfs: GtfsData): { gtfs: GtfsData; relabeled: number } {
+  const route301 = gtfs.routes.find(route => route.route_short_name === '301');
+  if (!route301) return { gtfs, relabeled: 0 };
+
+  const BAD_HEADSIGN = 'HOSPITAL -PORT DALHOUSIE'; // missing space before "PORT" — the defect signature
+  const candidateTripIds = new Set(
+    gtfs.trips
+      .filter(trip => trip.route_id === route301.route_id && trip.trip_headsign?.trim() === BAD_HEADSIGN)
+      .map(trip => trip.trip_id),
+  );
+  if (candidateTripIds.size === 0) return { gtfs, relabeled: 0 };
+
+  const lastStopByTrip = new Map<string, { stopId: string; seq: number }>();
+  for (const st of gtfs.stopTimes) {
+    if (!candidateTripIds.has(st.trip_id)) continue;
+    const seq = parseInt(st.stop_sequence, 10);
+    const existing = lastStopByTrip.get(st.trip_id);
+    if (!existing || seq > existing.seq) lastStopByTrip.set(st.trip_id, { stopId: st.stop_id, seq });
+  }
+  const stopNameById = new Map(gtfs.stops.map(stop => [stop.stop_id, stop.stop_name]));
+
+  const toClear = new Set<string>();
+  for (const tripId of candidateTripIds) {
+    const last = lastStopByTrip.get(tripId);
+    const name = last ? stopNameById.get(last.stopId) : undefined;
+    if (!name) continue;
+    // If a trip's actual last stop really is Port Dalhousie, the headsign wasn't
+    // mislabeled after all (e.g. a future feed fix) — leave it alone.
+    if (/port dalhousie/i.test(name)) continue;
+    toClear.add(tripId);
+  }
+  if (toClear.size === 0) return { gtfs, relabeled: 0 };
+
+  return {
+    gtfs: {
+      ...gtfs,
+      trips: gtfs.trips.map(trip => toClear.has(trip.trip_id) ? { ...trip, trip_headsign: undefined } : trip),
+    },
+    relabeled: toClear.size,
+  };
+}
+
 /** Keep NRT's published day/night route numbers separate while removing known bad auxiliary trips. */
 export function sanitizeNrtFeed(gtfs: GtfsData): { gtfs: GtfsData; result: NrtCleanupResult } {
   const cleaned = removeNrtShortTurnArtifacts(gtfs);
-  return { gtfs: cleaned.gtfs, result: { shortTurnTripsDropped: cleaned.dropped } };
+  const relabeledResult = relabelNrt301MislabeledShortTurn(cleaned.gtfs);
+  return {
+    gtfs: relabeledResult.gtfs,
+    result: { shortTurnTripsDropped: cleaned.dropped },
+  };
 }
