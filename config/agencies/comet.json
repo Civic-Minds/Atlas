@@ -11,10 +11,12 @@
     34.2,
     -80.8
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-60/latest.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2209/latest.zip",
   "region": "South Carolina",
-  "lastFeedExpiry": "20231231",
-  "lastFeedVersion": "UTC: 26-May-2023 21:22",
-  "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://mvgo.org/"
+  "lastRefreshedAt": "2026-07-17",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "3681142b-debf-4b2e-9648-2c10841b6aff",
+  "cities": [
+    "Columbia, South Carolina"
+  ]
 }

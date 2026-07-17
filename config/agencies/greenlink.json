@@ -11,9 +11,12 @@
     35.1,
     -82.1
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-61/latest.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip",
   "region": "South Carolina",
-  "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "UTC: 30-Jun-2026 15:17",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-17",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "cities": [
+    "Greenville, South Carolina"
+  ]
 }

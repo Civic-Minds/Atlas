@@ -6866,11 +6866,16 @@
         32.5,
         -110.6
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-43/latest.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2354/latest.zip",
       "region": "Arizona",
-      "lastFeedExpiry": "20271231",
-      "lastFeedVersion": "20260611",
-      "lastRefreshedAt": "2026-07-06"
+      "lastRefreshedAt": "2026-07-17",
+      "lastFeedExpiry": "20260516",
+      "lastFeedVersion": "Feb1526_20260121",
+      "cities": [
+        "Tucson, Arizona",
+        "Casas Adobes, Arizona",
+        "Catalina Foothills, Arizona"
+      ]
     },
     {
       "slug": "ycat",
@@ -6885,11 +6890,14 @@
         33,
         -114.3
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-17/latest.zip",
       "region": "Arizona",
-      "lastFeedExpiry": "20261230",
-      "lastFeedVersion": "No deviations",
-      "lastRefreshedAt": "2026-07-06"
+      "lastRefreshedAt": "2026-07-17",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "cities": [
+        "Yuma, Arizona"
+      ]
     },
     {
       "slug": "comet",
@@ -6904,12 +6912,14 @@
         34.2,
         -80.8
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-60/latest.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2209/latest.zip",
       "region": "South Carolina",
-      "lastFeedExpiry": "20231231",
-      "lastFeedVersion": "UTC: 26-May-2023 21:22",
-      "lastRefreshedAt": "2026-07-13",
-      "websiteUrl": "https://mvgo.org/"
+      "lastRefreshedAt": "2026-07-17",
+      "lastFeedExpiry": "20270109",
+      "lastFeedVersion": "3681142b-debf-4b2e-9648-2c10841b6aff",
+      "cities": [
+        "Columbia, South Carolina"
+      ]
     },
     {
       "slug": "greenlink",
@@ -6924,11 +6934,14 @@
         35.1,
         -82.1
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-61/latest.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/tld-490/latest.zip",
       "region": "South Carolina",
-      "lastFeedExpiry": "20270101",
-      "lastFeedVersion": "UTC: 30-Jun-2026 15:17",
-      "lastRefreshedAt": "2026-07-06"
+      "lastRefreshedAt": "2026-07-17",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "cities": [
+        "Greenville, South Carolina"
+      ]
     },
     {
       "slug": "carta-chattanooga",
@@ -6943,12 +6956,15 @@
         35.3,
         -85
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-71/latest.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2082/latest.zip",
       "region": "Tennessee",
-      "lastFeedExpiry": "20260110",
-      "lastFeedVersion": "UTC: 24-Jul-2025 22:32",
-      "lastRefreshedAt": "2026-07-13",
-      "websiteUrl": "https://marintransit.org"
+      "lastRefreshedAt": "2026-07-17",
+      "lastFeedExpiry": "20240817",
+      "lastFeedVersion": "S1000099",
+      "cities": [
+        "Chattanooga, Tennessee",
+        "East Chattanooga, Tennessee"
+      ]
     },
     {
       "slug": "citilink-fw",
