@@ -4,19 +4,7 @@ Engineering direction for Atlas infrastructure and the live data layer.
 
 ---
 
-## Current Stack
-
-| Layer | What | Status |
-|-------|------|--------|
-| Frontend | React + MapLibre GL JS (GPU-rendered), hosted on Vercel | Live |
-| Route data | GTFS → PMTiles pipeline, served from Cloudflare R2 | Live |
-| Weekly refresh | GitHub Actions cron → `npm run refresh` | Live |
-| GTFS-RT archiving | Cloudflare Worker → versioned normalized snapshots to `atlas-live` R2 bucket | Canary only; existing cohort |
-| Live provider API | `/api/live-snapshot` latest data + `/api/live-replay` bounded replay | Implemented for canary validation |
-
----
-
-## Next: Live Data Infrastructure
+## Live Data Infrastructure
 
 The goal is to make Atlas a stable live-data provider for multiple products without
 forcing each consumer to poll GTFS-RT or access private R2. Replay is the validation

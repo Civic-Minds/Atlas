@@ -18,8 +18,6 @@ User experience and the workflow of a transit professional using Atlas.
 
 - **Factbook / Insights — Proposed:** What surprising or useful stories does the data contain?
 
-See [Atlas Factbook roadmap](FACTBOOK.md) for details on computation, AI-assisted narratives, and surfacing.
-
 ---
 
 ## Live Data Layer (Expanding)

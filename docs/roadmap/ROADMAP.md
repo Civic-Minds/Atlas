@@ -8,8 +8,8 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 
 ### Product & Platform
 - **[Product](./PRODUCT.md)**: Map apps (Frequency Map, Corridors, History, Factbook/Insights), live data layer, filters, design principles.
-- **[Technical](./TECHNICAL.md)**: Infrastructure stack, GTFS-RT archiving, live data infrastructure (workers, databases, trip matching).
 - **[Platform](./PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).
+- **[Technical](./TECHNICAL.md)**: Future engineering direction for live data, rendering, and analysis infrastructure.
 
 ---
 
