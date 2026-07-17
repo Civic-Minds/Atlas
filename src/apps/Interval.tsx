@@ -28,6 +28,8 @@ interface Props {
   onStatsChange?: (stats: { total: number; matching: number } | null) => void;
   resetViewKey?: number;
   showUi?: boolean;
+  /** Keep the normal selection card available for another app (e.g. Live). */
+  showSelectionUi?: boolean;
   showRouteLayers?: boolean;
   showCorridorBand?: boolean;
   forceShowCorridors?: boolean;
@@ -52,7 +54,7 @@ interface Props {
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showRouteLayers = true, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft, searchEnterRef }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft, searchEnterRef }: Props) {
   const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -149,7 +151,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     if (forceShowCorridors) setShowCorridors(true);
   }, [forceShowCorridors]);
 
-  const showSidebar = showUi || fareView;
+  const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length);
+  const showSidebar = showUi || fareView || selectionUiVisible;
   const [fareOverrides, setFareOverrides] = useState<Record<string, FareOverride>>({});
   useEffect(() => {
     if (!fareView) return;
@@ -259,12 +262,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   // Clear map selection states when switching away from the Frequency app
   useEffect(() => {
-    if (!showUi) {
+    if (!showUi && !showSelectionUi) {
       setSelectedRoute(null);
       setSelectedStop(null);
       setDisambiguationRoutes(null);
     }
-  }, [showUi]);
+  }, [showUi, showSelectionUi]);
 
   useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
   useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);

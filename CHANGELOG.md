@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live stop clicks now open the normal departure card**: upcoming departures remain accessible without restoring the entire Frequency Map interface.
 - **Live map overviews are readable again**: vehicle route-number labels appear after selecting a route instead of overlapping across the entire city.
 - **Routes remain clickable while Live Vehicles is open**: the normal route layers stay visible beneath live vehicle markers so users can open route details from the map.
 - **Live route cards now follow the static route-card layout**: destinations and route identity lead the card, with vehicle status and speed treated as supporting live details.
