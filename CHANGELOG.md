@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Live mode now filters the map to live-configured routes**: non-live static routes no longer clutter the live vehicle view, while live routes remain clickable.
+- **Local Live stop cards now receive realtime arrivals**: the dev API registers the stop-departure endpoint instead of silently falling back to static schedule times.
 - **Live stop clicks now open the normal departure card**: upcoming departures remain accessible without restoring the entire Frequency Map interface.
 - **Live map overviews are readable again**: vehicle route-number labels appear after selecting a route instead of overlapping across the entire city.
 - **Routes remain clickable while Live Vehicles is open**: the normal route layers stay visible beneath live vehicle markers so users can open route details from the map.

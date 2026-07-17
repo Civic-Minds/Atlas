@@ -13,10 +13,12 @@ const handlers: Record<string, (req: Request) => Promise<Response>> = {};
 
 async function loadHandlers() {
   const { default: liveVehicles } = await import('./api/live-vehicles.js');
+  const { default: liveStop } = await import('./api/live-stop.js');
   const { default: liveAdherence } = await import('./api/live-adherence.js');
   const { default: historyAdherence } = await import('./api/history-adherence.js');
   const { default: gtfsRt } = await import('./api/gtfs-rt.js');
   handlers['/api/live-vehicles'] = liveVehicles;
+  handlers['/api/live-stop'] = liveStop;
   handlers['/api/live-adherence'] = liveAdherence;
   handlers['/api/history-adherence'] = historyAdherence;
   handlers['/api/gtfs-rt'] = gtfsRt;
@@ -56,5 +58,5 @@ createServer(async (req, res) => {
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);
-  console.log('Routes: /api/live-vehicles, /api/live-adherence, /api/history-adherence, /api/gtfs-rt');
+  console.log('Routes: /api/live-vehicles, /api/live-stop, /api/live-adherence, /api/history-adherence, /api/gtfs-rt');
 });
