@@ -21,7 +21,7 @@ Atlas is built from publicly available transit data and publishes the processing
 - When a feed-specific correction is applied, the affected agency or route can show a public correction note explaining what changed.
 - The map uses static GTFS schedule data unless a surface is explicitly marked Live; live vehicle and adherence data are limited to supported agencies and routes.
 
-## Maintainer guides
+## Procedures and maintenance
 
 - **[Adding agencies](./ADDING_AGENCIES.md)**: Contributor guide for onboarding a new transit agency.
 - **[Pipeline operations](./PIPELINE_OPERATIONS.md)**: Contributor procedures for adding agencies, refreshing feeds, and publishing artifacts.
