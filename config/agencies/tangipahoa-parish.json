@@ -16,5 +16,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "20251212",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only — every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+  "pmtilesPending": true
 }

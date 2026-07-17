@@ -25,6 +25,11 @@ interface Agency {
   name: string;
   center: [number, number]; // [lat, lon]
   bbox?: [number, number, number, number]; // [s, w, n, e]
+  // Known, tracked gap — e.g. no route data published yet, or a data/pipeline
+  // issue tracked in a GitHub issue. Excluded from the pass/fail result so the
+  // checker doesn't fail loudly on agencies with a known cause; still sampled
+  // so we notice (and print) if the underlying issue actually gets resolved.
+  pmtilesPending?: boolean;
 }
 
 // Matches the app's own fallback bbox padding (shared/config.ts AGENCY_BBOX_PAD)
@@ -190,10 +195,23 @@ async function main() {
 
   console.log(`Fetched ${fetched} tiles (${emptyTiles} empty, ${errors} errors). Found ${foundSlugs.size} distinct agency slugs across all sampled tiles.`);
 
-  const missing = agencies.filter(a => !foundSlugs.has(a.slug));
+  const allMissing = agencies.filter(a => !foundSlugs.has(a.slug));
+  const missing = allMissing.filter(a => !a.pmtilesPending);
+  const stillPending = allMissing.filter(a => a.pmtilesPending);
+  const resolvedPending = agencies.filter(a => a.pmtilesPending && foundSlugs.has(a.slug));
+
+  if (resolvedPending.length > 0) {
+    console.log(`\nNote: ${resolvedPending.length} agenc${resolvedPending.length === 1 ? 'y' : 'ies'} marked "pmtilesPending" now ${resolvedPending.length === 1 ? 'has' : 'have'} route features in the archive — the flag can likely be removed:`);
+    for (const a of resolvedPending) console.log(`  - ${a.slug} (${a.name})`);
+  }
+
+  if (stillPending.length > 0) {
+    console.log(`\n${stillPending.length} agenc${stillPending.length === 1 ? 'y' : 'ies'} still missing but marked "pmtilesPending" (known, tracked gap — not counted as a failure):`);
+    for (const a of stillPending) console.log(`  - ${a.slug} (${a.name})`);
+  }
 
   if (missing.length === 0) {
-    console.log(`\nOK — all ${agencies.length} agencies have route features present in the PMTiles archive.`);
+    console.log(`\nOK — all ${agencies.length - stillPending.length} non-pending agencies have route features present in the PMTiles archive.`);
     return;
   }
 
@@ -201,7 +219,7 @@ async function main() {
   for (const a of missing) {
     console.error(`  - ${a.slug} (${a.name})`);
   }
-  console.error(`\nLikely cause: \`npm run build-pmtiles\` + upload never ran after these agencies were added to index.json. Rebuild and upload atlas.pmtiles (see CLAUDE.md "Refreshing Data").`);
+  console.error(`\nLikely cause: \`npm run build-pmtiles\` + upload never ran after these agencies were added to index.json. Rebuild and upload atlas.pmtiles (see CLAUDE.md "Refreshing Data"). If this is a known, separately-tracked issue (bad upstream data, a missing pipeline feature, etc.), mark it \`"pmtilesPending": true\` in its config/agencies/{slug}.json instead of leaving this check red.`);
   process.exitCode = 1;
 }
 

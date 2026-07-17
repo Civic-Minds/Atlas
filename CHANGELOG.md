@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Map tile fetches now retry on rate-limit/server errors**: A single 429 or 5xx from R2 on any map tile request used to fail silently with no retry, which could blank out the whole map until a manual page reload. Now retries with backoff, matching how the backend pipeline already handles this.
 - **Fixed two agencies with no routes at all**: Dutchess County Public Transit and Fredericksburg Regional Transit had real, valid GTFS data but published zero route features. Dutchess: the reference-date picker preferred a near-empty 2-trip placeholder block over the real 585-trip dominant service just because it started later. Fredericksburg: route shape selection only considered Monday/Saturday/Sunday, silently dropping the agency's actual Tuesday–Friday-only service. Both now publish real routes (62 and 16 respectively).
 - **Routes/coverage badge now fades instead of disappearing instantly** when switching out of the map view (e.g. into Fares).
 - **PMTiles coverage check false positives fixed**: The sparse 9-point sampling grid could miss real route geometry for agencies with only a few routes clustered in part of their bbox (confirmed on Laredo, Siskiyou, Lassen — all render correctly on the map, the checker just wasn't looking in the right tiles). Now samples every tile in an agency's bbox up to a cap, instead of fixed corner/edge points.

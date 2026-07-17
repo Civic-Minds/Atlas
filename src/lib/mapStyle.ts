@@ -1,15 +1,24 @@
 import maplibregl from 'maplibre-gl';
-import { Protocol } from 'pmtiles';
+import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { agencyGeoWeekVersion } from './agencyGeo';
+import { RetryingFetchSource } from './pmtilesRetrySource';
 
+function atlasPmtilesUrl(): string {
+  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${agencyGeoWeekVersion()}`;
+}
+
+const protocol = new Protocol();
 let protocolRegistered = false;
 export function registerProtocol() {
   if (!protocolRegistered) {
-    const protocol = new Protocol();
     maplibregl.addProtocol('pmtiles', protocol.tile);
     protocolRegistered = true;
   }
+  // Register our retry-wrapped PMTiles instance under this exact URL so
+  // MapLibre's `pmtiles://${url}/{z}/{x}/{y}` requests resolve to it instead
+  // of a fresh stock instance (Protocol.get() matches by exact source key).
+  protocol.add(new PMTiles(new RetryingFetchSource(atlasPmtilesUrl())));
 }
 
 export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification => {
@@ -45,7 +54,7 @@ export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification =
       },
       'atlas-pmtiles': {
         type: 'vector',
-        url: `pmtiles://${R2_PUBLIC_URL}/atlas.pmtiles?v=${agencyGeoWeekVersion()}`,
+        url: `pmtiles://${atlasPmtilesUrl()}`,
       },
     },
     layers: [
