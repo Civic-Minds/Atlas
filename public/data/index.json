@@ -16628,6 +16628,26 @@
       "timezone": "America/Mexico_City"
     },
     {
+      "slug": "mexico-city-metro",
+      "name": "Sistema de Transporte Colectivo Metro (Mexico City)",
+      "region": "Ciudad de M\u00e9xico",
+      "country": "Mexico",
+      "center": [
+        19.4271,
+        -99.1419
+      ],
+      "bbox": [
+        19.25,
+        -99.35,
+        19.55,
+        -98.95
+      ],
+      "feedUrl": "https://datos.cdmx.gob.mx/dataset/75538d96-3ade-4bc5-ae7d-d85595e4522d/resource/32ed1b6b-41cd-49b3-b7f0-b57acb0eb819/download/gtfs-2.zip",
+      "mdbFeedUrl": "https://mobilitydatabase.org/feeds/gtfs/tfs-70",
+      "agencyName": "Sistema de Transporte Colectivo Metro",
+      "websiteUrl": "https://www.metro.cdmx.gob.mx/"
+    },
+    {
       "slug": "cheyenne",
       "name": "Cheyenne Transit Program",
       "region": "Wyoming",

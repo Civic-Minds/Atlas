@@ -163,6 +163,7 @@ async function main() {
   const indexPath = resolve('public/data/index.json');
   let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
   let agencyId: string | undefined;
+  let agencyNameFilter: string | undefined;
   let excludeRouteShortNames: string[] | undefined;
   let excludeTripHeadsigns: string[] | undefined;
   let mergeEquivalentShapeVariants: boolean | undefined;
@@ -171,11 +172,12 @@ async function main() {
   let manualBaseFare: number | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null }>;
+      agencies: Array<{ slug: string; agencyId?: string; agencyName?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
     preprocess = entry?.preprocess;
     agencyId = entry?.agencyId;
+    agencyNameFilter = entry?.agencyName;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
     excludeTripHeadsigns = entry?.excludeTripHeadsigns;
     mergeEquivalentShapeVariants = entry?.mergeEquivalentShapeVariants;
@@ -204,7 +206,7 @@ async function main() {
 
   const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { agencyId, preprocess, excludeRouteShortNames, excludeTripHeadsigns, mergeEquivalentShapeVariants, slug, manualBaseFare, force });
+  }, { agencyId, agencyName: agencyNameFilter, preprocess, excludeRouteShortNames, excludeTripHeadsigns, mergeEquivalentShapeVariants, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const todayYmd = todayUtcYmd().replace(/-/g, '');
