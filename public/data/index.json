@@ -308,7 +308,7 @@
         "BLUE"
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/194",
-      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
+      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-15",
@@ -558,7 +558,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -618,7 +618,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -742,7 +742,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -784,7 +784,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -2019,7 +2019,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -6033,7 +6033,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {
@@ -6054,8 +6054,14 @@
       "slug": "laredo",
       "name": "El Metro (Laredo)",
       "center": [
-        26.2,
-        -99.52
+        27.538,
+        -99.4856
+      ],
+      "bbox": [
+        27.4289,
+        -99.5461,
+        27.6472,
+        -99.4252
       ],
       "feedUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip",
       "region": "Texas",
@@ -7413,7 +7419,6 @@
       "lastRefreshedAt": "2026-07-15",
       "region": "Colorado",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
-      "websiteUrl": "http://gvt.mesacounty.us",
       "bbox": [
         39.0109,
         -108.7584,

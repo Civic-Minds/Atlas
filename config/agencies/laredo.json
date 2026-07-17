@@ -2,8 +2,14 @@
   "slug": "laredo",
   "name": "El Metro (Laredo)",
   "center": [
-    26.2,
-    -99.52
+    27.538,
+    -99.4856
+  ],
+  "bbox": [
+    27.4289,
+    -99.5461,
+    27.6472,
+    -99.4252
   ],
   "feedUrl": "https://gtfs.remix.com/el_metro_laredo_transit_us.zip",
   "region": "Texas",

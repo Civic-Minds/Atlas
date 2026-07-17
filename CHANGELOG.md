@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **PMTiles coverage check false positives fixed**: The sparse 9-point sampling grid could miss real route geometry for agencies with only a few routes clustered in part of their bbox (confirmed on Laredo, Siskiyou, Lassen — all render correctly on the map, the checker just wasn't looking in the right tiles). Now samples every tile in an agency's bbox up to a cap, instead of fixed corner/edge points.
+- **Laredo (El Metro) location data corrected**: `center` was off by over a degree (pointed south of the actual service area) and had no `bbox`, which was also the root cause of the false-positive coverage failure above.
 - **Duplicate agency removed**: Grand Valley Transit (Mesa County, CO) was listed twice under different slugs, pointing at the same feed — removed the less complete duplicate.
 - **Continent specialty agencies**: Added JFK AirTrain, Staten Island Ferry, NYC Ferry, Roosevelt Island Tramway, Guadalajara Mi Transporte, Cheyenne Transit Program, Rapid Transit System (Rapid City), and Sioux City Transit — NYC water/airport specialties, first Mexico coverage, first Wyoming agency, and Iowa/Nebraska border.
 - **Seattle specialty agencies**: Added Seattle Center Monorail and Snoqualmie Valley Transportation (SVT). Seattle Streetcar is configured but still pending — its feed is King County Metro's full multi-agency GTFS and needs agency-scoped filtering the pipeline doesn't support yet (#214), so it won't appear on the map until that's built.

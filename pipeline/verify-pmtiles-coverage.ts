@@ -37,6 +37,14 @@ const FALLBACK_PAD = { lat: 0.4, lon: 0.5 };
 // every headway tier. We still clamp to the archive's actual maxZoom at runtime.
 const PREFERRED_ZOOM = 12;
 
+// A sparse fixed-point grid (e.g. 9 corner/edge/center points) can miss real
+// route geometry entirely for agencies with only a handful of routes clustered
+// in a small part of their bbox — confirmed false-positive on siskiyou/lassen
+// (see #215). Instead cover every tile in the bbox up to this cap; beyond it
+// (large/statewide agencies) fall back to an evenly-strided grid so total
+// fetch cost stays bounded.
+const MAX_TILES_PER_AGENCY = 100;
+
 function lonLatToTile(lon: number, lat: number, zoom: number): { x: number; y: number } {
   const n = 2 ** zoom;
   const latRad = (lat * Math.PI) / 180;
@@ -50,8 +58,12 @@ function lonLatToTile(lon: number, lat: number, zoom: number): { x: number; y: n
   };
 }
 
-/** 9-point grid (4 corners + 4 edge midpoints + center) over an agency's service bbox. */
-function samplePoints(agency: Agency): Array<[lat: number, lon: number]> {
+/**
+ * Every tile spanned by an agency's bbox at the sampling zoom, up to
+ * MAX_TILES_PER_AGENCY. Larger bboxes fall back to an evenly-strided grid
+ * within the cap rather than every tile, to bound total fetch cost.
+ */
+function tilesForAgency(agency: Agency, zoom: number): Array<{ x: number; y: number }> {
   const [centerLat, centerLon] = agency.center;
   const [s, w, n, e] = agency.bbox ?? [
     centerLat - FALLBACK_PAD.lat,
@@ -59,13 +71,34 @@ function samplePoints(agency: Agency): Array<[lat: number, lon: number]> {
     centerLat + FALLBACK_PAD.lat,
     centerLon + FALLBACK_PAD.lon,
   ];
-  const midLat = (s + n) / 2;
-  const midLon = (w + e) / 2;
-  return [
-    [centerLat, centerLon],
-    [s, w], [s, e], [n, w], [n, e],
-    [s, midLon], [n, midLon], [midLat, w], [midLat, e],
-  ];
+  // Tile y increases southward, so north (n) maps to the smaller y.
+  const topLeft = lonLatToTile(w, n, zoom);
+  const bottomRight = lonLatToTile(e, s, zoom);
+  const xMin = Math.min(topLeft.x, bottomRight.x);
+  const xMax = Math.max(topLeft.x, bottomRight.x);
+  const yMin = Math.min(topLeft.y, bottomRight.y);
+  const yMax = Math.max(topLeft.y, bottomRight.y);
+  const width = xMax - xMin + 1;
+  const height = yMax - yMin + 1;
+
+  if (width * height <= MAX_TILES_PER_AGENCY) {
+    const tiles: Array<{ x: number; y: number }> = [];
+    for (let x = xMin; x <= xMax; x++) {
+      for (let y = yMin; y <= yMax; y++) tiles.push({ x, y });
+    }
+    return tiles;
+  }
+
+  const gridDim = Math.max(1, Math.floor(Math.sqrt(MAX_TILES_PER_AGENCY)));
+  const tiles: Array<{ x: number; y: number }> = [];
+  for (let i = 0; i < gridDim; i++) {
+    for (let j = 0; j < gridDim; j++) {
+      const x = xMin + Math.round((i / Math.max(1, gridDim - 1)) * (width - 1));
+      const y = yMin + Math.round((j / Math.max(1, gridDim - 1)) * (height - 1));
+      tiles.push({ x, y });
+    }
+  }
+  return tiles;
 }
 
 async function getZxyWithRetry(
@@ -114,12 +147,11 @@ async function main() {
   // Build the deduped set of tiles to fetch across all agencies.
   const tileKeys = new Map<string, { x: number; y: number }>();
   for (const agency of agencies) {
-    for (const [lat, lon] of samplePoints(agency)) {
-      const { x, y } = lonLatToTile(lon, lat, zoom);
+    for (const { x, y } of tilesForAgency(agency, zoom)) {
       tileKeys.set(`${x}/${y}`, { x, y });
     }
   }
-  console.log(`${tileKeys.size} unique tiles to fetch (deduped from ${agencies.length} agencies x up to 9 sample points).`);
+  console.log(`${tileKeys.size} unique tiles to fetch (deduped from ${agencies.length} agencies, full-bbox coverage up to ${MAX_TILES_PER_AGENCY} tiles each).`);
 
   // Fetch + decode every unique tile, collecting every agencySlug seen anywhere
   // in the routes layer. An agency's routes must appear in *some* tile globally —
