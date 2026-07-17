@@ -152,7 +152,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     if (forceShowCorridors) setShowCorridors(true);
   }, [forceShowCorridors]);
 
-  const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length);
+  const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || fareView || selectionUiVisible;
   const [fareOverrides, setFareOverrides] = useState<Record<string, FareOverride>>({});
   useEffect(() => {
@@ -267,6 +267,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       setSelectedRoute(null);
       setSelectedStop(null);
       setDisambiguationRoutes(null);
+      setSelectedAgencySlug?.(null);
     }
   }, [showUi, showSelectionUi]);
 
@@ -423,7 +424,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {(showUi || fareView) && selectedAgencySlug && !selectedRoute && !selectedStop && (() => {
+      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard

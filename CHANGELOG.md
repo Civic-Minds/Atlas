@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Agency selections now open their cards in Live mode**: choosing an agency from the agency browser no longer closes the panel without showing the result.
 - **Sidebar panels now sit 12px below the search bar**: static and Live panels share the same tighter vertical rhythm.
 - **Live mode now filters the map to live-configured routes**: non-live static routes no longer clutter the live vehicle view, while live routes remain clickable.
 - **Local Live stop cards now receive realtime arrivals**: the dev API registers the stop-departure endpoint instead of silently falling back to static schedule times.
