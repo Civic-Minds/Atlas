@@ -13,6 +13,14 @@ Atlas is built from publicly available transit data and publishes the processing
 - **[Pipeline methodology](./PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
 - **[Route service metrics](./ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
 
+## Data freshness and review
+
+- Atlas checks configured feeds during the weekly refresh and publishes the last successful schedule data it has.
+- If a feed's `feed_end_date` has passed, Atlas keeps the data visible but marks the schedule as potentially outdated rather than silently removing the agency.
+- New or changed schedule data may be marked as being verified while Atlas checks for missing service and known feed-quality problems.
+- When a feed-specific correction is applied, the affected agency or route can show a public correction note explaining what changed.
+- The map uses static GTFS schedule data unless a surface is explicitly marked Live; live vehicle and adherence data are limited to supported agencies and routes.
+
 ## Maintainer guides
 
 - **[Adding agencies](./ADDING_AGENCIES.md)**: Contributor guide for onboarding a new transit agency.
