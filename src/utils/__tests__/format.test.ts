@@ -47,14 +47,10 @@ describe('shortenAgencyName', () => {
   //   SCT     — Sonoma County (CA) / Suffolk County (NY)
   //   SAM     — Sandy Area Metro (OR) / Sioux Area Metro (SD)
   //   RTC     — RTC de Québec / Regional Transportation Commission of Southern Nevada
-  // "Grand Valley Transit" (grand-valley-transit / grand-junction, both CO)
-  // looks like a genuine duplicate index.json entry rather than two real
-  // agencies — flagged separately, allowlisted here so this test stays
-  // focused on shortenAgencyName logic, not data hygiene.
   // Multi-region single agencies (exo, BC Transit both legitimately operate
   // many service areas under one brand) are also expected, not collisions.
   const KNOWN_SHARED_ACRONYMS = new Set([
-    'CAT', 'GET', 'The Bus', 'DART', 'CARTA', 'Grand Valley Transit',
+    'CAT', 'GET', 'The Bus', 'DART', 'CARTA',
     'SMART', 'TCAT', 'CATA', 'SCT', 'SAM', 'RTC', 'exo', 'BC Transit',
   ]);
 

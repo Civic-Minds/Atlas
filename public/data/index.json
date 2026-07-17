@@ -5649,20 +5649,6 @@
       "lastRefreshedAt": "2026-07-06"
     },
     {
-      "slug": "grand-valley-transit",
-      "name": "Grand Valley Transit",
-      "center": [
-        39.07,
-        -108.55
-      ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
-      "region": "Colorado",
-      "lastFeedExpiry": "20251105",
-      "lastFeedVersion": "Nov_05_2024",
-      "lastRefreshedAt": "2026-07-13",
-      "websiteUrl": "http://gvt.mesacounty.us"
-    },
-    {
       "slug": "durango-transit",
       "name": "Durango Transit",
       "center": [
@@ -7427,6 +7413,7 @@
       "lastRefreshedAt": "2026-07-15",
       "region": "Colorado",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "websiteUrl": "http://gvt.mesacounty.us",
       "bbox": [
         39.0109,
         -108.7584,

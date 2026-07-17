@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Duplicate agency removed**: Grand Valley Transit (Mesa County, CO) was listed twice under different slugs, pointing at the same feed — removed the less complete duplicate.
 - **Continent specialty agencies**: Added JFK AirTrain, Staten Island Ferry, NYC Ferry, Roosevelt Island Tramway, Guadalajara Mi Transporte, Cheyenne Transit Program, Rapid Transit System (Rapid City), and Sioux City Transit — NYC water/airport specialties, first Mexico coverage, first Wyoming agency, and Iowa/Nebraska border.
 - **Seattle specialty agencies**: Added Seattle Center Monorail and Snoqualmie Valley Transportation (SVT). Seattle Streetcar is configured but still pending — its feed is King County Metro's full multi-agency GTFS and needs agency-scoped filtering the pipeline doesn't support yet (#214), so it won't appear on the map until that's built.
 - **PMTiles builds**: Retry throttled R2 artifact downloads, refuse incomplete uploads (with an explicit opt-out for agencies still pending their first data publish), and fall back to rclone when Node's large-file R2 transport fails.
