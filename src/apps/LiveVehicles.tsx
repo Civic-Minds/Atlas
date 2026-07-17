@@ -14,6 +14,7 @@ import { STATUS_COLORS } from '../utils/colors';
 import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
+import { inferLiveDirection } from '../utils/liveDirection';
 
 interface Props {
   agencies: Agency[];
@@ -88,6 +89,25 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Locally-fetched agency GeoJSON (fallback when Interval layers haven't loaded yet)
   const [localLayers, setLocalLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+
+  // Fill missing direction metadata from static directional route shapes. Some
+  // GTFS-RT feeds provide vehicle positions without direction_id or headsign.
+  const resolvedVehiclesBySlug = useMemo(() => {
+    const resolved: Record<string, LiveVehicle[]> = {};
+    for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
+      const fc = layers[slug] ?? localLayers[slug];
+      resolved[slug] = fc
+        ? vehicles.map(vehicle => {
+            const routeFeatures = fc.features.filter(feature =>
+              (feature.properties as any)?.routeShortName === vehicle.routeShortName,
+            );
+            const match = inferLiveDirection(vehicle, routeFeatures);
+            return { ...vehicle, directionId: match.directionId, headsign: match.headsign };
+          })
+        : vehicles;
+    }
+    return resolved;
+  }, [vehiclesBySlug, layers, localLayers]);
 
   // selectedRoute is a composite "slug::routeShortName" key
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
@@ -180,7 +200,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
   }, [visibleSlugs, selectedRoute]);
 
-  const allVehicles = useMemo(() => Object.values(vehiclesBySlug).flat(), [vehiclesBySlug]);
+  const allVehicles = useMemo(() => Object.values(resolvedVehiclesBySlug).flat(), [resolvedVehiclesBySlug]);
   const isLoading = Object.values(loadingBySlug).some(Boolean);
   const errors = Object.values(errorBySlug).filter(Boolean) as string[];
 
