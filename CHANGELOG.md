@@ -6,7 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- **Shared panel rows now have one source of truth**: search and Live browsing lists use the same divider treatment, while card-style rows can explicitly use the shared spaced variant instead of copying one-off Tailwind overrides.
+- **Live control now uses the same light selected state as the rest of the interface**: the active pill no longer becomes a heavy dark block.
+- **Live vehicle markers are less dominant at city scale**: smaller dots and lighter outlines keep clusters readable without losing hover targets or selected-vehicle emphasis.
+- **Live and map-selection panels no longer overlap**: opening a selected route, stop, or agency card temporarily yields the Live overview panel's space.
+- **Shared panel rows now have one source of truth**: search and Live browsing lists use the same section-divider and whitespace treatment, while card-style rows can explicitly use the shared spaced variant instead of copying one-off Tailwind overrides.
 - **Agency selections now open their cards in Live mode**: choosing an agency from the agency browser no longer closes the panel without showing the result.
 - **Sidebar panels now sit 12px below the search bar**: static and Live panels share the same tighter vertical rhythm.
 - **Live mode now filters the map to live-configured routes**: non-live static routes no longer clutter the live vehicle view, while live routes remain clickable.

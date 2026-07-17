@@ -26,6 +26,7 @@ interface Props {
   query: string;
   layers?: Record<string, GeoJSON.FeatureCollection>;
   sidebarLeft?: number;
+  selectionActive?: boolean;
 }
 
 interface RouteGroup {
@@ -73,7 +74,7 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
 
 const MIN_LIVE_ZOOM = 9;
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false }: Props) {
   const { setOverlay } = useLiveVehiclesMapOverlay();
   const { bounds, zoom } = useViewport();
 
@@ -408,7 +409,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             name={routeListCompanionName(g.displayName, g.routeShortName)}
             selected={isSelected}
             onClick={() => handleRouteClick(key)}
-            variant="divided"
+            variant="spaced"
             right={
               <div className="flex items-center gap-1.5 shrink-0 ml-3">
                 <span className={`${LIST_ROW_DIM} shrink-0`}>{g.vehicles.length} veh</span>
@@ -561,7 +562,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
-        className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} pointer-events-auto`}
+        className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         <div className={`${PANEL_SHELL} ${PANEL_ENTER}`}>
@@ -680,6 +681,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                     key={p.slug}
                     shortName={p.place}
                     name={p.agencyName}
+                    variant="spaced"
                     onClick={() => handlePlaceClick(p.slug)}
                     right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
                   />

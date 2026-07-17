@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
+import { PANEL_SECTION_HEAD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -96,6 +96,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         return (
           <RouteListRow
             shortName={primary}
+            variant="spaced"
             onClick={() => {
               setSelectedAgencySlug?.(g.slug);
               setQuery('');
@@ -129,6 +130,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             name={name}
             stacked
             selected={selectedRoute === r.key}
+            variant="spaced"
             onHoverChange={onRouteHover ? (h => onRouteHover(h ? r.key : null)) : undefined}
             onClick={() => {
               onRouteHover?.(null);
@@ -155,7 +157,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         return (
           <button
             type="button"
-            className={`${LIST_ROW} items-start gap-3 ${selectedStop === s.key ? 'bg-[var(--accent-bg)]' : ''}`}
+            className={`${LIST_ROW_SPACED} items-start gap-3 ${selectedStop === s.key ? 'bg-[var(--accent-bg)]' : ''}`}
             onClick={() => {
               saveRecentSearch(query);
               setQuery('');

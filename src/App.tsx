@@ -156,6 +156,7 @@ export default function App() {
   }, [searchFocused]);
 
   const [liveMounted, setLiveMounted] = useState(false);
+  const [intervalSelectionActive, setIntervalSelectionActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
     try {
       const sp = new URLSearchParams(window.location.search);
@@ -351,9 +352,9 @@ export default function App() {
         <button
           onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
           aria-label="Live vehicles"
-          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
-          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-white animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
           <span>Live</span>
         </button>
 
@@ -447,6 +448,7 @@ export default function App() {
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}
+              onSelectionActiveChange={setIntervalSelectionActive}
               headerPortalContainer={headerPortalEl}
               sidebarLeft={sidebarLeft}
               searchEnterRef={searchEnterRef}
@@ -469,6 +471,7 @@ export default function App() {
                   query={deferredQuery}
                   layers={layers}
                   sidebarLeft={sidebarLeft}
+                  selectionActive={intervalSelectionActive}
                 />
               </div>
             )}
