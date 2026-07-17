@@ -6715,25 +6715,6 @@
       ]
     },
     {
-      "slug": "wave-transit",
-      "name": "Wave Transit",
-      "center": [
-        34.19,
-        -77.94
-      ],
-      "bbox": [
-        34.05,
-        -78.1,
-        34.3,
-        -77.8
-      ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1862/latest.zip",
-      "region": "North Carolina",
-      "lastFeedExpiry": null,
-      "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-07-13"
-    },
-    {
       "slug": "starmetro",
       "name": "StarMetro (Tallahassee)",
       "center": [
