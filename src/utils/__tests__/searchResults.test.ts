@@ -90,6 +90,33 @@ describe('searchResults', () => {
     expect(results[0]?.inView).toBe(true);
   });
 
+  it('keeps same-shortName routes from different agencies separate, each with its own agency label (#211)', () => {
+    const features = [
+      {
+        type: 'Feature' as const,
+        geometry: { type: 'LineString' as const, coordinates: [[-118.4, 34.0], [-118.3, 34.1]] },
+        properties: {
+          routeId: '7X', agencySlug: 'gtrans', agencyName: 'GTrans',
+          routeShortName: '7X', routeLongName: 'Line 7x', headway: 6, directionId: 0,
+        },
+      },
+      {
+        type: 'Feature' as const,
+        geometry: { type: 'LineString' as const, coordinates: [[-122.4, 37.7], [-122.3, 37.8]] },
+        properties: {
+          routeId: '7X', agencySlug: 'sfmta', agencyName: 'SFMTA',
+          routeShortName: '7X', routeLongName: 'Noriega', headway: 8, directionId: 0,
+        },
+      },
+    ];
+    const results = searchRouteResults(features, '7x', null);
+    expect(results).toHaveLength(2);
+    const gtrans = results.find(r => r.key === 'gtrans::7X');
+    const sfmta = results.find(r => r.key === 'sfmta::7X');
+    expect(gtrans?.agencyName).toBe('GTrans');
+    expect(sfmta?.agencyName).toBe('SFMTA');
+  });
+
   it('puts routes first for numeric queries', () => {
     const routes = [{ key: 'a::1', routeShortName: '501', routeLongName: null, inView: true, distanceM: 0, matchRank: 0 }];
     const agencies = [{ key: 'TTC', name: 'TTC', region: 'Ontario', slug: 'ttc', inView: true, distanceM: 0 }];
