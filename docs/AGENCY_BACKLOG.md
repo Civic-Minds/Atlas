@@ -227,7 +227,7 @@ Run `npm run discover-gaps -- --min-pop 100000` for fresh ranked list. Notables 
 1. `npm run discover-gaps` → review `tmp/gap-candidates.json`
 2. Pick rows → add `todo` entries here (or promote directly)
 3. `npm run find-mdb -- "Agency Name" slug "lat,lon"` to confirm feed
-4. Batch `npm run process` (see [`PIPELINE.md`](./PIPELINE.md) § Batch adding agencies)
+4. Batch `npm run process` (see [`PIPELINE_OPERATIONS.md`](./PIPELINE_OPERATIONS.md) § Batch Processing and Publishing)
 5. Set `feedUrl` / `mdbFeedUrl` / `region` in `index.json`
 6. `npm run refresh -- <slugs> --force`
 7. One `npm run build-pmtiles` per batch

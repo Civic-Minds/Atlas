@@ -3,26 +3,25 @@
 Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflare R2, rendered by a React + MapLibre GL frontend. Coverage extends outward from the Greater Golden Horseshoe — Buffalo, London, Kingston, Montreal, and more on one continuous map.
 
 - **[Vision](../VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
-- **[Features](../../README.md#features)**: Headway tiers, filtering, search, station view, corridors, live adherence, history, agency browser.
-- **[Agencies](../AGENCIES.md)**: Current coverage, regions, and feed metadata.
-- **[Agency Backlog](../AGENCY_BACKLOG.md)**: Prioritized expansion queue and `npm run discover-gaps` workflow.
 
 **Current focus:** Corridors app live. History and live data layers expanding. Exploring the new Factbook for data-driven insights and stories.
 
 ### Strategy & Direction
-- **[Research](../RESEARCH.md)**: Agency pain points and problem statements (broken metrics, data silos, evidence gaps for planning).
 - **[Strategy](../STRATEGY.md)**: Competitive landscape and long-term product positioning.
-- **[Factbook (proposed)](./FACTBOOK.md)**: Atlas Factbook — surfacing data-driven findings, service change stories, frequency realities, corridors, and AI-assisted narratives.
 
 ### Product & Platform
 - **[Product](./PRODUCT.md)**: Map apps (Frequency Map, Corridors, History, Factbook/Insights), live data layer, filters, design principles.
 - **[Technical](./TECHNICAL.md)**: Infrastructure stack, GTFS-RT archiving, live data infrastructure (workers, databases, trip matching).
 - **[Platform](./PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).
 
-### Operations & Documentation
-- **[Pipeline](../PIPELINE.md)**: GTFS processing, weekly refresh, history builds, and supporting scripts.
-- **[Changelog](../../CHANGELOG.md)**: Detailed release notes and all notable changes.
-
 ---
+
+## Factbook (proposed)
+
+[Explore the Atlas Factbook concept](./FACTBOOK.md): surfacing data-driven findings, service change stories, frequency realities, corridors, and AI-assisted narratives.
+
+## Research
+
+[Read the market research](../RESEARCH.md): agency pain points and problem statements informing Atlas’s direction.
 
 [Back to Home](../../README.md)
