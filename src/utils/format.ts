@@ -187,7 +187,8 @@ export function liveVehicleRowLabel(
  *   "MiWay (Mississauga)"               → MiWay · Mississauga
  *   "Calgary Transit"                   → Calgary Transit
  *   "Edmonton Transit Service (ETS)"    → Edmonton Transit Service  (fits; no need to abbreviate)
- *   "Bay Area Rapid Transit (BART)"     → BART
+ *   "Bay Area Rapid Transit (BART)"     → BART · Bay Area
+ *   "Golden Empire Transit District (GET)" → GET · Golden Empire  (place recovered so it doesn't collide with the other GET)
  *   "County Connection (CCCTA)"         → County Connection  (outer already short brand)
  *   "T3 Transit (PEI)"                  → T3 Transit · PEI
  */
@@ -195,19 +196,25 @@ export function agencyDisplayParts(name: string): { primary: string; secondary?:
   const trimmed = name.trim();
   const m = trimmed.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
   if (!m) {
-    return { primary: compactListPrimary(trimmed, trimmed) };
+    return compactListPrimaryWithPlace(trimmed, trimmed);
   }
 
   const outer = m[1].trim();
   const inner = m[2].trim();
   if (!outer) return { primary: compactListPrimary(trimmed, inner || trimmed) };
-  if (!inner) return { primary: compactListPrimary(trimmed, outer) };
+  if (!inner) return compactListPrimaryWithPlace(trimmed, outer);
 
-  // Brand / acronym in parens — never secondary
+  // Brand / acronym in parens — the acronym never becomes secondary itself,
+  // but when we abbreviate to it we still surface the place buried in the
+  // legal name, since a bare acronym alone isn't self-explanatory (and two
+  // different agencies can land on the same acronym — see GET).
   if (!isPlaceAbbrev(inner) && looksLikeBrandCode(inner)) {
+    const place = placeFromLegalName(outer);
     // Long legal outer + code → everyday callsign (SFMTA, AC Transit)
     if (isLongLegalName(outer)) {
-      return { primary: normalizeBrandCode(inner) };
+      return place
+        ? { primary: normalizeBrandCode(inner), secondary: place }
+        : { primary: normalizeBrandCode(inner) };
     }
     // A handful of acronyms are more widely recognized than their expansion
     // even when the expansion would otherwise fit a list row (e.g. BART).
@@ -215,20 +222,49 @@ export function agencyDisplayParts(name: string): { primary: string; secondary?:
     // (Edmonton Transit Service, Sonoma County Transit, ...) should just
     // show in full when they fit.
     if (ALWAYS_ACRONYM_BRANDS.has(outer)) {
-      return { primary: normalizeBrandCode(inner) };
+      return place
+        ? { primary: normalizeBrandCode(inner), secondary: place }
+        : { primary: normalizeBrandCode(inner) };
     }
     return { primary: compactListPrimary(trimmed, outer) };
   }
 
   // Place / sector: only if not already embedded in the agency name
   if (placeAlreadyInName(outer, inner)) {
-    return { primary: compactListPrimary(trimmed, outer) };
+    return compactListPrimaryWithPlace(trimmed, outer);
   }
   return { primary: compactListPrimary(trimmed, outer), secondary: inner };
 }
 
 /** Outer (expanded) names whose acronym is the better-known public brand regardless of length. */
 const ALWAYS_ACRONYM_BRANDS = new Set(['Bay Area Rapid Transit']);
+
+/** Generic descriptor words stripped from the end of a legal name to recover the place prefix. */
+const GENERIC_LEGAL_NAME_WORDS = new Set([
+  'transit', 'transportation', 'metro', 'metropolitan', 'rapid', 'authority',
+  'district', 'agency', 'commission', 'system', 'service', 'services',
+  'municipal', 'regional', 'county', 'bus', 'coach', 'railway', 'railroad',
+  'shuttle', 'department', 'of', 'public', 'corporation', 'board', 'line', 'lines',
+  'express', 'company', 'mass',
+]);
+
+/**
+ * "Golden Empire Transit District" → "Golden Empire"; "Bay Area Rapid Transit" → "Bay Area".
+ * Strips generic words from the end first; if the name already ends in a
+ * proper noun (nothing to strip), falls back to whatever follows a trailing
+ * "of"/"de" (Regional Transportation Commission of Southern Nevada →
+ * "Southern Nevada"; Société de transport de Sherbrooke → "Sherbrooke").
+ */
+function placeFromLegalName(outer: string): string | undefined {
+  const words = outer.split(/\s+/).filter(Boolean);
+  let end = words.length;
+  while (end > 0 && GENERIC_LEGAL_NAME_WORDS.has(words[end - 1].toLowerCase())) {
+    end--;
+  }
+  if (end > 0 && end < words.length) return words.slice(0, end).join(' ');
+  const ofMatch = outer.match(/\b(?:of|de)\s+([A-ZÀ-Ý].*)$/);
+  return ofMatch ? ofMatch[1].trim() : undefined;
+}
 
 /** Prefer a known short form when the primary still overflows a narrow list row. */
 function compactListPrimary(fullName: string, primary: string): string {
@@ -237,11 +273,22 @@ function compactListPrimary(fullName: string, primary: string): string {
   return short.length > 0 && short.length < primary.length ? short : primary;
 }
 
-/** Legal / formal names that shouldn't fill a narrow list row. */
+/** Like compactListPrimary, but also surfaces the place when it actually had to shorten. */
+function compactListPrimaryWithPlace(fullName: string, primary: string): { primary: string; secondary?: string } {
+  const compacted = compactListPrimary(fullName, primary);
+  if (compacted === primary) return { primary: compacted };
+  const place = placeFromLegalName(fullName);
+  return place && place !== compacted ? { primary: compacted, secondary: place } : { primary: compacted };
+}
+
+/**
+ * Names too long to fill a narrow list row — the only length-based reason
+ * to abbreviate. Same 28-char threshold as compactListPrimary; a name that
+ * merely contains "Authority"/"District"/etc. isn't reason enough on its
+ * own (Chicago Transit Authority, Utah Transit Authority both fit fine).
+ */
 function isLongLegalName(s: string): boolean {
-  if (s.length >= 28) return true;
-  return /\b(Authority|District|Agency|Commission|Municipal|Metropolitan|Department of Transportation)\b/i.test(s)
-    && s.length >= 22;
+  return s.length >= 28;
 }
 
 function normalizeBrandCode(s: string): string {

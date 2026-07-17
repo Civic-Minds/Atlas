@@ -35,17 +35,20 @@ describe('agencyDisplayParts', () => {
     });
   });
 
-  it('uses short brand for long legal names (list-friendly)', () => {
-    expect(agencyDisplayParts('Bay Area Rapid Transit (BART)')).toEqual({ primary: 'BART' });
+  it('uses short brand for long legal names, paired with the place buried in the legal name', () => {
+    expect(agencyDisplayParts('Bay Area Rapid Transit (BART)')).toEqual({
+      primary: 'BART',
+      secondary: 'Bay Area',
+    });
     expect(
       agencyDisplayParts('San Francisco Municipal Transportation Agency (SFMTA - Muni)'),
-    ).toEqual({ primary: 'SFMTA' });
+    ).toEqual({ primary: 'SFMTA', secondary: 'San Francisco' });
     expect(
       agencyDisplayParts('Alameda-Contra Costa Transit District (AC Transit)'),
-    ).toEqual({ primary: 'AC Transit' });
+    ).toEqual({ primary: 'AC Transit', secondary: 'Alameda-Contra Costa' });
     expect(
       agencyDisplayParts('Santa Clara Valley Transportation Authority (VTA)'),
-    ).toEqual({ primary: 'VTA' });
+    ).toEqual({ primary: 'VTA', secondary: 'Santa Clara Valley' });
   });
 
   it('keeps expanded * Transit Service names in full when they fit a list row', () => {
@@ -54,6 +57,24 @@ describe('agencyDisplayParts', () => {
     });
     expect(agencyDisplayParts('Sonoma County Transit (SCT)')).toEqual({
       primary: 'Sonoma County Transit',
+    });
+    // Fits under the row threshold even with "Authority"/"District" in the name.
+    expect(agencyDisplayParts('Chicago Transit Authority (CTA)')).toEqual({
+      primary: 'Chicago Transit Authority',
+    });
+    expect(agencyDisplayParts('Utah Transit Authority (UTA)')).toEqual({
+      primary: 'Utah Transit Authority',
+    });
+  });
+
+  it('surfaces the place when a bare legal name (no parenthetical) has to shorten', () => {
+    expect(agencyDisplayParts('Rochester-Genesee Regional Transportation Authority')).toEqual({
+      primary: 'RGRTA',
+      secondary: 'Rochester-Genesee',
+    });
+    expect(agencyDisplayParts('Regional Transportation Commission of Southern Nevada (RTC)')).toEqual({
+      primary: 'RTC',
+      secondary: 'Southern Nevada',
     });
   });
 
