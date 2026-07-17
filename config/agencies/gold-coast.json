@@ -1,6 +1,6 @@
 {
   "slug": "gold-coast",
-  "name": "Gold Coast Transit District",
+  "name": "Gold Coast Transit District (Oxnard)",
   "center": [34.1975, -119.177],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
   "bbox": [34.0, -119.5, 34.4, -118.8],

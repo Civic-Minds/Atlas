@@ -141,7 +141,7 @@
     },
     {
       "slug": "grt",
-      "name": "Grand River Transit",
+      "name": "Grand River Transit (Waterloo Region)",
       "searchAliases": [
         "Kitchener",
         "Waterloo",
@@ -316,7 +316,7 @@
     },
     {
       "slug": "octranspo",
-      "name": "OC Transpo",
+      "name": "OC Transpo (Ottawa)",
       "searchAliases": [
         "Ottawa"
       ],
@@ -457,7 +457,7 @@
     },
     {
       "slug": "upexpress",
-      "name": "UP Express",
+      "name": "UP Express (Toronto)",
       "region": "Ontario",
       "center": [
         43.6532,
@@ -535,7 +535,7 @@
     },
     {
       "slug": "rem",
-      "name": "REM",
+      "name": "REM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -577,7 +577,7 @@
     },
     {
       "slug": "rtl",
-      "name": "RTL",
+      "name": "RTL (Longueuil)",
       "region": "Quebec",
       "center": [
         45.538,
@@ -598,7 +598,7 @@
     },
     {
       "slug": "stl",
-      "name": "STL",
+      "name": "STL (Laval)",
       "region": "Quebec",
       "center": [
         45.61,
@@ -638,7 +638,7 @@
     },
     {
       "slug": "stm",
-      "name": "STM",
+      "name": "STM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -889,7 +889,7 @@
     },
     {
       "slug": "translink",
-      "name": "TransLink",
+      "name": "TransLink (Vancouver)",
       "region": "British Columbia",
       "center": [
         49.2827,
@@ -1146,7 +1146,7 @@
     },
     {
       "slug": "port-huron",
-      "name": "Blue Water Area Transit",
+      "name": "Blue Water Area Transit (Port Huron)",
       "center": [
         42.97,
         -82.42
@@ -1283,7 +1283,7 @@
     },
     {
       "slug": "centro",
-      "name": "Centro",
+      "name": "Centro (Syracuse)",
       "region": "New York",
       "center": [
         43.048,
@@ -1367,7 +1367,7 @@
     },
     {
       "slug": "laketran",
-      "name": "Laketran",
+      "name": "Laketran (Lake County, OH)",
       "region": "Ohio",
       "center": [
         41.713,
@@ -1381,7 +1381,7 @@
     },
     {
       "slug": "mta-flint",
-      "name": "Mass Transportation Authority",
+      "name": "Mass Transportation Authority (Flint)",
       "region": "Michigan",
       "center": [
         43.012,
@@ -1407,7 +1407,7 @@
     },
     {
       "slug": "the-rapid",
-      "name": "The Rapid",
+      "name": "The Rapid (Grand Rapids)",
       "region": "Michigan",
       "center": [
         42.963,
@@ -1654,7 +1654,7 @@
     },
     {
       "slug": "kingcountymetro",
-      "name": "King County Metro",
+      "name": "King County Metro (Seattle)",
       "center": [
         47.5,
         -122.3
@@ -1673,7 +1673,7 @@
     },
     {
       "slug": "soundtransit",
-      "name": "Sound Transit",
+      "name": "Sound Transit (Seattle)",
       "center": [
         47.5,
         -122.1
@@ -1712,7 +1712,7 @@
     },
     {
       "slug": "communitytransit",
-      "name": "Community Transit",
+      "name": "Community Transit (Everett)",
       "center": [
         47.9,
         -122.1
@@ -1770,7 +1770,7 @@
     },
     {
       "slug": "intercitytransit",
-      "name": "Intercity Transit",
+      "name": "Intercity Transit (Olympia)",
       "center": [
         47.05,
         -122.9
@@ -1827,7 +1827,7 @@
     },
     {
       "slug": "islandtransit",
-      "name": "Island Transit",
+      "name": "Island Transit (Whidbey Island)",
       "center": [
         48.22,
         -122.65
@@ -2040,7 +2040,7 @@
     },
     {
       "slug": "trimet",
-      "name": "TriMet",
+      "name": "TriMet (Portland, OR)",
       "center": [
         45.494,
         -122.6593
@@ -2060,7 +2060,7 @@
     },
     {
       "slug": "ctran",
-      "name": "C-TRAN",
+      "name": "C-TRAN (Vancouver, WA)",
       "center": [
         45.6513,
         -122.5972
@@ -2121,7 +2121,7 @@
     },
     {
       "slug": "cherriots",
-      "name": "Cherriots",
+      "name": "Cherriots (Salem, OR)",
       "center": [
         44.9377,
         -123.0187
@@ -2342,7 +2342,7 @@
     },
     {
       "slug": "westcat",
-      "name": "WestCAT",
+      "name": "WestCAT (Pinole)",
       "center": [
         38.0027,
         -122.2636
@@ -2362,7 +2362,7 @@
     },
     {
       "slug": "soltrans",
-      "name": "SolTrans",
+      "name": "SolTrans (Vallejo)",
       "center": [
         38.1087,
         -122.2233
@@ -2442,7 +2442,7 @@
     },
     {
       "slug": "vine",
-      "name": "VINE Transit",
+      "name": "VINE Transit (Napa)",
       "center": [
         38.3079,
         -122.3118
@@ -2504,7 +2504,7 @@
     },
     {
       "slug": "tridelta",
-      "name": "Tri Delta Transit",
+      "name": "Tri Delta Transit (Antioch)",
       "center": [
         37.9967,
         -121.8336
@@ -2648,7 +2648,7 @@
     },
     {
       "slug": "vacaville",
-      "name": "City Coach",
+      "name": "City Coach (Vacaville)",
       "center": [
         38.3568,
         -121.9708
@@ -2933,7 +2933,7 @@
     },
     {
       "slug": "unitrans",
-      "name": "Unitrans",
+      "name": "Unitrans (Davis)",
       "center": [
         38.5529,
         -121.7393
@@ -3095,7 +3095,7 @@
     },
     {
       "slug": "beach-cities-transit",
-      "name": "Beach Cities Transit",
+      "name": "Beach Cities Transit (South Bay, CA)",
       "center": [
         33.8492,
         -118.3884
@@ -3119,7 +3119,7 @@
     },
     {
       "slug": "gold-coast",
-      "name": "Gold Coast Transit District",
+      "name": "Gold Coast Transit District (Oxnard)",
       "center": [
         34.1975,
         -119.177
@@ -3137,7 +3137,7 @@
     },
     {
       "slug": "bigbluebus",
-      "name": "Big Blue Bus",
+      "name": "Big Blue Bus (Santa Monica)",
       "center": [
         34.01,
         -118.49
@@ -3242,7 +3242,7 @@
     },
     {
       "slug": "omnitrans",
-      "name": "OmniTrans",
+      "name": "OmniTrans (San Bernardino)",
       "center": [
         34.11,
         -117.29
@@ -3372,7 +3372,7 @@
     },
     {
       "slug": "sunline",
-      "name": "SunLine Transit Agency",
+      "name": "SunLine Transit Agency (Coachella Valley)",
       "center": [
         33.87,
         -116.54
@@ -3922,7 +3922,7 @@
     },
     {
       "slug": "metra",
-      "name": "Metra",
+      "name": "Metra (Chicago)",
       "center": [
         41.8781,
         -87.6298
@@ -3935,7 +3935,7 @@
     },
     {
       "slug": "pace-bus",
-      "name": "Pace Bus",
+      "name": "Pace Bus (Chicago suburbs)",
       "center": [
         41.9,
         -87.8
@@ -3948,7 +3948,7 @@
     },
     {
       "slug": "marta",
-      "name": "MARTA",
+      "name": "MARTA (Atlanta)",
       "center": [
         33.749,
         -84.388
@@ -3961,7 +3961,7 @@
     },
     {
       "slug": "cobblinc",
-      "name": "CobbLinc",
+      "name": "CobbLinc (Marietta, GA)",
       "center": [
         33.9,
         -84.55
@@ -4027,7 +4027,7 @@
     },
     {
       "slug": "septa",
-      "name": "SEPTA",
+      "name": "SEPTA (Philadelphia)",
       "region": "Pennsylvania",
       "center": [
         39.9526,
@@ -4050,7 +4050,7 @@
     },
     {
       "slug": "wmata",
-      "name": "WMATA",
+      "name": "WMATA (Washington, DC)",
       "region": "Washington DC",
       "center": [
         38.9072,
@@ -4592,7 +4592,7 @@
     },
     {
       "slug": "gotriangle",
-      "name": "GoTriangle",
+      "name": "GoTriangle (Raleigh-Durham)",
       "center": [
         35.99,
         -78.9
@@ -4711,7 +4711,7 @@
     },
     {
       "slug": "palm-tran",
-      "name": "Palm Tran",
+      "name": "Palm Tran (West Palm Beach)",
       "center": [
         26.7,
         -80.1
@@ -4724,7 +4724,7 @@
     },
     {
       "slug": "sunrail",
-      "name": "SunRail",
+      "name": "SunRail (Orlando)",
       "center": [
         28.5,
         -81.4
@@ -4927,7 +4927,7 @@
     },
     {
       "slug": "dart-first-state",
-      "name": "DART First State",
+      "name": "DART First State (Wilmington, DE)",
       "center": [
         39.1,
         -75.54
@@ -6014,7 +6014,7 @@
     },
     {
       "slug": "lexington",
-      "name": "Lextran",
+      "name": "Lextran (Lexington, KY)",
       "center": [
         38.05,
         -84.5
@@ -6161,7 +6161,7 @@
     },
     {
       "slug": "lancaster",
-      "name": "Red Rose Transit Authority",
+      "name": "Red Rose Transit Authority (Lancaster, PA)",
       "center": [
         40.04,
         -76.31
@@ -6203,7 +6203,7 @@
     },
     {
       "slug": "patco",
-      "name": "PATCO Speedline",
+      "name": "PATCO Speedline (Philadelphia-Camden)",
       "center": [
         39.95,
         -75.12
@@ -6217,7 +6217,7 @@
     },
     {
       "slug": "cascades-east",
-      "name": "Cascades East Transit",
+      "name": "Cascades East Transit (Bend, OR)",
       "region": "Oregon",
       "center": [
         44.06,
@@ -6639,7 +6639,7 @@
     },
     {
       "slug": "ben-franklin",
-      "name": "Ben Franklin Transit",
+      "name": "Ben Franklin Transit (Tri-Cities, WA)",
       "center": [
         46.21,
         -119.14
@@ -6959,7 +6959,7 @@
     },
     {
       "slug": "advance-transit",
-      "name": "Advance Transit",
+      "name": "Advance Transit (Lebanon, NH)",
       "center": [
         43.7,
         -72.29
@@ -6979,7 +6979,7 @@
     },
     {
       "slug": "ccta",
-      "name": "CCTA / Green Mountain Transit",
+      "name": "CCTA / Green Mountain Transit (Burlington, VT)",
       "center": [
         44.48,
         -73.21
@@ -7019,7 +7019,7 @@
     },
     {
       "slug": "bis-man",
-      "name": "Bis-Man Transit",
+      "name": "Bis-Man Transit (Bismarck-Mandan)",
       "center": [
         46.81,
         -100.78
@@ -7436,7 +7436,7 @@
     },
     {
       "slug": "um-transit",
-      "name": "University of Michigan Transit Services",
+      "name": "University of Michigan Transit Services (Ann Arbor)",
       "center": [
         42.28,
         -83.74
@@ -7755,7 +7755,7 @@
     },
     {
       "slug": "rapid-city",
-      "name": "Rapid Transit System",
+      "name": "Rapid Transit System (Rapid City, SD)",
       "region": "South Dakota",
       "center": [
         44.0773,

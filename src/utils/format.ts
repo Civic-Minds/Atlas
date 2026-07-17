@@ -335,6 +335,11 @@ export function shortenAgencyName(name: string): string {
   if (lower.includes('golden gate')) return 'Golden Gate Transit';
   if (lower.includes('smart') && lower.includes('sonoma')) return 'SMART';
   if (lower.includes('mountain metropolitan')) return 'Mountain Metro';
+  // Already-recognizable brand names — the generic "(City)" fallback below
+  // would otherwise collapse both of these Seattle-area agencies to the
+  // same bare "Seattle" shortened form.
+  if (lower.includes('king county metro')) return 'King County Metro';
+  if (lower.includes('sound transit')) return 'Sound Transit';
 
   // Long " * Transit/Transportation Authority" names — map to common short/acronym forms used in UI
   if (lower.includes('massachusetts bay') || hasWord(lower, 'mbta')) return 'MBTA';
