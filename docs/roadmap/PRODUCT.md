@@ -10,7 +10,7 @@ User experience and the workflow of a transit professional using Atlas.
 |-----|--------|---------------------|
 | **Frequency Map** | Live | Where is service frequent or infrequent? |
 | **Corridors** | Live | What runs directly between these two stations? |
-| **History** | Planned | How did service change across schedule periods? |
+| **History** | Limited | How did service change across schedule periods? |
 | **Factbook / Insights** | Proposed | What surprising or useful stories does the data contain? |
 
 **Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or filter.
@@ -19,10 +19,10 @@ See [Atlas Factbook roadmap](FACTBOOK.md) for details on computation, AI-assiste
 
 ---
 
-## Live Data Layer (Next)
+## Live Data Layer (Expanding)
 
-- [ ] **Live vehicle map**: extend GTFS-RT archiver Worker to write vehicle position snapshots per agency; frontend polls for live positions
-- [ ] **Schedule adherence panel**: per-stop comparison of scheduled vs. actual headway — start with Hamilton B-Line and Burlington Route 1
+- [x] **Live vehicle map**: live vehicle positions for configured agencies; the frontend polls supported feeds while the map is open
+- [x] **Schedule adherence panel**: on-demand comparison of scheduled vs. actual headway for supported routes
 - [ ] **Historical drift analysis**: combine archived snapshots with on-demand TripUpdates to surface patterns over time (e.g. "always 5 min late on Tuesdays at this stop")
 
 ---

@@ -45,7 +45,8 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 
 ## Rendering & Visualization
 
-- [ ] **Deck.gl vehicle animations**: replace DOM-based vehicle markers with GPU-rendered Deck.gl layers. Use `ScatterplotLayer` / `IconLayer` for current positions; `TripsLayer` to animate vehicle paths over time using the `atlas-live` archive. Deck.gl integrates with MapLibre as an overlay — no map replacement needed.
+- [x] **Deck.gl vehicle rendering**: current vehicle positions use GPU-rendered Deck.gl layers over MapLibre.
+- [ ] **Archived vehicle path animation**: use `TripsLayer` to animate vehicle paths over time from the `atlas-live` archive.
 - [ ] **Line offsets for overlapping routes**: when multiple routes share the same road segment, offset each line laterally so they render as parallel bands rather than stacked on top of each other. Requires pre-computing overlap groups in the pipeline and storing an `offsetIndex` property in PMTiles features, then using MapLibre's `line-offset` paint expression.
 
 ---

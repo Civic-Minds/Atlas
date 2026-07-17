@@ -6,9 +6,6 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 
 **Current focus:** Corridors app live. History and live data layers expanding. Exploring the new Factbook for data-driven insights and stories.
 
-### Strategy & Direction
-- **[Strategy](../STRATEGY.md)**: Competitive landscape and long-term product positioning.
-
 ### Product & Platform
 - **[Product](./PRODUCT.md)**: Map apps (Frequency Map, Corridors, History, Factbook/Insights), live data layer, filters, design principles.
 - **[Technical](./TECHNICAL.md)**: Infrastructure stack, GTFS-RT archiving, live data infrastructure (workers, databases, trip matching).
@@ -19,6 +16,10 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 ## Factbook (proposed)
 
 [Explore the Atlas Factbook concept](./FACTBOOK.md): surfacing data-driven findings, service change stories, frequency realities, corridors, and AI-assisted narratives.
+
+## Strategy
+
+[Read the Atlas strategy](../STRATEGY.md): competitive landscape and long-term product positioning.
 
 ## Research
 
