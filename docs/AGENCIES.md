@@ -47,6 +47,7 @@ Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while 
 | Edmonton Transit System | `edmonton` | 004 | none | gtfs.edmonton.ca |
 | York Region Transit | `yrt` | VIVA Blue | none | rtu.york.ca |
 | Halifax Transit | `halifax` | 1 | none | gtfs.halifax.ca |
+| SF Muni | `sfmta` | J, K, L, M, N, T | `MUNI_511_API_KEY` | api.511.org |
 
 ### Keys In Hand — Not Yet Wired Up
 
@@ -54,7 +55,7 @@ Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while 
 |--------|------|----------|-------|
 | King County Metro | `kcm` | OBA key stored | Feed was returning 0 vehicles at peak — likely route_id prefix mismatch (`1_100512` etc.). Verify IDs against live feed before enabling. |
 | Sound Transit | `soundtransit` | Same OBA key | Route filter uses `40_512`, `40_545` — unverified. |
-| LA Metro Rail | `lametro` | Swiftly key | A Line (801), E Line (804). Key covers LA Metro only, not Miami/Vegas. |
+| LA Metro rail | `lacmta` | Swiftly key needed | Rail routes are configured but deliberately parked until the Swiftly credential is restored. |
 
 ### Not Yet Requested
 
@@ -94,7 +95,7 @@ All other agencies: static history snapshots only (headway diffs via `atlas-arch
 
 ## Notes
 
-- **511 SF Bay API key**: one key covers SF Muni, AC Transit, and VTA. BART, Caltrain, and SamTrans could be added to live polling at no extra cost.
+- **511 SF Bay API key**: one key covers SF Muni (`SF`), AC Transit (`AC`), and VTA (`SC`). Atlas uses `MUNI_511_API_KEY` and the provider's `api_key` query parameter.
 - **TTC trip IDs**: Clever Devices RT trip IDs don't match Toronto Open Data static IDs — time-based spatial fallback required. ~20% direct match rate.
 - **Halifax trip IDs**: RT trip IDs differ from static — spatial fallback handles matching.
 

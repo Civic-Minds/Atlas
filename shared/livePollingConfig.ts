@@ -21,6 +21,8 @@ export interface LiveRouteConfig {
   scheduleOffsetMin: Record<string, Record<string, number>>;
   /** Env var name whose value is appended as `?apikey=VALUE` to the feed URLs (e.g. TransLink). */
   apiKeyParamEnvVar?: string;
+  /** Query parameter name for apiKeyParamEnvVar when the provider uses a non-default spelling. */
+  apiKeyParamName?: string;
   /** Env var name whose value is sent as the `apikey` HTTP header (e.g. STM). */
   apiKeyHeaderEnvVar?: string;
   /** Set to true once the API key is configured in Vercel — makes the route visible in the UI. */
@@ -45,6 +47,8 @@ export const LIVE_AGENCY_BBOXES: Record<string, [number, number, number, number]
   halifax:    [-63.92, 44.48, -63.38, 44.85],
   translink:  [-123.50, 49.00, -122.20, 49.50],
   stm:        [-74.07, 45.10, -73.07, 45.90],
+  sfmta:      [-122.56, 37.65, -122.30, 37.90],
+  lacmta:     [-118.70, 33.65, -117.60, 34.40],
 };
 
 /** Human-readable place name per live-capable agency, for the Live Vehicles coverage list. */
@@ -57,6 +61,8 @@ export const LIVE_AGENCY_PLACES: Record<string, string> = {
   halifax: 'Halifax',
   translink: 'Vancouver',
   stm: 'Montréal',
+  sfmta: 'San Francisco',
+  lacmta: 'Los Angeles',
 };
 
 /** IANA timezone per live-polling agency (History hourly bucketing). */
@@ -67,6 +73,8 @@ export const LIVE_AGENCY_TIMEZONES: Record<string, string> = {
   yrt: 'America/Toronto',
   translink: 'America/Vancouver',
   stm: 'America/Montreal',
+  sfmta: 'America/Los_Angeles',
+  lacmta: 'America/Los_Angeles',
   edmonton: 'America/Edmonton',
   halifax: 'America/Halifax',
 };
@@ -210,6 +218,45 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
       '1': { '52947': 0, '51827': 21, '51848': 46, '50314': 70 },
     },
   },
+  // SF Muni Metro — vehicles-map-only until we have route-specific stop timing
+  // baselines. 511's regional feed is filtered to Muni with agency=SF.
+  ...(['J', 'K', 'L', 'M', 'N', 'T'] as string[]).map((route): LiveRouteConfig => ({
+    slug: 'sfmta',
+    displayRouteShortName: route,
+    routeIds: [route],
+    scheduledHeadwayMin: 10,
+    targetStops: {},
+    tripUpdatesUrl: 'https://api.511.org/Transit/TripUpdates?agency=SF',
+    vehiclePositionsUrl: 'https://api.511.org/Transit/VehiclePositions?agency=SF',
+    apiKeyParamEnvVar: 'MUNI_511_API_KEY',
+    apiKeyParamName: 'api_key',
+    active: true,
+    scheduleOffsetMin: {},
+    vehiclesOnly: true,
+  })),
+  // LA Metro rail — Swiftly's feed is already rail-scoped; route IDs come from
+  // the current LACMTA supplemental static feed.
+  ...([
+    ['801', 'A Line'],
+    ['802', 'B Line'],
+    ['803', 'C Line'],
+    ['804', 'E Line'],
+    ['805', 'D Line'],
+    ['807', 'K Line'],
+  ] as [string, string][]).map(([route, displayName]): LiveRouteConfig => ({
+    slug: 'lacmta',
+    displayRouteShortName: route,
+    displayName,
+    routeIds: [route],
+    scheduledHeadwayMin: 10,
+    targetStops: {},
+    tripUpdatesUrl: 'https://api.goswift.ly/real-time/lametro-rail/gtfs-rt-trip-updates',
+    vehiclePositionsUrl: 'https://api.goswift.ly/real-time/lametro-rail/gtfs-rt-vehicle-positions',
+    apiKeyHeaderEnvVar: 'SWIFTLY_API_KEY',
+    active: false,
+    scheduleOffsetMin: {},
+    vehiclesOnly: true,
+  })),
   {
     slug: 'hamilton',
     displayRouteShortName: '01',

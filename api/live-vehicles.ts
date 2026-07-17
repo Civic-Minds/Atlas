@@ -61,7 +61,7 @@ const FEED_FAILURE_MESSAGES: Record<FeedFailureReason, string> = {
 async function fetchProtoFeed(
   url: string,
   label: string,
-  opts?: { apiKeyParam?: string; apiKeyHeader?: string }
+  opts?: { apiKeyParam?: string; apiKeyParamName?: string; apiKeyHeader?: string }
 ): Promise<FeedFetchResult> {
   let finalUrl = url;
   const headers: Record<string, string> = {
@@ -69,7 +69,8 @@ async function fetchProtoFeed(
   };
 
   if (opts?.apiKeyParam) {
-    finalUrl += (finalUrl.includes('?') ? '&' : '?') + `apikey=${encodeURIComponent(opts.apiKeyParam)}`;
+    const paramName = opts.apiKeyParamName ?? 'apikey';
+    finalUrl += (finalUrl.includes('?') ? '&' : '?') + `${paramName}=${encodeURIComponent(opts.apiKeyParam)}`;
   }
   if (opts?.apiKeyHeader) {
     headers['apikey'] = opts.apiKeyHeader;
@@ -177,9 +178,10 @@ export default async function handler(req: Request) {
   const vehiclePositionsUrl = cfg.vehiclePositionsUrl;
 
   const apiKeyParam = cfg.apiKeyParamEnvVar ? process.env[cfg.apiKeyParamEnvVar] : undefined;
+  const apiKeyParamName = cfg.apiKeyParamName;
   const apiKeyHeader = cfg.apiKeyHeaderEnvVar ? process.env[cfg.apiKeyHeaderEnvVar] : undefined;
 
-  const fetchOpts = { apiKeyParam, apiKeyHeader };
+  const fetchOpts = { apiKeyParam, apiKeyParamName, apiKeyHeader };
 
   try {
     // Fetch positions, trip updates, and static trips lookup in parallel
