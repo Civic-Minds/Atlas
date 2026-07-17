@@ -43,6 +43,10 @@ export function useLiveVehiclesLayer(
 
     const vehicles = (liveOverlay?.vehicles ?? []).filter(v => v.lat && v.lon);
     const focusedId = liveOverlay?.focusedVehicle?.id ?? null;
+    // At city scale, one label per vehicle turns the live overview into a wall
+    // of overlapping route numbers. Keep labels for the selected route only;
+    // markers and hover tooltips remain available everywhere.
+    const labelVehicles = liveOverlay?.selectedRouteKey ? vehicles : [];
 
     const statusRgb: Record<string, [number, number, number]> = {
       on_time: [56, 161, 105],
@@ -80,7 +84,7 @@ export function useLiveVehiclesLayer(
         // Route short name labels
         new TextLayer({
           id: 'vehicles-labels',
-          data: vehicles,
+          data: labelVehicles,
           getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
           getText: (v: typeof vehicles[0]) => cleanRouteShortName(v.routeShortName) ?? '',
           getSize: 9,
