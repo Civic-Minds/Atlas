@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Fixed two agencies with no routes at all**: Dutchess County Public Transit and Fredericksburg Regional Transit had real, valid GTFS data but published zero route features. Dutchess: the reference-date picker preferred a near-empty 2-trip placeholder block over the real 585-trip dominant service just because it started later. Fredericksburg: route shape selection only considered Monday/Saturday/Sunday, silently dropping the agency's actual Tuesday–Friday-only service. Both now publish real routes (62 and 16 respectively).
+- **Routes/coverage badge now fades instead of disappearing instantly** when switching out of the map view (e.g. into Fares).
 - **PMTiles coverage check false positives fixed**: The sparse 9-point sampling grid could miss real route geometry for agencies with only a few routes clustered in part of their bbox (confirmed on Laredo, Siskiyou, Lassen — all render correctly on the map, the checker just wasn't looking in the right tiles). Now samples every tile in an agency's bbox up to a cap, instead of fixed corner/edge points.
 - **Laredo (El Metro) location data corrected**: `center` was off by over a degree (pointed south of the actual service area) and had no `bbox`, which was also the root cause of the false-positive coverage failure above.
 - **Duplicate agency removed**: Grand Valley Transit (Mesa County, CO) was listed twice under different slugs, pointing at the same feed — removed the less complete duplicate.

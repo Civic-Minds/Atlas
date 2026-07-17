@@ -65,7 +65,25 @@ export function detectReferenceDate(
         groups.set(cal.start_date, grp);
     }
     const sortedStarts = Array.from(groups.keys()).sort();
-    const multiStarts = sortedStarts.filter(s => groups.get(s)!.length > 1);
+    const rawMultiStarts = sortedStarts.filter(s => groups.get(s)!.length > 1);
+
+    // Trip-volume floor: a multi-entry group can still be pure noise if its total
+    // trip count is negligible (e.g. a 2-trip placeholder block), the same class
+    // of noise a singleton entry already gets excluded for above. Without this,
+    // Dutchess County's near-empty placeholder (2 services x 2 trips, open-ended
+    // "no expiry" end_date) beat its real 585-trip dominant weekday service
+    // purely on having a later start_date, computing a reference date past the
+    // placeholder's own service window entirely.
+    const MIN_GROUP_TRIPS = 5;
+    const tripCountByServiceId = tripServiceIds
+        ? trips!.reduce((m, t) => m.set(t.service_id, (m.get(t.service_id) ?? 0) + 1), new Map<string, number>())
+        : null;
+    const substantialMultiStarts = tripCountByServiceId
+        ? rawMultiStarts.filter(s => groups.get(s)!.reduce((sum, c) => sum + (tripCountByServiceId.get(c.service_id) ?? 0), 0) >= MIN_GROUP_TRIPS)
+        : rawMultiStarts;
+    // Only apply the floor if it doesn't eliminate every candidate — preserves
+    // existing behavior for feeds where every period is genuinely small.
+    const multiStarts = substantialMultiStarts.length > 0 ? substantialMultiStarts : rawMultiStarts;
 
     // Prefer the most recently started multi-entry period that has already begun
     // (start_date ≤ today). This prevents future schedule blocks published months

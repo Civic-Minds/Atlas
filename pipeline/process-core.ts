@@ -14,6 +14,7 @@ import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } from '../shared/config.js';
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
+import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
 import { computePeriodHeadways, headwayToTier, medianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
@@ -77,11 +78,14 @@ export async function processGtfsBuffer(
   }
 
   const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
-  const activeForShapes = new Set<string>([
-    ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Monday', refDate),
-    ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Saturday', refDate),
-    ...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], 'Sunday', refDate),
-  ]);
+  // Union all 7 days, not just Monday/Saturday/Sunday — an agency whose weekday
+  // service runs e.g. Tuesday-Friday only (no Monday service at all) had every
+  // one of its route::dir keys silently excluded from shape selection, dropping
+  // otherwise-valid phase1/phase2 results with `if (!shapeId) continue` further
+  // down (Fredericksburg Regional Transit pattern).
+  const activeForShapes = new Set<string>(
+    ALL_DAYS.flatMap(day => [...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
+  );
   const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes);
   const {
     shapeById,
