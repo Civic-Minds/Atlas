@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Routes remain clickable while Live Vehicles is open**: the normal route layers stay visible beneath live vehicle markers so users can open route details from the map.
 - **Live route cards now follow the static route-card layout**: destinations and route identity lead the card, with vehicle status and speed treated as supporting live details.
 - **Live vehicle directions now fill from static route shapes when feeds omit them**: TTC, Edmonton, and Halifax vehicles can show a destination or direction when their realtime metadata is incomplete, while ambiguous matches remain unlabeled.
 - **Live rail coverage prepared for SF Muni and LA Metro**: added vehicles-only polling for Muni Metro and all six current LA Metro rail lines, with each provider's route filtering and API-key contract.

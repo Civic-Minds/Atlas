@@ -427,7 +427,7 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showRouteLayers={inFrequency || inHistory || inFares || inCorridors}
+              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors}
               forceShowCorridors={inCorridors}
               fareView={inFares}
               filterToAgencies={inHistory || inFares}
