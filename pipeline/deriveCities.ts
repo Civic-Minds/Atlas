@@ -13,8 +13,8 @@ let cachedPlaces: GazetteerPlace[] | null = null;
 
 function loadPlaces(): GazetteerPlace[] {
   if (cachedPlaces) return cachedPlaces;
-  const path = resolve(import.meta.dirname, 'data/na-places.json');
-  const rows = JSON.parse(readFileSync(path, 'utf8')) as [string, number, number, string, string][];
+  const path = resolve(import.meta.dirname, '../shared/data/na-places.json');
+  const rows = JSON.parse(readFileSync(path, 'utf8')) as [string, number, number, string, string, number][];
   cachedPlaces = rows.map(([name, lat, lon, country, region]) => ({ name, lat, lon, country, region }));
   return cachedPlaces;
 }

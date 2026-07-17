@@ -14,6 +14,7 @@ import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { Z_PANEL } from '../../styles';
+import { findPlaceByName } from '../../../shared/placeLookup';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -588,8 +589,8 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
   }, [selectedAgencySlug, agencies, mapLoaded]);
 
-  // A unique city/agency query should navigate the map even before the user
-  // selects the agency result. Keep the result list visible for route/stop
+  // A recognizable place/agency query should navigate the map even before the
+  // user selects a result. Keep the result list visible for route/stop
   // selection, but make place search useful on its own.
   //
   // Debounced so this only evaluates once typing pauses: without it, this ran
@@ -602,6 +603,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const query = q.trim().toLowerCase();
     if (!map || query.length < 4 || selectedAgencySlug) return;
     const timer = setTimeout(() => {
+      // Try an exact city-name match first — independent of how many agencies
+      // serve it. A unique-agency match alone breaks down for any city with
+      // more than one operator (e.g. "denver" matches both RTD Denver and
+      // Bustang, which passes through Denver on its statewide routes).
+      const place = findPlaceByName(query);
+      if (place) {
+        map.flyTo({ center: [place.lon, place.lat], zoom: 11, duration: 900, essential: true });
+        return;
+      }
       const matches = agencies.filter(agency => {
         const fields = [agency.name, agency.region ?? '', ...(agency.searchAliases ?? []), ...(agency.cities ?? [])]
           .map(value => value.toLowerCase());
