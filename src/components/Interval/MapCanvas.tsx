@@ -15,6 +15,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { Z_PANEL } from '../../styles';
 import { findPlaceByName } from '../../../shared/placeLookup';
+import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -67,6 +68,7 @@ interface MapCanvasProps {
     siblingIdsByAgency?: Record<string, Set<string>>;
   } | null;
   showRouteLayers?: boolean;
+  liveRoutesOnly?: boolean;
   showCorridorBand?: boolean;
   selectedCorridorFamily?: { agencySlug: string; routeIds: string[] } | null;
   hideSpan?: boolean;
@@ -102,6 +104,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onLocate,
   routesForStop,
   showRouteLayers = true,
+  liveRoutesOnly = false,
   showCorridorBand = false,
   selectedCorridorFamily = null,
   hideSpan = false,
@@ -779,6 +782,16 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       routeFilter = concatFilters(routeFilter, slugAllowlist);
     }
 
+    if (liveRoutesOnly) {
+      const livePairs = LIVE_POLLING_ROUTES
+        .filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active)
+        .map(r => ['all',
+          ['==', ['get', 'agencySlug'], r.slug],
+          ['==', ['get', 'routeShortName'], r.displayRouteShortName],
+        ]);
+      routeFilter = concatFilters(routeFilter, livePairs.length > 0 ? ['any', ...livePairs] : ['==', ['get', 'agencySlug'], '']);
+    }
+
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
     if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
 
@@ -884,7 +897,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, filterToAgencies, agencies, tileFilter, fareView]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

@@ -31,6 +31,7 @@ interface Props {
   /** Keep the normal selection card available for another app (e.g. Live). */
   showSelectionUi?: boolean;
   showRouteLayers?: boolean;
+  liveRoutesOnly?: boolean;
   showCorridorBand?: boolean;
   forceShowCorridors?: boolean;
   onInfoOpen?: OpenInfoFn;
@@ -54,7 +55,7 @@ interface Props {
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft, searchEnterRef }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, headerPortalContainer, fareView = false, sidebarLeft, searchEnterRef }: Props) {
   const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -377,6 +378,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         resetViewKey={resetViewKey}
         onLocate={onLocate}
         showRouteLayers={showRouteLayers}
+        liveRoutesOnly={liveRoutesOnly}
         showCorridorBand={showCorridorBand}
         selectedCorridorFamily={selectedCorridorFamily}
         hideSpan={hideSpan}

@@ -429,6 +429,7 @@ export default function App() {
               showUi={inFrequency}
               showSelectionUi={inLive}
               showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors}
+              liveRoutesOnly={inLive}
               forceShowCorridors={inCorridors}
               fareView={inFares}
               filterToAgencies={inHistory || inFares}
