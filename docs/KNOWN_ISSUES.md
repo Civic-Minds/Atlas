@@ -64,3 +64,27 @@ GTFS contains almost no stop-level amenity data (shelters, accessibility, real-t
 
 ### GBFS (bike share) not integrated
 GBFS is a separate spec for shared micromobility (Bike Share Toronto, etc.). Atlas does not currently ingest GBFS feeds. Would require a separate pipeline and render layer.
+
+### Routes with no published shape are dropped entirely, not just map-less
+A route/direction whose GTFS has no `shape_id` (or a degenerate 0-1-point shape) doesn't just fail to draw
+a line — it's skipped during processing (`pipeline/process-core.ts`, the `if (!shapeId) continue` /
+`if (!points || points.length < 2) continue` guards) and never becomes a feature at all. That means it's
+absent from search, has no route card, and shows no schedule/headway info anywhere in the app — full
+silence, not a degraded map view. Confirmed on **tangipahoa-parish** (Tangipahoa Transit, Hammond, LA) and
+**roswell** (Roswell Transit, NM), both of which genuinely never publish `shapes.txt` (see #216).
+
+**Proposed fix (not started, scoped 2026-07-17):** stop dropping these route/direction pairs; instead emit
+a feature with `geometry: null` and a `noRouteShape: true` property, carrying the same schedule/headway
+data as a normal route. Surface a UI notice on the route card ("No route map published for this route" —
+same visual pattern as the outdated-schedule banner) instead of a drawn line.
+
+This is a real schema change, not a small add-on — `GeoJsonFeature.geometry` (`pipeline/geojson-types.ts`)
+is currently typed as always `{ type: 'LineString'; coordinates: number[][] }`, and at least 8 files assume
+that unconditionally: `src/components/Interval/MapCanvas.tsx`, `src/utils/searchResults.ts` (bbox/distance
+ranking for search), `src/utils/directionLabel.ts`, `src/hooks/useIntervalStats.ts`,
+`src/hooks/useNearbyRoutes.ts`, `shared/shapeProjection.ts` (live vehicle shape matching),
+`src/components/Interval/SidebarControls.tsx`, plus the PMTiles build/verify tooling. Tippecanoe itself
+handles null-geometry features fine (skips them from tiles), so the map-rendering side is likely low-risk;
+the real work is auditing every geometry-assuming consumer above to fall back gracefully (e.g. search
+ranking needs a non-geometry distance source — agency center or stop coordinates work) and adding the new
+UI notice. Needs a dedicated session, not a quick fix.
