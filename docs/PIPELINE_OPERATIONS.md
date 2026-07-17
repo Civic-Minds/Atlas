@@ -53,3 +53,7 @@ Candidates are written to `tmp/gap-candidates.json`.
    ```
 6. Upload the completed archive to the Cloudflare R2 bucket.
 7. Record product additions in `CHANGELOG.md` and mark backlog items `done` in `docs/AGENCY_BACKLOG.md`.
+
+---
+
+[Back to Data](./DATA.md)

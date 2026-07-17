@@ -39,3 +39,7 @@ Commit `index.json`. PMTiles upload is a separate live action (goes straight to 
 ## Gotchas
 
 **Mid-week data fix cache bust**: the browser caches agency GeoJSON in IndexedDB keyed by `${slug}-${weekVersion}`. If you re-process an agency mid-week (e.g. fixing a wrong feed), the IDB cache won't update automatically. Bump `CACHE_BUILD` in `src/lib/agencyGeo.ts` to invalidate the old entries and force a fresh fetch from R2.
+
+---
+
+[Back to Data](./DATA.md)

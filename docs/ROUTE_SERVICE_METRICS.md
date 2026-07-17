@@ -39,3 +39,7 @@ Using TTC 900 Airport Express with the same active period, verify:
 3. Stop panels show the named stop-specific cadence, not the route-wide display cadence.
 4. Shared-section/branch ranges and sparklines use their shared and branch projections respectively.
 5. Live Vehicles' scheduled comparison matches the route-card scheduled branch metric.
+
+---
+
+[Back to Data](./DATA.md)

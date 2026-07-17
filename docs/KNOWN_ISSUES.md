@@ -88,3 +88,7 @@ handles null-geometry features fine (skips them from tiles), so the map-renderin
 the real work is auditing every geometry-assuming consumer above to fall back gracefully (e.g. search
 ranking needs a non-geometry distance source — agency center or stop coordinates work) and adding the new
 UI notice. Needs a dedicated session, not a quick fix.
+
+---
+
+[Back to Data](./DATA.md)
