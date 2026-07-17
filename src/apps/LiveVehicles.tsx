@@ -15,6 +15,7 @@ import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDi
 import { buildRouteServiceSummary, metricValueForPeriod } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
+import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 
 interface Props {
   agencies: Agency[];
@@ -612,74 +613,62 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           <div className={PANEL_BODY}>
             {selectedGroup ? (
               <>
-              {selectedRouteHeadwayLine && (
-                <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
-                  {selectedRouteHeadwayLine}
-                </div>
-              )}
-              {/* Route card: destination-grouped or vehicle-level fallback */}
-              {selectedGroup.vehicles.length === 0 ? (
-                <p className={`${PANEL_EMPTY} text-center`}>No vehicles on this route</p>
-              ) : canGroupByDirection && !selectedDirection ? (
-                [...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
-                  const label = getDirectionLabel(dirKey);
-                  const preview = vehicles.slice(0, 3);
-                  const extra = vehicles.length - preview.length;
-                  return (
-                    <button
-                      key={dirKey}
-                      onClick={() => setSelectedDirection(dirKey)}
-                      className={`${LIST_ROW} border-b-0 mb-0.5`}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className={`${LIST_ROW_PRIMARY} truncate`}>{label}</p>
-                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                          {preview.map(v => {
-                            const colors = STATUS_COLORS[v.status];
-                            return (
-                              <span
-                                key={v.id}
-                                style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                                className={`text-[10px] font-bold ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
-                              >
-                                {delayLabel(v)}
-                              </span>
-                            );
-                          })}
-                          {extra > 0 && (
-                            <span className={LIST_ROW_DIM}>+{extra} more</span>
-                          )}
+              <div className="px-4 py-4">
+                {selectedRouteHeadwayLine && (
+                  <div className="text-[10px] font-black text-[var(--text-dim)] mb-4">
+                    {selectedRouteHeadwayLine}
+                  </div>
+                )}
+                {/* Match static route cards: destinations first, live vehicles second. */}
+                {selectedGroup.vehicles.length === 0 ? (
+                  <p className={`${PANEL_EMPTY} text-center`}>No vehicles on this route</p>
+                ) : canGroupByDirection && !selectedDirection ? (
+                  <SidebarCardListRows>
+                    {[...(vehiclesByDirection ?? [])].map(([dirKey, vehicles]) => {
+                      const label = getDirectionLabel(dirKey);
+                      const preview = vehicles.slice(0, 3);
+                      const extra = vehicles.length - preview.length;
+                      return (
+                        <div key={dirKey} className="relative pr-4">
+                          <CardDirectionRow
+                            label={label}
+                            subLabel={`${preview.map(delayLabel).join(' · ')}${extra > 0 ? ` · +${extra} more` : ''}`}
+                            onClick={() => setSelectedDirection(dirKey)}
+                          />
+                          <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--text-dim)]" />
                         </div>
-                      </div>
-                      <ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] shrink-0 transition-colors" />
-                    </button>
-                  );
-                })
-              ) : (
-                (selectedDirection
-                  ? (vehiclesByDirection?.get(selectedDirection) ?? [])
-                  : selectedGroup.vehicles
-                ).map((v, i) => {
-                  const label = delayLabel(v);
-                  const colors = STATUS_COLORS[v.status];
-                  return (
-                    <div key={v.id} className={`${LIST_ROW} border-b-0 mb-0.5 cursor-default hover:bg-transparent`}>
-                      <p className={`${LIST_ROW_PRIMARY} flex-1 min-w-0 truncate group-hover:text-[var(--text-primary)]`}>
-                        {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
-                      </p>
-                      {v.speedKmh != null && (
-                        <span className={`${LIST_ROW_DIM} shrink-0`}>{v.speedKmh} km/h</span>
-                      )}
-                      <span
-                        style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                        className={`text-[10px] font-bold shrink-0 ${v.status === 'no_data' ? LIST_ROW_DIM : ''}`}
-                      >
-                        {label}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
+                      );
+                    })}
+                  </SidebarCardListRows>
+                ) : (
+                  <SidebarCardListRows>
+                    {(selectedDirection
+                      ? (vehiclesByDirection?.get(selectedDirection) ?? [])
+                      : selectedGroup.vehicles
+                    ).map((v, i) => {
+                      const colors = STATUS_COLORS[v.status];
+                      return (
+                        <div key={v.id} className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className={`${CARD_LIST_ROUTE} truncate`}>
+                              {liveVehicleRowLabel(v, i, selectedRouteModeWord)}
+                            </p>
+                            {v.speedKmh != null && (
+                              <p className="text-[10px] font-bold text-[var(--text-dim)] mt-0.5">{v.speedKmh} km/h</p>
+                            )}
+                          </div>
+                          <span
+                            style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                            className={`text-[11px] font-black shrink-0 whitespace-nowrap ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                          >
+                            {delayLabel(v)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </SidebarCardListRows>
+                )}
+              </div>
               </>
             ) : !isZoomedIn || (visibleSlugs.length === 0 && !isLoading) ? (
               <>

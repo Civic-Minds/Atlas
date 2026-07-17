@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live route cards now follow the static route-card layout**: destinations and route identity lead the card, with vehicle status and speed treated as supporting live details.
 - **Live vehicle directions now fill from static route shapes when feeds omit them**: TTC, Edmonton, and Halifax vehicles can show a destination or direction when their realtime metadata is incomplete, while ambiguous matches remain unlabeled.
 - **Live rail coverage prepared for SF Muni and LA Metro**: added vehicles-only polling for Muni Metro and all six current LA Metro rail lines, with each provider's route filtering and API-key contract.
 - **Fixed reference-date detection for feeds with recurring multi-year holiday exceptions**: Emery Go-Round had real, current shape data but published zero routes. The reference-date heuristic's calendarDates sanity-check treats a tight cluster of exception dates as the true service window (the Foothill Transit pattern) — but Emery Go-Round's calendar_dates.txt recorded the same Dec 24/31 holiday closure across three separate years, and averaging across a 3-year span landed the "reference date" a full year in the past, excluding every active trip. The override now only applies when the exception dates themselves span under a year.
