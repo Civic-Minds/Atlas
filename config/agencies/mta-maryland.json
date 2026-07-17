@@ -9,5 +9,14 @@
   "lastFeedExpiry": "20260822",
   "lastFeedVersion": "20260701",
   "region": "Maryland",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Baltimore, Maryland",
+    "Towson, Maryland",
+    "Dundalk, Maryland",
+    "Ellicott City, Maryland",
+    "Glen Burnie, Maryland",
+    "Bowie, Maryland",
+    "Columbia, Maryland"
+  ]
 }

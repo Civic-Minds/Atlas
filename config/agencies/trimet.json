@@ -16,5 +16,13 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-trimet-portland-streetcar-gtfs-247.zip?alt=media",
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "20260531-20260624-2100",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Portland, Oregon",
+    "Gresham, Oregon",
+    "Tigard, Oregon",
+    "Beaverton, Oregon",
+    "Hillsboro, Oregon",
+    "Vancouver, Washington"
+  ]
 }

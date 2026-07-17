@@ -15,5 +15,9 @@
   "region": "Illinois",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "20260602",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "North Peoria, Illinois",
+    "Peoria, Illinois"
+  ]
 }

@@ -9,5 +9,11 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5191/google_transit.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260519",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Flint, Michigan",
+    "Novi, Michigan",
+    "Ann Arbor, Michigan",
+    "Pontiac, Michigan"
+  ]
 }

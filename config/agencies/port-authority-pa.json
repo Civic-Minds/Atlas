@@ -9,5 +9,8 @@
   "lastFeedExpiry": "20261024",
   "lastFeedVersion": "2606-Merged_Clever_2606",
   "region": "Pennsylvania",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Pittsburgh, Pennsylvania"
+  ]
 }

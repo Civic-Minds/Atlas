@@ -17,5 +17,16 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Terrebonne, Quebec",
+    "Saint-Louis-de-Terrebonne, Quebec",
+    "Repentigny, Quebec",
+    "Laval, Quebec",
+    "Ahuntsic-Cartierville, Quebec",
+    "Montréal-Nord, Quebec",
+    "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+    "Saint-Léonard, Quebec",
+    "Mercier–Hochelaga-Maisonneuve, Quebec"
+  ]
 }

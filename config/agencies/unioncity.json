@@ -17,5 +17,8 @@
   "lastFeedExpiry": "20230927",
   "lastFeedVersion": "UTC: 14-Mar-2023 23:56",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.uctransit.org"
+  "websiteUrl": "http://www.uctransit.org",
+  "cities": [
+    "Union City, California"
+  ]
 }

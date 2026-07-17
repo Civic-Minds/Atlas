@@ -15,5 +15,8 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "UTC: 27-Jan-2026 10:04",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "Corona, California"
+  ]
 }

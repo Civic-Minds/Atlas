@@ -15,5 +15,10 @@
   "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-simcoe.zip",
   "lastFeedExpiry": "20270706",
   "lastFeedVersion": "1/20260706 22:00:00/20260707 00:00:00",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Barrie, Ontario",
+    "Newmarket, Ontario",
+    "Caledon, Ontario"
+  ]
 }

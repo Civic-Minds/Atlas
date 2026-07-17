@@ -10,5 +10,9 @@
   "region": "Texas",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260317",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "McAllen, Texas",
+    "Edinburg, Texas"
+  ]
 }

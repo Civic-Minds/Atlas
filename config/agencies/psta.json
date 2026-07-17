@@ -10,5 +10,14 @@
   "lastFeedVersion": "S1000242",
   "region": "Florida",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.psta.net"
+  "websiteUrl": "http://www.psta.net",
+  "cities": [
+    "St. Petersburg, Florida",
+    "Pinellas Park, Florida",
+    "Largo, Florida",
+    "Clearwater, Florida",
+    "Palm Harbor, Florida",
+    "Town 'n' Country, Florida",
+    "Tampa, Florida"
+  ]
 }

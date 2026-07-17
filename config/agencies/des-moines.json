@@ -10,5 +10,10 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
   "lastFeedExpiry": "20260822",
   "lastFeedVersion": "2026.06_20260514",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Des Moines, Iowa",
+    "West Des Moines, Iowa",
+    "Ankeny, Iowa"
+  ]
 }

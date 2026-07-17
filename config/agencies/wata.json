@@ -15,5 +15,9 @@
   "region": "Virginia",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Newport News, Virginia",
+    "Hampton, Virginia"
+  ]
 }

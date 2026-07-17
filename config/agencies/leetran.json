@@ -15,5 +15,11 @@
   "region": "Florida",
   "lastFeedExpiry": "20261118",
   "lastFeedVersion": "S1000223",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Fort Myers, Florida",
+    "Cape Coral, Florida",
+    "Bonita Springs, Florida",
+    "Lehigh Acres, Florida"
+  ]
 }

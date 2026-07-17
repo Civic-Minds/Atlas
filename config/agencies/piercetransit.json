@@ -16,5 +16,17 @@
   "lastFeedExpiry": "20260606",
   "lastFeedVersion": "S1000129",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://www.piercetransit.org"
+  "websiteUrl": "https://www.piercetransit.org",
+  "cities": [
+    "Tacoma, Washington",
+    "Lakewood, Washington",
+    "South Hill, Washington",
+    "Federal Way, Washington",
+    "Seattle, Washington",
+    "Auburn, Washington",
+    "Burien, Washington",
+    "Renton, Washington",
+    "Bellevue, Washington",
+    "Kent, Washington"
+  ]
 }

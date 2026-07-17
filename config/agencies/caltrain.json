@@ -16,5 +16,17 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-caltrain-gtfs-54.zip?alt=media",
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "UTC: 10-Jun-2026 22:25",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "San Mateo, California",
+    "San Jose, California",
+    "South San Francisco, California",
+    "Redwood City, California",
+    "Palo Alto, California",
+    "San Francisco, California",
+    "Mountain View, California",
+    "Sunnyvale, California",
+    "Gilroy, California",
+    "Daly City, California"
+  ]
 }

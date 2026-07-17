@@ -16,5 +16,8 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-city-of-corvallis-gtfs-2283.zip?alt=media",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260625",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Corvallis, Oregon"
+  ]
 }

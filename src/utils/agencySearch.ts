@@ -37,6 +37,7 @@ export interface AgencySearchGroup {
   slug: string;
   inView: boolean;
   distanceM: number;
+  cities?: string[];
 }
 
 /** Match + dedupe agencies by display name, sort nearest/in-viewport first. */
@@ -54,7 +55,8 @@ export function searchAgencyGroups(
     a.name.toLowerCase().includes(q)
     || a.slug.startsWith(q)
     || (a.region || '').toLowerCase().includes(q)
-    || (a.searchAliases ?? []).some(alias => alias.toLowerCase().includes(q)),
+    || (a.searchAliases ?? []).some(alias => alias.toLowerCase().includes(q))
+    || (a.cities ?? []).some(city => city.toLowerCase().includes(q)),
   );
 
   const byKey = new Map<string, {
@@ -63,6 +65,7 @@ export function searchAgencyGroups(
     slugs: string[];
     inView: boolean;
     distanceM: number;
+    cities?: string[];
   }>();
 
   for (const a of raw) {
@@ -80,7 +83,7 @@ export function searchAgencyGroups(
       if (inView) g.inView = true;
       g.distanceM = Math.min(g.distanceM, distanceM);
     } else {
-      byKey.set(key, { name: a.name, region, slugs: [a.slug], inView, distanceM });
+      byKey.set(key, { name: a.name, region, slugs: [a.slug], inView, distanceM, cities: a.cities });
     }
   }
 
@@ -99,6 +102,7 @@ export function searchAgencyGroups(
         slug,
         inView: g.inView,
         distanceM: g.distanceM,
+        cities: g.cities,
       };
     })
     .sort((a, b) => {

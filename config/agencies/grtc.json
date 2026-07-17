@@ -16,5 +16,8 @@
   "lastFeedExpiry": "20240518",
   "lastFeedVersion": "S1000151",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.ridegrtc.com"
+  "websiteUrl": "http://www.ridegrtc.com",
+  "cities": [
+    "Richmond, Virginia"
+  ]
 }

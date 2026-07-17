@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "San Diego, California",
+    "Chula Vista, California",
+    "La Mesa, California",
+    "National City, California",
+    "Mira Mesa, California",
+    "El Cajon, California",
+    "Santee, California",
+    "Poway, California",
+    "Rancho Penasquitos, California",
+    "Escondido, California"
+  ]
 }

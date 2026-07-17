@@ -9,5 +9,16 @@
   "lastFeedExpiry": "20260718",
   "lastFeedVersion": "S1000131",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Gardena, California",
+    "Carson, California",
+    "Hawthorne, California",
+    "Compton, California",
+    "Wilmington, California",
+    "Lynwood, California",
+    "Torrance, California",
+    "Redondo Beach, California",
+    "Inglewood, California"
+  ]
 }

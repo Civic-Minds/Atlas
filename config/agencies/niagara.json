@@ -23,5 +23,11 @@
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "S1000282",
   "lastRefreshedAt": "2026-07-15",
-  "websiteUrl": "https://nrtransit.ca/"
+  "websiteUrl": "https://nrtransit.ca/",
+  "cities": [
+    "St. Catharines, Ontario",
+    "Niagara Falls, Ontario",
+    "Welland, Ontario",
+    "Buffalo, New York"
+  ]
 }

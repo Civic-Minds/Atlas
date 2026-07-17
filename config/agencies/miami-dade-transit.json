@@ -9,5 +9,17 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "North Miami, Florida",
+    "Allapattah, Florida",
+    "Hialeah, Florida",
+    "Little Havana, Florida",
+    "Kendall, Florida",
+    "Miami, Florida",
+    "Homestead, Florida",
+    "Carol City, Florida",
+    "Flagami, Florida",
+    "Coral Gables, Florida"
+  ]
 }

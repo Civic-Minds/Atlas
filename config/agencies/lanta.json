@@ -10,5 +10,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
   "lastFeedExpiry": "20260823",
   "lastFeedVersion": "20260622",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Allentown, Pennsylvania",
+    "Bethlehem, Pennsylvania"
+  ]
 }

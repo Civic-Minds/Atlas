@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260624",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Santa Clarita, California",
+    "Canyon Country, California",
+    "Valencia, California",
+    "Canoga Park, California",
+    "Los Angeles, California",
+    "Santa Monica, California",
+    "Woodland Hills, California",
+    "Mid-City, California",
+    "Northridge, California",
+    "North Hollywood, California"
+  ]
 }

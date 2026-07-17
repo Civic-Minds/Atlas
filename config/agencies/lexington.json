@@ -10,5 +10,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2067/latest.zip",
   "lastFeedExpiry": "20260815",
   "lastFeedVersion": "20260612",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Lexington-Fayette, Kentucky",
+    "Lexington, Kentucky"
+  ]
 }

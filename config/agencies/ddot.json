@@ -10,5 +10,16 @@
   "lastFeedExpiry": "20260703",
   "lastFeedVersion": "S1000180",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://DetroitMI.gov/DDOT"
+  "websiteUrl": "https://DetroitMI.gov/DDOT",
+  "cities": [
+    "Detroit, Michigan",
+    "Dearborn, Michigan",
+    "Southfield, Michigan",
+    "Warren, Michigan",
+    "Royal Oak, Michigan",
+    "Dearborn Heights, Michigan",
+    "Saint Clair Shores, Michigan",
+    "Livonia, Michigan",
+    "Windsor, Ontario"
+  ]
 }

@@ -15,5 +15,17 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
   "lastFeedExpiry": "20260904",
   "lastFeedVersion": "20260529182459",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Mississauga, Ontario",
+    "Brampton, Ontario",
+    "Oshawa, Ontario",
+    "Halton Hills, Ontario",
+    "Richmond Hill, Ontario",
+    "Newmarket, Ontario",
+    "Guelph, Ontario",
+    "Caledon, Ontario",
+    "Pickering, Ontario",
+    "Barrie, Ontario"
+  ]
 }

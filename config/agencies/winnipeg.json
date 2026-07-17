@@ -16,5 +16,9 @@
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-manitoba-winnipeg-transit-gtfs-717.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Winnipeg, Manitoba",
+    "Fort Garry South, Manitoba"
+  ]
 }

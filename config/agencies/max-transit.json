@@ -15,5 +15,9 @@
   "region": "Alabama",
   "lastFeedExpiry": "20350201",
   "lastFeedVersion": "20240531",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Birmingham, Alabama",
+    "Hoover, Alabama"
+  ]
 }

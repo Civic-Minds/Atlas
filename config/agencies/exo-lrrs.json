@@ -17,5 +17,12 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Brossard, Quebec",
+    "Verdun, Quebec",
+    "Notre-Dame-de-Grâce, Quebec",
+    "Le Vieux-Longueuil, Quebec",
+    "Le Sud-Ouest, Quebec"
+  ]
 }

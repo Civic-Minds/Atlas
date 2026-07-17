@@ -10,5 +10,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7019/latest.zip",
   "lastFeedExpiry": "20260812",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "South Bend, Indiana",
+    "Elkhart, Indiana"
+  ]
 }

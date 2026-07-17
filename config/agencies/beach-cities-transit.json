@@ -1,9 +1,18 @@
 {
   "slug": "beach-cities-transit",
   "name": "Beach Cities Transit (South Bay, CA)",
-  "center": [33.8492, -118.3884],
+  "center": [
+    33.8492,
+    -118.3884
+  ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-beach-cities-transit-gtfs-1999.zip?alt=media",
   "lastFeedExpiry": "",
   "lastFeedVersion": "Transit Center Trip Split",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "Redondo Beach, California",
+    "Hawthorne, California",
+    "Inglewood, California",
+    "Torrance, California"
+  ]
 }

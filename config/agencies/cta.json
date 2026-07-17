@@ -9,5 +9,17 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Illinois",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "South Shore, Illinois",
+    "Chicago Lawn, Illinois",
+    "Chicago, Illinois",
+    "South Lawndale, Illinois",
+    "West Town, Illinois",
+    "Portage Park, Illinois",
+    "Logan Square, Illinois",
+    "Belmont Cragin, Illinois",
+    "Near North Side, Illinois",
+    "Oak Park, Illinois"
+  ]
 }

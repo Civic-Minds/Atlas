@@ -15,5 +15,8 @@
   "region": "Alabama",
   "lastFeedExpiry": "20281231",
   "lastFeedVersion": "20260319",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Mobile, Alabama"
+  ]
 }

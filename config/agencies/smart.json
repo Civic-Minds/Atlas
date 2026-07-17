@@ -10,5 +10,17 @@
   "lastFeedExpiry": "20260621",
   "lastFeedVersion": "S1000139",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://smartbus.org"
+  "websiteUrl": "https://smartbus.org",
+  "cities": [
+    "Royal Oak, Michigan",
+    "Southfield, Michigan",
+    "Saint Clair Shores, Michigan",
+    "Taylor, Michigan",
+    "Warren, Michigan",
+    "Clinton Township, Michigan",
+    "Pontiac, Michigan",
+    "Dearborn Heights, Michigan",
+    "Troy, Michigan",
+    "Farmington Hills, Michigan"
+  ]
 }

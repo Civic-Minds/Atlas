@@ -18,5 +18,10 @@
   "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "2026 Spring & 2026 Summer Merged",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Hamilton, Ontario",
+    "Stoney Creek, Ontario",
+    "Burlington, Ontario"
+  ]
 }

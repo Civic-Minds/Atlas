@@ -15,5 +15,8 @@
   "region": "Texas",
   "lastFeedExpiry": "20260807",
   "lastFeedVersion": "UTC: 11-Mar-2026 20:19",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Lubbock, Texas"
+  ]
 }

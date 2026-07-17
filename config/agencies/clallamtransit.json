@@ -15,5 +15,10 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-clallam-transit-system-gtfs-279.zip?alt=media",
   "lastFeedExpiry": "20270522",
   "lastFeedVersion": "Updated: Mar 16, 2026, 12:30 PM",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Victoria, British Columbia",
+    "Shoreline, Washington",
+    "Seattle, Washington"
+  ]
 }

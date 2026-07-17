@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1716_1/latest.zip",
   "lastFeedExpiry": "20270710",
   "lastFeedVersion": "402",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Toledo, Ohio"
+  ]
 }

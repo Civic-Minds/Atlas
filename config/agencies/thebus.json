@@ -9,5 +9,8 @@
   "lastFeedExpiry": "20260822",
   "lastFeedVersion": "(2605_v5_BusRail_MERGED_Landlines)",
   "region": "Hawaii",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Honolulu, Hawaii"
+  ]
 }

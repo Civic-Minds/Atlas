@@ -15,5 +15,17 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-sound-transit-gtfs-268.zip?alt=media",
   "lastFeedExpiry": "20260828",
   "lastFeedVersion": "SC-Spring-2026.8",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Seattle, Washington",
+    "Tacoma, Washington",
+    "Bellevue, Washington",
+    "Shoreline, Washington",
+    "Redmond, Washington",
+    "Renton, Washington",
+    "Burien, Washington",
+    "South Hill, Washington",
+    "Kent, Washington",
+    "Federal Way, Washington"
+  ]
 }

@@ -9,5 +9,9 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Arkansas",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Little Rock, Arkansas",
+    "North Little Rock, Arkansas"
+  ]
 }

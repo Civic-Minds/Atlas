@@ -16,5 +16,13 @@
   "lastFeedExpiry": "20260601",
   "lastFeedVersion": "UTC: 22-May-2025 18:06",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.panynj.gov/path/"
+  "websiteUrl": "http://www.panynj.gov/path/",
+  "cities": [
+    "East Village, New York",
+    "Hoboken, New Jersey",
+    "Newark, New Jersey",
+    "Jersey City, New Jersey",
+    "Financial District, New York",
+    "New York City, New York"
+  ]
 }

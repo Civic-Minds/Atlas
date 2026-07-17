@@ -9,5 +9,10 @@
   "lastFeedExpiry": "",
   "lastFeedVersion": "1/12/2024",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Burbank, California",
+    "North Hollywood, California",
+    "Universal City, California"
+  ]
 }

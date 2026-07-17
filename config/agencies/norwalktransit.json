@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20251126",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Norwalk, California",
+    "Whittier, California",
+    "Bellflower, California",
+    "South Whittier, California",
+    "Pico Rivera, California",
+    "El Monte, California",
+    "Buena Park, California",
+    "La Habra, California",
+    "Downey, California",
+    "Paramount, California"
+  ]
 }

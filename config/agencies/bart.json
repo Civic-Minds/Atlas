@@ -16,5 +16,17 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-bay-area-rapid-transit-bart-gtfs-53.zip?alt=media",
   "lastFeedExpiry": "20260807",
   "lastFeedVersion": "72",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Oakland, California",
+    "Berkeley, California",
+    "Daly City, California",
+    "South San Francisco, California",
+    "San Leandro, California",
+    "Chinatown, California",
+    "San Francisco, California",
+    "Walnut Creek, California",
+    "Fremont, California",
+    "Hayward, California"
+  ]
 }

@@ -15,5 +15,17 @@
   "region": "New York",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "gtfs_q_20260611T155317Z",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Queens Village, New York",
+    "Bayside, New York",
+    "Jamaica, New York",
+    "Corona, New York",
+    "Briarwood, New York",
+    "Elmhurst, New York",
+    "South Ozone Park, New York",
+    "Ridgewood, New York",
+    "Parkchester, New York",
+    "East Village, New York"
+  ]
 }

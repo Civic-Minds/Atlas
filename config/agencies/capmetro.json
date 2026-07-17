@@ -9,5 +9,13 @@
   "lastFeedExpiry": "20260815",
   "lastFeedVersion": "260630_1449",
   "region": "Texas",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "University of Texas, Texas",
+    "Austin, Texas",
+    "Pflugerville, Texas",
+    "Cedar Park, Texas",
+    "Round Rock, Texas",
+    "Leander, Texas"
+  ]
 }

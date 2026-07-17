@@ -9,5 +9,13 @@
   "lastFeedExpiry": "20260801",
   "lastFeedVersion": "2026-03 service V1",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Durham, North Carolina",
+    "Cary, North Carolina",
+    "Chapel Hill, North Carolina",
+    "West Raleigh, North Carolina",
+    "Raleigh, North Carolina",
+    "Burlington, North Carolina"
+  ]
 }

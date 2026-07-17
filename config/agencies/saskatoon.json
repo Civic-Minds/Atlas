@@ -15,5 +15,12 @@
   ],
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Saskatoon, Saskatchewan",
+    "Confederation, Saskatchewan",
+    "University Heights, Saskatchewan",
+    "Nutana Sector, Saskatchewan",
+    "Lakewood, Saskatchewan"
+  ]
 }

@@ -10,5 +10,11 @@
   "lastFeedVersion": "20250305",
   "region": "Indiana",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.indygo.net"
+  "websiteUrl": "http://www.indygo.net",
+  "cities": [
+    "Indianapolis, Indiana",
+    "Carmel, Indiana",
+    "Greenwood, Indiana",
+    "Fishers, Indiana"
+  ]
 }

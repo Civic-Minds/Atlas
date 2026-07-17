@@ -10,5 +10,8 @@
   "lastFeedVersion": "UTC: 29-Feb-2024 18:42",
   "region": "California",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx"
+  "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx",
+  "cities": [
+    "El Monte, California"
+  ]
 }

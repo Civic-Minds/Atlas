@@ -15,5 +15,9 @@
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "2026",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Danbury, Connecticut",
+    "Greenburgh, New York"
+  ]
 }

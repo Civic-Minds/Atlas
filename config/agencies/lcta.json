@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4555/latest.zip",
   "lastFeedExpiry": "20301214",
   "lastFeedVersion": "20260609",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Scranton, Pennsylvania"
+  ]
 }

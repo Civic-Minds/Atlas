@@ -9,5 +9,10 @@
   "lastFeedExpiry": "20261226",
   "lastFeedVersion": "20260702",
   "region": "Georgia",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Johns Creek, Georgia",
+    "Brookhaven, Georgia",
+    "Stonecrest, Georgia"
+  ]
 }

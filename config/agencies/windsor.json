@@ -16,5 +16,9 @@
   "lastFeedExpiry": "20261004",
   "lastFeedVersion": "8ddbe2dd-30f4-49d0-891b-25b9c3b196d4",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-transit-windsor-gtfs-720.zip?alt=media",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Windsor, Ontario",
+    "Detroit, Michigan"
+  ]
 }

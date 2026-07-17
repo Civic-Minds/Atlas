@@ -9,5 +9,8 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-people-mover-gtfs-2281.zip?alt=media",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Detroit, Michigan"
+  ]
 }

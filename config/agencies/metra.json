@@ -9,5 +9,17 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Illinois",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "South Shore, Illinois",
+    "Waukegan, Illinois",
+    "Oak Lawn, Illinois",
+    "Tinley Park, Illinois",
+    "Berwyn, Illinois",
+    "Des Plaines, Illinois",
+    "Belmont Cragin, Illinois",
+    "Wheaton, Illinois",
+    "Chicago Lawn, Illinois",
+    "Skokie, Illinois"
+  ]
 }

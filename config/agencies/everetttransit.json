@@ -15,5 +15,8 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-everett-transit-gtfs-3038.zip?alt=media",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "4fcef50b-1dfc-45aa-8abb-b2eecb95b162",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Everett, Washington"
+  ]
 }

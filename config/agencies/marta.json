@@ -9,5 +9,15 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Georgia",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Atlanta, Georgia",
+    "Brookhaven, Georgia",
+    "Stonecrest, Georgia",
+    "South Fulton, Georgia",
+    "Sandy Springs, Georgia",
+    "Alpharetta, Georgia",
+    "Roswell, Georgia",
+    "Smyrna, Georgia"
+  ]
 }

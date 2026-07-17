@@ -15,5 +15,16 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-521/mdb-521-202606070009/mdb-521-202606070009.zip",
   "lastFeedExpiry": "20260912",
   "lastFeedVersion": "",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Hempstead, New York",
+    "Levittown, New York",
+    "Queens Village, New York",
+    "Bayside, New York",
+    "South Ozone Park, New York",
+    "New Rochelle, New York",
+    "Jamaica, New York",
+    "Briarwood, New York",
+    "Corona, New York"
+  ]
 }

@@ -15,5 +15,8 @@
   "region": "Iowa",
   "lastFeedExpiry": "20260831",
   "lastFeedVersion": "UTC: 20-Feb-2026 15:41",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Cedar Rapids, Iowa"
+  ]
 }

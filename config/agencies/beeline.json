@@ -15,5 +15,17 @@
   "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
   "lastFeedExpiry": "20261019",
   "lastFeedVersion": "20260703_180756",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "White Plains, New York",
+    "Greenburgh, New York",
+    "Yonkers, New York",
+    "Mount Vernon, New York",
+    "New Rochelle, New York",
+    "Wakefield, New York",
+    "North Stamford, Connecticut",
+    "Danbury, Connecticut",
+    "The Bronx, New York",
+    "Kings Bridge, New York"
+  ]
 }

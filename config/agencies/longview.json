@@ -16,5 +16,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
   "lastFeedExpiry": "20260930",
   "lastFeedVersion": "2.0",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Longview, Texas"
+  ]
 }

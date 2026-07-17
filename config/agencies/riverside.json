@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260912",
   "lastFeedVersion": "S1000245",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Riverside, California",
+    "Moreno Valley, California",
+    "Perris, California",
+    "Lake Elsinore, California",
+    "Hemet, California",
+    "Murrieta, California",
+    "Eastvale, California",
+    "Temecula, California",
+    "Corona, California",
+    "Menifee, California"
+  ]
 }

@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2069/mdb-2069-202607060127/mdb-2069-202607060127.zip",
   "lastFeedExpiry": "",
   "lastFeedVersion": "2026 Summer Detours 6/27",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Appleton, Wisconsin"
+  ]
 }

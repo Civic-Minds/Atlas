@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260719",
   "lastFeedVersion": "V702-215-214-20260608",
   "region": "Texas",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Dallas, Texas",
+    "Richardson, Texas",
+    "Garland, Texas",
+    "Carrollton, Texas",
+    "Irving, Texas",
+    "Mesquite, Texas",
+    "DeSoto, Texas",
+    "Plano, Texas",
+    "Grand Prairie, Texas",
+    "Frisco, Texas"
+  ]
 }

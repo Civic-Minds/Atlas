@@ -15,5 +15,8 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-jefferson-transit-authority-gtfs-838.zip?alt=media",
   "lastFeedExpiry": "20270501",
   "lastFeedVersion": "20260602",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Shoreline, Washington"
+  ]
 }

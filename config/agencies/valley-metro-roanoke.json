@@ -15,5 +15,8 @@
   "region": "Virginia",
   "lastFeedExpiry": "",
   "lastFeedVersion": "04/06/26",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Roanoke, Virginia"
+  ]
 }

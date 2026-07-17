@@ -9,5 +9,9 @@
   "lastFeedExpiry": "20260809",
   "lastFeedVersion": "6.1.26 Production_20260515",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Fresno, California",
+    "Clovis, California"
+  ]
 }

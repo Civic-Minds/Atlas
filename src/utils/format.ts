@@ -192,7 +192,22 @@ export function liveVehicleRowLabel(
  *   "County Connection (CCCTA)"         → County Connection  (outer already short brand)
  *   "T3 Transit (PEI)"                  → T3 Transit · PEI
  */
-export function agencyDisplayParts(name: string): { primary: string; secondary?: string } {
+export function agencyDisplayParts(
+  name: string,
+  cities?: string[],
+): { primary: string; secondary?: string } {
+  const result = agencyDisplayPartsFromName(name);
+  // `cities` is derived from real GTFS stop coordinates (pipeline/deriveCities.ts),
+  // so it's authoritative over whatever the name-parsing heuristics above guessed —
+  // prefer it whenever the primary city isn't already spelled out in the name.
+  const primaryCity = cities?.[0]?.split(',')[0]?.trim();
+  if (primaryCity && !placeAlreadyInName(result.primary, primaryCity)) {
+    return { ...result, secondary: primaryCity };
+  }
+  return result;
+}
+
+function agencyDisplayPartsFromName(name: string): { primary: string; secondary?: string } {
   const trimmed = name.trim();
   const m = trimmed.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
   if (!m) {

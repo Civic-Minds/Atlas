@@ -15,5 +15,8 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip",
   "lastFeedExpiry": "20260901",
   "lastFeedVersion": "UTC: 18-Dec-2025 21:10",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "Simi Valley, California"
+  ]
 }

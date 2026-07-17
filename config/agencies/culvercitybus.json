@@ -9,5 +9,10 @@
   "lastFeedExpiry": "20260712",
   "lastFeedVersion": "S1000250_2026.01.09",
   "region": "California",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Mid-City, California",
+    "Inglewood, California",
+    "Santa Monica, California"
+  ]
 }

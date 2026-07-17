@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260821",
   "lastFeedVersion": "1782334167",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Minneapolis, Minnesota",
+    "Saint Paul, Minnesota",
+    "Brooklyn Park, Minnesota",
+    "Bloomington, Minnesota",
+    "Edina, Minnesota",
+    "Woodbury, Minnesota",
+    "Coon Rapids, Minnesota",
+    "Minnetonka Mills, Minnesota",
+    "Plymouth, Minnesota",
+    "West Coon Rapids, Minnesota"
+  ]
 }

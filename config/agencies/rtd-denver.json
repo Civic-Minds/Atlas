@@ -9,5 +9,17 @@
   "region": "Colorado",
   "lastFeedExpiry": "20260926",
   "lastFeedVersion": "Jun26-36807-13-20-20260704-030232",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Denver, Colorado",
+    "Aurora, Colorado",
+    "Lakewood, Colorado",
+    "Boulder, Colorado",
+    "Centennial, Colorado",
+    "Thornton, Colorado",
+    "Arvada, Colorado",
+    "Commerce City, Colorado",
+    "Broomfield, Colorado",
+    "Westminster, Colorado"
+  ]
 }

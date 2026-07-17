@@ -9,5 +9,13 @@
   "feedUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Waterbury, Connecticut",
+    "Meriden, Connecticut",
+    "New Britain, Connecticut",
+    "Bristol, Connecticut",
+    "Hamden, Connecticut",
+    "Hartford, Connecticut"
+  ]
 }

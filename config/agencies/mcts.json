@@ -9,5 +9,9 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Wisconsin",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Milwaukee, Wisconsin",
+    "West Allis, Wisconsin"
+  ]
 }

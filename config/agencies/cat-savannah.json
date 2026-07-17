@@ -16,5 +16,8 @@
   "lastFeedExpiry": "20250727",
   "lastFeedVersion": "S1000046",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.catchacat.org"
+  "websiteUrl": "http://www.catchacat.org",
+  "cities": [
+    "Savannah, Georgia"
+  ]
 }

@@ -9,5 +9,14 @@
   "lastFeedExpiry": "20260926",
   "lastFeedVersion": "MAY 26_20260526",
   "region": "Texas",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Fort Worth, Texas",
+    "North Richland Hills, Texas",
+    "Arlington, Texas",
+    "Grapevine, Texas",
+    "Euless, Texas",
+    "Mansfield, Texas",
+    "Flower Mound, Texas"
+  ]
 }

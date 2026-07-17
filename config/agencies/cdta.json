@@ -10,5 +10,10 @@
   "lastFeedExpiry": "20260829",
   "lastFeedVersion": "Major",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-capital-district-transportation-authority-cdta-gtfs-538.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "West Albany, New York",
+    "Schenectady, New York",
+    "Albany, New York"
+  ]
 }

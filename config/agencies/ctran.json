@@ -16,5 +16,10 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-c-tran-gtfs-258.zip?alt=media",
   "lastFeedExpiry": "20260912",
   "lastFeedVersion": "20260510-20260912",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Vancouver, Washington",
+    "Gresham, Oregon",
+    "Portland, Oregon"
+  ]
 }

@@ -10,5 +10,8 @@
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "202606290/20260628 21:00:00/20260629 04:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-kamloops-transit-system-gtfs-707.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Kamloops, British Columbia"
+  ]
 }

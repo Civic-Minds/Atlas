@@ -16,5 +16,8 @@
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "2026 02 28  Bid5 V2",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://www.codiactranspo.ca/"
+  "websiteUrl": "https://www.codiactranspo.ca/",
+  "cities": [
+    "Moncton, New Brunswick"
+  ]
 }

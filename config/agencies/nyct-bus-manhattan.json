@@ -15,5 +15,17 @@
   "region": "New York",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "gtfs_m_20260611T155328Z",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "East Village, New York",
+    "Manhattan, New York",
+    "Harlem, New York",
+    "Upper West Side, New York",
+    "Morningside Heights, New York",
+    "Washington Heights, New York",
+    "East Harlem, New York",
+    "Chinatown, New York",
+    "New York City, New York",
+    "Financial District, New York"
+  ]
 }

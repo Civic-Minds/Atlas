@@ -16,5 +16,11 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-marin-area-rail-transit-smart-gtfs-815.zip?alt=media",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "UTC: 14-Apr-2026 15:07",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Santa Rosa, California",
+    "Petaluma, California",
+    "San Rafael, California",
+    "Novato, California"
+  ]
 }

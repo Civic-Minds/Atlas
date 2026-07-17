@@ -9,5 +9,8 @@
   "lastFeedExpiry": "",
   "lastFeedVersion": "Summer 2026",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Chapel Hill, North Carolina"
+  ]
 }

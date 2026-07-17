@@ -16,5 +16,12 @@
   "lastFeedExpiry": "20260802",
   "lastFeedVersion": "20260629",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-brampton-transit-gtfs-729.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Brampton, Ontario",
+    "Etobicoke, Ontario",
+    "Vaughan, Ontario",
+    "Mississauga, Ontario",
+    "Caledon, Ontario"
+  ]
 }

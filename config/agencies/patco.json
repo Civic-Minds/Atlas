@@ -10,5 +10,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "15",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Cherry Hill, New Jersey",
+    "Center City, Pennsylvania",
+    "Camden, New Jersey",
+    "Philadelphia, Pennsylvania"
+  ]
 }

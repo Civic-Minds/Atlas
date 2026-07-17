@@ -16,5 +16,9 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-spokane-transit-authority-sta-gtfs-290.zip?alt=media",
   "lastFeedExpiry": "20260919",
   "lastFeedVersion": "MAY2026v3_20260521",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Spokane, Washington",
+    "Spokane Valley, Washington"
+  ]
 }

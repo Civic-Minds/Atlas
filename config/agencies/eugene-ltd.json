@@ -17,5 +17,9 @@
   "lastFeedExpiry": "20260131",
   "lastFeedVersion": "",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.ltd.org"
+  "websiteUrl": "http://www.ltd.org",
+  "cities": [
+    "Eugene, Oregon",
+    "Springfield, Oregon"
+  ]
 }

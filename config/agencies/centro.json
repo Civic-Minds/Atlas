@@ -10,5 +10,10 @@
   "lastFeedExpiry": "20260906",
   "lastFeedVersion": "2026-06 Centro_20260616",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-centro-gtfs-534.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Syracuse, New York",
+    "Utica, New York",
+    "Clay, New York"
+  ]
 }

@@ -10,5 +10,10 @@
   "lastFeedVersion": "20210223",
   "region": "Florida",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.votran.org"
+  "websiteUrl": "http://www.votran.org",
+  "cities": [
+    "Daytona Beach, Florida",
+    "Port Orange, Florida",
+    "Deltona, Florida"
+  ]
 }

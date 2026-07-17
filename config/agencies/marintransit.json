@@ -16,5 +16,11 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-marin-transit-gtfs-2937.zip?alt=media",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "UTC: 04-Feb-2026 00:08",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "San Rafael, California",
+    "Novato, California",
+    "Chinatown, California",
+    "Petaluma, California"
+  ]
 }

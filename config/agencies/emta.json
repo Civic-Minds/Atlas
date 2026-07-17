@@ -10,5 +10,8 @@
   "lastFeedExpiry": "20231101",
   "lastFeedVersion": "UTC: 22-Jun-2023 22:03",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.ride-the-e.com/"
+  "websiteUrl": "http://www.ride-the-e.com/",
+  "cities": [
+    "Erie, Pennsylvania"
+  ]
 }

@@ -9,5 +9,9 @@
   "lastFeedExpiry": "20260904",
   "lastFeedVersion": "2026-05_20260605",
   "region": "New Mexico",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Albuquerque, New Mexico",
+    "Rio Rancho, New Mexico"
+  ]
 }

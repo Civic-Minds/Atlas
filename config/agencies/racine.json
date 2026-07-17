@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2246/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260329",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Racine, Wisconsin"
+  ]
 }

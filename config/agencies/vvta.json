@@ -10,5 +10,14 @@
   "lastFeedVersion": "2024.09",
   "region": "California",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://vvta.org/"
+  "websiteUrl": "http://vvta.org/",
+  "cities": [
+    "Victorville, California",
+    "Hesperia, California",
+    "Apple Valley, California",
+    "San Bernardino, California",
+    "Fontana, California",
+    "Colton, California",
+    "Rancho Cucamonga, California"
+  ]
 }

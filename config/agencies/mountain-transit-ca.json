@@ -16,5 +16,10 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-107/latest.zip",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 29-Jun-2026 16:59",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Yucaipa, California",
+    "Highland, California",
+    "San Bernardino, California"
+  ]
 }

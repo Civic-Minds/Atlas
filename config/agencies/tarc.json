@@ -9,5 +9,8 @@
   "lastFeedExpiry": "20260801",
   "lastFeedVersion": "20260416",
   "region": "Kentucky",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Louisville, Kentucky"
+  ]
 }

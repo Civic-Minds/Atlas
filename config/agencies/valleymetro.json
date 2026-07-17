@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20261025",
   "lastFeedVersion": "GTFS_v4.5_20260616",
   "region": "Arizona",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Deer Valley, Arizona",
+    "Encanto, Arizona",
+    "Scottsdale, Arizona",
+    "Central City, Arizona",
+    "Maryvale, Arizona",
+    "Tempe Junction, Arizona",
+    "Glendale, Arizona",
+    "Alhambra, Arizona",
+    "Mesa, Arizona",
+    "Ahwatukee Foothills, Arizona"
+  ]
 }

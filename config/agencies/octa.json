@@ -9,5 +9,17 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Santa Ana, California",
+    "Westminster, California",
+    "Buena Park, California",
+    "Fountain Valley, California",
+    "Garden Grove, California",
+    "Irvine, California",
+    "Orange, California",
+    "Anaheim, California",
+    "Placentia, California",
+    "Costa Mesa, California"
+  ]
 }

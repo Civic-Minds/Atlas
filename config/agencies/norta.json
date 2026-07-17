@@ -9,5 +9,11 @@
   "lastFeedExpiry": "20270124",
   "lastFeedVersion": "S1000253",
   "region": "Louisiana",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "New Orleans, Louisiana",
+    "Metairie, Louisiana",
+    "Metairie Terrace, Louisiana",
+    "Kenner, Louisiana"
+  ]
 }

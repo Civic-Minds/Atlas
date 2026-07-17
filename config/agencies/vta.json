@@ -16,5 +16,15 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-clara-valley-transportation-authority-vta-gtfs-57.zip?alt=media",
   "lastFeedExpiry": "20260809",
   "lastFeedVersion": "2026-06-01_10:34",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "San Jose, California",
+    "Santa Clara, California",
+    "Cupertino, California",
+    "Milpitas, California",
+    "Sunnyvale, California",
+    "Mountain View, California",
+    "Gilroy, California",
+    "Palo Alto, California"
+  ]
 }

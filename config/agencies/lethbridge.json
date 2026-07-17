@@ -10,5 +10,8 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "2026-06-29",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-lethbridge-transit-gtfs-765.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Lethbridge, Alberta"
+  ]
 }

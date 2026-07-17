@@ -15,5 +15,9 @@
   "region": "Ohio",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "S1000325",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Dayton, Ohio",
+    "Kettering, Ohio"
+  ]
 }

@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260809",
   "lastFeedVersion": "20260504_20260428a",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "San Bernardino, California",
+    "Fontana, California",
+    "Rialto, California",
+    "Rancho Cucamonga, California",
+    "Colton, California",
+    "Ontario, California",
+    "Redlands, California",
+    "Highland, California",
+    "Upland, California",
+    "Chino, California"
+  ]
 }

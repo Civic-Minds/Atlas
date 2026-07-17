@@ -9,5 +9,16 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": "Version_20250205",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Vista, California",
+    "Escondido, California",
+    "Oceanside, California",
+    "Carlsbad, California",
+    "Encinitas, California",
+    "San Marcos, California",
+    "Mira Mesa, California",
+    "Temecula, California",
+    "Rancho Penasquitos, California"
+  ]
 }

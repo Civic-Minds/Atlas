@@ -16,5 +16,17 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Vancouver, British Columbia",
+    "North Vancouver, British Columbia",
+    "Downtown Vancouver, British Columbia",
+    "Maple Ridge, British Columbia",
+    "Burnaby, British Columbia",
+    "Renfrew-Collingwood, British Columbia",
+    "New Westminster, British Columbia",
+    "Coquitlam, British Columbia",
+    "Brighouse-City Centre, British Columbia",
+    "Langley, British Columbia"
+  ]
 }

@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260919",
   "lastFeedVersion": "20260511",
   "region": "Florida",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "West Palm Beach, Florida",
+    "Boynton Beach, Florida",
+    "Delray Beach, Florida",
+    "Palm Beach Gardens, Florida",
+    "Wellington, Florida",
+    "Boca Raton, Florida",
+    "Deerfield Beach, Florida",
+    "Jupiter, Florida",
+    "Coconut Creek, Florida",
+    "Coral Springs, Florida"
+  ]
 }

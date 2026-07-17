@@ -9,5 +9,8 @@
   "lastFeedExpiry": "",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Santa Maria, California"
+  ]
 }

@@ -15,5 +15,10 @@
   "region": "South Carolina",
   "lastFeedExpiry": "20260815",
   "lastFeedVersion": "UTC: 25-Jun-2026 16:41",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "North Charleston, South Carolina",
+    "Charleston, South Carolina",
+    "Mount Pleasant, South Carolina"
+  ]
 }

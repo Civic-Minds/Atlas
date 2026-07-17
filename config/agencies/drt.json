@@ -16,5 +16,14 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-durham-region-transit-gtfs-726.zip?alt=media",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Oshawa, Ontario",
+    "Ajax, Ontario",
+    "Whitby, Ontario",
+    "Pickering, Ontario",
+    "Woburn, Ontario",
+    "Newmarket, Ontario",
+    "Barrie, Ontario"
+  ]
 }

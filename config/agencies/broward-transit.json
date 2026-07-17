@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260926",
   "lastFeedVersion": "S20260621_E20260926_TS20260626144559",
   "region": "Florida",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Pompano Beach, Florida",
+    "Hollywood, Florida",
+    "Fort Lauderdale, Florida",
+    "Lauderhill, Florida",
+    "Plantation, Florida",
+    "Tamarac, Florida",
+    "West Hollywood, Florida",
+    "Sunrise, Florida",
+    "Coconut Creek, Florida",
+    "Miramar, Florida"
+  ]
 }

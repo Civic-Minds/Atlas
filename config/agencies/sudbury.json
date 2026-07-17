@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-737/latest.zip",
   "lastFeedExpiry": "20260821",
   "lastFeedVersion": "1/20260609 12:48:23/20260613 04:00:00",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Greater Sudbury, Ontario"
+  ]
 }

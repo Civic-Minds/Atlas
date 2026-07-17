@@ -16,5 +16,8 @@
   "lastFeedExpiry": "20201205",
   "lastFeedVersion": "20200909",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.wrtaonline.com/"
+  "websiteUrl": "http://www.wrtaonline.com/",
+  "cities": [
+    "Youngstown, Ohio"
+  ]
 }

@@ -16,5 +16,10 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40063/latest.zip",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Melbourne, Florida",
+    "Palm Bay, Florida",
+    "Alafaya, Florida"
+  ]
 }

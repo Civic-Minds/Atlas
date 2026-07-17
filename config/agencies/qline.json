@@ -10,5 +10,8 @@
   "lastFeedExpiry": "20251231",
   "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://qlinedetroit.com/"
+  "websiteUrl": "https://qlinedetroit.com/",
+  "cities": [
+    "Detroit, Michigan"
+  ]
 }

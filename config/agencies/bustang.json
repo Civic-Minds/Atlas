@@ -15,5 +15,15 @@
   ],
   "lastFeedExpiry": "20260926",
   "lastFeedVersion": "Jun26-36807-13-20-20260704-040323",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Denver, Colorado",
+    "Colorado Springs, Colorado",
+    "Loveland, Colorado",
+    "Fort Collins, Colorado",
+    "Longmont, Colorado",
+    "Lakewood, Colorado",
+    "Boulder, Colorado",
+    "Centennial, Colorado"
+  ]
 }

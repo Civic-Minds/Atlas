@@ -10,5 +10,12 @@
   "region": "California",
   "lastFeedExpiry": "20261001",
   "lastFeedVersion": "UTC: 18-Feb-2026 15:22",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Tulare, California",
+    "Visalia, California",
+    "Porterville, California",
+    "Delano, California",
+    "Fresno, California"
+  ]
 }

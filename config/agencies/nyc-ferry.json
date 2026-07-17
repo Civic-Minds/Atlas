@@ -16,5 +16,17 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260707",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "South Ozone Park, New York",
+    "Sheepshead Bay, New York",
+    "East Village, New York",
+    "Canarsie, New York",
+    "Financial District, New York",
+    "Chinatown, New York",
+    "Astoria, New York",
+    "Sunset Park, New York",
+    "Parkchester, New York",
+    "Park Slope, New York"
+  ]
 }

@@ -9,5 +9,8 @@
   "lastFeedExpiry": "20261230",
   "lastFeedVersion": "No deviations",
   "region": "Arizona",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Flagstaff, Arizona"
+  ]
 }

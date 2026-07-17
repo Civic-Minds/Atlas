@@ -16,5 +16,8 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-iowa-sioux-city-transit-system-gtfs-191.zip?alt=media",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 09-Jun-2026 21:02",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "Sioux City, Iowa"
+  ]
 }

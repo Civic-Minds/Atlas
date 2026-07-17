@@ -9,5 +9,11 @@
   "lastFeedExpiry": "20270609",
   "lastFeedVersion": "457",
   "region": "Idaho",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Boise, Idaho",
+    "Meridian, Idaho",
+    "Nampa, Idaho",
+    "Caldwell, Idaho"
+  ]
 }

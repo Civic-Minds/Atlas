@@ -9,5 +9,11 @@
   "lastFeedExpiry": "20260815",
   "lastFeedVersion": "2606.2",
   "region": "Florida",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Tampa, Florida",
+    "Town 'n' Country, Florida",
+    "Brandon, Florida",
+    "Riverview, Florida"
+  ]
 }

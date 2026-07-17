@@ -17,5 +17,8 @@
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.fasttransit.org/"
+  "websiteUrl": "http://www.fasttransit.org/",
+  "cities": [
+    "Fairfield, California"
+  ]
 }

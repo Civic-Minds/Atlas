@@ -16,5 +16,8 @@
   "lastFeedExpiry": "20251005",
   "lastFeedVersion": "Updated: Aug 25, 2025, 10:00 AM",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.southportland.org/departments/bus-transportation/"
+  "websiteUrl": "http://www.southportland.org/departments/bus-transportation/",
+  "cities": [
+    "Portland, Maine"
+  ]
 }

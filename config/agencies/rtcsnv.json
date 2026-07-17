@@ -9,5 +9,14 @@
   "lastFeedExpiry": "20260822",
   "lastFeedVersion": "October 2025_20260302",
   "region": "Nevada",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Las Vegas, Nevada",
+    "Spring Valley, Nevada",
+    "Paradise, Nevada",
+    "North Las Vegas, Nevada",
+    "Sunrise Manor, Nevada",
+    "Henderson, Nevada",
+    "Enterprise, Nevada"
+  ]
 }

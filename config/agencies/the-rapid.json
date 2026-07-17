@@ -9,5 +9,10 @@
   "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
   "lastFeedExpiry": "20260830",
   "lastFeedVersion": "20260604",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Grand Rapids, Michigan",
+    "Wyoming, Michigan",
+    "Kentwood, Michigan"
+  ]
 }

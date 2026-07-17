@@ -10,5 +10,9 @@
   "lastFeedExpiry": "20260906",
   "lastFeedVersion": "AprJun26_Merged",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-rochester-genesee-regional-transportation-authority-rgrta-gtfs-533.zip?alt=media",
-  "lastRefreshedAt": "2026-07-08"
+  "lastRefreshedAt": "2026-07-08",
+  "cities": [
+    "Rochester, New York",
+    "Irondequoit, New York"
+  ]
 }

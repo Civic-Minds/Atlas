@@ -16,5 +16,10 @@
   "lastFeedExpiry": "20260829",
   "lastFeedVersion": "260623_1347",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-edmonton-transit-system-gtfs-714.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Edmonton, Alberta",
+    "St. Albert, Alberta",
+    "Sherwood Park, Alberta"
+  ]
 }

@@ -16,5 +16,10 @@
   "lastFeedExpiry": "20211231",
   "lastFeedVersion": "20210606",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.kitsaptransit.com"
+  "websiteUrl": "http://www.kitsaptransit.com",
+  "cities": [
+    "Seattle, Washington",
+    "Burien, Washington",
+    "Shoreline, Washington"
+  ]
 }

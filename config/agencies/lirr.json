@@ -15,5 +15,17 @@
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
   "lastFeedExpiry": null,
   "lastFeedVersion": "GO201_26",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Hempstead, New York",
+    "Brentwood, New York",
+    "Levittown, New York",
+    "Bayside, New York",
+    "Queens Village, New York",
+    "South Ozone Park, New York",
+    "Jamaica, New York",
+    "New Rochelle, New York",
+    "East Village, New York",
+    "Corona, New York"
+  ]
 }

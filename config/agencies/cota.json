@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://www.cota.com/data/cota.gtfs.zip",
   "lastFeedExpiry": "20260906",
   "lastFeedVersion": "2026-MAY-04-BB_20260630",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Columbus, Ohio"
+  ]
 }

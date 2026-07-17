@@ -16,5 +16,12 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Gatineau, Quebec",
+    "Aylmer, Quebec",
+    "Hull, Quebec",
+    "Orléans, Ontario",
+    "Ottawa, Ontario"
+  ]
 }

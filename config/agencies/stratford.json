@@ -19,5 +19,8 @@
     "LOS"
   ],
   "overrideNote": "The \"Lights On Stratford\" shuttle is a seasonal hop-on hop-off route that only runs mid-December to mid-January, but it was showing up on the map year-round. We've hidden it until the transit agency fixes their schedule data.",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Kitchener, Ontario"
+  ]
 }

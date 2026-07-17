@@ -16,5 +16,9 @@
   "lastFeedExpiry": "20230819",
   "lastFeedVersion": "APRIL 2023_20230317",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.tulsatransit.org"
+  "websiteUrl": "http://www.tulsatransit.org",
+  "cities": [
+    "Tulsa, Oklahoma",
+    "Broken Arrow, Oklahoma"
+  ]
 }

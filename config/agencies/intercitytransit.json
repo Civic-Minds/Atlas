@@ -15,5 +15,9 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-intercity-transit-gtfs-266.zip?alt=media",
   "lastFeedExpiry": "20260912",
   "lastFeedVersion": "20260602",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Olympia, Washington",
+    "Lakewood, Washington"
+  ]
 }

@@ -9,5 +9,12 @@
   "lastFeedExpiry": "20260926",
   "lastFeedVersion": "S1000079",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Leesburg, Virginia",
+    "Reston, Virginia",
+    "Centreville, Virginia",
+    "Washington, District of Columbia",
+    "Downtown DC, District of Columbia"
+  ]
 }

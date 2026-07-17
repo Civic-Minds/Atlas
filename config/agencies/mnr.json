@@ -15,5 +15,17 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-524/mdb-524-202607030002/mdb-524-202607030002.zip",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Greenburgh, New York",
+    "Danbury, Connecticut",
+    "White Plains, New York",
+    "Stamford, Connecticut",
+    "Mount Vernon, New York",
+    "North Stamford, Connecticut",
+    "Fordham, New York",
+    "Yonkers, New York",
+    "East Norwalk, Connecticut",
+    "Kings Bridge, New York"
+  ]
 }

@@ -11,5 +11,17 @@
   "lastFeedVersion": "Summer 2026, 2026-06-26T19:57:52+00:00, version D",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Dorchester, Massachusetts",
+    "Brookline, Massachusetts",
+    "Quincy, Massachusetts",
+    "Medford, Massachusetts",
+    "Malden, Massachusetts",
+    "Lynn, Massachusetts",
+    "Waltham, Massachusetts",
+    "Revere, Massachusetts",
+    "Newton, Massachusetts",
+    "Cambridge, Massachusetts"
+  ]
 }

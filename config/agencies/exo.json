@@ -17,5 +17,17 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Pierrefonds, Quebec",
+    "Notre-Dame-de-Grâce, Quebec",
+    "Saint-Hubert, Quebec",
+    "Pierrefonds-Roxboro, Quebec",
+    "Saint-Laurent, Quebec",
+    "Saint-Louis-de-Terrebonne, Quebec",
+    "Laval, Quebec",
+    "Ahuntsic-Cartierville, Quebec",
+    "Verdun, Quebec",
+    "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec"
+  ]
 }

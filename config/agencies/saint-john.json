@@ -15,5 +15,8 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-saint-john-transit-gtfs-2131.zip?alt=media",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "a5193e57-6986-42e9-9310-bf35d76fe078",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Saint John, New Brunswick"
+  ]
 }

@@ -15,5 +15,17 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-509/mdb-509-202607010038/mdb-509-202607010038.zip",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Plainfield, New Jersey",
+    "Paterson, New Jersey",
+    "East Orange, New Jersey",
+    "Newark, New Jersey",
+    "Passaic, New Jersey",
+    "Parsippany, New Jersey",
+    "Cherry Hill, New Jersey",
+    "Middletown, New Jersey",
+    "New Brunswick, New Jersey",
+    "Union, New Jersey"
+  ]
 }

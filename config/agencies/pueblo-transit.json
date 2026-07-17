@@ -9,5 +9,8 @@
   "region": "Colorado",
   "lastFeedExpiry": "20270301",
   "lastFeedVersion": "UTC: 24-Apr-2026 17:32",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Pueblo, Colorado"
+  ]
 }

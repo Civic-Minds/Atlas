@@ -15,5 +15,8 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip",
   "lastFeedExpiry": "20211231",
   "lastFeedVersion": "UTC: 22-Nov-2021 17:16",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "Bakersfield, California"
+  ]
 }

@@ -17,5 +17,16 @@
   "lastFeedVersion": "202606181332",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-longueuil-gtfs-751.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Longueuil, Quebec",
+    "Saint-Hubert, Quebec",
+    "Le Vieux-Longueuil, Quebec",
+    "Brossard, Quebec",
+    "Mercier–Hochelaga-Maisonneuve, Quebec",
+    "Ville-Marie, Quebec",
+    "Le Plateau-Mont-Royal, Quebec",
+    "Saint-Léonard, Quebec",
+    "Verdun, Quebec"
+  ]
 }

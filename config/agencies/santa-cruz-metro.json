@@ -13,5 +13,11 @@
   "feedUrl": "https://developer.scmetro.org/gtfs.zip",
   "lastFeedExpiry": "20260909",
   "lastFeedVersion": "S1000116",
-  "lastRefreshedAt": "2026-07-14"
+  "lastRefreshedAt": "2026-07-14",
+  "cities": [
+    "Santa Cruz, California",
+    "Watsonville, California",
+    "San Jose, California",
+    "Cupertino, California"
+  ]
 }

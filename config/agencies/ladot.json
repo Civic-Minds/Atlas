@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,45-5/15/2026 437A changes,47-CE 423 Changes v3,183-Downtown DASH eff 12-20-2025,183-Downtown DASH eff 7-11-2026",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Los Angeles, California",
+    "Florence-Graham, California",
+    "Koreatown, California",
+    "Mid-City, California",
+    "Hollywood, California",
+    "Van Nuys, California",
+    "Boyle Heights, California",
+    "San Pedro, California",
+    "North Hills, California",
+    "North Hollywood, California"
+  ]
 }

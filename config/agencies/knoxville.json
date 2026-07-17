@@ -10,5 +10,8 @@
   "region": "Tennessee",
   "lastFeedExpiry": "",
   "lastFeedVersion": "MARCH 3/14",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Knoxville, Tennessee"
+  ]
 }

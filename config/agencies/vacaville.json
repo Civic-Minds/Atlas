@@ -17,5 +17,8 @@
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "2.2.26",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://citycoach.com/"
+  "websiteUrl": "https://citycoach.com/",
+  "cities": [
+    "Vacaville, California"
+  ]
 }

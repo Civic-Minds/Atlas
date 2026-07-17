@@ -15,5 +15,17 @@
   "region": "New York",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "gtfs_bx_20260611T155333Z",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Parkchester, New York",
+    "Fordham, New York",
+    "Mott Haven, New York",
+    "The Bronx, New York",
+    "Wakefield, New York",
+    "Kings Bridge, New York",
+    "Washington Heights, New York",
+    "Harlem, New York",
+    "Yonkers, New York",
+    "Morningside Heights, New York"
+  ]
 }

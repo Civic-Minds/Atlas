@@ -9,5 +9,12 @@
   "lastFeedExpiry": "20260828",
   "lastFeedVersion": null,
   "region": "Rhode Island",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Warwick, Rhode Island",
+    "Providence, Rhode Island",
+    "Pawtucket, Rhode Island",
+    "Cranston, Rhode Island",
+    "Fall River, Massachusetts"
+  ]
 }

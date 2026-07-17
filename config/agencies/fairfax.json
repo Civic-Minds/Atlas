@@ -15,5 +15,15 @@
   "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
   "lastFeedExpiry": "20280930",
   "lastFeedVersion": "S1000208",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Reston, Virginia",
+    "Alexandria, Virginia",
+    "Arlington, Virginia",
+    "Centreville, Virginia",
+    "Dale City, Virginia",
+    "Bethesda, Maryland",
+    "Washington, District of Columbia",
+    "Downtown DC, District of Columbia"
+  ]
 }

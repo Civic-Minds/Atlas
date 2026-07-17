@@ -167,7 +167,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;
-      return a.name.toLowerCase().includes(q) || a.slug.includes(q);
+      return a.name.toLowerCase().includes(q)
+        || a.slug.includes(q)
+        || (a.cities ?? []).some(city => city.toLowerCase().includes(q));
     });
   }, [agencies, query, regionFilter, agencyFeatureFilter, liveBySlug, historyBySlug]);
 
@@ -404,7 +406,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const hasHistory = historyBySlug.has(a.slug);
                           const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
                           const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
-                          const { primary, secondary } = agencyDisplayParts(a.name);
+                          const { primary, secondary } = agencyDisplayParts(a.name, a.cities);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
                             <button

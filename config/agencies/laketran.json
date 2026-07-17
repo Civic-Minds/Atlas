@@ -10,5 +10,8 @@
   "lastFeedExpiry": "20260927",
   "lastFeedVersion": "May 2026",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-laketran-gtfs-410.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Cleveland, Ohio"
+  ]
 }

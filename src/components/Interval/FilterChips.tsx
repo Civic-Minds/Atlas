@@ -67,13 +67,13 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
   const allGroups = useMemo(() => {
-    const groups: { name: string; slugs: string[]; region: string; loaded: boolean }[] = [];
+    const groups: { name: string; slugs: string[]; region: string; loaded: boolean; cities?: string[] }[] = [];
     for (const a of agencies) {
       const region = a.region ?? 'Other';
       const inView = bboxInViewport(a, bounds);
       const g = groups.find(x => x.name === a.name && x.region === region);
       if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
-      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: inView });
+      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: inView, cities: a.cities });
     }
     return groups;
   }, [agencies, bounds]);
@@ -81,7 +81,12 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
   const byRegion = useMemo(() => {
     const q = agencyQuery.toLowerCase();
     const source = (showAll || q) ? allGroups : allGroups.filter(g => g.loaded);
-    const filtered = q ? source.filter(g => g.name.toLowerCase().includes(q) || g.region.toLowerCase().includes(q)) : source;
+    const filtered = q
+      ? source.filter(g =>
+          g.name.toLowerCase().includes(q)
+          || g.region.toLowerCase().includes(q)
+          || (g.cities ?? []).some(city => city.toLowerCase().includes(q)))
+      : source;
     const map = new Map<string, typeof allGroups>();
     for (const g of filtered) {
       if (!map.has(g.region)) map.set(g.region, []);
@@ -137,7 +142,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
             <p className="px-2 pt-2 pb-0.5 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyDisplayParts(g.name);
+              const { primary, secondary } = agencyDisplayParts(g.name, g.cities);
               return (
                 <button
                   key={g.name}

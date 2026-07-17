@@ -92,7 +92,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={agencySections.elsewhere}
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => {
-        const { primary, secondary } = agencyDisplayParts(g.name);
+        const { primary, secondary } = agencyDisplayParts(g.name, g.cities);
         return (
           <RouteListRow
             shortName={primary}

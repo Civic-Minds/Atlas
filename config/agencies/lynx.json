@@ -9,5 +9,12 @@
   "lastFeedExpiry": "20260808",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Orlando, Florida",
+    "Pine Hills, Florida",
+    "Kissimmee, Florida",
+    "Alafaya, Florida",
+    "Poinciana, Florida"
+  ]
 }

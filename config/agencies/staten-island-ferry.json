@@ -16,5 +16,9 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-staten-island-ferry-gtfs-518.zip?alt=media",
   "lastFeedExpiry": "20280117",
   "lastFeedVersion": "18",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "Bayonne, New Jersey",
+    "Financial District, New York"
+  ]
 }

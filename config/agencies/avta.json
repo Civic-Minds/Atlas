@@ -10,5 +10,16 @@
   "lastFeedVersion": "20210503",
   "region": "California",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.avta.com"
+  "websiteUrl": "http://www.avta.com",
+  "cities": [
+    "Lancaster, California",
+    "Palmdale, California",
+    "Los Angeles, California",
+    "Mid-City, California",
+    "Canoga Park, California",
+    "Woodland Hills, California",
+    "Northridge, California",
+    "Santa Monica, California",
+    "Reseda, California"
+  ]
 }

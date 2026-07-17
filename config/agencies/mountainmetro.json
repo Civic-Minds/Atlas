@@ -10,5 +10,8 @@
   "lastFeedVersion": "2025 (1) Spring_20250421",
   "region": "Colorado",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.mmtransit.com"
+  "websiteUrl": "http://www.mmtransit.com",
+  "cities": [
+    "Colorado Springs, Colorado"
+  ]
 }

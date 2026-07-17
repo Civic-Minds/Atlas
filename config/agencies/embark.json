@@ -9,5 +9,12 @@
   "lastFeedExpiry": "20270702",
   "lastFeedVersion": "01/07/2026-22:30",
   "region": "Oklahoma",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Oklahoma City, Oklahoma",
+    "Edmond, Oklahoma",
+    "Norman, Oklahoma",
+    "Midwest City, Oklahoma",
+    "Moore, Oklahoma"
+  ]
 }

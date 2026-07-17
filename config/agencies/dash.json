@@ -15,5 +15,10 @@
   "feedUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
   "lastFeedExpiry": "20260831",
   "lastFeedVersion": "S1000234",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Alexandria, Virginia",
+    "Arlington, Virginia",
+    "Washington, District of Columbia"
+  ]
 }

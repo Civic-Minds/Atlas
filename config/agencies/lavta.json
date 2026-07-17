@@ -17,5 +17,10 @@
   "lastFeedExpiry": "20260430",
   "lastFeedVersion": "January_26_01_20260327",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://wheelsbus.com/"
+  "websiteUrl": "https://wheelsbus.com/",
+  "cities": [
+    "Livermore, California",
+    "Pleasanton, California",
+    "Dublin, California"
+  ]
 }

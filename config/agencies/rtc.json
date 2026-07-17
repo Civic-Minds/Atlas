@@ -15,5 +15,14 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-la-capitale-gtfs-757.zip?alt=media",
   "lastFeedExpiry": "20260821",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Sainte-Foy, Quebec",
+    "Les Rivières, Quebec",
+    "La Haute-Saint-Charles, Quebec",
+    "Beauport, Quebec",
+    "Charlesbourg, Quebec",
+    "La Cité-Limoilou, Quebec",
+    "Québec, Quebec"
+  ]
 }

@@ -10,5 +10,8 @@
   "region": "Louisiana",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260619",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Baton Rouge, Louisiana"
+  ]
 }

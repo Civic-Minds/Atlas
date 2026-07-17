@@ -10,5 +10,8 @@
   "region": "Wisconsin",
   "lastFeedExpiry": "20260815",
   "lastFeedVersion": "S070_202605050858",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Madison, Wisconsin"
+  ]
 }

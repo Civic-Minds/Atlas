@@ -15,5 +15,10 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media",
   "lastFeedExpiry": "20261001",
   "lastFeedVersion": "UTC: 06-May-2026 16:22",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Marysville, Washington",
+    "Everett, Washington",
+    "Bellingham, Washington"
+  ]
 }

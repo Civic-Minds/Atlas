@@ -9,5 +9,12 @@
   "lastFeedExpiry": "20260808",
   "lastFeedVersion": "2026-04 (Apr)_20260319",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Santa Monica, California",
+    "Mid-City, California",
+    "Inglewood, California",
+    "Los Angeles, California",
+    "Koreatown, California"
+  ]
 }

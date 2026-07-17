@@ -11,5 +11,8 @@
   "lastFeedExpiry": "20201231",
   "lastFeedVersion": "",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit"
+  "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
+  "cities": [
+    "Green Bay, Wisconsin"
+  ]
 }

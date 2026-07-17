@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260711",
   "lastFeedVersion": "FIFA2026IVOMS_20260612",
   "region": "Texas",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Houston, Texas",
+    "Alief, Texas",
+    "Missouri City, Texas",
+    "Pasadena, Texas",
+    "Spring, Texas",
+    "Pearland, Texas",
+    "Atascocita, Texas",
+    "Cypress, Texas",
+    "League City, Texas",
+    "Baytown, Texas"
+  ]
 }

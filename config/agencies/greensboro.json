@@ -11,5 +11,9 @@
   "lastFeedExpiry": "20250228",
   "lastFeedVersion": "2024-06-28T20:55:07Z",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180"
+  "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
+  "cities": [
+    "Greensboro, North Carolina",
+    "High Point, North Carolina"
+  ]
 }

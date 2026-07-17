@@ -15,5 +15,15 @@
   "region": "Virginia",
   "lastFeedExpiry": "20261024",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Norfolk, Virginia",
+    "Newport News, Virginia",
+    "Chesapeake, Virginia",
+    "Virginia Beach, Virginia",
+    "Hampton, Virginia",
+    "Portsmouth Heights, Virginia",
+    "East Hampton, Virginia",
+    "Portsmouth, Virginia"
+  ]
 }

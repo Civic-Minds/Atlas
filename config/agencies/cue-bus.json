@@ -9,5 +9,9 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Virginia",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Centreville, Virginia",
+    "Reston, Virginia"
+  ]
 }

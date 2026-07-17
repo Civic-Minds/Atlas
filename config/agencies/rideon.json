@@ -15,5 +15,14 @@
   "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "13-May 3, 2026_20260423",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Rockville, Maryland",
+    "Silver Spring, Maryland",
+    "Gaithersburg, Maryland",
+    "Bethesda, Maryland",
+    "Germantown, Maryland",
+    "Leesburg, Virginia",
+    "Reston, Virginia"
+  ]
 }

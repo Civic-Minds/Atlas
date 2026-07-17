@@ -9,5 +9,12 @@
   "lastFeedExpiry": "20260725",
   "lastFeedVersion": "20260531-20260725",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Stockton, California",
+    "Lodi, California",
+    "Manteca, California",
+    "Tracy, California",
+    "Modesto, California"
+  ]
 }

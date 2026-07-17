@@ -15,5 +15,10 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-whatcom-transportation-authority-gtfs-284.zip?alt=media",
   "lastFeedExpiry": "20260919",
   "lastFeedVersion": "S1000173-S1000174",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Bellingham, Washington",
+    "Abbotsford, British Columbia",
+    "South Surrey, British Columbia"
+  ]
 }

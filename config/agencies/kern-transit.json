@@ -16,5 +16,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-47/mdb-47-202607160119/mdb-47-202607160119.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "UTC: 15-Jul-2026 14:20",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-16",
+  "cities": [
+    "Lancaster, California",
+    "Bakersfield, California"
+  ]
 }

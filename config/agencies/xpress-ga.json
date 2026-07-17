@@ -10,5 +10,13 @@
   "lastFeedVersion": "S1000101",
   "region": "Georgia",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.xpressga.com/"
+  "websiteUrl": "http://www.xpressga.com/",
+  "cities": [
+    "Atlanta, Georgia",
+    "Stonecrest, Georgia",
+    "Marietta, Georgia",
+    "Johns Creek, Georgia",
+    "Smyrna, Georgia",
+    "South Fulton, Georgia"
+  ]
 }

@@ -16,5 +16,14 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-mateo-county-transit-district-samtrans-gtfs-49.zip?alt=media",
   "lastFeedExpiry": "20260801",
   "lastFeedVersion": "Initial",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "South San Francisco, California",
+    "San Mateo, California",
+    "Daly City, California",
+    "Redwood City, California",
+    "Palo Alto, California",
+    "San Francisco, California",
+    "Chinatown, California"
+  ]
 }

@@ -15,5 +15,17 @@
   "feedUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Silver Spring, Maryland",
+    "Baltimore, Maryland",
+    "Columbia, Maryland",
+    "Bowie, Maryland",
+    "Germantown, Maryland",
+    "Glen Burnie, Maryland",
+    "Gaithersburg, Maryland",
+    "Downtown DC, District of Columbia",
+    "Bethesda, Maryland",
+    "Rockville, Maryland"
+  ]
 }

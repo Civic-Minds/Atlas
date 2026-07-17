@@ -17,5 +17,8 @@
   "lastFeedVersion": "2025 May _20250801",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.guelphtransit.ca"
+  "websiteUrl": "http://www.guelphtransit.ca",
+  "cities": [
+    "Guelph, Ontario"
+  ]
 }

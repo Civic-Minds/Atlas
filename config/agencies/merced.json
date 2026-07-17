@@ -9,5 +9,9 @@
   "lastFeedExpiry": "",
   "lastFeedVersion": "PASAT 8 Route Update",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Merced, California",
+    "Turlock, California"
+  ]
 }

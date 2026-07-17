@@ -15,5 +15,8 @@
   "region": "Alabama",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "UTC: 08-Jan-2026 10:11",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Montgomery, Alabama"
+  ]
 }

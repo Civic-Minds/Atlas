@@ -89,4 +89,18 @@ describe('agencyDisplayParts', () => {
       primary: 'Kelowna Transit',
     });
   });
+
+  it('prefers a GTFS-derived cities list over name-parsing heuristics', () => {
+    expect(agencyDisplayParts('Metra', ['Chicago, Illinois'])).toEqual({
+      primary: 'Metra',
+      secondary: 'Chicago',
+    });
+    // Still skips the secondary when the derived city is already spelled out in the name.
+    expect(agencyDisplayParts('Calgary Transit', ['Calgary, Alberta'])).toEqual({
+      primary: 'Calgary Transit',
+    });
+    // No cities data (or empty) falls back to the name-parsing behavior untouched.
+    expect(agencyDisplayParts('Metra', [])).toEqual({ primary: 'Metra' });
+    expect(agencyDisplayParts('Metra')).toEqual({ primary: 'Metra' });
+  });
 });

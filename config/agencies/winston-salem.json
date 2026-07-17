@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://ridewsta.com/gtfs",
   "lastFeedExpiry": "",
   "lastFeedVersion": "Jan 4th 2026 GTFS",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Winston-Salem, North Carolina"
+  ]
 }

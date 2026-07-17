@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20261031",
   "lastFeedVersion": "20260701",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "West Covina, California",
+    "Pomona, California",
+    "Glendora, California",
+    "Hacienda Heights, California",
+    "Diamond Bar, California",
+    "El Monte, California",
+    "Baldwin Park, California",
+    "Arcadia, California",
+    "Los Angeles, California",
+    "Upland, California"
+  ]
 }

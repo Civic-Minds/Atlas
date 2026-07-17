@@ -15,5 +15,17 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-king-county-metro-gtfs-1330.zip?alt=media",
   "lastFeedExpiry": "20260828",
   "lastFeedVersion": "SPR26-160.3-MetroDayShuttleUpdate",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Seattle, Washington",
+    "Shoreline, Washington",
+    "Renton, Washington",
+    "Kirkland, Washington",
+    "Burien, Washington",
+    "Kent, Washington",
+    "Bellevue, Washington",
+    "Federal Way, Washington",
+    "Sammamish, Washington",
+    "Redmond, Washington"
+  ]
 }

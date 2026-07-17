@@ -16,5 +16,9 @@
   "lastFeedExpiry": "20221101",
   "lastFeedVersion": "UTC: 24-Feb-2022 22:06",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://goecat.com/"
+  "websiteUrl": "https://goecat.com/",
+  "cities": [
+    "Pensacola, Florida",
+    "East Pensacola Heights, Florida"
+  ]
 }

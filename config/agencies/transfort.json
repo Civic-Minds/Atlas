@@ -10,5 +10,11 @@
   "lastFeedVersion": "S1000201",
   "region": "Colorado",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.ridetransfort.com/"
+  "websiteUrl": "http://www.ridetransfort.com/",
+  "cities": [
+    "Fort Collins, Colorado",
+    "Loveland, Colorado",
+    "Longmont, Colorado",
+    "Boulder, Colorado"
+  ]
 }

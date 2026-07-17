@@ -16,5 +16,8 @@
   "lastFeedExpiry": "20240901",
   "lastFeedVersion": "UTC: 07-May-2024 20:44",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.talgov.com/starmetro"
+  "websiteUrl": "http://www.talgov.com/starmetro",
+  "cities": [
+    "Tallahassee, Florida"
+  ]
 }

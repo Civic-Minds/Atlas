@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260823",
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Long Beach, California",
+    "Lakewood, California",
+    "Paramount, California",
+    "Carson, California",
+    "Bellflower, California",
+    "Compton, California",
+    "Norwalk, California",
+    "Wilmington, California",
+    "Downey, California",
+    "Santa Monica, California"
+  ]
 }

@@ -17,5 +17,13 @@
   "lastFeedExpiry": "20241231",
   "lastFeedVersion": "20231226",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://acerail.com/"
+  "websiteUrl": "https://acerail.com/",
+  "cities": [
+    "Livermore, California",
+    "Fremont, California",
+    "Milpitas, California",
+    "Santa Clara, California",
+    "San Jose, California",
+    "Pleasanton, California"
+  ]
 }

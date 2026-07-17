@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4298/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260511",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Harrisburg, Pennsylvania"
+  ]
 }

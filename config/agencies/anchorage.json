@@ -10,5 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-225/latest.zip",
   "lastFeedExpiry": "20270531",
   "lastFeedVersion": "20260528",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Anchorage, Alaska"
+  ]
 }

@@ -17,5 +17,8 @@
   "lastFeedExpiry": "20250131",
   "lastFeedVersion": "UTC: 23-Feb-2024 22:27",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://www.riovistacity.com/deltabreeze/page/delta-breeze-transit-schedule"
+  "websiteUrl": "https://www.riovistacity.com/deltabreeze/page/delta-breeze-transit-schedule",
+  "cities": [
+    "Fairfield, California"
+  ]
 }

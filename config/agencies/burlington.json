@@ -16,5 +16,9 @@
   "lastFeedExpiry": "20260822",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-burlington-transit-gtfs-724.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Burlington, Ontario",
+    "Hamilton, Ontario"
+  ]
 }

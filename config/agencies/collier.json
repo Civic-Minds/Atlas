@@ -16,5 +16,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Bonita Springs, Florida",
+    "Lehigh Acres, Florida"
+  ]
 }

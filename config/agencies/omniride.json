@@ -9,5 +9,13 @@
   "lastFeedExpiry": "20260725",
   "lastFeedVersion": "2026 March_20260326",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Dale City, Virginia",
+    "Centreville, Virginia",
+    "Washington, District of Columbia",
+    "Downtown DC, District of Columbia",
+    "Arlington, Virginia",
+    "Alexandria, Virginia"
+  ]
 }

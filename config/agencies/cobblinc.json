@@ -9,5 +9,10 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260701",
   "region": "Georgia",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Smyrna, Georgia",
+    "Marietta, Georgia",
+    "Atlanta, Georgia"
+  ]
 }

@@ -15,5 +15,17 @@
   "region": "New York",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "gtfs_b_20260611T155327Z",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Bushwick, New York",
+    "Park Slope, New York",
+    "Flatlands, New York",
+    "Borough Park, New York",
+    "Brownsville, New York",
+    "Bensonhurst, New York",
+    "Sunset Park, New York",
+    "Flatbush, New York",
+    "Ridgewood, New York",
+    "East New York, New York"
+  ]
 }

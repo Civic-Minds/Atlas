@@ -9,5 +9,15 @@
   "lastFeedExpiry": "20260809",
   "lastFeedVersion": "20260622",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Eagan, Minnesota",
+    "Burnsville, Minnesota",
+    "Apple Valley, Minnesota",
+    "Eden Prairie, Minnesota",
+    "Minneapolis, Minnesota",
+    "Saint Paul, Minnesota",
+    "Bloomington, Minnesota",
+    "Lakeville, Minnesota"
+  ]
 }

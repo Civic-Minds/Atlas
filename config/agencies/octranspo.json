@@ -18,5 +18,16 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
   "lastFeedExpiry": "20260829",
   "lastFeedVersion": "S1000499-",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Nepean, Ontario",
+    "Orléans, Ontario",
+    "Kanata, Ontario",
+    "Ottawa, Ontario",
+    "Ottawa South, Ontario",
+    "Gloucester, Ontario",
+    "Aylmer, Quebec",
+    "Hull, Quebec",
+    "Gatineau, Quebec"
+  ]
 }

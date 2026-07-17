@@ -19,5 +19,17 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
   "lastFeedExpiry": "20260801",
   "lastFeedVersion": "v202606282",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Havertown, Pennsylvania",
+    "Philadelphia, Pennsylvania",
+    "Abington, Pennsylvania",
+    "Center City, Pennsylvania",
+    "Bensalem, Pennsylvania",
+    "Wilmington, Delaware",
+    "Levittown, Pennsylvania",
+    "Cherry Hill, New Jersey",
+    "Camden, New Jersey",
+    "Reading, Pennsylvania"
+  ]
 }

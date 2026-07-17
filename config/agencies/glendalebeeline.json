@@ -9,5 +9,10 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Glendale, California",
+    "Burbank, California",
+    "Pasadena, California"
+  ]
 }

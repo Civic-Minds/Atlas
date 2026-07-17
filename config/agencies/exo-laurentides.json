@@ -17,5 +17,14 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Saint-Louis-de-Terrebonne, Quebec",
+    "Saint-Jérôme, Quebec",
+    "Pierrefonds-Roxboro, Quebec",
+    "Pierrefonds, Quebec",
+    "Chomedey, Quebec",
+    "Terrebonne, Quebec",
+    "Laval, Quebec"
+  ]
 }

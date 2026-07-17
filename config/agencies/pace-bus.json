@@ -9,5 +9,17 @@
   "lastFeedExpiry": "20260829",
   "lastFeedVersion": "20260531",
   "region": "Illinois",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Waukegan, Illinois",
+    "Des Plaines, Illinois",
+    "Skokie, Illinois",
+    "Berwyn, Illinois",
+    "Joliet, Illinois",
+    "Oak Lawn, Illinois",
+    "Elgin, Illinois",
+    "Oak Park, Illinois",
+    "Tinley Park, Illinois",
+    "Wheaton, Illinois"
+  ]
 }

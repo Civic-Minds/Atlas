@@ -16,5 +16,17 @@
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "2026.06.28_June_20260611",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-york-region-transit-gtfs-728.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Vaughan, Ontario",
+    "Richmond Hill, Ontario",
+    "Markham, Ontario",
+    "Newmarket, Ontario",
+    "Willowdale East, Ontario",
+    "Aurora, Ontario",
+    "Barrie, Ontario",
+    "Willowdale, Ontario",
+    "Etobicoke, Ontario",
+    "Pickering, Ontario"
+  ]
 }

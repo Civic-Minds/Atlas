@@ -12,5 +12,17 @@
   "lastRefreshedAt": "2026-07-16",
   "supplementalFeedUrls": [
     "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
+  ],
+  "cities": [
+    "Los Angeles, California",
+    "Koreatown, California",
+    "Mid-City, California",
+    "Inglewood, California",
+    "Florence-Graham, California",
+    "Hollywood, California",
+    "Glendale, California",
+    "Pasadena, California",
+    "North Hills, California",
+    "North Hollywood, California"
   ]
 }

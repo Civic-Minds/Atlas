@@ -15,5 +15,9 @@
   "region": "Louisiana",
   "lastFeedExpiry": "20260802",
   "lastFeedVersion": "20260428",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Bossier City, Louisiana",
+    "Shreveport, Louisiana"
+  ]
 }

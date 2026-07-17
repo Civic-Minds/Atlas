@@ -20,5 +20,17 @@
   "lastFeedExpiry": "20241221",
   "lastFeedVersion": "S1000219",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://www.wmata.com"
+  "websiteUrl": "https://www.wmata.com",
+  "cities": [
+    "Downtown DC, District of Columbia",
+    "Silver Spring, Maryland",
+    "Arlington, Virginia",
+    "Alexandria, Virginia",
+    "Bowie, Maryland",
+    "Washington, District of Columbia",
+    "Bethesda, Maryland",
+    "Rockville, Maryland",
+    "Centreville, Virginia",
+    "Reston, Virginia"
+  ]
 }

@@ -15,5 +15,10 @@
   "region": "Florida",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Sarasota, Florida",
+    "North Port, Florida",
+    "Bradenton, Florida"
+  ]
 }

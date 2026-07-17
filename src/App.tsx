@@ -52,6 +52,8 @@ export interface Agency {
   fareUrl?: string;
   websiteUrl?: string;
   searchAliases?: string[];
+  /** Cities the agency serves, ranked by stop density — derived from GTFS stops, not hand-curated. First entry is the primary/display city. */
+  cities?: string[];
   // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
   feedUrl?: string | null;
   mdbFeedUrl?: string;

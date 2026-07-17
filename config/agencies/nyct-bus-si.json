@@ -15,5 +15,17 @@
   "region": "New York",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "gtfs_si_20260611T155316Z",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Staten Island, New York",
+    "Bayonne, New Jersey",
+    "Perth Amboy, New Jersey",
+    "Bensonhurst, New York",
+    "Elizabeth, New Jersey",
+    "East Village, New York",
+    "Sunset Park, New York",
+    "Financial District, New York",
+    "New York City, New York",
+    "Manhattan, New York"
+  ]
 }

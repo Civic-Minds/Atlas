@@ -9,5 +9,8 @@
   "feedUrl": "https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip",
   "lastFeedExpiry": "20260829",
   "lastFeedVersion": "S1000149",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Red Deer, Alberta"
+  ]
 }

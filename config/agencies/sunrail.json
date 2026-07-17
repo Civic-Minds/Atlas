@@ -9,5 +9,11 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Orlando, Florida",
+    "Kissimmee, Florida",
+    "Sanford, Florida",
+    "Deltona, Florida"
+  ]
 }

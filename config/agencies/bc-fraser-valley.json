@@ -10,5 +10,12 @@
   "lastFeedExpiry": "20260627",
   "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "https://www.bctransit.com/"
+  "websiteUrl": "https://www.bctransit.com/",
+  "cities": [
+    "Abbotsford, British Columbia",
+    "Chilliwack, British Columbia",
+    "Langley, British Columbia",
+    "Burnaby, British Columbia",
+    "New Westminster, British Columbia"
+  ]
 }

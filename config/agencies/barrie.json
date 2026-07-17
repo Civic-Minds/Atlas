@@ -16,5 +16,8 @@
   "lastFeedExpiry": "20261031",
   "lastFeedVersion": "20260628",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-barrie-transit-gtfs-3.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Barrie, Ontario"
+  ]
 }

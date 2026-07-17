@@ -9,5 +9,12 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "Memphis, Tennessee",
+    "New South Memphis, Tennessee",
+    "Bartlett, Tennessee",
+    "Southaven, Mississippi",
+    "Cordova, Tennessee"
+  ]
 }

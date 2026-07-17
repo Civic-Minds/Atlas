@@ -10,5 +10,17 @@
   "lastFeedExpiry": "20360501",
   "lastFeedVersion": "20260505",
   "region": "California",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Pomona, California",
+    "San Bernardino, California",
+    "North Hollywood, California",
+    "Redlands, California",
+    "Santa Clarita, California",
+    "Upland, California",
+    "Riverside, California",
+    "Orange, California",
+    "Laguna Niguel, California",
+    "Corona, California"
+  ]
 }

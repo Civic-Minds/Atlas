@@ -17,5 +17,17 @@
   "lastFeedExpiry": "20240302",
   "lastFeedVersion": "S1000222",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://www.actransit.org"
+  "websiteUrl": "http://www.actransit.org",
+  "cities": [
+    "Berkeley, California",
+    "Oakland, California",
+    "San Leandro, California",
+    "Richmond, California",
+    "Alameda, California",
+    "Fremont, California",
+    "Hayward, California",
+    "Union City, California",
+    "Castro Valley, California",
+    "Milpitas, California"
+  ]
 }

@@ -17,5 +17,8 @@
   "lastFeedExpiry": "20230630",
   "lastFeedVersion": "UTC: 01-Dec-2022 01:48",
   "lastRefreshedAt": "2026-07-13",
-  "websiteUrl": "http://cityofpetaluma.net/pubworks/transit-sub.html"
+  "websiteUrl": "http://cityofpetaluma.net/pubworks/transit-sub.html",
+  "cities": [
+    "Petaluma, California"
+  ]
 }

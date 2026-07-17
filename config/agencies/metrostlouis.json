@@ -9,5 +9,11 @@
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "region": "Missouri",
-  "lastRefreshedAt": "2026-07-13"
+  "lastRefreshedAt": "2026-07-13",
+  "cities": [
+    "St. Louis, Missouri",
+    "Florissant, Missouri",
+    "Saint Charles, Missouri",
+    "Saint Peters, Missouri"
+  ]
 }

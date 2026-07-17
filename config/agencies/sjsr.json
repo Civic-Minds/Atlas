@@ -15,5 +15,9 @@
   "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "1778686364253",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Saint-Jean-sur-Richelieu, Quebec",
+    "Brossard, Quebec"
+  ]
 }

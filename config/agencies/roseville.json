@@ -16,5 +16,10 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-roseville-transit-gtfs-1067.zip?alt=media",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Roseville_April_2025-26",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "cities": [
+    "Roseville, California",
+    "Citrus Heights, California",
+    "Rocklin, California"
+  ]
 }
