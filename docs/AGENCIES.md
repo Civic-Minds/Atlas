@@ -49,13 +49,18 @@ Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while 
 | Halifax Transit | `halifax` | 1 | none | gtfs.halifax.ca |
 | SF Muni | `sfmta` | J, K, L, M, N, T | `MUNI_511_API_KEY` | api.511.org |
 
+### Configured but parked
+
+| Agency | Slug | Status | Notes |
+|--------|------|--------|-------|
+| LA Metro rail | `lacmta` | Parked | Rail routes are configured but waiting for the Swiftly credential to be restored before activation. |
+
 ### Keys In Hand — Not Yet Wired Up
 
 | Agency | Slug | Key Type | Notes |
 |--------|------|----------|-------|
 | King County Metro | `kcm` | OBA key stored | Feed was returning 0 vehicles at peak — likely route_id prefix mismatch (`1_100512` etc.). Verify IDs against live feed before enabling. |
 | Sound Transit | `soundtransit` | Same OBA key | Route filter uses `40_512`, `40_545` — unverified. |
-| LA Metro rail | `lacmta` | Swiftly key needed | Rail routes are configured but deliberately parked until the Swiftly credential is restored. |
 
 ### Not Yet Requested
 
