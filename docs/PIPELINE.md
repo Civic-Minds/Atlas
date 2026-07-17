@@ -9,10 +9,10 @@ By standardizing feed schedules across different transit agencies, this pipeline
 ## Technical Methodology
 
 ### 1. Fetching the Feeds
-The pipeline downloads each agency's GTFS feed from its official source URL. If an official URL is rate-limited or unstable, the pipeline falls back to a stable mirror hosted on the [Mobility Database](https://mobilitydatabase.org/).
+The pipeline downloads each agency's configured primary GTFS feed. Depending on the agency, that may be an official feed, a provider-hosted mirror, a [Transitland](https://www.transit.land/) archive, or a [Mobility Database](https://mobilitydatabase.org/) dataset. Some agencies also have a configured Mobility Database fallback when the primary feed fails.
 
 - **Update Frequency:** Feeds are checked and re-downloaded automatically every week.
-- **Mirroring:** We use Mobility Database mirrors for agencies with unstable feeds to ensure the weekly refresh is reliable.
+- **Fallbacks:** The refresh process uses `mdbFeedUrl` only when the configured `feedUrl` fails; it can also merge explicitly configured supplemental feeds.
 
 ### 2. Active Schedule Detection
 GTFS feeds often package historical, current, and future service periods together. The pipeline checks the calendar dates inside the feed and programmatically determines which schedule is currently active.
@@ -23,8 +23,8 @@ GTFS feeds often package historical, current, and future service periods togethe
 ### 3. Route Shape Selection
 Transit routes often have multiple routing variants, such as branches, short-turns, or trips to the garage. To keep the map clean, the pipeline isolates two specific shapes for each route:
 
-- **Display Shape:** The pipeline selects the shape variant with the longest geographical path to display on the map. This ensures the full extent of the route is visible.
-- **Headway Shape:** For counting departures, the pipeline selects the shape corresponding to the most common trip pattern (the trunk line). This prevents short-turns from skewing the frequency calculation.
+- **Display Shape:** Geometry is selected per route and headsign, using the active trip patterns and their geographic lengths so the displayed feature represents the relevant service pattern.
+- **Analysis Shapes:** Departure analysis uses representative shape groups for bus routes so short-turns and branches do not silently distort the route's frequency. Rail routes and agency-specific overrides can use different shape rules.
 
 ### 4. Counting Departures
 Instead of trusting the optional headway fields in GTFS feeds (which agencies often leave blank or format incorrectly), Atlas counts departures directly from `stop_times.txt`.
@@ -40,15 +40,16 @@ A route's frequency is calculated as the median gap (headway) between consecutiv
 - **Stop-Level Headways:** Gaps are computed at every individual stop along a route. This powers the Corridors app, which displays frequency at the passenger's boarding stop rather than a generic route average.
 
 ### 6. Assigning Frequency Tiers
-Calculated median headways are mapped to qualitative frequency tiers. These tiers determine the colors and line weights shown on the map:
+Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The current surface thresholds are:
 
-| Tier | Headway Range | Description |
-|------|---------------|-------------|
-| Rapid | $\le 10$ min | High-frequency trunk |
-| Frequent | $11 - 15$ min | Turn-up-and-go service |
-| Regular | $16 - 30$ min | Standard scheduled service |
-| Moderate | $31 - 60$ min | Low-frequency service |
-| Infrequent | $> 60$ min | Minimal coverage service |
+- **≤10 minutes**
+- **≤15 minutes**
+- **≤20 minutes**
+- **≤30 minutes**
+- **≤60 minutes**
+- **Infrequent:** worse than 60 minutes or no finite tier qualifies
+
+These thresholds determine the colors and line weights shown on the map. Median headways remain useful as route and stop-level display metrics, but a median alone does not determine the tier.
 
 ### 7. Generating Output & Distribution
 To maintain a serverless architecture, the pipeline converts the processed data into static files:
@@ -66,11 +67,9 @@ The frontend client uses lazy loading to keep the application fast and responsiv
 
 ---
 
-## Edge Cases & Exceptions
+## Exceptions and limitations
 
-- **Day/Night Route Splits:** Some agencies publish separate route IDs for day and night variants of the same corridor. The pipeline merges these and selects the lower headway variant to show them as a single route on the map.
-- **Commuter Rail Shape Overrides:** For rail lines, the pipeline locks both the display and analytical shapes to the longest variant. This ensures that short-turns do not truncate the rail lines on the map.
-- **GTFS-Flex (On-Demand Transit):** We do not process demand-responsive transit zones yet because GTHA agencies do not publish GTFS-Flex data. This will be added once feeds adopt the spec.
+Feed-specific quirks and current data limitations are documented in [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md). The pipeline methodology stays here; the issue document records exceptions such as day/night route pairs, commuter-rail shape selection, missing shapes, and the current GTFS-Flex scope.
 
 ---
 

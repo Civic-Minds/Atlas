@@ -1,6 +1,6 @@
 # Known Issues
 
-Ongoing data gaps, feed quirks, and platform limitations that aren't tracked as Linear bugs because they're either outside our control or waiting on upstream changes.
+Ongoing data gaps, feed quirks, and platform limitations that are outside our control, waiting on upstream changes, or documented for follow-up rather than tracked as separate product bugs.
 
 ---
 
@@ -57,7 +57,7 @@ GO Rail routes have multiple shape variants (local vs express, different termina
 ## Platform Limitations
 
 ### GTFS-Flex / on-demand transit zones
-GTFS-Flex (the extension for demand-responsive transit — `locations.geojson`, stop_times booking windows) is not yet published by any GTHA agency. Atlas can't display on-demand service zones until agencies adopt the spec. Tracked in Linear as a future feature.
+GTFS-Flex (the extension for demand-responsive transit — `locations.geojson`, stop_times booking windows) is not currently processed into Atlas. Atlas can't display on-demand service zones until the pipeline and map support the spec.
 
 ### No amenity data
 GTFS contains almost no stop-level amenity data (shelters, accessibility, real-time displays). Any amenity overlay would require a separate data source (OpenStreetMap, agency open data portals, or manual digitization). No current plan to add this.

@@ -21,7 +21,7 @@ Transit frequency data lives in separate GTFS feeds across many agencies, with n
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS
 - **Mapping**: MapLibre GL JS, deck.gl, PMTiles
 - **Pipeline**: Node.js / tsx, JSZip, Papaparse
-- **Infrastructure**: Vercel (hosting + serverless API routes), Cloudflare R2 (GeoJSON, stop indexes, GTFS-RT archives), Cloudflare Workers (background GTFS-RT archiver), GitHub Actions (weekly refresh)
+- **Infrastructure**: Vercel (hosting + serverless API routes), Cloudflare R2 (public map artifacts and private GTFS-RT archives), Cloudflare Workers (background GTFS-RT archiver), GitHub Actions (weekly refresh)
 - **Testing**: Vitest
 
 ---
