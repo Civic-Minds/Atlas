@@ -186,7 +186,7 @@ export function liveVehicleRowLabel(
  *   "BC Transit (Kelowna)"              → BC Transit · Kelowna
  *   "MiWay (Mississauga)"               → MiWay · Mississauga
  *   "Calgary Transit"                   → Calgary Transit
- *   "Edmonton Transit Service (ETS)"    → ETS   (short brand; place already in legal name)
+ *   "Edmonton Transit Service (ETS)"    → Edmonton Transit Service  (fits; no need to abbreviate)
  *   "Bay Area Rapid Transit (BART)"     → BART
  *   "County Connection (CCCTA)"         → County Connection  (outer already short brand)
  *   "T3 Transit (PEI)"                  → T3 Transit · PEI
@@ -205,12 +205,16 @@ export function agencyDisplayParts(name: string): { primary: string; secondary?:
 
   // Brand / acronym in parens — never secondary
   if (!isPlaceAbbrev(inner) && looksLikeBrandCode(inner)) {
-    // Long legal outer + code → everyday callsign (BART, SFMTA, AC Transit)
+    // Long legal outer + code → everyday callsign (SFMTA, AC Transit)
     if (isLongLegalName(outer)) {
       return { primary: normalizeBrandCode(inner) };
     }
-    // Expanded "… Transit Service (ETS)" → ETS; keep short brands like County Connection
-    if (isPureAcronym(normalizeBrandCode(inner)) && looksLikeExpandedAgencyName(outer)) {
+    // A handful of acronyms are more widely recognized than their expansion
+    // even when the expansion would otherwise fit a list row (e.g. BART).
+    // Don't extend this list on a length-fit basis — most expanded names
+    // (Edmonton Transit Service, Sonoma County Transit, ...) should just
+    // show in full when they fit.
+    if (ALWAYS_ACRONYM_BRANDS.has(outer)) {
       return { primary: normalizeBrandCode(inner) };
     }
     return { primary: compactListPrimary(trimmed, outer) };
@@ -222,6 +226,9 @@ export function agencyDisplayParts(name: string): { primary: string; secondary?:
   }
   return { primary: compactListPrimary(trimmed, outer), secondary: inner };
 }
+
+/** Outer (expanded) names whose acronym is the better-known public brand regardless of length. */
+const ALWAYS_ACRONYM_BRANDS = new Set(['Bay Area Rapid Transit']);
 
 /** Prefer a known short form when the primary still overflows a narrow list row. */
 function compactListPrimary(fullName: string, primary: string): string {
@@ -235,16 +242,6 @@ function isLongLegalName(s: string): boolean {
   if (s.length >= 28) return true;
   return /\b(Authority|District|Agency|Commission|Municipal|Metropolitan|Department of Transportation)\b/i.test(s)
     && s.length >= 22;
-}
-
-function isPureAcronym(s: string): boolean {
-  return /^[A-Z]{2,8}$/.test(s.trim());
-}
-
-/** "Edmonton Transit Service", "Sonoma County Transit" — expanded form of a callsign. */
-function looksLikeExpandedAgencyName(s: string): boolean {
-  return s.length >= 16
-    && /\b(Transit|Transportation|Metro|Railway|Railroad|Shuttle)\b/i.test(s);
 }
 
 function normalizeBrandCode(s: string): string {

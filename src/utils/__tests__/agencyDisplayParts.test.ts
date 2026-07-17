@@ -48,8 +48,13 @@ describe('agencyDisplayParts', () => {
     ).toEqual({ primary: 'VTA' });
   });
 
-  it('prefers short callsign for expanded * Transit Service names', () => {
-    expect(agencyDisplayParts('Edmonton Transit Service (ETS)')).toEqual({ primary: 'ETS' });
+  it('keeps expanded * Transit Service names in full when they fit a list row', () => {
+    expect(agencyDisplayParts('Edmonton Transit Service (ETS)')).toEqual({
+      primary: 'Edmonton Transit Service',
+    });
+    expect(agencyDisplayParts('Sonoma County Transit (SCT)')).toEqual({
+      primary: 'Sonoma County Transit',
+    });
   });
 
   it('keeps short public brands; drops legal acronym only', () => {

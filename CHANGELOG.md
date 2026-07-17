@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Agencies list no longer needlessly abbreviates names that fit**: Edmonton Transit Service, Sonoma County Transit, Suffolk County Transit, and a handful of others were collapsing to a bare acronym (ETS, SCT, ...) even though the full name fit the row fine. Now only names that are genuinely too long, or a small set of acronyms more recognizable than their expansion (BART), get shortened.
 - **Map tile fetches now retry on rate-limit/server errors**: A single 429 or 5xx from R2 on any map tile request used to fail silently with no retry, which could blank out the whole map until a manual page reload. Now retries with backoff, matching how the backend pipeline already handles this.
 - **Fixed two agencies with no routes at all**: Dutchess County Public Transit and Fredericksburg Regional Transit had real, valid GTFS data but published zero route features. Dutchess: the reference-date picker preferred a near-empty 2-trip placeholder block over the real 585-trip dominant service just because it started later. Fredericksburg: route shape selection only considered Monday/Saturday/Sunday, silently dropping the agency's actual Tuesday–Friday-only service. Both now publish real routes (62 and 16 respectively).
 - **Routes/coverage badge now fades instead of disappearing instantly** when switching out of the map view (e.g. into Fares).
