@@ -13,5 +13,8 @@
     -73.7391
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media"
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260707",
+  "lastRefreshedAt": "2026-07-16"
 }

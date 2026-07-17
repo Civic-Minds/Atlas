@@ -12,5 +12,8 @@
     47.8881,
     -121.7323
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip"
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip",
+  "lastFeedExpiry": "20261101",
+  "lastFeedVersion": "UTC: 05-May-2026 18:13",
+  "lastRefreshedAt": "2026-07-16"
 }

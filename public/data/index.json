@@ -308,7 +308,7 @@
         "BLUE"
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/194",
-      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
+      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-15",
@@ -558,7 +558,7 @@
     },
     {
       "slug": "rtc",
-      "name": "RTC (Qu\u00e9bec)",
+      "name": "RTC (Québec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -618,7 +618,7 @@
     },
     {
       "slug": "stlevis",
-      "name": "STL\u00e9vis",
+      "name": "STLévis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -742,7 +742,7 @@
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'\u00eele)",
+      "name": "exo (La Presqu'île)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -784,7 +784,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain\u2013Roussillon)",
+      "name": "exo (Le Richelain–Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -2019,7 +2019,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
+      "name": "Société de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -3122,7 +3122,7 @@
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
       "bbox": [
-        34.0,
+        34,
         -119.5,
         34.4,
         -118.8
@@ -6047,7 +6047,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06"
     },
     {
@@ -7649,7 +7649,10 @@
         -73.7501
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-522/latest.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "staten-island-ferry",
@@ -7666,7 +7669,10 @@
         -73.9827
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-518/latest.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-staten-island-ferry-gtfs-518.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-staten-island-ferry-gtfs-518.zip?alt=media",
+      "lastFeedExpiry": "20280117",
+      "lastFeedVersion": "18",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "nyc-ferry",
@@ -7683,7 +7689,10 @@
         -73.7391
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260707",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "rioc-tram",
@@ -7700,7 +7709,10 @@
         -73.9129
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1109/latest.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-roosevelt-island-operating-corporation-tramway-rioc-tramway-gtfs-1109.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-roosevelt-island-operating-corporation-tramway-rioc-tramway-gtfs-1109.zip?alt=media",
+      "lastFeedExpiry": "20240101",
+      "lastFeedVersion": "20221128",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "guadalajara",
@@ -7717,7 +7729,10 @@
         -103.1204
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2366/latest.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "cheyenne",
@@ -7733,7 +7748,10 @@
         41.1944,
         -104.7193
       ],
-      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip"
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "rapid-city",
@@ -7749,7 +7767,10 @@
         44.1411,
         -103.1417
       ],
-      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13102/rts_corc_gtfs.zip"
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13102/rts_corc_gtfs.zip",
+      "lastFeedExpiry": "20280331",
+      "lastFeedVersion": "20250124",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "sioux-city",
@@ -7766,7 +7787,10 @@
         -96.2992
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-191/latest.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-iowa-sioux-city-transit-system-gtfs-191.zip?alt=media"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-iowa-sioux-city-transit-system-gtfs-191.zip?alt=media",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 09-Jun-2026 21:02",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "imperial-valley",
@@ -8068,7 +8092,10 @@
         47.6413,
         -122.3169
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip"
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip",
+      "lastFeedExpiry": "20240501",
+      "lastFeedVersion": "UTC: 28-Nov-2023 22:52",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "snoqualmie-valley",
@@ -8084,7 +8111,10 @@
         47.8881,
         -121.7323
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip"
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/snoqualmie-wa-us/snoqualmie-wa-us.zip",
+      "lastFeedExpiry": "20261101",
+      "lastFeedVersion": "UTC: 05-May-2026 18:13",
+      "lastRefreshedAt": "2026-07-16"
     },
     {
       "slug": "seattle-streetcar",
@@ -8101,7 +8131,8 @@
         -122.294
       ],
       "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
-      "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST."
+      "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST.",
+      "pmtilesPending": true
     }
   ]
 }

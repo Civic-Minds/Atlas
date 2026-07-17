@@ -12,5 +12,8 @@
     47.6413,
     -122.3169
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip"
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip",
+  "lastFeedExpiry": "20240501",
+  "lastFeedVersion": "UTC: 28-Nov-2023 22:52",
+  "lastRefreshedAt": "2026-07-16"
 }

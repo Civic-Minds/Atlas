@@ -78,7 +78,11 @@ async function main() {
           allRoutes.push(f);
         });
       } else if (!data) {
-        failedRouteFetches.push(`${slug}: ${url}`);
+        if (agency.pmtilesPending) {
+          console.warn(`  Skipping ${slug}: marked "pmtilesPending" (no route data published yet — excluded from fail-closed check, not from the map once it is).`);
+        } else {
+          failedRouteFetches.push(`${slug}: ${url}`);
+        }
       }
     }
 

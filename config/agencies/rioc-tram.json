@@ -13,5 +13,8 @@
     -73.9129
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1109/latest.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-roosevelt-island-operating-corporation-tramway-rioc-tramway-gtfs-1109.zip?alt=media"
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-roosevelt-island-operating-corporation-tramway-rioc-tramway-gtfs-1109.zip?alt=media",
+  "lastFeedExpiry": "20240101",
+  "lastFeedVersion": "20221128",
+  "lastRefreshedAt": "2026-07-16"
 }

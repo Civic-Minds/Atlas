@@ -13,5 +13,8 @@
     -96.2992
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-191/latest.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-iowa-sioux-city-transit-system-gtfs-191.zip?alt=media"
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-iowa-sioux-city-transit-system-gtfs-191.zip?alt=media",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 09-Jun-2026 21:02",
+  "lastRefreshedAt": "2026-07-16"
 }

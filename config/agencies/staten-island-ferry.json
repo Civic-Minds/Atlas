@@ -13,5 +13,8 @@
     -73.9827
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-518/latest.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-staten-island-ferry-gtfs-518.zip?alt=media"
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-staten-island-ferry-gtfs-518.zip?alt=media",
+  "lastFeedExpiry": "20280117",
+  "lastFeedVersion": "18",
+  "lastRefreshedAt": "2026-07-16"
 }

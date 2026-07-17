@@ -13,5 +13,8 @@
     -103.1204
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2366/latest.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media"
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-16"
 }

@@ -13,5 +13,8 @@
     -73.7501
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-522/latest.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media"
+  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-16"
 }

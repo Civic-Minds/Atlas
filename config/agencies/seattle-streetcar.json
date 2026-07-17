@@ -13,5 +13,6 @@
     -122.294
   ],
   "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
-  "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST."
+  "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST.",
+  "pmtilesPending": true
 }
