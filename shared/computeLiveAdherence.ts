@@ -32,12 +32,13 @@ export interface LiveAdherenceResult {
 
 async function fetchTripUpdates(
   url: string,
-  opts?: { apiKeyParam?: string; apiKeyHeader?: string },
+  opts?: { apiKeyParam?: string; apiKeyParamName?: string; apiKeyHeader?: string },
 ) {
   let finalUrl = url;
   const headers: Record<string, string> = {};
   if (opts?.apiKeyParam) {
-    finalUrl += (finalUrl.includes('?') ? '&' : '?') + `apikey=${encodeURIComponent(opts.apiKeyParam)}`;
+    const paramName = opts.apiKeyParamName ?? 'apikey';
+    finalUrl += (finalUrl.includes('?') ? '&' : '?') + `${paramName}=${encodeURIComponent(opts.apiKeyParam)}`;
   }
   if (opts?.apiKeyHeader) {
     headers['apikey'] = opts.apiKeyHeader;
@@ -90,8 +91,9 @@ export async function computeLiveAdherence(
   const scheduledHeadway = routeSidecar?.scheduledHeadwayMin ?? cfg.scheduledHeadwayMin;
 
   const apiKeyParam = cfg.apiKeyParamEnvVar ? process.env[cfg.apiKeyParamEnvVar] : undefined;
+  const apiKeyParamName = cfg.apiKeyParamName;
   const apiKeyHeader = cfg.apiKeyHeaderEnvVar ? process.env[cfg.apiKeyHeaderEnvVar] : undefined;
-  const feed = await fetchTripUpdates(cfg.tripUpdatesUrl, { apiKeyParam, apiKeyHeader });
+  const feed = await fetchTripUpdates(cfg.tripUpdatesUrl, { apiKeyParam, apiKeyParamName, apiKeyHeader });
   if (!feed?.entity) return null;
 
   const timestamp = new Date().toISOString();

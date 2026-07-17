@@ -90,7 +90,10 @@ export default async function handler(req: Request) {
   const headers: Record<string, string> = {
     'User-Agent': 'atlas-live-stop/1.0 (https://atlas-gamma-two.vercel.app)',
   };
-  if (apiKeyParam) url += (url.includes('?') ? '&' : '?') + `apikey=${encodeURIComponent(apiKeyParam)}`;
+  if (apiKeyParam) {
+    const paramName = cfg.apiKeyParamName ?? 'apikey';
+    url += (url.includes('?') ? '&' : '?') + `${paramName}=${encodeURIComponent(apiKeyParam)}`;
+  }
   if (apiKeyHeader) headers['apikey'] = apiKeyHeader;
 
   const routeIdToShortName = new Map<string, string>();
