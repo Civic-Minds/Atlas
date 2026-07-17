@@ -129,6 +129,14 @@ export function detectReferenceDate(
     // calendarDates midpoint to September while the real services run March–May),
     // the calendar-derived reference is already anchored in the correct early
     // window — do not override it.
+    //
+    // Require the added dates themselves to span less than a year: the Foothill
+    // pattern is a tight cluster of dates (e.g. all in April) whose midpoint is
+    // meaningful. A feed with recurring annual holiday exceptions (e.g. Dec 24/31
+    // recorded across 2023, 2024, and 2026) has no such cluster — its "midpoint"
+    // is an arbitrary date roughly halfway between the earliest and latest year,
+    // not a real service window, and trusting it pulled Emery Go-Round's
+    // reference date back a full year, excluding every currently-active trip.
     if (calendarDates && calendarDates.length > 0) {
         const added = calendarDates
             .filter(cd => cd.exception_type === '1')
@@ -139,11 +147,12 @@ export function detectReferenceDate(
             const last = added[added.length - 1];
             const fsy = parseInt(first.substring(0, 4)), fsm = parseInt(first.substring(4, 6)) - 1, fsd = parseInt(first.substring(6, 8));
             const fey = parseInt(last.substring(0, 4)), fem = parseInt(last.substring(4, 6)) - 1, fed = parseInt(last.substring(6, 8));
+            const addedSpanDays = (new Date(fey, fem, fed).getTime() - new Date(fsy, fsm, fsd).getTime()) / 86400000;
             const datesMid = new Date((new Date(fsy, fsm, fsd).getTime() + new Date(fey, fem, fed).getTime()) / 2);
             const calendarRefMs = mid.getTime();
             const datesMidMs = datesMid.getTime();
             const diffDays = Math.abs(calendarRefMs - datesMidMs) / 86400000;
-            if (diffDays > 90 && datesMidMs < calendarRefMs) {
+            if (diffDays > 90 && datesMidMs < calendarRefMs && addedSpanDays < 365) {
                 return `${datesMid.getFullYear()}${String(datesMid.getMonth() + 1).padStart(2, '0')}${String(datesMid.getDate()).padStart(2, '0')}`;
             }
         }
