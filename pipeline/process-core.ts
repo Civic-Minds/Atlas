@@ -128,7 +128,7 @@ export async function processGtfsBuffer(
       if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
     }
   }
-  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null }>();
+  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null }>();
   for (const trip of gtfs.trips ?? []) {
     const dayType = serviceIdToDayType.get(trip.service_id);
     if (!dayType) continue;
@@ -149,6 +149,7 @@ export async function processGtfsBuffer(
       dirId: String(trip.direction_id ?? '0'),
       dayType,
       headsign,
+      shapeId: trip.shape_id || null,
     });
   }
   // stopDepsByGroup["routeId::dirId::dayType"] → stopId → sorted departure minutes
@@ -156,6 +157,12 @@ export async function processGtfsBuffer(
   // Headsign-scoped deps for display trunk headways (RGRTA 21/22: combined trunk deps
   // from competing branches produced misleading "every 13–30 min" ranges).
   const stopDepsByHeadsignGroup = new Map<string, Map<string, number[]>>();
+  // Shape-scoped deps: some feeds (NRT 301/401) reuse one generic headsign across trips
+  // on genuinely different shapes (e.g. a short direct pattern and the return leg of a
+  // different, unrelated corridor that happens to also end near the same hub stop), so
+  // headsign alone doesn't separate them. Keying by the feature's own display shape_id
+  // catches this — two trips only pool together here if they trace the same physical path.
+  const stopDepsByShapeGroup = new Map<string, Map<string, number[]>>();
   // Track first visit per (trip_id, stop_id) to avoid double-counting loop routes
   // where the terminus appears at both the start and end of the same trip.
   const stopFirstVisit = new Map<string, Set<string>>();
@@ -165,6 +172,9 @@ export async function processGtfsBuffer(
   // emit two overlapping features per line. When duplicates exist, keep the lower headway
   // (more frequent / more trips active in the analysis window).
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
+  // Feature → the shapeId it was actually built from, so the per-stop headway
+  // resolution loop below can pool departures scoped to that exact physical path.
+  const featureShapeId = new Map<GeoJsonFeature, string>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
     // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
@@ -200,7 +210,7 @@ export async function processGtfsBuffer(
         (existing.properties.headway as number) <= newHeadway))
     ) continue;
 
-    dedupedFeatures.set(dedupeKey, {
+    const newFeature: GeoJsonFeature = {
       type: 'Feature',
       geometry: {
         type: 'LineString',
@@ -234,7 +244,9 @@ export async function processGtfsBuffer(
         headsign: resolveDisplayHeadsign(result.headsign, shortName, routeLongName)
           ?? routeDirToHeadsign.get(key) ?? null,
       },
-    });
+    };
+    dedupedFeatures.set(dedupeKey, newFeature);
+    featureShapeId.set(newFeature, shapeId);
   }
   const features = [...dedupedFeatures.values()];
 
@@ -315,6 +327,12 @@ export async function processGtfsBuffer(
               if (!hsMap) { hsMap = new Map(); stopDepsByHeadsignGroup.set(hsKey, hsMap); }
               pushDep(hsMap, st.stop_id, mins);
             }
+            if (grp.shapeId) {
+              const shKey = `${grp.shapeId}::${grp.dayType}`;
+              let shMap = stopDepsByShapeGroup.get(shKey);
+              if (!shMap) { shMap = new Map(); stopDepsByShapeGroup.set(shKey, shMap); }
+              pushDep(shMap, st.stop_id, mins);
+            }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             if (parentId && !visitSet.has(parentId)) {
               visitSet.add(parentId);
@@ -324,6 +342,12 @@ export async function processGtfsBuffer(
                 let hsMap = stopDepsByHeadsignGroup.get(hsKey);
                 if (!hsMap) { hsMap = new Map(); stopDepsByHeadsignGroup.set(hsKey, hsMap); }
                 pushDep(hsMap, parentId, mins);
+              }
+              if (grp.shapeId) {
+                const shKey = `${grp.shapeId}::${grp.dayType}`;
+                let shMap = stopDepsByShapeGroup.get(shKey);
+                if (!shMap) { shMap = new Map(); stopDepsByShapeGroup.set(shKey, shMap); }
+                pushDep(shMap, parentId, mins);
               }
             }
           }
@@ -405,7 +429,12 @@ export async function processGtfsBuffer(
     const headsignMap = featureHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`)
       : undefined;
-    const metricStopMap = headsignMap ?? stopMap;
+    // Shape-scoped is the most specific: prefer it whenever this feature's shape has its
+    // own departure history, since headsign text can be reused across genuinely different
+    // physical patterns (NRT 301/401 reuse one generic headsign for unrelated shapes).
+    const featureShape = featureShapeId.get(feature);
+    const shapeMap = featureShape ? stopDepsByShapeGroup.get(`${featureShape}::${day}`) : undefined;
+    const metricStopMap = shapeMap ?? headsignMap ?? stopMap;
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
