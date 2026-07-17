@@ -16,6 +16,7 @@ import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { Z_PANEL } from '../../styles';
 import { findPlaceByName } from '../../../shared/placeLookup';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
+import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -40,6 +41,18 @@ function buildServingStopMatchExpression(
     : [];
   if (stopIds.length === 0) return false;
   return ['any', ...stopIds.map(id => ['!=', ['get', id, ['get', 'stopHeadways']], null])];
+}
+
+/** Color route lines from the same effective headway metric used by filtering. */
+function buildEffectiveHeadwayColorExpression(period: TimePeriod): any {
+  const headway = tileEffectiveHeadwayExpr(period);
+  const expression: any[] = ['case'];
+  for (const tier of HEADWAY_TIERS) {
+    if (tier.max === Infinity) break;
+    expression.push(['<=', headway, tier.max], tier.color);
+  }
+  expression.push(HEADWAY_TIERS[HEADWAY_TIERS.length - 1].color);
+  return expression;
 }
 
 interface MapCanvasProps {
@@ -742,10 +755,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
 
     // Headway expression for zoom gate only (progressive reveal by zoom level).
-    const headwayExpr: any = ['case',
-      ['==', ['get', 'tier'], 'infrequent'], 9999,
-      ['coalesce', ['get', 'headway'], 9999]
-    ];
+    const headwayExpr: any = tileEffectiveHeadwayExpr(period);
 
     // Hide span (irregular) routes from the map when hideSpan is active
 
@@ -801,14 +811,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       if (fareView) {
         lineColorExpr = buildFareColorExpression();
       } else {
-        const lineColorMatch: any[] = ['match', ['get', 'tier']];
-        HEADWAY_TIERS.forEach(({ max, color }) => {
-          if (max !== Infinity) {
-            lineColorMatch.push(String(max), color);
-          }
-        });
-        lineColorMatch.push('#6b7280'); // fallback/default
-        lineColorExpr = lineColorMatch;
+        lineColorExpr = buildEffectiveHeadwayColorExpression(period);
       }
 
       map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);

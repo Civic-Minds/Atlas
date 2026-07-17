@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Frequency-filtered map lines now use the same headway metric for color and visibility**: routes that qualify through effective service data no longer retain a misleading slower tier color.
 - **Live control now uses the same light selected state as the rest of the interface**: the active pill no longer becomes a heavy dark block.
 - **Live vehicle markers are less dominant at city scale**: smaller dots and lighter outlines keep clusters readable without losing hover targets or selected-vehicle emphasis.
 - **Live and map-selection panels no longer overlap**: opening a selected route, stop, or agency card temporarily yields the Live overview panel's space.
