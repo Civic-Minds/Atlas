@@ -1,5 +1,5 @@
 import React from 'react';
-import { LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../styles';
+import { LIST_ROW, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../styles';
 
 interface RouteListRowProps {
   shortName: string;
@@ -9,6 +9,7 @@ interface RouteListRowProps {
   onHoverChange?: (hovered: boolean) => void;
   selected?: boolean;
   stacked?: boolean;
+  variant?: 'divided' | 'spaced';
   className?: string;
 }
 
@@ -20,6 +21,7 @@ export default function RouteListRow({
   onHoverChange,
   selected = false,
   stacked = false,
+  variant = 'divided',
   className
 }: RouteListRowProps) {
   return (
@@ -27,7 +29,7 @@ export default function RouteListRow({
       onClick={onClick}
       onMouseEnter={onHoverChange ? () => onHoverChange(true) : undefined}
       onMouseLeave={onHoverChange ? () => onHoverChange(false) : undefined}
-      className={`${LIST_ROW} ${stacked ? 'items-start' : ''} ${selected ? 'bg-[var(--accent-bg)]' : ''} ${className ?? ''}`}
+      className={`${variant === 'spaced' ? LIST_ROW_SPACED : LIST_ROW} ${stacked ? 'items-start' : ''} ${selected ? 'bg-[var(--accent-bg)]' : ''} ${className ?? ''}`}
     >
       {stacked ? (
         <div className="min-w-0 flex-1">

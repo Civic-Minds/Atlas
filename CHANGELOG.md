@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Shared panel rows now have one source of truth**: search and Live browsing lists use the same divider treatment, while card-style rows can explicitly use the shared spaced variant instead of copying one-off Tailwind overrides.
 - **Agency selections now open their cards in Live mode**: choosing an agency from the agency browser no longer closes the panel without showing the result.
 - **Sidebar panels now sit 12px below the search bar**: static and Live panels share the same tighter vertical rhythm.
 - **Live mode now filters the map to live-configured routes**: non-live static routes no longer clutter the live vehicle view, while live routes remain clickable.
