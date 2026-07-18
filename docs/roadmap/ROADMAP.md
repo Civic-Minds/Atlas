@@ -19,6 +19,6 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 
 International expansion planning lives in [Data § Expansion Planning](../DATA.md), not here — it's a coverage question, not a product-direction one.
 
-Early-stage experiment: [Factbook](./FACTBOOK.md) — turning the dataset into shareable data-driven stories and facts. Exploratory, not a settled direction yet.
+Ideas kicked around just for fun, no commitment: [Experiments](./EXPERIMENTS.md).
 
 [Back to Home](../../README.md)
