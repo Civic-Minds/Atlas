@@ -53,6 +53,43 @@ export function truncateAtImplausibleJump(points: [number, number][]): [number, 
 }
 
 /**
+ * Some feeds publish multiple points sharing the same shape_pt_sequence value —
+ * e.g. two distinct physical paths concatenated under one shape_id with
+ * independently-numbered, colliding sequences (Mi Transporte Guadalajara's
+ * T14B_r1, #244: 317 of 382 distinct sequence numbers appear twice, each
+ * pointing to a different location). Sorting by sequence alone interleaves
+ * both paths into a single zigzag. When a sequence number has multiple
+ * candidate points, keep whichever is spatially nearest the previously
+ * selected point, so the result stays on one continuous path. No effect on
+ * well-formed shapes, which never have duplicate sequence numbers to begin
+ * with — this only changes behavior for feeds with this specific defect.
+ */
+export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; lon: number }[]): [number, number][] {
+    const bySeq = new Map<number, { lat: number; lon: number }[]>();
+    for (const p of pts) {
+        const candidates = bySeq.get(p.seq) ?? [];
+        candidates.push(p);
+        bySeq.set(p.seq, candidates);
+    }
+
+    let previous: { lat: number; lon: number } | null = null;
+    const points: [number, number][] = [];
+    for (const seq of [...bySeq.keys()].sort((a, b) => a - b)) {
+        const candidates = bySeq.get(seq)!;
+        const selected = previous
+            ? candidates.reduce((best, candidate) => {
+                const bestDist = (best.lat - previous!.lat) ** 2 + (best.lon - previous!.lon) ** 2;
+                const candidateDist = (candidate.lat - previous!.lat) ** 2 + (candidate.lon - previous!.lon) ** 2;
+                return candidateDist < bestDist ? candidate : best;
+            })
+            : candidates[0];
+        points.push([selected.lat, selected.lon]);
+        previous = selected;
+    }
+    return points;
+}
+
+/**
  * Group raw shape point records into GtfsShape objects keyed by shape_id.
  */
 const groupShapes = (parsed: any[]): GtfsShape[] => {
@@ -71,11 +108,7 @@ const groupShapes = (parsed: any[]): GtfsShape[] => {
     }
     return Array.from(grouped.entries()).map(([id, pts]) => ({
         id,
-        points: truncateAtImplausibleJump(
-            pts
-                .sort((a, b) => a.seq - b.seq)
-                .map(p => [p.lat, p.lon] as [number, number]),
-        ),
+        points: truncateAtImplausibleJump(deinterleaveDuplicateSequences(pts)),
     }));
 };
 
