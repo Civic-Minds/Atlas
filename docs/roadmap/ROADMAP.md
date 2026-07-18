@@ -13,20 +13,10 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 
 ---
 
-## Factbook (proposed)
-
-[Explore the Atlas Factbook concept](./FACTBOOK.md): surfacing data-driven findings, service change stories, frequency realities, corridors, and AI-assisted narratives.
-
-## Strategy
-
-[Read the Atlas strategy](../STRATEGY.md): competitive landscape and long-term product positioning.
-
-## Research
-
-[Read the market research](../RESEARCH.md): agency pain points and problem statements informing Atlas’s direction.
-
-## International Expansion
-
-[Read the international expansion doc](../INTERNATIONAL.md): country-by-country findings on taking Atlas coverage beyond Canada/US — Mexico, UK, and France so far.
+### Reference & Research
+- **[Factbook](./FACTBOOK.md)** (proposed): data-driven findings, service change stories, frequency realities, AI-assisted narratives.
+- **[Strategy](../STRATEGY.md)**: competitive landscape and long-term product positioning.
+- **[Research](../RESEARCH.md)**: agency pain points and problem statements informing Atlas's direction.
+- **[International Expansion](../INTERNATIONAL.md)**: country-by-country findings on coverage beyond Canada/US — Mexico, UK, and France so far.
 
 [Back to Home](../../README.md)
