@@ -1,11 +1,18 @@
 #!/usr/bin/env npx tsx
 /**
  * process-gtfs.ts — add or update one agency from a local GTFS zip or remote URL.
- * Usage: npm run process -- <path/to/feed.zip | https://.../feed.zip> <slug> [Display Name] [lat,lon]
+ * Usage: npm run process -- <path/to/feed.zip | https://.../feed.zip> <slug> [Display Name] [lat,lon] [--dry-run]
  * Uploads the processed GeoJSON artifacts to R2.
  * Updates public/data/index.json with name/center + preserves feed source config.
  * Artifact URLs are derived (no longer stored per-agency in the index).
  * Requires R2_* creds in .env.local.
+ *
+ * --dry-run: process the feed exactly as normal, but write the resulting
+ * artifacts to tmp/process-preview/<slug>/ on local disk instead of
+ * uploading to R2, and don't touch public/data/index.json or
+ * config/agencies/<slug>.json. Lets you inspect real processed output
+ * (shapes, tiers, route counts) before committing to a live publish — no
+ * R2 credentials needed for this mode.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
@@ -25,13 +32,17 @@ import { todayUtcYmd } from './utils.js';
 
 config({ path: resolve('.env.local') });
 
-const input = process.argv[2];
-const slug = process.argv[3];
-const agencyName = process.argv[4] || slug;
-const centerArg = process.argv[5];
+const rawArgs = process.argv.slice(2);
+const dryRun = rawArgs.includes('--dry-run');
+const positional = rawArgs.filter(a => a !== '--dry-run');
+
+const input = positional[0];
+const slug = positional[1];
+const agencyName = positional[2] || slug;
+const centerArg = positional[3];
 
 if (!input || !slug) {
-  console.error('Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon]');
+  console.error('Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon] [--dry-run]');
   process.exit(1);
 }
 
@@ -40,7 +51,7 @@ function writeAgencySource(agency: Record<string, unknown>): void {
   writeFileSync(sourcePath, JSON.stringify(agency, null, 2) + '\n');
 }
 
-if (!process.env.R2_ACCESS_KEY_ID) {
+if (!dryRun && !process.env.R2_ACCESS_KEY_ID) {
   console.error('Missing R2 credentials. Add R2_* vars to .env.local');
   process.exit(1);
 }
@@ -129,6 +140,30 @@ async function main() {
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
+
+  if (dryRun) {
+    const previewDir = resolve('tmp/process-preview', slug);
+    mkdirSync(previewDir, { recursive: true });
+    const files: Record<string, string> = {
+      [`${slug}.json`]: geojson,
+      [`${slug}-stops.json`]: stopsJson,
+      [`${slug}-corridors.json`]: corridorsGeojson,
+      [`${slug}-trips.json`]: tripsJson,
+      [`${slug}-stops-meta.json`]: stopsMetaJson,
+    };
+    if (livePollingSidecar) {
+      files[`live-polling-${slug}.json`] = JSON.stringify(livePollingSidecar, null, 2);
+    }
+    for (const [name, content] of Object.entries(files)) {
+      writeFileSync(resolve(previewDir, name), content);
+    }
+    console.log(`\n  DRY RUN — wrote ${Object.keys(files).length} artifact(s) to ${previewDir}/ (${kb} KB main geojson, ${featureCount} features)`);
+    console.log(`  Nothing uploaded to R2. public/data/index.json and config/agencies/${slug}.json NOT modified.`);
+    console.log(`  Resulting agency record would be: name="${agencyName}", center=${JSON.stringify(argCenter ?? computedCenter ?? [0, 0])}, feedExpiry=${feedExpiry ?? 'null'}, feedVersion=${feedVersion ?? 'null'}`);
+    console.log(`  Re-run without --dry-run once you're satisfied to actually publish.\n`);
+    return;
+  }
+
   const uploads: Promise<any>[] = [
     r2Put(`atlas/${slug}.json`, geojson),
     r2Put(`atlas/${slug}-stops.json`, stopsJson),

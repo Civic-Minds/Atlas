@@ -7,27 +7,32 @@ This is the single canonical procedure for adding or updating an agency — [`AD
 ## Integrating a New Transit Agency
 
 1. Obtain the GTFS ZIP download link (preferring a stable agency URL or Mobility Database link).
-2. Process the feed:
+2. **Optional but recommended for a new/unfamiliar feed**: preview it locally first, with nothing written to R2 or any repo file:
+   ```bash
+   npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]" --dry-run
+   ```
+   Writes the real processed artifacts to `tmp/process-preview/<slug>/` on local disk — inspect route/shape counts, tier distribution, headsigns, etc. before trusting the feed enough to publish it. No R2 credentials needed for this mode. This is exactly the kind of check that caught Guadalajara's shape corruption and mislabeled headsigns (#219/#227/#244) — do it before publishing, not after.
+3. Process the feed for real:
    ```bash
    npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]"
    ```
-3. Add or edit `config/agencies/<slug>.json` with `region`, `feedUrl`, `mdbFeedUrl`, and `bbox`.
+4. Add or edit `config/agencies/<slug>.json` with `region`, `feedUrl`, `mdbFeedUrl`, and `bbox`.
    - **bbox vs. center**: if an agency's service area is larger than ±0.4/0.5° from its center (e.g. statewide or regional services like Bustang), add an explicit `bbox: [s, w, n, e]`. Without it, the GeoJSON won't load into the sidebar for viewports outside the ±0.5° window — route cards won't appear even though PMTiles renders the routes.
    - If the official URL is dead or unreliable, use the Mobility Database stable mirror: find the feed at github.com/MobilityData/mobility-database-catalogs, then `https://storage.googleapis.com/storage/v1/b/mdb-latest/o/{feed-id}.zip?alt=media` (GRT and Niagara already use this).
-4. Generate the runtime index:
+5. Generate the runtime index:
    ```bash
    npm run build:agency-index
    ```
-5. Refresh the agency and set up supplemental feeds/history config:
+6. Refresh the agency and set up supplemental feeds/history config:
    ```bash
    npm run refresh -- <slug> --force
    ```
-6. **Rebuild and upload PMTiles — do not skip this:**
+7. **Rebuild and upload PMTiles — do not skip this:**
    ```bash
    npm run build-pmtiles
    npm run upload-pmtiles
    ```
-   The per-agency GeoJSON (from step 2) is what powers search and the sidebar route cards. It is **not** what renders routes on the map — that's a single aggregate `atlas.pmtiles` file built from *every* agency's current GeoJSON, and it only updates when you explicitly rebuild and upload it.
+   The per-agency GeoJSON (from step 3) is what powers search and the sidebar route cards. It is **not** what renders routes on the map — that's a single aggregate `atlas.pmtiles` file built from *every* agency's current GeoJSON, and it only updates when you explicitly rebuild and upload it.
 
    **This step has been skipped before and shipped silently broken agencies** — the route exists in search results and the sidebar card, with real headway data, but nothing draws on the map, because the aggregate tile file was never rebuilt to include it. It doesn't error; it just quietly renders nothing for that agency. Confirmed twice: a newly-added agency (GTrans) that never got its first PMTiles build, and an existing agency (LA Metro) whose rail lines were added to the feed but the PMTiles rebuild step was missed on that change.
 
@@ -36,7 +41,7 @@ This is the single canonical procedure for adding or updating an agency — [`AD
    npm run verify-pmtiles-coverage
    ```
    This compares every agency slug in `index.json` against which slugs actually have route features in the deployed PMTiles and fails loudly on any gap. Run it after every `build-pmtiles` + `upload-pmtiles`, not just when adding a brand-new agency — it also catches an existing agency whose feed changed (new routes, new mode) without a rebuild.
-7. Commit the agency source file (`config/agencies/<slug>.json`) and regenerated `public/data/index.json`. PMTiles upload is a separate live action (goes straight to R2, not part of git history) — see `docs/ARCHITECTURE.md` for the R2 bucket layout.
+8. Commit the agency source file (`config/agencies/<slug>.json`) and regenerated `public/data/index.json`. PMTiles upload is a separate live action (goes straight to R2, not part of git history) — see `docs/ARCHITECTURE.md` for the R2 bucket layout.
 
 **Mid-week data fix cache bust**: the browser caches agency GeoJSON in IndexedDB keyed by `${slug}-${weekVersion}`. If you re-process an *existing* agency mid-week (e.g. fixing a wrong feed), the IDB cache won't update automatically. Bump `CACHE_BUILD` in `shared/cacheBuild.ts` to invalidate old entries and force a fresh fetch from R2.
 
@@ -48,7 +53,7 @@ A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoe
 
 **When this is NOT safe — use the full `npm run build-pmtiles` instead**:
 - **Updating an existing, already-published agency** (new routes, a feed refresh, a data fix). Incremental tile-join can only *add* tiles, never remove them — "replacing" an existing agency's tiles this way would leave both the old and new versions of its features present (duplicate/stale rendering), not a clean update. Removing the old version first is a genuinely harder problem and is intentionally out of scope for this script.
-- **A new agency whose bbox overlaps any existing agency's bbox**, even partially. The stops layer is built with tippecanoe `--drop-densest-as-needed` (see step 6 above), which decides which stops to drop at each zoom *relative to everything else sharing a tile*. A full rebuild makes that decision once, jointly, across every agency's stops. Tile-joining a new agency's independently-built `stops.pmtiles` into the existing archive does not redo that joint decision for any tile the two agencies share — you'd get whatever each side's tippecanoe run decided in isolation, which is a different (and wrong) answer than a full rebuild would produce for that shared area. This is the same category of "silently wrong, not loudly broken" risk called out in the PMTiles-skip warning above, just triggered by overlap instead of a skipped rebuild.
+- **A new agency whose bbox overlaps any existing agency's bbox**, even partially. The stops layer is built with tippecanoe `--drop-densest-as-needed` (see step 7 above), which decides which stops to drop at each zoom *relative to everything else sharing a tile*. A full rebuild makes that decision once, jointly, across every agency's stops. Tile-joining a new agency's independently-built `stops.pmtiles` into the existing archive does not redo that joint decision for any tile the two agencies share — you'd get whatever each side's tippecanoe run decided in isolation, which is a different (and wrong) answer than a full rebuild would produce for that shared area. This is the same category of "silently wrong, not loudly broken" risk called out in the PMTiles-skip warning above, just triggered by overlap instead of a skipped rebuild.
 
 The script enforces both boundaries itself before doing any tippecanoe/tile-join work, and refuses with a clear error rather than guessing:
 1. Scans the deployed `atlas.pmtiles` (via bounded HTTP range requests near the agency's own bbox — no full download needed just to check) for the slug. Refuses if it's already present.
@@ -96,7 +101,7 @@ Same procedure as above, applied to multiple agencies at once:
    ```bash
    npm run refresh -- slug1 slug2 slug3 --force
    ```
-5. Rebuild and upload the PMTiles archive (`npm run build-pmtiles` then `npm run upload-pmtiles`), then run `npm run verify-pmtiles-coverage` — see the warning under step 6 above; this is not optional.
+5. Rebuild and upload the PMTiles archive (`npm run build-pmtiles` then `npm run upload-pmtiles`), then run `npm run verify-pmtiles-coverage` — see the warning under step 7 above; this is not optional.
 6. Record product additions in `CHANGELOG.md` and mark backlog items `done` in `docs/AGENCY_BACKLOG.md`.
 
 ---
