@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.6] - 2026-07-18
 
 - **Local preview now covers a candidate agency's route/stop data, not just its map tiles**: the dev server serves an agency's `--dry-run` process output for any `/atlas-data/<slug>*.json` request when a matching local preview file exists, instead of proxying to R2 — so a brand-new agency's search results, sidebar route cards, and route data all work locally before anything is ever uploaded. Same override-if-present, fall-through-otherwise behavior as the existing PMTiles preview.
 - **Route Report QA tool**: `npm run route-report -- <slug>` prints a route × direction × day frequency table for a processed agency and flags three patterns that have each caused a real published bug before: a terminal headway far above the best headway anywhere on the route (Niagara 301, #241), near-duplicate headsigns on the same route+direction (Niagara typo, #242), and shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244). Reads a `--dry-run` process preview by default so a new feed can be checked before it's ever published; `--live` checks an already-published agency instead. Shape-anomaly tracking is new plumbing added to the parser itself (`shapeAnomalies` on `GtfsData`), not just the report script.
