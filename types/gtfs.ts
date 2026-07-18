@@ -173,6 +173,11 @@ export interface ShapeAnomaly {
     shapeId: string;
     truncated: boolean;
     deinterleaved: boolean;
+    // Detected but NOT auto-repaired -- see detectClusteredJumps in parseGtfs.ts.
+    // Unlike truncated/deinterleaved, this is flag-only: two coherent sub-paths
+    // interleaved via unique (non-duplicate) sequence renumbering, which needs
+    // path-segmentation to fix safely, not a point-by-point heuristic.
+    clusteredJumps: boolean;
 }
 
 // ---------------------------------------------------------------------------

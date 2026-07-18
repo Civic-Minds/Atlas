@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { truncateAtImplausibleJump, deinterleaveDuplicateSequences } from '../parseGtfs.js';
+import { truncateAtImplausibleJump, deinterleaveDuplicateSequences, detectClusteredJumps } from '../parseGtfs.js';
 
 describe('truncateAtImplausibleJump', () => {
   it('leaves a well-formed, evenly-spaced shape untouched', () => {
@@ -66,5 +66,55 @@ describe('deinterleaveDuplicateSequences', () => {
       [43.651, -79.381],
       [43.652, -79.382],
     ]);
+  });
+});
+
+describe('detectClusteredJumps', () => {
+  it('flags a real repro from Nancy Réseau Stan shape 10757$STAN-56$14: two sub-paths interleaved via unique (non-duplicate) sequence numbers', () => {
+    // Leading/trailing filler at the shape's real ~26m median spacing, so the
+    // median (computed across the whole shape) isn't skewed by this short
+    // excerpt the way it would be with just the 22-point repro alone -- matches
+    // how the real 446-point shape behaves (median stays small, jumps stand out).
+    const filler: [number, number][] = Array.from({ length: 30 }, (_, i) => [48.678 + i * 0.00023, 6.160 + i * 0.00023]);
+    // Points 283-296 exactly as published (sorted by their real, distinct shape_pt_sequence
+    // values) -- no duplicates to key off of, but the path still zigzags: north (283-285),
+    // snaps back ~250m south then east (286-294), snaps back north again (295-296).
+    const points: [number, number][] = [
+      ...filler,
+      [48.68177032470703, 6.16294002532959],
+      [48.681907653808594, 6.163816928863525],
+      [48.68208694458008, 6.165071964263916],
+      [48.68211364746094, 6.165280818939209],
+      [48.68215560913086, 6.165363788604736],
+      [48.68218231201172, 6.165460109710693],
+      [48.682220458984375, 6.1656951904296875],
+      [48.68230438232422, 6.166211128234863],
+      [48.682273864746094, 6.166215896606445],
+      [48.68454360961914, 6.168026924133301], // jump north
+      [48.686790466308594, 6.168015956878662], // jump further north
+      [48.68354797363281, 6.168540954589844], // snaps back south
+      [48.68381118774414, 6.17014217376709],
+      [48.683937072753906, 6.170985221862793],
+      [48.6840934753418, 6.171936988830566],
+      [48.68427276611328, 6.172421932220459],
+      [48.68458557128906, 6.173192977905273],
+      [48.68466567993164, 6.173373222351074],
+      [48.684730529785156, 6.173602104187012],
+      [48.68476867675781, 6.1738200187683105],
+      [48.6883544921875, 6.173195838928223], // jumps north again
+      [48.69043731689453, 6.175655841827393],
+    ];
+    expect(detectClusteredJumps(points)).toBe(true);
+  });
+
+  it('does not flag a well-formed shape with consistent spacing', () => {
+    const points: [number, number][] = Array.from({ length: 20 }, (_, i) => [43.65 + i * 0.0003, -79.38 + i * 0.0003]);
+    expect(detectClusteredJumps(points)).toBe(false);
+  });
+
+  it('does not flag a single isolated long segment (a real long block or highway stretch)', () => {
+    const points: [number, number][] = Array.from({ length: 15 }, (_, i) => [43.65 + i * 0.0003, -79.38 + i * 0.0003]);
+    points[8] = [43.68, -79.38]; // one big jump, not a clustered zigzag
+    expect(detectClusteredJumps(points)).toBe(false);
   });
 });

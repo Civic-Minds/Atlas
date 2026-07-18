@@ -12,7 +12,8 @@
  * changed feed can be checked before it's published:
  *   - minStopHeadway far below the terminal headway (Niagara 301 pattern, #241)
  *   - near-duplicate headsigns on the same route+direction (Niagara typo, #242)
- *   - shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244)
+ *   - shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244),
+ *     or that show clustered implausible jumps flagged but NOT auto-repaired (Nancy Réseau Stan)
  */
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
@@ -46,6 +47,7 @@ interface ShapeAnomaly {
   shapeId: string;
   truncated: boolean;
   deinterleaved: boolean;
+  clusteredJumps: boolean;
 }
 
 async function loadGeojson(): Promise<{ features: RouteFeature[] }> {
@@ -187,7 +189,11 @@ async function main() {
   } else {
     console.log(`Shapes needing correction during parsing: ${shapeAnomalies.length}`);
     for (const a of shapeAnomalies) {
-      const kinds = [a.truncated && 'truncated at implausible jump', a.deinterleaved && 'de-interleaved duplicate sequences']
+      const kinds = [
+        a.truncated && 'truncated at implausible jump',
+        a.deinterleaved && 'de-interleaved duplicate sequences',
+        a.clusteredJumps && 'clustered jumps detected (NOT auto-repaired — two interleaved sub-paths, needs manual review)',
+      ]
         .filter(Boolean)
         .join(' + ');
       console.log(`  shape_id=${a.shapeId}: ${kinds}`);
