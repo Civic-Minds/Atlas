@@ -66,17 +66,10 @@ Checked as a third data point after France confirmed the UK's bundling problem i
 
 ## Recommendation
 
-<<<<<<< HEAD
-1. **France next**, not the UK — it's the low-effort, high-confidence win the UK was originally hoped to be, and validates whether "Europe is generally easier than Mexico" holds without also taking on new pipeline architecture work.
+1. **France next**, not the UK — it's the low-effort, high-confidence win the UK was originally hoped to be, and validates whether "Europe is generally easier than Mexico" holds without also taking on new pipeline architecture work. Not going live solo once processed, either — the plan is to launch France once a good portion of the country is covered (Metz + Tours + ideally more), so `hiddenInProduction` should stay on for each city until that broader rollout, not just until its own QA is done.
 2. **UK and Australia's NSW/Victoria stay parked** until there's appetite for the agency_id-filter pipeline work — worth building once, since it unblocks all three at once (every England agency, plus NSW and Victoria, hit the identical regional-bundling shape).
 3. **Tasmania (Burnie) is a viable next pick** if there's interest in a second country beyond France before that filter work happens — same "no new pipeline capability needed" profile as France's candidates.
-4. Keep new countries **hidden from production** (`hiddenInProduction`) until each is individually validated, same as Mexico — don't let one bad agency block or discredit an otherwise-good country's rollout.
-=======
-1. **France (Metz) — data-quality validation done; launch itself deliberately held.** Passed Atlas's own shape/headsign/headway checks cleanly. Not going live solo — the plan is to launch France once a good portion of the country is covered (Metz + Tours + ideally more), so `hiddenInProduction` stays on until that broader rollout, not pending further QA.
-2. **UK and Australia's NSW/Victoria stay parked** until there's appetite for the agency_id-filter pipeline work — worth building once, since it unblocks all three at once (every England agency, plus NSW and Victoria, hit the identical regional-bundling shape).
-3. **Tasmania (Burnie) is a viable next pick** if there's interest in a second country beyond France before that filter work happens — same "no new pipeline capability needed" profile as Metz.
 4. Keep new countries **hidden from production** (`hiddenInProduction`) until each country's rollout is actually ready, same as Mexico — don't let one bad agency block or discredit an otherwise-good country's rollout, and don't ship a country as a single isolated city either.
->>>>>>> 20b98bb1 (Clarify Metz launch is held for broader France coverage, not QA)
 
 ---
 
