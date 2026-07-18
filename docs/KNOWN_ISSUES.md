@@ -46,7 +46,7 @@ GO Transit publishes two overlapping route ID sets per schedule period (e.g. `04
 
 ### Display naming violations
 
-Known violations of the naming rules in [`AGENCIES.md`](AGENCIES.md) § Display Naming, as of 2026-07-16 (found during a Live-feature session, not yet fixed): TransLink shows with no city/province secondary text; Big Blue Bus shows with no city; some agencies get abbreviated inconsistently relative to others in the same list. Worth an audit pass across `SearchResultsList.tsx`, `LiveVehicles.tsx`, `AgencyCard.tsx`, and `History.tsx` — the places agency name + secondary text render together.
+Known violations of the naming rules in [`DISPLAY_NAMING.md`](DISPLAY_NAMING.md), as of 2026-07-16 (found during a Live-feature session, not yet fixed): TransLink shows with no city/province secondary text; Big Blue Bus shows with no city; some agencies get abbreviated inconsistently relative to others in the same list. Worth an audit pass across `SearchResultsList.tsx`, `LiveVehicles.tsx`, `AgencyCard.tsx`, and `History.tsx` — the places agency name + secondary text render together.
 
 ---
 

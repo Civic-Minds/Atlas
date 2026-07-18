@@ -2,11 +2,14 @@
 
 Atlas is built from publicly available transit data and publishes the processing choices behind the map so the results can be understood and checked.
 
-## Coverage and status
+## Current Coverage & Status
 
-- **[Agencies](./AGENCIES.md)**: Current coverage, regions, and display naming rules.
+- **[Agencies](./AGENCIES.md)**: Current coverage and regions.
 - **[Live polling](./LIVE_POLLING.md)**: Live GTFS-RT integration status — active/parked agencies, keys in hand, history archiving.
 - **[Known issues](./KNOWN_ISSUES.md)**: Current data and coverage limitations.
+
+## Expansion Planning
+
 - **[Agency backlog](./AGENCY_BACKLOG.md)**: Coverage expansion queue and discovery notes.
 - **[International expansion](./INTERNATIONAL.md)**: Country-by-country research and planning for coverage beyond Canada/US.
 
@@ -14,6 +17,7 @@ Atlas is built from publicly available transit data and publishes the processing
 
 - **[Pipeline methodology](./PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
 - **[Route service metrics](./ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
+- **[Display naming](./DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
 
 ## Data freshness and review
 

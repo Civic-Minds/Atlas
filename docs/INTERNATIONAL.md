@@ -14,10 +14,10 @@ Atlas's coverage has been exclusively Canada/US to date. Mexico (Mi Transporte /
 
 Mi Transporte (Guadalajara) was added, then found to have real, unrelated data-quality issues once put under scrutiny:
 
-- **#219 / #244 — corrupted shape data.** Route T14B has two broken shape variants. One (`T14B_r2`) has a single ~16.7km corrupted coordinate jump — fixed with a general pipeline safeguard (truncate at an unambiguous outlier jump). The other (`T14B_r1`) is worse: 317 of 382 distinct `shape_pt_sequence` values appear twice, each pointing to a different location — two physical paths interleaved under one `shape_id`. Still open; not safely auto-repairable without risking false positives elsewhere.
-- **#227 — turned out not to be Mexico-specific at all.** Route cards were mislabeling nearly every route "limited service." Root cause: the app's default time period is picked from the *viewer's own local clock*, with no agency-timezone awareness (tracked separately as **#245**), and a frontend bug was treating "no service in the selected period" the same as "genuinely limited service." Any agency without 24/7 service, viewed by anyone during their own local overnight hours, was affected — this has likely been live and unnoticed for a long time. Fixed.
-- **#222 — hidden from production** via a new `hiddenInProduction` agency flag (visible in local dev for QA, excluded from the public build and the external agency directory) until the above is fully resolved.
-- **#228 — Mexico City Metro, stays blocked.** No Metro-only GTFS source exists anywhere checked (Mobility Database, Transitland, the official `datos.cdmx.gob.mx` portal) — Mexico City's only available feed is one combined 9-agency, 301-route SEMOVI dataset with active validator errors. Getting an isolated Metro feed would mean filtering the combined dataset ourselves, not a quick feed swap.
+- **[#219](https://github.com/Civic-Minds/Atlas/issues/219) / [#244](https://github.com/Civic-Minds/Atlas/issues/244) — corrupted shape data.** Route T14B has two broken shape variants. One (`T14B_r2`) has a single ~16.7km corrupted coordinate jump — fixed with a general pipeline safeguard (truncate at an unambiguous outlier jump). The other (`T14B_r1`) is worse: 317 of 382 distinct `shape_pt_sequence` values appear twice, each pointing to a different location — two physical paths interleaved under one `shape_id`. Still open; not safely auto-repairable without risking false positives elsewhere.
+- **[#227](https://github.com/Civic-Minds/Atlas/issues/227) — turned out not to be Mexico-specific at all.** Route cards were mislabeling nearly every route "limited service." Root cause: the app's default time period is picked from the *viewer's own local clock*, with no agency-timezone awareness (tracked separately as **[#245](https://github.com/Civic-Minds/Atlas/issues/245)**), and a frontend bug was treating "no service in the selected period" the same as "genuinely limited service." Any agency without 24/7 service, viewed by anyone during their own local overnight hours, was affected — this has likely been live and unnoticed for a long time. Fixed.
+- **[#222](https://github.com/Civic-Minds/Atlas/issues/222) — hidden from production** via a new `hiddenInProduction` agency flag (visible in local dev for QA, excluded from the public build and the external agency directory) until the above is fully resolved.
+- **[#228](https://github.com/Civic-Minds/Atlas/issues/228) — Mexico City Metro, stays blocked.** No Metro-only GTFS source exists anywhere checked (Mobility Database, Transitland, the official `datos.cdmx.gob.mx` portal) — Mexico City's only available feed is one combined 9-agency, 301-route SEMOVI dataset with active validator errors. Getting an isolated Metro feed would mean filtering the combined dataset ourselves, not a quick feed swap.
 
 **Takeaway:** the shape corruption and blocked Metro-only feed are genuinely Mexico/Guadalajara-specific data problems. The "limited service" bug was not — it just happened to surface there first.
 
@@ -36,7 +36,7 @@ Explored Gloucester/Cheltenham (Stagecoach West operates routes between them) as
 
 ---
 
-## France — the easy win the UK wasn't
+## France — per-operator feeds, cleanest found so far
 
 Checked as an alternative after the UK's bundling problem surfaced.
 

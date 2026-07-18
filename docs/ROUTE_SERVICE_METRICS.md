@@ -24,15 +24,15 @@ These consumers operate on a different representation and should not be silently
 
 If one of these surfaces needs a rider-facing route cadence, it should project the relevant `RouteFacts.service` metric at its boundary and keep its representation-specific value separately named.
 
-## Filter semantics decision (#166)
+## Filter semantics decision ([#166](https://github.com/Civic-Minds/Atlas/issues/166))
 
 The settled product behavior is **best qualifying stop during the active period**. This preserves section clipping: a route appears when a useful high-frequency section meets the selected threshold, even if an outer terminal or destination is slower. The route card continues to show destination/branch cadence, so the two values must remain explicitly labeled as display versus filter metrics.
 
-The original decision is implemented and documented by #166's existing commits. Changing it to median-stop, percentage-of-stops, destination, or worst-direction semantics would be a new product request, not remaining work for #166 or the #186 consistency fix.
+This was decided and implemented in [#166](https://github.com/Civic-Minds/Atlas/issues/166). Changing it to median-stop, percentage-of-stops, destination, or worst-direction semantics would be a new product request, not remaining work for [#166](https://github.com/Civic-Minds/Atlas/issues/166) or the [#186](https://github.com/Civic-Minds/Atlas/issues/186) consistency fix.
 
 ## Post-deploy verification
 
-Using TTC 900 Airport Express with the same active period, verify:
+Any route with multiple branches/destinations works for this check — for example, TTC 900 Airport Express (used as the fixture route in the automated tests too, so a manual click-through and the test suite are checking the same scenario). Using that route with the same active period, verify:
 
 1. The route card, agency card, search result, Recent routes, and Near You show the same display cadence.
 2. The route card may show a different filter result only when the best-stop filter semantics explain it; the filter behavior remains consistent between sidebar and map.
