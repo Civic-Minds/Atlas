@@ -47,12 +47,38 @@ export default defineConfig(({ mode }) => {
     },
   };
 
+  // Dev-only: serve an agency's dry-run process artifacts (see `npm run process
+  // -- <feed> <slug> ... --dry-run`) instead of proxying to R2, whenever a local
+  // preview file exists for that exact filename — same override-if-present,
+  // fall-through-otherwise philosophy as localPmtilesPreview above. Lets a
+  // candidate agency (even one already added to public/data/index.json for local
+  // testing) be looked at locally before anything is uploaded. Clear
+  // tmp/process-preview/<slug>/ to go back to fetching that slug's real R2 data.
+  const PROCESS_PREVIEW_DIR = resolve('tmp/process-preview');
+  const localAgencyDataPreview: Plugin = {
+    name: 'local-agency-data-preview',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const pathname = (req.url ?? '').split('?')[0];
+        const match = /^\/atlas-data\/([\w-]+\.json)$/.exec(pathname);
+        if (!match) return next();
+        const filename = match[1];
+        const slug = filename.replace(/-(stops-meta|stops|corridors|trips)\.json$/, '').replace(/\.json$/, '');
+        const candidate = resolve(PROCESS_PREVIEW_DIR, slug, filename);
+        if (!existsSync(candidate)) return next();
+        res.setHeader('Content-Type', 'application/json');
+        createReadStream(candidate).pipe(res);
+      });
+    },
+  };
+
   return {
     base: process.env.GITHUB_ACTIONS ? '/Atlas/' : '/',
     plugins: [
       react(),
       tailwindcss(),
       localPmtilesPreview,
+      localAgencyDataPreview,
     ],
     server: {
       port: 5100,
