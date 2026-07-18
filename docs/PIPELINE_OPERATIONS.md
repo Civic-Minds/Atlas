@@ -2,7 +2,7 @@
 
 Maintainer and contributor runbooks for adding agencies, discovering coverage gaps, refreshing feeds, and publishing map artifacts. This is repository documentation, not user-facing product documentation.
 
-This is the single canonical procedure for adding or updating an agency — [`ADDING_AGENCIES.md`](ADDING_AGENCIES.md) and [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md) § Workflow both point here rather than restating these steps, so there's one source of truth for the actual mechanics.
+This is the single canonical procedure for adding or updating an agency. The [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md) § Workflow points here so there is one source of truth for the actual mechanics.
 
 ## Integrating a New Transit Agency
 
