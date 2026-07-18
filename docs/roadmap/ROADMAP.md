@@ -1,6 +1,6 @@
 # Roadmap
 
-Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflare R2, rendered by a React + MapLibre GL frontend. Coverage extends outward from the Greater Golden Horseshoe — Buffalo, London, Kingston, Montreal, and more on one continuous map.
+Atlas is a regional transit atlas for understanding where transit runs frequently, how service changes, and—where available—how it performs in practice. It began in the Greater Golden Horseshoe and is expanding outward.
 
 - **[Vision](../VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
 
