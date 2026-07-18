@@ -224,14 +224,13 @@ Run `npm run discover-gaps -- --min-pop 100000` for fresh ranked list. Notables 
 
 ## Workflow
 
+Triage steps specific to this backlog:
+
 1. `npm run discover-gaps` → review `tmp/gap-candidates.json`
 2. Pick rows → add `todo` entries here (or promote directly)
 3. `npm run find-mdb -- "Agency Name" slug "lat,lon"` to confirm feed
-4. Batch `npm run process` (see [`PIPELINE_OPERATIONS.md`](./PIPELINE_OPERATIONS.md) § Batch Processing and Publishing)
-5. Set `feedUrl` / `mdbFeedUrl` / `region` in `index.json`
-6. `npm run refresh -- <slugs> --force`
-7. One `npm run build-pmtiles` per batch
-8. Mark `done` here; note in `CHANGELOG.md`
+
+Then process and publish — see [`PIPELINE_OPERATIONS.md`](./PIPELINE_OPERATIONS.md) § Batch Processing and Publishing for the actual steps (config, refresh, PMTiles rebuild + verify) — and mark `done` here plus note it in `CHANGELOG.md` once published.
 
 ---
 
