@@ -10408,6 +10408,23 @@
       "cities": [
         "Nancy, France"
       ]
+    },
+    {
+      "slug": "rennes",
+      "name": "STAR (Rennes)",
+      "region": "Bretagne",
+      "center": [
+        48.1173,
+        -1.6778
+      ],
+      "feedUrl": "https://eu.ftp.opendatasoft.com/star/gtfs/GTFS_STAR_BUS_METRO_EN_COURS.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.star.fr/",
+      "cities": [
+        "Rennes, France"
+      ]
     }
   ]
 }
