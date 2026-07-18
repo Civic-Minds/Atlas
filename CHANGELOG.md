@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.7] - 2026-07-18
 
 - **San Francisco's transit agency now displays as "Muni" instead of "SFMTA"**: SFMTA is the government agency name; Muni is the service brand riders actually use. The shortening logic previously preferred the bare acronym over any compound brand code — now it prefers "Muni" specifically when the name says so, consistent with the "callsign riders actually use" rule already used for BART and AC Transit.
 
