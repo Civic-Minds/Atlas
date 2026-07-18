@@ -33,6 +33,21 @@ If a weekly refresh fails for an agency, check whether the official `feedUrl` in
 ### GO Transit dual route IDs
 GO Transit publishes two overlapping route ID sets per schedule period (e.g. `04260626-41` and `06260926-41` for route 41). The pipeline deduplicates these by `routeShortName::direction::day::headsign`, keeping the lower-headway feature. The losing feature's stop headways are discarded. This is expected behaviour.
 
+### Live GTFS-RT feed quirks
+
+| Agency | Issue |
+|--------|-------|
+| Hamilton | `feed_end_date` in `feed_info.txt` uses quoted CSV values — pipeline strips them correctly as of July 2026. |
+| Hamilton / Burlington | GTFS-RT does not include `directionId` or `trip_headsign`. Static trips lookup (`atlas/{slug}-trips.json`) used as fallback. |
+| Edmonton | LRT (Capital/Metro/Valley Line West) absent from ETS vehicle positions feed. May be on a separate undocumented feed. |
+| Calgary | CTrain absent from GTFS-RT entirely — `routeId` not populated. No live data until Calgary improves their feed. |
+| New Orleans RTA | No GTFS-RT feed. Custom XML API only — would need a dedicated adapter. |
+| Spokane Transit (STA) | Intermittent protobuf buffer overflow from their server returning malformed/truncated responses. Would match 100% when healthy. |
+
+### Display naming violations
+
+Known violations of the naming rules in [`AGENCIES.md`](AGENCIES.md) § Display Naming, as of 2026-07-16 (found during a Live-feature session, not yet fixed): TransLink shows with no city/province secondary text; Big Blue Bus shows with no city; some agencies get abbreviated inconsistently relative to others in the same list. Worth an audit pass across `SearchResultsList.tsx`, `LiveVehicles.tsx`, `AgencyCard.tsx`, and `History.tsx` — the places agency name + secondary text render together.
+
 ---
 
 ## Data Quirks (not bugs)
