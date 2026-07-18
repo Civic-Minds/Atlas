@@ -36,17 +36,30 @@ Explored Gloucester/Cheltenham (Stagecoach West operates routes between them) as
 
 ---
 
-## France — per-operator feeds, cleanest found so far
+## France — per-operator feeds, but Metz is the outlier not the norm
 
-Checked as an alternative after the UK's bundling problem surfaced.
+Checked as an alternative after the UK's bundling problem surfaced. Revised substantially after processing five more cities beyond Metz — see below.
 
 - **Source:** `transport.data.gouv.fr`, France's national access point, distributes GTFS **per operator/network** — TBM (Bordeaux), Le Met' (Metz), Fil Bleu (Tours), ilévia (Lille), and others each have their own dataset page with a direct single-operator GTFS zip. The only bundled exception is Île-de-France Mobilités (Paris region, ~75 operators) — not relevant to a small-city starting point.
-- This matches Atlas's existing single-operator, single-feed pipeline assumption exactly — **no new filtering capability needed**, unlike the UK.
-- **Le Met' (Metz)**: `https://data.lemet.fr/documents/LEMET-gtfs.zip` — 98% conformity, 100% freshness, zero validator errors. The cleanest candidate feed found across this entire investigation, Mexico and UK included.
-- **Fil Bleu (Tours)**: `https://data.tours-metropole.fr/api/v2/catalog/datasets/horaires-temps-reel-gtfsrt-reseau-filbleu-tmvl/alternative_exports/filbleu_gtfszip` — noisier (~1,085 validator warnings) but no fatal errors.
-- **Réseau Stan (Nancy)** — tried as a second, geographically-clustered city (Lorraine, ~50km from Metz): validator/route-report checks passed clean, but a manual visual check found route lines cutting diagonally across blocks on ~1/3 of shapes. Real cause: a shape-corruption pattern distinct from Guadalajara's (#219/#244) — unique, non-duplicate `shape_pt_sequence` numbers whose order still interleaves two coherent physical sub-paths, which neither existing repair heuristic catches or safely fixes (two repair approaches were tried and both made it worse). **Paused, tracked as [#246](https://github.com/Civic-Minds/Atlas/issues/246)** — not published, stays out of the agency registry until a real path-segmentation fix lands.
+- This matches Atlas's existing single-operator, single-feed pipeline assumption exactly — **no new filtering capability needed**, unlike the UK. That part of the original thesis still holds.
+- **Le Met' (Metz)**: `https://data.lemet.fr/documents/LEMET-gtfs.zip` — 98% conformity, 100% freshness, zero validator errors, zero shape anomalies. Processed and validated — genuinely clean, but turned out to be the exception, not representative of French feeds generally (see below).
 
-**Status:** not started, but this is the recommended next country to actually process — Metz specifically, given its validator score. No architecture work needed first; can follow the same `hiddenInProduction`-gated pattern used for Mexico while validating. The plan is to launch France once a good portion of the country is covered (Metz plus at least Tours, ideally a few more), not ship a single isolated city — so any city added here should stay `hiddenInProduction` until that broader rollout is ready, not just until its own QA is done.
+**A widespread shape-corruption pattern, not a Metz-specific find — [#246](https://github.com/Civic-Minds/Atlas/issues/246):** two coherent physical sub-paths get merged into one `shape_id` with unique (non-duplicate) `shape_pt_sequence` numbers whose order still zigzags between both paths — distinct from Guadalajara's duplicate-sequence corruption (#219/#244), and not caught by either existing repair heuristic (both a greedy-nearest-neighbor and a cheapest-insertion repair were tried against real data and made it worse, not better). Likely explanation: French law (LOM) requires transit data published as NeTEx, with GTFS produced by *converting* it — commonly via Chouette, the national open-source NeTEx↔GTFS converter — and NeTEx's journey-pattern/shared-route-section model doesn't map cleanly to GTFS's "one `shape_id` = one continuous line" assumption. Not a confirmed root cause with a citation, but a well-supported working theory.
+
+Six French cities checked so far, ordered by severity:
+
+| City | Result |
+|---|---|
+| Le Met' (Metz) | Clean — 0% of shapes affected |
+| Fil Bleu (Tours) | 26% of shapes affected (56/218) |
+| Réseau Stan (Nancy) | 30% of shapes affected (25/82) |
+| TBM (Bordeaux) | 72% of shapes affected (308/429) |
+| STAR (Rennes) | 88% of shapes affected (149/170) |
+| ilévia (Lille) | No `shapes.txt` in the feed at all (unrelated gap — same as CTS Strasbourg and Pont-à-Mousson: the agency's own export never included shape geometry, nothing to repair) |
+
+**Takeaway:** 5 of 6 cities hit one of the two problems (shape corruption or missing shapes entirely), at increasing rather than decreasing severity as more were checked. Metz reads as the lucky exception, not the representative case — the original "France is the easy win" framing doesn't hold up. The architecture-simplicity part of the thesis (per-operator feeds, no filtering capability needed) is still true; the data-quality part was wrong.
+
+**Status:** Metz is processed and validated, still `hiddenInProduction` pending a broader France rollout. No second clean city has been found among six tried. Two real paths forward, not mutually exclusive: (1) fix #246 properly (path-segmentation, validated against multiple real agencies' examples) and re-check the cities above, since most of their non-shape data was otherwise fine; (2) keep sampling cities in case another clean one turns up, though six-for-one-clean is not great odds. Either way, don't ship a second France city until it's actually been validated — the whole point of building Route Report and the local-preview tooling was to catch exactly this before publishing, and it worked.
 
 ---
 
