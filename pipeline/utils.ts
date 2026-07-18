@@ -17,6 +17,26 @@ export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2
 }
 
 /**
+ * Compass bearing (0-360, 0 = north) from one point to another.
+ */
+export function bearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const phi1 = (lat1 * Math.PI) / 180;
+    const phi2 = (lat2 * Math.PI) / 180;
+    const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+
+    const x = Math.sin(deltaLambda) * Math.cos(phi2);
+    const y = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
+    const theta = (Math.atan2(x, y) * 180) / Math.PI;
+    return (theta + 360) % 360;
+}
+
+/** Smallest angle between two compass bearings, 0-180. */
+export function bearingDiff(a: number, b: number): number {
+    const d = Math.abs(a - b) % 360;
+    return Math.min(d, 360 - d);
+}
+
+/**
  * Formats seconds into a human-readable duration string.
  */
 export function formatTime(seconds: number): string {

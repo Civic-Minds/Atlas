@@ -117,4 +117,28 @@ describe('detectClusteredJumps', () => {
     points[8] = [43.68, -79.38]; // one big jump, not a clustered zigzag
     expect(detectClusteredJumps(points)).toBe(false);
   });
+
+  it('does not flag a densely-sampled real shape with a few long-but-straight segments (Rennes false-positive regression)', () => {
+    // A real repro from STAR (Rennes) shape 0002-B-1071-2131: most points ~11m apart
+    // (much denser than Nancy's ~26m), so several genuinely straight segments crossing
+    // a bridge/open area are 8x+ that tiny median without being corrupt at all. Verified
+    // against the real feed: these points' bearing barely changes (max ~34 degrees turn)
+    // versus the ~174 degree reversal in the real Nancy corruption above -- an earlier,
+    // distance-only version of this check flagged shapes like this one at up to 88%,
+    // when visually every route rendered correctly on the street grid.
+    const points: [number, number][] = [
+      [48.1014595, -1.65963399], [48.10173035, -1.65992403], [48.10200119, -1.66015697],
+      [48.1024704, -1.66088402], [48.1035614, -1.66271806], [48.10365295, -1.66275203],
+      [48.10531235, -1.66542399], // long straight segment (bridge/open area), same bearing
+      [48.10538101, -1.66554999], [48.10543823, -1.66567504], [48.1056633, -1.66604495],
+      [48.10554123, -1.666116], [48.10486603, -1.66618395], [48.10477829, -1.66615605],
+      [48.10476303, -1.66635001], [48.10457611, -1.66796803], [48.10414886, -1.67151499],
+      [48.1041069, -1.67158699], [48.10427856, -1.67239499], [48.10426331, -1.67252803],
+      [48.10438156, -1.67257094], [48.10469437, -1.67265999], [48.10577011, -1.67292404],
+      [48.10702515, -1.67326796], [48.10748672, -1.673401], [48.10754776, -1.67335403],
+      [48.10773849, -1.67340696], [48.10790253, -1.673473], [48.10886765, -1.67373896],
+      [48.10978317, -1.67398703], [48.10987473, -1.673949],
+    ];
+    expect(detectClusteredJumps(points)).toBe(false);
+  });
 });
