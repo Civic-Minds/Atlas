@@ -10391,6 +10391,23 @@
       "cities": [
         "Metz, France"
       ]
+    },
+    {
+      "slug": "nancy",
+      "name": "R\u00e9seau Stan (Nancy)",
+      "region": "Grand Est",
+      "center": [
+        48.6921,
+        6.1844
+      ],
+      "feedUrl": "https://transport.data.gouv.fr/resources/83710/download",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.reseau-stan.com/",
+      "cities": [
+        "Nancy, France"
+      ]
     }
   ]
 }
