@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule } from '../types/gtfs';
+import { haversineDistance } from './utils.js';
 
 /**
  * Parse a CSV string into an array of typed objects.
@@ -21,6 +22,37 @@ export const parseCsv = <T>(text: string): T[] => {
 };
 
 /**
+ * Some feeds have a single corrupted shapes.txt jump — one pair of consecutive
+ * points, after sorting by shape_pt_sequence, implausibly far apart relative to
+ * the rest of the shape (e.g. Mi Transporte Guadalajara's T14B_r2, #219: a
+ * ~16.7km jump on an otherwise ~50m-spaced shape). Truncate at the first such
+ * jump — a partial, geographically coherent line beats rendering a straight
+ * segment across the whole city. Only fires on a dramatic, unambiguous outlier
+ * against sane surrounding data, so well-formed shapes (including sparse rail
+ * corridors with naturally longer gaps throughout) are unaffected.
+ */
+export function truncateAtImplausibleJump(points: [number, number][]): [number, number][] {
+    if (points.length < 4) return points;
+
+    const segLens: number[] = [];
+    for (let i = 0; i < points.length - 1; i++) {
+        segLens.push(haversineDistance(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]));
+    }
+    const sorted = [...segLens].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    if (median <= 0) return points;
+
+    const ABSOLUTE_THRESHOLD_M = 2000;
+    const RELATIVE_MULTIPLE = 15;
+    for (let i = 0; i < segLens.length; i++) {
+        if (segLens[i] > ABSOLUTE_THRESHOLD_M && segLens[i] > median * RELATIVE_MULTIPLE) {
+            return points.slice(0, i + 1);
+        }
+    }
+    return points;
+}
+
+/**
  * Group raw shape point records into GtfsShape objects keyed by shape_id.
  */
 const groupShapes = (parsed: any[]): GtfsShape[] => {
@@ -39,9 +71,11 @@ const groupShapes = (parsed: any[]): GtfsShape[] => {
     }
     return Array.from(grouped.entries()).map(([id, pts]) => ({
         id,
-        points: pts
-            .sort((a, b) => a.seq - b.seq)
-            .map(p => [p.lat, p.lon] as [number, number]),
+        points: truncateAtImplausibleJump(
+            pts
+                .sort((a, b) => a.seq - b.seq)
+                .map(p => [p.lat, p.lon] as [number, number]),
+        ),
     }));
 };
 
