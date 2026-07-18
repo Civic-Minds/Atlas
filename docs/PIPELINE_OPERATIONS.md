@@ -40,6 +40,33 @@ This is the single canonical procedure for adding or updating an agency — [`AD
 
 **Mid-week data fix cache bust**: the browser caches agency GeoJSON in IndexedDB keyed by `${slug}-${weekVersion}`. If you re-process an *existing* agency mid-week (e.g. fixing a wrong feed), the IDB cache won't update automatically. Bump `CACHE_BUILD` in `shared/cacheBuild.ts` to invalidate old entries and force a fresh fetch from R2.
 
+## Incremental PMTiles Build (single new, isolated agency)
+
+A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoes the entire archive — expensive, and unnecessary just to validate one small new agency (e.g. proof-of-concept international coverage like Metz, France). `pipeline/build-pmtiles-incremental.ts` (`npm run build-pmtiles-incremental -- <slug> [--dry-run]`) instead builds tippecanoe outputs for just that one agency's routes/stops/corridors and `tile-join`s them into the *already-deployed* `atlas.pmtiles`, without touching any other agency's tiles.
+
+**When this is safe**: a brand-new agency, not yet published, whose service area does not geographically overlap any existing Atlas agency. This is exactly the Metz case — the nearest other Atlas agency is thousands of km away.
+
+**When this is NOT safe — use the full `npm run build-pmtiles` instead**:
+- **Updating an existing, already-published agency** (new routes, a feed refresh, a data fix). Incremental tile-join can only *add* tiles, never remove them — "replacing" an existing agency's tiles this way would leave both the old and new versions of its features present (duplicate/stale rendering), not a clean update. Removing the old version first is a genuinely harder problem and is intentionally out of scope for this script.
+- **A new agency whose bbox overlaps any existing agency's bbox**, even partially. The stops layer is built with tippecanoe `--drop-densest-as-needed` (see step 6 above), which decides which stops to drop at each zoom *relative to everything else sharing a tile*. A full rebuild makes that decision once, jointly, across every agency's stops. Tile-joining a new agency's independently-built `stops.pmtiles` into the existing archive does not redo that joint decision for any tile the two agencies share — you'd get whatever each side's tippecanoe run decided in isolation, which is a different (and wrong) answer than a full rebuild would produce for that shared area. This is the same category of "silently wrong, not loudly broken" risk called out in the PMTiles-skip warning above, just triggered by overlap instead of a skipped rebuild.
+
+The script enforces both boundaries itself before doing any tippecanoe/tile-join work, and refuses with a clear error rather than guessing:
+1. Scans the deployed `atlas.pmtiles` (via bounded HTTP range requests near the agency's own bbox — no full download needed just to check) for the slug. Refuses if it's already present.
+2. Compares the agency's bbox (explicit `bbox` in `index.json`, or the same center-padding fallback the rest of the app uses when one isn't set) against every other agency's bbox. Refuses on any rectangle overlap — deliberately conservative (bbox rectangles, not real geometry): a false "safe" here ships a real map correctness bug, so it errs toward refusing.
+
+Both checks are pure logic, unit tested in `pipeline/__tests__/incrementalPmtilesSafety.test.ts` without needing tippecanoe or real R2 access.
+
+```bash
+# Validate the mechanics and see what would change, without uploading:
+npm run build-pmtiles-incremental -- metz --dry-run
+
+# Once you're satisfied and have explicit go-ahead to write to the live bucket
+# (same production-data gate as npm run build-pmtiles — see CLAUDE.md § Production Data Rules):
+npm run build-pmtiles-incremental -- metz
+```
+
+`--dry-run` still downloads the real deployed `atlas.pmtiles` and runs the real tippecanoe/tile-join steps locally (so the size/feature-count report reflects reality), it just stops before the final upload. After a real (non-dry-run) run, still run `npm run verify-pmtiles-coverage` to confirm.
+
 ## Querying Mobility Database
 
 ```bash
