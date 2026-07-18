@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- **Route Report now detects a shape-corruption pattern that previously slipped through undetected**: two coherent physical sub-paths interleaved via unique, non-duplicate `shape_pt_sequence` numbers (found on ~1/3 of Nancy Réseau Stan's shapes) — distinct from the duplicate-sequence pattern already caught (Guadalajara, #219/#244). Flag-only for now: two repair approaches were tried and both produced worse or equally-bad geometry, so this needs proper path-segmentation to fix safely rather than a point-by-point heuristic. See #246.
+
 ## [3.2.7] - 2026-07-18
 
 - **San Francisco's transit agency now displays as "Muni" instead of "SFMTA"**: SFMTA is the government agency name; Muni is the service brand riders actually use. The shortening logic previously preferred the bare acronym over any compound brand code — now it prefers "Muni" specifically when the name says so, consistent with the "callsign riders actually use" rule already used for BART and AC Transit.

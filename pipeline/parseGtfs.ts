@@ -90,6 +90,53 @@ export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; 
 }
 
 /**
+ * Detects (but does NOT repair) a shape where two coherent physical sub-paths
+ * are interleaved via unique, non-duplicate shape_pt_sequence numbers -- so
+ * neither truncateAtImplausibleJump (one dominant jump) nor
+ * deinterleaveDuplicateSequences (tied sequence numbers) catches it. Nancy's
+ * Réseau Stan feed hits this on ~1/3 of its shapes: e.g. points head north for
+ * a stretch, snap back ~250m to rejoin a second path heading a different
+ * direction, then snap back again later -- a real defect, but the points
+ * aren't simply "one outlier near a tie", they're two genuine sub-paths that
+ * need path-segmentation to reconcatenate correctly.
+ *
+ * Both a naive greedy-nearest-neighbor repair (mirrors deinterleaveDuplicateSequences'
+ * approach) and a cheapest-insertion repair were tried against the real data and
+ * both produced worse or equally-bad geometry (stranding the outlier point at
+ * the end of the path, or just relocating the same zigzag elsewhere) -- so this
+ * is flag-only for now. Only fires when 3+ locally-clustered implausible jumps
+ * occur within a short span; an isolated single big jump (a real long block, a
+ * highway segment) is not flagged.
+ */
+export function detectClusteredJumps(points: [number, number][]): boolean {
+    if (points.length < 10) return false;
+
+    const segLens: number[] = [];
+    for (let i = 0; i < points.length - 1; i++) {
+        segLens.push(haversineDistance(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]));
+    }
+    const sorted = [...segLens].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)] || 1;
+
+    const ABSOLUTE_THRESHOLD_M = 100;
+    const RELATIVE_MULTIPLE = 8;
+    const bigJumpIdxs: number[] = [];
+    for (let i = 0; i < segLens.length; i++) {
+        if (segLens[i] > ABSOLUTE_THRESHOLD_M && segLens[i] > median * RELATIVE_MULTIPLE) bigJumpIdxs.push(i);
+    }
+
+    const WINDOW = 20;
+    let i = 0;
+    while (i < bigJumpIdxs.length) {
+        let j = i;
+        while (j + 1 < bigJumpIdxs.length && bigJumpIdxs[j + 1] - bigJumpIdxs[i] <= WINDOW) j++;
+        if (j - i + 1 >= 3) return true;
+        i = j + 1;
+    }
+    return false;
+}
+
+/**
  * Group raw shape point records into GtfsShape objects keyed by shape_id.
  * Also reports which shapes needed correction (duplicate-sequence de-interleaving
  * and/or implausible-jump truncation) so QA tooling can flag them (#219/#244 pattern).
@@ -114,8 +161,14 @@ const groupShapes = (parsed: any[]): { shapes: GtfsShape[]; anomalies: ShapeAnom
         const deinterleaved = deinterleaveDuplicateSequences(pts);
         const truncated = truncateAtImplausibleJump(deinterleaved);
         const wasTruncated = truncated.length < deinterleaved.length;
-        if (hadDuplicateSequences || wasTruncated) {
-            anomalies.push({ shapeId: id, truncated: wasTruncated, deinterleaved: hadDuplicateSequences });
+        const hasClusteredJumps = detectClusteredJumps(truncated);
+        if (hadDuplicateSequences || wasTruncated || hasClusteredJumps) {
+            anomalies.push({
+                shapeId: id,
+                truncated: wasTruncated,
+                deinterleaved: hadDuplicateSequences,
+                clusteredJumps: hasClusteredJumps,
+            });
         }
         return { id, points: truncated };
     });
