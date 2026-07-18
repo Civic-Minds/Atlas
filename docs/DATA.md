@@ -1,33 +1,32 @@
 # Data
 
-Atlas is built from publicly available transit data and publishes the processing choices behind the map so the results can be understood and checked.
+Atlas is built from publicly available transit data and publishes the processing choices behind the map so the results can be understood and checked. This page is the index for Atlas data documentation.
 
 ## Current Coverage & Status
 
 - **[Agencies](./AGENCIES.md)**: Current coverage and regions.
-- **[Live polling](./LIVE_POLLING.md)**: Live GTFS-RT integration status — active/parked agencies, keys in hand, history archiving.
-- **[Known issues](./KNOWN_ISSUES.md)**: Current data and coverage limitations.
+- **[Live Polling](./LIVE_POLLING.md)**: Live GTFS-RT integration status — active/parked agencies, keys in hand, history archiving.
+- **[Known Issues](./KNOWN_ISSUES.md)**: Current data and coverage limitations.
 
 ## Expansion Planning
 
-- **[Agency backlog](./AGENCY_BACKLOG.md)**: Coverage expansion queue and discovery notes.
-- **[International expansion](./INTERNATIONAL.md)**: Country-by-country research and planning for coverage beyond Canada/US.
+- **[Agency Backlog](./AGENCY_BACKLOG.md)**: Coverage expansion queue and discovery notes.
+- **[International Expansion](./INTERNATIONAL.md)**: Country-by-country research and planning for coverage beyond Canada/US.
 
 ## Methodology
 
-- **[Pipeline methodology](./PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
-- **[Route service metrics](./ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
-- **[Display naming](./DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
+- **[Pipeline Methodology](./PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
+- **[Route Service Metrics](./ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
+- **[Display Naming](./DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
+- **[Population Context](./DATA_POPULATION.md)**: Proposed population-density data layer and its relationship to transit frequency.
 
-## Data freshness and review
+## Data Freshness & Review
 
-- Atlas checks configured feeds during the weekly refresh and publishes the last successful schedule data it has.
-- If a feed's `feed_end_date` has passed, Atlas keeps the data visible but marks the schedule as potentially outdated rather than silently removing the agency.
-- New or changed schedule data may be marked as being verified while Atlas checks for missing service and known feed-quality problems.
-- When a feed-specific correction is applied, the affected agency or route can show a public correction note explaining what changed.
-- The map uses static GTFS schedule data unless a surface is explicitly marked Live; live vehicle and adherence data are limited to supported agencies and routes.
+- **[Known Issues](./KNOWN_ISSUES.md)**: Feed limitations, data quirks, and known coverage gaps.
+- **[Pipeline Operations](./PIPELINE_OPERATIONS.md)**: Refresh, review, correction, and publication procedures.
+- **[Live Polling](./LIVE_POLLING.md)**: Freshness and coverage details for real-time vehicle and adherence data.
 
-## Procedures and maintenance
+## Procedures & Maintenance
 
-- **[Adding agencies](./ADDING_AGENCIES.md)**: Contributor guide for onboarding a new transit agency.
-- **[Pipeline operations](./PIPELINE_OPERATIONS.md)**: Contributor procedures for adding agencies, refreshing feeds, and publishing artifacts.
+- **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor guide for onboarding a new transit agency.
+- **[Pipeline Operations](./PIPELINE_OPERATIONS.md)**: Contributor procedures for adding agencies, refreshing feeds, and publishing artifacts.
