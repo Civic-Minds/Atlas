@@ -306,11 +306,23 @@ function isLongLegalName(s: string): boolean {
   return s.length >= 28;
 }
 
+/**
+ * Brand-code compounds where the real rider callsign is the non-acronym half —
+ * the opposite of normalizeBrandCode's default "prefer the bare acronym" rule.
+ * SF riders say "Muni", not "SFMTA" — SFMTA is the agency, Muni is the service.
+ */
+const BRAND_CODE_OVERRIDES: Record<string, string> = {
+  'SFMTA - Muni': 'Muni',
+};
+
 function normalizeBrandCode(s: string): string {
-  // "SFMTA - Muni" → "SFMTA"; "LA Metro" / "AC Transit" stay multi-word
-  const head = s.split(/\s*[-/]\s*/)[0]?.trim();
-  if (head && /^[A-Z]{2,8}$/.test(head) && head.length < s.trim().length) return head;
-  return s.trim();
+  const trimmed = s.trim();
+  if (BRAND_CODE_OVERRIDES[trimmed]) return BRAND_CODE_OVERRIDES[trimmed];
+  // "SFMTA - Muni" would otherwise become "SFMTA" here (overridden above);
+  // "LA Metro" / "AC Transit" have no acronym half, so they stay multi-word.
+  const head = trimmed.split(/\s*[-/]\s*/)[0]?.trim();
+  if (head && /^[A-Z]{2,8}$/.test(head) && head.length < trimmed.length) return head;
+  return trimmed;
 }
 
 /** True when place text (or its significant words) already appears in the agency name. */
@@ -383,6 +395,10 @@ function hasWord(haystack: string, word: string): boolean {
 export function shortenAgencyName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';
+  // SF riders say "Muni", not "SFMTA" — SFMTA is the agency, Muni is the service brand.
+  // Only prefer it when the name actually says "Muni" (e.g. "(SFMTA - Muni)");
+  // plain "SFMTA" alone still shortens to "SFMTA".
+  if (lower.includes('sfmta') && hasWord(lower, 'muni')) return 'Muni';
   if (lower.includes('sfmta') || hasWord(lower, 'muni')) return 'SFMTA';
   if (hasWord(lower, 'bart')) return 'BART';
   if (lower.includes('caltrain')) return 'Caltrain';

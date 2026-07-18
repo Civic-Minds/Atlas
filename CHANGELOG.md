@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- **San Francisco's transit agency now displays as "Muni" instead of "SFMTA"**: SFMTA is the government agency name; Muni is the service brand riders actually use. The shortening logic previously preferred the bare acronym over any compound brand code — now it prefers "Muni" specifically when the name says so, consistent with the "callsign riders actually use" rule already used for BART and AC Transit.
+
 ## [3.2.6] - 2026-07-18
 
 - **Local preview now covers a candidate agency's route/stop data, not just its map tiles**: the dev server serves an agency's `--dry-run` process output for any `/atlas-data/<slug>*.json` request when a matching local preview file exists, instead of proxying to R2 — so a brand-new agency's search results, sidebar route cards, and route data all work locally before anything is ever uploaded. Same override-if-present, fall-through-otherwise behavior as the existing PMTiles preview.

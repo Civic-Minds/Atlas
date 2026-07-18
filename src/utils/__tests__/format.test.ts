@@ -33,6 +33,14 @@ describe('shortenAgencyName', () => {
     expect(shortenAgencyName('Bay Area Rapid Transit (BART)')).toBe('BART');
   });
 
+  // SF riders say "Muni", not "SFMTA" — SFMTA is the agency, Muni is the
+  // service brand people actually use day to day. Only the compound form
+  // (name explicitly says "Muni") should prefer it; bare "SFMTA" stays as-is.
+  it('prefers "Muni" over "SFMTA" when the name explicitly says Muni', () => {
+    expect(shortenAgencyName('San Francisco Municipal Transportation Agency (SFMTA - Muni)')).toBe('Muni');
+    expect(shortenAgencyName('San Francisco Municipal Transportation Agency (SFMTA)')).toBe('SFMTA');
+  });
+
   // Real-world agencies that genuinely share a brand acronym across
   // different regions (verified against index.json — these are actually
   // different, unrelated transit agencies, not a shortenAgencyName bug):

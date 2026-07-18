@@ -40,9 +40,10 @@ describe('agencyDisplayParts', () => {
       primary: 'BART',
       secondary: 'Bay Area',
     });
+    // SF riders say "Muni", not "SFMTA" — the agency vs. the service brand.
     expect(
       agencyDisplayParts('San Francisco Municipal Transportation Agency (SFMTA - Muni)'),
-    ).toEqual({ primary: 'SFMTA', secondary: 'San Francisco' });
+    ).toEqual({ primary: 'Muni', secondary: 'San Francisco' });
     expect(
       agencyDisplayParts('Alameda-Contra Costa Transit District (AC Transit)'),
     ).toEqual({ primary: 'AC Transit', secondary: 'Alameda-Contra Costa' });
