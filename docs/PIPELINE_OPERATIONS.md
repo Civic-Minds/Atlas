@@ -72,6 +72,12 @@ npm run build-pmtiles-incremental -- metz
 
 `--dry-run` still downloads the real deployed `atlas.pmtiles` and runs the real tippecanoe/tile-join steps locally (so the size/feature-count report reflects reality), it just stops before the final upload. After a real (non-dry-run) run, still run `npm run verify-pmtiles-coverage` to confirm.
 
+**Previewing the dry-run's merged tiles visually, before ever uploading**: copy the local dry-run output to the well-known preview path and restart the local dev server:
+```bash
+cp tmp/incremental-pmtiles-build/<slug>/atlas.pmtiles tmp/atlas-pmtiles-preview.pmtiles
+```
+`vite.config.ts`'s dev proxy checks for this file on every `atlas.pmtiles` request and serves it directly (with proper Range-request support) instead of proxying to R2, falling back to the normal proxy when the file isn't present — so the new agency's routes render on the local map exactly as they would in production, with zero writes to the live bucket. Requires a dev server restart to pick up (`vite.config.ts` changes need one); delete the preview file (or just don't create it) to go back to normal behavior.
+
 ## Querying Mobility Database
 
 ```bash

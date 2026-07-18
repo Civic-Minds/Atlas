@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Visually preview a new agency's map tiles locally, before any R2 write**: the local dev server now serves a dry-run-built `atlas.pmtiles` (from `npm run build-pmtiles-incremental -- <slug> --dry-run`) when copied to a well-known path, instead of proxying to production R2 — so a not-yet-published agency's routes render on the real map for a real look before ever going live. Falls back to normal behavior automatically when no preview file is present.
 - **Local dry-run mode for processing a new agency**: `npm run process -- <feed> <slug> ... --dry-run` runs the real pipeline but writes output to `tmp/process-preview/<slug>/` on local disk instead of R2, with no repo files touched — lets a new or unfamiliar feed be inspected (shapes, route counts, headsigns) before publishing. No R2 credentials needed. Formalizes the ad-hoc verification scripts that caught Guadalajara's and Metz's data issues this cycle into an actual documented step.
 - **Wide-area map loading no longer leaves a partial-size canvas visible**: the map now tracks viewport resizing and shows a clear loading state while the first transit networks arrive.
 - **Wide-area map loads now prioritize nearby networks and limit concurrent parsing** so low-zoom views become usable sooner without dropping any eventual agency coverage.
