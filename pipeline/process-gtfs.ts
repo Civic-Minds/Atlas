@@ -134,7 +134,7 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, livePollingSidecar, feedExpiry, feedVersion } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { preprocess, excludeRouteShortNames, slug, manualBaseFare });
   const center = argCenter ?? computedCenter ?? [0, 0];
@@ -154,12 +154,19 @@ async function main() {
     if (livePollingSidecar) {
       files[`live-polling-${slug}.json`] = JSON.stringify(livePollingSidecar, null, 2);
     }
+    // Always written (even empty) so its mere presence distinguishes "generated with
+    // anomaly-tracking support, zero found" from "preview predates this check".
+    files[`${slug}-shape-anomalies.json`] = JSON.stringify(shapeAnomalies ?? [], null, 2);
     for (const [name, content] of Object.entries(files)) {
       writeFileSync(resolve(previewDir, name), content);
     }
     console.log(`\n  DRY RUN — wrote ${Object.keys(files).length} artifact(s) to ${previewDir}/ (${kb} KB main geojson, ${featureCount} features)`);
     console.log(`  Nothing uploaded to R2. public/data/index.json and config/agencies/${slug}.json NOT modified.`);
     console.log(`  Resulting agency record would be: name="${agencyName}", center=${JSON.stringify(argCenter ?? computedCenter ?? [0, 0])}, feedExpiry=${feedExpiry ?? 'null'}, feedVersion=${feedVersion ?? 'null'}`);
+    if (shapeAnomalies?.length) {
+      console.log(`  ${shapeAnomalies.length} shape(s) needed correction during parsing (truncated jump and/or de-interleaved duplicate sequences) — see ${slug}-shape-anomalies.json.`);
+    }
+    console.log(`  Run "npm run route-report -- ${slug}" to check for anomaly patterns (mismatched headways, near-duplicate headsigns, shape corrections) before publishing.`);
     console.log(`  Re-run without --dry-run once you're satisfied to actually publish.\n`);
     return;
   }

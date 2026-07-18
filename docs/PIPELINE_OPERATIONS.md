@@ -12,6 +12,12 @@ This is the single canonical procedure for adding or updating an agency — [`AD
    npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]" --dry-run
    ```
    Writes the real processed artifacts to `tmp/process-preview/<slug>/` on local disk — inspect route/shape counts, tier distribution, headsigns, etc. before trusting the feed enough to publish it. No R2 credentials needed for this mode. This is exactly the kind of check that caught Guadalajara's shape corruption and mislabeled headsigns (#219/#227/#244) — do it before publishing, not after.
+
+   Then run the automated version of that same check:
+   ```bash
+   npm run route-report -- <slug>
+   ```
+   Reads the dry-run preview and prints a route × direction × day frequency table, plus three flags that have each caught a real bug before: a terminal headway far above the best headway anywhere on the route (Niagara 301, #241), near-duplicate headsigns on the same route+direction (Niagara typo, #242), and shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244 — recorded in `<slug>-shape-anomalies.json` alongside the other preview artifacts). A flag isn't automatically a bug — branching routes legitimately have faster segments than their terminal, for instance — but each one is worth a manual look before publishing. Pass `--live` to run the same report against an already-published agency's current R2 data instead (shape-anomaly detection isn't available in `--live` mode — it's only captured during parsing).
 3. Process the feed for real:
    ```bash
    npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]"

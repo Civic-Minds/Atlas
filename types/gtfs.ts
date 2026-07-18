@@ -161,6 +161,18 @@ export interface GtfsData {
     fareProducts?: GtfsFareProduct[];
     riderCategories?: GtfsRiderCategory[];
     fareLegRules?: GtfsFareLegRule[];
+
+    // Shapes whose raw shape_pt_sequence data needed correction (truncated at an
+    // implausible jump, and/or had duplicate sequence numbers de-interleaved) —
+    // see parseGtfs.ts. Surfaced for QA tooling (route-report.ts); absent/empty
+    // for well-formed feeds.
+    shapeAnomalies?: ShapeAnomaly[];
+}
+
+export interface ShapeAnomaly {
+    shapeId: string;
+    truncated: boolean;
+    deinterleaved: boolean;
 }
 
 // ---------------------------------------------------------------------------

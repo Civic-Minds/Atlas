@@ -51,6 +51,7 @@ export interface ProcessResult {
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
+  shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
 }
 
 export async function processGtfsBuffer(
@@ -766,5 +767,6 @@ export async function processGtfsBuffer(
     feedExpiry: feedInfo?.feed_end_date ?? null,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
+    shapeAnomalies: gtfs.shapeAnomalies,
   };
 }

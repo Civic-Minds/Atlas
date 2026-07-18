@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule } from '../types/gtfs';
+import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule, ShapeAnomaly } from '../types/gtfs';
 import { haversineDistance } from './utils.js';
 
 /**
@@ -91,8 +91,10 @@ export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; 
 
 /**
  * Group raw shape point records into GtfsShape objects keyed by shape_id.
+ * Also reports which shapes needed correction (duplicate-sequence de-interleaving
+ * and/or implausible-jump truncation) so QA tooling can flag them (#219/#244 pattern).
  */
-const groupShapes = (parsed: any[]): GtfsShape[] => {
+const groupShapes = (parsed: any[]): { shapes: GtfsShape[]; anomalies: ShapeAnomaly[] } => {
     const grouped = new Map<string, { seq: number; lat: number; lon: number }[]>();
     for (const p of parsed) {
         if (!p.shape_id) continue;
@@ -106,10 +108,18 @@ const groupShapes = (parsed: any[]): GtfsShape[] => {
             lon,
         });
     }
-    return Array.from(grouped.entries()).map(([id, pts]) => ({
-        id,
-        points: truncateAtImplausibleJump(deinterleaveDuplicateSequences(pts)),
-    }));
+    const anomalies: ShapeAnomaly[] = [];
+    const shapes = Array.from(grouped.entries()).map(([id, pts]) => {
+        const hadDuplicateSequences = new Set(pts.map(p => p.seq)).size < pts.length;
+        const deinterleaved = deinterleaveDuplicateSequences(pts);
+        const truncated = truncateAtImplausibleJump(deinterleaved);
+        const wasTruncated = truncated.length < deinterleaved.length;
+        if (hadDuplicateSequences || wasTruncated) {
+            anomalies.push({ shapeId: id, truncated: wasTruncated, deinterleaved: hadDuplicateSequences });
+        }
+        return { id, points: truncated };
+    });
+    return { shapes, anomalies };
 };
 
 /**
@@ -261,7 +271,9 @@ export const parseGtfsZip = async (
             const parsed = parseCsv(text);
 
             if (key === 'shapes') {
-                gtfsData.shapes = groupShapes(parsed as any[]);
+                const { shapes, anomalies } = groupShapes(parsed as any[]);
+                gtfsData.shapes = shapes;
+                if (anomalies.length > 0) gtfsData.shapeAnomalies = anomalies;
             } else {
                 (gtfsData as any)[key] = parsed;
             }
