@@ -6,7 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- **Route Report now detects a shape-corruption pattern that previously slipped through undetected**: two coherent physical sub-paths interleaved via unique, non-duplicate `shape_pt_sequence` numbers (found on ~1/3 of Nancy Réseau Stan's shapes) — distinct from the duplicate-sequence pattern already caught (Guadalajara, #219/#244). Flag-only for now: two repair approaches were tried and both produced worse or equally-bad geometry, so this needs proper path-segmentation to fix safely rather than a point-by-point heuristic. See #246.
+- **Route Report now detects a shape-corruption pattern that previously slipped through undetected**: two coherent physical sub-paths interleaved via unique, non-duplicate `shape_pt_sequence` numbers (found on ~6% of Nancy Réseau Stan's shapes) — distinct from the duplicate-sequence pattern already caught (Guadalajara, #219/#244). Flag-only for now: two repair approaches were tried and both produced worse or equally-bad geometry, so this needs proper path-segmentation to fix safely rather than a point-by-point heuristic. See #246.
+- **Fixed a false-positive in that same shape-corruption check**: the first version flagged any implausibly-long segment relative to a shape's median point spacing, which misfired heavily on densely-sampled feeds (e.g. Rennes: flagged 88% of shapes, all false positives — a long-but-straight segment across a bridge or open area is 8x+ a ~11m median without being corrupt). Now also requires the flagged segment's direction to reverse sharply (>100°) relative to the path's incoming bearing, since real corruption showed a ~174° reversal while every false positive stayed under 34°.
 
 ## [3.2.7] - 2026-07-18
 

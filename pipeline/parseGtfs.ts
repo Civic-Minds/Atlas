@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule, ShapeAnomaly } from '../types/gtfs';
-import { haversineDistance } from './utils.js';
+import { haversineDistance, bearing, bearingDiff } from './utils.js';
 
 /**
  * Parse a CSV string into an array of typed objects.
@@ -93,20 +93,28 @@ export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; 
  * Detects (but does NOT repair) a shape where two coherent physical sub-paths
  * are interleaved via unique, non-duplicate shape_pt_sequence numbers -- so
  * neither truncateAtImplausibleJump (one dominant jump) nor
- * deinterleaveDuplicateSequences (tied sequence numbers) catches it. Nancy's
- * Réseau Stan feed hits this on ~1/3 of its shapes: e.g. points head north for
- * a stretch, snap back ~250m to rejoin a second path heading a different
- * direction, then snap back again later -- a real defect, but the points
- * aren't simply "one outlier near a tie", they're two genuine sub-paths that
- * need path-segmentation to reconcatenate correctly.
+ * deinterleaveDuplicateSequences (tied sequence numbers) catches it. Real
+ * examples (Nancy Réseau Stan): points head north for a stretch, snap back
+ * to rejoin a second path heading a different direction, then snap back
+ * again later -- the path direction reverses (a real Nancy example measured
+ * a 174° turn at the snap), not just a long segment.
+ *
+ * An earlier version of this check flagged any implausibly-long segment
+ * relative to the shape's median spacing. That produced heavy false positives
+ * on densely-sampled feeds (e.g. Rennes, median ~11m spacing): a long-but-straight
+ * segment across a bridge or open area is 8x+ the median without being corrupt
+ * at all -- verified by comparing turn angles directly: real corruption showed
+ * a ~174° reversal at the flagged point, while Rennes's flagged points never
+ * exceeded 34°, and visually its routes traced the street grid fine. The fix
+ * is to also require the flagged segment's bearing to reverse sharply relative
+ * to the path's incoming direction -- a long straight segment doesn't turn,
+ * a genuine interleaved sub-path does.
  *
  * Both a naive greedy-nearest-neighbor repair (mirrors deinterleaveDuplicateSequences'
  * approach) and a cheapest-insertion repair were tried against the real data and
  * both produced worse or equally-bad geometry (stranding the outlier point at
  * the end of the path, or just relocating the same zigzag elsewhere) -- so this
- * is flag-only for now. Only fires when 3+ locally-clustered implausible jumps
- * occur within a short span; an isolated single big jump (a real long block, a
- * highway segment) is not flagged.
+ * is flag-only for now.
  */
 export function detectClusteredJumps(points: [number, number][]): boolean {
     if (points.length < 10) return false;
@@ -120,17 +128,22 @@ export function detectClusteredJumps(points: [number, number][]): boolean {
 
     const ABSOLUTE_THRESHOLD_M = 100;
     const RELATIVE_MULTIPLE = 8;
-    const bigJumpIdxs: number[] = [];
-    for (let i = 0; i < segLens.length; i++) {
-        if (segLens[i] > ABSOLUTE_THRESHOLD_M && segLens[i] > median * RELATIVE_MULTIPLE) bigJumpIdxs.push(i);
+    const TURN_THRESHOLD_DEG = 100;
+    const reversalIdxs: number[] = [];
+    for (let i = 1; i < segLens.length - 1; i++) {
+        if (segLens[i] <= ABSOLUTE_THRESHOLD_M || segLens[i] <= median * RELATIVE_MULTIPLE) continue;
+        const bIn = bearing(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1]);
+        const bJump = bearing(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]);
+        if (bearingDiff(bIn, bJump) > TURN_THRESHOLD_DEG) reversalIdxs.push(i);
     }
 
     const WINDOW = 20;
+    const MIN_CLUSTER = 2;
     let i = 0;
-    while (i < bigJumpIdxs.length) {
+    while (i < reversalIdxs.length) {
         let j = i;
-        while (j + 1 < bigJumpIdxs.length && bigJumpIdxs[j + 1] - bigJumpIdxs[i] <= WINDOW) j++;
-        if (j - i + 1 >= 3) return true;
+        while (j + 1 < reversalIdxs.length && reversalIdxs[j + 1] - reversalIdxs[i] <= WINDOW) j++;
+        if (j - i + 1 >= MIN_CLUSTER) return true;
         i = j + 1;
     }
     return false;
