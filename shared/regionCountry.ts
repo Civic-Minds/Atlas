@@ -78,6 +78,7 @@ const REGION_TO_COUNTRY: Record<string, string> = {
   'Jalisco': 'Mexico',
   // France
   'Grand Est': 'France',
+  'Bretagne': 'France',
 };
 
 export function countryForRegion(region: string | null | undefined): string | null {
