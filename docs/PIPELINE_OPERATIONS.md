@@ -18,6 +18,8 @@ This is the single canonical procedure for adding or updating an agency — [`AD
    npm run route-report -- <slug>
    ```
    Reads the dry-run preview and prints a route × direction × day frequency table, plus three flags that have each caught a real bug before: a terminal headway far above the best headway anywhere on the route (Niagara 301, #241), near-duplicate headsigns on the same route+direction (Niagara typo, #242), and shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244 — recorded in `<slug>-shape-anomalies.json` alongside the other preview artifacts). A flag isn't automatically a bug — branching routes legitimately have faster segments than their terminal, for instance — but each one is worth a manual look before publishing. Pass `--live` to run the same report against an already-published agency's current R2 data instead (shape-anomaly detection isn't available in `--live` mode — it's only captured during parsing).
+
+   With the dry-run preview on disk, `npm run dev` will also serve that agency's search results and sidebar route cards locally — the dev server checks `tmp/process-preview/<slug>/` for any `/atlas-data/<slug>*.json` request before falling back to the real R2 proxy, so a brand-new (or not-yet-registered) agency can be browsed in the actual app before anything is published. This works even without a PMTiles build; see § Incremental PMTiles Build below for also previewing the agency's routes drawn on the map itself.
 3. Process the feed for real:
    ```bash
    npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]"
