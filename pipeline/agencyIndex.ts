@@ -16,6 +16,7 @@ export interface AgencyIndexSourceEntry {
   region?: string;
   bbox?: [number, number, number, number];
   staged?: boolean;
+  hiddenInProduction?: boolean;
 }
 
 export interface AgencyIndexEntry {
@@ -35,11 +36,12 @@ export interface AgencyIndexFile {
 /**
  * Pure: build the public agency directory. Staged agencies (not yet live —
  * see the `staged` flag cleared on first successful refresh) are excluded,
- * matching what the map itself shows.
+ * as are agencies explicitly hidden from production (e.g. Mexico coverage
+ * pending validation, #222) — matching what the map itself shows.
  */
 export function buildAgencyIndex(source: AgencyIndexSourceEntry[]): AgencyIndexFile {
   const agencies = source
-    .filter(a => !a.staged)
+    .filter(a => !a.staged && !a.hiddenInProduction)
     .map(a => ({
       slug: a.slug,
       name: a.name,

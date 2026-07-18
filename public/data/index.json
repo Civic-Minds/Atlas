@@ -376,7 +376,7 @@
         "BLUE"
       ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/243",
-      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service. Separately, routes 301 and 401 don't consistently use direction to mean outbound vs. inbound — one direction bucket mixes trips from two unrelated destinations under the same generic headsign — which made the Hospital stop look far more frequent than the real 30-minute (301) / hourly (401) service. We corrected the frequency calculation to stop conflating those trips. See issues #194 and #243.",
+      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service. Separately, routes 301 and 401 don't consistently use direction to mean outbound vs. inbound \u2014 one direction bucket mixes trips from two unrelated destinations under the same generic headsign \u2014 which made the Hospital stop look far more frequent than the real 30-minute (301) / hourly (401) service. We corrected the frequency calculation to stop conflating those trips. See issues #194 and #243.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-15",
@@ -411,7 +411,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Nepean, Ontario",
-        "Orléans, Ontario",
+        "Orl\u00e9ans, Ontario",
         "Kanata, Ontario",
         "Ottawa, Ontario",
         "Ottawa South, Ontario",
@@ -642,7 +642,7 @@
       "lastFeedVersion": "1771259558641",
       "lastRefreshedAt": "2026-07-06",
       "cities": [
-        "Saint-Jérôme, Quebec"
+        "Saint-J\u00e9r\u00f4me, Quebec"
       ]
     },
     {
@@ -667,7 +667,7 @@
     },
     {
       "slug": "rem",
-      "name": "REM (Montréal)",
+      "name": "REM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -695,12 +695,12 @@
         "Ville-Marie, Quebec",
         "Chomedey, Quebec",
         "Verdun, Quebec",
-        "Montréal, Quebec"
+        "Montr\u00e9al, Quebec"
       ]
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -718,12 +718,12 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Sainte-Foy, Quebec",
-        "Les Rivières, Quebec",
+        "Les Rivi\u00e8res, Quebec",
         "La Haute-Saint-Charles, Quebec",
         "Beauport, Quebec",
         "Charlesbourg, Quebec",
-        "La Cité-Limoilou, Quebec",
-        "Québec, Quebec"
+        "La Cit\u00e9-Limoilou, Quebec",
+        "Qu\u00e9bec, Quebec"
       ]
     },
     {
@@ -751,10 +751,10 @@
         "Saint-Hubert, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Brossard, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
         "Ville-Marie, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
-        "Saint-Léonard, Quebec",
+        "Saint-L\u00e9onard, Quebec",
         "Verdun, Quebec"
       ]
     },
@@ -781,18 +781,18 @@
         "Laval, Quebec",
         "Chomedey, Quebec",
         "Pierrefonds-Roxboro, Quebec",
-        "Montréal-Nord, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+        "Montr\u00e9al-Nord, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
         "Terrebonne, Quebec",
         "Saint-Louis-de-Terrebonne, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Saint-Léonard, Quebec",
+        "Saint-L\u00e9onard, Quebec",
         "Saint-Laurent, Quebec"
       ]
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -811,13 +811,13 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Sainte-Foy, Quebec",
-        "Lévis, Quebec",
-        "Québec, Quebec"
+        "L\u00e9vis, Quebec",
+        "Qu\u00e9bec, Quebec"
       ]
     },
     {
       "slug": "stm",
-      "name": "STM (Montréal)",
+      "name": "STM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -841,14 +841,14 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Saint-Laurent, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Verdun, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
         "Pierrefonds, Quebec",
-        "Rosemont–La Petite-Patrie, Quebec",
+        "Rosemont\u2013La Petite-Patrie, Quebec",
         "Ville-Marie, Quebec"
       ]
     },
@@ -875,7 +875,7 @@
         "Gatineau, Quebec",
         "Aylmer, Quebec",
         "Hull, Quebec",
-        "Orléans, Ontario",
+        "Orl\u00e9ans, Ontario",
         "Ottawa, Ontario"
       ]
     },
@@ -946,7 +946,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Saint-Hubert, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Saint-Laurent, Quebec",
@@ -954,12 +954,12 @@
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
         "Verdun, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec"
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec"
       ]
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -1003,7 +1003,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Le Sud-Ouest, Quebec",
         "Saint-Laurent, Quebec",
         "Verdun, Quebec",
@@ -1012,7 +1012,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -1033,7 +1033,7 @@
       "cities": [
         "Brossard, Quebec",
         "Verdun, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Le Sud-Ouest, Quebec"
       ]
@@ -1060,7 +1060,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Saint-Louis-de-Terrebonne, Quebec",
-        "Saint-Jérôme, Quebec",
+        "Saint-J\u00e9r\u00f4me, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Pierrefonds, Quebec",
         "Chomedey, Quebec",
@@ -1094,10 +1094,10 @@
         "Repentigny, Quebec",
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Montréal-Nord, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
-        "Saint-Léonard, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec"
+        "Montr\u00e9al-Nord, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
+        "Saint-L\u00e9onard, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec"
       ]
     },
     {
@@ -2494,7 +2494,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-07-13",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -2581,7 +2581,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -3196,8 +3196,8 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-emery-go-round-gtfs-2224.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-07-13",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "lastRefreshedAt": "2026-07-17",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -7979,7 +7979,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Champaign, Illinois"
@@ -8356,7 +8356,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-07-13",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt — nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt \u2014 nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -8501,7 +8501,7 @@
       "lastFeedExpiry": "20270201",
       "lastFeedVersion": "20251212",
       "lastRefreshedAt": "2026-07-06",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only — every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only \u2014 every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -9911,7 +9911,8 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/mx-guadalajara-mi-transporte-gtfs-2366.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-07-16"
+      "lastRefreshedAt": "2026-07-16",
+      "hiddenInProduction": true
     },
     {
       "slug": "cheyenne",

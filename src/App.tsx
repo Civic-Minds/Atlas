@@ -44,6 +44,8 @@ export interface Agency {
   lastRefreshedAt?: string | null;
   excludeRouteShortNames?: string[];
   staged?: boolean;
+  /** Excluded from the production build (real, processed data — unlike `staged`) until country coverage is validated. Visible in local dev for QA (#222). */
+  hiddenInProduction?: boolean;
   issueUrl?: string;
   overrideNote?: string;
   feedReviewStatus?: 'review' | 'verified';
@@ -241,7 +243,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged)
+          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug);
@@ -393,7 +395,7 @@ export default function App() {
                   })
                   .then((data: { agencies: Agency[] }) => {
                     const enriched = data.agencies
-                      .filter((a: Agency) => !a.staged)
+                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV))
                       .map((a: Agency) => {
                         if (!a.url) {
                           const arts = getAgencyArtifactUrls(a.slug);

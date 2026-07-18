@@ -23,6 +23,14 @@ describe('buildAgencyIndex', () => {
     expect(result.agencies.map(a => a.slug)).toEqual(['yrt']);
   });
 
+  it('excludes agencies hidden from production (#222)', () => {
+    const result = buildAgencyIndex([
+      { slug: 'guadalajara', name: 'Mi Transporte', hiddenInProduction: true },
+      { slug: 'yrt', name: 'YRT' },
+    ]);
+    expect(result.agencies.map(a => a.slug)).toEqual(['yrt']);
+  });
+
   it('never leaks feedUrl/mdbFeedUrl or other pipeline-only fields', () => {
     const withExtras = { slug: 'ttc', name: 'TTC', feedUrl: 'http://internal', mdbFeedUrl: 'http://mirror' };
     const result = buildAgencyIndex([withExtras]);
