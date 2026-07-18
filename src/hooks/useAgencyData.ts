@@ -47,6 +47,7 @@ function buildInitialBounds(): ViewportBounds {
   };
 }
 const INITIAL_BOUNDS = buildInitialBounds();
+const MAX_CONCURRENT_AGENCY_FETCHES = 6;
 
 function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
@@ -78,12 +79,19 @@ export function useAgencyData(
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
   const loadedSlugs = useRef(new Set<string>());
+  const queuedSlugs = useRef(new Set<string>());
+  const fetchQueue = useRef<Agency[]>([]);
+  const activeFetches = useRef(0);
+  const pumpRef = useRef<() => void>(() => {});
   const loadedCorridorSlugs = useRef(new Set<string>());
   const cancelled = useRef(false);
 
   useEffect(() => {
     cancelled.current = false;
     loadedSlugs.current = new Set();
+    queuedSlugs.current = new Set();
+    fetchQueue.current = [];
+    activeFetches.current = 0;
     loadedCorridorSlugs.current = new Set();
     setLayers({});
     setLoadedCount(0);
@@ -91,8 +99,32 @@ export function useAgencyData(
     return () => { cancelled.current = true; };
   }, [agencies]);
 
-  const fetchAgency = useCallback((agency: Agency) => {
-    if (loadedSlugs.current.has(agency.slug)) return;
+  const pumpFetchQueue = useCallback(() => {
+    while (activeFetches.current < MAX_CONCURRENT_AGENCY_FETCHES && fetchQueue.current.length > 0) {
+      const agency = fetchQueue.current.shift()!;
+      queuedSlugs.current.delete(agency.slug);
+      activeFetches.current++;
+
+      fetchAgencyGeo(agency)
+        .then(data => {
+          if (cancelled.current) return;
+          setLayers(prev => ({ ...prev, [agency.slug]: data }));
+        })
+        .catch(err => {
+          console.error(`Failed to load ${agency.slug}`, err);
+        })
+        .finally(() => {
+          activeFetches.current--;
+          if (!cancelled.current) setLoadedCount(n => n + 1);
+          pumpRef.current();
+        });
+    }
+  }, []);
+
+  pumpRef.current = pumpFetchQueue;
+
+  const queueAgency = useCallback((agency: Agency) => {
+    if (loadedSlugs.current.has(agency.slug) || queuedSlugs.current.has(agency.slug)) return;
     loadedSlugs.current.add(agency.slug);
 
     const cached = getCachedAgencyGeo(agency.slug);
@@ -101,18 +133,10 @@ export function useAgencyData(
       return;
     }
 
+    queuedSlugs.current.add(agency.slug);
+    fetchQueue.current.push(agency);
     setRequestedCount(n => n + 1);
-    fetchAgencyGeo(agency)
-      .then(data => {
-        if (cancelled.current) return;
-        setLayers(prev => ({ ...prev, [agency.slug]: data }));
-        setLoadedCount(n => n + 1);
-      })
-      .catch(err => {
-        console.error(`Failed to load ${agency.slug}`, err);
-        if (!cancelled.current) setLoadedCount(n => n + 1);
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    pumpRef.current();
   }, []);
 
   // Load agencies in the viewport, plus search-matched agencies so route search
@@ -132,8 +156,17 @@ export function useAgencyData(
       }
     }
 
-    agencies.filter(a => slugsToLoad.has(a.slug)).forEach(fetchAgency);
-  }, [agencies, bounds, fetchAgency, searchQuery]);
+    const centerLat = (vp.s + vp.n) / 2;
+    const centerLon = (vp.w + vp.e) / 2;
+    agencies
+      .filter(a => slugsToLoad.has(a.slug))
+      .sort((a, b) => {
+        const aDistance = Math.hypot(a.center[0] - centerLat, a.center[1] - centerLon);
+        const bDistance = Math.hypot(b.center[0] - centerLat, b.center[1] - centerLon);
+        return aDistance - bDistance;
+      })
+      .forEach(queueAgency);
+  }, [agencies, bounds, queueAgency, searchQuery]);
 
   // When the Corridors band view is active, lazily load per-agency corridor GeoJSON
   // (isCorridor features) for visible agencies that have a corridorsUrl.

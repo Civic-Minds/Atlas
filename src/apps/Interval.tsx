@@ -398,6 +398,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
         onClearSelection={clearMapSelection}
+        showInitialLoading={isLoading && loadedCount === 0 && requestedCount > 0}
       />
 
       <MapAttribution />
