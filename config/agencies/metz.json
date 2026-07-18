@@ -1,0 +1,20 @@
+{
+  "slug": "metz",
+  "name": "Le Met' (Metz)",
+  "region": "Grand Est",
+  "center": [
+    49.1193,
+    6.1757
+  ],
+  "feedUrl": "https://data.lemet.fr/documents/LEMET-gtfs.zip",
+  "mdbFeedUrl": null,
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-18",
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.lemet.fr/",
+  "cities": [
+    "Metz, France"
+  ]
+}
