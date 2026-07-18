@@ -45,6 +45,7 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 
 ## Data Quality
 
+- [ ] **Explicit `country` field per agency**: agency configs currently only have `region` (free text: "Ontario", "Jalisco", "Grand Est") with no `country` field at all. `shared/regionCountry.ts` works around this with a region→country lookup table (fine for now — low cost, one new entry per country added), but the more correct long-term fix is backfilling an explicit `country` field across all agency configs, removing the string-matching fragility entirely. Bigger one-time migration (467+ files) than the lookup-table workaround, which is why it's deferred rather than done alongside `regionCountry.ts`.
 - [ ] **Per-agency name normalizer**: `titleCase(str, agencyAcronyms?)` accepts an optional agency-specific acronym map merged with the global `TRANSIT_ACRONYMS` table at call time. Rules live in a `nameAcronyms` field per agency in `index.json` (only agencies that need overrides add an entry). Fixes cases where the global table is wrong for a specific agency — e.g. "St" means Street in most stop names, but GO Transit uses "ST" as the Stouffville line code. Currently handled by excluding the entry globally; per-agency injection would let GO use the override without affecting every other agency.
 
 ---

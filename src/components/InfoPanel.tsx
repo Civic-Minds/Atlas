@@ -6,6 +6,7 @@ import { R2_PUBLIC_URL } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
+import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
@@ -68,6 +69,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const countries = useMemo(() => countriesForAgencies(agencies), [agencies]);
+  const countriesLabel = useMemo(() => {
+    if (countries.length === 0) return 'North America';
+    if (countries.length === 1) return countries[0];
+    if (countries.length === 2) return countries.join(' and ');
+    return `${countries.slice(0, -1).join(', ')}, and ${countries[countries.length - 1]}`;
+  }, [countries]);
 
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
@@ -282,7 +290,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'home' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                A transit atlas covering agencies across North America.
+                A transit atlas covering agencies across {countriesLabel}.
               </p>
 
               <div>

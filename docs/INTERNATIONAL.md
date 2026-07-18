@@ -49,11 +49,27 @@ Checked as an alternative after the UK's bundling problem surfaced.
 
 ---
 
+## Australia — mixed, but Queensland/Tasmania look easy
+
+Checked as a third data point after France confirmed the UK's bundling problem isn't universal to "countries outside France."
+
+- **No national aggregator** — confirmed fragmented, one state/territory transport authority at a time (TfNSW, PTV/Vic DoT, TransLink Qld, Transport Tasmania, Transperth WA). `data.gov.au` is just a metadata index pointing at these state portals, not a data host itself.
+- **Distribution model varies by state** — this is the interesting part:
+  - **NSW** and **Victoria**: bundled, UK-style. One statewide zip (NSW: `full_greater_sydney_gtfs_static_0.zip`; Victoria: a single `gtfs.zip` with internal per-mode/operator folders) covering everything at once. Would need the same agency_id-filter capability the UK needs.
+  - **Queensland** and **Tasmania**: per-network, France-style. Queensland's TransLink publishes separate zips per region (SEQ, Cairns/Sunbus, Gladstone, Bowen, Rockhampton/Yeppoon, Toowoomba). Tasmania publishes separate feeds per city (Hobart, Launceston, Burnie). No filtering needed.
+- **Candidate found: MetroTas Burnie** (Tasmania, pop. ~20k) — `https://files.mobilitydatabase.org/mdb-681/mdb-681-202604180143/mdb-681-202604180143.zip`. 27-28 routes, 542 stops, clean `shapes.txt`, calendar valid through Dec 2026. Technically bundles 3 small operators (Metro Tasmania, Mersey Link, Redline Coaches) — Tasmania exports per-region rather than strictly per-operator — but nowhere near NSW/Victoria's capital-city scale, comparable in spirit to Metz.
+- Mobility Database has solid Australian coverage generally (TfNSW mdb-2449, TransLink SEQ mdb-668, Transperth mdb-1086, Sunbus Cairns mdb-674, MetroTas Hobart mdb-665 and Burnie mdb-681) — usable as `mdbFeedUrl` fallbacks.
+
+**Status:** not started. Easier than the UK, harder than France — but Queensland/Tasmania specifically need zero new pipeline work, same as Metz did.
+
+---
+
 ## Recommendation
 
-1. **France (Metz) next**, not the UK — it's the low-effort, high-confidence win the UK was originally hoped to be, and validates whether "Europe is generally easier than Mexico" holds without also taking on new pipeline architecture work.
-2. **UK stays parked** until there's appetite for the agency_id-filter pipeline work — worth revisiting once that's built anyway, since every England agency will hit the same regional-bundling shape.
-3. Keep new countries **hidden from production** (`hiddenInProduction`) until each is individually validated, same as Mexico — don't let one bad agency block or discredit an otherwise-good country's rollout.
+1. **France next**, not the UK — it's the low-effort, high-confidence win the UK was originally hoped to be, and validates whether "Europe is generally easier than Mexico" holds without also taking on new pipeline architecture work.
+2. **UK and Australia's NSW/Victoria stay parked** until there's appetite for the agency_id-filter pipeline work — worth building once, since it unblocks all three at once (every England agency, plus NSW and Victoria, hit the identical regional-bundling shape).
+3. **Tasmania (Burnie) is a viable next pick** if there's interest in a second country beyond France before that filter work happens — same "no new pipeline capability needed" profile as France's candidates.
+4. Keep new countries **hidden from production** (`hiddenInProduction`) until each is individually validated, same as Mexico — don't let one bad agency block or discredit an otherwise-good country's rollout.
 
 ---
 
