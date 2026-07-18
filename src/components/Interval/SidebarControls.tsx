@@ -409,8 +409,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       // short-turn trips are clustered together (e.g. LA Metro 182). The
       // pipeline marks that pattern as limited service; do not promote it to
       // a normal route-card row just because the gap is numerically defined.
-      if (d.tier !== 'span' && metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null) g.realTier.push(d);
-      else g.span.push(d);
+      if (d.tier === 'span') {
+        g.span.push(d);
+      } else if (metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null) {
+        g.realTier.push(d);
+      }
+      // Else: normal (non-span) service that simply has no data for the
+      // selected period — e.g. a daytime-only route viewed at 3am. Omit it
+      // entirely rather than mislabeling it "limited service" (#227); a
+      // route not running right now isn't the same as a genuinely
+      // short-window/peak-only pattern.
     }
     // Deduplicate realTier entries with the same headsign — keep the one with the best (lowest) headway.
     // Multiple shape variants can share the same headsign (e.g. different mid-route detours), producing
