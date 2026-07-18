@@ -22,6 +22,7 @@ Atlas is built from publicly available transit data and publishes the processing
 
 ## Data Freshness & Review
 
+- **[Data Principles](./DATA_PRINCIPLES.md)**: How Atlas approaches freshness, review, corrections, and static versus live data.
 - **[Known Issues](./KNOWN_ISSUES.md)**: Feed limitations, data quirks, and known coverage gaps.
 - **[Pipeline Operations](./PIPELINE_OPERATIONS.md)**: Refresh, review, correction, and publication procedures.
 - **[Live Polling](./LIVE_POLLING.md)**: Freshness and coverage details for real-time vehicle and adherence data.
