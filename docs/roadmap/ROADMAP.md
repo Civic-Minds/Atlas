@@ -17,8 +17,6 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 - **[Strategy](../STRATEGY.md)**: competitive landscape and long-term product positioning.
 - **[Research](../RESEARCH.md)**: agency pain points and problem statements informing Atlas's direction.
 
-International expansion planning lives in [Data § Expansion Planning](../DATA.md), not here — it's a coverage question, not a product-direction one.
-
 Ideas kicked around just for fun, no commitment: [Experiments](./EXPERIMENTS.md).
 
 [Back to Home](../../README.md)
