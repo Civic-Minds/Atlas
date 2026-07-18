@@ -14,10 +14,11 @@ Atlas is a regional transit atlas: GTFS feeds → processed GeoJSON on Cloudflar
 ---
 
 ### Reference & Research
-- **[Factbook](./FACTBOOK.md)** (proposed): data-driven findings, service change stories, frequency realities, AI-assisted narratives.
 - **[Strategy](../STRATEGY.md)**: competitive landscape and long-term product positioning.
 - **[Research](../RESEARCH.md)**: agency pain points and problem statements informing Atlas's direction.
 
 International expansion planning lives in [Data § Expansion Planning](../DATA.md), not here — it's a coverage question, not a product-direction one.
+
+Early-stage experiment: [Factbook](./FACTBOOK.md) — turning the dataset into shareable data-driven stories and facts. Exploratory, not a settled direction yet.
 
 [Back to Home](../../README.md)
