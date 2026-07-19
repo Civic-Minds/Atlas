@@ -302,16 +302,20 @@ describe('excludeKnownIsolatedPoints', () => {
   // break on the map. Confirmed real (33-90% bridge-savings, matching the
   // established range) vs. four other sweep candidates at 1.7-3.1% savings
   // that were left alone as noise.
-  it('excises the known misplaced point for Nancy shape 10757$STAN-67$16', () => {
+  it('excises both known misplaced points for Nancy shape 10757$STAN-67$16 (a two-point cluster, not a single isolated point)', () => {
+    // Visual re-inspection after the single-point fix showed the line still
+    // cutting through blocks -- the adjacent point at 6.122347 also needed
+    // removing (neither shows a sharp reversal on its own, tracked in #247).
     const points: [number, number][] = [
-      [48.69816589355469, 6.122346878051758],
-      [48.69740676879883, 6.119966983795166], // the known misplaced point
+      [48.69923400878906, 6.127908229827881],
+      [48.69816589355469, 6.122346878051758], // known misplaced point
+      [48.69740676879883, 6.119966983795166], // known misplaced point
       [48.69609451293945, 6.122805118560791],
     ];
     const result = excludeKnownIsolatedPoints('10757$STAN-67$16', points);
     expect(result.removed).toBe(true);
     expect(result.points).toEqual([
-      [48.69816589355469, 6.122346878051758],
+      [48.69923400878906, 6.127908229827881],
       [48.69609451293945, 6.122805118560791],
     ]);
   });

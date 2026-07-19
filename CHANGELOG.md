@@ -13,6 +13,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - A full sweep of every Nancy shape for this same isolated-reversal pattern found three more real cases (routes T2 and Corol variants, plus one previously-unflagged shape) — added to the same narrowly-scoped exception list. Four other sweep candidates matched the noise signature instead and were left alone.
 - **Right-click the map for a small menu**: copy a URL pointing at that exact spot, or jump straight to filing a GitHub issue pre-filled with the location — both skip having to recenter the map and manually copy coordinates first.
 - Found (but not yet fixed — see #247) a fourth Nancy shape-corruption pattern: large geometric jumps with only a mild turn angle, invisible to both existing detectors. Confirmed on routes T2 and T4; needs different detection logic than a coordinate patch.
+- One of the isolated-point fixes above (STAN-67$16) actually needed two adjacent points removed, not one — the map still showed a visible break there after the first fix. Both together match the confirmed-real bridge-savings range (~41%).
+- **Fixed the local dry-run agency-data preview added in 3.2.6 — it never actually worked.** Its URL match was missing an `atlas/` path segment that's always present in the real request path (`R2_PUBLIC_URL` resolves to a same-origin `/atlas-data` proxy in dev, and route/stop URLs are always built as `<R2_PUBLIC_URL>/atlas/<slug>....json`), so every dry-run preview silently fell through to the real R2 proxy instead — a 404 for any not-yet-published agency, showing as 0 routes/0% coverage on the map with no route card on click, even though the map tiles themselves rendered fine from the separate PMTiles preview.
 
 ## [3.2.7] - 2026-07-18
 
