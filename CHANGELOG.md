@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Overlapping calendar.txt service periods no longer double headways when calendar_dates cancels one**: French-style exports (confirmed on TAG Grenoble Tram A) that publish two concurrent weekday blocks and remove the superseded one via `exception_type=2` now drop the cancelled service on the reference day, so headways stay at the real interval instead of ~half.
+- **Broken GTFS feeds fail closed during process (soft-skip on weekly refresh)**: structural validation runs after parse; `npm run process` aborts on errors unless `--force`, and refresh leaves feed metadata alone when validation fails so a bad zip is not treated as published.
+- **Empty pipeline output no longer marks a feed as freshly refreshed**: a 0-feature result used to stamp `lastFeedExpiry` / `lastRefreshedAt`, so skip-if-unchanged could permanently ignore a flex/microtransit extract that later gains real routes.
+
 - **Live map tooltips no longer inject raw GTFS-RT text as HTML**: vehicle headsigns/route labels and history stop cards escape feed strings before `innerHTML`, so a malicious or malformed feed string cannot run as markup in the browser.
 - **Live API routes refuse parked and unkeyed agencies**: proxy and archive endpoints now match the UI eligibility rules (and require configured API keys before calling key-gated upstreams), so inactive configs like LA Metro cannot burn third-party quotas via the public API.
 - **All live API routes share rate limiting**: stop, adherence, and legacy gtfs-rt proxies now enforce the same per-IP budget as vehicles/history; expensive snapshot/replay/history paths use a tighter limit. (Still process-local on Vercel — not a distributed edge limit.)

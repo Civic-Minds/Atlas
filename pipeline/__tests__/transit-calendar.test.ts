@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { detectReferenceDate } from '../transit-calendar.js';
+import { detectReferenceDate, getActiveServiceIds } from '../transit-calendar.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../../types/gtfs.js';
 
 function cal(service_id: string, days: string, start_date: string, end_date: string): GtfsCalendar {
@@ -14,6 +14,10 @@ function cal(service_id: string, days: string, start_date: string, end_date: str
 
 function added(service_id: string, date: string): GtfsCalendarDate {
   return { service_id, date, exception_type: '1' };
+}
+
+function removed(service_id: string, date: string): GtfsCalendarDate {
+  return { service_id, date, exception_type: '2' };
 }
 
 describe('detectReferenceDate', () => {
@@ -89,5 +93,78 @@ describe('detectReferenceDate', () => {
     ];
     const ref = detectReferenceDate(calendar, undefined, trips);
     expect(ref.startsWith('2024-12') || ref.startsWith('202412')).toBe(false);
+  });
+});
+
+describe('getActiveServiceIds', () => {
+  it('applies calendar_dates exception_type=2 to calendar.txt services (Grenoble pattern)', () => {
+    // Two overlapping weekday periods; the superseded one is cancelled via type 2
+    // on the nearest Monday to the reference date (20240615 is a Saturday → Monday 20240617).
+    const calendar = [
+      cal('old', 'mo,tu,we,th,fr', '20240101', '20241231'),
+      cal('new', 'mo,tu,we,th,fr', '20240601', '20241231'),
+    ];
+    const calendarDates = [
+      removed('old', '20240617'), // nearest Monday to 20240615
+    ];
+    const active = getActiveServiceIds(calendar, calendarDates, 'Monday', '20240615');
+    expect(active.has('new')).toBe(true);
+    expect(active.has('old')).toBe(false);
+  });
+
+  it('keeps both overlapping calendar services when no type-2 removal applies', () => {
+    const calendar = [
+      cal('a', 'mo,tu,we,th,fr', '20240101', '20241231'),
+      cal('b', 'mo,tu,we,th,fr', '20240601', '20241231'),
+    ];
+    const active = getActiveServiceIds(calendar, [], 'Monday', '20240615');
+    expect(active.has('a')).toBe(true);
+    expect(active.has('b')).toBe(true);
+  });
+
+  it('includes calendar_dates-only services with enough weekday occurrences', () => {
+    // Four Mondays within 90 days of ref — regular calendar_dates-only service.
+    const calendarDates = [
+      added('cd_only', '20240603'),
+      added('cd_only', '20240610'),
+      added('cd_only', '20240617'),
+      added('cd_only', '20240624'),
+    ];
+    const active = getActiveServiceIds([], calendarDates, 'Monday', '20240615');
+    expect(active.has('cd_only')).toBe(true);
+  });
+
+  it('picks the single-occurrence service closest to referenceDate (GO-style)', () => {
+    // Each Monday is its own service_id (count 1). Prefer the one nearest ref.
+    const calendarDates = [
+      added('week1', '20240603'),
+      added('week2', '20240610'),
+      added('week3', '20240617'), // nearest Monday to 20240615
+      added('week4', '20240624'),
+    ];
+    const active = getActiveServiceIds([], calendarDates, 'Monday', '20240615');
+    expect([...active]).toEqual(['week3']);
+  });
+
+  it('uses single-day calendar entries only when no multi-day service is active (Burlington holiday pattern)', () => {
+    const calendar = [
+      cal('regular', 'mo,tu,we,th,fr', '20240101', '20241231'),
+      // Single-day holiday with all DOW=1 — must not merge with regular weekdays.
+      cal('victoria', 'mo,tu,we,th,fr,sa,su', '20240520', '20240520'),
+    ];
+    const active = getActiveServiceIds(calendar, [], 'Monday', '20240520');
+    expect(active.has('regular')).toBe(true);
+    expect(active.has('victoria')).toBe(false);
+  });
+
+  it('falls back to single-day calendar when multi-day has no coverage on that DOW', () => {
+    // Multi-day is weekends only; Monday falls through to single-day Pass B.
+    const calendar = [
+      cal('weekend', 'sa,su', '20240101', '20241231'),
+      cal('special_monday', 'mo', '20240617', '20240617'),
+    ];
+    const active = getActiveServiceIds(calendar, [], 'Monday', '20240615');
+    expect(active.has('special_monday')).toBe(true);
+    expect(active.has('weekend')).toBe(false);
   });
 });

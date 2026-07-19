@@ -34,7 +34,8 @@ config({ path: resolve('.env.local') });
 
 const rawArgs = process.argv.slice(2);
 const dryRun = rawArgs.includes('--dry-run');
-const positional = rawArgs.filter(a => a !== '--dry-run');
+const force = rawArgs.includes('--force');
+const positional = rawArgs.filter(a => a !== '--dry-run' && a !== '--force');
 
 const input = positional[0];
 const slug = positional[1];
@@ -42,7 +43,7 @@ const agencyName = positional[2] || slug;
 const centerArg = positional[3];
 
 if (!input || !slug) {
-  console.error('Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon] [--dry-run]');
+  console.error('Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon] [--dry-run] [--force]');
   process.exit(1);
 }
 
@@ -136,7 +137,7 @@ async function main() {
 
   const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { preprocess, excludeRouteShortNames, slug, manualBaseFare });
+  }, { preprocess, excludeRouteShortNames, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);

@@ -13,7 +13,7 @@ import { resolve } from 'path';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
 import JSZip from 'jszip';
 import { config } from 'dotenv';
-import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
+import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
@@ -29,6 +29,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
+import { shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 
 config({ path: resolve('.env.local') });
 
@@ -264,14 +265,27 @@ async function refreshAgency(
     }
   }
 
-  const primary = await processGtfsBuffer(buf, undefined, {
-    routeTypes: agency.routeTypes,
-    preprocess: agency.preprocess,
-    excludeRouteShortNames: agency.excludeRouteShortNames,
-    skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
-    slug: agency.slug,
-    manualBaseFare: manualBaseFareOverride,
-  });
+  let primary;
+  try {
+    primary = await processGtfsBuffer(buf, undefined, {
+      routeTypes: agency.routeTypes,
+      preprocess: agency.preprocess,
+      excludeRouteShortNames: agency.excludeRouteShortNames,
+      skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
+      slug: agency.slug,
+      manualBaseFare: manualBaseFareOverride,
+      // Soft: skip this agency rather than aborting the whole weekly refresh.
+      // process CLI fails hard unless --force.
+      force: false,
+    });
+  } catch (err) {
+    if (err instanceof GtfsValidationError) {
+      writeLog(`  [warn] GTFS validation failed (${err.report.errors} error(s)) — skipping update\n`);
+      // Do not stamp lastFeed* — leave previous metadata so a later good feed can run.
+      return 'validation failed, skipped';
+    }
+    throw err;
+  }
 
   let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
@@ -315,10 +329,9 @@ async function refreshAgency(
   }
 
   if (featureCount === 0) {
-    writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?)\n`);
-    agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
-    agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
-    agency.lastRefreshedAt = todayUtcYmd();
+    // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
+    // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
+    writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
     return '0 features, skipped';
   }
 
@@ -359,9 +372,15 @@ async function refreshAgency(
   } else {
     writeLog(`  [warn] no feed_end_date or feed_version — zip not archived\n`);
   }
-  agency.lastFeedExpiry = feedExpiry ?? peekedExpiry ?? null;
-  agency.lastFeedVersion = feedVersion ?? peekedVersion ?? null;
-  agency.lastRefreshedAt = todayUtcYmd();
+  if (shouldStampFeedMeta(featureCount)) {
+    stampFeedMeta(agency, {
+      feedExpiry,
+      feedVersion,
+      peekedExpiry,
+      peekedVersion,
+      todayYmd: todayUtcYmd(),
+    });
+  }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
   const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);

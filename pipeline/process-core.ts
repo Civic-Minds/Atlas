@@ -10,6 +10,7 @@ import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
+import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } from '../shared/config.js';
@@ -37,6 +38,22 @@ const PERIODS = Object.fromEntries(
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
   manualBaseFare?: number;
+  /**
+   * When true, continue after GTFS validation errors (log only).
+   * Default false: throw GtfsValidationError so process CLI fails closed.
+   * Refresh catches the error and soft-skips the agency.
+   */
+  force?: boolean;
+}
+
+/** Thrown when validateGtfs reports errors and options.force is not set. */
+export class GtfsValidationError extends Error {
+  readonly report: ValidationReport;
+  constructor(report: ValidationReport) {
+    super(`GTFS validation failed with ${report.errors} error(s)`);
+    this.name = 'GtfsValidationError';
+    this.report = report;
+  }
 }
 
 
@@ -62,6 +79,21 @@ export async function processGtfsBuffer(
 ): Promise<ProcessResult> {
   let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus);
   gtfs = normalizeGtfs(gtfs, options, onStatus);
+
+  const validation = validateGtfs(gtfs, options?.slug ?? 'feed');
+  if (validation.errors > 0) {
+    const errorIssues = validation.issues.filter(i => i.severity === 'error');
+    onStatus?.(`Validation: ${validation.errors} error(s), ${validation.warnings} warning(s)`);
+    for (const issue of errorIssues.slice(0, 12)) {
+      onStatus?.(`  [${issue.code}] ${issue.file}: ${issue.message}`);
+    }
+    if (!options?.force) {
+      throw new GtfsValidationError(validation);
+    }
+    onStatus?.('  continuing despite validation errors (--force)');
+  } else if (validation.warnings > 0) {
+    onStatus?.(`Validation: ${validation.warnings} warning(s)`);
+  }
 
   const routeBaseFares = computeRouteBaseFares(gtfs, options?.manualBaseFare);
 

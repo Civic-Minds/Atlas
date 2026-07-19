@@ -172,6 +172,27 @@ export function detectReferenceDate(
  * The referenceDate filter prevents merging trips from non-overlapping schedule
  * periods (e.g. summer + winter service).
  */
+/**
+ * Nearest date to referenceDate (within the same week) whose day-of-week matches
+ * `day`. getActiveServiceIds is called with ONE referenceDate shared across all
+ * DayNames, so referenceDate itself often isn't a `day`-matching date — e.g. a
+ * Sunday reference when checking Monday. calendar_dates.txt exceptions are
+ * per-exact-date, so matching only referenceDate would miss weekday exceptions.
+ */
+function nearestDateForDayName(referenceDate: string, day: DayName): string {
+    const DOW_NAMES: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const targetDow = DOW_NAMES.indexOf(day);
+    const ry = parseInt(referenceDate.substring(0, 4));
+    const rm = parseInt(referenceDate.substring(4, 6)) - 1;
+    const rd = parseInt(referenceDate.substring(6, 8));
+    const ref = new Date(ry, rm, rd);
+    let diff = targetDow - ref.getDay();
+    if (diff > 3) diff -= 7;
+    if (diff < -3) diff += 7;
+    const result = new Date(ry, rm, rd + diff);
+    return `${result.getFullYear()}${String(result.getMonth() + 1).padStart(2, '0')}${String(result.getDate()).padStart(2, '0')}`;
+}
+
 export function getActiveServiceIds(
     calendar: GtfsCalendar[],
     calendarDates: GtfsCalendarDate[],
@@ -219,6 +240,20 @@ export function getActiveServiceIds(
     // Pass B: only include single-day calendar entries when no multi-day service was found
     if (active.size === 0) {
         for (const cal of singleDayCalEntries) active.add(cal.service_id);
+    }
+
+    // calendar_dates.txt can override a calendar.txt service_id for a specific date
+    // (exception_type '2' = removed), not just add calendar_dates-only services (Step 2
+    // below). Sequential French schedule exports commonly publish several overlapping
+    // calendar.txt weekday periods and rely on calendar_dates.txt to cancel the
+    // superseded one for nearly every date in the overlap. Without this, both periods'
+    // trips get merged on the same reference date, doubling apparent departures
+    // (TAG Grenoble Tram A: real 10 min, computed 5 min from two overlapping services).
+    if (referenceDate) {
+        const checkDate = nearestDateForDayName(referenceDate, day);
+        for (const cd of (calendarDates ?? [])) {
+            if (cd.exception_type === '2' && cd.date === checkDate) active.delete(cd.service_id);
+        }
     }
 
     // Step 2: calendar_dates-only services (and all-zero placeholder calendar entries)
