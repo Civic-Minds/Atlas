@@ -153,9 +153,31 @@ describe('assertCountryMayWriteToR2', () => {
 });
 
 describe('isCountryLaunchBlocked', () => {
-  it('matches assert semantics without throwing', () => {
+  const prevBucket = process.env.R2_BUCKET_NAME;
+
+  afterEach(() => {
+    if (prevBucket === undefined) delete process.env.R2_BUCKET_NAME;
+    else process.env.R2_BUCKET_NAME = prevBucket;
+  });
+
+  it('matches assert semantics without throwing on production bucket', () => {
+    process.env.R2_BUCKET_NAME = 'atlas';
     expect(isCountryLaunchBlocked('France', registry)).toBe(true);
     expect(isCountryLaunchBlocked('Canada', registry)).toBe(false);
     expect(isCountryLaunchBlocked(null, registry)).toBe(false);
+  });
+
+  it('does not block writes to staging (non-production) bucket', () => {
+    process.env.R2_BUCKET_NAME = 'atlas-staging';
+    expect(isCountryLaunchBlocked('France', registry)).toBe(false);
+    expect(() =>
+      assertCountryMayWriteToR2({
+        country: 'France',
+        agencies: registry,
+        forceLaunch: false,
+        slug: 'lyon',
+        action: 'staging process',
+      }),
+    ).not.toThrow();
   });
 });

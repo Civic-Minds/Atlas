@@ -105,11 +105,22 @@ export class CountryLaunchBlockedError extends Error {
 }
 
 /**
- * Refuse a live R2 write when the target country has no production-visible
+ * Production public bucket is `atlas`. Writes to any other bucket (e.g.
+ * `atlas-staging`) are dress-rehearsal — country-launch gate does not apply.
+ */
+export function isProductionPublicR2Bucket(): boolean {
+  const bucket = (process.env.R2_BUCKET_NAME ?? 'atlas').replace(/^["']|["']$/g, '');
+  return bucket === 'atlas';
+}
+
+/**
+ * Refuse a production R2 write when the target country has no production-visible
  * agencies yet, unless `forceLaunch` is true (CLI flag was passed).
  *
- * No-ops when `country` is null (unmapped region outside the center fallback
- * boxes — typically US/Canada with a typo'd region we don't want to brick).
+ * No-ops when:
+ * - writing to a non-production bucket (staging dress rehearsal)
+ * - `country` is null (unmapped region — typically US/Canada typo we don't brick)
+ * - the country already has at least one production-visible agency
  */
 export function assertCountryMayWriteToR2(opts: {
   country: string | null;
@@ -119,16 +130,18 @@ export function assertCountryMayWriteToR2(opts: {
   action: string;
 }): void {
   if (opts.forceLaunch) return;
+  if (!isProductionPublicR2Bucket()) return;
   if (!opts.country) return;
   if (countryHasLiveAgencies(opts.country, opts.agencies)) return;
   throw new CountryLaunchBlockedError(opts.country, opts.slug, opts.action);
 }
 
-/** True when a live R2 write for this country would be blocked without the flag. */
+/** True when a production R2 write for this country would be blocked without the flag. */
 export function isCountryLaunchBlocked(
   country: string | null,
   agencies: AgencyCountrySource[],
 ): boolean {
+  if (!isProductionPublicR2Bucket()) return false;
   if (!country) return false;
   return !countryHasLiveAgencies(country, agencies);
 }

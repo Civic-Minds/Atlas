@@ -1,14 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import dotenv from 'dotenv';
+// loadEnv first so shared/config sees staging R2_PUBLIC_URL
+import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
 
-dotenv.config({ path: '.env.local' });
-dotenv.config();
+console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
 interface Feature {
   type: string;

@@ -21,7 +21,8 @@
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
-import { config } from 'dotenv';
+// loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
+import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { processGtfsBuffer } from './process-core.js';
 import { r2Put, r2PutArchive } from './r2.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
@@ -41,7 +42,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 
-config({ path: resolve('.env.local') });
+console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
 const FLAG_ARGS = new Set(['--dry-run', COUNTRY_LAUNCH_FLAG]);
 const rawArgs = process.argv.slice(2);

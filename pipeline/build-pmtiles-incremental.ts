@@ -55,10 +55,11 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { pipeline as streamPipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
-import dotenv from 'dotenv';
 import { PMTiles } from 'pmtiles';
 import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
+// loadEnv first so shared/config sees staging R2_PUBLIC_URL
+import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2.js';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway, AGENCY_BBOX_PAD, R2_PUBLIC_URL } from '../shared/config.js';
 import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
@@ -76,8 +77,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 
-dotenv.config({ path: '.env.local' });
-dotenv.config();
+console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
 interface Feature {
   type: string;

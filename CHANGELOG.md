@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Staging R2 support**: `ATLAS_ENV=staging` + `.env.staging` target a shared `atlas-staging` bucket for full process/PMTiles dress rehearsals without touching production. Country-launch gate only blocks the live `atlas` bucket.
 - **France expansion: ~140 candidate cities**: fourth dry-run batch (Bourg-en-Bresse area, Narbonne, Sète, Haguenau, La Roche-sur-Yon, Dreux, …). Still hidden, zero R2 writes.
 - **France expansion: ~116 candidate cities (dry-run only, still hidden)**: third speedrun batch added mid-size networks (Cherbourg, Chamonix, Albi, Angoulême, Montauban, Arcachon, …). Still no R2 writes.
 - **France expansion: ~91 candidate cities (dry-run only, still hidden)**: two speedrun batches — major metros (Lyon, Marseille, Toulouse, Nice, Cannes, Limoges, …) plus a wide mid-size sweep across every métropole région. Each feed dry-run validated with route LineStrings near the claimed city; still `hiddenInProduction` / `pmtilesPending` until a deliberate country launch. No R2 writes. Wrong-geo and stops-only feeds rejected.

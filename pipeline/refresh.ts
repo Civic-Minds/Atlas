@@ -15,9 +15,10 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
+// loadEnv first so shared/config sees staging R2_PUBLIC_URL
+import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
 import JSZip from 'jszip';
-import { config } from 'dotenv';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
@@ -41,10 +42,10 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 
-config({ path: resolve('.env.local') });
+console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
 if (!process.env.R2_ACCESS_KEY_ID) {
-  console.error('Missing R2 credentials. Add R2_* vars to .env.local');
+  console.error('Missing R2 credentials. Add R2_* vars to .env.local or .env.staging');
   process.exit(1);
 }
 
