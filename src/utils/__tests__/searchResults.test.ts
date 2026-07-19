@@ -50,6 +50,39 @@ describe('searchResults', () => {
     expect(prepared.truncated).toBe(true);
   });
 
+  it('prioritizes an agency whose primary city matches, over an incidental route/stop text match (#203)', () => {
+    const agencies: AgencySearchGroup[] = [{
+      key: 'LA Metro::California',
+      name: 'Los Angeles County Metropolitan Transportation Authority (LA Metro)',
+      region: 'California',
+      slug: 'lacmta',
+      inView: false,
+      distanceM: 100,
+      cities: ['Los Angeles, California', 'Koreatown, California'],
+    }];
+    // A route that only matches because its name happens to contain "Los Angeles" as text,
+    // not because it's actually an LA-area route (e.g. Santa Clarita Transit route "799 Los Angeles").
+    const incidentalRoute = [{
+      key: 'santaclarita::799',
+      routeShortName: '799',
+      routeLongName: 'Los Angeles',
+      inView: false,
+      distanceM: 50,
+      matchRank: 4,
+    }];
+
+    expect(prefersAgencySearchResults('los ang', incidentalRoute, agencies)).toBe(true);
+    expect(routesBeforeAgencies('los ang', incidentalRoute, agencies)).toBe(false);
+
+    // But a city name that only shows up further down an agency's served-cities list
+    // (not its primary/first city) shouldn't trigger this — that's a weaker, incidental match.
+    const notPrimaryCity: AgencySearchGroup[] = [{
+      ...agencies[0],
+      cities: ['Koreatown, California', 'Los Angeles, California'],
+    }];
+    expect(prefersAgencySearchResults('los ang', incidentalRoute, notPrimaryCity)).toBe(false);
+  });
+
   it('caps long route lists for display', () => {
     const manyRoutes = Array.from({ length: 50 }, (_, i) => ({
       key: `a::${i}`,
