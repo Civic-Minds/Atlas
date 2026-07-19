@@ -18,6 +18,9 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 | Transit Cape Breton | No public GTFS | Not in MDB / Canadian INF sources; retry periodically |
 | STS Saguenay | No usable public zip | Données Québec “STS” host serves Sherbrooke (sts.qc.ca), not Saguenay |
 | Manchester Transit Authority (NH) | Inactive MDB only | No active public fixed-route GTFS; retry periodically |
+| TaM (Montpellier) | No `shapes.txt` on the real network feed | Full official GTFS (`TAM_MMM_GTFS.zip` / mdb-844) and the urbain RT companion both ship schedules + stops only — dry-run yields ~2k stop points and **0 route lines**. Suburbain companion has shapes but is outer-bus only (misses tram + urban). Same class of gap as ilévia (Lille) and CTS (Strasbourg). Blocked for France expansion 2026-07-19 until upstream publishes shapes for the full network. |
+| ilévia (Lille) | No `shapes.txt` | Confirmed during France candidate sweep; agency export never includes shape geometry. |
+| CTS (Strasbourg) | No `shapes.txt` | Confirmed during France candidate sweep; agency export never includes shape geometry. |
 
 ---
 
