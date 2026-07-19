@@ -128,6 +128,15 @@ export function getRouteLabel(shortName: string | null | undefined, longName: st
   // as literal "<>" ("Longvic <> Toison D'or") — render as a proper arrow, not raw brackets.
   if (longName) longName = longName.replace(/\s*<>\s*/g, ' ↔ ');
 
+  // A route with 3+ termini (2+ arrows) reliably overflows the card title's 2-line clamp
+  // and gets cut off mid-word (STAR Rennes 12: "...↔ Saint-Grégoire ↔ Rennes (La..."). Keep
+  // just the first and last terminus — the through-route endpoints — and drop the middle
+  // via-point(s) from the title; the full stop-by-stop path is still on the map itself.
+  if (longName && longName.split(' ↔ ').length > 2) {
+    const parts = longName.split(' ↔ ');
+    longName = `${parts[0]} ↔ ${parts[parts.length - 1]}`;
+  }
+
   // SMART Train (Sonoma-Marin): long name is just "Main Line", combine with agency name
   if (agencyName && /smart/i.test(agencyName) && longName && /Main Line/i.test(longName)) {
     return 'SMART Train';
