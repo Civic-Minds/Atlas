@@ -297,6 +297,53 @@ describe('excludeKnownIsolatedPoints', () => {
     ]);
   });
 
+  // Found via a full sweep of every Nancy shape after the two cases above were
+  // fixed but route T2's other direction (STAN-67$16) still showed a visible
+  // break on the map. Confirmed real (33-90% bridge-savings, matching the
+  // established range) vs. four other sweep candidates at 1.7-3.1% savings
+  // that were left alone as noise.
+  it('excises the known misplaced point for Nancy shape 10757$STAN-67$16', () => {
+    const points: [number, number][] = [
+      [48.69816589355469, 6.122346878051758],
+      [48.69740676879883, 6.119966983795166], // the known misplaced point
+      [48.69609451293945, 6.122805118560791],
+    ];
+    const result = excludeKnownIsolatedPoints('10757$STAN-67$16', points);
+    expect(result.removed).toBe(true);
+    expect(result.points).toEqual([
+      [48.69816589355469, 6.122346878051758],
+      [48.69609451293945, 6.122805118560791],
+    ]);
+  });
+
+  it('excises the known misplaced point for Nancy shape 10757$STAN-76$100', () => {
+    const points: [number, number][] = [
+      [48.673855, 6.157254],
+      [48.67463302612305, 6.1587138175964355], // the known misplaced point
+      [48.674972, 6.157852],
+    ];
+    const result = excludeKnownIsolatedPoints('10757$STAN-76$100', points);
+    expect(result.removed).toBe(true);
+    expect(result.points).toEqual([
+      [48.673855, 6.157254],
+      [48.674972, 6.157852],
+    ]);
+  });
+
+  it('excises the known misplaced point for Nancy shape 10757$STAN-19$23', () => {
+    const points: [number, number][] = [
+      [48.71567153930664, 6.222369194030762],
+      [48.717010498046875, 6.221489906311035], // the known misplaced point
+      [48.71556854248047, 6.221330165863037],
+    ];
+    const result = excludeKnownIsolatedPoints('10757$STAN-19$23', points);
+    expect(result.removed).toBe(true);
+    expect(result.points).toEqual([
+      [48.71567153930664, 6.222369194030762],
+      [48.71556854248047, 6.221330165863037],
+    ]);
+  });
+
   it('is a no-op for any other shape_id, even one with a similarly-shaped anomaly', () => {
     const points: [number, number][] = [
       [48.696083068847656, 6.125679016113281],

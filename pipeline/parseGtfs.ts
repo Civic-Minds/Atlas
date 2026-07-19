@@ -187,6 +187,22 @@ const KNOWN_ISOLATED_POINT_FIXES: Record<string, [number, number][]> = {
         [48.67235565185547, 6.160637855529785],
         [48.67512512207031, 6.1585187911987305],
     ],
+    // Found via a full sweep of every Nancy shape for isolated single reversals
+    // after the two above were fixed but a route T2 variant (STAN-67$16) still
+    // showed a visible break on the rendered map -- these three plus the four
+    // above are the only candidates whose bridge-savings (33-90%) matches the
+    // confirmed-real range; four other candidates found in the same sweep
+    // scored 1.7-3.1% savings (the same near-noise signature as false positives
+    // found elsewhere) and are deliberately left alone.
+    '10757$STAN-67$16': [
+        [48.69740676879883, 6.119966983795166],
+    ],
+    '10757$STAN-76$100': [
+        [48.67463302612305, 6.1587138175964355],
+    ],
+    '10757$STAN-19$23': [
+        [48.717010498046875, 6.221489906311035],
+    ],
 };
 
 export function excludeKnownIsolatedPoints(shapeId: string, points: [number, number][]): { points: [number, number][]; removed: boolean } {
