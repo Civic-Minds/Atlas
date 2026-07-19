@@ -1,6 +1,25 @@
 import type { GtfsData, GtfsRoute } from '../types/gtfs.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
+import { haversineDistance } from './utils.js';
 import type { GeoJsonFeature } from './geojson-types.js';
+
+/**
+ * Real geographic length (meters), not raw point count — a shape's point count
+ * reflects how densely it was digitized, not its actual distance. Using point
+ * count as a length proxy let a sparsely-digitized-but-dominant shape (e.g.
+ * STAR Rennes 77: 439 of ~560 direction-1 trips, 374 points) fall below the
+ * short-turn threshold against a rarely-used, densely-digitized shape (18
+ * trips, 561 points), silently filtering out nearly all of that direction's
+ * real departures at phase 1 (#249).
+ */
+function shapeLengthMeters(points: [number, number][] | undefined): number {
+  if (!points || points.length < 2) return 0;
+  let total = 0;
+  for (let i = 1; i < points.length; i++) {
+    total += haversineDistance(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1]);
+  }
+  return total;
+}
 
 export interface ShapeSelectionContext {
   shapeById: Map<string, [number, number][]>;
@@ -37,7 +56,16 @@ function busAnalysisShapeIds(shapeEntries: { sid: string; trips: number; len: nu
       for (const sid of c.shapeIds) shapeIds.add(sid);
     }
   }
-  if (shapeIds.size === 0) {
+  const totalTrips = shapeEntries.reduce((s, e) => s + e.trips, 0);
+  const coveredTrips = shapeEntries.filter(e => shapeIds.has(e.sid)).reduce((s, e) => s + e.trips, 0);
+  // Length normally correlates inversely with trip share (a real short-turn is both shorter
+  // AND rarer), but that can invert: a rarely-used long detour/extension can be the single
+  // longest shape while carrying a small minority of trips (STAR Rennes 77 direction 1: the
+  // longest shape had 18 of 560 trips — 3%). Trusting length alone then excludes the shape
+  // nearly all real trips actually use. If the length-qualifying set covers less than half
+  // of all trips, it's not capturing the dominant pattern — fall back to trip volume instead.
+  if (shapeIds.size === 0 || coveredTrips < totalTrips * 0.5) {
+    shapeIds.clear();
     const winning = clusters.sort((a, b) => b.trips - a.trips)[0];
     if (winning) for (const sid of winning.shapeIds) shapeIds.add(sid);
   }
@@ -115,6 +143,15 @@ export function buildShapeSelectionContext(
   }
 
   const shapeById = new Map((gtfs.shapes ?? []).map(s => [s.id, s.points]));
+  const shapeLenCache = new Map<string, number>();
+  const shapeLen = (sid: string): number => {
+    let len = shapeLenCache.get(sid);
+    if (len === undefined) {
+      len = shapeLengthMeters(shapeById.get(sid));
+      shapeLenCache.set(sid, len);
+    }
+    return len;
+  };
   const routeDirToDisplayShape = new Map<string, string>();
   const routeDirToAnalysisShapes = new Map<string, Set<string>>();
 
@@ -126,7 +163,7 @@ export function buildShapeSelectionContext(
     if (isRail) {
       const best = [...counts.keys()]
         .filter(sid => shapeById.has(sid))
-        .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
+        .sort((a, b) => shapeLen(b) - shapeLen(a))[0];
       if (best) {
         routeDirToDisplayShape.set(key, best);
         routeDirToAnalysisShapes.set(key, new Set([best]));
@@ -134,11 +171,11 @@ export function buildShapeSelectionContext(
     } else {
       const byLength = [...counts.keys()]
         .filter(sid => shapeById.has(sid))
-        .sort((a, b) => (shapeById.get(b)?.length ?? 0) - (shapeById.get(a)?.length ?? 0))[0];
+        .sort((a, b) => shapeLen(b) - shapeLen(a))[0];
       if (byLength) routeDirToDisplayShape.set(key, byLength);
 
       const shapeEntries = [...counts.entries()]
-        .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
+        .map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) }))
         .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
       const analysisShapes = busAnalysisShapeIds(shapeEntries);
       if (analysisShapes.size > 0) routeDirToAnalysisShapes.set(key, analysisShapes);
@@ -158,7 +195,7 @@ export function buildShapeSelectionContext(
     const route = routeById.get(routeId);
     if (route?.route_type === '2' || route?.route_type === 2) continue;
     const shapeEntries = [...hShapeCounts.entries()]
-      .map(([sid, trips]) => ({ sid, trips, len: shapeById.get(sid)?.length }))
+      .map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) }))
       .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
     if (shapeEntries.length === 0) continue;
     const analysisShapes = busAnalysisShapeIds(shapeEntries);
