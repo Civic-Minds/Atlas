@@ -18,6 +18,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
+import { searchOverlayHidesPanel } from '../utils/format';
 
 interface Props {
   agencies: Agency[];
@@ -434,7 +435,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && (() => {
+      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard

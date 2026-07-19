@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Search dropdown no longer overlaps an already-open agency card**: route/stop/live cards already yielded to an active search, but the agency card independently reimplemented the same "hide while searching" check and missed it — the kind of drift that's caused this same overlap bug more than once. All four now share one `searchOverlayHidesPanel()` check instead of each hand-rolling its own.
 - **Route names with a raw `<>` separator now render as `↔`**: some French feeds (e.g. Divia/Dijon) encode bidirectional termini in `route_long_name` as literal `<>` ("Longvic <> Toison D'or"); displayed as a proper arrow everywhere route labels appear.
 - **Searching a city name now surfaces its transit agency first**: "los ang" led with a Santa Clarita route and dozens of unrelated stops that just happened to contain "Los Angeles" in their name, with LA Metro itself buried after all of them. Agencies whose primary service city matches the query now rank first.
 - **Route Report's interleaved-sub-path shape-corruption check now auto-repairs instead of just flagging**: excises the interleaved detour and bridges the gap directly, self-verifying the result before shipping it — falls back to the original flagged-but-unrepaired points if the fix doesn't fully resolve it. Validated against all 17 known real cases across Nancy Réseau Stan, TBM Bordeaux, and STAR Rennes. Distinct from the duplicate-sequence pattern already caught (Guadalajara, #219/#244). See #246.

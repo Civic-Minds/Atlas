@@ -2,6 +2,16 @@ import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cle
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
+/**
+ * Single source of truth for "an active search should hide this sidebar overlay panel".
+ * Every panel that floats over the same sidebar slot (route card, stop card, agency card,
+ * live overview) must gate on this exact check — a one-off reimplementation is how these
+ * panels have repeatedly ended up stacked/overlapping instead of yielding to search.
+ */
+export function searchOverlayHidesPanel(searchFocused: boolean, query: string): boolean {
+  return searchFocused || query.trim() !== '';
+}
+
 const TRANSIT_ACRONYMS: Record<string, string> = {
   Go: 'GO',
   Dc: 'DC',
