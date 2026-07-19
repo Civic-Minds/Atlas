@@ -1,0 +1,16 @@
+{
+  "slug": "saumur",
+  "name": "Saumur Agglobus",
+  "region": "Pays de la Loire",
+  "center": [
+    47.26,
+    -0.0781
+  ],
+  "feedUrl": "https://mobi-iti-pdl.okina.fr/static/mobiiti_saumur_val_de_loire/gtfs_imported-id_saumur.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Saumur, France"
+  ]
+}

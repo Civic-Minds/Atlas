@@ -1,0 +1,16 @@
+{
+  "slug": "vesoul",
+  "name": "Vesoul",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [
+    47.6231,
+    6.1556
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-du-reseau-moova-communaute-dagglomeration-de-vesoul-gtfs/20260326-155123/gtfs-vesoul.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Vesoul, France"
+  ]
+}

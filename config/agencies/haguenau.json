@@ -1,0 +1,16 @@
+{
+  "slug": "haguenau",
+  "name": "Haguenau",
+  "region": "Grand Est",
+  "center": [
+    48.8156,
+    7.7903
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=haguenau",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Haguenau, France"
+  ]
+}

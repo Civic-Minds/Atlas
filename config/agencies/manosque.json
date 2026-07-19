@@ -1,0 +1,16 @@
+{
+  "slug": "manosque",
+  "name": "TransAgglo (Manosque)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.828,
+    5.7869
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-de-transport-en-commun-trans-agglo-de-dlva/20260107-075252/gtfs-695e0e00e75be-0701.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Manosque, France"
+  ]
+}

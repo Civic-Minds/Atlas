@@ -1,0 +1,16 @@
+{
+  "slug": "amberieu",
+  "name": "Ambérieu",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.9586,
+    5.3569
+  ],
+  "feedUrl": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=TAM&dataFormat=GTFS&dataProfil=OPENDATA",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Ambérieu-en-Bugey, France"
+  ]
+}

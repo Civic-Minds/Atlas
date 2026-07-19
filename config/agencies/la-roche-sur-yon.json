@@ -1,0 +1,16 @@
+{
+  "slug": "la-roche-sur-yon",
+  "name": "Impulsyon (La Roche-sur-Yon)",
+  "region": "Pays de la Loire",
+  "center": [
+    46.6705,
+    -1.426
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/impulsyon/exports/medias.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "La Roche-sur-Yon, France"
+  ]
+}

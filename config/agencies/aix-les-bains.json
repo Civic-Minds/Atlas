@@ -1,0 +1,16 @@
+{
+  "slug": "aix-les-bains",
+  "name": "Aix-les-Bains",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.6886,
+    5.915
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/ctlb-aix-les-bains/exports/pan.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Aix-les-Bains, France"
+  ]
+}

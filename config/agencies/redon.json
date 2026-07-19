@@ -1,0 +1,16 @@
+{
+  "slug": "redon",
+  "name": "Redon",
+  "region": "Bretagne",
+  "center": [
+    47.6514,
+    -2.0847
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-de-redon-agglomeration/20251017-090411/518-20251014.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Redon, France"
+  ]
+}

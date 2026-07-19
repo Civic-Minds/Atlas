@@ -1,0 +1,16 @@
+{
+  "slug": "draguignan",
+  "name": "TedBus (Draguignan)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.5378,
+    6.4647
+  ],
+  "feedUrl": "https://www.datasud.fr/fr/dataset/datasets/1760/resource/2210/download/",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Draguignan, France"
+  ]
+}

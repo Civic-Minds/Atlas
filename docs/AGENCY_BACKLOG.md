@@ -212,7 +212,7 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ## France expansion — 2026-07-19 speedrun (dry-run candidates, still hidden)
 
-~116 French cities dry-run validated and added as `hiddenInProduction` / `pmtilesPending` across two batches — major metros (Lyon, Marseille, Toulouse, Nice, Cannes, Limoges, …) plus mid-size networks in every métropole région. Wrong-geo matches and stops-only feeds rejected (not added). No live R2 publish — country launch still required.
+~142 French cities dry-run validated and added as `hiddenInProduction` / `pmtilesPending` across two batches — major metros (Lyon, Marseille, Toulouse, Nice, Cannes, Limoges, …) plus mid-size networks in every métropole région. Wrong-geo matches and stops-only feeds rejected (not added). No live R2 publish — country launch still required.
 
 ## France expansion — blocked (no shapes)
 

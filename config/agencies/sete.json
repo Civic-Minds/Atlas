@@ -1,0 +1,16 @@
+{
+  "slug": "sete",
+  "name": "Sète",
+  "region": "Occitanie",
+  "center": [
+    43.4036,
+    3.6967
+  ],
+  "feedUrl": "https://drive.google.com/uc?export=download&id=1PUISUlg0tpVFTdr7NOzJ2w9KthNXpQNn",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Sète, France"
+  ]
+}

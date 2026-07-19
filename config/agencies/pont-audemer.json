@@ -1,0 +1,16 @@
+{
+  "slug": "pont-audemer",
+  "name": "Pont-Audemer",
+  "region": "Normandie",
+  "center": [
+    49.355,
+    0.5139
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/le-bus-pont-audemer-val-de-risle/20250819-074312/pt-th-offer-lebus-gtfs-20250812-817-opendata.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Pont-Audemer, France"
+  ]
+}

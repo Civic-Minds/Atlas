@@ -1,0 +1,16 @@
+{
+  "slug": "fecamp",
+  "name": "Fécamp",
+  "region": "Normandie",
+  "center": [
+    49.7556,
+    0.3742
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/ficibus-fecamp-caux-littoral/20260128-093227/ficibus.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Fécamp, France"
+  ]
+}

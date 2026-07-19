@@ -1,0 +1,16 @@
+{
+  "slug": "sarlat",
+  "name": "Sarlat",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    44.8897,
+    1.2167
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=Sarlat",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Sarlat-la-Canéda, France"
+  ]
+}

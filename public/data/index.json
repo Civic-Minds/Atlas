@@ -12262,6 +12262,422 @@
       "cities": [
         "Villeneuve-sur-Lot, France"
       ]
+    },
+    {
+      "slug": "aix-les-bains",
+      "name": "Aix-les-Bains",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.6886,
+        5.915
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/ctlb-aix-les-bains/exports/pan.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Aix-les-Bains, France"
+      ]
+    },
+    {
+      "slug": "amberieu",
+      "name": "Amb\u00e9rieu",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.9586,
+        5.3569
+      ],
+      "feedUrl": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=TAM&dataFormat=GTFS&dataProfil=OPENDATA",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Amb\u00e9rieu-en-Bugey, France"
+      ]
+    },
+    {
+      "slug": "chalons",
+      "name": "SITAC (Ch\u00e2lons)",
+      "region": "Grand Est",
+      "center": [
+        48.9566,
+        4.3631
+      ],
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CEC",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Ch\u00e2lons-en-Champagne, France"
+      ]
+    },
+    {
+      "slug": "cosne",
+      "name": "Cosne-Cours-sur-Loire",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.41,
+        2.925
+      ],
+      "feedUrl": "https://api.pysae.com/api/v4/groups/coeur-de-loire/gtfs/pub",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Cosne-Cours-sur-Loire, France"
+      ]
+    },
+    {
+      "slug": "dole",
+      "name": "Dole",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.0922,
+        5.4897
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-de-transport-du-grand-dole/20260219-150623/gtfs-dole.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Dole, France"
+      ]
+    },
+    {
+      "slug": "draguignan",
+      "name": "TedBus (Draguignan)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.5378,
+        6.4647
+      ],
+      "feedUrl": "https://www.datasud.fr/fr/dataset/datasets/1760/resource/2210/download/",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Draguignan, France"
+      ]
+    },
+    {
+      "slug": "dreux",
+      "name": "Dreux",
+      "region": "Centre-Val de Loire",
+      "center": [
+        48.7361,
+        1.3658
+      ],
+      "feedUrl": "https://fr.ftp.opendatasoft.com/centrevaldeloire/OKINAGTFS/GTFS_AO/DREUX.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Dreux, France"
+      ]
+    },
+    {
+      "slug": "fecamp",
+      "name": "F\u00e9camp",
+      "region": "Normandie",
+      "center": [
+        49.7556,
+        0.3742
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/ficibus-fecamp-caux-littoral/20260128-093227/ficibus.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "F\u00e9camp, France"
+      ]
+    },
+    {
+      "slug": "figeac",
+      "name": "Figeac",
+      "region": "Occitanie",
+      "center": [
+        44.6086,
+        2.0317
+      ],
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=figeac",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Figeac, France"
+      ]
+    },
+    {
+      "slug": "flers",
+      "name": "Flers",
+      "region": "Normandie",
+      "center": [
+        48.7486,
+        -0.5747
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/donnees-theoriques-du-reseau-urbain-de-flers-agglo-au-format-gtfs/20260414-121512/nemus-gtfs-du-01-01-26-au-31-12-26.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Flers, France"
+      ]
+    },
+    {
+      "slug": "haguenau",
+      "name": "Haguenau",
+      "region": "Grand Est",
+      "center": [
+        48.8156,
+        7.7903
+      ],
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=haguenau",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Haguenau, France"
+      ]
+    },
+    {
+      "slug": "la-roche-sur-yon",
+      "name": "Impulsyon (La Roche-sur-Yon)",
+      "region": "Pays de la Loire",
+      "center": [
+        46.6705,
+        -1.426
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/impulsyon/exports/medias.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "La Roche-sur-Yon, France"
+      ]
+    },
+    {
+      "slug": "lannion",
+      "name": "TILT (Lannion)",
+      "region": "Bretagne",
+      "center": [
+        48.7333,
+        -3.4542
+      ],
+      "feedUrl": "https://www.korrigo.bzh/ftp/OPENDATA/TILT.gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Lannion, France"
+      ]
+    },
+    {
+      "slug": "manosque",
+      "name": "TransAgglo (Manosque)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.828,
+        5.7869
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-de-transport-en-commun-trans-agglo-de-dlva/20260107-075252/gtfs-695e0e00e75be-0701.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Manosque, France"
+      ]
+    },
+    {
+      "slug": "mende",
+      "name": "Mende",
+      "region": "Occitanie",
+      "center": [
+        44.5186,
+        3.4989
+      ],
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tum",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Mende, France"
+      ]
+    },
+    {
+      "slug": "narbonne",
+      "name": "Citibus (Narbonne)",
+      "region": "Occitanie",
+      "center": [
+        43.1836,
+        3.0042
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/narbonne/exports/scolaires-sans-tad.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Narbonne, France"
+      ]
+    },
+    {
+      "slug": "oloron",
+      "name": "Oloron-Sainte-Marie",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        43.1942,
+        -0.61
+      ],
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=oloron",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Oloron-Sainte-Marie, France"
+      ]
+    },
+    {
+      "slug": "pont-audemer",
+      "name": "Pont-Audemer",
+      "region": "Normandie",
+      "center": [
+        49.355,
+        0.5139
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/le-bus-pont-audemer-val-de-risle/20250819-074312/pt-th-offer-lebus-gtfs-20250812-817-opendata.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Pont-Audemer, France"
+      ]
+    },
+    {
+      "slug": "redon",
+      "name": "Redon",
+      "region": "Bretagne",
+      "center": [
+        47.6514,
+        -2.0847
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-de-redon-agglomeration/20251017-090411/518-20251014.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Redon, France"
+      ]
+    },
+    {
+      "slug": "rumilly",
+      "name": "Rumilly",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.8667,
+        5.9442
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-jybus-a-rumilly/20260615-154800/gtfs-jybus.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Rumilly, France"
+      ]
+    },
+    {
+      "slug": "sarlat",
+      "name": "Sarlat",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        44.8897,
+        1.2167
+      ],
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=Sarlat",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Sarlat-la-Can\u00e9da, France"
+      ]
+    },
+    {
+      "slug": "saumur",
+      "name": "Saumur Agglobus",
+      "region": "Pays de la Loire",
+      "center": [
+        47.26,
+        -0.0781
+      ],
+      "feedUrl": "https://mobi-iti-pdl.okina.fr/static/mobiiti_saumur_val_de_loire/gtfs_imported-id_saumur.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Saumur, France"
+      ]
+    },
+    {
+      "slug": "sete",
+      "name": "S\u00e8te",
+      "region": "Occitanie",
+      "center": [
+        43.4036,
+        3.6967
+      ],
+      "feedUrl": "https://drive.google.com/uc?export=download&id=1PUISUlg0tpVFTdr7NOzJ2w9KthNXpQNn",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "S\u00e8te, France"
+      ]
+    },
+    {
+      "slug": "thiers",
+      "name": "Thiers",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.8567,
+        3.5475
+      ],
+      "feedUrl": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=THIERS&dataFormat=GTFS&dataProfil=OPENDATA",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Thiers, France"
+      ]
+    },
+    {
+      "slug": "vendome",
+      "name": "Vend\u00f4me",
+      "region": "Centre-Val de Loire",
+      "center": [
+        47.7931,
+        1.0658
+      ],
+      "feedUrl": "https://app.pysae.com/api/v2/groups/vendome/gtfs/676e649e1b7a2efbadbbe403",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Vend\u00f4me, France"
+      ]
+    },
+    {
+      "slug": "vesoul",
+      "name": "Vesoul",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.6231,
+        6.1556
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-du-reseau-moova-communaute-dagglomeration-de-vesoul-gtfs/20260326-155123/gtfs-vesoul.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Vesoul, France"
+      ]
     }
   ]
 }

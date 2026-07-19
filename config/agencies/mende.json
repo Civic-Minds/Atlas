@@ -1,0 +1,16 @@
+{
+  "slug": "mende",
+  "name": "Mende",
+  "region": "Occitanie",
+  "center": [
+    44.5186,
+    3.4989
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tum",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Mende, France"
+  ]
+}

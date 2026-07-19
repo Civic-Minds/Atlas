@@ -1,0 +1,16 @@
+{
+  "slug": "vendome",
+  "name": "Vendôme",
+  "region": "Centre-Val de Loire",
+  "center": [
+    47.7931,
+    1.0658
+  ],
+  "feedUrl": "https://app.pysae.com/api/v2/groups/vendome/gtfs/676e649e1b7a2efbadbbe403",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Vendôme, France"
+  ]
+}

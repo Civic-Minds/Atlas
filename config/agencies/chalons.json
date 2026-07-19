@@ -1,0 +1,16 @@
+{
+  "slug": "chalons",
+  "name": "SITAC (Châlons)",
+  "region": "Grand Est",
+  "center": [
+    48.9566,
+    4.3631
+  ],
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CEC",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Châlons-en-Champagne, France"
+  ]
+}
