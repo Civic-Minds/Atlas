@@ -98,7 +98,7 @@ interface MapCanvasProps {
   showInitialLoading?: boolean;
 }
 
-export const MapCanvas: React.FC<MapCanvasProps> = ({
+const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencies,
   layers,
   maxHeadway,
@@ -1064,3 +1064,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     </div>
   );
 };
+
+/** Skip re-renders when parent (sidebar search, stats) updates unrelated state. */
+export const MapCanvas = React.memo(MapCanvasInner);

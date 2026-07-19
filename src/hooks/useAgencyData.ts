@@ -49,6 +49,17 @@ function buildInitialBounds(): ViewportBounds {
 const INITIAL_BOUNDS = buildInitialBounds();
 const MAX_CONCURRENT_AGENCY_FETCHES = 6;
 
+/** Stamp agencySlug on feature properties once so stats/search can reuse objects without recloning. */
+function stampAgencySlug(data: GeoJSON.FeatureCollection, slug: string): GeoJSON.FeatureCollection {
+  for (const f of data.features) {
+    const p = f.properties as Record<string, unknown> | null;
+    if (!p || p.agencySlug !== slug) {
+      f.properties = { ...p, agencySlug: slug };
+    }
+  }
+  return data;
+}
+
 function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
   const [lat, lon] = agency.center;
@@ -108,7 +119,7 @@ export function useAgencyData(
       fetchAgencyGeo(agency)
         .then(data => {
           if (cancelled.current) return;
-          setLayers(prev => ({ ...prev, [agency.slug]: data }));
+          setLayers(prev => ({ ...prev, [agency.slug]: stampAgencySlug(data, agency.slug) }));
         })
         .catch(err => {
           console.error(`Failed to load ${agency.slug}`, err);
@@ -129,7 +140,7 @@ export function useAgencyData(
 
     const cached = getCachedAgencyGeo(agency.slug);
     if (cached) {
-      setLayers(prev => ({ ...prev, [agency.slug]: cached }));
+      setLayers(prev => ({ ...prev, [agency.slug]: stampAgencySlug(cached, agency.slug) }));
       return;
     }
 

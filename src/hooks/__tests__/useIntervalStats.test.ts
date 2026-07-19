@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react';
-import { useIntervalStats } from '../useIntervalStats';
+import { useIntervalStats, featureBbox, inViewport } from '../useIntervalStats';
 import type { AgencyLayers } from '../useAgencyData';
+import type { ViewportBounds } from '../useIntervalStats';
 import { describe, it, expect } from 'vitest';
 
 const mockLayers: AgencyLayers = {
@@ -411,5 +412,39 @@ describe('useIntervalStats', () => {
       period: 'midday' as const,
     }));
     expect(result.current.stats?.matching).toBe(1);
+  });
+});
+
+describe('featureBbox / inViewport', () => {
+  it('handles MultiLineString and caches bbox', () => {
+    const f: GeoJSON.Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'MultiLineString',
+        coordinates: [
+          [[-79.4, 43.6], [-79.3, 43.65]],
+          [[-79.35, 43.7], [-79.2, 43.75]],
+        ],
+      },
+      properties: {},
+    };
+    const bbox = featureBbox(f);
+    expect(bbox[0]).toBeCloseTo(-79.4);
+    expect(bbox[1]).toBeCloseTo(43.6);
+    expect(bbox[2]).toBeCloseTo(-79.2);
+    expect(bbox[3]).toBeCloseTo(43.75);
+    expect(featureBbox(f)).toBe(bbox); // same cached array
+  });
+
+  it('reports features whose bbox intersects the viewport', () => {
+    const f: GeoJSON.Feature = {
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[-79.4, 43.6], [-79.3, 43.7]] },
+      properties: {},
+    };
+    const view: ViewportBounds = { s: 43.5, w: -79.6, n: 43.8, e: -79.1 };
+    const far: ViewportBounds = { s: 40, w: -90, n: 41, e: -89 };
+    expect(inViewport(f, view)).toBe(true);
+    expect(inViewport(f, far)).toBe(false);
   });
 });
