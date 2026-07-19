@@ -32,3 +32,4 @@ Atlas is built from publicly available transit data and publishes the processing
 - **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency (or a small batch).
 - **[Updating the Map](./MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
 - **[Coverage Gap Discovery](./COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
+- **[Fixing Issues](./FIXING_ISSUES.md)**: Scoping a fix to its blast radius (single agency, a group, or all agencies) and validating accordingly.
