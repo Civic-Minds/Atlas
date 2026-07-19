@@ -10425,6 +10425,91 @@
       "cities": [
         "Rennes, France"
       ]
+    },
+    {
+      "slug": "tours",
+      "name": "Fil Bleu (Tours)",
+      "region": "Centre-Val de Loire",
+      "center": [
+        47.3941,
+        0.6848
+      ],
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/198b7602-5e74-4d88-b6bc-483af85a2430",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.filbleu.fr/",
+      "cities": [
+        "Tours, France"
+      ]
+    },
+    {
+      "slug": "bordeaux",
+      "name": "TBM (Bordeaux)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        44.8378,
+        -0.5792
+      ],
+      "feedUrl": "https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.infotbm.com/",
+      "cities": [
+        "Bordeaux, France"
+      ]
+    },
+    {
+      "slug": "grenoble",
+      "name": "TAG (Grenoble)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.1885,
+        5.7245
+      ],
+      "feedUrl": "https://data.mobilites-m.fr/api/gtfs/SEM",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.tag.fr/",
+      "cities": [
+        "Grenoble, France"
+      ]
+    },
+    {
+      "slug": "dijon",
+      "name": "Divia (Dijon)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.322,
+        5.0415
+      ],
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/e0dbd217-15cd-4e28-9459-211a27511a34",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.divia.fr/",
+      "cities": [
+        "Dijon, France"
+      ]
+    },
+    {
+      "slug": "angers",
+      "name": "Irigo (Angers)",
+      "region": "Pays de la Loire",
+      "center": [
+        47.4784,
+        -0.5632
+      ],
+      "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/Irigo/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.irigo.fr/",
+      "cities": [
+        "Angers, France"
+      ]
     }
   ]
 }

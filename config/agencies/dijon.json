@@ -1,0 +1,12 @@
+{
+  "slug": "dijon",
+  "name": "Divia (Dijon)",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [47.322, 5.0415],
+  "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/e0dbd217-15cd-4e28-9459-211a27511a34",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.divia.fr/",
+  "cities": ["Dijon, France"]
+}

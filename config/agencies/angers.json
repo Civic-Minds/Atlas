@@ -1,0 +1,12 @@
+{
+  "slug": "angers",
+  "name": "Irigo (Angers)",
+  "region": "Pays de la Loire",
+  "center": [47.4784, -0.5632],
+  "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/Irigo/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.irigo.fr/",
+  "cities": ["Angers, France"]
+}
