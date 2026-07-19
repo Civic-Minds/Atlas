@@ -25,12 +25,13 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Nfta: 'NFTA',
   Ltc: 'LTC',
   Ktc: 'KTC',
-  // GO Transit line codes (2-char codes handled by the ≤3-char uppercase rule when standalone)
-  Lw: 'LW',
-  Le: 'LE',
-  Ki: 'KI',
-  Mi: 'MI',
-  Br: 'BR',
+  // GO Transit's 2-char line codes (LW, LE, KI, MI, BR) are deliberately NOT listed
+  // here: as a standalone routeShortName ("LW — Lakeshore West") they're already
+  // uppercased by the ≤3-char whole-string rule above, and no real GO long name
+  // needs the mid-string substitution below. Adding them here previously matched
+  // "Le"/"Ki" as ordinary words inside French headsigns ("Le Haillan Rostand" →
+  // "LE Haillan Rostand") — the same class of false positive "St" was already
+  // excluded for, just not caught until France expansion made it common.
   // St intentionally excluded — "St" in stop names means Street/Saint, not the GO Stouffville line
   Rh: 'RH',
   // Bay Area / Staged expansion acronyms
