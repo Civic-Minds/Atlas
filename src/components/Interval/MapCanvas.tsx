@@ -796,7 +796,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
 
     if (found && minLng < maxLng) {
-      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 80, maxZoom: 14 });
+      // Asymmetric padding: route card sits on the left (~sidebar + panel width).
+      // Uniform padding (80) centers the line in the full canvas so the west end
+      // hides under the card — same issue live vehicles already avoided with left: 320.
+      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
+        padding: { top: 80, bottom: 80, left: 320, right: 80 },
+        maxZoom: 14,
+      });
     }
   }, [selectedRoute, mapLoaded, layers]);
 
