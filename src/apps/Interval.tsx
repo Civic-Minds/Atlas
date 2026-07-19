@@ -18,6 +18,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
+import { syncUrlParams } from '../utils/syncUrlParams';
 
 interface Props {
   agencies: Agency[];
@@ -320,43 +321,29 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, clearMapSelection]);
 
-  // Sync selected route and stop to URL — use replaceState directly (not React
-  // Router's setSearchParams) to avoid the stale-closure bug where a closure
-  // captured during the Fares render resolves the URL relative to /apps/fares.
+  // Sync selected route and stop to URL — replaceState via shared merge so
+  // concurrent writers (day, map center, filters) don't clobber each other.
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    if (selectedRoute) sp.set('route', selectedRoute);
-    else sp.delete('route');
-    const qs = sp.toString();
-    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    syncUrlParams({ route: selectedRoute || null });
   }, [selectedRoute]);
 
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    if (selectedStop) sp.set('stop', selectedStop);
-    else sp.delete('stop');
-    const qs = sp.toString();
-    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    syncUrlParams({ stop: selectedStop || null });
   }, [selectedStop]);
 
   // Sync filter state (maxHeadway, period) to URL for active view persistence (refresh/share).
   // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
   // current (like lat/lon/z). Defaults (h=60, p=all) omitted to keep URLs short.
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    if (maxHeadway === Infinity) sp.set('h', 'all');
-    else if (maxHeadway !== 60) sp.set('h', String(maxHeadway));
-    else sp.delete('h');
-    const qs = sp.toString();
-    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    const h =
+      maxHeadway === Infinity ? 'all'
+      : maxHeadway !== 60 ? String(maxHeadway)
+      : null;
+    syncUrlParams({ h });
   }, [maxHeadway]);
 
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    if (period !== 'all') sp.set('p', period);
-    else sp.delete('p');
-    const qs = sp.toString();
-    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    syncUrlParams({ p: period !== 'all' ? period : null });
   }, [period]);
 
   // Search-result hover → highlight that route on the map, fading the rest

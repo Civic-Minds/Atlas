@@ -36,13 +36,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
-
-function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const latMid = (lat1 + lat2) * Math.PI / 360;
-  const dy = (lat2 - lat1) * 111320;
-  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
-  return Math.sqrt(dx * dx + dy * dy);
-}
+import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 
 interface SidebarControlsProps {
   query: string;
@@ -493,49 +487,32 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (!stop || stop.geometry.type !== 'Point') return null;
     const props = stop.properties as any;
 
-    // Find all sibling stop IDs sharing the same stopName under this agency
-    // OR physically close (within 120 meters) across any agency to support transit hubs
-    const siblingIdsByAgency: Record<string, Set<string>> = {};
-    const routesByAgency: Record<string, Set<string>> = {};
     const stopName = props.stopName;
     const slug = props.agencySlug;
     const [clickLon, clickLat] = stop.geometry.coordinates;
 
-    for (const f of allFeatures) {
-      const p = f.properties as any;
-      if (!p.stopId || f.geometry.type !== 'Point') continue;
-      
-      const isExactNameSibling = p.agencySlug === slug && stopName && p.stopName === stopName;
-      
-      let isProximitySibling = false;
-      if (!isExactNameSibling) {
+    const candidates = allFeatures
+      .filter((f): f is typeof f & { geometry: GeoJSON.Point } =>
+        f.geometry.type === 'Point' && !!(f.properties as any)?.stopId)
+      .map(f => {
+        const p = f.properties as any;
         const [lon, lat] = f.geometry.coordinates;
-        const dist = getDistanceMeters(clickLat, clickLon, lat, lon);
-        isProximitySibling = dist <= 120;
-      }
-      
-      if (isExactNameSibling || isProximitySibling) {
-        if (!siblingIdsByAgency[p.agencySlug]) {
-          siblingIdsByAgency[p.agencySlug] = new Set();
-        }
-        siblingIdsByAgency[p.agencySlug].add(p.stopId);
+        return {
+          stopId: p.stopId as string,
+          agencySlug: p.agencySlug as string,
+          stopName: p.stopName as string | undefined,
+          lat,
+          lon,
+          routeIds: p.routeIds as string[] | undefined,
+        };
+      });
 
-        if (!routesByAgency[p.agencySlug]) {
-          routesByAgency[p.agencySlug] = new Set();
-        }
-        const rIds = p.routeIds as string[] | undefined;
-        if (rIds) {
-          for (const rId of rIds) {
-            routesByAgency[p.agencySlug].add(rId);
-          }
-        }
-      }
-    }
+    const hub = collectStopHubSiblings(clickLat, clickLon, slug, stopName, candidates);
 
     return {
       ...props,
-      siblingIdsByAgency,
-      routesByAgency,
+      siblingIdsByAgency: hub.siblingIdsByAgency,
+      routesByAgency: hub.routesByAgency,
       lat: clickLat,
       lon: clickLon,
     };

@@ -18,6 +18,7 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import { agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
+import { syncUrlParams } from './utils/syncUrlParams';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -229,11 +230,7 @@ export default function App() {
   // (see initializer); effects ensure current value (from LS/default/URL) is reflected.
   // 'Weekday' (common default) omitted for short URLs.
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    if (day !== 'Weekday') sp.set('day', day);
-    else sp.delete('day');
-    const qs = sp.toString();
-    window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    syncUrlParams({ day: day !== 'Weekday' ? day : null });
   }, [day]);
 
   useEffect(() => {
@@ -356,7 +353,7 @@ export default function App() {
         <button
           onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
           aria-label="Live vehicles"
-          className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
         >
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
           <span>Live</span>

@@ -6,6 +6,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live mode is available on phones**: the Live control was desktop-only (`hidden` below `sm`); it now shows in the header on small screens too.
+- **Map/stop selection at a hub stays consistent**: Frequency map filter and stop card now share one stop-hub expansion helper (same-name + 120 m proximity), so sibling routes at a transfer station cannot disagree between the map and the card.
+- **Share URLs are less likely to drop params**: day, route, stop, headway, period, and map center all merge through one `syncUrlParams` helper that re-reads the live query string before writing.
+- **Error recovery actually remounts the broken view**: Retry on the map ErrorBoundary bumps a key so React remounts children instead of clearing the error flag alone.
+
 - **Overlapping calendar.txt service periods no longer double headways when calendar_dates cancels one**: French-style exports (confirmed on TAG Grenoble Tram A) that publish two concurrent weekday blocks and remove the superseded one via `exception_type=2` now drop the cancelled service on the reference day, so headways stay at the real interval instead of ~half.
 - **Broken GTFS feeds fail closed during process (soft-skip on weekly refresh)**: structural validation runs after parse; `npm run process` aborts on errors unless `--force`, and refresh leaves feed metadata alone when validation fails so a bad zip is not treated as published.
 - **Empty pipeline output no longer marks a feed as freshly refreshed**: a 0-feature result used to stamp `lastFeedExpiry` / `lastRefreshedAt`, so skip-if-unchanged could permanently ignore a flex/microtransit extract that later gains real routes.

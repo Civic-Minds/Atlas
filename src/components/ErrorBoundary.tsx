@@ -7,14 +7,24 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  /** Bumped on Retry so children remount instead of reusing broken state. */
+  resetKey: number;
 }
 
 export default class ErrorBoundary extends React.Component<Props, State> {
-  state: State = { hasError: false };
+  state: State = { hasError: false, resetKey: 0 };
 
-  static getDerivedStateFromError(): State {
+  static getDerivedStateFromError(): Partial<State> {
     return { hasError: true };
   }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('[ErrorBoundary]', this.props.label ?? 'view', error, info.componentStack);
+  }
+
+  private handleRetry = () => {
+    this.setState(s => ({ hasError: false, resetKey: s.resetKey + 1 }));
+  };
 
   render() {
     if (this.state.hasError) {
@@ -24,13 +34,13 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           <button
             type="button"
             className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"
-            onClick={() => this.setState({ hasError: false })}
+            onClick={this.handleRetry}
           >
             Retry
           </button>
         </div>
       );
     }
-    return this.props.children;
+    return <React.Fragment key={this.state.resetKey}>{this.props.children}</React.Fragment>;
   }
 }

@@ -6,7 +6,7 @@ import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES } from '../
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
-import { getAgencyArtifactUrls } from '../../shared/config';
+import { fetchAgencyGeo } from '../lib/agencyGeo';
 import { PANEL_SHELL, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
@@ -222,6 +222,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [errorBySlug, failCountBySlug, agencies]);
 
   // Fetch GeoJSON for any visible agency that has live vehicles and isn't loaded yet
+  // (shared IDB/LRU path — same as Frequency / Corridors).
   useEffect(() => {
     const slugsNeeded = new Set<string>();
     if (selectedRoute) {
@@ -233,10 +234,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       if (layers[slug] || localLayers[slug]) continue;
       const agency = agencies.find(a => a.slug === slug);
       if (!agency) continue;
-      const arts = getAgencyArtifactUrls(agency.slug);
-      const geoUrl = agency.url || arts.url;
-      fetch(geoUrl)
-        .then(r => r.json())
+      fetchAgencyGeo({ slug: agency.slug, name: agency.name, url: agency.url ?? '' })
         .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
         .catch(() => {});
     }

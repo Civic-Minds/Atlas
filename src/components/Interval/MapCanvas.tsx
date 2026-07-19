@@ -17,6 +17,7 @@ import { Z_PANEL } from '../../styles';
 import { findPlaceByName } from '../../../shared/placeLookup';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
+import { syncUrlParams } from '../../utils/syncUrlParams';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -544,17 +545,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       const z = map.getZoom();
       saveView(c.lat, c.lng, z);
       setZoom(z);
-      // Update lat/lon/z in the URL directly via replaceState rather than going
-      // through React Router's setSearchParams. React Router's navigate() captures
-      // locationPathname in its closure — a stale capture from a Fares render
-      // would resolve "?lat=..." relative to /apps/fares, overwriting the
-      // /apps/frequency history entry. replaceState always reads window.location
-      // at call time so there is no stale-closure class of bug.
-      const sp = new URLSearchParams(window.location.search);
-      sp.set('lat', c.lat.toFixed(5));
-      sp.set('lon', c.lng.toFixed(5));
-      sp.set('z', z.toFixed(2));
-      window.history.replaceState(null, '', window.location.pathname + '?' + sp.toString());
+      // Shared merge reads window.location at call time so concurrent writers
+      // (day/route/filters) and React Router path switches don't clobber params.
+      syncUrlParams({
+        lat: c.lat.toFixed(5),
+        lon: c.lng.toFixed(5),
+        z: z.toFixed(2),
+      });
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
       onBoundsChangeRef.current(bounds);
