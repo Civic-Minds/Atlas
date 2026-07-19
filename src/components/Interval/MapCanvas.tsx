@@ -95,7 +95,6 @@ interface MapCanvasProps {
   onTileLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
   onClearSelection?: () => void;
-  showInitialLoading?: boolean;
 }
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -131,7 +130,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   initialMapCenter,
   onTileLoadingChange,
   onClearSelection,
-  showInitialLoading = false,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -994,18 +992,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     <div style={{ height: '100%', width: '100%', position: 'relative', background: 'var(--bg-app)' }}>
       {/* Map Element */}
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
-
-      {showInitialLoading && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-[var(--bg-app)]/35 backdrop-blur-[1px]">
-          <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-[var(--bg-panel)]/95 border border-[var(--border-primary)] shadow-2xl">
-            <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-            <div>
-              <div className="text-xs font-black text-[var(--text-primary)]">Loading transit networks</div>
-              <div className="text-[10px] font-bold text-[var(--text-muted)]">The map will fill in as data arrives</div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Geolocate Button Control Overlay */}
       {mapHint && (

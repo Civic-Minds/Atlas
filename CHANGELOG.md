@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Removed the duplicate centered "Loading transit networks" card**: the map already had a small, non-intrusive loading badge in the bottom-right corner showing live progress (`X/Y networks`) — the dead-center overlay with a blur backdrop was a second indicator for the exact same state, and a much more intrusive one.
 - **Search dropdown no longer overlaps an already-open agency card**: route/stop/live cards already yielded to an active search, but the agency card independently reimplemented the same "hide while searching" check and missed it — the kind of drift that's caused this same overlap bug more than once. All four now share one `searchOverlayHidesPanel()` check instead of each hand-rolling its own.
 - **Route names with a raw `<>` separator now render as `↔`**: some French feeds (e.g. Divia/Dijon) encode bidirectional termini in `route_long_name` as literal `<>` ("Longvic <> Toison D'or"); displayed as a proper arrow everywhere route labels appear.
 - **Searching a city name now surfaces its transit agency first**: "los ang" led with a Santa Clarita route and dozens of unrelated stops that just happened to contain "Los Angeles" in their name, with LA Metro itself buried after all of them. Agencies whose primary service city matches the query now rank first.
