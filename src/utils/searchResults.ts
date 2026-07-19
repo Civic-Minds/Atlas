@@ -102,6 +102,15 @@ function routesAreMostlyAgencySlugMatches(routes: RouteSearchResult[]): boolean 
   return slugOnly / routes.length >= 0.75;
 }
 
+/** Query names a city that's an agency's actual primary service area (cities[0]) — not just
+ *  an incidental match somewhere in its city list. This is what makes "los ang" mean LA Metro
+ *  rather than any stop or route that happens to have "Los Angeles" in its name (#203). */
+function matchesAgencyPrimaryCity(query: string, agencies: AgencySearchGroup[]): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return false;
+  return agencies.some(a => (a.cities?.[0] ?? '').toLowerCase().includes(q));
+}
+
 /** Agency should lead the list and implicit slug-only route matches should be hidden. */
 export function prefersAgencySearchResults(
   query: string,
@@ -111,6 +120,7 @@ export function prefersAgencySearchResults(
   if (agencies.length === 0) return false;
   if (isStrongAgencyQuery(query, agencies)) return true;
   if (agencies.length === 1 && routesAreMostlyAgencySlugMatches(routes)) return true;
+  if (matchesAgencyPrimaryCity(query, agencies)) return true;
   return false;
 }
 
