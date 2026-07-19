@@ -37,7 +37,7 @@
  *     for the exact rectangle test.
  *
  * Usage:
- *   npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run]
+ *   npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [--i-am-launching-country]
  *
  * --dry-run runs both safety checks and the full tippecanoe/tile-join build
  * locally, then reports what WOULD be uploaded (size, feature counts, which
@@ -45,6 +45,10 @@
  * real. Treat that exactly like `npm run build-pmtiles`: this is a
  * production data pipeline command — get explicit human go-ahead before
  * running it without --dry-run (see CLAUDE.md § Production Data Rules).
+ *
+ * --i-am-launching-country: required (with explicit maintainer approval) to
+ * upload tiles for a country that still has zero production-visible agencies.
+ * See AGENTS.md § Production Data Rules / pipeline/countryLaunchGate.ts.
  */
 import fs from 'fs';
 import path from 'path';
@@ -65,6 +69,12 @@ import {
   type AgencyBboxSource,
   type Bbox,
 } from './incrementalPmtilesSafety.js';
+import {
+  COUNTRY_LAUNCH_FLAG,
+  assertCountryMayWriteToR2,
+  resolveAgencyCountry,
+  type AgencyCountrySource,
+} from './countryLaunchGate.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -258,20 +268,25 @@ async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[];
   return { routes, stops, corridors };
 }
 
-function parseArgs(argv: string[]): { slug: string; dryRun: boolean } {
+function parseArgs(argv: string[]): { slug: string; dryRun: boolean; forceCountryLaunch: boolean } {
   const dryRun = argv.includes('--dry-run');
+  const forceCountryLaunch = argv.includes(COUNTRY_LAUNCH_FLAG);
   const slug = argv.find(a => !a.startsWith('--'));
   if (!slug) {
-    throw new Error('Usage: npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run]');
+    throw new Error(
+      `Usage: npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [${COUNTRY_LAUNCH_FLAG}]`,
+    );
   }
-  return { slug, dryRun };
+  return { slug, dryRun, forceCountryLaunch };
 }
 
 async function main() {
-  const { slug, dryRun } = parseArgs(process.argv.slice(2));
+  const { slug, dryRun, forceCountryLaunch } = parseArgs(process.argv.slice(2));
 
   console.log(`Loading agency index from public/data/index.json...`);
-  const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: AgencyBboxSource[] };
+  const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as {
+    agencies: Array<AgencyBboxSource & AgencyCountrySource>;
+  };
   const agencies = index.agencies || [];
   const agency = agencies.find(a => a.slug === slug);
   if (!agency) {
@@ -279,6 +294,18 @@ async function main() {
       `Agency "${slug}" not found in public/data/index.json. Add it via the normal ` +
       `agency-adding procedure first (docs/ADDING_AGENCIES.md § Integrating a New Transit Agency).`,
     );
+  }
+
+  // Country-launch gate before any tippecanoe work on a real (non-dry-run) upload.
+  // --dry-run still builds locally for map preview.
+  if (!dryRun) {
+    assertCountryMayWriteToR2({
+      country: resolveAgencyCountry(agency),
+      agencies,
+      forceLaunch: forceCountryLaunch,
+      slug,
+      action: 'incremental PMTiles R2 upload',
+    });
   }
 
   const targetBbox = deriveAgencyBbox(agency, AGENCY_BBOX_PAD);

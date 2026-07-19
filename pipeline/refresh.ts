@@ -5,6 +5,11 @@
  *   npm run refresh              → all agencies with a feedUrl
  *   npm run refresh -- ttc yrt   → specific slugs only
  *
+ * Agencies in a country with zero production-visible agencies (France, Mexico,
+ * …) are skipped unless --i-am-launching-country is passed — weekly refresh
+ * must not keep rewriting unlaunched-country R2 data by accident. See
+ * AGENTS.md § Production Data Rules / pipeline/countryLaunchGate.ts.
+ *
  * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
 import { readFileSync, writeFileSync } from 'fs';
@@ -29,6 +34,12 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
+import {
+  COUNTRY_LAUNCH_FLAG,
+  isCountryLaunchBlocked,
+  resolveAgencyCountry,
+  type AgencyCountrySource,
+} from './countryLaunchGate.js';
 
 config({ path: resolve('.env.local') });
 
@@ -37,9 +48,11 @@ if (!process.env.R2_ACCESS_KEY_ID) {
   process.exit(1);
 }
 
+const FLAG_ARGS = new Set(['--force', COUNTRY_LAUNCH_FLAG]);
 const rawArgs = process.argv.slice(2);
 const forceRefresh = rawArgs.includes('--force');
-const onlySlugs = rawArgs.filter(a => a !== '--force');
+const forceCountryLaunch = rawArgs.includes(COUNTRY_LAUNCH_FLAG);
+const onlySlugs = rawArgs.filter(a => !FLAG_ARGS.has(a));
 
 // All agencies with a feedUrl get history snapshots — no manual opt-in needed.
 
@@ -410,8 +423,14 @@ async function main() {
     process.exit(1);
   }
 
+  // Full registry for country-live checks (not just the filtered target list —
+  // otherwise "refresh only metz" would see France as empty of live peers and
+  // block, which is correct, but "refresh only ttc" must still see Canada live).
+  const countryRegistry = index.agencies as AgencyCountrySource[];
+
   let failures = 0;
   let uploads = 0;
+  let countryLaunchSkips = 0;
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
     const logger = {
@@ -420,6 +439,17 @@ async function main() {
       }
     };
     try {
+      if (!forceCountryLaunch) {
+        const country = resolveAgencyCountry(agency);
+        if (isCountryLaunchBlocked(country, countryRegistry)) {
+          countryLaunchSkips++;
+          console.log(
+            `  ${agency.slug.padEnd(12)} ... skipped (unlaunched country: ${country} — ` +
+              `pass ${COUNTRY_LAUNCH_FLAG} after explicit maintainer approval)`,
+          );
+          return;
+        }
+      }
       const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
       if (!summary.startsWith('skipped')) uploads++;
       console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
@@ -435,9 +465,19 @@ async function main() {
   });
 
   console.log(`Refreshing ${targets.length} agencies in parallel (concurrency 5)...`);
+  if (!forceCountryLaunch) {
+    console.log(
+      `  (agencies in unlaunched countries are skipped; pass ${COUNTRY_LAUNCH_FLAG} to include them)`,
+    );
+  }
   await runWithConcurrency(tasks, 5);
 
   console.log(`\n  index.json updated. ${targets.length - failures}/${targets.length} succeeded.`);
+  if (countryLaunchSkips > 0) {
+    console.log(
+      `  ${countryLaunchSkips} skipped — unlaunched country (no production-visible agencies yet)`,
+    );
+  }
   if (uploads > 0) {
     bumpCacheBuild();
     console.log(`  cache build bumped (${uploads} agencies uploaded)`);

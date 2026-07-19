@@ -76,9 +76,30 @@ const REGION_TO_COUNTRY: Record<string, string> = {
   'Wyoming': 'United States',
   // Mexico
   'Jalisco': 'Mexico',
-  // France
-  'Grand Est': 'France',
+  // France (région names as used in config/agencies/*.json)
+  'Auvergne-Rhône-Alpes': 'France',
+  'Bourgogne-Franche-Comté': 'France',
   'Bretagne': 'France',
+  'Centre-Val de Loire': 'France',
+  'Corse': 'France',
+  'Grand Est': 'France',
+  'Hauts-de-France': 'France',
+  'Île-de-France': 'France',
+  'Normandie': 'France',
+  'Nouvelle-Aquitaine': 'France',
+  'Occitanie': 'France',
+  'Pays de la Loire': 'France',
+  "Provence-Alpes-Côte d'Azur": 'France',
+  // Belgium (for candidates; none live yet)
+  'Brussels': 'Belgium',
+  'Brussels-Capital': 'Belgium',
+  'Flanders': 'Belgium',
+  'Wallonia': 'Belgium',
+  // Spain (for candidates; none live yet)
+  'Basque Country': 'Spain',
+  'Catalonia': 'Spain',
+  'Community of Madrid': 'Spain',
+  'Madrid': 'Spain',
 };
 
 export function countryForRegion(region: string | null | undefined): string | null {

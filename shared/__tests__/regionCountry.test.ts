@@ -15,6 +15,10 @@ describe('countryForRegion', () => {
   it('maps known non-North-American regions to their country', () => {
     expect(countryForRegion('Jalisco')).toBe('Mexico');
     expect(countryForRegion('Grand Est')).toBe('France');
+    expect(countryForRegion('Nouvelle-Aquitaine')).toBe('France');
+    expect(countryForRegion('Pays de la Loire')).toBe('France');
+    expect(countryForRegion('Wallonia')).toBe('Belgium');
+    expect(countryForRegion('Basque Country')).toBe('Spain');
   });
 
   it('returns null for unmapped or missing regions', () => {
