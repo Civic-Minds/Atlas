@@ -144,6 +144,7 @@ interface AgencyEntry {
   slug: string;
   name: string;
   center: [number, number];
+  timezone?: string | null;
   url: string;
   stopsUrl: string;
   corridorsUrl?: string;

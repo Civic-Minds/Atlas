@@ -34,6 +34,28 @@ export function getNowPeriod(): TimePeriod {
   return periodKeyForHour(new Date().getHours()) ?? 'all';
 }
 
+/**
+ * Same as getNowPeriod, but for the current hour where a specific agency
+ * actually operates rather than the viewer's own browser-local clock — see
+ * #245 (a viewer in Toronto opening a UK/Mexico agency at 11pm local landed on
+ * "late/overnight" even when it was mid-afternoon where that agency runs).
+ * Falls back to local time when no IANA timezone is known for the agency
+ * (most agencies processed before this field existed, or no agency in view
+ * yet) — same neutral behavior as getNowPeriod.
+ */
+export function getNowPeriodForTimezone(timezone?: string | null, now: Date = new Date()): TimePeriod {
+  if (!timezone) return periodKeyForHour(now.getHours()) ?? 'all';
+  try {
+    const hourStr = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: timezone }).format(now);
+    // "24" at midnight in some locales/environments -- normalize to 0.
+    const hour = parseInt(hourStr, 10) % 24;
+    return periodKeyForHour(hour) ?? 'all';
+  } catch {
+    // Invalid/unrecognized IANA name (bad upstream agency_timezone value) -- don't crash the app over it.
+    return periodKeyForHour(now.getHours()) ?? 'all';
+  }
+}
+
 type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
