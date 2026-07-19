@@ -1,0 +1,16 @@
+{
+  "slug": "chateauroux",
+  "name": "Horizon (Châteauroux)",
+  "region": "Centre-Val de Loire",
+  "center": [
+    46.8096,
+    1.6912
+  ],
+  "feedUrl": "https://data.chateauroux-metropole.fr/api/v2/catalog/datasets/reseau-de-bus-urbain_horizon/alternative_exports/gtfs_20260105_zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Châteauroux, France"
+  ]
+}

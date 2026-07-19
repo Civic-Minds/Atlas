@@ -1,0 +1,17 @@
+{
+  "slug": "valenciennes",
+  "name": "Transvilles (Valenciennes)",
+  "region": "Hauts-de-France",
+  "center": [
+    50.3591,
+    3.5251
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-du-reseau-transvilles-au-format-gtfs/20260123-101905/google-transit.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Valenciennes, France"
+  ],
+  "websiteUrl": "https://www.transvilles.com/"
+}

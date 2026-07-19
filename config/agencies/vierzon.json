@@ -1,0 +1,16 @@
+{
+  "slug": "vierzon",
+  "name": "Le Vib (Vierzon)",
+  "region": "Centre-Val de Loire",
+  "center": [
+    47.2219,
+    2.0697
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-le-vib/20260519-052037/gtfs-20260507-172329-levib-hb-pan-du-01-05-26-au-31-08-26.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Vierzon, France"
+  ]
+}

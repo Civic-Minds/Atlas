@@ -1,0 +1,16 @@
+{
+  "slug": "epinal",
+  "name": "Imagine (Épinal)",
+  "region": "Grand Est",
+  "center": [
+    48.1734,
+    6.449
+  ],
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=IMAGINE",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Épinal, France"
+  ]
+}

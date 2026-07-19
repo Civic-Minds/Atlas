@@ -1,0 +1,16 @@
+{
+  "slug": "laon",
+  "name": "Laon urbain",
+  "region": "Hauts-de-France",
+  "center": [
+    49.5643,
+    3.6203
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tul-gares/exports/medias.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Laon, France"
+  ]
+}

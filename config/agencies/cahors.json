@@ -1,0 +1,16 @@
+{
+  "slug": "cahors",
+  "name": "Cahors urbain",
+  "region": "Occitanie",
+  "center": [
+    44.4475,
+    1.4406
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/donnees-gtfs-du-reseau-de-transports-public-du-grand-cahors/20250903-064002/gtfs-.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Cahors, France"
+  ]
+}

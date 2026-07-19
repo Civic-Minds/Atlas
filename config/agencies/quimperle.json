@@ -1,0 +1,16 @@
+{
+  "slug": "quimperle",
+  "name": "TBK (Quimperlé)",
+  "region": "Bretagne",
+  "center": [
+    47.8725,
+    -3.5495
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tbk/exports/export-pan.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Quimperlé, France"
+  ]
+}

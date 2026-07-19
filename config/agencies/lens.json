@@ -1,0 +1,18 @@
+{
+  "slug": "lens",
+  "name": "Tadao (Lens-Liévin)",
+  "region": "Hauts-de-France",
+  "center": [
+    50.4289,
+    2.8317
+  ],
+  "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/opendata/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Lens, France",
+    "Liévin, France"
+  ],
+  "websiteUrl": "https://www.tadao.fr/"
+}

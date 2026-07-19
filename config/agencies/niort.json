@@ -1,0 +1,16 @@
+{
+  "slug": "niort",
+  "name": "TanLib (Niort)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    46.3237,
+    -0.4648
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_du_niortais-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Niort, France"
+  ]
+}

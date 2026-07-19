@@ -1,0 +1,16 @@
+{
+  "slug": "mont-de-marsan",
+  "name": "TMA (Mont-de-Marsan)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    43.8902,
+    -0.5007
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_du_marsan-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Mont-de-Marsan, France"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "beauvais",
+  "name": "Corolis (Beauvais)",
+  "region": "Hauts-de-France",
+  "center": [
+    49.4295,
+    2.0807
+  ],
+  "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=COROLIS_URB&dataFormat=GTFS&dataProfil=OPENDATA",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Beauvais, France"
+  ]
+}

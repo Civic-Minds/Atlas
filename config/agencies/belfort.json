@@ -1,0 +1,17 @@
+{
+  "slug": "belfort",
+  "name": "Optymo (Belfort)",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [
+    47.638,
+    6.8628
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/arrets-circuits-et-horaires-du-reseau-optymo-de-belfort/20260707-090040/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Belfort, France"
+  ],
+  "websiteUrl": "https://www.optymo.fr/"
+}

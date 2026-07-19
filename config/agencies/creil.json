@@ -1,0 +1,16 @@
+{
+  "slug": "creil",
+  "name": "TCR (Creil)",
+  "region": "Hauts-de-France",
+  "center": [
+    49.2583,
+    2.482
+  ],
+  "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=AXO&dataFormat=GTFS&dataProfil=OPENDATA",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Creil, France"
+  ]
+}

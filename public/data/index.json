@@ -11162,6 +11162,704 @@
       "cities": [
         "Vannes, France"
       ]
+    },
+    {
+      "slug": "aix-en-provence",
+      "name": "Aixenbus",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.5297,
+        5.4474
+      ],
+      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp-aix?apiKey=020c7c326b6c5e750b168064336e344c61213521",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Aix-en-Provence, France"
+      ],
+      "websiteUrl": "https://www.aixenbus.fr/"
+    },
+    {
+      "slug": "arles",
+      "name": "Envia (Arles)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.6766,
+        4.6278
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/donnees-statiques-et-temps-reels-reseau-envia/20260713-080242/gtfs-envia-20260711.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Arles, France"
+      ]
+    },
+    {
+      "slug": "beauvais",
+      "name": "Corolis (Beauvais)",
+      "region": "Hauts-de-France",
+      "center": [
+        49.4295,
+        2.0807
+      ],
+      "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=COROLIS_URB&dataFormat=GTFS&dataProfil=OPENDATA",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Beauvais, France"
+      ]
+    },
+    {
+      "slug": "belfort",
+      "name": "Optymo (Belfort)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.638,
+        6.8628
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/arrets-circuits-et-horaires-du-reseau-optymo-de-belfort/20260707-090040/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Belfort, France"
+      ],
+      "websiteUrl": "https://www.optymo.fr/"
+    },
+    {
+      "slug": "bergerac",
+      "name": "TUB (Bergerac)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        44.8533,
+        0.4833
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_bergeracoise-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Bergerac, France"
+      ]
+    },
+    {
+      "slug": "blois",
+      "name": "Azalys (Blois)",
+      "region": "Centre-Val de Loire",
+      "center": [
+        47.5861,
+        1.3359
+      ],
+      "feedUrl": "https://fr.ftp.opendatasoft.com/centrevaldeloire/OKINAGTFS/GTFS_AO/BLOIS.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Blois, France"
+      ],
+      "websiteUrl": "https://www.azalys-blois.fr/"
+    },
+    {
+      "slug": "boulogne-sur-mer",
+      "name": "Marin\u00e9o (Boulogne)",
+      "region": "Hauts-de-France",
+      "center": [
+        50.7252,
+        1.6139
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/boulogne/exports/medias.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Boulogne-sur-mer, France"
+      ]
+    },
+    {
+      "slug": "bourgoin",
+      "name": "Ruban (Bourgoin-Jallieu)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.5861,
+        5.273
+      ],
+      "feedUrl": "https://api.pysae.com/api/v4/groups/keolis-9cc4/gtfs/6a5504d0f9fc74c03997b2dd",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Bourgoin-Jallieu, France"
+      ]
+    },
+    {
+      "slug": "brive",
+      "name": "Lib\u00e9o (Brive)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        45.1596,
+        1.5337
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_bassin_de_brive-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Brive-la-Gaillarde, France"
+      ]
+    },
+    {
+      "slug": "cahors",
+      "name": "Cahors urbain",
+      "region": "Occitanie",
+      "center": [
+        44.4475,
+        1.4406
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/donnees-gtfs-du-reseau-de-transports-public-du-grand-cahors/20250903-064002/gtfs-.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Cahors, France"
+      ]
+    },
+    {
+      "slug": "cannes",
+      "name": "Palm Bus (Cannes)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.5528,
+        7.0174
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-et-temps-reel-gtfs-gtfs-rt-du-reseau-palmbus-cannes-pays-de-lerins/20260710-114430/palmbus-cannes-fr.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.palmbus.fr/",
+      "cities": [
+        "Cannes, France"
+      ]
+    },
+    {
+      "slug": "carcassonne",
+      "name": "RTCA (Carcassonne)",
+      "region": "Occitanie",
+      "center": [
+        43.213,
+        2.3491
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-rtca/20260324-093822/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Carcassonne, France"
+      ]
+    },
+    {
+      "slug": "castres",
+      "name": "Libellus (Castres)",
+      "region": "Occitanie",
+      "center": [
+        43.6053,
+        2.2409
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transport-du-reseau-libellus-gtfs/20260108-095309/08012026.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Castres, France"
+      ]
+    },
+    {
+      "slug": "charleville",
+      "name": "TAC (Charleville)",
+      "region": "Grand Est",
+      "center": [
+        49.7719,
+        4.72
+      ],
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CHM",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Charleville-M\u00e9zi\u00e8res, France"
+      ]
+    },
+    {
+      "slug": "chateauroux",
+      "name": "Horizon (Ch\u00e2teauroux)",
+      "region": "Centre-Val de Loire",
+      "center": [
+        46.8096,
+        1.6912
+      ],
+      "feedUrl": "https://data.chateauroux-metropole.fr/api/v2/catalog/datasets/reseau-de-bus-urbain_horizon/alternative_exports/gtfs_20260105_zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Ch\u00e2teauroux, France"
+      ]
+    },
+    {
+      "slug": "colmar",
+      "name": "Trace (Colmar)",
+      "region": "Grand Est",
+      "center": [
+        48.0794,
+        7.3586
+      ],
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CAC",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Colmar, France"
+      ]
+    },
+    {
+      "slug": "compiegne",
+      "name": "TIC (Compi\u00e8gne)",
+      "region": "Hauts-de-France",
+      "center": [
+        49.4178,
+        2.8261
+      ],
+      "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=TIC_INT&dataFormat=GTFS&dataProfil=OPENDATA",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Compi\u00e8gne, France"
+      ]
+    },
+    {
+      "slug": "concarneau",
+      "name": "Coralie (Concarneau)",
+      "region": "Bretagne",
+      "center": [
+        47.875,
+        -3.9189
+      ],
+      "feedUrl": "https://www.korrigo.bzh/ftp/OPENDATA/CORALIE.gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Concarneau, France"
+      ]
+    },
+    {
+      "slug": "creil",
+      "name": "TCR (Creil)",
+      "region": "Hauts-de-France",
+      "center": [
+        49.2583,
+        2.482
+      ],
+      "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=AXO&dataFormat=GTFS&dataProfil=OPENDATA",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Creil, France"
+      ]
+    },
+    {
+      "slug": "dieppe",
+      "name": "Stradibus (Dieppe)",
+      "region": "Normandie",
+      "center": [
+        49.922,
+        1.0775
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/deepmob-dieppe-maritime/20260717-132010/pt-th-offer-deepmob-gtfs-20260713-784-opendata.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Dieppe, France"
+      ]
+    },
+    {
+      "slug": "douai",
+      "name": "\u00c9vasion (Douai)",
+      "region": "Hauts-de-France",
+      "center": [
+        50.3678,
+        3.0805
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/eveole-douai-reseau-bus-du-syndicat-mixte-des-transports-du-douaisis-smtd/20260707-151337/gtfs-du-060726-au-030127.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Douai, France"
+      ]
+    },
+    {
+      "slug": "epinal",
+      "name": "Imagine (\u00c9pinal)",
+      "region": "Grand Est",
+      "center": [
+        48.1734,
+        6.449
+      ],
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=IMAGINE",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "\u00c9pinal, France"
+      ]
+    },
+    {
+      "slug": "evreux",
+      "name": "Transurbain (\u00c9vreux)",
+      "region": "Normandie",
+      "center": [
+        49.027,
+        1.151
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/transurbain-evreux-portes-de-normandie/20260622-071336/pt-th-offer-transurbain-gtfs-20260609-304-opendata.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "\u00c9vreux, France"
+      ]
+    },
+    {
+      "slug": "fougeres",
+      "name": "Surfline (Foug\u00e8res)",
+      "region": "Bretagne",
+      "center": [
+        48.3519,
+        -1.1995
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-surf/20250926-080752/gtfs-20250926-100314-surf.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Foug\u00e8res, France"
+      ]
+    },
+    {
+      "slug": "grasse",
+      "name": "Sillages (Grasse)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.6585,
+        6.925
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/lignes-regulieres-de-transports-sillages-en-pays-de-grasse-urbain-et-scolaire/20251119-082733/gtfs-urbain-sillages-20251119.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Grasse, France"
+      ]
+    },
+    {
+      "slug": "laon",
+      "name": "Laon urbain",
+      "region": "Hauts-de-France",
+      "center": [
+        49.5643,
+        3.6203
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tul-gares/exports/medias.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Laon, France"
+      ]
+    },
+    {
+      "slug": "lens",
+      "name": "Tadao (Lens-Li\u00e9vin)",
+      "region": "Hauts-de-France",
+      "center": [
+        50.4289,
+        2.8317
+      ],
+      "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/opendata/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Lens, France",
+        "Li\u00e9vin, France"
+      ],
+      "websiteUrl": "https://www.tadao.fr/"
+    },
+    {
+      "slug": "limoges",
+      "name": "STCL (Limoges)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        45.8336,
+        1.2611
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_limoges_metropole-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Limoges, France"
+      ],
+      "websiteUrl": "https://www.stcl.fr/"
+    },
+    {
+      "slug": "menton",
+      "name": "Zest (Menton)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.7745,
+        7.4975
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-reseau-zest/20260710-140010/gtfs-10072026-0806.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Menton, France"
+      ]
+    },
+    {
+      "slug": "mont-de-marsan",
+      "name": "TMA (Mont-de-Marsan)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        43.8902,
+        -0.5007
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_du_marsan-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Mont-de-Marsan, France"
+      ]
+    },
+    {
+      "slug": "montbeliard",
+      "name": "Evolity (Montb\u00e9liard)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.5096,
+        6.7985
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/evolity-horaires-theoriques-de-transport-public/20260709-133238/2026-07-13-au-2027-06-11-gtfs-mpm-rs-v2.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Montb\u00e9liard, France"
+      ],
+      "websiteUrl": "https://www.evolity.fr/"
+    },
+    {
+      "slug": "morlaix",
+      "name": "Lin\u00e9otim (Morlaix)",
+      "region": "Bretagne",
+      "center": [
+        48.5778,
+        -3.8279
+      ],
+      "feedUrl": "https://www.korrigo.bzh/ftp/OPENDATA/LINEOTIM_Complet.gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Morlaix, France"
+      ]
+    },
+    {
+      "slug": "nevers",
+      "name": "Taneo (Nevers)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        46.9909,
+        3.1628
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/versions-des-horaires-theoriques-des-lignes-du-reseau-de-bus-au-format-gtfs/20260717-055745/gtfs-2026-ete.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Nevers, France"
+      ],
+      "websiteUrl": "https://www.taneo-nevers.fr/"
+    },
+    {
+      "slug": "niort",
+      "name": "TanLib (Niort)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        46.3237,
+        -0.4648
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_du_niortais-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Niort, France"
+      ]
+    },
+    {
+      "slug": "quimperle",
+      "name": "TBK (Quimperl\u00e9)",
+      "region": "Bretagne",
+      "center": [
+        47.8725,
+        -3.5495
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tbk/exports/export-pan.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Quimperl\u00e9, France"
+      ]
+    },
+    {
+      "slug": "romans",
+      "name": "Cit\u00e9a Romans",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.046,
+        5.051
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/ce-jeu-de-donnees-contient-la-liste-des-arrets-des-horaires-et-des-parcours-theoriques-du-reseau-de-transport-urbain-et-interurbain-de-vrm/20260518-071358/gtfs-citea-20260517-20260628.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Romans-sur-Is\u00e8re, France"
+      ]
+    },
+    {
+      "slug": "saint-brieuc",
+      "name": "TUB (Saint-Brieuc)",
+      "region": "Bretagne",
+      "center": [
+        48.514,
+        -2.765
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/gtfs-du-reseau-de-transports-publics-de-saint-brieuc-armor-agglomeration/20260522-153134/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Saint-Brieuc, France"
+      ]
+    },
+    {
+      "slug": "saint-malo",
+      "name": "MAT (Saint-Malo)",
+      "region": "Bretagne",
+      "center": [
+        48.6493,
+        -2.0257
+      ],
+      "feedUrl": "https://eu.ftp.opendatasoft.com/star/gtfs/GTFS_STAR_BUS_METRO_EN_COURS.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Saint-Malo, France"
+      ]
+    },
+    {
+      "slug": "saint-omer",
+      "name": "MouvO (Saint-Omer)",
+      "region": "Hauts-de-France",
+      "center": [
+        50.7501,
+        2.2522
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/transports-en-commun-audomarois-1/20260430-132927/mouveo.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Saint-Omer, France"
+      ]
+    },
+    {
+      "slug": "saintes",
+      "name": "Bus\u00e9au (Saintes)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        45.7463,
+        -0.6333
+      ],
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=buss-cdasaintes",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Saintes, France"
+      ]
+    },
+    {
+      "slug": "tarbes",
+      "name": "TLP Mobilit\u00e9s (Tarbes)",
+      "region": "Occitanie",
+      "center": [
+        43.2329,
+        0.0781
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-du-reseau-tarbes-lourdes-tlp-mobilites-gtfs/20260709-103323/ktlp-gtfs-gvs-030826-090826.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Tarbes, France"
+      ]
+    },
+    {
+      "slug": "valenciennes",
+      "name": "Transvilles (Valenciennes)",
+      "region": "Hauts-de-France",
+      "center": [
+        50.3591,
+        3.5251
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-du-reseau-transvilles-au-format-gtfs/20260123-101905/google-transit.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Valenciennes, France"
+      ],
+      "websiteUrl": "https://www.transvilles.com/"
+    },
+    {
+      "slug": "vierzon",
+      "name": "Le Vib (Vierzon)",
+      "region": "Centre-Val de Loire",
+      "center": [
+        47.2219,
+        2.0697
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-le-vib/20260519-052037/gtfs-20260507-172329-levib-hb-pan-du-01-05-26-au-31-08-26.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Vierzon, France"
+      ]
     }
   ]
 }

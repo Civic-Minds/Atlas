@@ -1,0 +1,16 @@
+{
+  "slug": "arles",
+  "name": "Envia (Arles)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.6766,
+    4.6278
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/donnees-statiques-et-temps-reels-reseau-envia/20260713-080242/gtfs-envia-20260711.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Arles, France"
+  ]
+}

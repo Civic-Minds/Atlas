@@ -1,0 +1,16 @@
+{
+  "slug": "charleville",
+  "name": "TAC (Charleville)",
+  "region": "Grand Est",
+  "center": [
+    49.7719,
+    4.72
+  ],
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CHM",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Charleville-Mézières, France"
+  ]
+}

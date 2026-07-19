@@ -1,0 +1,16 @@
+{
+  "slug": "evreux",
+  "name": "Transurbain (Évreux)",
+  "region": "Normandie",
+  "center": [
+    49.027,
+    1.151
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/transurbain-evreux-portes-de-normandie/20260622-071336/pt-th-offer-transurbain-gtfs-20260609-304-opendata.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Évreux, France"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "saintes",
+  "name": "Buséau (Saintes)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    45.7463,
+    -0.6333
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=buss-cdasaintes",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Saintes, France"
+  ]
+}

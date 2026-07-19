@@ -1,0 +1,16 @@
+{
+  "slug": "bergerac",
+  "name": "TUB (Bergerac)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    44.8533,
+    0.4833
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_bergeracoise-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Bergerac, France"
+  ]
+}

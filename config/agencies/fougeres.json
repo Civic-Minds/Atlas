@@ -1,0 +1,16 @@
+{
+  "slug": "fougeres",
+  "name": "Surfline (Fougères)",
+  "region": "Bretagne",
+  "center": [
+    48.3519,
+    -1.1995
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-surf/20250926-080752/gtfs-20250926-100314-surf.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Fougères, France"
+  ]
+}

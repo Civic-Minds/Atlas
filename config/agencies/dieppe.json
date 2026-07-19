@@ -1,0 +1,16 @@
+{
+  "slug": "dieppe",
+  "name": "Stradibus (Dieppe)",
+  "region": "Normandie",
+  "center": [
+    49.922,
+    1.0775
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/deepmob-dieppe-maritime/20260717-132010/pt-th-offer-deepmob-gtfs-20260713-784-opendata.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Dieppe, France"
+  ]
+}

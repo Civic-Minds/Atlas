@@ -1,0 +1,16 @@
+{
+  "slug": "boulogne-sur-mer",
+  "name": "Marinéo (Boulogne)",
+  "region": "Hauts-de-France",
+  "center": [
+    50.7252,
+    1.6139
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/boulogne/exports/medias.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Boulogne-sur-mer, France"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "saint-omer",
+  "name": "MouvO (Saint-Omer)",
+  "region": "Hauts-de-France",
+  "center": [
+    50.7501,
+    2.2522
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/transports-en-commun-audomarois-1/20260430-132927/mouveo.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Saint-Omer, France"
+  ]
+}
