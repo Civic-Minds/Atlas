@@ -563,6 +563,28 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     return () => { map.off('moveend', onMove); };
   }, [mapLoaded]);
 
+  // Right-click a spot to copy a URL pointing at that exact location + current
+  // zoom — lets you hand someone (or paste back for a bug report) the precise
+  // location under the cursor, not just wherever the map happens to be centered.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const onContextMenu = (e: maplibregl.MapMouseEvent) => {
+      e.preventDefault();
+      const sp = new URLSearchParams(window.location.search);
+      sp.set('lat', e.lngLat.lat.toFixed(5));
+      sp.set('lon', e.lngLat.lng.toFixed(5));
+      sp.set('z', map.getZoom().toFixed(2));
+      const url = `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
+      navigator.clipboard.writeText(url).then(
+        () => showMapHint('Location URL copied'),
+        () => showMapHint('Could not copy — clipboard access denied'),
+      );
+    };
+    map.on('contextmenu', onContextMenu);
+    return () => { map.off('contextmenu', onContextMenu); };
+  }, [mapLoaded]);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
