@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { LocateFixed, Plus, Minus } from 'lucide-react';
+import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
@@ -138,6 +138,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
+  const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const showMapHint = (msg: string) => {
     setMapHint(msg);
@@ -563,27 +564,56 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     return () => { map.off('moveend', onMove); };
   }, [mapLoaded]);
 
-  // Right-click a spot to copy a URL pointing at that exact location + current
-  // zoom — lets you hand someone (or paste back for a bug report) the precise
-  // location under the cursor, not just wherever the map happens to be centered.
+  // Right-click a spot to open a small menu: copy a URL pointing at that exact
+  // location + current zoom (handy for a bug report or handing someone the
+  // precise spot under the cursor), or jump straight to filing a GitHub issue
+  // pre-filled with that URL.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const onContextMenu = (e: maplibregl.MapMouseEvent) => {
       e.preventDefault();
-      const sp = new URLSearchParams(window.location.search);
-      sp.set('lat', e.lngLat.lat.toFixed(5));
-      sp.set('lon', e.lngLat.lng.toFixed(5));
-      sp.set('z', map.getZoom().toFixed(2));
-      const url = `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
-      navigator.clipboard.writeText(url).then(
-        () => showMapHint('Location URL copied'),
-        () => showMapHint('Could not copy — clipboard access denied'),
-      );
+      setMapContextMenu({ x: e.point.x, y: e.point.y, lat: e.lngLat.lat, lon: e.lngLat.lng });
     };
+    const closeMenu = () => setMapContextMenu(null);
     map.on('contextmenu', onContextMenu);
-    return () => { map.off('contextmenu', onContextMenu); };
+    map.on('click', closeMenu);
+    map.on('movestart', closeMenu);
+    return () => {
+      map.off('contextmenu', onContextMenu);
+      map.off('click', closeMenu);
+      map.off('movestart', closeMenu);
+    };
   }, [mapLoaded]);
+
+  const buildLocationUrl = (lat: number, lon: number): string => {
+    const map = mapRef.current;
+    const sp = new URLSearchParams(window.location.search);
+    sp.set('lat', lat.toFixed(5));
+    sp.set('lon', lon.toFixed(5));
+    sp.set('z', (map?.getZoom() ?? zoom).toFixed(2));
+    return `${window.location.origin}${window.location.pathname}?${sp.toString()}`;
+  };
+
+  const handleCopyLocationUrl = () => {
+    if (!mapContextMenu) return;
+    const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
+    navigator.clipboard.writeText(url).then(
+      () => showMapHint('Location URL copied'),
+      () => showMapHint('Could not copy — clipboard access denied'),
+    );
+    setMapContextMenu(null);
+  };
+
+  const handleReportIssue = () => {
+    if (!mapContextMenu) return;
+    const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
+    const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
+    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
+    const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    window.open(issueUrl, '_blank', 'noopener,noreferrer');
+    setMapContextMenu(null);
+  };
 
   useEffect(() => {
     const map = mapRef.current;
@@ -981,6 +1011,28 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       {mapHint && (
         <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} px-3 py-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-xs text-[var(--text-muted)] shadow-lg pointer-events-none`}>
           {mapHint}
+        </div>
+      )}
+
+      {mapContextMenu && (
+        <div
+          className={`absolute ${Z_PANEL} rounded-xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl backdrop-blur-md overflow-hidden pointer-events-auto`}
+          style={{ left: mapContextMenu.x, top: mapContextMenu.y }}
+        >
+          <button
+            onClick={handleCopyLocationUrl}
+            className="flex items-center gap-2 w-full px-3.5 py-2.5 border-b border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] transition-colors text-left cursor-pointer"
+          >
+            <Link2 className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
+            <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Copy URL for here</span>
+          </button>
+          <button
+            onClick={handleReportIssue}
+            className="flex items-center gap-2 w-full px-3.5 py-2.5 hover:bg-[var(--bg-btn-hover)] transition-colors text-left cursor-pointer"
+          >
+            <Flag className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
+            <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
+          </button>
         </div>
       )}
 
