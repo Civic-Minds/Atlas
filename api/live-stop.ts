@@ -1,7 +1,9 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
-import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
+import { LIVE_POLLING_ROUTES, isLiveApiServable } from '../shared/livePollingConfig.js';
 import { fetchRecentPositions } from '../shared/liveArchive.js';
 import { haversineM } from '../shared/shapeProjection.js';
+import { isRateLimited, rateLimitWebResponse } from '../shared/rateLimit.js';
+import { requestHeader } from '../shared/request.js';
 
 export const config = {
   maxDuration: 60,
@@ -60,6 +62,11 @@ async function fetchObservedArrivals(
  * what actually happened, not just what the feed predicts.
  */
 export default async function handler(req: Request) {
+  const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
+  if (isRateLimited(ip)) {
+    return rateLimitWebResponse();
+  }
+
   const raw = req.url ?? '';
   const qs = new URLSearchParams(raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : raw);
   const agencySlug = qs.get('agency');
@@ -74,9 +81,16 @@ export default async function handler(req: Request) {
     });
   }
 
+  if (!isLiveApiServable(agencySlug)) {
+    return new Response(JSON.stringify({ error: 'Unknown or inactive agency' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   const configs = LIVE_POLLING_ROUTES.filter(r => r.slug === agencySlug);
   if (configs.length === 0) {
-    return new Response(JSON.stringify({ error: `No live config for agency: ${agencySlug}` }), {
+    return new Response(JSON.stringify({ error: 'Unknown or inactive agency' }), {
       status: 404,
       headers: { 'Content-Type': 'application/json' },
     });

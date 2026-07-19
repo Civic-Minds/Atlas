@@ -1,5 +1,9 @@
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
+/** Default public API budget. In-memory only — resets per Vercel isolate. */
+export const DEFAULT_RATE_LIMIT = 60;
+export const DEFAULT_RATE_WINDOW_MS = 60_000;
+
 function cleanupExpired() {
   const now = Date.now();
   for (const [ip, record] of rateLimitMap.entries()) {
@@ -12,11 +16,12 @@ function cleanupExpired() {
 /**
  * Checks if a given IP has exceeded the rate limit.
  * Defaults to 60 requests per minute.
+ * Note: process-local Map — not shared across Vercel instances (known gap).
  */
 export function isRateLimited(
   ip: string,
-  limit: number = 60,
-  windowMs: number = 60000
+  limit: number = DEFAULT_RATE_LIMIT,
+  windowMs: number = DEFAULT_RATE_WINDOW_MS
 ): boolean {
   const now = Date.now();
 
@@ -37,4 +42,15 @@ export function isRateLimited(
 
   record.count += 1;
   return record.count > limit;
+}
+
+/** JSON 429 body for Fetch-style (Web Response) handlers. */
+export function rateLimitWebResponse(): Response {
+  return new Response(JSON.stringify({ error: 'Too many requests' }), {
+    status: 429,
+    headers: {
+      'Content-Type': 'application/json',
+      'Retry-After': '60',
+    },
+  });
 }

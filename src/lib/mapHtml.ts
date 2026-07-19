@@ -1,6 +1,7 @@
 import { STATUS_COLORS } from '../utils/colors';
 import type { HistoryMapStop } from '../context/HistoryMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
+import { escapeHtml } from './escapeHtml';
 
 export function formatGap(gap: number | null): string {
   if (gap === null) return '–';
@@ -25,7 +26,7 @@ export function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
   const gap = formatGap(stop.avgGap);
 
   return `
-    <div class="history-stop-card" data-stop-id="${stop.stopId}" style="
+    <div class="history-stop-card" data-stop-id="${escapeHtml(stop.stopId)}" style="
       background: var(--bg-panel, #fff);
       border: 1.5px solid ${color};
       border-radius: 12px;
@@ -37,7 +38,7 @@ export function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
       pointer-events: auto;
       font-family: inherit;
     ">
-      <p style="font-size:9px;font-weight:700;color:var(--text-dim,#6b7280);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${stop.name}</p>
+      <p style="font-size:9px;font-weight:700;color:var(--text-dim,#6b7280);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(stop.name)}</p>
       <div style="display:flex;align-items:baseline;gap:3px;">
         <span style="font-size:18px;font-weight:900;color:var(--text-primary,#111);line-height:1;">${gap}</span>
         <span style="font-size:9px;color:var(--text-dim,#6b7280);">gap</span>
@@ -108,7 +109,7 @@ export function VehicleMarkerHtml(vehicle: LiveVehicle, hideText: boolean = fals
       box-shadow: 0 2px 6px rgba(0,0,0,0.22);
       cursor: pointer;
     ">
-      ${vehicle.routeShortName}
+      ${escapeHtml(vehicle.routeShortName)}
       ${vehicle.bearing !== null ? `
         <div style="
           position: absolute;

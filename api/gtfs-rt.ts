@@ -1,4 +1,7 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
+import { isLiveApiServable } from '../shared/livePollingConfig.js';
+import { isRateLimited, rateLimitWebResponse } from '../shared/rateLimit.js';
+import { requestHeader } from '../shared/request.js';
 
 export const config = {
   maxDuration: 60,
@@ -16,9 +19,14 @@ const FEEDS = {
 };
 
 export default async function handler(req: Request) {
+  const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
+  if (isRateLimited(ip)) {
+    return rateLimitWebResponse();
+  }
+
   const agency = queryParams(req).get('agency');
 
-  if (!agency || !FEEDS[agency as keyof typeof FEEDS]) {
+  if (!agency || !FEEDS[agency as keyof typeof FEEDS] || !isLiveApiServable(agency)) {
     return new Response(JSON.stringify({ error: 'Invalid agency. Use burlington or hamilton.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -31,8 +39,9 @@ export default async function handler(req: Request) {
   try {
     const response = await fetch(feedUrl, { headers });
     if (!response.ok) {
-      return new Response(JSON.stringify({ error: `Fetch failed with status ${response.status}` }), {
-        status: 500,
+      console.error(`[gtfs-rt] upstream HTTP ${response.status} for ${agency}`);
+      return new Response(JSON.stringify({ error: 'Feed unavailable' }), {
+        status: 502,
         headers: { 'Content-Type': 'application/json' },
       });
     }

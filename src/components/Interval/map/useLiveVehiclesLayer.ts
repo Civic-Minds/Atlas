@@ -6,8 +6,10 @@ import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useLiveVehiclesMapOverlay } from '../../../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../../../context/LiveVehiclesMapOverlay';
 import { cleanRouteShortName } from '../../../utils/format';
+import { escapeHtml } from '../../../lib/escapeHtml';
 
-function vehicleTooltipHtml(v: LiveVehicle): string | null {
+/** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
+export function vehicleTooltipHtml(v: LiveVehicle): string | null {
   if (!v.routeShortName) return null;
   const delayMin = v.delayMin;
   const label = delayMin === null ? null
@@ -18,11 +20,14 @@ function vehicleTooltipHtml(v: LiveVehicle): string | null {
     on_time: '#38a169', early: '#3182ce', late: '#e53e3e', no_data: '#718096',
   };
   const color = statusColor[v.status] ?? statusColor.no_data;
+  const routeLabel = escapeHtml(cleanRouteShortName(v.routeShortName));
+  const headsign = v.headsign ? escapeHtml(v.headsign) : '';
+  const speed = v.speedKmh != null ? escapeHtml(String(v.speedKmh)) : null;
   return `
     <div style="font-family:'Inter',ui-sans-serif,sans-serif;padding:8px 10px;min-width:130px;line-height:1.4;">
-      <div style="font-size:9px;font-weight:800;color:var(--text-dim);letter-spacing:0.4px;text-transform:uppercase;">Route ${cleanRouteShortName(v.routeShortName)}</div>
-      ${v.headsign ? `<div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${v.headsign}</div>` : ''}
-      ${v.speedKmh != null ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Speed</span><span style="font-size:10px;font-weight:800;color:var(--text-primary);">${v.speedKmh} km/h</span></div>` : ''}
+      <div style="font-size:9px;font-weight:800;color:var(--text-dim);letter-spacing:0.4px;text-transform:uppercase;">Route ${routeLabel}</div>
+      ${headsign ? `<div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${headsign}</div>` : ''}
+      ${speed != null ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Speed</span><span style="font-size:10px;font-weight:800;color:var(--text-primary);">${speed} km/h</span></div>` : ''}
       ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-primary);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${label}</span></div>` : ''}
     </div>`;
 }

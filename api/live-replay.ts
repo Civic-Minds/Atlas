@@ -1,10 +1,10 @@
-import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
+import { isLiveEligibleSlug } from '../shared/livePollingConfig.js';
 import { LIVE_SNAPSHOT_SCHEMA_VERSION, type LiveFeedType } from '../shared/liveContract.js';
 import { isRateLimited } from '../shared/rateLimit.js';
 import { requestHeader } from '../shared/request.js';
 import { jsonResponse, type ApiResponse } from '../shared/http.js';
 import type { ApiRequest } from '../shared/request.js';
-import { getR2Client, LIVE_BUCKET, listKeys, readSnapshot } from './liveStore.js';
+import { getR2Client, listKeys, readSnapshot } from './liveStore.js';
 
 export const config = { maxDuration: 30 };
 const MAX_RANGE_SECONDS = 7 * 24 * 60 * 60;
@@ -12,7 +12,8 @@ const MAX_SNAPSHOTS = 120;
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
   const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
-  if (isRateLimited(ip)) return jsonResponse(res, { error: 'Too many requests' }, 429);
+  // Stricter budget: multi-get on private R2 (in-memory only — multi-instance gap known).
+  if (isRateLimited(ip, 20)) return jsonResponse(res, { error: 'Too many requests' }, 429);
 
   const params = new URL(req.url ?? '', 'https://atlas.invalid').searchParams;
   const agency = params.get('agency');
@@ -22,9 +23,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
   const start = Number(params.get('start') ?? end - 60 * 60);
   const limit = Math.min(MAX_SNAPSHOTS, Math.max(1, Number(params.get('limit') ?? 60)));
   const offset = Math.max(0, Number(params.get('offset') ?? 0));
-  const knownAgency = LIVE_POLLING_ROUTES.some(config => config.slug === agency);
 
-  if (!agency || !knownAgency || !Number.isFinite(start) || !Number.isFinite(end) || !Number.isInteger(offset) || start > end || end - start > MAX_RANGE_SECONDS) {
+  if (!agency || !isLiveEligibleSlug(agency) || !Number.isFinite(start) || !Number.isFinite(end) || !Number.isInteger(offset) || start > end || end - start > MAX_RANGE_SECONDS) {
     return jsonResponse(res, { error: 'Invalid agency or replay range' }, 400);
   }
 
@@ -44,6 +44,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     if (!snapshots.length) return jsonResponse(res, { schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: 'No live snapshots in requested range' }, 404);
     return jsonResponse(res, { schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'available', start, end, offset, limit, returned: snapshots.length, total: candidates.length, hasMore: offset + selected.length < candidates.length, snapshots });
   } catch (error) {
-    return jsonResponse(res, { schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: (error as Error).message }, 503);
+    console.error('[live-replay]', error);
+    return jsonResponse(res, { schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: 'Live data temporarily unavailable' }, 503);
   }
 }

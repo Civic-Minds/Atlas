@@ -1,4 +1,4 @@
-import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
+import { isLiveEligibleSlug } from '../shared/livePollingConfig.js';
 import { LIVE_SNAPSHOT_SCHEMA_VERSION, type LiveFeedType } from '../shared/liveContract.js';
 import { isRateLimited } from '../shared/rateLimit.js';
 import { requestHeader } from '../shared/request.js';
@@ -23,7 +23,8 @@ async function latestKey(client: S3Client, feedType: LiveFeedType, agency: strin
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
   const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
-  if (isRateLimited(ip)) {
+  // Stricter budget: list + get on private R2 (in-memory only — multi-instance gap known).
+  if (isRateLimited(ip, 20)) {
     return jsonResponse(res, { error: 'Too many requests' }, 429, { 'Retry-After': '60' });
   }
 
@@ -31,9 +32,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
   const agency = params.get('agency');
   const feedType = params.get('feed') === 'trips' ? 'trip_updates' : 'vehicle_positions';
   const route = params.get('route');
-  const knownAgency = LIVE_POLLING_ROUTES.some(config => config.slug === agency);
-  if (!agency || !knownAgency) {
-    return jsonResponse(res, { error: 'Unknown live agency' }, 400);
+  // Archive reads: UI-eligible only (no upstream key burn). Keys not required for R2.
+  if (!agency || !isLiveEligibleSlug(agency)) {
+    return jsonResponse(res, { error: 'Unknown or inactive agency' }, 404);
   }
 
   try {
@@ -52,6 +53,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
 
     return jsonResponse(res, { ...snapshot, status, ageSeconds, snapshotKey: key, records }, status === 'unavailable' ? 503 : 200, { 'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=20' });
   } catch (error) {
-    return jsonResponse(res, { schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: (error as Error).message }, 503);
+    console.error('[live-snapshot]', error);
+    return jsonResponse(res, { schemaVersion: LIVE_SNAPSHOT_SCHEMA_VERSION, agency, feedType, status: 'unavailable', error: 'Live data temporarily unavailable' }, 503);
   }
 }

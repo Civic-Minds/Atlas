@@ -1,6 +1,6 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import type { GeoJSON } from 'geojson';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_TIMEZONES } from '../shared/livePollingConfig.js';
+import { LIVE_POLLING_ROUTES, LIVE_AGENCY_TIMEZONES, isLiveApiServable } from '../shared/livePollingConfig.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   delayFromTripUpdate,
@@ -8,7 +8,8 @@ import {
   explicitTripDelaySec,
   serviceDayStartEpoch,
 } from '../shared/liveVehicleDelay.js';
-import { isRateLimited } from '../shared/rateLimit.js';
+import { isRateLimited, rateLimitWebResponse } from '../shared/rateLimit.js';
+import { requestHeader } from '../shared/request.js';
 import { vehicleHeadwayGapMinFromShape } from '../shared/liveHeadway.js';
 import { pickBestShape, shapesFromGeometry, type Shape } from '../shared/shapeProjection.js';
 import { fetchRecentPositions } from '../shared/liveArchive.js';
@@ -24,16 +25,6 @@ function queryParams(req: Request & { url?: string }): URLSearchParams {
   const raw = req.url ?? '';
   const qs = raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : raw;
   return new URLSearchParams(qs);
-}
-
-/** Read a request header from either Fetch's Headers or Vercel's Node headers. */
-function requestHeader(req: Request & { headers: Headers | Record<string, string | string[] | undefined> }, name: string): string | null {
-  const headers = req.headers;
-  if (typeof (headers as Headers).get === 'function') {
-    return (headers as Headers).get(name);
-  }
-  const value = (headers as Record<string, string | string[] | undefined>)[name.toLowerCase()];
-  return Array.isArray(value) ? value[0] ?? null : value ?? null;
 }
 
 type FeedFailureReason = 'timeout' | 'http-error' | 'decode-error';
@@ -146,13 +137,7 @@ async function fetchTtcShapes(): Promise<Map<string, Shape[]>> {
 export default async function handler(req: Request) {
   const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) {
-    return new Response(JSON.stringify({ error: 'Too many requests' }), {
-      status: 429,
-      headers: {
-        'Content-Type': 'application/json',
-        'Retry-After': '60',
-      },
-    });
+    return rateLimitWebResponse();
   }
 
   const agencySlug = queryParams(req).get('agency');
@@ -164,9 +149,16 @@ export default async function handler(req: Request) {
     });
   }
 
+  if (!isLiveApiServable(agencySlug)) {
+    return new Response(JSON.stringify({ error: 'Unknown or inactive agency' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   const configs = LIVE_POLLING_ROUTES.filter(r => r.slug === agencySlug);
   if (configs.length === 0) {
-    return new Response(JSON.stringify({ error: `No live config found for agency: ${agencySlug}` }), {
+    return new Response(JSON.stringify({ error: 'Unknown or inactive agency' }), {
       status: 404,
       headers: { 'Content-Type': 'application/json' },
     });

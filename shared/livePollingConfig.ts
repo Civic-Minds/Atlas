@@ -361,11 +361,25 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
   },
 ];
 
-/** True when an agency's live feeds are usable (no API key needed, or key configured). */
+/** True when an agency's live feeds are usable in the UI (no API key needed, or marked active). */
 export function isLiveEligibleSlug(slug: string): boolean {
   return LIVE_POLLING_ROUTES.some(
     r => r.slug === slug && ((!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active),
   );
+}
+
+/**
+ * Server-only gate for live API routes: UI-eligible AND any required API keys
+ * present in process.env. Never call upstream when this returns false.
+ * (In-memory rate limits still apply separately — multi-instance gap is known.)
+ */
+export function isLiveApiServable(slug: string): boolean {
+  if (!isLiveEligibleSlug(slug)) return false;
+  const cfg = LIVE_POLLING_ROUTES.find(r => r.slug === slug);
+  if (!cfg) return false;
+  if (cfg.apiKeyParamEnvVar && !process.env[cfg.apiKeyParamEnvVar]) return false;
+  if (cfg.apiKeyHeaderEnvVar && !process.env[cfg.apiKeyHeaderEnvVar]) return false;
+  return true;
 }
 
 export function getLiveRouteConfig(
