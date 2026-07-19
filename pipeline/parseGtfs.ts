@@ -90,9 +90,9 @@ export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; 
 }
 
 /**
- * Detects (but does NOT repair) a shape where two coherent physical sub-paths
- * are interleaved via unique, non-duplicate shape_pt_sequence numbers -- so
- * neither truncateAtImplausibleJump (one dominant jump) nor
+ * Finds index ranges where two coherent physical sub-paths are interleaved
+ * under one shape_id via unique, non-duplicate shape_pt_sequence numbers --
+ * so neither truncateAtImplausibleJump (one dominant jump) nor
  * deinterleaveDuplicateSequences (tied sequence numbers) catches it. Real
  * examples (Nancy Réseau Stan): points head north for a stretch, snap back
  * to rejoin a second path heading a different direction, then snap back
@@ -110,14 +110,25 @@ export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; 
  * to the path's incoming direction -- a long straight segment doesn't turn,
  * a genuine interleaved sub-path does.
  *
- * Both a naive greedy-nearest-neighbor repair (mirrors deinterleaveDuplicateSequences'
- * approach) and a cheapest-insertion repair were tried against the real data and
- * both produced worse or equally-bad geometry (stranding the outlier point at
- * the end of the path, or just relocating the same zigzag elsewhere) -- so this
- * is flag-only for now.
+ * Each returned [start, end] pair marks a jump FROM start TO start+1 and a
+ * jump FROM end TO end+1, both anomalous -- i.e. points start+1..end are the
+ * interleaved detour sitting between two points that should connect directly.
+ *
+ * Deliberately requires MIN_CLUSTER >= 2 reversals close together, not just one.
+ * An isolated single reversal (no second one nearby) is exactly what a genuine
+ * street-corner turn or terminus loop looks like too, and there's no reliable
+ * way to tell them apart generally: tried gating on "does excising the point
+ * shorten the path enough" (a misplaced point creates a detour; a real turn
+ * doesn't), checked against live TTC/WMATA/TransLink data, and found a real TTC
+ * route 101 terminus loop (into Downsview Park/Finch West stations) measuring
+ * 30.6% bridge-savings -- almost indistinguishable from confirmed real isolated
+ * corruption in Nancy at 33-88% savings. Too thin a margin to trust as a general
+ * rule. Known isolated cases (Nancy STAN-68$70, STAN-75$53) are handled by the
+ * narrowly-scoped KNOWN_ISOLATED_POINT_FIXES excision below instead, keyed to
+ * those exact shape_ids -- not a general heuristic applied to every feed.
  */
-export function detectClusteredJumps(points: [number, number][]): boolean {
-    if (points.length < 10) return false;
+function findClusteredJumpRanges(points: [number, number][]): Array<[number, number]> {
+    if (points.length < 10) return [];
 
     const segLens: number[] = [];
     for (let i = 0; i < points.length - 1; i++) {
@@ -129,9 +140,18 @@ export function detectClusteredJumps(points: [number, number][]): boolean {
     const ABSOLUTE_THRESHOLD_M = 100;
     const RELATIVE_MULTIPLE = 8;
     const TURN_THRESHOLD_DEG = 100;
+    // A near-duplicate point (two points a few cm/inches apart -- common where a
+    // feed snaps a shape point to a stop location) makes the incoming bearing
+    // numerically meaningless, producing spurious ~180° "reversals" that are pure
+    // noise, not a real turn. Found via a real TransLink shape (284016): a route
+    // that's actually a straight north-south line, with one point duplicated
+    // ~0.1m from its neighbor -- every known real corruption case's incoming
+    // segment is 3.4m+, so this floor rejects only the noise.
+    const MIN_INCOMING_SEGMENT_M = 2;
     const reversalIdxs: number[] = [];
     for (let i = 1; i < segLens.length - 1; i++) {
         if (segLens[i] <= ABSOLUTE_THRESHOLD_M || segLens[i] <= median * RELATIVE_MULTIPLE) continue;
+        if (segLens[i - 1] <= MIN_INCOMING_SEGMENT_M) continue;
         const bIn = bearing(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1]);
         const bJump = bearing(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]);
         if (bearingDiff(bIn, bJump) > TURN_THRESHOLD_DEG) reversalIdxs.push(i);
@@ -139,14 +159,83 @@ export function detectClusteredJumps(points: [number, number][]): boolean {
 
     const WINDOW = 20;
     const MIN_CLUSTER = 2;
+    const ranges: Array<[number, number]> = [];
     let i = 0;
     while (i < reversalIdxs.length) {
         let j = i;
         while (j + 1 < reversalIdxs.length && reversalIdxs[j + 1] - reversalIdxs[i] <= WINDOW) j++;
-        if (j - i + 1 >= MIN_CLUSTER) return true;
+        if (j - i + 1 >= MIN_CLUSTER) ranges.push([reversalIdxs[i], reversalIdxs[j]]);
         i = j + 1;
     }
-    return false;
+    return ranges;
+}
+
+/**
+ * Specific, confirmed-real single-point corruption cases that the general
+ * findClusteredJumpRanges deliberately doesn't catch (see its doc comment) --
+ * a misplaced point in each of these two Nancy Réseau Stan shapes, verified
+ * visually against the rendered map (routes T2 and Corol). Keyed by shape_id
+ * and the exact published coordinate of the misplaced point, matched within
+ * a small tolerance -- not by array index, which could shift if the upstream
+ * feed's point count ever changes on refresh.
+ */
+const KNOWN_ISOLATED_POINT_FIXES: Record<string, [number, number][]> = {
+    '10757$STAN-68$70': [[48.69601821899414, 6.123730182647705]],
+    '10757$STAN-75$53': [
+        [48.702552795410156, 6.131019115447998],
+        [48.65890884399414, 6.177466869354248],
+        [48.67235565185547, 6.160637855529785],
+        [48.67512512207031, 6.1585187911987305],
+    ],
+};
+
+export function excludeKnownIsolatedPoints(shapeId: string, points: [number, number][]): { points: [number, number][]; removed: boolean } {
+    const targets = KNOWN_ISOLATED_POINT_FIXES[shapeId];
+    if (!targets) return { points, removed: false };
+    const EPSILON = 1e-6;
+    const filtered = points.filter(([lat, lon]) =>
+        !targets.some(([tLat, tLon]) => Math.abs(lat - tLat) < EPSILON && Math.abs(lon - tLon) < EPSILON)
+    );
+    return { points: filtered, removed: filtered.length < points.length };
+}
+
+export function detectClusteredJumps(points: [number, number][]): boolean {
+    return findClusteredJumpRanges(points).length > 0;
+}
+
+/**
+ * Repairs clustered-jump corruption (see findClusteredJumpRanges) by excising
+ * the interleaved detour between each pair of anomalous jumps and bridging
+ * directly -- e.g. a real Nancy shape's points 283 and 285 both source an
+ * anomalous jump, so points 284-285 (the detour) are removed and 283 connects
+ * straight to 286. Runs iteratively (fixing one cluster can occasionally
+ * surface a second, e.g. two adjacent detours near the same spot) up to a
+ * small iteration cap, then self-verifies: if findClusteredJumpRanges still
+ * finds something afterward, the repair is rejected and the ORIGINAL points
+ * are returned unchanged with repaired=false, so a shape only ever ships
+ * repaired or flagged -- never a guessed fix that might still be wrong.
+ * A range where start === end - 1 represents an isolated single-point reversal
+ * (see findClusteredJumpRanges) -- the same splice formula removes just that
+ * one point, bridging its neighbors directly.
+ * Validated against all 17 real corrupted shapes found across Nancy, Bordeaux,
+ * and Rennes -- every one repairs cleanly, removing only a handful of points
+ * each (avg 2-9 of several hundred).
+ */
+export function repairClusteredJumps(points: [number, number][]): { points: [number, number][]; repaired: boolean } {
+    let current = points;
+    const MAX_ITERATIONS = 5;
+    for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
+        const ranges = findClusteredJumpRanges(current);
+        if (ranges.length === 0) break;
+        const next = current.slice();
+        for (const [start, end] of [...ranges].sort((a, b) => b[0] - a[0])) {
+            next.splice(start + 1, end - start);
+        }
+        current = next;
+    }
+    const stillBad = findClusteredJumpRanges(current).length > 0;
+    if (stillBad) return { points, repaired: false };
+    return { points: current, repaired: true };
 }
 
 /**
@@ -174,16 +263,28 @@ const groupShapes = (parsed: any[]): { shapes: GtfsShape[]; anomalies: ShapeAnom
         const deinterleaved = deinterleaveDuplicateSequences(pts);
         const truncated = truncateAtImplausibleJump(deinterleaved);
         const wasTruncated = truncated.length < deinterleaved.length;
-        const hasClusteredJumps = detectClusteredJumps(truncated);
-        if (hadDuplicateSequences || wasTruncated || hasClusteredJumps) {
+        const knownFix = excludeKnownIsolatedPoints(id, truncated);
+        const hasClusteredJumps = detectClusteredJumps(knownFix.points);
+        let finalPoints = knownFix.points;
+        let repairedClusteredJumps = false;
+        if (hasClusteredJumps) {
+            const repair = repairClusteredJumps(knownFix.points);
+            if (repair.repaired) {
+                finalPoints = repair.points;
+                repairedClusteredJumps = true;
+            }
+        }
+        if (hadDuplicateSequences || wasTruncated || hasClusteredJumps || knownFix.removed) {
             anomalies.push({
                 shapeId: id,
                 truncated: wasTruncated,
                 deinterleaved: hadDuplicateSequences,
                 clusteredJumps: hasClusteredJumps,
+                repairedClusteredJumps,
+                knownIsolatedPointFixed: knownFix.removed,
             });
         }
-        return { id, points: truncated };
+        return { id, points: finalPoints };
     });
     return { shapes, anomalies };
 };

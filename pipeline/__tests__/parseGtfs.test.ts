@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { truncateAtImplausibleJump, deinterleaveDuplicateSequences, detectClusteredJumps } from '../parseGtfs.js';
+import { truncateAtImplausibleJump, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints } from '../parseGtfs.js';
 
 describe('truncateAtImplausibleJump', () => {
   it('leaves a well-formed, evenly-spaced shape untouched', () => {
@@ -113,8 +113,33 @@ describe('detectClusteredJumps', () => {
   });
 
   it('does not flag a single isolated long segment (a real long block or highway stretch)', () => {
-    const points: [number, number][] = Array.from({ length: 15 }, (_, i) => [43.65 + i * 0.0003, -79.38 + i * 0.0003]);
-    points[8] = [43.68, -79.38]; // one big jump, not a clustered zigzag
+    // A genuine long gap that continues in the same direction afterward -- unlike
+    // an interleaved/misplaced point, the bearing barely changes, so this isn't a
+    // reversal at all regardless of the isolated-point bridge-savings check below.
+    const points: [number, number][] = Array.from({ length: 8 }, (_, i) => [43.65 + i * 0.0003, -79.38 + i * 0.0003]);
+    points.push([43.6521 + 0.01, -79.3779 + 0.01]);
+    for (let i = 1; i <= 6; i++) {
+      points.push([43.6521 + 0.01 + i * 0.0003, -79.3779 + 0.01 + i * 0.0003]);
+    }
+    expect(detectClusteredJumps(points)).toBe(false);
+  });
+
+  it('does not flag an isolated reversal where bridging saves little distance (real street-corner turn or terminus loop, TTC/WMATA false-positive regression)', () => {
+    // Real TTC shape 1120145: the path turns ~105 degrees over a ~115m segment at
+    // what is a genuine street corner, not a misplaced point. Bridging directly
+    // only saves ~10% of the through-distance (113m vs 126m) -- far short of the
+    // 25%+ savings seen in confirmed real corruption (Nancy: 33-88%). An earlier
+    // version of the isolated-reversal check only required bridging to be
+    // *any* amount shorter, which by the triangle inequality is true of nearly
+    // every reversal -- this flagged 43 shapes across TTC/WMATA/TransLink alone,
+    // all already rendering correctly in production.
+    const points: [number, number][] = [
+      ...Array.from({ length: 15 }, (_, i) => [43.787255 - i * 0.00002, -79.352947 + i * 0.00002] as [number, number]),
+      [43.787255, -79.352947],
+      [43.787338, -79.353018],
+      [43.787642, -79.351645],
+      ...Array.from({ length: 15 }, (_, i) => [43.787642 + i * 0.00002, -79.351645 - i * 0.00002] as [number, number]),
+    ];
     expect(detectClusteredJumps(points)).toBe(false);
   });
 
@@ -140,5 +165,146 @@ describe('detectClusteredJumps', () => {
       [48.10978317, -1.67398703], [48.10987473, -1.673949],
     ];
     expect(detectClusteredJumps(points)).toBe(false);
+  });
+
+  it('does not flag a real isolated single-point reversal from Nancy shape 10757$STAN-68$70 (index 12) -- deliberately left to the scoped known-shape fix, not the general detector', () => {
+    // Real points 0-39 as published (self-contained slice reproducing the shape's
+    // own local median -- a shorter slice understates the median and misses the
+    // flag, same lesson as the STAN-56 repro above). Point 12 sits ~239m from its
+    // neighbors with a ~100 degree reversal and nothing else nearby is anomalous,
+    // so MIN_CLUSTER=2 correctly leaves it alone -- a general isolated-reversal
+    // heuristic was tried and rejected (see findClusteredJumpRanges doc comment);
+    // this exact case is instead handled by excludeKnownIsolatedPoints below.
+    const points: [number, number][] = [
+      [48.69089126586914, 6.12836217880249], [48.69093322753906, 6.1283159255981445],
+      [48.69112014770508, 6.128424167633057], [48.691463470458984, 6.128377914428711],
+      [48.69178009033203, 6.128335952758789], [48.69282913208008, 6.12818717956543],
+      [48.69326400756836, 6.128158092498779], [48.694061279296875, 6.128070831298828],
+      [48.694297790527344, 6.12808084487915], [48.694435119628906, 6.128068923950195],
+      [48.694496154785156, 6.1280999183654785], [48.696083068847656, 6.125679016113281],
+      [48.69601821899414, 6.123730182647705], // point 12 -- isolated misplaced outlier
+      [48.69815444946289, 6.124143123626709], [48.699005126953125, 6.127620220184326],
+      [48.7009391784668, 6.130112171173096], [48.7009391784668, 6.130109786987305],
+      [48.701358795166016, 6.130214214324951], [48.70174789428711, 6.130317211151123],
+      [48.70216369628906, 6.13042688369751], [48.70231246948242, 6.130483150482178],
+      [48.702388763427734, 6.130557060241699], [48.702449798583984, 6.130702972412109],
+      [48.70254898071289, 6.131021022796631], [48.702552795410156, 6.131042003631592],
+      [48.70269012451172, 6.131475925445557], [48.70293426513672, 6.132115840911865],
+      [48.70298385620117, 6.132338047027588], [48.70295715332031, 6.132547855377197],
+      [48.70283508300781, 6.132954120635986], [48.70267105102539, 6.1335039138793945],
+      [48.70258712768555, 6.133635997772217], [48.702491760253906, 6.133755207061768],
+      [48.70238494873047, 6.133823871612549], [48.70231246948242, 6.133840084075928],
+      [48.702239990234375, 6.133823871612549], [48.702178955078125, 6.133800983428955],
+      [48.702056884765625, 6.133726119995117], [48.701881408691406, 6.133551120758057],
+      [48.70161819458008, 6.133306980133057],
+    ];
+    expect(detectClusteredJumps(points)).toBe(false);
+  });
+});
+
+describe('repairClusteredJumps', () => {
+  it('repairs the real Nancy Réseau Stan repro by excising the interleaved detour and bridging directly', () => {
+    // Real points 250-299 of shape 10757$STAN-56$14 (not synthetic filler -- a shorter
+    // synthetic lead-in doesn't reproduce the real shape's local point density closely
+    // enough, and skews which range gets flagged). Real points 283/285 each source an
+    // anomalous jump; the interleaved detour is points 284-285, which should be excised
+    // so point 283 connects directly to point 286.
+    const points: [number, number][] = [
+      [48.677207946777344, 6.156075954437256], [48.6772346496582, 6.156259059906006],
+      [48.677310943603516, 6.156632900238037], [48.677398681640625, 6.157092094421387],
+      [48.67747116088867, 6.1573591232299805], [48.67755889892578, 6.157773017883301],
+      [48.6776123046875, 6.158036231994629], [48.67770004272461, 6.158350944519043],
+      [48.67781448364258, 6.158731937408447], [48.67784881591797, 6.158837795257568],
+      [48.67788314819336, 6.15882682800293], [48.677886962890625, 6.158839225769043],
+      [48.678104400634766, 6.159524917602539], [48.67823791503906, 6.159409046173096],
+      [48.68003463745117, 6.157853126525879], [48.6808967590332, 6.157077789306641],
+      [48.68093490600586, 6.157388210296631], [48.680999755859375, 6.157711029052734],
+      [48.6810188293457, 6.157822132110596], [48.68098068237305, 6.157826900482178],
+      [48.68107986450195, 6.158420085906982], [48.68123245239258, 6.159379005432129],
+      [48.6813850402832, 6.160378932952881], [48.68147277832031, 6.160921096801758],
+      [48.68167495727539, 6.16230583190918], [48.68177032470703, 6.16294002532959],
+      [48.681907653808594, 6.163816928863525], [48.68208694458008, 6.165071964263916],
+      [48.68211364746094, 6.165280818939209], [48.68215560913086, 6.165363788604736],
+      [48.68218231201172, 6.165460109710693], [48.682220458984375, 6.1656951904296875],
+      [48.68230438232422, 6.166211128234863],
+      [48.682273864746094, 6.166215896606445], // point 283
+      [48.68454360961914, 6.168026924133301], // point 284 -- detour, should be excised
+      [48.686790466308594, 6.168015956878662], // point 285 -- detour, should be excised
+      [48.68354797363281, 6.168540954589844], // point 286 -- should connect directly after repair
+      [48.68381118774414, 6.17014217376709], [48.683937072753906, 6.170985221862793],
+      [48.6840934753418, 6.171936988830566], [48.68427276611328, 6.172421932220459],
+      [48.68458557128906, 6.173192977905273], [48.68466567993164, 6.173373222351074],
+      [48.684730529785156, 6.173602104187012], [48.68476867675781, 6.1738200187683105],
+      [48.6883544921875, 6.173195838928223], [48.69043731689453, 6.175655841827393],
+      [48.6904296875, 6.17564582824707], [48.690582275390625, 6.175548076629639],
+      [48.69109344482422, 6.175191879272461],
+    ];
+    const result = repairClusteredJumps(points);
+    expect(result.repaired).toBe(true);
+    expect(result.points).not.toContainEqual([48.68454360961914, 6.168026924133301]);
+    expect(result.points).not.toContainEqual([48.686790466308594, 6.168015956878662]);
+    expect(result.points).toContainEqual([48.682273864746094, 6.166215896606445]);
+    expect(result.points).toContainEqual([48.68354797363281, 6.168540954589844]);
+    expect(detectClusteredJumps(result.points)).toBe(false);
+    // Small, localized excision -- not a wholesale truncation of the shape.
+    expect(points.length - result.points.length).toBeLessThan(5);
+  });
+
+  it('is a no-op on a well-formed shape with nothing to repair', () => {
+    const points: [number, number][] = Array.from({ length: 20 }, (_, i) => [43.65 + i * 0.0003, -79.38 + i * 0.0003]);
+    const result = repairClusteredJumps(points);
+    expect(result.repaired).toBe(true);
+    expect(result.points).toEqual(points);
+  });
+
+});
+
+describe('excludeKnownIsolatedPoints', () => {
+  // These are the two real isolated-single-point corruption cases the general
+  // findClusteredJumpRanges deliberately doesn't catch (see its doc comment) --
+  // confirmed real by visual inspection of the rendered map (Nancy Réseau Stan
+  // routes T2 and Corol). Handled here by exact shape_id + coordinate match
+  // instead of a general heuristic, since a general one was tried and found to
+  // sit too close to real terminus-loop geometry on live agencies (TTC).
+  it('excises the known misplaced point for Nancy shape 10757$STAN-68$70', () => {
+    const points: [number, number][] = [
+      [48.696083068847656, 6.125679016113281],
+      [48.69601821899414, 6.123730182647705], // the known misplaced point
+      [48.69815444946289, 6.124143123626709],
+    ];
+    const result = excludeKnownIsolatedPoints('10757$STAN-68$70', points);
+    expect(result.removed).toBe(true);
+    expect(result.points).toEqual([
+      [48.696083068847656, 6.125679016113281],
+      [48.69815444946289, 6.124143123626709],
+    ]);
+  });
+
+  it('excises all four known misplaced points for Nancy shape 10757$STAN-75$53', () => {
+    const points: [number, number][] = [
+      [48.70254898071289, 6.131021022796631],
+      [48.702552795410156, 6.131019115447998], // known misplaced point (idx 43)
+      [48.70269012451172, 6.131475925445557],
+      [48.65890884399414, 6.177466869354248], // known misplaced point (idx 405)
+      [48.67235565185547, 6.160637855529785], // known misplaced point (idx 456)
+      [48.67512512207031, 6.1585187911987305], // known misplaced point (idx 482)
+    ];
+    const result = excludeKnownIsolatedPoints('10757$STAN-75$53', points);
+    expect(result.removed).toBe(true);
+    expect(result.points).toEqual([
+      [48.70254898071289, 6.131021022796631],
+      [48.70269012451172, 6.131475925445557],
+    ]);
+  });
+
+  it('is a no-op for any other shape_id, even one with a similarly-shaped anomaly', () => {
+    const points: [number, number][] = [
+      [48.696083068847656, 6.125679016113281],
+      [48.69601821899414, 6.123730182647705],
+      [48.69815444946289, 6.124143123626709],
+    ];
+    const result = excludeKnownIsolatedPoints('some-other-shape-id', points);
+    expect(result.removed).toBe(false);
+    expect(result.points).toEqual(points);
   });
 });
