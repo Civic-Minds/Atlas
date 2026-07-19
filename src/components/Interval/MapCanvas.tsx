@@ -610,7 +610,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
     const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
-    const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
     window.open(issueUrl, '_blank', 'noopener,noreferrer');
     setMapContextMenu(null);
   };
