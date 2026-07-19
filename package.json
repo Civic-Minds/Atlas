@@ -10,6 +10,8 @@
     "dev:api": "npx tsx api-dev-server.ts",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json",
+    "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json",
     "test": "vitest run",
     "process": "npx tsx pipeline/process-gtfs.ts",
     "refresh": "npx tsx pipeline/refresh.ts",
@@ -56,6 +58,7 @@
     "@emnapi/runtime": "1.11.2"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260719.1",
     "@emnapi/core": "1.11.2",
     "@emnapi/runtime": "1.11.2",
     "@mapbox/vector-tile": "^3.0.0",

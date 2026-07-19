@@ -53,14 +53,30 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ## History Archiving
 
-Cloudflare Worker (`workers/gtfs-rt-archiver/`) archives GTFS-RT snapshots every 5 minutes into the `atlas-live` R2 bucket. 30-day rolling retention. Powers the History tab.
+Cloudflare Worker (`workers/gtfs-rt-archiver/`) writes to private R2 bucket `atlas-live`. Cron is **every minute** (`* * * * *`); trip-update delay archives **self-gate to every 5th minute**, while vehicle-position samples write **every minute**. Daily cleanup at 04:00 UTC enforces **30-day** retention.
 
-| Agency | Slug | Status |
+This is **not** the same set as client Live Vehicles (`LIVE_POLLING_ROUTES`). The Worker hardcodes its own feed lists in `workers/gtfs-rt-archiver/src/index.ts`.
+
+### Trip-update archives (every ~5 min)
+
+Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Powers `/api/history-adherence` and related History RT views.
+
+| Agency | Slug | Notes |
+|--------|------|-------|
+| Toronto Transit Commission | `ttc` | Public feed |
+| Burlington Transit | `burlington` | Public feed |
+| Hamilton Street Railway | `hamilton` | Public feed |
+| STM (Montreal) | `stm` | Requires Worker secret `STM_API_KEY` |
+
+### Vehicle-position archives (every 1 min)
+
+Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Used for measured headway/speed analysis (e.g. TTC streetcars).
+
+| Agency | Slug | Filter |
 |--------|------|--------|
-| Burlington Transit | `burlington` | Active |
-| Hamilton Street Railway | `hamilton` | Active |
+| Toronto Transit Commission | `ttc` | Streetcar route_ids only (`/^5(0[1345679]|1[012])$/`) |
 
-All other agencies: static history snapshots only (headway diffs via `atlas-archive`, written on each pipeline refresh).
+All other agencies: **static** history snapshots only (headway diffs via `atlas-archive`, written on each pipeline refresh) — not GTFS-RT archives.
 
 ---
 

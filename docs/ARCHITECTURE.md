@@ -29,42 +29,39 @@ Read by: `pipeline/refresh.ts` only (reads `history/{slug}/latest.json` to detec
 
 ### atlas-live (private)
 
-Real-time GTFS-RT snapshots from the Cloudflare Worker archiver. The current
-canary cohort is deliberately limited to the feeds already used for live testing.
+Real-time GTFS-RT snapshots from the Cloudflare Worker archiver. Canary cohort is
+**smaller** than the browser Live Vehicles set — see `docs/LIVE_POLLING.md` § History Archiving.
 
-- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — versioned vehicle-position snapshots
-- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — versioned trip-update snapshots
+- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples (currently TTC streetcars, every minute)
+- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries (ttc, burlington, hamilton, stm; self-gated every 5th minute)
 - Both formats use the `atlas.live.v1` normalized envelope; legacy fields remain during migration.
 
-Written by: Cloudflare Worker (`workers/gtfs-rt-archiver/`)
-Read by: Atlas provider APIs (`/api/live-snapshot` and `/api/live-replay`) and the
-existing History aggregation. Replay supports bounded `start`, `end`, `offset`, and
-`limit` queries. Consumers must use those APIs rather than private R2.
+Written by: Cloudflare Worker (`workers/gtfs-rt-archiver/`) — cron every minute + daily 04:00 UTC cleanup
+Read by: `/api/live-snapshot`, `/api/live-replay`, `/api/history-adherence` (not direct browser R2)
 
 30-day retention enforced by the Worker's daily cleanup cron.
 
 
-## Live Polling: Provider and consumer surfaces
+## Live Polling: three surfaces (often conflated)
 
-These are independent and often confused.
+### 1. Browser on-demand (while Live is open)
 
-### 1. Atlas provider polling and archiving
+Client polls `/api/live-vehicles` (and stop/adherence helpers). Route list and key gates:
+`shared/livePollingConfig.ts` (`LIVE_POLLING_ROUTES`). Includes public feeds (e.g. burlington,
+hamilton, ttc, edmonton, yrt, halifax) and key-gated ones (TransLink, STM, SF Muni `active`,
+LA Metro parked).
 
-The Worker polls the configured canary feeds and writes normalized snapshots to R2. It
-does not expand coverage until feed health, schema validation, replay, and consumer
-verification pass for the existing cohort.
+### 2. Background Worker archiver
 
-Configured in: `shared/livePollingConfig.ts` (LIVE_POLLING_ROUTES)
-Current routes: Burlington 1+10, Hamilton 01+10, Edmonton 004, YRT VIVA Blue, Halifax 1, TTC 503, TTC 504, TransLink 099 (key-gated), STM 55 (key-gated)
+Hardcoded feed lists in `workers/gtfs-rt-archiver/src/index.ts` (not `LIVE_POLLING_ROUTES`):
+trip-updates for **ttc, burlington, hamilton, stm**; positions for **ttc streetcars** only.
+Writes private `atlas-live`. Expand only after canary health + contract checks.
 
-### 2. Atlas consumers
+### 3. Provider consumers (snapshot / replay)
 
-Atlas serves current data with `/api/live-snapshot` and bounded historical data with
-`/api/live-replay`. Bridge consumes those contracts and owns bunching, gap, dwell,
-recommendation, policy, approval, and webhook behavior.
-
-The frontend may retain its route-specific on-demand adherence behavior while it is
-migrated to the same provider contract; it is not a second owner of GTFS-RT ingestion.
+`/api/live-snapshot` and `/api/live-replay` read `atlas-live` for Bridge and verification tools.
+History UI also uses schedule-period headway diffs from `atlas-archive` (pipeline) — a different
+meaning of “history” than RT delay archives.
 
 
 ## Data Flow: Weekly Refresh
@@ -86,12 +83,17 @@ Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
 
 ## Vercel API Routes
 
-`/api/*` routes are Vercel serverless functions — they do NOT run in the Vite dev server. Use `vercel dev` to test them locally.
+`/api/*` routes are Vercel serverless functions — they do NOT run in the Vite dev server.
+Local: `npm run dev:api` (custom tsx server; not full parity with every Node-style handler).
+Production-like: `vercel dev` if preferred.
 
-- `/api/live-adherence` — legacy/on-demand adherence surface during migration
+- `/api/live-vehicles` — on-demand GTFS-RT vehicle positions + delays for Live UI
+- `/api/live-stop` — predicted (and TTC observed) arrivals at a stop
+- `/api/live-adherence` — on-demand route adherence panel
 - `/api/live-snapshot` — latest versioned canary snapshot with freshness state
 - `/api/live-replay` — bounded versioned snapshot replay for validation and consumers
-- `/api/history-adherence` — reads from `atlas-live`, aggregates trip delay snapshots into hourly buckets for the History tab
+- `/api/history-adherence` — aggregates trip-delay archives from `atlas-live` into hourly buckets
+- `/api/gtfs-rt` — legacy raw proto→JSON proxy (burlington/hamilton only)
 
 
 ## Environment Variables
@@ -102,8 +104,10 @@ Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
 | R2_ACCESS_KEY_ID | pipeline, api/* | R2 credentials |
 | R2_SECRET_ACCESS_KEY | pipeline, api/* | R2 credentials |
 | R2_BUCKET_NAME | pipeline | `atlas` bucket name |
-| R2_PUBLIC_URL | pipeline | Public base URL for atlas bucket |
+| R2_PUBLIC_URL | frontend, pipeline, api/* | Public base URL for atlas bucket |
 | R2_ARCHIVE_BUCKET_NAME | pipeline | `atlas-archive` bucket name |
-| R2_LIVE_BUCKET_NAME | api/history-adherence | `atlas-live` bucket name |
-| TRANSLINK_API_KEY | api/live-adherence | TransLink 099 B-Line |
-| STM_API_KEY | api/live-adherence | STM 55 |
+| R2_LIVE_BUCKET_NAME | api/* live archive routes | `atlas-live` bucket name |
+| TRANSLINK_API_KEY | api/live-* (TransLink) | TransLink GTFS-RT |
+| STM_API_KEY | api/live-*; Worker archiver | STM GTFS-RT |
+| MUNI_511_API_KEY | api/live-* (sfmta) | 511 SF Bay (Muni Metro) |
+| SWIFTLY_API_KEY | api/live-* (lacmta, parked) | Swiftly — not active until UI/API unparked |
