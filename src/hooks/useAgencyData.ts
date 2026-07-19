@@ -49,7 +49,7 @@ function buildInitialBounds(): ViewportBounds {
 const INITIAL_BOUNDS = buildInitialBounds();
 const MAX_CONCURRENT_AGENCY_FETCHES = 6;
 
-function getAgencyBbox(agency: Agency): [number, number, number, number] {
+export function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
   const [lat, lon] = agency.center;
   return [

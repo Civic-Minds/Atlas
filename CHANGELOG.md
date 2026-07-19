@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The zoom-in dead end now orients instead of just blocking**: clicking overlapping stops/routes while too zoomed out to disambiguate used to show a bare "Zoom in to choose a route/stop" pill. Now names the place being zoomed into (e.g. "Rennes, France") alongside the hint, derived from whichever agency's coverage area contains the click — no reverse geocoding needed. ([#213](https://github.com/Civic-Minds/Atlas/issues/213))
 - **Removed the duplicate centered "Loading transit networks" card**: the map already had a small, non-intrusive loading badge in the bottom-right corner showing live progress (`X/Y networks`) — the dead-center overlay with a blur backdrop was a second indicator for the exact same state, and a much more intrusive one.
 - **Search dropdown no longer overlaps an already-open agency card**: route/stop/live cards already yielded to an active search, but the agency card independently reimplemented the same "hide while searching" check and missed it — the kind of drift that's caused this same overlap bug more than once. All four now share one `searchOverlayHidesPanel()` check instead of each hand-rolling its own.
 - **Route names with a raw `<>` separator now render as `↔`**: some French feeds (e.g. Divia/Dijon) encode bidirectional termini in `route_long_name` as literal `<>` ("Longvic <> Toison D'or"); displayed as a proper arrow everywhere route labels appear.

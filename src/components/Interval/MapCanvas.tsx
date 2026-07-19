@@ -13,12 +13,26 @@ import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
-import { Z_PANEL } from '../../styles';
+import { getAgencyBbox } from '../../hooks/useAgencyData';
+import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { findPlaceByName } from '../../../shared/placeLookup';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
+
+/** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
+function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
+  let best: Agency | undefined;
+  let bestArea = Infinity;
+  for (const a of agencies) {
+    const [s, w, n, e] = getAgencyBbox(a);
+    if (lat < s || lat > n || lng < w || lng > e) continue;
+    const area = (n - s) * (e - w);
+    if (area < bestArea) { bestArea = area; best = a; }
+  }
+  return best;
+}
 
 /** Flatten nested ['all', ...] filters into one clause list for MapLibre. */
 function concatFilters(...parts: any[]): any {
@@ -144,6 +158,23 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     hintTimerRef.current = setTimeout(() => setMapHint(null), 2500);
   };
 
+  // Orienting card for the zoomed-out "too many overlapping features" dead end (#213):
+  // rather than a bare "Zoom in to choose a route" instruction, name the place being
+  // flown into so the auto zoom-in feels like it's going somewhere, not just blocking.
+  const [zoomOrientCard, setZoomOrientCard] = useState<{ title: string; subtitle: string } | null>(null);
+  const zoomOrientTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const showZoomOrientCard = (title: string, subtitle: string) => {
+    setZoomOrientCard({ title, subtitle });
+    if (zoomOrientTimerRef.current) clearTimeout(zoomOrientTimerRef.current);
+    zoomOrientTimerRef.current = setTimeout(() => setZoomOrientCard(null), 1800);
+  };
+  const showZoomHint = (lng: number, lat: number, subtitle: string, fallback: string) => {
+    const agency = agencyAtPoint(agencies, lng, lat);
+    const place = agency?.cities?.[0] ?? agency?.name;
+    if (place) showZoomOrientCard(place, subtitle);
+    else showMapHint(fallback);
+  };
+
   const { setBoundsAndZoom } = useViewport();
 
   // Deck.gl overlay for GPU-rendered vehicle markers
@@ -210,7 +241,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutesRef.current(null);
         if (map.getZoom() < 13) {
           map.flyTo({ center: e.lngLat, zoom: 13, duration: 800 });
-          showMapHint('Zoom in to choose a stop');
+          showZoomHint(e.lngLat.lng, e.lngLat.lat, 'Zooming in to show individual stops', 'Zoom in to choose a stop');
           return;
         }
         setSelectedStopRef.current(prev => prev === compositeId ? null : compositeId);
@@ -240,7 +271,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 11) {
             setDisambiguationRoutesRef.current(null);
-            showMapHint('Zoom in to choose a route');
+            showZoomHint(e.lngLat.lng, e.lngLat.lat, 'Zoom in to see individual routes', 'Zoom in to choose a route');
             return;
           }
           setDisambiguationRoutesRef.current(uniqueRouteKeys);
@@ -997,6 +1028,12 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       {mapHint && (
         <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} px-3 py-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-xs text-[var(--text-muted)] shadow-lg pointer-events-none`}>
           {mapHint}
+        </div>
+      )}
+      {zoomOrientCard && (
+        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${FLOATING_CARD} px-4 py-2.5 pointer-events-none`}>
+          <div className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</div>
+          <div className="text-[10px] font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</div>
         </div>
       )}
 
