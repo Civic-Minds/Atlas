@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live polling no longer rebuilds the map every 15 seconds when nothing moved**: vehicle polls skip React and deck updates when positions/status are unchanged, so idle Live views stay smooth.
+- **Deck.gl loads only when Live is used**: Frequency Map no longer pays the deck bundle cost on first paint; the overlay attaches on demand when vehicle markers are needed.
+- **Wide pans drop far agency GeoJSON from memory**: React keeps at most ~24 agency layers (viewport + search pinned first); IDB still caches data so re-entering an area is fast.
 - **Map pan/zoom stays smoother under load**: route-count badges and search ranking use deferred viewport bounds and a cached bbox check instead of re-scanning every shape vertex on each move, and the map canvas skips re-renders when only the sidebar/stats update. Agency layers stamp `agencySlug` once so feature lists stop re-cloning geometry.
 
 - **Searching a city name now surfaces its transit agency first**: "los ang" led with a Santa Clarita route and dozens of unrelated stops that just happened to contain "Los Angeles" in their name, with LA Metro itself buried after all of them. Agencies whose primary service city matches the query now rank first.

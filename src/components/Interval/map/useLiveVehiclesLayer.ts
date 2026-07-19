@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import type maplibregl from 'maplibre-gl';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
-import { ScatterplotLayer, TextLayer } from 'deck.gl';
 import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useLiveVehiclesMapOverlay } from '../../../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../../../context/LiveVehiclesMapOverlay';
 import { cleanRouteShortName } from '../../../utils/format';
+import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
 
 function vehicleTooltipHtml(v: LiveVehicle): string | null {
   if (!v.routeShortName) return null;
@@ -27,7 +27,17 @@ function vehicleTooltipHtml(v: LiveVehicle): string | null {
     </div>`;
 }
 
-/** Live vehicle map layers: deck.gl vehicle markers, hover tooltip, route shape, and camera moves. */
+const statusRgb: Record<string, [number, number, number]> = {
+  on_time: [56, 161, 105],
+  early:   [49, 130, 206],
+  late:    [229,  62,  62],
+  no_data: [113, 128, 150],
+};
+
+/**
+ * Live vehicle map layers: deck.gl is dynamically imported only when Live is
+ * active so Frequency Map doesn't pay the deck bundle cost up front.
+ */
 export function useLiveVehiclesLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   deckOverlayRef: React.RefObject<MapboxOverlay | null>,
@@ -35,73 +45,121 @@ export function useLiveVehiclesLayer(
 ) {
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
   const liveFittedRouteRef = useRef<string | null>(null);
+  const lastDeckFpRef = useRef('');
+  const deckEnsurePromiseRef = useRef<Promise<MapboxOverlay | null> | null>(null);
 
-  // Live vehicles — GPU-rendered via Deck.gl
+  // Lazily attach MapboxOverlay the first time Live has vehicles to show.
+  async function ensureDeckOverlay(): Promise<MapboxOverlay | null> {
+    if (deckOverlayRef.current) return deckOverlayRef.current;
+    if (deckEnsurePromiseRef.current) return deckEnsurePromiseRef.current;
+    const map = mapRef.current;
+    if (!map) return null;
+
+    deckEnsurePromiseRef.current = (async () => {
+      const { MapboxOverlay } = await import('@deck.gl/mapbox');
+      if (deckOverlayRef.current) return deckOverlayRef.current;
+      if (!mapRef.current) return null;
+      const deckOverlay = new MapboxOverlay({
+        interleaved: false,
+        layers: [],
+      });
+      mapRef.current.addControl(deckOverlay as unknown as maplibregl.IControl);
+      deckOverlayRef.current = deckOverlay;
+      if (import.meta.env.DEV) {
+        (window as unknown as { __deckOverlay?: MapboxOverlay }).__deckOverlay = deckOverlay;
+      }
+      return deckOverlay;
+    })();
+
+    try {
+      return await deckEnsurePromiseRef.current;
+    } finally {
+      deckEnsurePromiseRef.current = null;
+    }
+  }
+
+  // Live vehicles — GPU-rendered via Deck.gl (dynamic import)
   useEffect(() => {
-    const deck = deckOverlayRef.current;
-    if (!deck || !mapLoaded) return;
+    if (!mapLoaded) return;
 
-    const vehicles = (liveOverlay?.vehicles ?? []).filter(v => v.lat && v.lon);
-    const focusedId = liveOverlay?.focusedVehicle?.id ?? null;
-    // At city scale, one label per vehicle turns the live overview into a wall
-    // of overlapping route numbers. Keep labels for the selected route only;
-    // markers and hover tooltips remain available everywhere.
-    const labelVehicles = liveOverlay?.selectedRouteKey ? vehicles : [];
+    // Live closed: clear layers if overlay exists; don't load deck just to clear.
+    if (!liveOverlay) {
+      lastDeckFpRef.current = '';
+      if (deckOverlayRef.current) {
+        deckOverlayRef.current.setProps({ layers: [] });
+      }
+      return;
+    }
 
-    const statusRgb: Record<string, [number, number, number]> = {
-      on_time: [56, 161, 105],
-      early:   [49, 130, 206],
-      late:    [229,  62,  62],
-      no_data: [113, 128, 150],
+    const vehicles = (liveOverlay.vehicles ?? []).filter(v => v.lat && v.lon);
+    const focusedId = liveOverlay.focusedVehicle?.id ?? null;
+    const labelVehicles = liveOverlay.selectedRouteKey ? vehicles : [];
+    const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${liveOverlay.selectedRouteKey ?? ''}|${labelVehicles.length}`;
+    if (fp === lastDeckFpRef.current && deckOverlayRef.current) return;
+
+    let cancelled = false;
+    (async () => {
+      const deck = await ensureDeckOverlay();
+      if (cancelled || !deck) return;
+
+      const { ScatterplotLayer, TextLayer } = await import('deck.gl');
+      if (cancelled) return;
+
+      lastDeckFpRef.current = fp;
+      deck.setProps({
+        layers: [
+          new ScatterplotLayer({
+            id: 'vehicles-focus-ring',
+            data: vehicles.filter(v => v.id === focusedId),
+            getPosition: (v: LiveVehicle) => [v.lon, v.lat],
+            getRadius: 11,
+            getFillColor: [255, 255, 255, 80],
+            stroked: false,
+            radiusUnits: 'pixels',
+            updateTriggers: { data: focusedId },
+          }),
+          new ScatterplotLayer({
+            id: 'vehicles-dots',
+            data: vehicles,
+            getPosition: (v: LiveVehicle) => [v.lon, v.lat],
+            getRadius: (v: LiveVehicle) => (v.id === focusedId ? 9 : 7),
+            getFillColor: (v: LiveVehicle) => statusRgb[v.status] ?? statusRgb.no_data,
+            stroked: true,
+            getLineColor: [255, 255, 255, 200],
+            getLineWidth: 1.5,
+            lineWidthUnits: 'pixels',
+            radiusUnits: 'pixels',
+            pickable: true,
+            updateTriggers: {
+              getRadius: focusedId,
+              getFillColor: fp,
+              data: fp,
+            },
+          }),
+          new TextLayer({
+            id: 'vehicles-labels',
+            data: labelVehicles,
+            getPosition: (v: LiveVehicle) => [v.lon, v.lat],
+            getText: (v: LiveVehicle) => cleanRouteShortName(v.routeShortName) ?? '',
+            getSize: 9,
+            getColor: [255, 255, 255, 230],
+            fontWeight: 800,
+            fontFamily: '"Inter", ui-sans-serif, sans-serif',
+            getTextAnchor: 'middle',
+            getAlignmentBaseline: 'center',
+            billboard: true,
+            updateTriggers: { data: fp },
+          }),
+        ],
+      });
+    })();
+
+    return () => {
+      cancelled = true;
     };
+  }, [liveOverlay, mapLoaded, mapRef, deckOverlayRef]);
 
-    deck.setProps({
-      layers: [
-        // Outer ring (focus highlight)
-        new ScatterplotLayer({
-          id: 'vehicles-focus-ring',
-          data: vehicles.filter(v => v.id === focusedId),
-          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
-          getRadius: 11,
-          getFillColor: [255, 255, 255, 80],
-          stroked: false,
-          radiusUnits: 'pixels',
-        }),
-        // Vehicle dots — pickable for the manual hover tooltip (pickObject below)
-        new ScatterplotLayer({
-          id: 'vehicles-dots',
-          data: vehicles,
-          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
-          getRadius: (v: typeof vehicles[0]) => v.id === focusedId ? 9 : 7,
-          getFillColor: (v: typeof vehicles[0]) => statusRgb[v.status] ?? statusRgb.no_data,
-          stroked: true,
-          getLineColor: [255, 255, 255, 200],
-          getLineWidth: 1.5,
-          lineWidthUnits: 'pixels',
-          radiusUnits: 'pixels',
-          pickable: true,
-        }),
-        // Route short name labels
-        new TextLayer({
-          id: 'vehicles-labels',
-          data: labelVehicles,
-          getPosition: (v: typeof vehicles[0]) => [v.lon, v.lat],
-          getText: (v: typeof vehicles[0]) => cleanRouteShortName(v.routeShortName) ?? '',
-          getSize: 9,
-          getColor: [255, 255, 255, 230],
-          fontWeight: 800,
-          fontFamily: '"Inter", ui-sans-serif, sans-serif',
-          getTextAnchor: 'middle',
-          getAlignmentBaseline: 'center',
-          billboard: true,
-        }),
-      ],
-    });
-  }, [liveOverlay, mapLoaded]);
-
-  // Deck.gl's canvas sits above MapLibre; if it ever receives pointer events it
-  // swallows map pan/zoom across the whole viewport. Keep it inert always — the
-  // tooltip below picks manually through MapLibre's own events instead.
+  // Deck.gl's canvas sits above MapLibre; keep it inert always.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
@@ -116,13 +174,12 @@ export function useLiveVehiclesLayer(
     const obs = new MutationObserver(syncPointerEvents);
     obs.observe(map.getContainer(), { childList: true, subtree: true });
     return () => obs.disconnect();
-  }, [mapLoaded]);
+  }, [mapLoaded, mapRef, liveOverlay]);
 
-  // Vehicle hover tooltip — manual deck picking driven by MapLibre mouse events,
-  // so the deck canvas can stay pointer-events:none (see effect above).
+  // Vehicle hover tooltip — manual deck picking driven by MapLibre mouse events.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded) return;
+    if (!map || !mapLoaded || !liveOverlay) return;
 
     const container = map.getContainer();
     const tip = document.createElement('div');
@@ -146,7 +203,6 @@ export function useLiveVehiclesLayer(
         raf = 0;
         const deck = deckOverlayRef.current;
         if (!deck) return hide();
-        // Generous radius: deck pick radius scales with devicePixelRatio on retina
         const info = deck.pickObject({ x: e.point.x, y: e.point.y, radius: 16, layerIds: ['vehicles-dots'] });
         const html = info?.object ? vehicleTooltipHtml(info.object as LiveVehicle) : null;
         if (html) {
@@ -168,9 +224,9 @@ export function useLiveVehiclesLayer(
       map.off('mouseout', hide);
       tip.remove();
     };
-  }, [mapLoaded]);
+  }, [mapLoaded, mapRef, deckOverlayRef, liveOverlay]);
 
-  // Live route dynamic shape overlay
+  // Live route dynamic shape overlay (MapLibre GeoJSON — not deck)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
@@ -188,34 +244,39 @@ export function useLiveVehiclesLayer(
           ...f,
           properties: {
             ...f.properties,
-            color: getTierColor((f.properties as any)?.tier ?? null)
-          }
-        }))
+            color: getTierColor((f.properties as { tier?: string | null } | null)?.tier ?? null),
+          },
+        })),
       });
 
       if (routeKey && liveFittedRouteRef.current !== routeKey) {
         liveFittedRouteRef.current = routeKey;
         let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
         features.forEach(f => {
-          const geom = f.geometry as any;
-          const coords = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
-          coords.forEach(([lng, lat]: [number, number]) => {
+          const geom = f.geometry as { type: string; coordinates: number[][] | number[][][] };
+          const coords =
+            geom.type === 'LineString' ? (geom.coordinates as number[][])
+            : geom.type === 'MultiLineString' ? (geom.coordinates as number[][][]).flat()
+            : [];
+          for (const [lng, lat] of coords) {
             if (lng < minLng) minLng = lng;
             if (lng > maxLng) maxLng = lng;
             if (lat < minLat) minLat = lat;
             if (lat > maxLat) maxLat = lat;
-          });
+          }
         });
         if (minLng < maxLng) {
-          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 120, bottom: 120, left: 320, right: 80 }, maxZoom: 14 });
+          map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
+            padding: { top: 120, bottom: 120, left: 320, right: 80 },
+            maxZoom: 14,
+          });
         }
       }
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
-      // Only reset the fit-ref when the route key actually changes/clears, not on every empty render
       if (!routeKey) liveFittedRouteRef.current = null;
     }
-  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded]);
+  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded, mapRef]);
 
   // Focus vehicle centering — skip if route shape fit will handle positioning
   useEffect(() => {
@@ -225,7 +286,7 @@ export function useLiveVehiclesLayer(
 
     const { lat, lon } = liveOverlay.focusedVehicle;
     map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 14) });
-  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded]);
+  }, [liveOverlay?.focusedVehicle, liveOverlay?.routeFeatures, mapLoaded, mapRef]);
 
   // Coverage-area fly — live panel requests a jump to an agency's bbox (place list click)
   useEffect(() => {
@@ -236,5 +297,5 @@ export function useLiveVehiclesLayer(
     const cam = map.cameraForBounds([[w, s], [e, n]], { padding: 64 });
     if (!cam) return;
     map.flyTo({ center: cam.center, zoom: Math.max(cam.zoom ?? 0, area.minZoom ?? 0) });
-  }, [liveOverlay?.focusArea, mapLoaded]);
+  }, [liveOverlay?.focusArea, mapLoaded, mapRef]);
 }

@@ -16,6 +16,7 @@ import { buildRouteServiceSummary, metricValueForPeriod } from '../utils/routeFa
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
+import { liveVehiclesEqual, liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 
 interface Props {
   agencies: Agency[];
@@ -141,11 +142,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       }
       const data = await res.json();
       const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
-      setVehiclesBySlug(prev => ({ ...prev, [slug]: tagged }));
+      // Skip React updates when poll returns the same map-relevant vehicle state
+      // (avoids full Live + deck rebuild every 15s while buses idle).
+      setVehiclesBySlug(prev => {
+        const prior = prev[slug];
+        if (prior && liveVehiclesEqual(prior, tagged)) return prev;
+        return { ...prev, [slug]: tagged };
+      });
       setHeadwaysBySlug(prev => ({ ...prev, [slug]: data.headways || {} }));
-      setErrorBySlug(prev => ({ ...prev, [slug]: null }));
+      setErrorBySlug(prev => (prev[slug] == null ? prev : { ...prev, [slug]: null }));
       setFailCountBySlug(prev => (prev[slug] ? { ...prev, [slug]: 0 } : prev));
-      setDegradedBySlug(prev => ({ ...prev, [slug]: data.degraded ? (data.degradedReason ?? 'Some data unavailable') : null }));
+      const degradedMsg = data.degraded ? (data.degradedReason ?? 'Some data unavailable') : null;
+      setDegradedBySlug(prev => (prev[slug] === degradedMsg ? prev : { ...prev, [slug]: degradedMsg }));
     } catch (err: any) {
       setErrorBySlug(prev => ({ ...prev, [slug]: err.message || 'Feed unavailable' }));
       setFailCountBySlug(prev => ({ ...prev, [slug]: (prev[slug] ?? 0) + 1 }));
@@ -273,9 +281,24 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return allVehicles.filter(v => `${v.agencySlug}::${v.routeShortName}` === selectedRoute);
   }, [allVehicles, selectedRoute]);
 
-  // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll)
+  // Update map overlay — no cleanup that nulls overlay (prevents zoom-reset on poll).
+  // Fingerprint skips setOverlay when poll data is unchanged so MapCanvas/deck don't churn.
+  const lastOverlayFpRef = useRef('');
   useEffect(() => {
-    if (!active) return;
+    if (!active) {
+      lastOverlayFpRef.current = '';
+      return;
+    }
+    const fp = [
+      liveVehiclesFingerprint(overlayVehicles),
+      selectedRoute ?? '',
+      focusedVehicle?.id ?? '',
+      focusedVehicle?.ts ?? '',
+      routeFeatures.length,
+      focusArea?.ts ?? '',
+    ].join('::');
+    if (fp === lastOverlayFpRef.current) return;
+    lastOverlayFpRef.current = fp;
     setOverlay({ vehicles: overlayVehicles, focusedVehicle, routeFeatures, selectedRouteKey: selectedRoute, focusArea });
   }, [active, overlayVehicles, focusedVehicle, routeFeatures, selectedRoute, focusArea, setOverlay]);
 

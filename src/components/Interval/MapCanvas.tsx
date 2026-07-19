@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { MapboxOverlay } from '@deck.gl/mapbox';
+import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
@@ -457,16 +457,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         }
       });
 
-      // Deck.gl overlay for GPU-rendered vehicle markers.
-      // Vehicle tooltip lives in useLiveVehiclesLayer (manual picking via map events).
-      const deckOverlay = new MapboxOverlay({
-        interleaved: false,
-        layers: [],
-      });
-      map.addControl(deckOverlay as any);
-      deckOverlayRef.current = deckOverlay;
+      // Deck.gl is attached lazily when Live Vehicles first needs markers
+      // (see useLiveVehiclesLayer) so Frequency Map doesn't pay the deck bundle cost.
       if (import.meta.env.DEV) {
-        (window as any).__deckOverlay = deckOverlay;
         (window as any).__map = map;
       }
 

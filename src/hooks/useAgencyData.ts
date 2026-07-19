@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
 import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByPeriod } from '../../shared/config';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
+import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
 
 export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
@@ -207,6 +208,28 @@ export function useAgencyData(
           .catch(err => console.error(`Failed to load corridors for ${agency.slug}`, err));
       });
   }, [agencies, bounds, showCorridorBand]);
+
+  const agencyLayerCount = useMemo(
+    () => Object.keys(layers).filter(k => !k.endsWith('-corridors')).length,
+    [layers],
+  );
+
+  // Drop far agency layers from React state so multi-city pans don't retain
+  // every FeatureCollection forever (IDB/cache still holds them for re-entry).
+  useEffect(() => {
+    if (agencyLayerCount <= MAX_AGENCY_LAYERS_IN_REACT) return;
+    const vp = bounds ?? INITIAL_BOUNDS;
+    const pinned = new Set(agencySlugsToPrefetchForSearch(agencies, searchQuery, bounds));
+    setLayers(prev => {
+      const result = pruneAgencyLayers(prev, agencies, vp, pinned, MAX_AGENCY_LAYERS_IN_REACT);
+      if (!result) return prev;
+      for (const slug of result.dropped) {
+        loadedSlugs.current.delete(slug);
+        loadedCorridorSlugs.current.delete(slug);
+      }
+      return result.layers;
+    });
+  }, [agencyLayerCount, agencies, bounds, searchQuery]);
 
   const isLoading = loadedCount < requestedCount;
 
