@@ -194,7 +194,17 @@ const KNOWN_ISOLATED_POINT_FIXES: Record<string, [number, number][]> = {
     // confirmed-real range; four other candidates found in the same sweep
     // scored 1.7-3.1% savings (the same near-noise signature as false positives
     // found elsewhere) and are deliberately left alone.
+    // STAN-67$16 needed a second point removed beyond the isolated-reversal
+    // sweep above -- visual re-inspection after the first fix showed the line
+    // still cutting through blocks near Rue de l'Ornain. The two points sit
+    // adjacent (indices 477-478) and neither shows a sharp bearing reversal on
+    // its own (the surrounding path only turns ~29°), so the isolated-reversal
+    // sweep never found this one -- it's the fourth, still-undetected
+    // corruption pattern tracked in #247. Removing both together (bridging
+    // directly from the point before to the point after) saves ~41% of the
+    // through-distance, matching the confirmed-real range.
     '10757$STAN-67$16': [
+        [48.69816589355469, 6.122346878051758],
         [48.69740676879883, 6.119966983795166],
     ],
     '10757$STAN-76$100': [
