@@ -65,13 +65,20 @@ export default defineConfig(({ mode }) => {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const pathname = (req.url ?? '').split('?')[0];
-        const match = /^\/atlas-data\/([\w-]+\.json)$/.exec(pathname);
+        // getAgencyDataUrl() builds `${R2_PUBLIC_URL}/atlas/<slug>...json`, and in
+        // dev R2_PUBLIC_URL is same-origin `/atlas-data` (see getR2PublicUrl in
+        // shared/config.ts) -- so the real request path always has this extra
+        // `atlas/` segment. Matching without it meant this middleware silently
+        // never intercepted anything, falling through to the R2 proxy (a 404 for
+        // any not-yet-published agency) for the entire time it's existed.
+        const match = /^\/atlas-data\/atlas\/([\w-]+\.json)$/.exec(pathname);
         if (!match) return next();
         const filename = match[1];
         const slug = filename.replace(/-(stops-meta|stops|corridors|trips)\.json$/, '').replace(/\.json$/, '');
         const candidate = resolve(PROCESS_PREVIEW_DIR, slug, filename);
         if (!existsSync(candidate)) return next();
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store');
         createReadStream(candidate).pipe(res);
       });
     },
