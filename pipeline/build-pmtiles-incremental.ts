@@ -9,7 +9,7 @@
  * service area doesn't overlap any existing agency's bbox — e.g. Metz,
  * France (the proof-of-concept this was built for), which is ~4,000+ km from
  * the nearest other Atlas agency. It is NOT a replacement for the full
- * rebuild in general. See docs/ADDING_AGENCIES.md § Incremental PMTiles
+ * rebuild in general. See docs/PIPELINE_OPERATIONS.md § Incremental PMTiles
  * Build for the full safe/unsafe boundary.
  *
  * Two hard safety gates run before any tippecanoe/tile-join work happens:
@@ -277,7 +277,7 @@ async function main() {
   if (!agency) {
     throw new Error(
       `Agency "${slug}" not found in public/data/index.json. Add it via the normal ` +
-      `agency-adding procedure first (docs/ADDING_AGENCIES.md § Integrating a New Transit Agency).`,
+      `agency-adding procedure first (docs/PIPELINE_OPERATIONS.md § Integrating a New Transit Agency).`,
     );
   }
 

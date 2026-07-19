@@ -1,12 +1,10 @@
-# Adding a Transit Agency
+# Atlas Pipeline Operations
 
-Maintainer and contributor runbook for onboarding one new agency (or a small batch) into Atlas. This is repository documentation, not user-facing product documentation.
+Maintainer and contributor runbooks for adding agencies, discovering coverage gaps, refreshing feeds, and publishing map artifacts. This is repository documentation, not user-facing product documentation.
 
-This is the single canonical procedure for adding or updating an agency. [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md) § Workflow points here so there is one source of truth for the actual mechanics. See [`MAP_UPDATES.md`](MAP_UPDATES.md) for keeping already-published agencies current (refreshes, batch publishing) and [`COVERAGE_GAP_DISCOVERY.md`](COVERAGE_GAP_DISCOVERY.md) for finding new candidates in the first place.
+This is the single canonical procedure for adding or updating an agency. The [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md) § Workflow points here so there is one source of truth for the actual mechanics.
 
 ## Integrating a New Transit Agency
-
-**Stop before step 3 if this is the first agency for a country with zero live agencies yet** (e.g. any France/Belgium/Spain candidate right now). Steps 1-2 (dry-run + local preview) are always fine to run freely — nothing in them touches R2. Step 3 onward writes real data to the live bucket: for an already-live country, that's routine once an agency is validated; for a brand-new country, publishing its first agency is a country-launch decision, not just a routine agency add, and needs separate maintainer sign-off. `hiddenInProduction` only hides an agency from the UI *after* its data is already live on R2 — it is not a substitute for staying offline, and a previously-hidden agency should not be treated as precedent for publishing the next one in the same country.
 
 1. Obtain the GTFS ZIP download link (preferring a stable agency URL or Mobility Database link).
 2. **Optional but recommended for a new/unfamiliar feed**: preview it locally first, with nothing written to R2 or any repo file:
@@ -57,9 +55,9 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
 
 ## Incremental PMTiles Build (single new, isolated agency)
 
-A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoes the entire archive — expensive, and unnecessary just to validate one small new agency (e.g. proof-of-concept international coverage). `pipeline/build-pmtiles-incremental.ts` (`npm run build-pmtiles-incremental -- <slug> [--dry-run]`) instead builds tippecanoe outputs for just that one agency's routes/stops/corridors and `tile-join`s them into the *already-deployed* `atlas.pmtiles`, without touching any other agency's tiles.
+A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoes the entire archive — expensive, and unnecessary just to validate one small new agency (e.g. proof-of-concept international coverage like Metz, France). `pipeline/build-pmtiles-incremental.ts` (`npm run build-pmtiles-incremental -- <slug> [--dry-run]`) instead builds tippecanoe outputs for just that one agency's routes/stops/corridors and `tile-join`s them into the *already-deployed* `atlas.pmtiles`, without touching any other agency's tiles.
 
-**When this is safe**: a brand-new agency, not yet published, whose service area does not geographically overlap any existing Atlas agency.
+**When this is safe**: a brand-new agency, not yet published, whose service area does not geographically overlap any existing Atlas agency. This is exactly the Metz case — the nearest other Atlas agency is thousands of km away.
 
 **When this is NOT safe — use the full `npm run build-pmtiles` instead**:
 - **Updating an existing, already-published agency** (new routes, a feed refresh, a data fix). Incremental tile-join can only *add* tiles, never remove them — "replacing" an existing agency's tiles this way would leave both the old and new versions of its features present (duplicate/stale rendering), not a clean update. Removing the old version first is a genuinely harder problem and is intentionally out of scope for this script.
@@ -73,11 +71,11 @@ Both checks are pure logic, unit tested in `pipeline/__tests__/incrementalPmtile
 
 ```bash
 # Validate the mechanics and see what would change, without uploading:
-npm run build-pmtiles-incremental -- <slug> --dry-run
+npm run build-pmtiles-incremental -- metz --dry-run
 
 # Once you're satisfied and have explicit go-ahead to write to the live bucket
-# (same production-data gate as npm run build-pmtiles):
-npm run build-pmtiles-incremental -- <slug>
+# (same production-data gate as npm run build-pmtiles — see CLAUDE.md § Production Data Rules):
+npm run build-pmtiles-incremental -- metz
 ```
 
 `--dry-run` still downloads the real deployed `atlas.pmtiles` and runs the real tippecanoe/tile-join steps locally (so the size/feature-count report reflects reality), it just stops before the final upload. After a real (non-dry-run) run, still run `npm run verify-pmtiles-coverage` to confirm.
@@ -87,6 +85,38 @@ npm run build-pmtiles-incremental -- <slug>
 cp tmp/incremental-pmtiles-build/<slug>/atlas.pmtiles tmp/atlas-pmtiles-preview.pmtiles
 ```
 `vite.config.ts`'s dev proxy checks for this file on every `atlas.pmtiles` request and serves it directly (with proper Range-request support) instead of proxying to R2, falling back to the normal proxy when the file isn't present — so the new agency's routes render on the local map exactly as they would in production, with zero writes to the live bucket. Requires a dev server restart to pick up (`vite.config.ts` changes need one); delete the preview file (or just don't create it) to go back to normal behavior.
+
+## Querying Mobility Database
+
+```bash
+npm run find-mdb -- "[search query]" <slug> "[lat,lon]"
+# Example:
+npm run find-mdb -- "Hamilton Street Railway" hamilton "43.25,-79.87"
+```
+
+## Coverage Gap Discovery
+
+```bash
+npm run discover-gaps
+npm run discover-gaps -- --region Ontario --limit 20
+npm run discover-gaps -- --min-pop 100000
+```
+
+Candidates are written to `tmp/gap-candidates.json`.
+
+## Batch Processing and Publishing
+
+Same procedure as above, applied to multiple agencies at once:
+
+1. Identify candidates with coverage-gap discovery.
+2. Process new agencies and update `config/agencies/`.
+3. Run `npm run build:agency-index`.
+4. Refresh new slugs together:
+   ```bash
+   npm run refresh -- slug1 slug2 slug3 --force
+   ```
+5. Rebuild and upload the PMTiles archive (`npm run build-pmtiles` then `npm run upload-pmtiles`), then run `npm run verify-pmtiles-coverage` — see the warning under step 7 above; this is not optional.
+6. Record product additions in `CHANGELOG.md` and mark backlog items `done` in `docs/AGENCY_BACKLOG.md`.
 
 ---
 
