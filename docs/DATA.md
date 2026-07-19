@@ -24,9 +24,11 @@ Atlas is built from publicly available transit data and publishes the processing
 
 - **[Data Principles](./DATA_PRINCIPLES.md)**: How Atlas approaches freshness, review, corrections, and static versus live data.
 - **[Known Issues](./KNOWN_ISSUES.md)**: Feed limitations, data quirks, and known coverage gaps.
-- **[Pipeline Operations](./PIPELINE_OPERATIONS.md)**: Refresh, review, correction, and publication procedures.
+- **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding a new agency, review, and correction.
 - **[Live Polling](./LIVE_POLLING.md)**: Freshness and coverage details for real-time vehicle and adherence data.
 
 ## Procedures & Maintenance
 
-- **[Pipeline Operations](./PIPELINE_OPERATIONS.md)**: Contributor procedures for adding agencies, refreshing feeds, and publishing artifacts.
+- **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency (or a small batch).
+- **[Updating the Map](./MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
+- **[Coverage Gap Discovery](./COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
