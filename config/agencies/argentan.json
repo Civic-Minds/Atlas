@@ -1,0 +1,16 @@
+{
+  "slug": "argentan",
+  "name": "Argentan Bus",
+  "region": "Normandie",
+  "center": [
+    48.7444,
+    -0.0203
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/argentanbus-argentan-intercom/20260710-125655/pt-th-offer-argentanbus-gtfs-20260707-611-opendata-1-.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Argentan, France"
+  ]
+}

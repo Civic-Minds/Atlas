@@ -1,0 +1,16 @@
+{
+  "slug": "ales",
+  "name": "Ales'y (Alès)",
+  "region": "Occitanie",
+  "center": [
+    44.1272,
+    4.0817
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-des-lignes-urbaines-et-interurbaines-sur-le-reseau-alesy-gtfs/20260622-132552/gtfs-is-20260704.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Alès, France"
+  ]
+}

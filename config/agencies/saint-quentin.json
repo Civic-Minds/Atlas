@@ -1,0 +1,16 @@
+{
+  "slug": "saint-quentin",
+  "name": "TUC (Saint-Quentin)",
+  "region": "Hauts-de-France",
+  "center": [
+    49.8466,
+    3.2875
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/donnees-gtfs-reseau-tuc-communaute-dagglomeration-de-cambrai/20260324-131607/rhdf-gtfs-cac-tuc-24-03-26.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Saint-Quentin, France"
+  ]
+}

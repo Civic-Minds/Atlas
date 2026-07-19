@@ -1,0 +1,16 @@
+{
+  "slug": "albi",
+  "name": "LibéA (Albi)",
+  "region": "Occitanie",
+  "center": [
+    43.9298,
+    2.148
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-du-grand-albigeois-gtfs/20260623-112718/libea-reseau-urbain.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Albi, France"
+  ]
+}

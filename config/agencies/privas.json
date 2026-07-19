@@ -1,0 +1,16 @@
+{
+  "slug": "privas",
+  "name": "T'CAP (Privas)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    44.7356,
+    4.5986
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-interurbain-et-scolaire-de-la-communaute-dagglomeration-privas-centre-ardeche/20250917-112833/gtfs-dsp-tcap-17-09-25.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Privas, France"
+  ]
+}

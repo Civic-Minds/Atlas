@@ -1,0 +1,16 @@
+{
+  "slug": "gap",
+  "name": "Trotibus (Gap)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    44.5594,
+    6.0797
+  ],
+  "feedUrl": "https://gtfs-rt.infra-hubup.fr/cagtd/current/gtfs",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Gap, France"
+  ]
+}

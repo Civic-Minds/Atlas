@@ -11860,6 +11860,408 @@
       "cities": [
         "Vierzon, France"
       ]
+    },
+    {
+      "slug": "albi",
+      "name": "Lib\u00e9A (Albi)",
+      "region": "Occitanie",
+      "center": [
+        43.9298,
+        2.148
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-du-grand-albigeois-gtfs/20260623-112718/libea-reseau-urbain.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Albi, France"
+      ]
+    },
+    {
+      "slug": "ales",
+      "name": "Ales'y (Al\u00e8s)",
+      "region": "Occitanie",
+      "center": [
+        44.1272,
+        4.0817
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-des-lignes-urbaines-et-interurbaines-sur-le-reseau-alesy-gtfs/20260622-132552/gtfs-is-20260704.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Al\u00e8s, France"
+      ]
+    },
+    {
+      "slug": "angouleme",
+      "name": "M\u00f6bius (Angoul\u00eame)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        45.6484,
+        0.1562
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-et-temps-reel-reseau-mobius/20251008-085244/gtfs-mobius-saison25-26-20250930-tad.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Angoul\u00eame, France"
+      ]
+    },
+    {
+      "slug": "arcachon",
+      "name": "Ba\u00efa (Bassin d'Arcachon)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        44.6586,
+        -1.1689
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/cobas-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Arcachon, France",
+        "La Teste-de-Buch, France"
+      ]
+    },
+    {
+      "slug": "argentan",
+      "name": "Argentan Bus",
+      "region": "Normandie",
+      "center": [
+        48.7444,
+        -0.0203
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/argentanbus-argentan-intercom/20260710-125655/pt-th-offer-argentanbus-gtfs-20260707-611-opendata-1-.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Argentan, France"
+      ]
+    },
+    {
+      "slug": "auch",
+      "name": "Alliance (Auch)",
+      "region": "Occitanie",
+      "center": [
+        43.6464,
+        0.5856
+      ],
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=auch-alliance",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Auch, France"
+      ]
+    },
+    {
+      "slug": "beaune",
+      "name": "C\u00f4te&Bus (Beaune)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.026,
+        4.84
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transport-de-la-c-a-beaune-cote-sud-gtfs/20251230-134445/gtfs-30-12-2025-04-15.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Beaune, France"
+      ]
+    },
+    {
+      "slug": "cavaillon",
+      "name": "Cmonbus (Cavaillon)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.8372,
+        5.0381
+      ],
+      "feedUrl": "https://app.pysae.com/api/v2/groups/cavaillon/gtfs/pub",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Cavaillon, France"
+      ]
+    },
+    {
+      "slug": "chamonix",
+      "name": "Chamonix Mobilit\u00e9s",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.9237,
+        6.8694
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/gtfs-reseau-chamonix-mobilite/20260703-083917/gtfs-chamonix-mobilite-20263006.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Chamonix-Mont-Blanc, France"
+      ]
+    },
+    {
+      "slug": "cherbourg",
+      "name": "Cap Cotentin (Cherbourg)",
+      "region": "Normandie",
+      "center": [
+        49.6337,
+        -1.6222
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-et-en-temps-reel-des-bus-et-autocars-circulant-sur-le-reseau-cap-cotentin/20260701-123050/gtfs-capcotentin-010726-au-30082026.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Cherbourg-en-Cotentin, France"
+      ]
+    },
+    {
+      "slug": "coutances",
+      "name": "Cosibus (Coutances)",
+      "region": "Normandie",
+      "center": [
+        49.0454,
+        -1.4452
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/cosibus-coutances-mer-et-bocage/20260520-065200/cosibus.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Coutances, France"
+      ]
+    },
+    {
+      "slug": "dinan",
+      "name": "Dinamo (Dinan)",
+      "region": "Bretagne",
+      "center": [
+        48.455,
+        -2.0497
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-dinamo/20260629-151052/gtfs-20260629-162332-dinamo.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Dinan, France"
+      ]
+    },
+    {
+      "slug": "gap",
+      "name": "Trotibus (Gap)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        44.5594,
+        6.0797
+      ],
+      "feedUrl": "https://gtfs-rt.infra-hubup.fr/cagtd/current/gtfs",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Gap, France"
+      ]
+    },
+    {
+      "slug": "guingamp",
+      "name": "Guingamp-Paimpol Mobilit\u00e9",
+      "region": "Bretagne",
+      "center": [
+        48.5633,
+        -3.1508
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-scolaire-guingamp-paimpol-mobilite/20260121-175558/reseau-urbain-et-scolaire-guingamppaimpol-mobilite.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Guingamp, France"
+      ]
+    },
+    {
+      "slug": "libourne",
+      "name": "Calibus (Libourne)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        44.9145,
+        -0.2439
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_du_libournais-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Libourne, France"
+      ]
+    },
+    {
+      "slug": "louviers",
+      "name": "SEMO (Louviers)",
+      "region": "Normandie",
+      "center": [
+        49.2156,
+        1.1694
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/semo-val-de-reuil-louviers-seine-eure-agglo/20251218-104416/pt-th-offer-semo-gtfs-20251216-761-opendata.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Louviers, France"
+      ]
+    },
+    {
+      "slug": "montauban",
+      "name": "TM (Montauban)",
+      "region": "Occitanie",
+      "center": [
+        44.0176,
+        1.355
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/gtfs-de-la-societe-de-transport-urbain-du-grand-montauban-semtm/20251215-085859/gtfs-dec25-v3.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Montauban, France"
+      ]
+    },
+    {
+      "slug": "moulins",
+      "name": "Al\u00e9o (Moulins)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        46.5646,
+        3.3324
+      ],
+      "feedUrl": "https://api.pysae.com/api/v4/groups/moulins/gtfs/pub",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Moulins, France"
+      ],
+      "websiteUrl": "https://www.aleo-moulins.fr/"
+    },
+    {
+      "slug": "oyonnax",
+      "name": "Duobus (Oyonnax)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        46.2592,
+        5.6556
+      ],
+      "feedUrl": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=OYONNAX&dataFormat=GTFS&dataProfil=OPENDATA",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Oyonnax, France"
+      ]
+    },
+    {
+      "slug": "porto-vecchio",
+      "name": "A Citadina (Porto-Vecchio)",
+      "region": "Corse",
+      "center": [
+        41.591,
+        9.2796
+      ],
+      "feedUrl": "https://pysae.com/api/v2/groups/porto-vecchio/gtfs/pub",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Porto-Vecchio, France"
+      ]
+    },
+    {
+      "slug": "privas",
+      "name": "T'CAP (Privas)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        44.7356,
+        4.5986
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-interurbain-et-scolaire-de-la-communaute-dagglomeration-privas-centre-ardeche/20250917-112833/gtfs-dsp-tcap-17-09-25.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Privas, France"
+      ]
+    },
+    {
+      "slug": "saint-quentin",
+      "name": "TUC (Saint-Quentin)",
+      "region": "Hauts-de-France",
+      "center": [
+        49.8466,
+        3.2875
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/donnees-gtfs-reseau-tuc-communaute-dagglomeration-de-cambrai/20260324-131607/rhdf-gtfs-cac-tuc-24-03-26.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Saint-Quentin, France"
+      ]
+    },
+    {
+      "slug": "selestat",
+      "name": "ELSA (S\u00e9lestat)",
+      "region": "Grand Est",
+      "center": [
+        48.2594,
+        7.4542
+      ],
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CCSelestat",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "S\u00e9lestat, France"
+      ]
+    },
+    {
+      "slug": "vichy",
+      "name": "MobiVie (Vichy)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        46.127,
+        3.4258
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/mobivie-reseau-urbain-vichy-communaute/20250813-081437/gtfs-01092025-31072026.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Vichy, France"
+      ]
+    },
+    {
+      "slug": "villeneuve-sur-lot",
+      "name": "Elios (Villeneuve-sur-Lot)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        44.4069,
+        0.7042
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/elios-transports-urbains-du-grand-villeneuvois/20250902-085502/gtfs-elios-grand-villeneuvois-septembre-2025.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "cities": [
+        "Villeneuve-sur-Lot, France"
+      ]
     }
   ]
 }

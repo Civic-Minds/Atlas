@@ -1,0 +1,16 @@
+{
+  "slug": "vichy",
+  "name": "MobiVie (Vichy)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    46.127,
+    3.4258
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/mobivie-reseau-urbain-vichy-communaute/20250813-081437/gtfs-01092025-31072026.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Vichy, France"
+  ]
+}

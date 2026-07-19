@@ -1,0 +1,16 @@
+{
+  "slug": "chamonix",
+  "name": "Chamonix Mobilités",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.9237,
+    6.8694
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/gtfs-reseau-chamonix-mobilite/20260703-083917/gtfs-chamonix-mobilite-20263006.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Chamonix-Mont-Blanc, France"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "beaune",
+  "name": "Côte&Bus (Beaune)",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [
+    47.026,
+    4.84
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transport-de-la-c-a-beaune-cote-sud-gtfs/20251230-134445/gtfs-30-12-2025-04-15.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Beaune, France"
+  ]
+}

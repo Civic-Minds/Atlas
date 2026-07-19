@@ -1,0 +1,16 @@
+{
+  "slug": "porto-vecchio",
+  "name": "A Citadina (Porto-Vecchio)",
+  "region": "Corse",
+  "center": [
+    41.591,
+    9.2796
+  ],
+  "feedUrl": "https://pysae.com/api/v2/groups/porto-vecchio/gtfs/pub",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Porto-Vecchio, France"
+  ]
+}
