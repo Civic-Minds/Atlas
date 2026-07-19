@@ -1,0 +1,17 @@
+{
+  "slug": "caen",
+  "name": "Twisto (Caen)",
+  "region": "Normandie",
+  "center": [
+    49.1829,
+    -0.3707
+  ],
+  "feedUrl": "https://data.twisto.fr/api/v2/catalog/datasets/fichier-gtfs-du-reseau-twisto/alternative_exports/gtfs_twisto_zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.twisto.fr/",
+  "cities": [
+    "Caen, France"
+  ]
+}

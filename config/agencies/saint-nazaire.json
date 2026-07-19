@@ -1,0 +1,17 @@
+{
+  "slug": "saint-nazaire",
+  "name": "Ycéo (Saint-Nazaire)",
+  "region": "Pays de la Loire",
+  "center": [
+    47.2735,
+    -2.2137
+  ],
+  "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/stran-merge?apiKey=2e6071036d276153761f0c090b4a45420e047612",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.strann.fr/",
+  "cities": [
+    "Saint-Nazaire, France"
+  ]
+}

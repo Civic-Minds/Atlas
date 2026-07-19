@@ -210,6 +210,10 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ---
 
+## France expansion — 2026-07-19 batch (dry-run candidates, still hidden)
+
++34 cities dry-run validated and added as `hiddenInProduction` / `pmtilesPending` (Lyon, Marseille, Toulouse, Nice, Brest, Orléans, Caen, Rouen, Reims, Clermont, Saint-Étienne, Toulon, Mulhouse, Amiens, Perpignan, Avignon, Pau, La Rochelle, Poitiers, Valence, Nîmes, Troyes, Quimper, Lorient, Vannes, Saint-Nazaire, Dunkerque, Chartres, Cholet, Laval, Annemasse, Bourges, Béziers, Bayonne, Le Havre). Registry now ~48 French candidates. No live R2 publish — country launch still required.
+
 ## France expansion — blocked (no shapes)
 
 Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md) § Missing Agencies and [`INTERNATIONAL.md`](./INTERNATIONAL.md) § France.
@@ -219,6 +223,7 @@ Permanent until upstream ships `shapes.txt` on the real network feed. Details in
 | blocked | `montpellier` | TaM (Montpellier) | Occitanie | Full + urbain GTFS have no shapes; suburbain-only has shapes but misses tram/urban |
 | blocked | `lille` | ilévia (Lille) | Hauts-de-France | Export never includes `shapes.txt` |
 | blocked | `strasbourg` | CTS (Strasbourg) | Grand Est | Export never includes `shapes.txt` |
+| blocked | `thionville` | TeMo'b (Thionville) | Grand Est | Dry-run produced stops only (no route LineStrings) |
 
 ---
 

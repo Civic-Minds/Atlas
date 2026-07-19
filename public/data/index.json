@@ -371,8 +371,12 @@
       ],
       "feedUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
       "preprocess": "nrt-cleanup",
+      "excludeRouteShortNames": [
+        "RED",
+        "BLUE"
+      ],
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/243",
-      "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service. Separately, routes 301 and 401 don't consistently use direction to mean outbound vs. inbound — one direction bucket mixes trips from two unrelated destinations under the same generic headsign — which made the Hospital stop look far more frequent than the real 30-minute (301) / hourly (401) service. We corrected the frequency calculation to stop conflating those trips. See issues #194 and #243.",
+      "overrideNote": "Niagara Transit\u2019s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1\u20135 minutes. We filtered those records so the map reflects the published 30-minute-plus service. Separately, routes 301 and 401 don't consistently use direction to mean outbound vs. inbound \u2014 one direction bucket mixes trips from two unrelated destinations under the same generic headsign \u2014 which made the Hospital stop look far more frequent than the real 30-minute (301) / hourly (401) service. We corrected the frequency calculation to stop conflating those trips. See issues #194 and #243.",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "S1000282",
       "lastRefreshedAt": "2026-07-19",
@@ -407,7 +411,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Nepean, Ontario",
-        "Orléans, Ontario",
+        "Orl\u00e9ans, Ontario",
         "Kanata, Ontario",
         "Ottawa, Ontario",
         "Ottawa South, Ontario",
@@ -638,7 +642,7 @@
       "lastFeedVersion": "1771259558641",
       "lastRefreshedAt": "2026-07-06",
       "cities": [
-        "Saint-Jérôme, Quebec"
+        "Saint-J\u00e9r\u00f4me, Quebec"
       ]
     },
     {
@@ -663,7 +667,7 @@
     },
     {
       "slug": "rem",
-      "name": "REM (Montréal)",
+      "name": "REM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -691,12 +695,12 @@
         "Ville-Marie, Quebec",
         "Chomedey, Quebec",
         "Verdun, Quebec",
-        "Montréal, Quebec"
+        "Montr\u00e9al, Quebec"
       ]
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -714,12 +718,12 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Sainte-Foy, Quebec",
-        "Les Rivières, Quebec",
+        "Les Rivi\u00e8res, Quebec",
         "La Haute-Saint-Charles, Quebec",
         "Beauport, Quebec",
         "Charlesbourg, Quebec",
-        "La Cité-Limoilou, Quebec",
-        "Québec, Quebec"
+        "La Cit\u00e9-Limoilou, Quebec",
+        "Qu\u00e9bec, Quebec"
       ]
     },
     {
@@ -747,10 +751,10 @@
         "Saint-Hubert, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Brossard, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
         "Ville-Marie, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
-        "Saint-Léonard, Quebec",
+        "Saint-L\u00e9onard, Quebec",
         "Verdun, Quebec"
       ]
     },
@@ -777,18 +781,18 @@
         "Laval, Quebec",
         "Chomedey, Quebec",
         "Pierrefonds-Roxboro, Quebec",
-        "Montréal-Nord, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+        "Montr\u00e9al-Nord, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
         "Terrebonne, Quebec",
         "Saint-Louis-de-Terrebonne, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Saint-Léonard, Quebec",
+        "Saint-L\u00e9onard, Quebec",
         "Saint-Laurent, Quebec"
       ]
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -807,13 +811,13 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Sainte-Foy, Quebec",
-        "Lévis, Quebec",
-        "Québec, Quebec"
+        "L\u00e9vis, Quebec",
+        "Qu\u00e9bec, Quebec"
       ]
     },
     {
       "slug": "stm",
-      "name": "STM (Montréal)",
+      "name": "STM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -837,14 +841,14 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Saint-Laurent, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Verdun, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
         "Pierrefonds, Quebec",
-        "Rosemont–La Petite-Patrie, Quebec",
+        "Rosemont\u2013La Petite-Patrie, Quebec",
         "Ville-Marie, Quebec"
       ]
     },
@@ -871,7 +875,7 @@
         "Gatineau, Quebec",
         "Aylmer, Quebec",
         "Hull, Quebec",
-        "Orléans, Ontario",
+        "Orl\u00e9ans, Ontario",
         "Ottawa, Ontario"
       ]
     },
@@ -942,7 +946,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Saint-Hubert, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Saint-Laurent, Quebec",
@@ -950,12 +954,12 @@
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
         "Verdun, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec"
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec"
       ]
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -999,7 +1003,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Le Sud-Ouest, Quebec",
         "Saint-Laurent, Quebec",
         "Verdun, Quebec",
@@ -1008,7 +1012,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -1029,7 +1033,7 @@
       "cities": [
         "Brossard, Quebec",
         "Verdun, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Le Sud-Ouest, Quebec"
       ]
@@ -1056,7 +1060,7 @@
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Saint-Louis-de-Terrebonne, Quebec",
-        "Saint-Jérôme, Quebec",
+        "Saint-J\u00e9r\u00f4me, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Pierrefonds, Quebec",
         "Chomedey, Quebec",
@@ -1090,10 +1094,10 @@
         "Repentigny, Quebec",
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Montréal-Nord, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
-        "Saint-Léonard, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec"
+        "Montr\u00e9al-Nord, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
+        "Saint-L\u00e9onard, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec"
       ]
     },
     {
@@ -2490,7 +2494,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-07-13",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -2577,7 +2581,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -3193,7 +3197,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-07-17",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -5965,32 +5969,19 @@
     },
     {
       "slug": "nice",
-      "name": "Nassau Inter-County Express (NICE Bus)",
-      "region": "New York",
+      "name": "Lignes d'Azur (Nice)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
-        40.73,
-        -73.6
+        43.7102,
+        7.262
       ],
-      "bbox": [
-        40.586,
-        -73.8302,
-        40.8642,
-        -73.4087
-      ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-521/mdb-521-202606070009/mdb-521-202606070009.zip",
-      "lastFeedExpiry": "20260912",
-      "lastFeedVersion": "",
-      "lastRefreshedAt": "2026-07-06",
+      "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/OpendataRLA/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.lignesdazur.com/",
       "cities": [
-        "Hempstead, New York",
-        "Levittown, New York",
-        "Queens Village, New York",
-        "Bayside, New York",
-        "South Ozone Park, New York",
-        "New Rochelle, New York",
-        "Jamaica, New York",
-        "Briarwood, New York",
-        "Corona, New York"
+        "Nice, France"
       ]
     },
     {
@@ -7975,7 +7966,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20260808",
-      "lastFeedVersion": "GTFS Feed 17/05/2026 – 08/08/2026 (Generated: 11/06/2026 2:31:36)",
+      "lastFeedVersion": "GTFS Feed 17/05/2026 \u2013 08/08/2026 (Generated: 11/06/2026 2:31:36)",
       "lastRefreshedAt": "2026-07-06",
       "cities": [
         "Champaign, Illinois"
@@ -8352,7 +8343,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-07-13",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt — nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt \u2014 nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -8497,7 +8488,7 @@
       "lastFeedExpiry": "20270201",
       "lastFeedVersion": "20251212",
       "lastRefreshedAt": "2026-07-06",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only — every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only \u2014 every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -10390,7 +10381,7 @@
     },
     {
       "slug": "nancy",
-      "name": "Réseau Stan (Nancy)",
+      "name": "R\u00e9seau Stan (Nancy)",
       "region": "Grand Est",
       "center": [
         48.6921,
@@ -10459,7 +10450,7 @@
     {
       "slug": "grenoble",
       "name": "TAG (Grenoble)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.1885,
         5.7245
@@ -10476,7 +10467,7 @@
     {
       "slug": "dijon",
       "name": "Divia (Dijon)",
-      "region": "Bourgogne-Franche-Comté",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.322,
         5.0415
@@ -10509,8 +10500,8 @@
     },
     {
       "slug": "chambery",
-      "name": "Synchro (Chambéry)",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "Synchro (Chamb\u00e9ry)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.5646,
         5.9178
@@ -10521,7 +10512,7 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.synchro.grandchambery.fr/",
       "cities": [
-        "Chambéry, France"
+        "Chamb\u00e9ry, France"
       ]
     },
     {
@@ -10560,8 +10551,8 @@
     },
     {
       "slug": "besancon",
-      "name": "Ginko (Besançon)",
-      "region": "Bourgogne-Franche-Comté",
+      "name": "Ginko (Besan\u00e7on)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.2378,
         6.0241
@@ -10572,13 +10563,13 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.ginko.voyage/",
       "cities": [
-        "Besançon, France"
+        "Besan\u00e7on, France"
       ]
     },
     {
       "slug": "annecy",
       "name": "Sibra (Annecy)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.8992,
         6.1294
@@ -10590,6 +10581,586 @@
       "websiteUrl": "https://www.sibra.fr/",
       "cities": [
         "Annecy, France"
+      ]
+    },
+    {
+      "slug": "amiens",
+      "name": "Ametis (Amiens)",
+      "region": "Hauts-de-France",
+      "center": [
+        49.8941,
+        2.2958
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/ametis/20260703-135019/gtfs-ametis-du-04-07-2026-au-30-08-2026.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.ametois.fr/",
+      "cities": [
+        "Amiens, France"
+      ]
+    },
+    {
+      "slug": "annemasse",
+      "name": "TAC (Annemasse)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        46.1934,
+        6.2342
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tp2a/exports/medias.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.tac-mobilites.fr/",
+      "cities": [
+        "Annemasse, France"
+      ]
+    },
+    {
+      "slug": "avignon",
+      "name": "Orizo (Avignon)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.9493,
+        4.8055
+      ],
+      "feedUrl": "https://api.maas-fr.cityway.fr/dataflow/offre-tc/download?provider=ORIZO&dataFormat=GTFS&dataProfil=OPENDATA",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.orizo.fr/",
+      "cities": [
+        "Avignon, France"
+      ]
+    },
+    {
+      "slug": "bayonne",
+      "name": "Txik Txak",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        43.4929,
+        -1.4748
+      ],
+      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/txiktxak?apiKey=0f64273f070b7d4621002040646e180d374e5373",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.txiktxak.fr/",
+      "cities": [
+        "Bayonne, France",
+        "Biarritz, France",
+        "Anglet, France"
+      ]
+    },
+    {
+      "slug": "beziers",
+      "name": "beeMob (B\u00e9ziers)",
+      "region": "Occitanie",
+      "center": [
+        43.3442,
+        3.215
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rdbm/exports/gtfs-pour-le-pan.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.beemob.fr/",
+      "cities": [
+        "B\u00e9ziers, France"
+      ]
+    },
+    {
+      "slug": "bourges",
+      "name": "AggloBus (Bourges)",
+      "region": "Centre-Val de Loire",
+      "center": [
+        47.081,
+        2.3988
+      ],
+      "feedUrl": "https://fr.ftp.opendatasoft.com/centrevaldeloire/OKINAGTFS/GTFS_AO/BOURGES-GTFS.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.agglobus.com/",
+      "cities": [
+        "Bourges, France"
+      ]
+    },
+    {
+      "slug": "brest",
+      "name": "Bibus (Brest)",
+      "region": "Bretagne",
+      "center": [
+        48.3904,
+        -4.4861
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/bibus/exports/medias.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.bibus.fr/",
+      "cities": [
+        "Brest, France"
+      ]
+    },
+    {
+      "slug": "caen",
+      "name": "Twisto (Caen)",
+      "region": "Normandie",
+      "center": [
+        49.1829,
+        -0.3707
+      ],
+      "feedUrl": "https://data.twisto.fr/api/v2/catalog/datasets/fichier-gtfs-du-reseau-twisto/alternative_exports/gtfs_twisto_zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.twisto.fr/",
+      "cities": [
+        "Caen, France"
+      ]
+    },
+    {
+      "slug": "chartres",
+      "name": "Filibus (Chartres)",
+      "region": "Centre-Val de Loire",
+      "center": [
+        48.4439,
+        1.489
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/filibus-urbain/20260716-101744/gtfs-filibus-20260720-20270702.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.filibus.fr/",
+      "cities": [
+        "Chartres, France"
+      ]
+    },
+    {
+      "slug": "cholet",
+      "name": "Choletbus",
+      "region": "Pays de la Loire",
+      "center": [
+        47.0594,
+        -0.8797
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-reseau-choletbus/20260717-113054/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.choletbus.fr/",
+      "cities": [
+        "Cholet, France"
+      ]
+    },
+    {
+      "slug": "clermont",
+      "name": "T2C (Clermont-Ferrand)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.7772,
+        3.087
+      ],
+      "feedUrl": "https://opendata.clermontmetropole.eu/api/v2/catalog/datasets/gtfs-smtc/alternative_exports/gtfs",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.t2c.fr/",
+      "cities": [
+        "Clermont-Ferrand, France"
+      ]
+    },
+    {
+      "slug": "dunkirk",
+      "name": "DK'Bus (Dunkerque)",
+      "region": "Hauts-de-France",
+      "center": [
+        51.0343,
+        2.3768
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-reseau-dk-bus-de-la-communaute-urbaine-de-dunkerque-gtfs/20260706-085929/gtfs-20260624-110758-dkbus.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.dkbus.com/",
+      "cities": [
+        "Dunkerque, France"
+      ]
+    },
+    {
+      "slug": "la-rochelle",
+      "name": "Y\u00e9lo (La Rochelle)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        46.1603,
+        -1.1511
+      ],
+      "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_la_rochelle-aggregated-gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.yelo-larochelle.fr/",
+      "cities": [
+        "La Rochelle, France"
+      ]
+    },
+    {
+      "slug": "laval",
+      "name": "TUL (Laval)",
+      "region": "Pays de la Loire",
+      "center": [
+        48.0785,
+        -0.7669
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rd-laval/exports/pan.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.tul-laval.fr/",
+      "cities": [
+        "Laval, France"
+      ]
+    },
+    {
+      "slug": "le-havre",
+      "name": "LiA (Le Havre)",
+      "region": "Normandie",
+      "center": [
+        49.4944,
+        0.1079
+      ],
+      "feedUrl": "https://gtfs.bus-tracker.fr/lia.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.transports-lia.fr/",
+      "cities": [
+        "Le Havre, France"
+      ]
+    },
+    {
+      "slug": "lorient",
+      "name": "Izilo (Lorient)",
+      "region": "Bretagne",
+      "center": [
+        47.7483,
+        -3.37
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rdla-lorient/exports/medias.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.izilo.bzh/",
+      "cities": [
+        "Lorient, France"
+      ]
+    },
+    {
+      "slug": "lyon",
+      "name": "TCL (Lyon)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.764,
+        4.8357
+      ],
+      "feedUrl": "https://gtech-transit-prod.apigee.net/v1/google/gtfs/odbl/lyon_tcl.zip?apikey=BasyG6OFZXgXnzWdQLTwJFGcGmeOs204&secret=gNo6F5PhQpsGRBCK",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.tcl.fr/",
+      "cities": [
+        "Lyon, France"
+      ]
+    },
+    {
+      "slug": "marseille",
+      "name": "RTM (Marseille)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.2965,
+        5.3698
+      ],
+      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp-rtm?apiKey=16421b08630a7d065c6d250051780f484b673659",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.rtm.fr/",
+      "cities": [
+        "Marseille, France"
+      ]
+    },
+    {
+      "slug": "mulhouse",
+      "name": "Sol\u00e9a (Mulhouse)",
+      "region": "Grand Est",
+      "center": [
+        47.7508,
+        7.3359
+      ],
+      "feedUrl": "https://eu.ftp.opendatasoft.com/mulhouse/TRANSPORT_GTFS/SOLEA.GTFS_current.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.solea.info/",
+      "cities": [
+        "Mulhouse, France"
+      ]
+    },
+    {
+      "slug": "nimes",
+      "name": "Tango (N\u00eemes)",
+      "region": "Occitanie",
+      "center": [
+        43.8367,
+        4.3601
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transport-du-reseau-tango-de-nimes-metropole-gtfs-gtfs-rt/20260612-082001/gtfs-production.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.tangonimes.fr/",
+      "cities": [
+        "N\u00eemes, France"
+      ]
+    },
+    {
+      "slug": "orleans",
+      "name": "TAO (Orl\u00e9ans)",
+      "region": "Centre-Val de Loire",
+      "center": [
+        47.9029,
+        1.9093
+      ],
+      "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/keolis_orleans/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.reseau-tao.fr/",
+      "cities": [
+        "Orl\u00e9ans, France"
+      ]
+    },
+    {
+      "slug": "pau",
+      "name": "Idelis (Pau)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        43.2951,
+        -0.3708
+      ],
+      "feedUrl": "https://opendata.idelis.fr/?file=GTFS_MultiRoutes/Data.GTFS.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.idelis.fr/",
+      "cities": [
+        "Pau, France"
+      ]
+    },
+    {
+      "slug": "perpignan",
+      "name": "Sank\u00e9o (Perpignan)",
+      "region": "Occitanie",
+      "center": [
+        42.6887,
+        2.8948
+      ],
+      "feedUrl": "https://eur.mecatran.com/utw/ws/gtfsfeed/static/perpignan?apiKey=612f606b5e3b0a3e6e1f441a2c4a050f6a345b55",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.sankeo.com/",
+      "cities": [
+        "Perpignan, France"
+      ]
+    },
+    {
+      "slug": "poitiers",
+      "name": "Vitalis (Poitiers)",
+      "region": "Nouvelle-Aquitaine",
+      "center": [
+        46.5802,
+        0.3404
+      ],
+      "feedUrl": "https://data.grandpoitiers.fr/data-fair/api/v1/datasets/offre-de-transport-du-reseau-vitalis/metadata-attachments/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.vitalis-poitiers.fr/",
+      "cities": [
+        "Poitiers, France"
+      ]
+    },
+    {
+      "slug": "quimper",
+      "name": "Qub (Quimper)",
+      "region": "Bretagne",
+      "center": [
+        47.9975,
+        -4.0979
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/qbo/exports/medias.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.qub.fr/",
+      "cities": [
+        "Quimper, France"
+      ]
+    },
+    {
+      "slug": "reims",
+      "name": "Grand Reims Mobilit\u00e9s",
+      "region": "Grand Est",
+      "center": [
+        49.2583,
+        4.0317
+      ],
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=REI",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.grandreims-mobilites.fr/",
+      "cities": [
+        "Reims, France"
+      ]
+    },
+    {
+      "slug": "rouen",
+      "name": "Astuce (Rouen)",
+      "region": "Normandie",
+      "center": [
+        49.4431,
+        1.0993
+      ],
+      "feedUrl": "https://api.mrn.cityway.fr/dataflow/offre-tc/download?provider=ASTUCE&dataFormat=gtfs&dataProfil=ASTUCE",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.reseau-astuce.fr/",
+      "cities": [
+        "Rouen, France"
+      ]
+    },
+    {
+      "slug": "saint-etienne",
+      "name": "STAS (Saint-\u00c9tienne)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.4397,
+        4.3872
+      ],
+      "feedUrl": "https://api.saint-etienne-metropole.fr/stas/api/horraires_tc/GTFS.aspx",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.reseau-stas.fr/",
+      "cities": [
+        "Saint-\u00c9tienne, France"
+      ]
+    },
+    {
+      "slug": "saint-nazaire",
+      "name": "Yc\u00e9o (Saint-Nazaire)",
+      "region": "Pays de la Loire",
+      "center": [
+        47.2735,
+        -2.2137
+      ],
+      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/stran-merge?apiKey=2e6071036d276153761f0c090b4a45420e047612",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.strann.fr/",
+      "cities": [
+        "Saint-Nazaire, France"
+      ]
+    },
+    {
+      "slug": "toulon",
+      "name": "Mistral (Toulon)",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "center": [
+        43.1242,
+        5.928
+      ],
+      "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rd-toulon/exports/gtfs-complet.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.reseaumistral.com/",
+      "cities": [
+        "Toulon, France"
+      ]
+    },
+    {
+      "slug": "toulouse",
+      "name": "Tiss\u00e9o (Toulouse)",
+      "region": "Occitanie",
+      "center": [
+        43.6047,
+        1.4442
+      ],
+      "feedUrl": "https://data.toulouse-metropole.fr/explore/dataset/tisseo-gtfs/files/fc1dda89077cf37e4f7521760e0ef4e9/download/",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.tisseo.fr/",
+      "cities": [
+        "Toulouse, France"
+      ]
+    },
+    {
+      "slug": "troyes",
+      "name": "TCAT (Troyes)",
+      "region": "Grand Est",
+      "center": [
+        48.2973,
+        4.0744
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/donnees-tcat-troyes-champagne-metropole-1/20260520-141045/gtfs.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.tcat.fr/",
+      "cities": [
+        "Troyes, France"
+      ]
+    },
+    {
+      "slug": "valence",
+      "name": "Cit\u00e9a (Valence Romans)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        44.9334,
+        4.8924
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/ce-jeu-de-donnees-contient-la-liste-des-arrets-des-horaires-et-des-parcours-theoriques-du-reseau-de-transport-urbain-et-interurbain-de-vrm/20260518-071358/gtfs-citea-20260517-20260628.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.vrd-mobilites.fr/",
+      "cities": [
+        "Valence, France"
+      ]
+    },
+    {
+      "slug": "vannes",
+      "name": "Kic\u00e9o (Vannes)",
+      "region": "Bretagne",
+      "center": [
+        47.6582,
+        -2.7608
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-kiceo/20260626-142417/gtfs-20260626-161300-kiceo.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.kiceo.fr/",
+      "cities": [
+        "Vannes, France"
       ]
     }
   ]

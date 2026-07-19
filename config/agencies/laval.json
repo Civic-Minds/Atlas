@@ -1,0 +1,17 @@
+{
+  "slug": "laval",
+  "name": "TUL (Laval)",
+  "region": "Pays de la Loire",
+  "center": [
+    48.0785,
+    -0.7669
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rd-laval/exports/pan.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.tul-laval.fr/",
+  "cities": [
+    "Laval, France"
+  ]
+}

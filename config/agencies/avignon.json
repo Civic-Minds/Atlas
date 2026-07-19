@@ -1,0 +1,17 @@
+{
+  "slug": "avignon",
+  "name": "Orizo (Avignon)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.9493,
+    4.8055
+  ],
+  "feedUrl": "https://api.maas-fr.cityway.fr/dataflow/offre-tc/download?provider=ORIZO&dataFormat=GTFS&dataProfil=OPENDATA",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.orizo.fr/",
+  "cities": [
+    "Avignon, France"
+  ]
+}

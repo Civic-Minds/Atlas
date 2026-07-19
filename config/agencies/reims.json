@@ -1,0 +1,17 @@
+{
+  "slug": "reims",
+  "name": "Grand Reims Mobilités",
+  "region": "Grand Est",
+  "center": [
+    49.2583,
+    4.0317
+  ],
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=REI",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.grandreims-mobilites.fr/",
+  "cities": [
+    "Reims, France"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "perpignan",
+  "name": "Sankéo (Perpignan)",
+  "region": "Occitanie",
+  "center": [
+    42.6887,
+    2.8948
+  ],
+  "feedUrl": "https://eur.mecatran.com/utw/ws/gtfsfeed/static/perpignan?apiKey=612f606b5e3b0a3e6e1f441a2c4a050f6a345b55",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.sankeo.com/",
+  "cities": [
+    "Perpignan, France"
+  ]
+}

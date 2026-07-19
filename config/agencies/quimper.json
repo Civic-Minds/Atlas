@@ -1,0 +1,17 @@
+{
+  "slug": "quimper",
+  "name": "Qub (Quimper)",
+  "region": "Bretagne",
+  "center": [
+    47.9975,
+    -4.0979
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/qbo/exports/medias.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.qub.fr/",
+  "cities": [
+    "Quimper, France"
+  ]
+}

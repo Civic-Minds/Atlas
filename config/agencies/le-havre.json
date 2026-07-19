@@ -1,0 +1,17 @@
+{
+  "slug": "le-havre",
+  "name": "LiA (Le Havre)",
+  "region": "Normandie",
+  "center": [
+    49.4944,
+    0.1079
+  ],
+  "feedUrl": "https://gtfs.bus-tracker.fr/lia.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.transports-lia.fr/",
+  "cities": [
+    "Le Havre, France"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "troyes",
+  "name": "TCAT (Troyes)",
+  "region": "Grand Est",
+  "center": [
+    48.2973,
+    4.0744
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/donnees-tcat-troyes-champagne-metropole-1/20260520-141045/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.tcat.fr/",
+  "cities": [
+    "Troyes, France"
+  ]
+}

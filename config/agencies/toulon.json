@@ -1,0 +1,17 @@
+{
+  "slug": "toulon",
+  "name": "Mistral (Toulon)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.1242,
+    5.928
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rd-toulon/exports/gtfs-complet.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.reseaumistral.com/",
+  "cities": [
+    "Toulon, France"
+  ]
+}

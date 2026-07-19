@@ -1,0 +1,17 @@
+{
+  "slug": "mulhouse",
+  "name": "Soléa (Mulhouse)",
+  "region": "Grand Est",
+  "center": [
+    47.7508,
+    7.3359
+  ],
+  "feedUrl": "https://eu.ftp.opendatasoft.com/mulhouse/TRANSPORT_GTFS/SOLEA.GTFS_current.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.solea.info/",
+  "cities": [
+    "Mulhouse, France"
+  ]
+}

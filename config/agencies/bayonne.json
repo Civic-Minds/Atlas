@@ -1,0 +1,19 @@
+{
+  "slug": "bayonne",
+  "name": "Txik Txak",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    43.4929,
+    -1.4748
+  ],
+  "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/txiktxak?apiKey=0f64273f070b7d4621002040646e180d374e5373",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.txiktxak.fr/",
+  "cities": [
+    "Bayonne, France",
+    "Biarritz, France",
+    "Anglet, France"
+  ]
+}

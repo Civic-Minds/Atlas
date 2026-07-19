@@ -1,0 +1,17 @@
+{
+  "slug": "pau",
+  "name": "Idelis (Pau)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    43.2951,
+    -0.3708
+  ],
+  "feedUrl": "https://opendata.idelis.fr/?file=GTFS_MultiRoutes/Data.GTFS.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.idelis.fr/",
+  "cities": [
+    "Pau, France"
+  ]
+}

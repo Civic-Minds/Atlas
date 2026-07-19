@@ -1,0 +1,17 @@
+{
+  "slug": "la-rochelle",
+  "name": "Yélo (La Rochelle)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    46.1603,
+    -1.1511
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_la_rochelle-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.yelo-larochelle.fr/",
+  "cities": [
+    "La Rochelle, France"
+  ]
+}
