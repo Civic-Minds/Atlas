@@ -13,7 +13,8 @@
  *   - minStopHeadway far below the terminal headway (Niagara 301 pattern, #241)
  *   - near-duplicate headsigns on the same route+direction (Niagara typo, #242)
  *   - shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244),
- *     or that show clustered implausible jumps flagged but NOT auto-repaired (Nancy Réseau Stan)
+ *     or clustered implausible jumps (an interleaved sub-path, Nancy Réseau Stan) -- usually
+ *     auto-repaired by excising the detour, flagged for manual review on the rare case it can't be
  */
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
@@ -48,6 +49,8 @@ interface ShapeAnomaly {
   truncated: boolean;
   deinterleaved: boolean;
   clusteredJumps: boolean;
+  repairedClusteredJumps: boolean;
+  knownIsolatedPointFixed: boolean;
 }
 
 async function loadGeojson(): Promise<{ features: RouteFeature[] }> {
@@ -192,7 +195,10 @@ async function main() {
       const kinds = [
         a.truncated && 'truncated at implausible jump',
         a.deinterleaved && 'de-interleaved duplicate sequences',
-        a.clusteredJumps && 'clustered jumps detected (NOT auto-repaired — two interleaved sub-paths, needs manual review)',
+        a.clusteredJumps && (a.repairedClusteredJumps
+          ? 'clustered jumps repaired (interleaved sub-path excised and bridged)'
+          : 'clustered jumps detected but NOT repaired — needs manual review'),
+        a.knownIsolatedPointFixed && 'known isolated misplaced point excised (hardcoded shape_id fix)',
       ]
         .filter(Boolean)
         .join(' + ');

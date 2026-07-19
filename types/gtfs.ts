@@ -173,11 +173,21 @@ export interface ShapeAnomaly {
     shapeId: string;
     truncated: boolean;
     deinterleaved: boolean;
-    // Detected but NOT auto-repaired -- see detectClusteredJumps in parseGtfs.ts.
-    // Unlike truncated/deinterleaved, this is flag-only: two coherent sub-paths
-    // interleaved via unique (non-duplicate) sequence renumbering, which needs
-    // path-segmentation to fix safely, not a point-by-point heuristic.
+    // Two coherent sub-paths interleaved via unique (non-duplicate) sequence
+    // renumbering -- see repairClusteredJumps in parseGtfs.ts. True whenever
+    // detected, regardless of whether repairedClusteredJumps below is also true.
     clusteredJumps: boolean;
+    // Whether a detected clusteredJumps case was actually repaired (excising
+    // the interleaved detour, self-verified afterward) vs. left as the
+    // original, still-corrupted points because repair didn't fully resolve it.
+    repairedClusteredJumps: boolean;
+    // Whether this shape matched one of the narrowly-scoped, hardcoded known
+    // single-point corruption fixes (see KNOWN_ISOLATED_POINT_FIXES in
+    // parseGtfs.ts) -- NOT a general detector; a generalized isolated-reversal
+    // heuristic was tried and found too close to real terminus-loop geometry
+    // on live agencies (TTC) to trust broadly, so these two confirmed-real
+    // Nancy cases are excised by exact shape_id + coordinate match instead.
+    knownIsolatedPointFixed: boolean;
 }
 
 // ---------------------------------------------------------------------------

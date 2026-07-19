@@ -164,7 +164,7 @@ async function main() {
     console.log(`  Nothing uploaded to R2. public/data/index.json and config/agencies/${slug}.json NOT modified.`);
     console.log(`  Resulting agency record would be: name="${agencyName}", center=${JSON.stringify(argCenter ?? computedCenter ?? [0, 0])}, feedExpiry=${feedExpiry ?? 'null'}, feedVersion=${feedVersion ?? 'null'}`);
     if (shapeAnomalies?.length) {
-      console.log(`  ${shapeAnomalies.length} shape(s) needed correction during parsing (truncated jump and/or de-interleaved duplicate sequences) — see ${slug}-shape-anomalies.json.`);
+      console.log(`  ${shapeAnomalies.length} shape(s) needed correction during parsing (truncated jump, de-interleaved duplicate sequences, and/or a repaired/flagged interleaved sub-path) — see ${slug}-shape-anomalies.json.`);
     }
     console.log(`  Run "npm run route-report -- ${slug}" to check for anomaly patterns (mismatched headways, near-duplicate headsigns, shape corrections) before publishing.`);
     console.log(`  Re-run without --dry-run once you're satisfied to actually publish.\n`);
