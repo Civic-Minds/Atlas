@@ -1,0 +1,12 @@
+{
+  "slug": "le-mans",
+  "name": "SETRAM (Le Mans)",
+  "region": "Pays de la Loire",
+  "center": [48.0061, 0.1996],
+  "feedUrl": "https://static.data.gouv.fr/resources/gtfs-du-reseau-des-transports-bus-et-tramway-setram-circulant-sur-le-territoire-le-mans-metropole/20260706-090730/gtfssetramlmm.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.setram.fr/",
+  "cities": ["Le Mans, France"]
+}

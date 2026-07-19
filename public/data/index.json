@@ -163,7 +163,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
       "lastFeedExpiry": "20260904",
       "lastFeedVersion": "20260529182459",
-      "lastRefreshedAt": "2026-07-06",
+      "lastRefreshedAt": "2026-07-19",
       "cities": [
         "Mississauga, Ontario",
         "Brampton, Ontario",
@@ -10509,6 +10509,91 @@
       "websiteUrl": "https://www.irigo.fr/",
       "cities": [
         "Angers, France"
+      ]
+    },
+    {
+      "slug": "chambery",
+      "name": "Synchro (Chamb\u00e9ry)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.5646,
+        5.9178
+      ],
+      "feedUrl": "https://mwe.mecatran.com/utw/ws/gtfsfeed/static/chambery?apiKey=223f2f102c1242570d3f0231326a271940774f72&type=gtfs_urbain",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.synchro.grandchambery.fr/",
+      "cities": [
+        "Chamb\u00e9ry, France"
+      ]
+    },
+    {
+      "slug": "nantes",
+      "name": "Naolib (Nantes)",
+      "region": "Pays de la Loire",
+      "center": [
+        47.2184,
+        -1.5536
+      ],
+      "feedUrl": "https://data.nantesmetropole.fr/explore/dataset/244400404_transports_commun_naolib_nantes_metropole_gtfs/files/0cc0469a72de54ee045cb66d1a21de9e/download/",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.naolib.fr/",
+      "cities": [
+        "Nantes, France"
+      ]
+    },
+    {
+      "slug": "le-mans",
+      "name": "SETRAM (Le Mans)",
+      "region": "Pays de la Loire",
+      "center": [
+        48.0061,
+        0.1996
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/gtfs-du-reseau-des-transports-bus-et-tramway-setram-circulant-sur-le-territoire-le-mans-metropole/20260706-090730/gtfssetramlmm.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.setram.fr/",
+      "cities": [
+        "Le Mans, France"
+      ]
+    },
+    {
+      "slug": "besancon",
+      "name": "Ginko (Besan\u00e7on)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
+      "center": [
+        47.2378,
+        6.0241
+      ],
+      "feedUrl": "https://api.ginko.voyage/gtfs-ginko.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.ginko.voyage/",
+      "cities": [
+        "Besan\u00e7on, France"
+      ]
+    },
+    {
+      "slug": "annecy",
+      "name": "Sibra (Annecy)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "center": [
+        45.8992,
+        6.1294
+      ],
+      "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-sibra-a-annecy-gtfs/20260706-091802/gtfs-sibra-1-.zip",
+      "mdbFeedUrl": null,
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "websiteUrl": "https://www.sibra.fr/",
+      "cities": [
+        "Annecy, France"
       ]
     }
   ]

@@ -1,0 +1,12 @@
+{
+  "slug": "nantes",
+  "name": "Naolib (Nantes)",
+  "region": "Pays de la Loire",
+  "center": [47.2184, -1.5536],
+  "feedUrl": "https://data.nantesmetropole.fr/explore/dataset/244400404_transports_commun_naolib_nantes_metropole_gtfs/files/0cc0469a72de54ee045cb66d1a21de9e/download/",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.naolib.fr/",
+  "cities": ["Nantes, France"]
+}

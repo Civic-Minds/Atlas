@@ -1,0 +1,12 @@
+{
+  "slug": "annecy",
+  "name": "Sibra (Annecy)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [45.8992, 6.1294],
+  "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-sibra-a-annecy-gtfs/20260706-091802/gtfs-sibra-1-.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.sibra.fr/",
+  "cities": ["Annecy, France"]
+}
