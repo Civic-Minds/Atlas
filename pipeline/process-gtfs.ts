@@ -134,7 +134,7 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { preprocess, excludeRouteShortNames, slug, manualBaseFare });
   const center = argCenter ?? computedCenter ?? [0, 0];
@@ -162,7 +162,7 @@ async function main() {
     }
     console.log(`\n  DRY RUN — wrote ${Object.keys(files).length} artifact(s) to ${previewDir}/ (${kb} KB main geojson, ${featureCount} features)`);
     console.log(`  Nothing uploaded to R2. public/data/index.json and config/agencies/${slug}.json NOT modified.`);
-    console.log(`  Resulting agency record would be: name="${agencyName}", center=${JSON.stringify(argCenter ?? computedCenter ?? [0, 0])}, feedExpiry=${feedExpiry ?? 'null'}, feedVersion=${feedVersion ?? 'null'}`);
+    console.log(`  Resulting agency record would be: name="${agencyName}", center=${JSON.stringify(argCenter ?? computedCenter ?? [0, 0])}, timezone=${timezone ?? 'null'}, feedExpiry=${feedExpiry ?? 'null'}, feedVersion=${feedVersion ?? 'null'}`);
     if (shapeAnomalies?.length) {
       console.log(`  ${shapeAnomalies.length} shape(s) needed correction during parsing (truncated jump, de-interleaved duplicate sequences, and/or a repaired/flagged interleaved sub-path) — see ${slug}-shape-anomalies.json.`);
     }
@@ -203,6 +203,7 @@ async function main() {
       ...prev,
       name: agencyName,
       center,
+      timezone: timezone ?? prev.timezone,
       lastFeedExpiry: feedExpiry,
       lastFeedVersion: feedVersion,
       lastRefreshedAt: todayUtcYmd(),
@@ -215,7 +216,7 @@ async function main() {
     }
     index.agencies[existing] = updated;
   } else {
-    index.agencies.push({ slug, name: agencyName, center, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd() });
+    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd() });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   const savedAgency = index.agencies.find(a => a.slug === slug);

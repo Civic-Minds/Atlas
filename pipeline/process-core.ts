@@ -48,6 +48,7 @@ export interface ProcessResult {
   stopsMetaJson: string; // JSON: StopsMetaFile — per-stop facts (routes, direction) for external consumers
   featureCount: number;
   center: [number, number] | null;
+  timezone: string | null;     // agency_timezone from agency.txt (IANA name, e.g. "America/Toronto"), or null if absent
   feedExpiry: string | null;   // feed_end_date from feed_info.txt, or null if absent
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
@@ -713,6 +714,7 @@ export async function processGtfsBuffer(
   }
 
   const feedInfo = gtfs.feedInfo?.[0];
+  const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   const mainFeatures = [...features, ...stopFeatures];
 
   let livePollingSidecar: Record<string, any> | undefined;
@@ -764,6 +766,7 @@ export async function processGtfsBuffer(
     stopsMetaJson: JSON.stringify(stopsMeta),
     featureCount: mainFeatures.length,
     center,
+    timezone,
     feedExpiry: feedInfo?.feed_end_date ?? null,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,

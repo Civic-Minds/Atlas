@@ -10,7 +10,7 @@ import { MapAttribution } from '../components/Interval/MapAttribution';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
-import { FilterChips, getNowPeriod } from '../components/Interval/FilterChips';
+import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
 import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
 import type { Agency, FareOverride } from '../App';
@@ -144,7 +144,11 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       const p = searchParams.get('p') || searchParams.get('period');
       if (p === 'all' || (p && PERIOD_KEYS.includes(p as any))) return p as TimePeriod;
     } catch {}
-    return getNowPeriod();
+    // A direct link to a specific agency's route/stop should default to that
+    // agency's own current time, not the viewer's browser-local clock (#245).
+    const initialSlug = (selectedRoute ?? selectedStop)?.split('::')[0];
+    const initialAgency = initialSlug ? agencies.find(a => a.slug === initialSlug) : undefined;
+    return getNowPeriodForTimezone(initialAgency?.timezone);
   });
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
