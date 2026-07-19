@@ -28,6 +28,11 @@ export default defineConfig(({ mode }) => {
         const range = req.headers.range;
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Content-Type', 'application/octet-stream');
+        // Without this, the browser can cache individual byte-range responses
+        // indefinitely (no ETag/Last-Modified to invalidate against), so
+        // rebuilding this file mid-session can silently keep serving stale
+        // tile data even after a hard reload.
+        res.setHeader('Cache-Control', 'no-store');
 
         if (!range) {
           res.setHeader('Content-Length', String(size));
