@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
   // `npm run build-pmtiles-incremental -- <slug> --dry-run`) instead of proxying
   // to production R2, so a not-yet-published agency's map tiles can be previewed
   // before ever writing to the live bucket. Falls through to the normal proxy
-  // when no override file is present (the common case) -- see docs/PIPELINE_OPERATIONS.md.
+  // when no override file is present (the common case) -- see docs/ADDING_AGENCIES.md.
   const PMTILES_PREVIEW_PATH = resolve('tmp/atlas-pmtiles-preview.pmtiles');
   const localPmtilesPreview: Plugin = {
     name: 'local-pmtiles-preview',

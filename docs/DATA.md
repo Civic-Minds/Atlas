@@ -29,5 +29,6 @@ Atlas is built from publicly available transit data and publishes the processing
 
 ## Procedures and maintenance
 
-- **[Adding agencies](./ADDING_AGENCIES.md)**: Contributor guide for onboarding a new transit agency.
-- **[Pipeline operations](./PIPELINE_OPERATIONS.md)**: Contributor procedures for adding agencies, refreshing feeds, and publishing artifacts.
+- **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency (or a small batch).
+- **[Updating the Map](./MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
+- **[Coverage Gap Discovery](./COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.

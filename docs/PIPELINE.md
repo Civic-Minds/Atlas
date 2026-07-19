@@ -75,7 +75,7 @@ Feed-specific quirks and current data limitations are documented in [`KNOWN_ISSU
 
 ## Maintainer workflows
 
-The command-by-command feed, discovery, batch-processing, and publishing runbooks live in [`PIPELINE_OPERATIONS.md`](./PIPELINE_OPERATIONS.md). This page stays focused on the methodology behind the public map.
+The command-by-command runbooks live in [`ADDING_AGENCIES.md`](./ADDING_AGENCIES.md) (onboarding), [`MAP_UPDATES.md`](./MAP_UPDATES.md) (refreshing/publishing), and [`COVERAGE_GAP_DISCOVERY.md`](./COVERAGE_GAP_DISCOVERY.md) (finding candidates). This page stays focused on the methodology behind the public map.
 
 ---
 
