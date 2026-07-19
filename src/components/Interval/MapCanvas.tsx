@@ -920,7 +920,12 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
       map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
 
-      // Opacity based on route state (focused vs dimmed)
+      // Opacity based on route state (focused vs dimmed).
+      // When a route is selected we keep other lines visible and clickable
+      // (hit layer still covers them) so the network context stays readable and
+      // you can click another line to switch — not a near-invisible ghost layer.
+      const DIM_OPACITY = 0.32;
+      const DIM_WIDTH = 1.25;
       if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey];
@@ -931,37 +936,37 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             ['==', ['get', 'headsign'], hoveredBranch.headsign],
           ];
           map.setPaintProperty('routes-layer', 'line-opacity', [
-            'case', branchMatch, 1.0, routeMatch, 0.25, 0.15,
+            'case', branchMatch, 1.0, routeMatch, 0.4, DIM_OPACITY,
           ]);
           map.setPaintProperty('routes-layer', 'line-width', [
-            'case', branchMatch, 3.5, routeMatch, 1.0, 0.5,
+            'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else {
           map.setPaintProperty('routes-layer', 'line-opacity', [
-            'case', routeMatch, 1.0, 0.15,
+            'case', routeMatch, 1.0, DIM_OPACITY,
           ]);
           map.setPaintProperty('routes-layer', 'line-width', [
-            'case', routeMatch, 3.5, 0.5,
+            'case', routeMatch, 3.5, DIM_WIDTH,
           ]);
         }
       } else if (hoveredSearchRoute) {
         // Hovering a search result: spotlight that route, fade the rest
         const hoverMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], hoveredSearchRoute];
         map.setPaintProperty('routes-layer', 'line-opacity', [
-          'case', hoverMatch, 1.0, 0.12,
+          'case', hoverMatch, 1.0, DIM_OPACITY,
         ]);
         map.setPaintProperty('routes-layer', 'line-width', [
-          'case', hoverMatch, 3.5, 0.5,
+          'case', hoverMatch, 3.5, DIM_WIDTH,
         ]);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(routesForStop.siblingIdsByAgency);
         map.setPaintProperty('routes-layer', 'line-opacity', [
-          'case', servingMatch, 1.0, 0.15,
+          'case', servingMatch, 1.0, DIM_OPACITY,
         ]);
         map.setPaintProperty('routes-layer', 'line-width', [
           'case', servingMatch,
           ['interpolate', ['linear'], ['zoom'], 8, 2.0, 14, 3.0],
-          0.5,
+          DIM_WIDTH,
         ]);
       } else {
         map.setPaintProperty('routes-layer', 'line-width', [
