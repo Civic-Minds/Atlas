@@ -8,6 +8,8 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
 
 **Stop before step 3 if this is the first agency for a country with zero live agencies yet** (e.g. any France/Belgium/Spain candidate right now). Steps 1-2 (dry-run + local preview) are always fine to run freely — nothing in them touches R2. Step 3 onward writes real data to the live bucket: for an already-live country, that's routine once an agency is validated; for a brand-new country, publishing its first agency is a country-launch decision, not just a routine agency add, and needs separate maintainer sign-off. `hiddenInProduction` only hides an agency from the UI *after* its data is already live on R2 — it is not a substitute for staying offline, and a previously-hidden agency should not be treated as precedent for publishing the next one in the same country.
 
+**Hard refuse:** `npm run process` and `npm run build-pmtiles-incremental` without `--dry-run` will exit with an error for any country that still has zero production-visible agencies (France and Mexico today). `npm run refresh` skips those agencies so weekly jobs don't keep rewriting them. After Ryan explicitly authorizes the country launch (or an intentional pre-launch R2 fix), re-run with `--i-am-launching-country`. See `pipeline/countryLaunchGate.ts` and AGENTS.md § Production Data Rules.
+
 1. Obtain the GTFS ZIP download link (preferring a stable agency URL or Mobility Database link).
 2. **Optional but recommended for a new/unfamiliar feed**: preview it locally first, with nothing written to R2 or any repo file:
    ```bash
@@ -22,11 +24,14 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    Reads the dry-run preview and prints a route × direction × day frequency table, plus three flags that have each caught a real bug before: a terminal headway far above the best headway anywhere on the route (Niagara 301, #241), near-duplicate headsigns on the same route+direction (Niagara typo, #242), and shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244 — recorded in `<slug>-shape-anomalies.json` alongside the other preview artifacts). A flag isn't automatically a bug — branching routes legitimately have faster segments than their terminal, for instance — but each one is worth a manual look before publishing. Pass `--live` to run the same report against an already-published agency's current R2 data instead (shape-anomaly detection isn't available in `--live` mode — it's only captured during parsing).
 
    With the dry-run preview on disk, `npm run dev` will also serve that agency's search results and sidebar route cards locally — the dev server checks `tmp/process-preview/<slug>/` for any `/atlas-data/<slug>*.json` request before falling back to the real R2 proxy, so a brand-new (or not-yet-registered) agency can be browsed in the actual app before anything is published. This works even without a PMTiles build; see § Incremental PMTiles Build below for also previewing the agency's routes drawn on the map itself.
-3. Process the feed for real:
+3. Process the feed for real (already-live countries only — France/Mexico/etc. hard-refuse without the launch flag):
    ```bash
    npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]"
+   # Country launch only, after explicit maintainer approval:
+   # npm run process -- <feed> <slug> "[Name]" "[lat,lon]" --i-am-launching-country
    ```
 4. Add or edit `config/agencies/<slug>.json` with `region`, `feedUrl`, `mdbFeedUrl`, and `bbox`.
+   - **Check the slug isn't already taken by a different agency before writing the file** — `cat config/agencies/<slug>.json` first if it already exists, and compare the `name`/`region` against what you're about to add. A common city name (e.g. "Nice") can coincidentally collide with an existing agency's slug (e.g. NICE Bus, Nassau NY); `scripts/build-agency-index.ts` only rejects two *different files* sharing a slug, so it cannot catch one file's content being silently overwritten in place. On a real collision, disambiguate with a suffix (`nice-fr`, matching the existing `springfield-mo` pattern) rather than reusing the slug.
    - **bbox vs. center**: if an agency's service area is larger than ±0.4/0.5° from its center (e.g. statewide or regional services like Bustang), add an explicit `bbox: [s, w, n, e]`. Without it, the GeoJSON won't load into the sidebar for viewports outside the ±0.5° window — route cards won't appear even though PMTiles renders the routes.
    - If the official URL is dead or unreliable, use the Mobility Database stable mirror: find the feed at github.com/MobilityData/mobility-database-catalogs, then `https://storage.googleapis.com/storage/v1/b/mdb-latest/o/{feed-id}.zip?alt=media` (GRT and Niagara already use this).
 5. Generate the runtime index:

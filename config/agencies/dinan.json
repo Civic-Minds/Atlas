@@ -1,0 +1,16 @@
+{
+  "slug": "dinan",
+  "name": "Dinamo (Dinan)",
+  "region": "Bretagne",
+  "center": [
+    48.455,
+    -2.0497
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-dinamo/20260629-151052/gtfs-20260629-162332-dinamo.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Dinan, France"
+  ]
+}

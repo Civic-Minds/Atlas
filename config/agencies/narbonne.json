@@ -1,0 +1,16 @@
+{
+  "slug": "narbonne",
+  "name": "Citibus (Narbonne)",
+  "region": "Occitanie",
+  "center": [
+    43.1836,
+    3.0042
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/narbonne/exports/scolaires-sans-tad.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Narbonne, France"
+  ]
+}

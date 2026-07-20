@@ -6,7 +6,7 @@ import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { shortenAgencyName } from '../../utils/format';
+import { shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
@@ -809,8 +809,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     fareView ? fareViewMatchedAgencies.length > 0 : (searchMatchResults !== null || searchStopMatchResults !== null)
   );
 
-  const panelStop = currentStop && !query.trim() && !searchFocused;
-  const panelRoute = currentRoute && !query.trim() && !searchFocused;
+  const panelStop = currentStop && !searchOverlayHidesPanel(searchFocused, query);
+  const panelRoute = currentRoute && !searchOverlayHidesPanel(searchFocused, query);
   const hasContent = !!(
     panelStop
     || panelRoute
@@ -1036,7 +1036,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         )}
       </div>}
 
-      {liveRouteInfo && liveStatus !== 'noData' && !query.trim() && !searchFocused && (
+      {liveRouteInfo && liveStatus !== 'noData' && !searchOverlayHidesPanel(searchFocused, query) && (
         <LiveAdherenceCard
           liveRouteInfo={liveRouteInfo as LiveRouteInfoData}
           liveStatus={liveStatus}

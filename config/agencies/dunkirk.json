@@ -1,0 +1,17 @@
+{
+  "slug": "dunkirk",
+  "name": "DK'Bus (Dunkerque)",
+  "region": "Hauts-de-France",
+  "center": [
+    51.0343,
+    2.3768
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-reseau-dk-bus-de-la-communaute-urbaine-de-dunkerque-gtfs/20260706-085929/gtfs-20260624-110758-dkbus.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.dkbus.com/",
+  "cities": [
+    "Dunkerque, France"
+  ]
+}

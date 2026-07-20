@@ -14,12 +14,6 @@ User experience and the workflow of a transit professional using Atlas.
 
 **Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or contextual mode.
 
-## Future product concepts
-
-- **Factbook / Insights — Proposed:** What surprising or useful stories does the data contain?
-
----
-
 ## Live Data Layer (Expanding)
 
 - [x] **Live vehicle map**: live vehicle positions for configured agencies; the frontend polls supported feeds while the map is open

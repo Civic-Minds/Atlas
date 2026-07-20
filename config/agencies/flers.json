@@ -1,0 +1,16 @@
+{
+  "slug": "flers",
+  "name": "Flers",
+  "region": "Normandie",
+  "center": [
+    48.7486,
+    -0.5747
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/donnees-theoriques-du-reseau-urbain-de-flers-agglo-au-format-gtfs/20260414-121512/nemus-gtfs-du-01-01-26-au-31-12-26.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Flers, France"
+  ]
+}

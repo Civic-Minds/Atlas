@@ -1,0 +1,16 @@
+{
+  "slug": "guingamp",
+  "name": "Guingamp-Paimpol Mobilité",
+  "region": "Bretagne",
+  "center": [
+    48.5633,
+    -3.1508
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-scolaire-guingamp-paimpol-mobilite/20260121-175558/reseau-urbain-et-scolaire-guingamppaimpol-mobilite.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Guingamp, France"
+  ]
+}

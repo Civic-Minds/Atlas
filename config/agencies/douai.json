@@ -1,0 +1,16 @@
+{
+  "slug": "douai",
+  "name": "Évasion (Douai)",
+  "region": "Hauts-de-France",
+  "center": [
+    50.3678,
+    3.0805
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/eveole-douai-reseau-bus-du-syndicat-mixte-des-transports-du-douaisis-smtd/20260707-151337/gtfs-du-060726-au-030127.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Douai, France"
+  ]
+}

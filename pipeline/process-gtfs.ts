@@ -1,7 +1,7 @@
 #!/usr/bin/env npx tsx
 /**
  * process-gtfs.ts — add or update one agency from a local GTFS zip or remote URL.
- * Usage: npm run process -- <path/to/feed.zip | https://.../feed.zip> <slug> [Display Name] [lat,lon] [--dry-run]
+ * Usage: npm run process -- <path/to/feed.zip | https://.../feed.zip> <slug> [Display Name] [lat,lon] [--dry-run] [--i-am-launching-country]
  * Uploads the processed GeoJSON artifacts to R2.
  * Updates public/data/index.json with name/center + preserves feed source config.
  * Artifact URLs are derived (no longer stored per-agency in the index).
@@ -13,10 +13,16 @@
  * config/agencies/<slug>.json. Lets you inspect real processed output
  * (shapes, tiers, route counts) before committing to a live publish — no
  * R2 credentials needed for this mode.
+ *
+ * --i-am-launching-country: required (with explicit maintainer approval) to
+ * write R2 artifacts for a country that still has zero production-visible
+ * agencies (France, Mexico, …). Without it, real (non-dry-run) process for
+ * those countries hard-refuses — see AGENTS.md § Production Data Rules.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
-import { config } from 'dotenv';
+// loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
+import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { processGtfsBuffer } from './process-core.js';
 import { r2Put, r2PutArchive } from './r2.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
@@ -29,13 +35,21 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
+import {
+  COUNTRY_LAUNCH_FLAG,
+  assertCountryMayWriteToR2,
+  resolveAgencyCountry,
+  type AgencyCountrySource,
+} from './countryLaunchGate.js';
 
-config({ path: resolve('.env.local') });
+console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
+const FLAG_ARGS = new Set(['--dry-run', COUNTRY_LAUNCH_FLAG]);
 const rawArgs = process.argv.slice(2);
 const dryRun = rawArgs.includes('--dry-run');
 const force = rawArgs.includes('--force');
-const positional = rawArgs.filter(a => a !== '--dry-run' && a !== '--force');
+const forceCountryLaunch = rawArgs.includes(COUNTRY_LAUNCH_FLAG);
+const positional = rawArgs.filter(a => !FLAG_ARGS.has(a) && a !== '--force');
 
 const input = positional[0];
 const slug = positional[1];
@@ -43,7 +57,9 @@ const agencyName = positional[2] || slug;
 const centerArg = positional[3];
 
 if (!input || !slug) {
-  console.error('Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon] [--dry-run] [--force]');
+  console.error(
+    `Usage: npm run process -- <gtfs.zip | https://feed.zip> <slug> [name] [lat,lon] [--dry-run] [--force] [${COUNTRY_LAUNCH_FLAG}]`,
+  );
   process.exit(1);
 }
 
@@ -82,7 +98,47 @@ async function downloadToBuffer(url: string): Promise<Buffer> {
   }
 }
 
+function loadAgencyRegistry(): AgencyCountrySource[] {
+  const indexPath = resolve('public/data/index.json');
+  if (!existsSync(indexPath)) return [];
+  const index = JSON.parse(readFileSync(indexPath, 'utf8')) as { agencies?: AgencyCountrySource[] };
+  return index.agencies ?? [];
+}
+
+/** Region/center for the slug from index.json or config/agencies/<slug>.json. */
+function loadAgencyCountryHints(slugToLoad: string): { region?: string | null; center?: [number, number] | null } {
+  const indexPath = resolve('public/data/index.json');
+  if (existsSync(indexPath)) {
+    const index = JSON.parse(readFileSync(indexPath, 'utf8')) as { agencies?: AgencyCountrySource[] };
+    const entry = index.agencies?.find(a => a.slug === slugToLoad);
+    if (entry) return { region: entry.region, center: entry.center };
+  }
+  const sourcePath = resolve('config/agencies', `${slugToLoad}.json`);
+  if (existsSync(sourcePath)) {
+    const entry = JSON.parse(readFileSync(sourcePath, 'utf8')) as AgencyCountrySource;
+    return { region: entry.region, center: entry.center };
+  }
+  return {};
+}
+
 async function main() {
+  // Fail fast on unlaunched countries before any download / parse work.
+  // --dry-run is always fine (local disk only).
+  if (!dryRun) {
+    const hints = loadAgencyCountryHints(slug);
+    const country = resolveAgencyCountry({
+      region: hints.region,
+      center: argCenter ?? hints.center ?? null,
+    });
+    assertCountryMayWriteToR2({
+      country,
+      agencies: loadAgencyRegistry(),
+      forceLaunch: forceCountryLaunch,
+      slug,
+      action: 'R2 process upload',
+    });
+  }
+
   let zipPath = input;
   let buf: Buffer;
 

@@ -1,0 +1,12 @@
+{
+  "slug": "besancon",
+  "name": "Ginko (Besançon)",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [47.2378, 6.0241],
+  "feedUrl": "https://api.ginko.voyage/gtfs-ginko.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.ginko.voyage/",
+  "cities": ["Besançon, France"]
+}

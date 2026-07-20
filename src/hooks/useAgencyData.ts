@@ -61,7 +61,7 @@ function stampAgencySlug(data: GeoJSON.FeatureCollection, slug: string): GeoJSON
   return data;
 }
 
-function getAgencyBbox(agency: Agency): [number, number, number, number] {
+export function getAgencyBbox(agency: Agency): [number, number, number, number] {
   if (agency.bbox) return agency.bbox;
   const [lat, lon] = agency.center;
   return [

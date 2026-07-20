@@ -1,0 +1,16 @@
+{
+  "slug": "villeneuve-sur-lot",
+  "name": "Elios (Villeneuve-sur-Lot)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    44.4069,
+    0.7042
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/elios-transports-urbains-du-grand-villeneuvois/20250902-085502/gtfs-elios-grand-villeneuvois-septembre-2025.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Villeneuve-sur-Lot, France"
+  ]
+}

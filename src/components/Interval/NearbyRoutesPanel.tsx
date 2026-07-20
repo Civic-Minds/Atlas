@@ -23,7 +23,10 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
   return (
     <div
       ref={ref}
-      style={{ position: 'absolute', bottom: 72, right: 12, zIndex: PANEL_Z_INDEX }}
+      // 136px clears the stacked zoom controls (bottom-[59px], 64px tall → top edge at 123)
+      // plus the geolocate button below them — this used to sit at bottom:72, overlapping
+      // the zoom-in button by ~50px.
+      style={{ position: 'absolute', bottom: 136, right: 12, zIndex: PANEL_Z_INDEX }}
       className={`w-64 max-h-72 flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
     >
       <div className={PANEL_TITLE_BAR}>

@@ -1,0 +1,16 @@
+{
+  "slug": "angouleme",
+  "name": "Möbius (Angoulême)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    45.6484,
+    0.1562
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-et-temps-reel-reseau-mobius/20251008-085244/gtfs-mobius-saison25-26-20250930-tad.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Angoulême, France"
+  ]
+}

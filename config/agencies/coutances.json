@@ -1,0 +1,16 @@
+{
+  "slug": "coutances",
+  "name": "Cosibus (Coutances)",
+  "region": "Normandie",
+  "center": [
+    49.0454,
+    -1.4452
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/cosibus-coutances-mer-et-bocage/20260520-065200/cosibus.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Coutances, France"
+  ]
+}

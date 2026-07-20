@@ -1,0 +1,17 @@
+{
+  "slug": "limoges",
+  "name": "STCL (Limoges)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    45.8336,
+    1.2611
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_limoges_metropole-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Limoges, France"
+  ],
+  "websiteUrl": "https://www.stcl.fr/"
+}

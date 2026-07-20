@@ -1,0 +1,17 @@
+{
+  "slug": "annemasse",
+  "name": "TAC (Annemasse)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    46.1934,
+    6.2342
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tp2a/exports/medias.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.tac-mobilites.fr/",
+  "cities": [
+    "Annemasse, France"
+  ]
+}

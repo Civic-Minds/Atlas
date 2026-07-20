@@ -1,0 +1,17 @@
+{
+  "slug": "blois",
+  "name": "Azalys (Blois)",
+  "region": "Centre-Val de Loire",
+  "center": [
+    47.5861,
+    1.3359
+  ],
+  "feedUrl": "https://fr.ftp.opendatasoft.com/centrevaldeloire/OKINAGTFS/GTFS_AO/BLOIS.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Blois, France"
+  ],
+  "websiteUrl": "https://www.azalys-blois.fr/"
+}

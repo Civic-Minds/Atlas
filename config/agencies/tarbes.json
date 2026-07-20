@@ -1,0 +1,16 @@
+{
+  "slug": "tarbes",
+  "name": "TLP Mobilités (Tarbes)",
+  "region": "Occitanie",
+  "center": [
+    43.2329,
+    0.0781
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-du-reseau-tarbes-lourdes-tlp-mobilites-gtfs/20260709-103323/ktlp-gtfs-gvs-030826-090826.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Tarbes, France"
+  ]
+}

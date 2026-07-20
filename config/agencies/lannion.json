@@ -1,0 +1,16 @@
+{
+  "slug": "lannion",
+  "name": "TILT (Lannion)",
+  "region": "Bretagne",
+  "center": [
+    48.7333,
+    -3.4542
+  ],
+  "feedUrl": "https://www.korrigo.bzh/ftp/OPENDATA/TILT.gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Lannion, France"
+  ]
+}

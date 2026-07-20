@@ -1,0 +1,17 @@
+{
+  "slug": "cannes",
+  "name": "Palm Bus (Cannes)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.5528,
+    7.0174
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-et-temps-reel-gtfs-gtfs-rt-du-reseau-palmbus-cannes-pays-de-lerins/20260710-114430/palmbus-cannes-fr.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.palmbus.fr/",
+  "cities": [
+    "Cannes, France"
+  ]
+}

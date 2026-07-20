@@ -1,0 +1,17 @@
+{
+  "slug": "saint-etienne",
+  "name": "STAS (Saint-Étienne)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.4397,
+    4.3872
+  ],
+  "feedUrl": "https://api.saint-etienne-metropole.fr/stas/api/horraires_tc/GTFS.aspx",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.reseau-stas.fr/",
+  "cities": [
+    "Saint-Étienne, France"
+  ]
+}

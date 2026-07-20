@@ -1,0 +1,16 @@
+{
+  "slug": "castres",
+  "name": "Libellus (Castres)",
+  "region": "Occitanie",
+  "center": [
+    43.6053,
+    2.2409
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transport-du-reseau-libellus-gtfs/20260108-095309/08012026.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Castres, France"
+  ]
+}

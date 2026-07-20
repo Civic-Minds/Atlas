@@ -1,0 +1,17 @@
+{
+  "slug": "nevers",
+  "name": "Taneo (Nevers)",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [
+    46.9909,
+    3.1628
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/versions-des-horaires-theoriques-des-lignes-du-reseau-de-bus-au-format-gtfs/20260717-055745/gtfs-2026-ete.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Nevers, France"
+  ],
+  "websiteUrl": "https://www.taneo-nevers.fr/"
+}

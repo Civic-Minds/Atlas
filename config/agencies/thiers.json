@@ -1,0 +1,16 @@
+{
+  "slug": "thiers",
+  "name": "Thiers",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.8567,
+    3.5475
+  ],
+  "feedUrl": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=THIERS&dataFormat=GTFS&dataProfil=OPENDATA",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Thiers, France"
+  ]
+}

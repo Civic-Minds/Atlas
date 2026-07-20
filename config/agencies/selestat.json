@@ -1,0 +1,16 @@
+{
+  "slug": "selestat",
+  "name": "ELSA (Sélestat)",
+  "region": "Grand Est",
+  "center": [
+    48.2594,
+    7.4542
+  ],
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CCSelestat",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Sélestat, France"
+  ]
+}

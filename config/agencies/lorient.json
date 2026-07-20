@@ -1,0 +1,17 @@
+{
+  "slug": "lorient",
+  "name": "Izilo (Lorient)",
+  "region": "Bretagne",
+  "center": [
+    47.7483,
+    -3.37
+  ],
+  "feedUrl": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/rdla-lorient/exports/medias.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.izilo.bzh/",
+  "cities": [
+    "Lorient, France"
+  ]
+}

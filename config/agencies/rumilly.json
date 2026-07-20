@@ -1,0 +1,16 @@
+{
+  "slug": "rumilly",
+  "name": "Rumilly",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.8667,
+    5.9442
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/offre-de-transports-jybus-a-rumilly/20260615-154800/gtfs-jybus.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Rumilly, France"
+  ]
+}

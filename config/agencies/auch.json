@@ -1,0 +1,16 @@
+{
+  "slug": "auch",
+  "name": "Alliance (Auch)",
+  "region": "Occitanie",
+  "center": [
+    43.6464,
+    0.5856
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=auch-alliance",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Auch, France"
+  ]
+}

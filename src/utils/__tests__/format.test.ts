@@ -55,11 +55,19 @@ describe('shortenAgencyName', () => {
   //   SCT     — Sonoma County (CA) / Suffolk County (NY)
   //   SAM     — Sandy Area Metro (OR) / Sioux Area Metro (SD)
   //   RTC     — RTC de Québec / Regional Transportation Commission of Southern Nevada
+  //   Citibus — Lubbock, TX / Narbonne, France (Transports en Grand Narbonne, branded
+  //             "Citibus" since 2010 — coincidental match with the unrelated US agency)
+  //   TAC     — Annemasse, France (Transports Annemasse Collectivités) /
+  //             Charleville-Mézières, France (Transports de l'Agglomération de
+  //             Charleville-Mézières-Sedan) — same initials, unrelated networks
+  //   TUB     — Saint-Brieuc, France (Transports Urbains Briochins) /
+  //             Bergerac, France (Transports Urbains Bergeracois)
   // Multi-region single agencies (exo, BC Transit both legitimately operate
   // many service areas under one brand) are also expected, not collisions.
   const KNOWN_SHARED_ACRONYMS = new Set([
     'CAT', 'GET', 'The Bus', 'DART', 'CARTA',
     'SMART', 'TCAT', 'CATA', 'SCT', 'SAM', 'RTC', 'exo', 'BC Transit',
+    'Citibus', 'TAC', 'TUB',
   ]);
 
   // General regression guard: no two distinct real agencies in the live

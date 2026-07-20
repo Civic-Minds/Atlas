@@ -1,0 +1,16 @@
+{
+  "slug": "colmar",
+  "name": "Trace (Colmar)",
+  "region": "Grand Est",
+  "center": [
+    48.0794,
+    7.3586
+  ],
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CAC",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Colmar, France"
+  ]
+}

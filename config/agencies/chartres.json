@@ -1,0 +1,17 @@
+{
+  "slug": "chartres",
+  "name": "Filibus (Chartres)",
+  "region": "Centre-Val de Loire",
+  "center": [
+    48.4439,
+    1.489
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/filibus-urbain/20260716-101744/gtfs-filibus-20260720-20270702.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.filibus.fr/",
+  "cities": [
+    "Chartres, France"
+  ]
+}

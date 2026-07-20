@@ -1,0 +1,17 @@
+{
+  "slug": "marseille",
+  "name": "RTM (Marseille)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.2965,
+    5.3698
+  ],
+  "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp-rtm?apiKey=16421b08630a7d065c6d250051780f484b673659",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.rtm.fr/",
+  "cities": [
+    "Marseille, France"
+  ]
+}

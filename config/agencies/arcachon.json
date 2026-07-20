@@ -1,0 +1,17 @@
+{
+  "slug": "arcachon",
+  "name": "Baïa (Bassin d'Arcachon)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    44.6586,
+    -1.1689
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/cobas-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Arcachon, France",
+    "La Teste-de-Buch, France"
+  ]
+}

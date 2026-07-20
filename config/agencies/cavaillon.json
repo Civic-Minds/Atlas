@@ -1,0 +1,16 @@
+{
+  "slug": "cavaillon",
+  "name": "Cmonbus (Cavaillon)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.8372,
+    5.0381
+  ],
+  "feedUrl": "https://app.pysae.com/api/v2/groups/cavaillon/gtfs/pub",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Cavaillon, France"
+  ]
+}

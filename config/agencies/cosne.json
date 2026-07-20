@@ -1,0 +1,16 @@
+{
+  "slug": "cosne",
+  "name": "Cosne-Cours-sur-Loire",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [
+    47.41,
+    2.925
+  ],
+  "feedUrl": "https://api.pysae.com/api/v4/groups/coeur-de-loire/gtfs/pub",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Cosne-Cours-sur-Loire, France"
+  ]
+}

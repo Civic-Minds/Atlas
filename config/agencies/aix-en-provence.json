@@ -1,0 +1,17 @@
+{
+  "slug": "aix-en-provence",
+  "name": "Aixenbus",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.5297,
+    5.4474
+  ],
+  "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp-aix?apiKey=020c7c326b6c5e750b168064336e344c61213521",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Aix-en-Provence, France"
+  ],
+  "websiteUrl": "https://www.aixenbus.fr/"
+}

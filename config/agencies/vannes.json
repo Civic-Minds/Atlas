@@ -1,0 +1,17 @@
+{
+  "slug": "vannes",
+  "name": "Kicéo (Vannes)",
+  "region": "Bretagne",
+  "center": [
+    47.6582,
+    -2.7608
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-urbain-kiceo/20260626-142417/gtfs-20260626-161300-kiceo.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.kiceo.fr/",
+  "cities": [
+    "Vannes, France"
+  ]
+}

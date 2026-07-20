@@ -1,0 +1,16 @@
+{
+  "slug": "montauban",
+  "name": "TM (Montauban)",
+  "region": "Occitanie",
+  "center": [
+    44.0176,
+    1.355
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/gtfs-de-la-societe-de-transport-urbain-du-grand-montauban-semtm/20251215-085859/gtfs-dec25-v3.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Montauban, France"
+  ]
+}

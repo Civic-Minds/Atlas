@@ -2,6 +2,16 @@ import { cleanHeadsign, formatRemDisplay, getRouteLabel } from '../../shared/cle
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 
+/**
+ * Single source of truth for "an active search should hide this sidebar overlay panel".
+ * Every panel that floats over the same sidebar slot (route card, stop card, agency card,
+ * live overview) must gate on this exact check — a one-off reimplementation is how these
+ * panels have repeatedly ended up stacked/overlapping instead of yielding to search.
+ */
+export function searchOverlayHidesPanel(searchFocused: boolean, query: string): boolean {
+  return searchFocused || query.trim() !== '';
+}
+
 const TRANSIT_ACRONYMS: Record<string, string> = {
   Go: 'GO',
   Dc: 'DC',
@@ -15,12 +25,13 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Nfta: 'NFTA',
   Ltc: 'LTC',
   Ktc: 'KTC',
-  // GO Transit line codes (2-char codes handled by the ≤3-char uppercase rule when standalone)
-  Lw: 'LW',
-  Le: 'LE',
-  Ki: 'KI',
-  Mi: 'MI',
-  Br: 'BR',
+  // GO Transit's 2-char line codes (LW, LE, KI, MI, BR) are deliberately NOT listed
+  // here: as a standalone routeShortName ("LW — Lakeshore West") they're already
+  // uppercased by the ≤3-char whole-string rule above, and no real GO long name
+  // needs the mid-string substitution below. Adding them here previously matched
+  // "Le"/"Ki" as ordinary words inside French headsigns ("Le Haillan Rostand" →
+  // "LE Haillan Rostand") — the same class of false positive "St" was already
+  // excluded for, just not caught until France expansion made it common.
   // St intentionally excluded — "St" in stop names means Street/Saint, not the GO Stouffville line
   Rh: 'RH',
   // Bay Area / Staged expansion acronyms

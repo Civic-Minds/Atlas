@@ -1,0 +1,16 @@
+{
+  "slug": "dreux",
+  "name": "Dreux",
+  "region": "Centre-Val de Loire",
+  "center": [
+    48.7361,
+    1.3658
+  ],
+  "feedUrl": "https://fr.ftp.opendatasoft.com/centrevaldeloire/OKINAGTFS/GTFS_AO/DREUX.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Dreux, France"
+  ]
+}

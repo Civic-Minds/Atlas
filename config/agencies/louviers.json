@@ -1,0 +1,16 @@
+{
+  "slug": "louviers",
+  "name": "SEMO (Louviers)",
+  "region": "Normandie",
+  "center": [
+    49.2156,
+    1.1694
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/semo-val-de-reuil-louviers-seine-eure-agglo/20251218-104416/pt-th-offer-semo-gtfs-20251216-761-opendata.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Louviers, France"
+  ]
+}

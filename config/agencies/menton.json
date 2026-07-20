@@ -1,0 +1,16 @@
+{
+  "slug": "menton",
+  "name": "Zest (Menton)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.7745,
+    7.4975
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-reseau-zest/20260710-140010/gtfs-10072026-0806.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Menton, France"
+  ]
+}

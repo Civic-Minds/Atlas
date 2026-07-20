@@ -1,0 +1,16 @@
+{
+  "slug": "saint-brieuc",
+  "name": "TUB (Saint-Brieuc)",
+  "region": "Bretagne",
+  "center": [
+    48.514,
+    -2.765
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/gtfs-du-reseau-de-transports-publics-de-saint-brieuc-armor-agglomeration/20260522-153134/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Saint-Brieuc, France"
+  ]
+}

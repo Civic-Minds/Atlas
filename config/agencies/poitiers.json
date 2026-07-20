@@ -1,0 +1,17 @@
+{
+  "slug": "poitiers",
+  "name": "Vitalis (Poitiers)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    46.5802,
+    0.3404
+  ],
+  "feedUrl": "https://data.grandpoitiers.fr/data-fair/api/v1/datasets/offre-de-transport-du-reseau-vitalis/metadata-attachments/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.vitalis-poitiers.fr/",
+  "cities": [
+    "Poitiers, France"
+  ]
+}

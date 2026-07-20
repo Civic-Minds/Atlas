@@ -1,0 +1,17 @@
+{
+  "slug": "clermont",
+  "name": "T2C (Clermont-Ferrand)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.7772,
+    3.087
+  ],
+  "feedUrl": "https://opendata.clermontmetropole.eu/api/v2/catalog/datasets/gtfs-smtc/alternative_exports/gtfs",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.t2c.fr/",
+  "cities": [
+    "Clermont-Ferrand, France"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "romans",
+  "name": "Citéa Romans",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.046,
+    5.051
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/ce-jeu-de-donnees-contient-la-liste-des-arrets-des-horaires-et-des-parcours-theoriques-du-reseau-de-transport-urbain-et-interurbain-de-vrm/20260518-071358/gtfs-citea-20260517-20260628.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Romans-sur-Isère, France"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "slug": "bordeaux",
+  "name": "TBM (Bordeaux)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [44.8378, -0.5792],
+  "feedUrl": "https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.infotbm.com/",
+  "cities": ["Bordeaux, France"]
+}

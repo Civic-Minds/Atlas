@@ -1,0 +1,16 @@
+{
+  "slug": "libourne",
+  "name": "Calibus (Libourne)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    44.9145,
+    -0.2439
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_du_libournais-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Libourne, France"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "orleans",
+  "name": "TAO (Orléans)",
+  "region": "Centre-Val de Loire",
+  "center": [
+    47.9029,
+    1.9093
+  ],
+  "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/keolis_orleans/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.reseau-tao.fr/",
+  "cities": [
+    "Orléans, France"
+  ]
+}

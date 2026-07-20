@@ -100,6 +100,18 @@ export function cleanHeadsign(
     }
   }
 
+  // Known same-destination headsign variants where the source feed itself is inconsistent,
+  // found via route-report --live triage before a France candidate's real launch:
+  //   Lyon (TCL) ZI8: "Parc des Lumieres" (no accent) carries no real stop_times (0 stops,
+  //     null headway) -- an orphaned duplicate of the real "Parc des Lumières 1" pattern.
+  //   Nice (Lignes d'Azur) 69: "Leï Feirriero" / "Lei Feirrièro" -- same Niçard terminus,
+  //     inconsistent accent placement between trips.
+  const knownHeadsignAliases: Record<string, string> = {
+    'Parc des Lumieres': 'Parc des Lumières 1',
+    'Leï Feirriero': 'Lei Feirrièro',
+  };
+  if (h in knownHeadsignAliases) h = knownHeadsignAliases[h];
+
   return h.trim();
 }
 
@@ -124,6 +136,19 @@ export function formatRemDisplay(shortName: string | null | undefined, longName:
 }
 
 export function getRouteLabel(shortName: string | null | undefined, longName: string | null | undefined, agencyName?: string | null): string {
+  // Some French feeds (e.g. Divia/Dijon) encode bidirectional termini in route_long_name
+  // as literal "<>" ("Longvic <> Toison D'or") — render as a proper arrow, not raw brackets.
+  if (longName) longName = longName.replace(/\s*<>\s*/g, ' ↔ ');
+
+  // A route with 3+ termini (2+ arrows) reliably overflows the card title's 2-line clamp
+  // and gets cut off mid-word (STAR Rennes 12: "...↔ Saint-Grégoire ↔ Rennes (La..."). Keep
+  // just the first and last terminus — the through-route endpoints — and drop the middle
+  // via-point(s) from the title; the full stop-by-stop path is still on the map itself.
+  if (longName && longName.split(' ↔ ').length > 2) {
+    const parts = longName.split(' ↔ ');
+    longName = `${parts[0]} ↔ ${parts[parts.length - 1]}`;
+  }
+
   // SMART Train (Sonoma-Marin): long name is just "Main Line", combine with agency name
   if (agencyName && /smart/i.test(agencyName) && longName && /Main Line/i.test(longName)) {
     return 'SMART Train';

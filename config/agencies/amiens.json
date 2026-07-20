@@ -1,0 +1,17 @@
+{
+  "slug": "amiens",
+  "name": "Ametis (Amiens)",
+  "region": "Hauts-de-France",
+  "center": [
+    49.8941,
+    2.2958
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/ametis/20260703-135019/gtfs-ametis-du-04-07-2026-au-30-08-2026.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.ametois.fr/",
+  "cities": [
+    "Amiens, France"
+  ]
+}

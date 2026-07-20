@@ -1,0 +1,16 @@
+{
+  "slug": "figeac",
+  "name": "Figeac",
+  "region": "Occitanie",
+  "center": [
+    44.6086,
+    2.0317
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=figeac",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Figeac, France"
+  ]
+}

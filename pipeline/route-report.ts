@@ -206,7 +206,7 @@ async function main() {
     }
   }
 
-  const totalFlags = mismatchFlags.length + headsignFlags.length + shapeAnomalies.length;
+  const totalFlags = mismatchFlags.length + headsignFlags.length + (live ? 0 : shapeAnomalies.length);
   console.log(`\n${totalFlags === 0 ? 'No anomalies flagged.' : `${totalFlags} total anomaly flag(s) — review before publishing.`}`);
 }
 

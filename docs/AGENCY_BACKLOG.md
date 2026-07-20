@@ -210,6 +210,23 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ---
 
+## France expansion — 2026-07-19 speedrun (dry-run candidates, still hidden)
+
+~142 French cities dry-run validated and added as `hiddenInProduction` / `pmtilesPending` across two batches — major metros (Lyon, Marseille, Toulouse, Nice, Cannes, Limoges, …) plus mid-size networks in every métropole région. Wrong-geo matches and stops-only feeds rejected (not added). No live R2 publish — country launch still required.
+
+## France expansion — blocked (no shapes)
+
+Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md) § Missing Agencies and [`INTERNATIONAL.md`](./INTERNATIONAL.md) § France.
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| blocked | `montpellier` | TaM (Montpellier) | Occitanie | Full + urbain GTFS have no shapes; suburbain-only has shapes but misses tram/urban |
+| blocked | `lille` | ilévia (Lille) | Hauts-de-France | Export never includes `shapes.txt` |
+| blocked | `strasbourg` | CTS (Strasbourg) | Grand Est | Export never includes `shapes.txt` |
+| blocked | `thionville` | TeMo'b (Thionville) | Grand Est | Dry-run produced stops only (no route LineStrings) |
+
+---
+
 ## Tier 4 — Secondary metros (HANDOFF / discover-gaps)
 
 Run `npm run discover-gaps -- --min-pop 100000` for fresh ranked list. Notables from prior sessions:

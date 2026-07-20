@@ -1,0 +1,16 @@
+{
+  "slug": "bourgoin",
+  "name": "Ruban (Bourgoin-Jallieu)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    45.5861,
+    5.273
+  ],
+  "feedUrl": "https://api.pysae.com/api/v4/groups/keolis-9cc4/gtfs/6a5504d0f9fc74c03997b2dd",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Bourgoin-Jallieu, France"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "cholet",
+  "name": "Choletbus",
+  "region": "Pays de la Loire",
+  "center": [
+    47.0594,
+    -0.8797
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-reseau-choletbus/20260717-113054/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.choletbus.fr/",
+  "cities": [
+    "Cholet, France"
+  ]
+}

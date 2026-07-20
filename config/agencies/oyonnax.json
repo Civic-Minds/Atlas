@@ -1,0 +1,16 @@
+{
+  "slug": "oyonnax",
+  "name": "Duobus (Oyonnax)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    46.2592,
+    5.6556
+  ],
+  "feedUrl": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=OYONNAX&dataFormat=GTFS&dataProfil=OPENDATA",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Oyonnax, France"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "moulins",
+  "name": "Aléo (Moulins)",
+  "region": "Auvergne-Rhône-Alpes",
+  "center": [
+    46.5646,
+    3.3324
+  ],
+  "feedUrl": "https://api.pysae.com/api/v4/groups/moulins/gtfs/pub",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Moulins, France"
+  ],
+  "websiteUrl": "https://www.aleo-moulins.fr/"
+}

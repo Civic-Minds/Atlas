@@ -1,0 +1,16 @@
+{
+  "slug": "oloron",
+  "name": "Oloron-Sainte-Marie",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    43.1942,
+    -0.61
+  ],
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=oloron",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Oloron-Sainte-Marie, France"
+  ]
+}

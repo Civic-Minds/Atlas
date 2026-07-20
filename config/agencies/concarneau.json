@@ -1,0 +1,16 @@
+{
+  "slug": "concarneau",
+  "name": "Coralie (Concarneau)",
+  "region": "Bretagne",
+  "center": [
+    47.875,
+    -3.9189
+  ],
+  "feedUrl": "https://www.korrigo.bzh/ftp/OPENDATA/CORALIE.gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Concarneau, France"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "dole",
+  "name": "Dole",
+  "region": "Bourgogne-Franche-Comté",
+  "center": [
+    47.0922,
+    5.4897
+  ],
+  "feedUrl": "https://static.data.gouv.fr/resources/reseau-de-transport-du-grand-dole/20260219-150623/gtfs-dole.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Dole, France"
+  ]
+}

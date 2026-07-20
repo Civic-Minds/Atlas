@@ -1,0 +1,16 @@
+{
+  "slug": "brive",
+  "name": "Libéo (Brive)",
+  "region": "Nouvelle-Aquitaine",
+  "center": [
+    45.1596,
+    1.5337
+  ],
+  "feedUrl": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_bassin_de_brive-aggregated-gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Brive-la-Gaillarde, France"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "bourges",
+  "name": "AggloBus (Bourges)",
+  "region": "Centre-Val de Loire",
+  "center": [
+    47.081,
+    2.3988
+  ],
+  "feedUrl": "https://fr.ftp.opendatasoft.com/centrevaldeloire/OKINAGTFS/GTFS_AO/BOURGES-GTFS.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.agglobus.com/",
+  "cities": [
+    "Bourges, France"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "morlaix",
+  "name": "Linéotim (Morlaix)",
+  "region": "Bretagne",
+  "center": [
+    48.5778,
+    -3.8279
+  ],
+  "feedUrl": "https://www.korrigo.bzh/ftp/OPENDATA/LINEOTIM_Complet.gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "cities": [
+    "Morlaix, France"
+  ]
+}
