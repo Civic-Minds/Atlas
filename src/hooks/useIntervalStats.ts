@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useDeferredValue } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
 import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSearchResult } from '../utils/searchResults';
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
@@ -165,68 +165,77 @@ export function passesRouteFilter(
 // bbox per feature: [minLon, minLat, maxLon, maxLat]; cached per feature object
 const bboxCache = new WeakMap<GeoJSON.Feature, [number, number, number, number]>();
 
-function featureBbox(f: GeoJSON.Feature): [number, number, number, number] {
+/** Bounding box for viewport culling. Handles Point / LineString / MultiLineString. */
+export function featureBbox(f: GeoJSON.Feature): [number, number, number, number] {
   const cached = bboxCache.get(f);
   if (cached) return cached;
   let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
-  const coords =
-    f.geometry.type === 'LineString' ? (f.geometry.coordinates as number[][])
-    : f.geometry.type === 'Point' ? [f.geometry.coordinates as number[]]
-    : [];
-  for (const [lon, lat] of coords) {
+  const g = f.geometry;
+  if (!g) {
+    const empty: [number, number, number, number] = [0, 0, 0, 0];
+    bboxCache.set(f, empty);
+    return empty;
+  }
+  const absorb = (lon: number, lat: number) => {
     if (lon < minLon) minLon = lon;
     if (lat < minLat) minLat = lat;
     if (lon > maxLon) maxLon = lon;
     if (lat > maxLat) maxLat = lat;
+  };
+  if (g.type === 'Point') {
+    absorb(g.coordinates[0], g.coordinates[1]);
+  } else if (g.type === 'LineString') {
+    for (const [lon, lat] of g.coordinates) absorb(lon, lat);
+  } else if (g.type === 'MultiLineString') {
+    for (const line of g.coordinates) {
+      for (const [lon, lat] of line) absorb(lon, lat);
+    }
   }
   const bbox: [number, number, number, number] = [minLon, minLat, maxLon, maxLat];
   bboxCache.set(f, bbox);
   return bbox;
 }
 
-function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
+/** Fast viewport test: bbox intersection only (O(1) after first bbox compute). */
+export function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
   const [minLon, minLat, maxLon, maxLat] = featureBbox(f);
   return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
 }
 
-/** True when the feature's actual geometry enters the viewport — bbox intersection
- *  alone over-counts badly (an L-shaped route's box can cover downtown while the
- *  line never comes near it). Vertex check; shapes are dense enough at city scale. */
-function geometryInViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
-  const g = f.geometry as any;
-  if (!g) return false;
-  if (g.type === 'Point') {
-    const [lon, lat] = g.coordinates;
-    return lon >= b.w && lon <= b.e && lat >= b.s && lat <= b.n;
-  }
-  const lines: [number, number][][] =
-    g.type === 'LineString' ? [g.coordinates]
-    : g.type === 'MultiLineString' ? g.coordinates
-    : [];
-  for (const line of lines) {
-    for (const [lon, lat] of line) {
-      if (lon >= b.w && lon <= b.e && lat >= b.s && lat <= b.n) return true;
-    }
-  }
-  return false;
+function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const latMid = (lat1 + lat2) * Math.PI / 360;
+  const dy = (lat2 - lat1) * 111320;
+  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
   const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors, showCorridorBand, hoveredBranch } = filters;
   const q = query.trim().toLowerCase();
+  // Bounds update on every map moveend — defer stats/search so pan/zoom stays smooth.
+  // Tile filters and layer filtering do not depend on bounds.
+  const deferredBounds = useDeferredValue(bounds);
 
   const allFeatures = useMemo(() => {
-    return Object.entries(layers)
-      .filter(([slug]) => !slug.endsWith('-corridors'))
-      .flatMap(([slug, fc]) => {
-        return fc.features.map(f => ({
-          ...f,
-          properties: {
-            ...f.properties,
-            agencySlug: slug
-          }
-        }));
-      });
+    // Reuse feature objects when agencySlug is already stamped (avoids re-cloning
+    // thousands of geometries on every layers identity change after the first stamp).
+    const out: GeoJSON.Feature[] = [];
+    for (const [slug, fc] of Object.entries(layers)) {
+      if (slug.endsWith('-corridors')) continue;
+      for (const f of fc.features) {
+        const p = f.properties as Record<string, unknown> | null;
+        if (p && p.agencySlug === slug) {
+          out.push(f);
+        } else {
+          out.push({
+            type: 'Feature',
+            geometry: f.geometry,
+            properties: { ...p, agencySlug: slug },
+          });
+        }
+      }
+    }
+    return out;
   }, [layers]);
 
   // Find routes for selected stop if any. selectedStop is now "agencySlug::stopId"
@@ -301,9 +310,11 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
     // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in.
+    // Use bbox-only intersection (cached) — full vertex scans on every pan were a main-thread
+    // hitch. Badge may slightly over-count L-shaped routes whose box overlaps the view.
     // Restrict to the active service day — the map only draws the selected day's features,
     // so counting other days' variants inflates the badge (e.g. weekday-only routes on a Sunday).
-    const onScreen = (f: GeoJSON.Feature) => !bounds || (inViewport(f, bounds) && geometryInViewport(f, bounds));
+    const onScreen = (f: GeoJSON.Feature) => !deferredBounds || inViewport(f, deferredBounds);
     const activeDay = (f: GeoJSON.Feature) => {
       const d = (f.properties as any).day;
       return d === undefined || d === day;
@@ -315,7 +326,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       total: new Set(routesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
       matching: new Set(visibleRoutesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
     };
-  }, [allFeatures, visibleFeatures, bounds, day]);
+  }, [allFeatures, visibleFeatures, deferredBounds, day]);
 
   const routeNamesMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -333,13 +344,13 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const searchMatchResults = useMemo(() => {
     if (q === '') return null;
-    return searchRouteResults(allFeatures, q, bounds ?? null);
-  }, [allFeatures, q, bounds]);
+    return searchRouteResults(allFeatures, q, deferredBounds ?? null);
+  }, [allFeatures, q, deferredBounds]);
 
   const searchStopMatchResults = useMemo(() => {
     if (q === '') return null;
-    return searchStopResults(allFeatures, q, bounds ?? null, routeNamesMap);
-  }, [allFeatures, q, bounds, routeNamesMap]);
+    return searchStopResults(allFeatures, q, deferredBounds ?? null, routeNamesMap);
+  }, [allFeatures, q, deferredBounds, routeNamesMap]);
 
   const searchMatches = (searchMatchResults?.length ?? 0) + (searchStopMatchResults?.length ?? 0) || null;
 
