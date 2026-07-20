@@ -100,6 +100,18 @@ export function cleanHeadsign(
     }
   }
 
+  // Known same-destination headsign variants where the source feed itself is inconsistent,
+  // found via route-report --live triage before a France candidate's real launch:
+  //   Lyon (TCL) ZI8: "Parc des Lumieres" (no accent) carries no real stop_times (0 stops,
+  //     null headway) -- an orphaned duplicate of the real "Parc des Lumières 1" pattern.
+  //   Nice (Lignes d'Azur) 69: "Leï Feirriero" / "Lei Feirrièro" -- same Niçard terminus,
+  //     inconsistent accent placement between trips.
+  const knownHeadsignAliases: Record<string, string> = {
+    'Parc des Lumieres': 'Parc des Lumières 1',
+    'Leï Feirriero': 'Lei Feirrièro',
+  };
+  if (h in knownHeadsignAliases) h = knownHeadsignAliases[h];
+
   return h.trim();
 }
 
