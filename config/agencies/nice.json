@@ -1,17 +1,30 @@
 {
   "slug": "nice",
-  "name": "Lignes d'Azur (Nice)",
-  "region": "Provence-Alpes-Côte d'Azur",
+  "name": "Nassau Inter-County Express (NICE Bus)",
+  "region": "New York",
   "center": [
-    43.7102,
-    7.262
+    40.73,
+    -73.6
   ],
-  "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/OpendataRLA/gtfs.zip",
-  "mdbFeedUrl": null,
-  "hiddenInProduction": true,
-  "pmtilesPending": true,
-  "websiteUrl": "https://www.lignesdazur.com/",
+  "bbox": [
+    40.586,
+    -73.8302,
+    40.8642,
+    -73.4087
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-521/mdb-521-202606070009/mdb-521-202606070009.zip",
+  "lastFeedExpiry": "20260912",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-07-06",
   "cities": [
-    "Nice, France"
+    "Hempstead, New York",
+    "Levittown, New York",
+    "Queens Village, New York",
+    "Bayside, New York",
+    "South Ozone Park, New York",
+    "New Rochelle, New York",
+    "Jamaica, New York",
+    "Briarwood, New York",
+    "Corona, New York"
   ]
 }

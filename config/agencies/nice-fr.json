@@ -1,0 +1,17 @@
+{
+  "slug": "nice-fr",
+  "name": "Lignes d'Azur (Nice)",
+  "region": "Provence-Alpes-Côte d'Azur",
+  "center": [
+    43.7102,
+    7.262
+  ],
+  "feedUrl": "https://chouette.enroute.mobi/api/v1/datas/OpendataRLA/gtfs.zip",
+  "mdbFeedUrl": null,
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
+  "websiteUrl": "https://www.lignesdazur.com/",
+  "cities": [
+    "Nice, France"
+  ]
+}
