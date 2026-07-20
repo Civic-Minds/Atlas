@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Reprocessed Nice under its corrected `nice-fr` slug in the atlas-staging dress-rehearsal bucket**: the earlier staging upload was still keyed as `nice`, colliding with the unrelated live NICE Bus (Nassau, NY) slug fixed earlier. Reprocessed for real into atlas-staging (isolated from production) under `nice-fr` and removed the stale `nice-*` staging keys. Also confirms the "Lei Feirrièro"/"Leï Feirriero" headsign fix resolves cleanly end-to-end — `route-report` now shows 0 near-duplicate headsigns for this agency.
+
 - **Selected-route mode keeps the rest of the network readable**: other lines were dimmed to ~15% opacity (looked hidden but stayed clickable). Now ~32% / slightly thicker so context stays visible and click-to-switch is obvious — still focused, not fully hidden.
 - **Selecting a route no longer zooms so the line hides under the route card**: fit-bounds used even padding; the card sits on the left so the west end of long routes was covered. Pads the left more, matching live-vehicles selection.
 - **Staging R2 support**: `ATLAS_ENV=staging` + `.env.staging` target a shared `atlas-staging` bucket for full process/PMTiles dress rehearsals without touching production. Country-launch gate only blocks the live `atlas` bucket.

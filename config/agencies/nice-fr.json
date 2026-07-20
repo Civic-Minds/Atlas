@@ -13,5 +13,9 @@
   "websiteUrl": "https://www.lignesdazur.com/",
   "cities": [
     "Nice, France"
-  ]
+  ],
+  "timezone": "Europe/Paris",
+  "lastFeedExpiry": "20260827",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-07-20"
 }
