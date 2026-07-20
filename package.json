@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1089.0",
-    "@aws-sdk/lib-storage": "^3.1089.0",
+    "@aws-sdk/lib-storage": "^3.1090.0",
     "@deck.gl/mapbox": "^9.3.6",
     "@mapbox/vector-tile": "^3.0.0",
     "deck.gl": "^9.3.6",
