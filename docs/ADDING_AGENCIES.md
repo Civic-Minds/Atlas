@@ -31,6 +31,7 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    # npm run process -- <feed> <slug> "[Name]" "[lat,lon]" --i-am-launching-country
    ```
 4. Add or edit `config/agencies/<slug>.json` with `region`, `feedUrl`, `mdbFeedUrl`, and `bbox`.
+   - **Check the slug isn't already taken by a different agency before writing the file** — `cat config/agencies/<slug>.json` first if it already exists, and compare the `name`/`region` against what you're about to add. A common city name (e.g. "Nice") can coincidentally collide with an existing agency's slug (e.g. NICE Bus, Nassau NY); `scripts/build-agency-index.ts` only rejects two *different files* sharing a slug, so it cannot catch one file's content being silently overwritten in place. On a real collision, disambiguate with a suffix (`nice-fr`, matching the existing `springfield-mo` pattern) rather than reusing the slug.
    - **bbox vs. center**: if an agency's service area is larger than ±0.4/0.5° from its center (e.g. statewide or regional services like Bustang), add an explicit `bbox: [s, w, n, e]`. Without it, the GeoJSON won't load into the sidebar for viewports outside the ±0.5° window — route cards won't appear even though PMTiles renders the routes.
    - If the official URL is dead or unreliable, use the Mobility Database stable mirror: find the feed at github.com/MobilityData/mobility-database-catalogs, then `https://storage.googleapis.com/storage/v1/b/mdb-latest/o/{feed-id}.zip?alt=media` (GRT and Niagara already use this).
 5. Generate the runtime index:
