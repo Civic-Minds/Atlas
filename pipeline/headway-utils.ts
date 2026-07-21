@@ -35,8 +35,8 @@ export function medianHeadwayInWindow(
 // (medianHeadwayInWindow above requires minDeps=3). On sparse branches this produces a noisy
 // median off a handful of gaps that can end up far from reality (issue #263 — confirmed case:
 // Rennes route 55 Sunday, 4 total trips, branch median 121min vs. a uniform 60min at every
-// stop including the terminal). 8 is empirically grounded: the confirmed #263 case sat at 4
-// trips; the shared-terminal case this ratchet exists to protect (TTC 35) sits at 38-72.
+// stop including the terminal). 8 is empirically grounded off that case (4 trips) versus
+// well-sampled real branches checked during the fix (dozens of trips/day).
 export const MIN_RELIABLE_BRANCH_TRIPS = 8;
 
 /**
@@ -47,6 +47,8 @@ export const MIN_RELIABLE_BRANCH_TRIPS = 8;
  * actually reach the terminus), but a shared terminal's combined frequency can look falsely
  * better than a branch's real frequency, so degrading to branchHw is normally protected —
  * unless branchHw itself is too thinly sampled to trust (see MIN_RELIABLE_BRANCH_TRIPS above).
+ * Only call this once hasGenuineBranchPattern (below) has confirmed there's an actual branch
+ * to protect in the first place.
  */
 export function resolveTerminalHeadway(
   terminalComputedHw: number,
@@ -62,6 +64,38 @@ export function resolveTerminalHeadway(
     return branchHw;
   }
   return terminalComputedHw;
+}
+
+// route-report's own threshold for flagging a headway mismatch worth a second look — reused
+// here so "is this a real branch" uses the same bar as "is this worth flagging" elsewhere.
+export const BRANCH_MISMATCH_RATIO = 1.8;
+
+/**
+ * Does this route feature actually have a branch for resolveTerminalHeadway to protect?
+ *
+ * The branch-protection ratchet exists for one specific scenario: a route's terminal stop is
+ * shared with other routes, so the *combined* frequency measured there looks better than this
+ * branch's real frequency — protecting branchHw stops that combined number from leaking in.
+ * That scenario requires the terminal to be a genuine outlier (notably *better* than the rest
+ * of the route). When it isn't — the terminal's own frequency is in line with (or worse than)
+ * the rest of the shape — there's no branch/trunk split happening at the terminus, so branchHw
+ * has nothing legitimate to protect against and comparing an all-day branch median against a
+ * midday-windowed terminal value is just picking between two statistics of one uniform service
+ * (issue #263 follow-up: confirmed on several France routes with a flat stopHeadways profile,
+ * e.g. Rennes 55, where every stop — including the terminal — already agreed).
+ */
+export function hasGenuineBranchPattern(
+  terminalComputedHw: number,
+  nonTerminalStopHeadways: number[],
+  ratioThreshold: number = BRANCH_MISMATCH_RATIO,
+): boolean {
+  if (nonTerminalStopHeadways.length === 0 || terminalComputedHw <= 0) return true;
+  const sorted = [...nonTerminalStopHeadways].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const median = sorted.length % 2 === 0
+    ? (sorted[mid - 1] + sorted[mid]) / 2
+    : sorted[mid];
+  return median / terminalComputedHw >= ratioThreshold;
 }
 
 export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {

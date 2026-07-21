@@ -22,7 +22,7 @@ export function resolvePipelineEnvFile(): string {
 /** Load env file into process.env. Returns the path used. */
 export function loadPipelineEnv(): string {
   const file = resolvePipelineEnvFile();
-  config({ path: resolve(file) });
+  config({ path: resolve(file), quiet: true });
   return file;
 }
 

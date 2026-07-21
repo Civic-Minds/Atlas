@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { medianHeadwayInWindow, resolveTerminalHeadway } from '../headway-utils';
+import { hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -12,9 +12,9 @@ describe('medianHeadwayInWindow', () => {
 });
 
 describe('resolveTerminalHeadway', () => {
-  // TTC 35 (shared terminal, well-sampled): terminal-computed value is the combined frequency
-  // of multiple routes converging on the same stop, which looks better than this branch's real
-  // frequency. With a well-sampled branchHw, the ratchet must protect it.
+  // Shared terminal (illustrative — well-sampled branch, terminal-computed value is the combined
+  // frequency of multiple routes converging on the same stop, which looks better than this
+  // branch's real frequency). With a well-sampled branchHw, the ratchet must protect it.
   it('protects a well-sampled branch headway from a falsely-better shared-terminal value', () => {
     expect(resolveTerminalHeadway(10, 15, 60)).toBe(15);
   });
@@ -38,5 +38,40 @@ describe('resolveTerminalHeadway', () => {
   it('respects a custom reliability threshold', () => {
     expect(resolveTerminalHeadway(10, 15, 5, 3)).toBe(15);
     expect(resolveTerminalHeadway(10, 15, 2, 3)).toBe(10);
+  });
+});
+
+describe('hasGenuineBranchPattern', () => {
+  // Rennes route 55 (Sunday): every on-shape stop, including the terminal, showed the same
+  // 60min headway — a flat, non-branching route. There's no trunk/branch split for the ratchet
+  // to protect, so branchHw=121 (whole-day median off only 4 trips) should not be able to win.
+  it('is false for a flat route with no real branch (Rennes 55)', () => {
+    expect(hasGenuineBranchPattern(60, Array(19).fill(60))).toBe(false);
+  });
+
+  // Draguignan route 01 (Saturday, "KOENIG - HOPITAL"): every on-shape stop, terminal included,
+  // showed 40min. branchHw=80 came from a whole-day median across a bursty schedule (paired
+  // departures then a long gap) — not a real branch either, same flat signature.
+  it('is false for a flat route with an irregular but uniform-across-stops schedule (draguignan 01)', () => {
+    expect(hasGenuineBranchPattern(40, Array(55).fill(40))).toBe(false);
+  });
+
+  // villeneuve-sur-lot route L6: terminal shows a WORSE headway (39) than the rest of the route
+  // (30) — the normal "degrades toward the terminus" pattern Step 4 exists to surface. This is
+  // not the shared-terminal-inflation scenario (terminal notably BETTER than the rest), so the
+  // ratchet has nothing to protect against here either.
+  it('is false when the terminal is worse than the rest of the route, not better', () => {
+    expect(hasGenuineBranchPattern(39, Array(14).fill(30))).toBe(false);
+  });
+
+  // The scenario the ratchet actually exists for: most of the route shows a real branch-specific
+  // headway, but the terminal is shared with other routes and shows a notably better (lower)
+  // combined frequency — a genuine trunk/branch split.
+  it('is true when the terminal is notably better than the rest of the route (shared-terminal case)', () => {
+    expect(hasGenuineBranchPattern(10, Array(12).fill(30))).toBe(true);
+  });
+
+  it('defaults to true (keep existing protection) when there is not enough data to tell', () => {
+    expect(hasGenuineBranchPattern(30, [])).toBe(true);
   });
 });

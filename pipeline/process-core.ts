@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } f
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { computePeriodHeadways, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, TIER_RANK } from './headway-utils.js';
+import { computePeriodHeadways, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -557,10 +557,18 @@ export async function processGtfsBuffer(
       // than the branch-specific headway. Do not override with the combined headway in that case.
       // Only override/degrade to the terminal headway if it is less frequent (higher) than branch
       // headway — unless branchHw itself is too thinly sampled to trust (issue #263: a sparse
-      // branch's own median can be noisy/stale, wrongly blocking a real improvement).
+      // branch's own median can be noisy/stale, wrongly blocking a real improvement), or unless
+      // there's no genuine branch here to protect in the first place (issue #263 follow-up: a
+      // flat route has no trunk/branch split, so branchHw vs. terminalComputedHw is just two
+      // statistics of one uniform service, not a real protection scenario).
       const branchHw = feature.properties.headway as number | null;
       const branchTripCount = featureBranchTripCount.get(feature) ?? 0;
-      const headway = resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount);
+      const nonTerminalStopHws = onShape.slice(0, -1)
+        .map(({ stopId }) => stopHeadways[stopId])
+        .filter((v): v is number => v != null);
+      const headway = hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
+        ? resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount)
+        : terminalComputedHw;
       feature.properties.headway = headway;
 
       // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
