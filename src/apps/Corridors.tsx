@@ -178,6 +178,13 @@ export default function Corridors({
   }, [toFocused, fromFocused]);
 
   useEffect(() => {
+    // Corridors stays mounted (just hidden) so switching apps is instant, but that means this
+    // effect used to run unconditionally on first load — firing an unthrottled fetch of every
+    // single agency's stops file (hundreds of concurrent requests) even when the user never
+    // opens Corridors. Defer until the app is actually active, and skip once already loaded so
+    // toggling in and out doesn't re-fetch.
+    if (!active || stopsReady) return;
+
     const eligible = agencies.filter(a => a.slug);
     if (eligible.length === 0) { setStopsReady(true); return; }
 
@@ -206,7 +213,7 @@ export default function Corridors({
     })();
 
     return () => { cancelled = true; };
-  }, [agencies]);
+  }, [agencies, active, stopsReady]);
 
   useEffect(() => {
     if (!fromStop || !toStop) return;
