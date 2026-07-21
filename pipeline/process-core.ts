@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } f
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { computePeriodHeadways, headwayToTier, medianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computePeriodHeadways, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -209,6 +209,10 @@ export async function processGtfsBuffer(
   // Feature → the shapeId it was actually built from, so the per-stop headway
   // resolution loop below can pool departures scoped to that exact physical path.
   const featureShapeId = new Map<GeoJsonFeature, string>();
+  // Feature → how many departures backed its own (branch-level) headway, so Step 4 below can
+  // tell a real branch frequency from a noisy one before trusting it over the terminal-computed
+  // value. Not serialized to the GeoJSON output — pipeline-internal only. See issue #263.
+  const featureBranchTripCount = new Map<GeoJsonFeature, number>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
     // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
@@ -281,6 +285,7 @@ export async function processGtfsBuffer(
     };
     dedupedFeatures.set(dedupeKey, newFeature);
     featureShapeId.set(newFeature, shapeId);
+    featureBranchTripCount.set(newFeature, result.times.length);
   }
   const features = [...dedupedFeatures.values()];
 
@@ -546,15 +551,16 @@ export async function processGtfsBuffer(
       const allStopMedian = hwVals.length % 2 === 0
         ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
         : hwVals[mid];
-      let headway = terminalMiddayHw ?? terminalHw ?? allStopMedian;
-      
+      const terminalComputedHw = terminalMiddayHw ?? terminalHw ?? allStopMedian;
+
       // If the terminal stop is shared, the combined terminal headway might be lower (better)
       // than the branch-specific headway. Do not override with the combined headway in that case.
-      // Only override/degrade to the terminal headway if it is less frequent (higher) than branch headway.
+      // Only override/degrade to the terminal headway if it is less frequent (higher) than branch
+      // headway — unless branchHw itself is too thinly sampled to trust (issue #263: a sparse
+      // branch's own median can be noisy/stale, wrongly blocking a real improvement).
       const branchHw = feature.properties.headway as number | null;
-      if (branchHw != null && headway < branchHw) {
-        headway = branchHw;
-      }
+      const branchTripCount = featureBranchTripCount.get(feature) ?? 0;
+      const headway = resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount);
       feature.properties.headway = headway;
 
       // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
