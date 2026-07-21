@@ -42,7 +42,7 @@
     "dotenv": "^17.4.2",
     "gtfs-realtime-bindings": "^2.1.0",
     "jszip": "^3.10.1",
-    "lucide-react": "^1.24.0",
+    "lucide-react": "^1.25.0",
     "maplibre-gl": "^5.24.0",
     "papaparse": "^5.5.4",
     "pbf": "^5.1.2",
