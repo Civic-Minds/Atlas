@@ -106,9 +106,33 @@ export function cleanHeadsign(
   //     null headway) -- an orphaned duplicate of the real "Parc des Lumières 1" pattern.
   //   Nice (Lignes d'Azur) 69: "Leï Feirriero" / "Lei Feirrièro" -- same Niçard terminus,
   //     inconsistent accent placement between trips.
+  //   TBM (Bordeaux), le Mans (SETRAM), Izilo (Lorient), Qub (Quimper): source feeds publish
+  //     both an ALL-CAPS/no-accent internal stop code and a properly-cased display name for
+  //     the same destination on different trips of the same route+direction. Confirmed a group
+  //     pattern (4 independent feeds), not a one-off -- canonical form is always the non-caps,
+  //     accented variant. Two other flagged pairs were checked and are NOT duplicates (left
+  //     alone): Orléans' "Quai C/D/E" are genuinely different platforms, and Saint-Nazaire's
+  //     "Redon"/"Besné" are different real origin towns -- both just have low edit distance.
   const knownHeadsignAliases: Record<string, string> = {
+    'SAINTE CATHERINE': 'Sainte Catherine',
+    'DE GARONNE': 'de la Garonne',
+    'GARE DE BEGLES': 'Gare de Bègles',
+    'BOUSCAT HIPPODROME': 'LE BOUSCAT Hippodrome',
+    'MERIGNAC LY. DAGUIN': 'MERIGNAC Lycée Daguin',
+    'LORMONT BUTTINIERE': 'LORMONT Buttinière',
+    'ST LOUIS BELLE RIVE': 'SAINT LOUIS Belle Rive',
+    'VILLENAVE PYRENEES': 'VILLENAVE Pyrénées',
+    'GRADIGNAN ST. ORNON': 'GRADIGNAN Stade Ornon',
+    'BORDEAUX REPUBLIQUE': 'BORDEAUX République',
+    'REPUBLIQUE': 'République',
+    'Parc des Exposition': 'Parc des Expositions',
+    'Ste Catherine': 'Sainte Catherine',
+    'Z.A. Petit Guelen': 'Petit Guelen',
     'Parc des Lumieres': 'Parc des Lumières 1',
     'Leï Feirriero': 'Lei Feirrièro',
+    'ST MEDARD GALAXIE': 'SAINT MEDARD Galaxie',
+    'MERIGNAC AEROPORT': 'MERIGNAC Aéroport',
+    'AEROPORT': 'Aéroport',
   };
   if (h in knownHeadsignAliases) h = knownHeadsignAliases[h];
 

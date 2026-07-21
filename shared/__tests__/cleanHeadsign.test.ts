@@ -41,6 +41,35 @@ describe('cleanHeadsign', () => {
     expect(cleanHeadsign('Leï Feirriero', '69', null)).toBe('Lei Feirrièro');
     expect(cleanHeadsign('Lei Feirrièro', '69', null)).toBe('Lei Feirrièro');
   });
+
+  it('merges ALL-CAPS/no-accent headsign variants found across TBM Bordeaux, le Mans, Izilo Lorient, and Qub Quimper', () => {
+    const pairs: [string, string, string][] = [
+      ['A', 'SAINTE CATHERINE', 'Ste Catherine'],
+      ['B', 'de la Garonne', 'DE GARONNE'],
+      ['C', 'Gare de Bègles', 'GARE DE BEGLES'],
+      ['23', 'LE BOUSCAT Hippodrome', 'BOUSCAT HIPPODROME'],
+      ['26', 'MERIGNAC Lycée Daguin', 'MERIGNAC LY. DAGUIN'],
+      ['27', 'LORMONT Buttinière', 'LORMONT BUTTINIERE'],
+      ['29', 'SAINT LOUIS Belle Rive', 'ST LOUIS BELLE RIVE'],
+      ['39', 'VILLENAVE Pyrénées', 'VILLENAVE PYRENEES'],
+      ['74', 'GRADIGNAN Stade Ornon', 'GRADIGNAN ST. ORNON'],
+      ['80', 'BORDEAUX République', 'BORDEAUX REPUBLIQUE'],
+      ['25', 'REPUBLIQUE', 'République'],
+      ['31', 'Parc des Exposition', 'Parc des Expositions'],
+      ['B3', 'Ste Catherine', 'Sainte Catherine'],
+      ['5', 'Z.A. Petit Guelen', 'Petit Guelen'],
+    ];
+    for (const [route, a, b] of pairs) {
+      expect(cleanHeadsign(a, route, null)).toBe(cleanHeadsign(b, route, null));
+    }
+  });
+
+  it('does not merge near-duplicate-looking headsigns that are actually different destinations', () => {
+    // Orléans: different platform letters, not a typo.
+    expect(cleanHeadsign('Léon Blum - Quai E', '2', null)).not.toBe(cleanHeadsign('Léon Blum - Quai C', '2', null));
+    // Saint-Nazaire: different real origin towns feeding the same terminus.
+    expect(cleanHeadsign('Redon > Saint-Nazaire', '305', null)).not.toBe(cleanHeadsign('Besné > Saint-Nazaire', '305', null));
+  });
 });
 
 describe('getRouteLabel', () => {
