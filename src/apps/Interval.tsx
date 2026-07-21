@@ -55,10 +55,11 @@ interface Props {
   headerPortalContainer?: Element | null;
   fareView?: boolean;
   sidebarLeft?: number;
+  searchBarWidth?: number;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, sidebarLeft, searchEnterRef }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
   const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -536,6 +537,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         fareView={fareView}
         fareOverrides={fareOverrides}
         sidebarLeft={sidebarLeft}
+        searchBarWidth={searchBarWidth}
         bounds={bounds}
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}

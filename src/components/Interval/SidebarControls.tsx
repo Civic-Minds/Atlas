@@ -73,6 +73,7 @@ interface SidebarControlsProps {
   fareView?: boolean;
   fareOverrides?: Record<string, FareOverride>;
   sidebarLeft?: number;
+  searchBarWidth?: number;
   bounds?: ViewportBounds | null;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
@@ -117,6 +118,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   fareView = false,
   fareOverrides = {},
   sidebarLeft,
+  searchBarWidth,
   bounds = null,
   hoveredBranch,
   setHoveredBranch,
@@ -859,7 +861,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   return (
     <div
       className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
-      style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
+      style={{
+        '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+        ...(searchBarWidth ? { width: `${searchBarWidth}px` } : {}),
+        ...(searchBarWidth ? { maxWidth: 'none' } : {}),
+      } as React.CSSProperties}
     >
       {searchFocused && query === '' && (
         <SearchSuggestionsPanel

@@ -132,6 +132,7 @@ export default function App() {
 
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
+  const [searchBarWidth, setSearchBarWidth] = useState<number>();
   const searchEnterRef = useRef<(() => void) | null>(null);
   const [sidebarLeft, setSidebarLeft] = useState<number>(SIDEBAR_LEFT_FALLBACK);
   const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); closeInfo(); }, [closeInfo]);
@@ -203,6 +204,7 @@ export default function App() {
       const search = searchBarRef.current?.getBoundingClientRect();
       if (search) {
         setSidebarLeft(search.left);
+        setSearchBarWidth(search.width);
         return;
       }
       const header = headerLeftRef.current?.getBoundingClientRect();
@@ -452,6 +454,7 @@ export default function App() {
               onSelectionActiveChange={setIntervalSelectionActive}
               headerPortalContainer={headerPortalEl}
               sidebarLeft={sidebarLeft}
+              searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}
             />
             <Corridors

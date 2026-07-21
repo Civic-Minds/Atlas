@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Fixed search results using a different width than the search bar.
+
 ## [3.2.8] - 2026-07-20
 
 - **Fixed the app feeling slow/laggy on every load, even before touching Corridors**: Corridors stays mounted in the background so switching apps is instant, but its stop-search index was loading unconditionally on first page load — an unthrottled fetch of every single agency's stops file (800+ requests) firing at once, competing with the visible Frequency map for network and CPU the whole time it was still rendering. Now deferred until Corridors is actually opened.
