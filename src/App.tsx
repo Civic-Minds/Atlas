@@ -192,6 +192,13 @@ export default function App() {
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   );
   const showHistoryControl = inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug)));
+  const historyAgencySlugsInView = useMemo(
+    () => historyAgencySlugs ? [...loadedAgencySlugs].filter(slug => historyAgencySlugs.has(slug)) : [],
+    [historyAgencySlugs, loadedAgencySlugs],
+  );
+  const historyAgencyForView = selectedAgencySlug && historyAgencySlugs?.has(selectedAgencySlug)
+    ? selectedAgencySlug
+    : historyAgencySlugsInView.length === 1 ? historyAgencySlugsInView[0] : null;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inFares ? 'Search agencies'
@@ -485,7 +492,7 @@ export default function App() {
               active={inCorridors}
               sidebarLeft={sidebarLeft}
             />
-            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
             {liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <LiveVehicles

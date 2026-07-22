@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History compilation now anchors current route snapshots to the public Atlas artifact, so redesigned routes and unchanged current service do not disappear from the timeline.
+- History route timelines now show the newest archived snapshot first and identify when the archive is older than current service.
+- History now opens directly on the eligible agency in the current city so its time scrubber is immediately available.
 - Show Live and History navigation only when the current map view contains an agency that supports those features.
 - Active-period agency counts no longer include routes with explicit no-service data just because their all-day frequency qualifies.
 - Fixed legacy GCRTA late-period cards showing short-window gaps such as 43 or 59 minutes instead of the published period service.

@@ -16,7 +16,7 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { config } from 'dotenv';
-import { r2ListArchive, r2GetArchive, r2Put } from './r2.js';
+import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
@@ -115,12 +115,39 @@ function getPeriodKeySortValue(key: string): number {
   return year * 10000 + 101;
 }
 
-/** Load compact current headways from history/{slug}/latest.json (written by refresh.ts). */
-async function loadLatestHeadways(slug: string): Promise<Record<string, { headway: number }>> {
+/** Load current route facts from the public Atlas artifact, not the archive baseline. */
+async function loadCurrentHeadways(slug: string): Promise<Record<string, {
+  headway: number;
+  routeLongName?: string;
+  headwayByPeriod?: HeadwayByPeriod;
+  geometry?: number[][];
+}>> {
   try {
-    const raw = await r2GetArchive(`history/${slug}/latest.json`);
+    const raw = await r2Get(`atlas/${slug}.json`);
     if (!raw) return {};
-    return JSON.parse(raw).routes ?? {};
+    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { coordinates?: number[][] }; properties?: Record<string, unknown> }> };
+    const current: Record<string, {
+      headway: number;
+      routeLongName?: string;
+      headwayByPeriod?: HeadwayByPeriod;
+      geometry?: number[][];
+    }> = {};
+    for (const feature of fc.features ?? []) {
+      const p = feature.properties;
+      if (!p?.routeShortName || p.day !== 'Weekday' || p.directionId !== 0 || p.headway == null) continue;
+      const routeShortName = String(p.routeShortName);
+      const headway = Number(p.headway);
+      if (!Number.isFinite(headway)) continue;
+      if (!current[routeShortName] || headway < current[routeShortName].headway) {
+        current[routeShortName] = {
+          headway,
+          routeLongName: p.routeLongName ? String(p.routeLongName) : undefined,
+          headwayByPeriod: p.headwayByPeriod as HeadwayByPeriod | undefined,
+          geometry: feature.geometry?.coordinates,
+        };
+      }
+    }
+    return current;
   } catch {
     return {};
   }
@@ -204,14 +231,15 @@ async function main() {
     }
   }
 
-  // 3. Load current headways from history/{slug}/latest.json (compact baseline written by refresh.ts).
-  //    Much cheaper than fetching full GeoJSONs — latest.json is ~a few KB vs hundreds of KB per agency.
+  // 3. Load current headways from the public Atlas artifact. This keeps the
+  // history endpoint aligned with the current map after route redesigns or
+  // refreshes, rather than trusting the archive diff baseline.
   const slugsWithData = Object.keys(archiveRoutes);
   console.log(`Loading latest headways for ${slugsWithData.length} agencies...`);
 
-  const currentHeadways: Record<string, Record<string, { headway: number }>> = {};
+  const currentHeadways: Record<string, Record<string, Awaited<ReturnType<typeof loadCurrentHeadways>>[string]>> = {};
   const headwayTasks = slugsWithData.map(slug => async () => {
-    currentHeadways[slug] = await loadLatestHeadways(slug);
+    currentHeadways[slug] = await loadCurrentHeadways(slug);
   });
   await runWithConcurrency(headwayTasks, 25);
 
@@ -239,14 +267,21 @@ async function main() {
         i === 0 || s.weekdayHeadwayMin !== snapshots[i - 1].weekdayHeadwayMin
       );
 
-      // Add current atlas data as the final point only if headway differs from last snapshot
+      // Add current Atlas data as the final point whenever it is newer than
+      // the archive. Even an unchanged headway gets a current endpoint when
+      // the route has a meaningful historical series.
       const currentRoute = current[routeShortName];
       if (currentRoute) {
         const lastSnap = deduped[deduped.length - 1];
         const alreadyCurrentYear = lastSnap && lastSnap.year === currentYear;
-        const headwayChanged = lastSnap && currentRoute.headway !== lastSnap.weekdayHeadwayMin;
-        if (!alreadyCurrentYear && headwayChanged) {
-          deduped.push({ label: String(currentYear), year: currentYear, weekdayHeadwayMin: currentRoute.headway });
+        if (!alreadyCurrentYear) {
+          deduped.push({
+            label: String(currentYear),
+            year: currentYear,
+            weekdayHeadwayMin: currentRoute.headway,
+            headwayByPeriod: currentRoute.headwayByPeriod,
+            geometry: currentRoute.geometry,
+          });
         }
       }
 
@@ -257,8 +292,8 @@ async function main() {
       const last = deduped[deduped.length - 1];
       if (first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
 
-      const routeLongName = changes.find(c => c.routeLongName)?.routeLongName
-        /* routeLongName not in latest.json — comes from archive snapshots only */
+      const routeLongName = currentRoute?.routeLongName
+        ?? changes.find(c => c.routeLongName)?.routeLongName
         ?? routeShortName;
 
       agencyRoutes.push({ routeShortName, routeName: routeLongName, snapshots: deduped });

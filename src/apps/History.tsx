@@ -32,6 +32,8 @@ export interface AgencyHistory {
 
 interface Props {
   active: boolean;
+  initialAgencySlug?: string | null;
+  initialAgencySlugs?: string[];
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
   searchFocused: boolean;
@@ -84,14 +86,14 @@ function RouteHistoryCard({
   onBack: () => void;
 }) {
   const [showChart, setShowChart] = useState(false);
-  const snaps = route.snapshots;
+  const snaps = [...route.snapshots].sort((a, b) => b.year - a.year || b.label.localeCompare(a.label));
 
   function snapHeadway(snap: RouteSnapshot): number {
     return snap.weekdayHeadwayMin;
   }
 
-  const first = snaps[0];
-  const last = snaps[snaps.length - 1];
+  const first = snaps[snaps.length - 1];
+  const last = snaps[0];
   const firstHw = snapHeadway(first);
   const lastHw = snapHeadway(last);
   const worse = lastHw > firstHw;
@@ -113,7 +115,8 @@ function RouteHistoryCard({
   const maxHw = Math.max(...hws);
   const hwRange = maxHw - minHw || 1;
 
-  const points = snaps.map((snap, i) => {
+  const chartSnaps = [...snaps].reverse();
+  const points = chartSnaps.map((snap, i) => {
     const hw = hws[i];
     const pctX = (snap.year - minYear) / yearRange;
     const x = paddingX + pctX * (width - 2 * paddingX);
@@ -223,14 +226,14 @@ function RouteHistoryCard({
         <div className="bg-[var(--bg-app)] border-t border-b border-[var(--border-primary)]">
           {snaps.map((snap, i) => {
             const hw = snapHeadway(snap);
-            const isLast = i === snaps.length - 1;
-            const hwColor = isLast
+            const isLatest = i === 0;
+            const hwColor = isLatest
               ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
               : 'text-[var(--text-dim)]';
-            const delta = i > 0 ? hw - snapHeadway(snaps[i - 1]) : null;
+            const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
               <div key={snap.label} className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0">
-                <span className={`text-[10px] font-bold ${isLast ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
+                <span className={`text-[10px] font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
                   {snap.label}
                 </span>
                 <div className="flex items-center gap-2">
@@ -250,6 +253,7 @@ function RouteHistoryCard({
           <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
             <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
             <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
+            <p className="text-[10px] text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
           </div>
         )}
       </div>
@@ -370,7 +374,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
+export default function History({ active, initialAgencySlug, initialAgencySlugs = [], onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(0);
@@ -418,6 +422,11 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   }, [historyData]);
 
   useEffect(() => {
+    if (!active || selectedSlug || !initialAgencySlug) return;
+    if (historyAgencies.some(a => a.slug === initialAgencySlug)) setSelectedSlug(initialAgencySlug);
+  }, [active, historyAgencies, initialAgencySlug, selectedSlug]);
+
+  useEffect(() => {
     if (!active) { setOverlay(null); return; }
     const agency = selectedSlug ? (historyAgencies.find(a => a.slug === selectedSlug) ?? null) : null;
     if (agency?.center) {
@@ -427,6 +436,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
         historicalRouteGeometries = [];
         agency.routes.forEach(route => {
           const snap = route.snapshots.find(s => s.year === selectedYear) || route.snapshots[route.snapshots.length - 1];
+          if (route.routeShortName === selectedRouteShortName) routeGeometry = snap?.geometry;
           if (snap && snap.geometry) {
             historicalRouteGeometries!.push({
               routeShortName: route.routeShortName,
@@ -512,11 +522,14 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    if (!q) return historyAgencies;
-    return historyAgencies.filter(a =>
+    const scoped = initialAgencySlugs.length > 0
+      ? historyAgencies.filter(a => initialAgencySlugs.includes(a.slug))
+      : historyAgencies;
+    if (!q) return scoped;
+    return scoped.filter(a =>
       a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q)
     );
-  }, [query, historyAgencies]);
+  }, [query, historyAgencies, initialAgencySlugs]);
 
   const availableYears = useMemo(() => {
     if (!selectedSlug) return [];
@@ -539,11 +552,12 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
   if (!shouldRender) return null;
 
   const showScrubber = selectedSlug && availableYears.length > 1;
+  const showAgencyChooser = active && !selectedSlug;
 
   return (
     <>
       <div
-        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!selectedSlug && !searchFocused ? 'pointer-events-none' : ''}`}
+        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!showAgencyChooser && !searchFocused ? 'pointer-events-none' : ''}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         {selectedSlug ? (
@@ -573,7 +587,7 @@ export default function History({ active, onInfoOpen, query, searchFocused, setQ
         })()
       ) : (
         <div
-          className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+          className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
           {query === '' && recentSearches.length > 0 ? (
