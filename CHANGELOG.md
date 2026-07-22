@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reduced the shared desktop search width so the header fits more naturally across view sizes.
 - Fixed History route rows becoming unclickable after an agency was selected.
 - History compilation now anchors current route snapshots to the public Atlas artifact, so redesigned routes and unchanged current service do not disappear from the timeline.
 - History route timelines now show the newest archived snapshot first and identify when the archive is older than current service.

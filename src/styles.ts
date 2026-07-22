@@ -35,10 +35,10 @@ export const PANEL_SHELL = `${FLOATING_CARD} flex flex-col overflow-hidden`;
 /** Top-bar pill surface (search bar, headway filter row) */
 export const PILL_SURFACE = `h-8 flex items-center ${SURFACE} rounded-full shadow-lg`;
 /** Shared responsive width used by the top search bar */
-export const SEARCH_BAR_WIDTH = 'w-full sm:w-80 xl:w-96';
+export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 
-/** Width constant for panels and cards, matching search bar on desktop but wider on mobile */
-export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-44 lg:w-56 xl:w-72 max-w-sm';
+/** Width constant for panels and cards; matches the responsive search bar on desktop. */
+export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
 /** Filter chip pill base — border color added dynamically per active state */
 export const CHIP_BASE = 'bg-[var(--bg-panel)] backdrop-blur-md border rounded-full shadow-lg';
