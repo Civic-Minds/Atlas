@@ -155,7 +155,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             />
           </div>
           <CardReportButton
-            title={`Route issue: ${currentRoute.routeShortName ?? 'Unknown route'}`}
+            title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             details={`**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}\n**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
           />
         </div>

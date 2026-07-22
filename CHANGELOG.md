@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Added report buttons to route, stop, and agency cards with prefilled GitHub issue context.
+- Route reports now include the agency and route name in their prefilled issue title.
 - Constrained the desktop search bar to a wider fixed range so it stays readable without expanding across the header.
 - Matched agency cards to the search bar width for consistent panel alignment.
 - Fixed search results using a different width than the search bar.
