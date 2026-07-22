@@ -651,7 +651,7 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
       </div>
 
       {showScrubber && (
-        <div className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-10 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`} title="Older to newer">
+        <div className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-8 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`} title="Older to newer">
             <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
             <input
               type="range"
