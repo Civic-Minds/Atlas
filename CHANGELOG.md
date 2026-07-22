@@ -7,7 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Added report buttons to route, stop, and agency cards with prefilled GitHub issue context.
-- Constrained the desktop search bar so it no longer expands across the header.
+- Constrained the desktop search bar to a wider fixed range so it stays readable without expanding across the header.
 - Fixed search results using a different width than the search bar.
 
 ## [3.2.8] - 2026-07-20
