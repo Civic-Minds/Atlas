@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { displayHeadwayValue, effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -143,5 +143,13 @@ describe('effectiveRouteHeadway', () => {
     expect(routeCardDisplayHeadway(p, 'overnight')).toBeNull();
     expect(routeListDisplayHeadway([p], 'overnight')).toBeNull();
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
+  });
+});
+
+describe('displayHeadwayValue', () => {
+  it('rounds GCRTA transition gaps to the published clockface cadence', () => {
+    expect(displayHeadwayValue(31, 'gcrta')).toBe(30);
+    expect(displayHeadwayValue(59, 'gcrta')).toBe(60);
+    expect(displayHeadwayValue(31, 'ttc')).toBe(31);
   });
 });
