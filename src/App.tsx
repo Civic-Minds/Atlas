@@ -9,6 +9,7 @@ import type { StopEntry } from './apps/corridor-search';
 import History from './apps/History';
 import LiveVehicles from './apps/LiveVehicles';
 import type { AppId } from './components/AppDrawer';
+import AppDrawer from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -310,7 +311,7 @@ export default function App() {
           <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        {/* AppDrawer hidden — History/Fares/Corridors are URL-only; Corridors is reached via a stop card's "Corridors from here…" link; Live uses the header toggle. */}
+        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
 
         <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
