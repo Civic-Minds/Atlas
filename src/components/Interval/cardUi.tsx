@@ -13,8 +13,6 @@ export const CARD_LIST_ROUTE = 'text-[11px] font-bold text-[var(--text-primary)]
 export const CARD_SECTION = 'text-[9px] font-black uppercase tracking-wider text-[var(--text-dim)]';
 
 export function CardReportButton({ title, details }: { title: string; details: string }) {
-  if (!import.meta.env.DEV) return null;
-
   return (
     <button
       type="button"
