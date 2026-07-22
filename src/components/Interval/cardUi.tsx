@@ -1,8 +1,9 @@
 import React from 'react';
-import { Radio } from 'lucide-react';
+import { Flag, Radio } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, PANEL_ENTER_LEFT } from '../../styles';
+import { openAtlasIssueReport } from '../../utils/reportIssue';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -10,6 +11,22 @@ export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-[11px] font-bold text-[var(--text-primary)] leading-snug';
 export const CARD_SECTION = 'text-[9px] font-black uppercase tracking-wider text-[var(--text-dim)]';
+
+export function CardReportButton({ title, details }: { title: string; details: string }) {
+  if (!import.meta.env.DEV) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={() => openAtlasIssueReport(title, details)}
+      aria-label="Report a problem with this card"
+      title="Report a problem with this card"
+      className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+    >
+      <Flag className="w-3.5 h-3.5" />
+    </button>
+  );
+}
 
 export function HeadwayBadge({
   headway,

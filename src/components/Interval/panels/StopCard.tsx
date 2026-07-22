@@ -9,7 +9,9 @@ import {
   SidebarCardList,
   SidebarCardSection,
   SidebarCardShell,
+  CardReportButton,
 } from '../cardUi';
+import { currentAtlasUrl } from '../../../utils/reportIssue';
 import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
 import LiveStopArrivals from './LiveStopArrivals';
 import type { HeadwayMetric } from '../../../utils/routeFacts';
@@ -89,25 +91,33 @@ export const StopCard: React.FC<StopCardProps> = ({
   return (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
-        {stopAgencies.length === 1 ? (
-          <SidebarCardHeader
-            eyebrow={stopAgencies[0]}
-            title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
-            titleClamp
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            {stopAgencies.length === 1 ? (
+              <SidebarCardHeader
+                eyebrow={stopAgencies[0]}
+                title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                titleClamp
+              />
+            ) : (
+              <>
+                <AgencyFilterChips
+                  agencies={stopAgencies}
+                  selected={stopAgencyFilter}
+                  onSelect={setStopAgencyFilter}
+                />
+                <SidebarCardHeader
+                  title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                  titleClamp
+                />
+              </>
+            )}
+          </div>
+          <CardReportButton
+            title={`Stop issue: ${titleCase(currentStop.stopName)}`}
+            details={`**Stop:** ${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}\n**Agencies:** ${stopAgencies.join(', ') || 'Unknown'}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
           />
-        ) : (
-          <>
-            <AgencyFilterChips
-              agencies={stopAgencies}
-              selected={stopAgencyFilter}
-              onSelect={setStopAgencyFilter}
-            />
-            <SidebarCardHeader
-              title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
-              titleClamp
-            />
-          </>
-        )}
+        </div>
       </SidebarCardHeaderBlock>
 
       {onDirectFromStop && (

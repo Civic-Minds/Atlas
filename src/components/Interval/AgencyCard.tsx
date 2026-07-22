@@ -10,8 +10,9 @@ import { agencyDisplayParts, getRouteLabel, titleCase } from '../../utils/format
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { routeListDisplayHeadway } from '../../utils/effectiveHeadway';
-import { CARD_TITLE, CardDirectionRow, CardHelpNotice } from './cardUi';
+import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from './cardUi';
 import { buildRouteFacts } from '../../utils/routeFacts';
+import { currentAtlasUrl } from '../../utils/reportIssue';
 
 interface RouteRow {
   routeId: string;
@@ -331,8 +332,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
     >
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-        <div className="min-w-0">
-          <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
+        <div className="flex items-start gap-2 min-w-0">
+          <div className="min-w-0 flex-1">
+            <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
           {fareView ? (
             <>
               {fareOverride?.free ? (
@@ -434,6 +436,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               )}
             </div>
           )}
+          </div>
+          <CardReportButton
+            title={`Agency issue: ${agency.name}`}
+            details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+          />
         </div>
       </div>
 

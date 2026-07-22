@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added development-only report buttons to route, stop, and agency cards with prefilled GitHub issue context.
 - Fixed search results using a different width than the search bar.
 
 ## [3.2.8] - 2026-07-20

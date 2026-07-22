@@ -14,6 +14,7 @@ import {
   SidebarCardHeaderBlock,
   SidebarCardList,
   SidebarCardShell,
+  CardReportButton,
 } from '../cardUi';
 import { CARD_NOTICE_FOOTER } from '../../../styles';
 import { SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
@@ -28,6 +29,7 @@ import {
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import type { VariantFamily } from '../../../utils/routeVariants';
+import { currentAtlasUrl } from '../../../utils/reportIssue';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -143,12 +145,20 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         </div>
       )}
       <SidebarCardHeaderBlock>
-        <RouteCardTitle
-          routeShortName={currentRoute.routeShortName}
-          routeLongName={currentRoute.routeLongName}
-          agencyName={agencyDisplayName}
-          onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
-        />
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <RouteCardTitle
+              routeShortName={currentRoute.routeShortName}
+              routeLongName={currentRoute.routeLongName}
+              agencyName={agencyDisplayName}
+              onAgencyClick={routeSlug && setSelectedAgencySlug ? () => { setSelectedAgencySlug(routeSlug); setSelectedRoute(null); } : undefined}
+            />
+          </div>
+          <CardReportButton
+            title={`Route issue: ${currentRoute.routeShortName ?? 'Unknown route'}`}
+            details={`**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}\n**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+          />
+        </div>
       </SidebarCardHeaderBlock>
       {variantFamily && (
         <p className="text-[10px] text-[var(--text-dim)] -mt-1 mb-3">
