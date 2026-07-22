@@ -372,9 +372,11 @@ export default function App() {
 
         {showHistoryControl && (
           <button
+            type="button"
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
-            aria-label="Historical service"
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+            aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
+            aria-pressed={inHistory}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
