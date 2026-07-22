@@ -436,6 +436,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             hideSpan={hideSpan}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}
+            searchBarWidth={searchBarWidth}
             fareView={fareView}
             fareOverride={fareOverrides[agency.slug]}
             onInfoOpen={onInfoOpen}

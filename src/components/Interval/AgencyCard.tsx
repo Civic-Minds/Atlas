@@ -216,6 +216,7 @@ interface Props {
   hideSpan: boolean;
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
+  searchBarWidth?: number;
   fareView?: boolean;
   fareOverride?: FareOverride;
   onInfoOpen?: OpenInfoFn;
@@ -263,6 +264,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   hideSpan,
   onRouteSelect,
   sidebarLeft,
+  searchBarWidth,
   fareView,
   fareOverride,
   onInfoOpen,
@@ -329,7 +331,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     <div
       ref={ref}
       className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
-      style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
+      style={{
+        '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+        ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
+      } as React.CSSProperties}
     >
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <div className="flex items-start gap-2 min-w-0">
