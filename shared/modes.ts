@@ -13,7 +13,7 @@ export interface EffectiveModeInput {
 }
 
 /** Agency feeds whose route_type=0 entries are rail rather than streetcars. */
-export const VIRTUAL_LRT_AGENCIES = ['calgary', 'edmonton', 'rem', 'octranspo'] as const;
+export const VIRTUAL_LRT_AGENCIES = ['calgary', 'edmonton', 'gcrta', 'rem', 'octranspo'] as const;
 
 const LRT_NAME_RE = /(?:CTrain|Capital Line|Metro Line|Valley Line|Valley Metro Rail|Metro [A-Za-z]+ Line)/i;
 const SAN_DIEGO_RAIL_RE = /^(?:Blue|Copper|Green|Orange|Silver)$/i;

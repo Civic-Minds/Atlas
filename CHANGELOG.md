@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- GCRTA’s Waterfront Line now appears under LRT instead of Streetcar, matching the route’s rail service.
 - History route charts now use the same ordered snapshots as their lists, so plotted headways and change indicators stay attached to the correct dates.
 - Route focus now dims the surrounding network consistently in History and Frequency while keeping the selected line prominent.
 - History’s time control is vertically aligned and exiting History uses a direct navigation link so the mode can reset cleanly.
