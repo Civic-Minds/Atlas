@@ -651,12 +651,7 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
       </div>
 
       {showScrubber && (
-        <div className={`absolute bottom-5 right-14 ${Z_PANEL} w-[320px] rounded-2xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md px-3 py-2.5 text-[10px]`}>
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="font-bold text-[var(--text-muted)]">History</span>
-            <span className="rounded-md bg-[var(--accent-bg)] border border-[var(--accent-border)] px-1.5 py-0.5 text-xs font-black text-[var(--text-primary)] tabular-nums">{selectedYear}</span>
-          </div>
-          <div className="flex items-center gap-2">
+        <div className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-10 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`} title="Older to newer">
             <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
             <input
               type="range"
@@ -669,11 +664,7 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
               className="time-scrubber-range flex-1 min-w-0"
             />
             <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">{availableYears[availableYears.length - 1]}</span>
-          </div>
-          <div className="flex justify-between mt-0.5 text-[8px] text-[var(--text-dim)]">
-            <span>older</span>
-            <span>newer</span>
-          </div>
+            <span className="rounded-md bg-[var(--accent-bg)] border border-[var(--accent-border)] px-1.5 py-0.5 text-xs font-black text-[var(--text-primary)] tabular-nums">{selectedYear}</span>
         </div>
       )}
     </>
