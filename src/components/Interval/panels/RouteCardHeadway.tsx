@@ -17,7 +17,7 @@ import {
   CardReportButton,
 } from '../cardUi';
 import { CARD_NOTICE_FOOTER } from '../../../styles';
-import { SPARKLINE_HOURS, periodKeyForHour } from '../../../../shared/config';
+import { SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import {
@@ -130,6 +130,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
 }) => {
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
+  const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
+  const hasPeriodService = period === 'all' || directionGroups.some(group =>
+    group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
+    group.span.length > 0,
+  );
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
   const primaryMultiBranch = directionGroups
@@ -201,6 +206,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </>
         );
       })()}
+      {selectedPeriod && !hasPeriodService && (
+        <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
+          <p className="text-[10px] font-black text-[var(--text-primary)]">
+            No scheduled service during {selectedPeriod.label}
+          </p>
+          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
+            {formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. This route may run during another period.
+          </p>
+        </div>
+      )}
       <SidebarCardList>
         {(() => {
           const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
