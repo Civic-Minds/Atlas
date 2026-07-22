@@ -94,8 +94,15 @@ function firstAvailableByPeriod(
   if (keys.size === 0) return undefined;
   const merged: Record<string, number | null> = {};
   for (const key of keys) {
-    const value = sources.map(source => source?.[key as keyof typeof source]).find(v => v != null);
-    if (value != null) merged[key] = value;
+    const values = sources.map(source => source?.[key as keyof typeof source]);
+    const value = values.find(v => v != null);
+    if (value != null) {
+      merged[key] = value;
+    } else if (values.some(v => v === null)) {
+      // Preserve an explicit no-service summary when every available source
+      // agrees that this period has no service.
+      merged[key] = null;
+    }
   }
   return merged as ShapeProperties['headwayByPeriod'];
 }

@@ -413,6 +413,32 @@ describe('useIntervalStats', () => {
     }));
     expect(result.current.stats?.matching).toBe(1);
   });
+
+  it('does not count routes with explicit no-service period data as active matches', () => {
+    const layers: AgencyLayers = {
+      'test': {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: {
+            routeId: '1',
+            headway: 20,
+            tier: '20',
+            headwayByPeriod: { late: null },
+          },
+        }],
+      },
+    };
+
+    const { result } = renderHook(() => useIntervalStats(layers, {
+      ...defaultFilters,
+      agencies: new Set(['test']),
+      maxHeadway: 60,
+      period: 'late' as const,
+    }));
+    expect(result.current.stats?.matching).toBe(0);
+  });
 });
 
 describe('featureBbox / inViewport', () => {
