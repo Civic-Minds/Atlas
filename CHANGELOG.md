@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Restored direct History navigation in the header so it is discoverable without manually opening its URL.
+- Show Live and History navigation only when the current map view contains an agency that supports those features.
 - Active-period agency counts no longer include routes with explicit no-service data just because their all-day frequency qualifies.
 - Fixed legacy GCRTA late-period cards showing short-window gaps such as 43 or 59 minutes instead of the published period service.
 - Added report buttons to route, stop, and agency cards with prefilled GitHub issue context.

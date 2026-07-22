@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback, useDeferredValue } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
+import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import Corridors from './apps/Corridors';
 import type { StopEntry } from './apps/corridor-search';
@@ -183,6 +184,14 @@ export default function App() {
   const inCorridors = activeApp === 'corridors';
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
+  const loadedAgencySlugs = useMemo(
+    () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
+    [layers],
+  );
+  const showLiveControl = inLive || [...loadedAgencySlugs].some(slug =>
+    LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
+  );
+  const showHistoryControl = inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug)));
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inFares ? 'Search agencies'
@@ -350,23 +359,27 @@ export default function App() {
         </div>
         </div>
 
-        <button
-          onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
-          aria-label="Live vehicles"
-          className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
-        >
-          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
-          <span>Live</span>
-        </button>
+        {showLiveControl && (
+          <button
+            onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
+            aria-label="Live vehicles"
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+            <span>Live</span>
+          </button>
+        )}
 
-        <button
-          onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
-          aria-label="Historical service"
-          className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
-        >
-          <HistoryIcon className="w-3.5 h-3.5" />
-          <span>History</span>
-        </button>
+        {showHistoryControl && (
+          <button
+            onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
+            aria-label="Historical service"
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          >
+            <HistoryIcon className="w-3.5 h-3.5" />
+            <span>History</span>
+          </button>
+        )}
 
         </div>
       </div>
