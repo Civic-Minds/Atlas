@@ -60,6 +60,10 @@ async function main() {
 
   const downloadTasks = agencies.map(agency => async () => {
     const slug = agency.slug;
+    if (agency.pmtilesPending) {
+      console.log(`Skipping ${slug}: marked "pmtilesPending" (no published artifacts to include).`);
+      return;
+    }
     const arts = getAgencyArtifactUrls(slug);
     const url = agency.url || arts.url;
     const stopsUrl = agency.stopsUrl || arts.stopsUrl;
