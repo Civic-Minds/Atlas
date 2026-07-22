@@ -57,6 +57,14 @@ function periodHeadwayFromByHour(
   return best;
 }
 
+// Published artifacts from before the late/overnight split used `lateNight`.
+// Keep this compatibility map until those artifacts have all been replaced;
+// an explicit legacy null must remain null rather than falling through to a
+// misleading all-day or hourly value.
+const LEGACY_PERIOD_KEYS: Partial<Record<PeriodKey, string>> = {
+  late: 'lateNight',
+};
+
 /** Resolve one named metric using the canonical period/hour fallback order. */
 export function metricValueForPeriod(metricValue: HeadwayMetric, period: ServicePeriod): number | null {
   if (period !== 'all') {
@@ -66,6 +74,10 @@ export function metricValueForPeriod(metricValue: HeadwayMetric, period: Service
     if (metricValue.byPeriod && Object.prototype.hasOwnProperty.call(metricValue.byPeriod, period)) {
       const periodValue = metricValue.byPeriod[period as keyof NonNullable<typeof metricValue.byPeriod>];
       return periodValue ?? null;
+    }
+    const legacyPeriod = LEGACY_PERIOD_KEYS[period];
+    if (legacyPeriod && metricValue.byPeriod && Object.prototype.hasOwnProperty.call(metricValue.byPeriod, legacyPeriod)) {
+      return metricValue.byPeriod[legacyPeriod as keyof NonNullable<typeof metricValue.byPeriod>] ?? null;
     }
     return periodHeadwayFromByHour(metricValue.byHour, period) ?? metricValue.value;
   }

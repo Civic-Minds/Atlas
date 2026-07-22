@@ -126,4 +126,20 @@ describe('routeFacts', () => {
       provenance: 'period-summary',
     }, 'overnight')).toBe(2);
   });
+
+  it('maps legacy lateNight summaries to late without hourly-min fallthrough', () => {
+    expect(metricValueForPeriod({
+      value: 30,
+      byPeriod: { lateNight: 60 } as any,
+      byHour: { 23: 27, 24: 60 },
+      provenance: 'period-summary',
+    }, 'late')).toBe(60);
+
+    expect(metricValueForPeriod({
+      value: 45,
+      byPeriod: { lateNight: null } as any,
+      byHour: { 23: 43 },
+      provenance: 'period-summary',
+    }, 'late')).toBeNull();
+  });
 });

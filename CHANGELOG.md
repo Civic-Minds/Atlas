@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed legacy GCRTA late-period cards showing short-window gaps such as 43 or 59 minutes instead of the published period service.
 - Added report buttons to route, stop, and agency cards with prefilled GitHub issue context.
 - Route reports now include the agency and route name in their prefilled issue title.
 - Selected routes now explain when they have no scheduled service during the active period.
