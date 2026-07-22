@@ -42,6 +42,11 @@ export function effectiveMode(p: EffectiveModeInput): number {
   return isVirtualLrt(p) ? VIRTUAL_LRT_MODE : rt;
 }
 
+/** True when a bus route is explicitly published as replacing rail service. */
+export function isRailReplacementBus(p: EffectiveModeInput): boolean {
+  return normalizeRouteType(p.routeType) === 3 && /replacement\s+bus/i.test(p.routeLongName ?? '');
+}
+
 /** Mode filter chip options (Frequency Map). */
 export const FILTER_MODES = [
   { id: 1, label: 'Subway' },

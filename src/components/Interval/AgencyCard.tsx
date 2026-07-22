@@ -5,7 +5,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
-import { effectiveMode, GTFS_RAIL_MODE_LABELS, VIRTUAL_LRT_MODE } from '../../../shared/modes';
+import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { agencyDisplayParts, getRouteLabel, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
@@ -240,10 +240,11 @@ function RouteListSection({
         const key = `${r.agencySlug}::${r.routeId}`;
         return (
           <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
-            <CardDirectionRow
-              label={titleCase(getRouteLabel(r.shortName, r.longName))}
-              headway={r.headway ?? undefined}
-              live={isLive}
+          <CardDirectionRow
+            label={titleCase(getRouteLabel(r.shortName, r.longName))}
+            headway={r.headway ?? undefined}
+            subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName }) ? 'Rail replacement bus' : undefined}
+            live={isLive}
               dimmed={dimmed}
               onClick={() => onRouteSelect(key)}
             />

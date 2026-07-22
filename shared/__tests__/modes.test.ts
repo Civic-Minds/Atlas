@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   effectiveMode,
+  isRailReplacementBus,
   normalizeRouteType,
   VIRTUAL_LRT_MODE,
 } from '../modes';
@@ -49,5 +50,12 @@ describe('effectiveMode', () => {
     expect(effectiveMode({ routeType: 0, agencySlug: 'sdmts', routeShortName: 'Blue', routeLongName: 'San Ysidro - UTC' })).toBe(VIRTUAL_LRT_MODE);
     expect(effectiveMode({ routeType: 0, agencySlug: 'metro-transit', routeLongName: 'METRO Blue Line' })).toBe(VIRTUAL_LRT_MODE);
     expect(effectiveMode({ routeType: 0, agencySlug: 'gcrta', routeShortName: 'WL', routeLongName: 'Waterfront Line' })).toBe(VIRTUAL_LRT_MODE);
+  });
+});
+
+describe('isRailReplacementBus', () => {
+  it('recognizes explicitly named rail replacement buses', () => {
+    expect(isRailReplacementBus({ routeType: 3, routeLongName: 'Blue Line Replacement Bus' })).toBe(true);
+    expect(isRailReplacementBus({ routeType: 3, routeLongName: 'Blue Line' })).toBe(false);
   });
 });
