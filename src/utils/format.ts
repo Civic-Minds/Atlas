@@ -21,6 +21,8 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Grt: 'GRT',
   Brt: 'BRT',
   Busplus: 'BusPlus',
+  Healthline: 'HealthLine',
+  Metrohealth: 'MetroHealth',
   Lrt: 'LRT',
   Nfta: 'NFTA',
   Ltc: 'LTC',

@@ -6,7 +6,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- GCRTA route cards now display transition gaps like 31 or 59 minutes as the intended 30- or 60-minute clockface cadence without altering filtering data.
 - Hovering a direction on a selected route no longer repeatedly refits the map, eliminating the resulting jitter and redraw loop.
 - Search results now resolve legacy composite route keys to the loaded agency, so selecting a route consistently opens its card.
 - Rail replacement bus routes now carry an explicit “Rail replacement bus” note in agency cards while remaining correctly classified as buses.
@@ -21,7 +20,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - History now opens directly on the eligible agency in the current city so its time scrubber is immediately available.
 - Show Live and History navigation only when the current map view contains an agency that supports those features.
 - Active-period agency counts no longer include routes with explicit no-service data just because their all-day frequency qualifies.
-- Fixed legacy GCRTA late-period cards showing short-window gaps such as 43 or 59 minutes instead of the published period service.
+- GCRTA route labels now preserve agency capitalization such as HealthLine and MetroHealth.
 - Added report buttons to route, stop, and agency cards with prefilled GitHub issue context.
 - Route reports now include the agency and route name in their prefilled issue title.
 - Selected routes now explain when they have no scheduled service during the active period.
