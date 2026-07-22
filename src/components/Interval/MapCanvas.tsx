@@ -21,6 +21,7 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
+import { splitRouteKey } from '../../utils/routeKey';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -155,6 +156,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const fittedRouteRef = useRef<string | null>(null);
   const showMapHint = (msg: string) => {
     setMapHint(msg);
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
@@ -746,12 +748,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Handle route zooming
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || !selectedRoute) return;
+    if (!map || !mapLoaded) return;
+    if (!selectedRoute) {
+      fittedRouteRef.current = null;
+      return;
+    }
+    // Direction hover changes filtered layer data, but it is not a new route
+    // selection. Do not refit the map on every hover-driven layer update.
+    if (fittedRouteRef.current === selectedRoute) return;
 
     // Compute full-route bounds from GeoJSON layer data.
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
     // so match by slug (from selectedRoute key) + routeId separately.
-    const [routeSlug, routeId] = selectedRoute.split('::');
+    const { agencySlug: routeSlug, routeId } = splitRouteKey(selectedRoute);
     let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
     let found = false;
 
@@ -796,6 +805,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         padding: { top: 80, bottom: 80, left: 320, right: 80 },
         maxZoom: 14,
       });
+      fittedRouteRef.current = selectedRoute;
     }
   }, [selectedRoute, mapLoaded, layers]);
 

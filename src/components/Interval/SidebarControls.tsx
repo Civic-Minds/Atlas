@@ -37,6 +37,7 @@ import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
+import { splitRouteKey } from '../../utils/routeKey';
 
 interface SidebarControlsProps {
   query: string;
@@ -146,10 +147,36 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
   const [showAllSearchResults, setShowAllSearchResults] = useState(false);
 
+  const selectRoute = useCallback((key: string | null) => {
+    if (key === null) {
+      setSelectedRoute(null);
+      return;
+    }
+    const allFeatures = Object.entries(nonCorridorLayers).flatMap(([slug, fc]) =>
+      fc.features.map(f => ({ slug, properties: f.properties as unknown as ShapeProperties })),
+    );
+    const exact = allFeatures.find(({ slug, properties }) => buildRouteFacts(properties, slug).key === key);
+    if (exact) {
+      setSelectedRoute(key);
+      return;
+    }
+
+    // Older/search-derived keys can use an agency display name before the
+    // route ID. Resolve those to the canonical loaded agency key when unique.
+    const { routeId } = splitRouteKey(key);
+    const matches = new Map<string, string>();
+    for (const { slug, properties } of allFeatures) {
+      if (String(properties.routeId) !== routeId) continue;
+      const facts = buildRouteFacts(properties, slug);
+      matches.set(facts.key, facts.key);
+    }
+    setSelectedRoute(matches.size === 1 ? [...matches.values()][0] : key);
+  }, [nonCorridorLayers, setSelectedRoute]);
+
   const pickRoute = useCallback((key: string) => {
     setSearchFocused?.(false);
-    setSelectedRoute(key);
-  }, [setSearchFocused, setSelectedRoute]);
+    selectRoute(key);
+  }, [selectRoute, setSearchFocused]);
 
   const loadRecents = useCallback(() => {
     try {
@@ -1023,7 +1050,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             stopResultsHeadLabel={stopResultsHeadLabel}
             matchedAgencyGroups={matchedAgencyGroups}
             selectedRoute={selectedRoute}
-            setSelectedRoute={setSelectedRoute}
+            setSelectedRoute={selectRoute}
             setSelectedStop={setSelectedStop}
             setSelectedAgencySlug={setSelectedAgencySlug}
             setQuery={setQuery}

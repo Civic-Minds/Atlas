@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Hovering a direction on a selected route no longer repeatedly refits the map, eliminating the resulting jitter and redraw loop.
+- Search results now resolve legacy composite route keys to the loaded agency, so selecting a route consistently opens its card.
 - Rail replacement bus routes now carry an explicit “Rail replacement bus” note in agency cards while remaining correctly classified as buses.
 - GCRTA’s Waterfront Line now appears under LRT instead of Streetcar, matching the route’s rail service.
 - History route charts now use the same ordered snapshots as their lists, so plotted headways and change indicators stay attached to the correct dates.
