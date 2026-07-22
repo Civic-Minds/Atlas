@@ -663,7 +663,9 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
               aria-label="History year"
               className="time-scrubber-range flex-1 min-w-0"
             />
-            <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">{availableYears[availableYears.length - 1]}</span>
+            <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">
+              {selectedYear === availableYears[availableYears.length - 1] ? 'now' : availableYears[availableYears.length - 1]}
+            </span>
             <span className="rounded-md bg-[var(--accent-bg)] border border-[var(--accent-border)] px-1.5 py-0.5 text-xs font-black text-[var(--text-primary)] tabular-nums">{selectedYear}</span>
         </div>
       )}
