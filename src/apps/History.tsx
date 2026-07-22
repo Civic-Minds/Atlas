@@ -553,11 +553,12 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
 
   const showScrubber = selectedSlug && availableYears.length > 1;
   const showAgencyChooser = active && !selectedSlug;
+  const panelInteractive = Boolean(selectedSlug || showAgencyChooser || searchFocused);
 
   return (
     <>
       <div
-        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!showAgencyChooser && !searchFocused ? 'pointer-events-none' : ''}`}
+        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         {selectedSlug ? (
