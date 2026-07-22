@@ -44,10 +44,10 @@ interface Props {
 }
 
 function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: string; worse: boolean } | null {
-  const snaps = entry.snapshots;
+  const snaps = sortSnapshotsNewestFirst(entry.snapshots);
   if (snaps.length < 2) return null;
-  const first = snaps[0];
-  const last = snaps[snaps.length - 1];
+  const first = snaps[snaps.length - 1];
+  const last = snaps[0];
   const fHw = first.weekdayHeadwayMin;
   const lHw = last.weekdayHeadwayMin;
   if (Math.abs(fHw - lHw) < 2) return null;
@@ -57,6 +57,18 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: strin
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
+}
+
+function sortSnapshotsNewestFirst(snapshots: RouteSnapshot[]): RouteSnapshot[] {
+  return [...snapshots].sort((a, b) => b.year - a.year || b.label.localeCompare(a.label));
+}
+
+function routeHistorySnapshots(entry: RouteHistoryEntry): {
+  newestFirst: RouteSnapshot[];
+  oldestFirst: RouteSnapshot[];
+} {
+  const newestFirst = sortSnapshotsNewestFirst(entry.snapshots);
+  return { newestFirst, oldestFirst: [...newestFirst].reverse() };
 }
 
 function formatXLabel(label: string): string {
@@ -86,7 +98,7 @@ function RouteHistoryCard({
   onBack: () => void;
 }) {
   const [showChart, setShowChart] = useState(false);
-  const snaps = [...route.snapshots].sort((a, b) => b.year - a.year || b.label.localeCompare(a.label));
+  const { newestFirst: snaps, oldestFirst: chartSnaps } = routeHistorySnapshots(route);
 
   function snapHeadway(snap: RouteSnapshot): number {
     return snap.weekdayHeadwayMin;
@@ -110,14 +122,13 @@ function RouteHistoryCard({
   const maxYear = last.year;
   const yearRange = maxYear - minYear || 1;
 
-  const hws = snaps.map(snapHeadway);
+  const hws = chartSnaps.map(snapHeadway);
   const minHw = Math.min(...hws);
   const maxHw = Math.max(...hws);
   const hwRange = maxHw - minHw || 1;
 
-  const chartSnaps = [...snaps].reverse();
   const points = chartSnaps.map((snap, i) => {
-    const hw = hws[i];
+    const hw = snapHeadway(snap);
     const pctX = (snap.year - minYear) / yearRange;
     const x = paddingX + pctX * (width - 2 * paddingX);
 
@@ -133,8 +144,16 @@ function RouteHistoryCard({
   const lineColor = worse ? '#ef4444' : better ? '#10b981' : '#9ca3af';
   // x-axis label visibility: always show first and last; intermediate only if they have clearance
   const labelClearance = 34;
-  const firstLabelEdge = paddingX + labelClearance;
-  const lastLabelEdge = width - paddingX - labelClearance;
+  const labelIndices = new Set<number>([0, points.length - 1]);
+  let lastLabelX = points[0]?.x ?? 0;
+  for (let i = 1; i < points.length - 1; i++) {
+    const hasRoomBefore = points[i].x - lastLabelX >= labelClearance;
+    const hasRoomAfter = points[points.length - 1].x - points[i].x >= labelClearance;
+    if (hasRoomBefore && hasRoomAfter) {
+      labelIndices.add(i);
+      lastLabelX = points[i].x;
+    }
+  }
 
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden ${PANEL_ENTER}`}>
@@ -200,7 +219,7 @@ function RouteHistoryCard({
               {points.map((p, i) => {
                 const isFirst = i === 0;
                 const isLast = i === points.length - 1;
-                const showXLabel = isFirst || isLast || (p.x > firstLabelEdge && p.x < lastLabelEdge);
+                const showXLabel = labelIndices.has(i);
                 const xAnchor = isFirst ? 'start' : isLast ? 'end' : 'middle';
                 const xPos = isFirst ? paddingX : isLast ? (width - paddingX) : p.x;
                 return (
@@ -293,8 +312,9 @@ function HistoryAgencyPanel({
     return agencyHistory.routes
       .map(route => {
         if (route.snapshots.length === 0) return null;
-        const first = route.snapshots[0];
-        const last = route.snapshots[route.snapshots.length - 1];
+        const { newestFirst } = routeHistorySnapshots(route);
+        const first = newestFirst[newestFirst.length - 1];
+        const last = newestFirst[0];
         const ratio = route.snapshots.length > 1 ? last.weekdayHeadwayMin / first.weekdayHeadwayMin : 1;
         const worse = ratio > 1.05;
         const better = ratio < 0.95;

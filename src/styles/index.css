@@ -138,13 +138,13 @@ button:disabled {
   height: 3px;
   background: var(--border-primary);
   border-radius: 9999px;
-  margin: 6.5px 0; /* center the 3px track in 16px */
 }
 
 .time-scrubber-range::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
   height: 14px;
+  margin-top: -5.5px;
   background: var(--bg-panel);
   border: 2px solid var(--accent);
   border-radius: 50%;
@@ -162,7 +162,6 @@ button:disabled {
   height: 3px;
   background: var(--border-primary);
   border-radius: 9999px;
-  margin: 6.5px 0;
 }
 
 .time-scrubber-range::-moz-range-thumb {

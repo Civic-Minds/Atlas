@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History route charts now use the same ordered snapshots as their lists, so plotted headways and change indicators stay attached to the correct dates.
+- Route focus now dims the surrounding network consistently in History and Frequency while keeping the selected line prominent.
+- History’s time control is vertically aligned and exiting History uses a direct navigation link so the mode can reset cleanly.
 - Reduced the shared desktop search width so the header fits more naturally across view sizes.
 - Fixed History route rows becoming unclickable after an agency was selected.
 - History compilation now anchors current route snapshots to the public Atlas artifact, so redesigned routes and unchanged current service do not disappear from the timeline.

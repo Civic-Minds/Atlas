@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useMemo } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
@@ -379,15 +379,15 @@ export default function App() {
         )}
 
         {showHistoryControl && (
-          <Link
-            to={inHistory ? '/' : '/apps/history'}
+          <a
+            href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
             aria-pressed={inHistory}
             className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
-          </Link>
+          </a>
         )}
 
         </div>

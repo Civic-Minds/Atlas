@@ -7,6 +7,7 @@ import { routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
+import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useCorridorLayer } from './map/useCorridorLayer';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
@@ -19,6 +20,7 @@ import { findPlaceByName } from '../../../shared/placeLookup';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
+import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -177,6 +179,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   };
 
   const { setBoundsAndZoom } = useViewport();
+  const { overlay: historyOverlay } = useHistoryMapOverlay();
 
   // Deck.gl overlay for GPU-rendered vehicle markers
   const deckOverlayRef = useRef<MapboxOverlay | null>(null);
@@ -916,7 +919,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // you can click another line to switch — not a near-invisible ghost layer.
       const DIM_OPACITY = 0.32;
       const DIM_WIDTH = 1.25;
-      if (selectedRoute) {
+      if (historyOverlay?.routeShortName) {
+        // History uses its own route selection state, so mirror the Frequency
+        // map's focus treatment when a historical route is selected.
+        const historyRouteMatch: any = ['all',
+          ['==', ['get', 'agencySlug'], historyOverlay.slug],
+          ['==', ['get', 'routeShortName'], historyOverlay.routeShortName],
+        ];
+        const focusedPaint = buildFocusedRoutePaint(historyRouteMatch, DIM_OPACITY, DIM_WIDTH);
+        map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
+        map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
+      } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey];
         if (hoveredBranch) {
@@ -932,22 +945,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else {
-          map.setPaintProperty('routes-layer', 'line-opacity', [
-            'case', routeMatch, 1.0, DIM_OPACITY,
-          ]);
-          map.setPaintProperty('routes-layer', 'line-width', [
-            'case', routeMatch, 3.5, DIM_WIDTH,
-          ]);
+          const focusedPaint = buildFocusedRoutePaint(routeMatch, DIM_OPACITY, DIM_WIDTH);
+          map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
+          map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
         }
       } else if (hoveredSearchRoute) {
         // Hovering a search result: spotlight that route, fade the rest
         const hoverMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], hoveredSearchRoute];
-        map.setPaintProperty('routes-layer', 'line-opacity', [
-          'case', hoverMatch, 1.0, DIM_OPACITY,
-        ]);
-        map.setPaintProperty('routes-layer', 'line-width', [
-          'case', hoverMatch, 3.5, DIM_WIDTH,
-        ]);
+        const focusedPaint = buildFocusedRoutePaint(hoverMatch, DIM_OPACITY, DIM_WIDTH);
+        map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
+        map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(routesForStop.siblingIdsByAgency);
         map.setPaintProperty('routes-layer', 'line-opacity', [
@@ -999,14 +1006,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, historyOverlay]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || selectedRoute) return;
+    if (!map || !mapLoaded || selectedRoute || historyOverlay?.routeShortName) return;
     resetRoutesLayerDefaultPaint(map);
-  }, [selectedRoute, mapLoaded]);
+  }, [selectedRoute, mapLoaded, historyOverlay]);
 
   // Overlay layers (corridors, history, live vehicles) — extracted to hooks
   useCorridorLayer(mapRef, mapLoaded, showCorridorBand, selectedCorridorFamily);
