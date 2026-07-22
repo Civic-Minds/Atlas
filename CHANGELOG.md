@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Refreshed Akron and GCRTA route data so current clockface schedules and clickable route geometry stay in sync.
 - Hovering a direction on a selected route no longer repeatedly refits the map, eliminating the resulting jitter and redraw loop.
 - Search results now resolve legacy composite route keys to the loaded agency, so selecting a route consistently opens its card.
 - Rail replacement bus routes now carry an explicit “Rail replacement bus” note in agency cards while remaining correctly classified as buses.
