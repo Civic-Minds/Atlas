@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useDeferredValue } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map as MapIcon, Search, X, Info } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
 import Interval from './apps/Interval';
@@ -9,7 +9,6 @@ import type { StopEntry } from './apps/corridor-search';
 import History from './apps/History';
 import LiveVehicles from './apps/LiveVehicles';
 import type { AppId } from './components/AppDrawer';
-import AppDrawer from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -311,8 +310,6 @@ export default function App() {
           <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        <AppDrawer activeApp={activeApp} onSelect={setActiveApp} />
-
         <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
@@ -360,6 +357,15 @@ export default function App() {
         >
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
           <span>Live</span>
+        </button>
+
+        <button
+          onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
+          aria-label="Historical service"
+          className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+        >
+          <HistoryIcon className="w-3.5 h-3.5" />
+          <span>History</span>
         </button>
 
         </div>
