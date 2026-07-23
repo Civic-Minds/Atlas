@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Period filters now keep routes with explicit no-service periods off the map.
 - History agency cards now match other cards by omitting the standalone close button.
 - History now retains current route data when an agency changes route IDs between archived and current GTFS.
 - PMTiles rebuilds now skip unpublished pending agencies before attempting artifact fetches.

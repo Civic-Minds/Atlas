@@ -12,8 +12,9 @@ export function flattenPeriodHeadwayProps(props: Record<string, unknown>): void 
     const obj = props[src];
     if (!obj || typeof obj !== 'object' || Array.isArray(obj)) continue;
     for (const key of PERIOD_KEYS) {
-      const v = (obj as Record<string, unknown>)[key];
-      if (typeof v === 'number' && Number.isFinite(v)) {
+      const periodProps = obj as Record<string, unknown>;
+      const v = periodProps[key];
+      if ((typeof v === 'number' && Number.isFinite(v)) || v === null) {
         props[`${prefix}_${key}`] = v;
       }
     }

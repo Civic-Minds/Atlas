@@ -15,4 +15,14 @@ describe('flattenPeriodHeadwayProps', () => {
     expect(props.hph_midday).toBe(20);
     expect(props.worstDirectionHeadwayByPeriod).toEqual({ midday: 45 });
   });
+
+  it('preserves explicit no-service periods as null flat properties', () => {
+    const props: Record<string, unknown> = {
+      headway: 30,
+      headwayByPeriod: { late: null },
+    };
+    flattenPeriodHeadwayProps(props);
+    expect(Object.hasOwn(props, 'hph_late')).toBe(true);
+    expect(props.hph_late).toBeNull();
+  });
 });

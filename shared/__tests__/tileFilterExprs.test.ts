@@ -16,6 +16,10 @@ function productionLikeFilter(maxHeadway: number, modes = new Set<number>()) {
   return ['all', ...clauses];
 }
 
+function periodFilter(period: 'late', maxHeadway: number) {
+  return ['all', ['<=', tileEffectiveHeadwayExpr(period), maxHeadway]];
+}
+
 const feat = (properties: Record<string, unknown>) => ({ type: 2, properties });
 
 describe('tileEffectiveHeadwayExpr', () => {
@@ -37,6 +41,19 @@ describe('tileEffectiveHeadwayExpr', () => {
       directionId: 0,
       worstDirectionHeadway: 10,
       headway: 10,
+    }) as any)).toBe(true);
+  });
+
+  it('does not fall back to all-day service when the active period is explicit null', () => {
+    const compiled = featureFilter(periodFilter('late', 15) as any);
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({
+      hph_late: null,
+      headway: 10,
+    }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({
+      hph_late: 15,
+      headway: 60,
     }) as any)).toBe(true);
   });
 });

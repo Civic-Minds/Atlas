@@ -18,7 +18,13 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
   ];
   if (period && period !== 'all') {
     const [msph, wdph, hph] = periodHeadwayFlatKeys(period);
-    return ['coalesce', ['get', msph], ['get', hph], ['get', wdph], allDay];
+    const periodKeys = [msph, hph, wdph];
+    return [
+      'case',
+      ['any', ...periodKeys.map((key) => ['has', key])],
+      ['coalesce', ...periodKeys.map((key) => ['get', key])],
+      allDay,
+    ];
   }
   return allDay;
 }
