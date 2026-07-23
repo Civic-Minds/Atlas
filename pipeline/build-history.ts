@@ -18,6 +18,7 @@ import { resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
+import { resolveCurrentHistoryRoute } from './historyIdentity.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
@@ -27,9 +28,10 @@ config({ path: resolve('.env.local') });
 const BASE_HISTORY: Array<{
   slug: string;
   routes: Array<{
-    routeShortName: string;
-    routeLongName: string;
-    snapshots: Array<{ periodKey: string; headway: number; label?: string }>;
+      routeShortName: string;
+      routeLongName: string;
+      currentRouteShortNames?: string[];
+      snapshots: Array<{ periodKey: string; headway: number; label?: string }>;
   }>;
 }> = [
   {
@@ -38,6 +40,7 @@ const BASE_HISTORY: Array<{
       {
         routeShortName: 'HealthLine',
         routeLongName: 'Euclid Avenue BRT',
+        currentRouteShortNames: ['HL'],
         snapshots: [
           { periodKey: '20080101', headway: 5 },
         ],
@@ -270,7 +273,13 @@ async function main() {
       // Add current Atlas data as the final point whenever it is newer than
       // the archive. Even an unchanged headway gets a current endpoint when
       // the route has a meaningful historical series.
-      const currentRoute = current[routeShortName];
+      const manualRoute = BASE_HISTORY
+        .find(a => a.slug === slug)?.routes
+        .find(r => r.routeShortName === routeShortName);
+      const currentRoute = resolveCurrentHistoryRoute(
+        { routeShortName, currentRouteShortNames: manualRoute?.currentRouteShortNames },
+        current,
+      );
       if (currentRoute) {
         const lastSnap = deduped[deduped.length - 1];
         const alreadyCurrentYear = lastSnap && lastSnap.year === currentYear;

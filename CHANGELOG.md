@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History agency cards now match other cards by omitting the standalone close button.
+- History now retains current route data when an agency changes route IDs between archived and current GTFS.
 - PMTiles rebuilds now skip unpublished pending agencies before attempting artifact fetches.
 - Refreshed Akron and GCRTA route data so current clockface schedules and clickable route geometry stay in sync.
 - Hovering a direction on a selected route no longer repeatedly refits the map, eliminating the resulting jitter and redraw loop.

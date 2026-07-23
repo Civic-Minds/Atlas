@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -242,7 +242,7 @@ function RouteHistoryCard({
       )}
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="bg-[var(--bg-app)] border-t border-b border-[var(--border-primary)]">
+        <div>
           {snaps.map((snap, i) => {
             const hw = snapHeadway(snap);
             const isLatest = i === 0;
@@ -251,7 +251,7 @@ function RouteHistoryCard({
               : 'text-[var(--text-dim)]';
             const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
-              <div key={snap.label} className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0">
+              <div key={snap.label} className={LIST_ROW}>
                 <span className={`text-[10px] font-bold ${isLatest ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
                   {snap.label}
                 </span>
@@ -288,11 +288,9 @@ const SINCE_FILTERS = [
 
 function HistoryAgencyPanel({
   agencyHistory,
-  onClose,
   onRouteSelect,
 }: {
   agencyHistory: AgencyHistory;
-  onClose: () => void;
   onRouteSelect: (routeShortName: string) => void;
 }) {
   const [routeQuery, setRouteQuery] = useState('');
@@ -346,13 +344,6 @@ function HistoryAgencyPanel({
               {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear}–{maxYear}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0 mt-0.5"
-            aria-label="Close"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
 
@@ -601,7 +592,6 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
           return (
             <HistoryAgencyPanel
               agencyHistory={agencyHistory}
-              onClose={() => setSelectedSlug(null)}
               onRouteSelect={setSelectedRouteShortName}
             />
           );
