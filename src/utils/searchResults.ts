@@ -402,14 +402,14 @@ export function searchStopResults(
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
-  const results: StopSearchResult[] = [];
+  const rawResults: (StopSearchResult & { hubId?: string })[] = [];
 
   for (const f of features) {
     if (f.geometry.type !== 'Point') continue;
     const p = f.properties as any;
     if (!p.stopId) continue;
 
-    const stopName = p.stopName || '';
+    const stopName = p.stopName || p.name || '';
     const stopCode = p.stopCode || null;
     const rank = matchesStopQuery(stopName, stopCode, q);
     if (rank === null) continue;
@@ -427,13 +427,13 @@ export function searchStopResults(
     const distanceM = featureDistanceM(f, bounds);
     const [lon, lat] = f.geometry.coordinates;
 
-    results.push({
+    rawResults.push({
       key: `${p.agencySlug}::${p.stopId}`,
       stopId: p.stopId,
       stopName,
       stopCode,
       direction: p.direction || null,
-      agencyName: p.agencyName,
+      agencyName: p.agencyName || p.agencySlug,
       agencySlug: p.agencySlug,
       routes,
       lat,
@@ -441,10 +441,55 @@ export function searchStopResults(
       inView,
       distanceM,
       matchRank: rank,
+      hubId: p.hubId || undefined,
     });
   }
 
-  return results.sort((a, b) => {
+  // Group by hubId
+  const groupedResults: StopSearchResult[] = [];
+  const hubToBestIndex = new Map<string, number>();
+
+  for (const res of rawResults) {
+    if (!res.hubId) {
+      groupedResults.push(res);
+      continue;
+    }
+
+    const existingIndex = hubToBestIndex.get(res.hubId);
+    if (existingIndex === undefined) {
+      groupedResults.push(res);
+      hubToBestIndex.set(res.hubId, groupedResults.length - 1);
+    } else {
+      const existing = groupedResults[existingIndex];
+
+      // Combine routes
+      const combinedRoutes = new Set([...existing.routes, ...res.routes]);
+      existing.routes = Array.from(combinedRoutes).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+      // Promote the stop name/details if it is a better match or closer
+      const shouldPromote =
+        res.matchRank < existing.matchRank ||
+        (res.matchRank === existing.matchRank && res.inView && !existing.inView) ||
+        (res.matchRank === existing.matchRank && res.inView === existing.inView && res.distanceM < existing.distanceM);
+
+      if (shouldPromote) {
+        existing.key = res.key;
+        existing.stopId = res.stopId;
+        existing.stopName = res.stopName;
+        existing.stopCode = res.stopCode;
+        existing.direction = res.direction;
+        existing.agencyName = res.agencyName || existing.agencyName;
+        existing.agencySlug = res.agencySlug;
+        existing.lat = res.lat;
+        existing.lon = res.lon;
+        existing.inView = res.inView;
+        existing.distanceM = res.distanceM;
+        existing.matchRank = res.matchRank;
+      }
+    }
+  }
+
+  return groupedResults.sort((a, b) => {
     if (a.inView !== b.inView) return a.inView ? -1 : 1;
     if (a.matchRank !== b.matchRank) return a.matchRank - b.matchRank;
     if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;

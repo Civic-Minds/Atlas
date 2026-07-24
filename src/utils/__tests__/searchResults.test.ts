@@ -9,6 +9,7 @@ import {
   routeQueryMatchRank,
   routesBeforeAgencies,
   searchRouteResults,
+  searchStopResults,
   splitByViewport,
 } from '../searchResults';
 import type { AgencySearchGroup } from '../agencySearch';
@@ -187,5 +188,31 @@ describe('searchResults', () => {
     expect(resolveSearchEnterAction([agency], [])).toEqual({ type: 'agency', slug: 'stratford' });
     expect(resolveSearchEnterAction([], [route])).toEqual({ type: 'route', key: 'stratford::1' });
     expect(resolveSearchEnterAction([agency], [route])).toBeNull();
+  });
+
+  it('consolidates and merges stop search results with the same hubId', () => {
+    const features: any[] = [
+      {
+        type: 'Feature',
+        properties: { stopId: 'pace1', stopName: 'Rosemont Cta Station', agencySlug: 'pace-bus', routeIds: ['811'], hubId: 'h_rosemont' },
+        geometry: { type: 'Point', coordinates: [-87.85965, 42.00045] }
+      },
+      {
+        type: 'Feature',
+        properties: { stopId: 'cta1', stopName: 'Rosemont', agencySlug: 'cta', routeIds: ['Blue'], hubId: 'h_rosemont' },
+        geometry: { type: 'Point', coordinates: [-87.85915, 41.99912] }
+      }
+    ];
+
+    const routeNamesMap = new Map([
+      ['pace-bus::811', '811'],
+      ['cta::Blue', 'Blue']
+    ]);
+
+    const results = searchStopResults(features, 'rosemont', null, routeNamesMap);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].stopName).toBe('Rosemont'); // "Rosemont" is shorter and matches "rosemont" query exactly (rank 2 vs rank 4)
+    expect(results[0].routes).toEqual(['811', 'Blue']);
   });
 });
