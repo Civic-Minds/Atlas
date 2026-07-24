@@ -274,13 +274,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       )}
       {(() => {
         const HOURS = SPARKLINE_HOURS;
-        const sparklineDirs = hoveredBranch
+        const hoveredSingleBranch = hoveredBranch?.headsign != null;
+        const sparklineDirs = hoveredSingleBranch
           ? currentRoute.directions.filter(
-              d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
-            )
+            d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
+          )
           : sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
         const hasTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
-        const showTrunkSparkline = !hoveredBranch && hasTrunkSparkline;
+        const showTrunkSparkline = !hoveredSingleBranch && hasTrunkSparkline;
         const merged = showTrunkSparkline
           ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS)
           : sparklineHeadwayByHour(sparklineDirs, HOURS);
@@ -298,7 +299,19 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         return (
           <>
             {hasTrunkSparkline && coreHeadway != null && (
-              <div className={`flex items-center gap-2 mt-6 mb-[-1rem] ${hoveredBranch ? 'invisible' : ''}`}>
+              <div
+                className={`flex items-center gap-2 mt-6 mb-[-1rem] cursor-pointer rounded-md transition-colors hover:bg-[var(--bg-hover)] ${hoveredSingleBranch ? 'invisible' : ''}`}
+                onMouseEnter={() => setHoveredBranch({
+                  directionId: primaryMultiBranch!.dirId,
+                  headsigns: primaryMultiBranch!.realTier
+                    .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
+                    .map(d => d.headsign)
+                    .filter((headsign): headsign is string => !!headsign),
+                  isCore: true,
+                })}
+                onMouseLeave={() => setHoveredBranch(null)}
+                title="Highlight the shared core area on the map"
+              >
                 <span className="text-[10px] font-black text-[var(--text-muted)]">Core area</span>
                 <span className="text-[9px] font-bold text-[var(--text-dim)]">combined every {coreHeadway} min</span>
               </div>
@@ -330,7 +343,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             });
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
             if (!headsign) return {};
-            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId) && hoveredBranch?.headsign === headsign;
+            const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId)
+              && (hoveredBranch?.headsign === headsign || hoveredBranch?.headsigns?.includes(headsign ?? '') === true);
             return {
               onHoverStart: () => setHoveredBranch({ directionId: dirId, headsign }),
               onHoverEnd: () => setHoveredBranch(null),

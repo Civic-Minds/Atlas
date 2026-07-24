@@ -943,10 +943,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const selKey = selectedRoute;
         const routeMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey];
         if (hoveredBranch) {
+          const branchHeadSignMatch: any = hoveredBranch.headsigns?.length
+            ? ['in', ['get', 'headsign'], ['literal', hoveredBranch.headsigns]]
+            : ['==', ['get', 'headsign'], hoveredBranch.headsign];
           const branchMatch: any = ['all',
             routeMatch,
             ['==', ['get', 'directionId'], hoveredBranch.directionId],
-            ['==', ['get', 'headsign'], hoveredBranch.headsign],
+            branchHeadSignMatch,
           ];
           map.setPaintProperty('routes-layer', 'line-opacity', [
             'case', branchMatch, 1.0, routeMatch, 0.4, DIM_OPACITY,

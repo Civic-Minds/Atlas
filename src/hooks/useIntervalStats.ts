@@ -35,7 +35,9 @@ export const routeKey = (p: ShapeProperties) => `${(p as any).agencySlug ?? p.ag
 /** Sidebar hover target for branch highlight on the map (routeId + headsign). */
 export interface HoveredBranch {
   directionId: number;
-  headsign: string;
+  headsign?: string;
+  headsigns?: string[];
+  isCore?: boolean;
 }
 
 export type { PeriodKey };

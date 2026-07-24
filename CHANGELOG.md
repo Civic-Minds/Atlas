@@ -13,6 +13,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Shared-section cadence now combines scheduled branch frequencies instead of using a fastest-stop gap.
 - Limited and infrequent branches no longer inflate shared-core frequency summaries.
 - Drop-off-only branches are excluded from shared-core frequency summaries even when feed tier metadata is inconsistent.
+- Hovering a shared-core summary now highlights its sustained branches on the map.
 - Long sparkline hover details now wrap inside the route card instead of being clipped.
 
 ## [3.2.9] - 2026-07-24
