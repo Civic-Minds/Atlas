@@ -15,6 +15,7 @@ import {
   SidebarCardList,
   SidebarCardShell,
   CardReportButton,
+  CardBackButton,
 } from '../cardUi';
 import { CARD_NOTICE_FOOTER } from '../../../styles';
 import { SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
@@ -245,6 +246,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       )}
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
+          <CardBackButton onClick={() => setSelectedRoute(null)} label="Back to route list" />
           <div className="flex-1 min-w-0">
             <RouteCardTitle
               routeShortName={currentRoute.routeShortName}

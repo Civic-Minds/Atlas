@@ -10,6 +10,7 @@ import {
   SidebarCardSection,
   SidebarCardShell,
   CardReportButton,
+  CardBackButton,
 } from '../cardUi';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
@@ -92,6 +93,7 @@ export const StopCard: React.FC<StopCardProps> = ({
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
         <div className="flex items-start gap-2">
+          <CardBackButton onClick={() => setSelectedStop(null)} label="Back to map" />
           <div className="flex-1 min-w-0">
             {stopAgencies.length === 1 ? (
               <SidebarCardHeader

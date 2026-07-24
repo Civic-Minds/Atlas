@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flag, Radio } from 'lucide-react';
+import { ArrowLeft, Flag, Radio } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, PANEL_ENTER_LEFT } from '../../styles';
@@ -22,6 +22,19 @@ export function CardReportButton({ title, details }: { title: string; details: s
       className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
     >
       <Flag className="w-3.5 h-3.5" />
+    </button>
+  );
+}
+
+export function CardBackButton({ onClick, label = 'Back' }: { onClick: () => void; label?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+    >
+      <ArrowLeft className="w-3.5 h-3.5" />
     </button>
   );
 }
