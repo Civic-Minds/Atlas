@@ -1,6 +1,6 @@
-/** Shared stop-hub expansion: same-name siblings + proximity hubs (120 m). */
+/** Shared stop-hub expansion: same-name siblings + proximity hubs (150 m). */
 
-export const STOP_HUB_PROXIMITY_M = 120;
+export const STOP_HUB_PROXIMITY_M = 150;
 
 export function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const latMid = ((lat1 + lat2) * Math.PI) / 360;

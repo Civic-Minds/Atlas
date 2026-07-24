@@ -34,7 +34,7 @@ describe('collectStopHubSiblings', () => {
     expect(result.allRouteIds.has('3')).toBe(false);
   });
 
-  it('includes nearby stops from any agency within 120 m', () => {
+  it('includes nearby stops from any agency within 150 m', () => {
     // ~50 m north of click
     const nearLat = 43.65 + 50 / 111320;
     const result = collectStopHubSiblings(43.65, -79.38, 'ttc', 'Platform A', [

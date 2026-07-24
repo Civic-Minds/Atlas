@@ -520,28 +520,55 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const slug = props.agencySlug;
     const [clickLon, clickLat] = stop.geometry.coordinates;
 
-    const candidates = allFeatures
-      .filter((f): f is typeof f & { geometry: GeoJSON.Point } =>
-        f.geometry.type === 'Point' && !!(f.properties as any)?.stopId)
-      .map(f => {
-        const p = f.properties as any;
-        const [lon, lat] = f.geometry.coordinates;
-        return {
-          stopId: p.stopId as string,
-          agencySlug: p.agencySlug as string,
-          stopName: p.stopName as string | undefined,
-          lat,
-          lon,
-          routeIds: p.routeIds as string[] | undefined,
-        };
-      });
+    let siblingIdsByAgency: Record<string, Set<string>> = {};
+    let routesByAgency: Record<string, Set<string>> = {};
 
-    const hub = collectStopHubSiblings(clickLat, clickLon, slug, stopName, candidates);
+    if (props.hubId) {
+      const siblingFeatures = allFeatures.filter(f => f.geometry.type === 'Point' && (f.properties as any).hubId === props.hubId);
+      for (const f of siblingFeatures) {
+        const p = f.properties as any;
+        const sSlug = p.agencySlug;
+        if (!sSlug || !p.stopId) continue;
+
+        if (!siblingIdsByAgency[sSlug]) siblingIdsByAgency[sSlug] = new Set();
+        siblingIdsByAgency[sSlug].add(p.stopId);
+
+        if (!routesByAgency[sSlug]) routesByAgency[sSlug] = new Set();
+        if (p.routeIds) {
+          const rids = Array.isArray(p.routeIds)
+            ? p.routeIds
+            : (typeof p.routeIds === 'string' ? p.routeIds.split(',') : []);
+          for (const rid of rids) {
+            routesByAgency[sSlug].add(rid);
+          }
+        }
+      }
+    } else {
+      const candidates = allFeatures
+        .filter((f): f is typeof f & { geometry: GeoJSON.Point } =>
+          f.geometry.type === 'Point' && !!(f.properties as any)?.stopId)
+        .map(f => {
+          const p = f.properties as any;
+          const [lon, lat] = f.geometry.coordinates;
+          return {
+            stopId: p.stopId as string,
+            agencySlug: p.agencySlug as string,
+            stopName: p.stopName as string | undefined,
+            lat,
+            lon,
+            routeIds: p.routeIds as string[] | undefined,
+          };
+        });
+
+      const hub = collectStopHubSiblings(clickLat, clickLon, slug, stopName, candidates);
+      siblingIdsByAgency = hub.siblingIdsByAgency;
+      routesByAgency = hub.routesByAgency;
+    }
 
     return {
       ...props,
-      siblingIdsByAgency: hub.siblingIdsByAgency,
-      routesByAgency: hub.routesByAgency,
+      siblingIdsByAgency,
+      routesByAgency,
       lat: clickLat,
       lon: clickLon,
     };
@@ -640,7 +667,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     if (lat == null || lon == null) return [];
 
     const TRANSFER_MAX_M = 800;
-    const SIBLING_MAX_M = 120;
 
     type TransferEntry = {
       rKey: string;
@@ -661,9 +687,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (f.geometry.type !== 'Point') continue;
         const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
         const d = getDistanceMeters(lat, lon, flat, flon);
-        if (d <= SIBLING_MAX_M || d > TRANSFER_MAX_M) continue;
         const p = f.properties as any;
         if (!p.stopId || !p.routeIds?.length) continue;
+        const isSibling = currentStop.siblingIdsByAgency?.[slug]?.has(p.stopId);
+        if (isSibling || d > TRANSFER_MAX_M) continue;
         for (const rid of p.routeIds as string[]) {
           const existing = routeIdToClosest.get(rid);
           if (!existing || d < existing.dist) {
