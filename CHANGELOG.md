@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Statically precompute cross-agency stop-hub clusters (via Union-Find spatial and name token grouping) at build-time to assign a hubId to every stop, resolving viewport boundaries and optimizing client lookup performance.
+- Consolidate overlapping stop markers on the map by rendering only one representative stop per hub below zoom 17.
 - Consolidate stop search results sharing a hubId to present a single unified transit hub result with combined routes.
 - Exclude departing routes from the walking connections list in stop cards.
 - Fixed high-severity security vulnerability in linkify-it dependency (#275)
