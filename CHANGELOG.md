@@ -12,6 +12,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Refreshed CTA and Laketran schedule artifacts and rebuilt the live PMTiles archive after the explicit no-service fix (#274)
 - Shared-section cadence now combines scheduled branch frequencies instead of using a fastest-stop gap.
 - Limited and infrequent branches no longer inflate shared-core frequency summaries.
+- Drop-off-only branches are excluded from shared-core frequency summaries even when feed tier metadata is inconsistent.
 
 ## [3.2.9] - 2026-07-24
 

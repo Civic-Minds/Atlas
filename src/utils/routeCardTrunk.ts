@@ -59,9 +59,15 @@ export function sparklineSourceDirections(
 }
 
 /** Combined trunk headway from scheduled branch cadences on a shared section. */
+function isLimitedBranch(d: ShapeProperties): boolean {
+  return d.tier === 'infrequent'
+    || d.tier === 'span'
+    || /drop[- ]?offs?\s+only/i.test(d.headsign ?? '');
+}
+
 export function groupTrunkHeadway(branches: ShapeProperties[], period: string): number | null {
   const values = branches
-    .filter(d => d.tier !== 'infrequent' && d.tier !== 'span')
+    .filter(d => !isLimitedBranch(d))
     .map(d => metricValueForPeriod(buildRouteServiceSummary(d).branch, period as TimePeriod))
     .filter((v): v is number => v != null && v > 0);
   if (values.length === 0) return null;
@@ -89,7 +95,7 @@ export function medianTerminalHeadway(branches: ShapeProperties[], period: TimeP
 
 /** True when combined trunk is materially better than typical destination wait. */
 export function shouldShowTrunkSummary(branches: ShapeProperties[], period: TimePeriod): boolean {
-  const sustainedBranches = branches.filter(d => d.tier !== 'infrequent' && d.tier !== 'span');
+  const sustainedBranches = branches.filter(d => !isLimitedBranch(d));
   if (sustainedBranches.length < 2) return false;
   const periodKey = period !== 'all' ? period : 'midday';
   const trunk = groupTrunkHeadway(sustainedBranches, periodKey);
