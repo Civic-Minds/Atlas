@@ -7,7 +7,9 @@ This document tracks experimental features, testing criteria, specific station t
 ## Active Experiments
 
 ### Experiment 1: Offline Stop-Hub Clustering (Tippecanoe Precompiled)
-- **Goal**: Group sibling stops (e.g., cross-agency bus bays and rail platforms) offline during the PMTiles build phase, injecting a static `hubId` property into the compiled `stops.pmtiles` file. This resolves viewport boundary limits and client-side runtime calculations.
+- **Goal**: 
+  1. Group sibling stops (e.g., cross-agency bus bays and rail platforms) offline during the PMTiles build phase, injecting a static `hubId` property into the compiled `stops.pmtiles` file. This resolves viewport boundary limits and client-side runtime calculations.
+  2. Consolidate search results for stops sharing a `hubId` into a single unified search result with combined routes.
 - **Status**: `TESTING` (Vite-node dry-runs pass, PMTiles rebuild in progress).
 - **Metric**: **7/7 Test Cases Passed (100% Accuracy)**
 
