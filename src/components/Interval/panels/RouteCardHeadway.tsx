@@ -190,13 +190,19 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     rawHeadway: direction.headway,
     displayedHeadway: routeCardDisplayHeadway(direction, period),
     headwayByPeriod: direction.headwayByPeriod ?? null,
-    headwayByHour: direction.headwayByHour ?? null,
-    minStopHeadway: direction.minStopHeadway ?? null,
+    selectedPeriodHourlyHeadways: selectedPeriod
+      ? Object.fromEntries(
+          Object.entries(direction.headwayByHour ?? {})
+            .filter(([hour]) => {
+              const h = Number(hour);
+              return h >= selectedPeriod.startHour && h < selectedPeriod.endHour;
+            }),
+        )
+      : null,
     minStopHeadwayByPeriod: direction.minStopHeadwayByPeriod ?? null,
     headsignMinStopHeadwayByPeriod: direction.headsignMinStopHeadwayByPeriod ?? null,
-    stopHeadways: direction.stopHeadways ?? null,
     selectedPeriodStopHeadways: period === 'all'
-      ? null
+      ? direction.stopHeadways ?? null
       : Object.fromEntries(
           Object.entries(direction.stopPeriodHeadways ?? {})
             .map(([stopId, periods]) => [stopId, periods[period] ?? null]),
@@ -212,9 +218,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',
     '**Generated route metrics (loaded artifact):**',
-    '```json',
-    JSON.stringify(reportRawMetrics),
-    '```',
+    JSON.stringify(reportRawMetrics, null, 2),
     `**Atlas URL:** ${currentAtlasUrl()}`,
   ].join('\n');
 
