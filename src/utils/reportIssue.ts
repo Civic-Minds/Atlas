@@ -5,10 +5,25 @@ export function currentAtlasUrl(): string {
 }
 
 export function openAtlasIssueReport(title: string, details: string): void {
-  const body = `${details}\n\n**What's wrong:**\n\n**Expected:**\n\n**Actual:**\n`;
+  const plainDetails = details
+    .replace(/\*\*/g, '')
+    .replace(/^```(?:json)?\s*$/gm, '');
+  const body = `WHAT'S WRONG:\n\n\nDIAGNOSTICS BELOW — PLEASE DO NOT EDIT\n\n${plainDetails}\n\nEXPECTED:\n\nACTUAL:\n`;
+  const diagnosticsMarker = '\nGenerated route metrics (loaded artifact):';
+  const diagnosticsStart = body.indexOf(diagnosticsMarker);
+  const issueBody = diagnosticsStart === -1
+    ? body
+    : 'Full route diagnostics copied to your clipboard. Select all with ⌘/Ctrl+A, then paste with ⌘/Ctrl+V.';
+
+  // GitHub's issue composer is GET-based, so large raw route payloads exceed the
+  // browser/request URL limit. Keep the auto-open body short and preserve the
+  // complete diagnostic payload for one paste into the issue.
+  if (diagnosticsStart !== -1) {
+    void navigator.clipboard?.writeText(body);
+  }
   const params = new URLSearchParams({
     title,
-    body,
+    body: issueBody,
     labels: 'user-reported',
   });
   window.open(`${ATLAS_ISSUE_URL}?${params.toString()}`, '_blank', 'noopener,noreferrer');

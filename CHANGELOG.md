@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Route issue reports now include displayed service and feed freshness, while full generated metrics are copied for easy pasting without exceeding GitHub’s URL limit.
+- User-reported issue templates now use plain-text headings so the copied report can replace the placeholder cleanly.
+- Issue-report clipboard contents now contain only the raw diagnostics, avoiding duplicate summary text when pasted into GitHub.
 - Nearby stop connections now show as nearby routes with their straight-line distance instead of implying an exact walking time.
 - Fixed route-card destination hover flicker by keeping the sparkline layout stable while highlighting a branch.
 - Statically precompute cross-agency stop-hub clusters (via Union-Find spatial and name token grouping) at build-time to assign a hubId to every stop, resolving viewport boundaries and optimizing client lookup performance.

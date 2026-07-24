@@ -141,6 +141,83 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
 
+  const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
+  const groupHeadway = (g: DirectionGroup) => g.realTier[0]
+    ? buildRouteServiceSummary(g.realTier[0]).branch.value
+    : null;
+  const collapseGroups = allLackHeadsigns && directionGroups.length > 1 &&
+    directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
+  const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
+  const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
+  const showDirectionSections = shouldShowDirectionSections(displayGroups);
+  const reportServiceLines = displayGroups.flatMap((group, gi) => {
+    const section = showDirectionSections && group.boundLabel ? [`${group.boundLabel}:`] : [];
+    const branchLines = group.realTier
+      .map(direction => {
+        const label = resolveBranchLabel({
+          headsign: direction.headsign,
+          shortName: currentRoute.routeShortName ?? '',
+          longName: currentRoute.routeLongName ?? '',
+          directionId: needsNumbered ? gi : group.dirId,
+          multipleDirections: showDirectionSections,
+          sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
+        });
+        if (!label) return null;
+        const headway = routeCardDisplayHeadway(direction, period);
+        return `- ${label}: ${headway != null ? `every ${headway} min` : 'no scheduled service'}`;
+      })
+      .filter((line): line is string => line !== null);
+    const limitedLines = !hideSpan
+      ? group.span
+          .map(direction => resolveBranchLabel({
+            headsign: direction.headsign,
+            shortName: currentRoute.routeShortName ?? '',
+            longName: currentRoute.routeLongName ?? '',
+            directionId: needsNumbered ? gi : group.dirId,
+            multipleDirections: showDirectionSections,
+            sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
+          }))
+          .filter(Boolean)
+          .map(label => `- ${label}: limited service`)
+      : [];
+    return [...section, ...branchLines, ...limitedLines];
+  });
+  const reportRawMetrics = currentRoute.directions.map(direction => ({
+    routeId: direction.routeId,
+    directionId: direction.directionId,
+    headsign: direction.headsign,
+    tier: direction.tier,
+    rawHeadway: direction.headway,
+    displayedHeadway: routeCardDisplayHeadway(direction, period),
+    headwayByPeriod: direction.headwayByPeriod ?? null,
+    headwayByHour: direction.headwayByHour ?? null,
+    minStopHeadway: direction.minStopHeadway ?? null,
+    minStopHeadwayByPeriod: direction.minStopHeadwayByPeriod ?? null,
+    headsignMinStopHeadwayByPeriod: direction.headsignMinStopHeadwayByPeriod ?? null,
+    stopHeadways: direction.stopHeadways ?? null,
+    selectedPeriodStopHeadways: period === 'all'
+      ? null
+      : Object.fromEntries(
+          Object.entries(direction.stopPeriodHeadways ?? {})
+            .map(([stopId, periods]) => [stopId, periods[period] ?? null]),
+        ),
+  }));
+  const reportDetails = [
+    `**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}`,
+    `**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`,
+    `**Period:** ${period}`,
+    `**Agency data refreshed:** ${routeAgency?.lastRefreshedAt ?? 'unknown'}`,
+    `**Feed expiry:** ${routeAgency?.lastFeedExpiry ?? 'unknown'}`,
+    '**Displayed service:**',
+    ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
+    '',
+    '**Generated route metrics (loaded artifact):**',
+    '```json',
+    JSON.stringify(reportRawMetrics),
+    '```',
+    `**Atlas URL:** ${currentAtlasUrl()}`,
+  ].join('\n');
+
   return (
     <SidebarCardShell>
       {liveRouteInfo && liveStatus !== 'noData' && (
@@ -161,7 +238,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
           <CardReportButton
             title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
-            details={`**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}\n**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            details={reportDetails}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -219,15 +296,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       )}
       <SidebarCardList>
         {(() => {
-          const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
-          const groupHeadway = (g: DirectionGroup) => g.realTier[0]
-            ? buildRouteServiceSummary(g.realTier[0]).branch.value
-            : null;
-          const collapseGroups = allLackHeadsigns && directionGroups.length > 1 &&
-            directionGroups.every(g => groupHeadway(g) === groupHeadway(directionGroups[0]));
-          const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
-          const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
-          const showDirectionSections = shouldShowDirectionSections(displayGroups);
           const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
             resolveBranchLabel({
               headsign,
