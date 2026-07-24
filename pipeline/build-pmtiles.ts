@@ -203,10 +203,12 @@ async function main() {
   console.log('Build complete!');
 }
 
-main().catch(err => {
-  console.error('Fatal error in build-pmtiles pipeline:', err);
-  process.exit(1);
-});
+if (process.argv[1] && (process.argv[1].endsWith('build-pmtiles.ts') || process.argv[1].endsWith('build-pmtiles.js'))) {
+  main().catch(err => {
+    console.error('Fatal error in build-pmtiles pipeline:', err);
+    process.exit(1);
+  });
+}
 
 class UnionFind {
   parent: number[];
