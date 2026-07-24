@@ -16,7 +16,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Hovering a shared-core summary now highlights its sustained branches on the map.
 - Selected-route filter notices now use the route card’s standard notice placement.
 - Stacked core sparklines now identify each destination branch by color.
-- Sparkline hover readouts are now plain inline text instead of floating bubbles.
+- Hovering a sparkline hour now updates the route rows to that hour's branch headways.
 - Long sparkline hover details now wrap inside the route card instead of being clipped.
 
 ## [3.2.9] - 2026-07-24

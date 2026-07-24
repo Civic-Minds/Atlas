@@ -140,6 +140,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   setHoveredBranch,
   onInfoOpen,
 }) => {
+  const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
@@ -318,7 +319,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 <span className="text-[9px] font-bold text-[var(--text-dim)]">combined every {coreHeadway} min</span>
               </div>
             )}
-            <HeadwaySparkline byHour={merged} stackedByHour={stackedByHour} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
+            <HeadwaySparkline
+              byHour={merged}
+              stackedByHour={stackedByHour}
+              period={period}
+              onPeriodChange={p => setPeriod(p as TimePeriod)}
+              onHourHover={setHoveredHour}
+            />
           </>
         );
       })()}
@@ -389,10 +396,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const filterHw = buildRouteServiceSummary(d).filter;
                     const dimmed = maxHeadway !== Infinity && (metricValueForPeriod(filterHw, period) ?? Infinity) > maxHeadway;
                     return (() => {
-                      const displayH = routeCardDisplayHeadway(d, period);
+                      const displayH = hoveredHour != null
+                        ? buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? routeCardDisplayHeadway(d, period)
+                        : routeCardDisplayHeadway(d, period);
                       const label = branchLabel(group, d.headsign, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
-                      const trunkHw = period !== 'all'
+                      const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
                       return (

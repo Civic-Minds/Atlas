@@ -35,11 +35,12 @@ interface HourlySparklineProps {
   period?: string;
   onPeriodChange?: (period: string) => void;
   onPeriodHover?: (period: string | null) => void;
+  onHourHover?: (hour: number | null) => void;
 }
 
-export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover, onHourHover }: HourlySparklineProps) {
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
-  const [hoveredTooltip, setHoveredTooltip] = useState<{ hour: number; x: number } | null>(null);
+  const [hoveredHour, setHoveredHour] = useState<number | null>(null);
 
   const H = 28;
   const valids = HOURS.map(h => byHour[h]).filter((v): v is number => v != null);
@@ -65,8 +66,9 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
     const hour = HOURS[idx];
     const p = HOUR_TO_PERIOD[hour] ?? null;
     setHoveredPeriod(p);
-    setHoveredTooltip({ hour, x: fraction });
+    setHoveredHour(hour);
     onPeriodHover?.(p);
+    onHourHover?.(hour);
   } : undefined;
 
   const handleClick = interactive ? (e: React.MouseEvent<HTMLDivElement>) => {
@@ -76,8 +78,9 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
 
   const handleMouseLeave = interactive ? () => {
     setHoveredPeriod(null);
-    setHoveredTooltip(null);
+    setHoveredHour(null);
     onPeriodHover?.(null);
+    onHourHover?.(null);
   } : undefined;
 
   const bands = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
@@ -88,19 +91,10 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
     ).values())
     : [];
 
-  const formatHour = (h: number): string => {
-    let h24 = h > 24 ? h - 24 : h;
-    if (h24 === 24) h24 = 0;
-    const ampm = h24 < 12 ? 'AM' : 'PM';
-    let h12 = h24 % 12;
-    if (h12 === 0) h12 = 12;
-    return `${h12} ${ampm}`;
-  };
-
   return (
     <div className="mt-6 mb-4">
       <div
-        className={`relative pt-10 ${interactive ? 'cursor-pointer select-none' : ''}`}
+        className={`relative pt-5 ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -136,7 +130,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
               ? isHourInPeriod(h, activePeriodKey)
               : true;
             const inHovered = hoveredPeriod ? HOUR_TO_PERIOD[h] === hoveredPeriod : false;
-            const isTooltipHover = hoveredTooltip?.hour === h;
+            const isTooltipHover = hoveredHour === h;
             const segments = stackedByHour?.[h] ?? [];
             const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
             // Hovered-but-inactive bars show their tier color at reduced opacity as a preview
@@ -173,35 +167,6 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
           })}
         </div>
 
-        {/* Custom hover tooltip — replaces ugly native title= */}
-        {hoveredTooltip && (() => {
-          const hw = byHour[hoveredTooltip.hour];
-          if (hw == null) return null;
-          const segments = stackedByHour?.[hoveredTooltip.hour] ?? [];
-          return (
-            <div
-              className="absolute top-5 right-0 max-w-[calc(100%-8px)] text-[9px] font-bold leading-tight text-right text-[var(--text-primary)] pointer-events-none z-10"
-              style={{
-                overflowWrap: 'anywhere',
-              }}
-            >
-              {formatHour(hoveredTooltip.hour)} · every {hw} min
-              {segments.length > 0 && (
-                <span className="block font-semibold text-[var(--text-dim)]">
-                  {segments.map((segment, i) => (
-                    <React.Fragment key={segment.label}>
-                      {i > 0 && ' · '}
-                      <span className="inline-flex items-center gap-0.5">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: segment.color }} />
-                        {segment.label}: {segment.headway} min
-                      </span>
-                    </React.Fragment>
-                  ))}
-                </span>
-              )}
-            </div>
-          );
-        })()}
       </div>
       {stackedLegend.length > 0 && (
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 mt-1 px-1 text-[7px] font-bold text-[var(--text-dim)] leading-tight">
