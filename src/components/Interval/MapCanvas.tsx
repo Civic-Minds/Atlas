@@ -992,27 +992,35 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (!showRouteLayers) {
         map.setFilter('stops-layer', ['==', ['get', 'agencySlug'], ''] as any);
       } else {
-        const showAll = zoom >= 15;
-        const showRail = zoom >= 12 && zoom < 15;
+        const showAllDetailed = zoom >= 17;
+        const showConsolidated = zoom >= 14 && zoom < 17;
+        const showRail = zoom >= 12 && zoom < 14;
 
         const allSiblingStopIds = routesForStop?.siblingIdsByAgency
           ? Object.values(routesForStop.siblingIdsByAgency).flatMap(set => Array.from(set))
           : [];
 
-        map.setFilter('stops-layer', [
-          'all',
-          showAll 
-            ? ['all'] 
-            : showRail 
+        const baseVisibility = showAllDetailed
+          ? ['all']
+          : showConsolidated
+            ? ['==', ['get', 'isHubRef'], true]
+            : showRail
               ? ['any', ['==', ['get', 'isRail'], true], ['==', ['get', 'isHub'], true]]
-              : (selectedStop && allSiblingStopIds.length > 0)
-                ? [
-                    'all',
-                    ['in', ['get', 'agencySlug'], ['literal', Object.keys(routesForStop?.siblingIdsByAgency || {})]],
-                    ['in', ['get', 'stopId'], ['literal', allSiblingStopIds]]
-                  ]
-                : ['==', ['get', 'stopId'], '']
-        ] as any);
+              : ['==', ['get', 'stopId'], ''];
+
+        const filterExpr = (selectedStop && allSiblingStopIds.length > 0)
+          ? [
+              'any',
+              baseVisibility,
+              [
+                'all',
+                ['in', ['get', 'agencySlug'], ['literal', Object.keys(routesForStop?.siblingIdsByAgency || {})]],
+                ['in', ['get', 'stopId'], ['literal', allSiblingStopIds]]
+              ]
+            ]
+          : baseVisibility;
+
+        map.setFilter('stops-layer', ['all', filterExpr] as any);
       }
     }
 

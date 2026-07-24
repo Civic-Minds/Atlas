@@ -373,5 +373,34 @@ export function runStopClustering(stops: Feature[]) {
     stops[i].properties.hubId = hubIds.get(root)!;
   }
 
+  // Assign isHubRef to exactly one representative stop per hubId
+  const hubMembers = new Map<string, number[]>();
+  for (let i = 0; i < N; i++) {
+    const hubId = stops[i].properties.hubId;
+    if (!hubMembers.has(hubId)) {
+      hubMembers.set(hubId, []);
+    }
+    hubMembers.get(hubId)!.push(i);
+  }
+
+  for (const indices of hubMembers.values()) {
+    let bestIndex = indices[0];
+    let bestScore = -1;
+    for (const idx of indices) {
+      const p = stops[idx].properties;
+      let score = 0;
+      if (p.isRail) score += 1000;
+      if (p.isHub) score += 100;
+      if (Array.isArray(p.routeIds)) {
+        score += p.routeIds.length;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        bestIndex = idx;
+      }
+    }
+    stops[bestIndex].properties.isHubRef = true;
+  }
+
   console.log(`Clustering complete! Assigned ${hubIds.size} unique hub IDs in ${Date.now() - start}ms.`);
 }

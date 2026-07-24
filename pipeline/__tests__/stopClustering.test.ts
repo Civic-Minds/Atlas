@@ -78,4 +78,25 @@ describe('runStopClustering', () => {
 
     expect(stops[0].properties.hubId).not.toBe(stops[1].properties.hubId);
   });
+
+  it('assigns isHubRef to exactly one representative stop per hub, preferring rail/hubs', () => {
+    const stops: any[] = [
+      {
+        type: 'Feature',
+        properties: { stopName: 'Rosemont CTA Station', agencySlug: 'pace-bus', isRail: false, isHub: false, routeIds: ['811'] },
+        geometry: { type: 'Point', coordinates: [-79.38, 43.65] }
+      },
+      {
+        type: 'Feature',
+        properties: { stopName: 'Rosemont', agencySlug: 'cta', isRail: true, isHub: true, routeIds: ['Blue'] },
+        geometry: { type: 'Point', coordinates: [-79.38, 43.65 + 100 / 111320] }
+      }
+    ];
+
+    runStopClustering(stops);
+
+    expect(stops[0].properties.hubId).toBe(stops[1].properties.hubId);
+    expect(stops[0].properties.isHubRef).toBeUndefined();
+    expect(stops[1].properties.isHubRef).toBe(true); // The CTA rail station should be the representative
+  });
 });
