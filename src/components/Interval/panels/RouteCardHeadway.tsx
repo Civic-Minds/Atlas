@@ -22,6 +22,7 @@ import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import {
   dirIdNum,
+  groupTrunkHeadway,
   headsignTrunkHeadway,
   sparklineSourceDirections,
   shouldShowTrunkSummary,
@@ -148,6 +149,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const primaryMultiBranch = directionGroups
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
+  const hasCoreSummary = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
+  const coreHeadway = hasCoreSummary
+    ? groupTrunkHeadway(primaryMultiBranch!.realTier, period === 'all' ? 'midday' : period)
+    : null;
 
   const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
   const groupHeadway = (g: DirectionGroup) => g.realTier[0]
@@ -292,10 +297,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         if (!hasAny) return null;
         return (
           <>
-            {hasTrunkSparkline && (
-              <p className={`text-[9px] font-bold text-[var(--text-dim)] mt-6 mb-[-1rem] ${hoveredBranch ? 'invisible' : ''}`}>
-                Shared section
-              </p>
+            {hasTrunkSparkline && coreHeadway != null && (
+              <div className={`flex items-center gap-2 mt-6 mb-[-1rem] ${hoveredBranch ? 'invisible' : ''}`}>
+                <span className="text-[10px] font-black text-[var(--text-muted)]">Core area</span>
+                <span className="text-[9px] font-bold text-[var(--text-dim)]">combined every {coreHeadway} min</span>
+              </div>
             )}
             <HeadwaySparkline byHour={merged} stackedByHour={stackedByHour} period={period} onPeriodChange={p => setPeriod(p as TimePeriod)} />
           </>
