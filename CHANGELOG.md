@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.9] - 2026-07-24
 
 - Removed blank EXPECTED/ACTUAL prompts from end-user issue reports; maintainers add those fields during triage.
-- Fixed branch route cards using shared trunk cadence instead of destination-specific service, so Madison R and E now show their scheduled terminal frequencies.
+- Fixed branch route cards using shared trunk cadence instead of destination-specific service, so Madison D, R, and E now show their scheduled terminal frequencies.
 - Route issue reports now include displayed service and feed freshness, while full generated metrics are copied for easy pasting without exceeding GitHub’s URL limit.
 - User-reported issue templates now use plain-text headings so the copied report can replace the placeholder cleanly.
 - Route issue diagnostics now focus on the selected period and relevant stop-level evidence instead of duplicating every raw metric.
