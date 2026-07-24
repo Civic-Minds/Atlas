@@ -9,7 +9,7 @@ import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT
 import { agencyDisplayParts, getRouteLabel, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
-import { routeListDisplayHeadway } from '../../utils/effectiveHeadway';
+import { routeListCombinedCoreHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from './cardUi';
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
@@ -20,6 +20,7 @@ interface RouteRow {
   shortName: string;
   longName: string | null;
   headway: number | null;
+  combinedCoreHeadway?: number | null;
   tier: string | null;
   routeType: number;
   busSubType: string | undefined;
@@ -106,6 +107,7 @@ function getRoutes(
       shortName: row.shortName,
       longName: row.longName,
       headway: routeListDisplayHeadway(row.props, period),
+      combinedCoreHeadway: routeListCombinedCoreHeadway(row.props, period),
       tier: row.tier,
       routeType: row.routeType,
       busSubType: row.busSubType,
@@ -243,7 +245,11 @@ function RouteListSection({
           <CardDirectionRow
             label={titleCase(getRouteLabel(r.shortName, r.longName))}
             headway={r.headway ?? undefined}
-            subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName }) ? 'Rail replacement bus' : undefined}
+            subLabel={r.combinedCoreHeadway != null
+              ? `Core area · every ${r.combinedCoreHeadway} min`
+              : isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
+                ? 'Rail replacement bus'
+                : undefined}
             live={isLive}
               dimmed={dimmed}
               onClick={() => onRouteSelect(key)}
