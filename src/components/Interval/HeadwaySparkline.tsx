@@ -179,11 +179,12 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
           const transform = xPct < 12 ? 'translate(0, 0)' : xPct > 88 ? 'translate(-100%, 0)' : 'translate(-50%, 0)';
           return (
             <div
-              className="absolute text-[9px] font-bold whitespace-nowrap bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"
+              className="absolute max-w-[calc(100%-8px)] text-[9px] font-bold leading-tight text-center bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"
               style={{
                 left: `${xPct}%`,
                 top: 0,
                 transform,
+                overflowWrap: 'anywhere',
               }}
             >
               {formatHour(hoveredTooltip.hour)} · every {hw} min
