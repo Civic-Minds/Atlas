@@ -1026,11 +1026,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               </>
             ) : (
               <>
-                {selectedRouteOutOfFilter && (
-                  <div className="mb-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] px-3 py-2 text-[10px] font-bold leading-relaxed text-[var(--text-muted)]">
-                    This route is outside the active frequency filter, but remains visible because it is selected.
-                  </div>
-                )}
                 <RouteCardHeadway
                   currentRoute={currentRoute}
                   variantFamily={variantFamily}
@@ -1046,6 +1041,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   directionGroups={directionGroups}
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
+                  selectedRouteOutOfFilter={selectedRouteOutOfFilter}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}

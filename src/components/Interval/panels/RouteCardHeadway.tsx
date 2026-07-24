@@ -16,7 +16,7 @@ import {
   SidebarCardShell,
   CardReportButton,
 } from '../cardUi';
-import { CARD_NOTICE_FOOTER } from '../../../styles';
+import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
@@ -112,6 +112,7 @@ export interface RouteCardHeadwayProps {
   directionGroups: DirectionGroup[];
   hideSpan: boolean;
   routeIsStale: boolean;
+  selectedRouteOutOfFilter: boolean;
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
@@ -133,6 +134,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   directionGroups,
   hideSpan,
   routeIsStale,
+  selectedRouteOutOfFilter,
   expDateStr,
   hoveredBranch,
   setHoveredBranch,
@@ -331,6 +333,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         </div>
       )}
       <SidebarCardList>
+        {selectedRouteOutOfFilter && (
+          <div className={CARD_NOTICE_FOOTER}>
+            <p className={CARD_NOTICE}>
+              This route is outside the active frequency filter, but remains visible because it is selected.
+            </p>
+          </div>
+        )}
         {(() => {
           const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
             resolveBranchLabel({

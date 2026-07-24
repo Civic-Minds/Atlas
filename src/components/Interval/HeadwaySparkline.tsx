@@ -82,6 +82,11 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
 
   const bands = hoveredPeriod ? PERIOD_BANDS[hoveredPeriod] : null;
   const activeLabelKey = (hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
+  const stackedLegend = stackedByHour
+    ? Array.from(new Map(
+      Object.values(stackedByHour).flat().map(segment => [segment.label, segment]),
+    ).values())
+    : [];
 
   const formatHour = (h: number): string => {
     let h24 = h > 24 ? h - 24 : h;
@@ -175,7 +180,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
           const segments = stackedByHour?.[hoveredTooltip.hour] ?? [];
           return (
             <div
-              className="absolute top-5 right-0 max-w-[calc(100%-8px)] text-[9px] font-bold leading-tight text-right bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"
+              className="absolute top-5 right-0 max-w-[calc(100%-8px)] text-[9px] font-bold leading-tight text-right text-[var(--text-primary)] pointer-events-none z-10"
               style={{
                 overflowWrap: 'anywhere',
               }}
@@ -183,13 +188,31 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
               {formatHour(hoveredTooltip.hour)} · every {hw} min
               {segments.length > 0 && (
                 <span className="block font-semibold text-[var(--text-dim)]">
-                  {segments.map(segment => `${segment.label}: ${segment.headway} min`).join(' · ')}
+                  {segments.map((segment, i) => (
+                    <React.Fragment key={segment.label}>
+                      {i > 0 && ' · '}
+                      <span className="inline-flex items-center gap-0.5">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: segment.color }} />
+                        {segment.label}: {segment.headway} min
+                      </span>
+                    </React.Fragment>
+                  ))}
                 </span>
               )}
             </div>
           );
         })()}
       </div>
+      {stackedLegend.length > 0 && (
+        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 mt-1 px-1 text-[7px] font-bold text-[var(--text-dim)] leading-tight">
+          {stackedLegend.map(segment => (
+            <span key={segment.label} className="inline-flex items-center gap-0.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: segment.color }} />
+              {segment.label}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="flex gap-px mt-1">
         {HOURS.map(h => (
           <div key={h} className="flex-1 min-w-0 text-center">
