@@ -44,6 +44,15 @@ describe('routeCardTrunk', () => {
     expect(shouldShowTrunkSummary(hsrWestBranches, 'evening')).toBe(true);
   });
 
+  it('does not combine infrequent drop-off-only branches into the core', () => {
+    const branches = [
+      { ...hsrWestBranches[0], headway: 15, headwayByPeriod: { pmPeak: 15 } },
+      { ...hsrWestBranches[1], headway: 15, headwayByPeriod: { pmPeak: 15 }, tier: 'infrequent' },
+    ] as ShapeProperties[];
+    expect(groupTrunkHeadway(branches, 'pmPeak')).toBe(15);
+    expect(shouldShowTrunkSummary(branches, 'pmPeak')).toBe(false);
+  });
+
   it('sparkline at 3 PM uses pmPeak trunk not 30-min terminal', () => {
     const byHour = trunkSparklineByHour(hsrWestBranches, [15]);
     expect(byHour[15]).toBe(8);

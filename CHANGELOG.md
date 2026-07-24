@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes and publishes them in PMTiles (#214)
 - Refreshed CTA and Laketran schedule artifacts and rebuilt the live PMTiles archive after the explicit no-service fix (#274)
 - Shared-section cadence now combines scheduled branch frequencies instead of using a fastest-stop gap.
+- Limited and infrequent branches no longer inflate shared-core frequency summaries.
 
 ## [3.2.9] - 2026-07-24
 
