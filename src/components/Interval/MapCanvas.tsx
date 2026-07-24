@@ -971,9 +971,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'case', servingMatch, 1.0, DIM_OPACITY,
         ]);
         map.setPaintProperty('routes-layer', 'line-width', [
-          'case', servingMatch,
-          ['interpolate', ['linear'], ['zoom'], 8, 2.0, 14, 3.0],
-          DIM_WIDTH,
+          'interpolate', ['linear'], ['zoom'],
+          8, ['case', servingMatch, 2.0, DIM_WIDTH],
+          14, ['case', servingMatch, 3.0, DIM_WIDTH],
         ]);
       } else {
         map.setPaintProperty('routes-layer', 'line-width', [
