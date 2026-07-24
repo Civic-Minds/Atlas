@@ -1,5 +1,5 @@
 import type { GtfsData } from '../../types/gtfs.js';
-import { filterGtfsByExcludedShortNames, filterGtfsByRouteTypes } from '../filterGtfs.js';
+import { filterGtfsByAgencyId, filterGtfsByExcludedShortNames, filterGtfsByRouteTypes } from '../filterGtfs.js';
 import { synthesizeMissingDirections } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
@@ -9,6 +9,7 @@ import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes';
 
 export interface GtfsTransformOptions {
+  agencyId?: string;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
@@ -23,6 +24,10 @@ export function normalizeGtfs(
 ): GtfsData {
   if (options?.routeTypes?.length) {
     gtfs = filterGtfsByRouteTypes(gtfs, options.routeTypes);
+  }
+  if (options?.agencyId) {
+    gtfs = filterGtfsByAgencyId(gtfs, options.agencyId);
+    onStatus?.(`Agency filter: kept agency_id=${options.agencyId}`);
   }
   if (options?.excludeRouteShortNames?.length) {
     gtfs = filterGtfsByExcludedShortNames(gtfs, options.excludeRouteShortNames);

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes (#214)
+
 ## [3.2.9] - 2026-07-24
 
 - Removed blank EXPECTED/ACTUAL prompts from end-user issue reports; maintainers add those fields during triage.

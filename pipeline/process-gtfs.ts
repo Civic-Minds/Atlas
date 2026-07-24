@@ -159,15 +159,17 @@ async function main() {
 
   const indexPath = resolve('public/data/index.json');
   let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
+  let agencyId: string | undefined;
   let excludeRouteShortNames: string[] | undefined;
   let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; issueUrl?: string; fare?: number }>;
+      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; issueUrl?: string; fare?: number }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
     preprocess = entry?.preprocess;
+    agencyId = entry?.agencyId;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
     issueUrl = entry?.issueUrl;
     if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
@@ -193,7 +195,7 @@ async function main() {
 
   const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { preprocess, excludeRouteShortNames, slug, manualBaseFare, force });
+  }, { agencyId, preprocess, excludeRouteShortNames, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);

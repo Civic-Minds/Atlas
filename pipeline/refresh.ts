@@ -169,6 +169,7 @@ interface AgencyEntry {
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
+  agencyId?: string;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
@@ -283,6 +284,7 @@ async function refreshAgency(
   try {
     primary = await processGtfsBuffer(buf, undefined, {
       routeTypes: agency.routeTypes,
+      agencyId: agency.agencyId,
       preprocess: agency.preprocess,
       excludeRouteShortNames: agency.excludeRouteShortNames,
       skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
@@ -319,6 +321,7 @@ async function refreshAgency(
       const suppBuf = await downloadFeed(suppUrl);
       const supp = await processGtfsBuffer(suppBuf, undefined, {
         routeTypes: agency.routeTypes,
+        agencyId: agency.agencyId,
         preprocess: agency.preprocess,
         excludeRouteShortNames: agency.excludeRouteShortNames,
         slug: agency.slug,
