@@ -37,6 +37,14 @@ function medianHeadway(values: number[]): number {
   return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 }
 
+function formatMetricMap(values: Record<string, number | null | undefined> | null | undefined): string {
+  if (!values) return 'none';
+  const entries = Object.entries(values);
+  return entries.length > 0
+    ? entries.map(([key, value]) => `${key}=${value ?? 'none'}`).join(', ')
+    : 'none';
+}
+
 /** Merge hourly headways across branches — median per hour avoids min-spike artifacts (#98). */
 function mergeHeadwayByHour(
   directions: ShapeProperties[],
@@ -182,15 +190,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       : [];
     return [...section, ...branchLines, ...limitedLines];
   });
-  const reportRawMetrics = currentRoute.directions.map(direction => ({
-    routeId: direction.routeId,
-    directionId: direction.directionId,
-    headsign: direction.headsign,
-    tier: direction.tier,
-    rawHeadway: direction.headway,
-    displayedHeadway: routeCardDisplayHeadway(direction, period),
-    headwayByPeriod: direction.headwayByPeriod ?? null,
-    selectedPeriodHourlyHeadways: selectedPeriod
+  const reportRawMetrics = currentRoute.directions.map((direction, index) => {
+    const selectedPeriodHourlyHeadways = selectedPeriod
       ? Object.fromEntries(
           Object.entries(direction.headwayByHour ?? {})
             .filter(([hour]) => {
@@ -198,16 +199,28 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               return h >= selectedPeriod.startHour && h < selectedPeriod.endHour;
             }),
         )
-      : null,
-    minStopHeadwayByPeriod: direction.minStopHeadwayByPeriod ?? null,
-    headsignMinStopHeadwayByPeriod: direction.headsignMinStopHeadwayByPeriod ?? null,
-    selectedPeriodStopHeadways: period === 'all'
+      : null;
+    const selectedPeriodStopHeadways = period === 'all'
       ? direction.stopHeadways ?? null
       : Object.fromEntries(
           Object.entries(direction.stopPeriodHeadways ?? {})
             .map(([stopId, periods]) => [stopId, periods[period] ?? null]),
-        ),
-  }));
+        );
+    return [
+      `Branch ${index + 1}:`,
+      `  Route ID: ${direction.routeId}`,
+      `  Direction ID: ${direction.directionId}`,
+      `  Headsign: ${direction.headsign ?? 'none'}`,
+      `  Tier: ${direction.tier ?? 'none'}`,
+      `  Raw headway: ${direction.headway ?? 'none'} min`,
+      `  Displayed headway: ${routeCardDisplayHeadway(direction, period) ?? 'none'} min`,
+      `  Headway by period: ${formatMetricMap(direction.headwayByPeriod)}`,
+      `  Hourly headways for ${period}: ${formatMetricMap(selectedPeriodHourlyHeadways)}`,
+      `  Minimum stop headway by period: ${formatMetricMap(direction.minStopHeadwayByPeriod)}`,
+      `  Headsign minimum stop headway by period: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod)}`,
+      `  Stop headways for ${period}: ${formatMetricMap(selectedPeriodStopHeadways)}`,
+    ].join('\n');
+  }).join('\n\n');
   const reportDetails = [
     `**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}`,
     `**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`,
@@ -218,7 +231,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',
     '**Generated route metrics (loaded artifact):**',
-    JSON.stringify(reportRawMetrics, null, 2),
+    reportRawMetrics,
     `**Atlas URL:** ${currentAtlasUrl()}`,
   ].join('\n');
 
