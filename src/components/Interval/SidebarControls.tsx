@@ -706,13 +706,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
 
-    return Array.from(seen.values()).sort((a, b) => {
-      if (a.headway !== null && b.headway !== null) return a.headway - b.headway;
-      if (a.headway !== null) return -1;
-      if (b.headway !== null) return 1;
-      return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
-    });
-  }, [currentStop, nonCorridorLayers, currentDay, period]);
+    const departingKeys = new Set<string>();
+    for (const route of stopRoutes) {
+      for (const branch of route.branches) {
+        departingKeys.add(branch.rKey);
+      }
+    }
+
+    return Array.from(seen.values())
+      .filter(conn => !departingKeys.has(conn.rKey))
+      .sort((a, b) => {
+        if (a.headway !== null && b.headway !== null) return a.headway - b.headway;
+        if (a.headway !== null) return -1;
+        if (b.headway !== null) return 1;
+        return a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true });
+      });
+  }, [currentStop, nonCorridorLayers, currentDay, period, stopRoutes]);
 
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
