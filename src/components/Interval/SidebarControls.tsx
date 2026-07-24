@@ -78,6 +78,7 @@ interface SidebarControlsProps {
   bounds?: ViewportBounds | null;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
+  selectedRouteOutOfFilter?: boolean;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
@@ -123,6 +124,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   bounds = null,
   hoveredBranch,
   setHoveredBranch,
+  selectedRouteOutOfFilter = false,
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
@@ -1023,26 +1025,33 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                 </div>
               </>
             ) : (
-              <RouteCardHeadway
-                currentRoute={currentRoute}
-                variantFamily={variantFamily}
-                liveRouteInfo={liveRouteInfo}
-                liveStatus={liveStatus}
-                routeSlug={routeSlug}
-                routeAgency={routeAgency}
-                setSelectedAgencySlug={setSelectedAgencySlug}
-                setSelectedRoute={setSelectedRoute}
-                maxHeadway={maxHeadway}
-                period={period}
-                setPeriod={setPeriod}
-                directionGroups={directionGroups}
-                hideSpan={hideSpan}
-                routeIsStale={routeIsStale}
-                expDateStr={expDateStr}
-                hoveredBranch={hoveredBranch}
-                setHoveredBranch={setHoveredBranch}
-                onInfoOpen={onInfoOpen}
-              />
+              <>
+                {selectedRouteOutOfFilter && (
+                  <div className="mb-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] px-3 py-2 text-[10px] font-bold leading-relaxed text-[var(--text-muted)]">
+                    This route is outside the active frequency filter, but remains visible because it is selected.
+                  </div>
+                )}
+                <RouteCardHeadway
+                  currentRoute={currentRoute}
+                  variantFamily={variantFamily}
+                  liveRouteInfo={liveRouteInfo}
+                  liveStatus={liveStatus}
+                  routeSlug={routeSlug}
+                  routeAgency={routeAgency}
+                  setSelectedAgencySlug={setSelectedAgencySlug}
+                  setSelectedRoute={setSelectedRoute}
+                  maxHeadway={maxHeadway}
+                  period={period}
+                  setPeriod={setPeriod}
+                  directionGroups={directionGroups}
+                  hideSpan={hideSpan}
+                  routeIsStale={routeIsStale}
+                  expDateStr={expDateStr}
+                  hoveredBranch={hoveredBranch}
+                  setHoveredBranch={setHoveredBranch}
+                  onInfoOpen={onInfoOpen}
+                />
+              </>
             )
         )}
 

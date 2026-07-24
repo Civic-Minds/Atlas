@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Selected routes now explain when they remain visible outside the active frequency filter (#270)
 - Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes (#214)
 
 ## [3.2.9] - 2026-07-24

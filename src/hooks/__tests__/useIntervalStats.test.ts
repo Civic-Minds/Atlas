@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { useIntervalStats, featureBbox, inViewport } from '../useIntervalStats';
+import { passesRouteFilter, useIntervalStats, featureBbox, inViewport } from '../useIntervalStats';
 import type { AgencyLayers } from '../useAgencyData';
 import type { ViewportBounds } from '../useIntervalStats';
 import { describe, it, expect } from 'vitest';
@@ -44,6 +44,13 @@ describe('useIntervalStats', () => {
     modes: new Set(),
     day: 'Weekday'
   };
+
+  it('keeps selected-route visibility separate from the active filter explanation', () => {
+    const route = { routeId: '12', agencySlug: 'kalamazoo', headway: 60, tier: '60' } as any;
+    const filters = { ...defaultFilters, maxHeadway: 20, agencies: new Set(['kalamazoo']) };
+    expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: 'kalamazoo::12' }, null)).toBe(true);
+    expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: null }, null)).toBe(false);
+  });
 
   it('should return correct stats for default filters', () => {
     const { result } = renderHook(() => useIntervalStats(mockLayers, defaultFilters));

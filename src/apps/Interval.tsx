@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
+import { passesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
@@ -241,6 +241,31 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     showCorridorBand,
     hoveredBranch,
   });
+
+  const selectedRouteOutOfFilter = useMemo(() => {
+    if (!selectedRoute || maxHeadway === Infinity) return false;
+    const separator = selectedRoute.indexOf('::');
+    if (separator < 0) return false;
+    const slug = selectedRoute.slice(0, separator);
+    const routeId = selectedRoute.slice(separator + 2);
+    const feature = layers[slug]?.features.find(f => {
+      const p = f.properties as ShapeProperties;
+      return p?.routeId === routeId && (p.day === undefined || p.day === day);
+    });
+    if (!feature) return false;
+    return !passesRouteFilter(feature.properties as ShapeProperties, slug, {
+      maxHeadway,
+      agencies: selectedAgencies,
+      modes: selectedModes,
+      day,
+      period,
+      hideSpan,
+      livePollingOnly,
+      showCorridors,
+      showCorridorBand,
+      selectedRoute: null,
+    }, routesForStop);
+  }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute, showCorridorBand, showCorridors]);
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
   useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
@@ -542,6 +567,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         bounds={bounds}
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
+        selectedRouteOutOfFilter={selectedRouteOutOfFilter}
         onDirectFromStop={onDirectFromStop}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
