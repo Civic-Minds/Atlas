@@ -95,7 +95,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
   return (
     <div className="mt-6 mb-4">
       <div
-        className={`relative pt-5 ${interactive ? 'cursor-pointer select-none' : ''}`}
+        className={`relative pt-10 ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -173,17 +173,10 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
           const hw = byHour[hoveredTooltip.hour];
           if (hw == null) return null;
           const segments = stackedByHour?.[hoveredTooltip.hour] ?? [];
-          const xPct = hoveredTooltip.x * 100;
-          // Keep the tooltip inside the card. Translating it upward made the
-          // card's overflow clipping cut off the tooltip at the top edge.
-          const transform = xPct < 12 ? 'translate(0, 0)' : xPct > 88 ? 'translate(-100%, 0)' : 'translate(-50%, 0)';
           return (
             <div
-              className="absolute max-w-[calc(100%-8px)] text-[9px] font-bold leading-tight text-center bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"
+              className="absolute top-5 right-0 max-w-[calc(100%-8px)] text-[9px] font-bold leading-tight text-right bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"
               style={{
-                left: `${xPct}%`,
-                top: 0,
-                transform,
                 overflowWrap: 'anywhere',
               }}
             >
