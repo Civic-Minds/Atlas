@@ -18,6 +18,8 @@ Same procedure as adding a single agency (see [`ADDING_AGENCIES.md`](ADDING_AGEN
 5. Rebuild and upload the PMTiles archive (`npm run build-pmtiles` then `npm run upload-pmtiles`), then run `npm run verify-pmtiles-coverage` — see [`ADDING_AGENCIES.md`](ADDING_AGENCIES.md) § Integrating a New Transit Agency step 7 for why this is never optional (it fails silently, not loudly, when skipped).
 6. Record product additions in `CHANGELOG.md` and mark backlog items `done` in `docs/AGENCY_BACKLOG.md`.
 
+For a local rebuild check without writing to R2, run `npm run build-pmtiles -- --dry-run`. The command still downloads the current public artifacts and runs the real tippecanoe/tile-join build, but leaves the result at `tmp/geojson-build/atlas.pmtiles` for inspection.
+
 ---
 
 [Back to Data](./DATA.md)

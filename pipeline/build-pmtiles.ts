@@ -44,6 +44,10 @@ async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | 
 }
 
 async function main() {
+  const dryRun = process.argv.includes('--dry-run');
+  if (dryRun) {
+    console.log('Dry run: building PMTiles locally without uploading to R2.');
+  }
   console.log(`Loading agency index from public/data/index.json...`);
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: any[] };
   const agencies = index.agencies || [];
@@ -192,6 +196,11 @@ async function main() {
 
   const size = fs.statSync(pmtilesPath).size;
   console.log(`atlas.pmtiles size: ${(size/1024/1024).toFixed(1)} MB`);
+
+  if (dryRun) {
+    console.log(`Dry run complete: ${pmtilesPath}`);
+    return;
+  }
 
   console.log("Uploading atlas.pmtiles to Cloudflare R2 (streaming)...");
   await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
