@@ -180,7 +180,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
             )
           : sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
-        const showTrunkSparkline = !hoveredBranch && !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
+        const hasTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
+        const showTrunkSparkline = !hoveredBranch && hasTrunkSparkline;
         const merged = showTrunkSparkline
           ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS)
           : sparklineHeadwayByHour(sparklineDirs, HOURS);
@@ -197,8 +198,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         if (!hasAny) return null;
         return (
           <>
-            {showTrunkSparkline && (
-              <p className="text-[9px] font-bold text-[var(--text-dim)] mt-6 mb-[-1rem]">
+            {hasTrunkSparkline && (
+              <p className={`text-[9px] font-bold text-[var(--text-dim)] mt-6 mb-[-1rem] ${hoveredBranch ? 'invisible' : ''}`}>
                 Shared section
               </p>
             )}
