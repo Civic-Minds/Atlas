@@ -58,15 +58,14 @@ export function sparklineSourceDirections(
   return withHours.filter(d => dirIdNum(d.directionId) === id);
 }
 
-/** Combined trunk headway from minStopHeadwayByPeriod (union of deps at shared stops). */
+/** Combined trunk headway from scheduled branch cadences on a shared section. */
 export function groupTrunkHeadway(branches: ShapeProperties[], period: string): number | null {
-  const vals = branches
-    .map(d => {
-      const shared = buildRouteServiceSummary(d).shared;
-      return shared.byPeriod?.[period as keyof NonNullable<typeof shared.byPeriod>] ?? shared.value;
-    })
-    .filter((v): v is number => v != null);
-  return vals.length ? Math.min(...vals) : null;
+  const values = branches
+    .map(d => metricValueForPeriod(buildRouteServiceSummary(d).branch, period as TimePeriod))
+    .filter((v): v is number => v != null && v > 0);
+  if (values.length === 0) return null;
+  const combined = 1 / values.reduce((sum, value) => sum + 1 / value, 0);
+  return Math.max(1, Math.round(combined));
 }
 
 function medianHeadway(values: number[]): number {

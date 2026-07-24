@@ -34,7 +34,7 @@ const hsrWestBranches: ShapeProperties[] = [
 ];
 
 describe('routeCardTrunk', () => {
-  it('reads combined trunk headway from minStopHeadwayByPeriod', () => {
+  it('combines scheduled branch headways instead of using fastest stop gaps', () => {
     expect(groupTrunkHeadway(hsrWestBranches, 'pmPeak')).toBe(8);
     expect(groupTrunkHeadway(hsrWestBranches, 'evening')).toBe(10);
   });
@@ -55,7 +55,7 @@ describe('routeCardTrunk', () => {
       headsignMinStopHeadwayByPeriod: { pmPeak: 12, evening: 15 },
     };
     expect(headsignTrunkHeadway(branch, 'pmPeak')).toBe(12);
-    expect(groupTrunkHeadway([branch], 'pmPeak')).toBe(8);
+    expect(groupTrunkHeadway([branch], 'pmPeak')).toBe(30);
   });
 
   describe('shouldShowBranchHeadwayRange', () => {
