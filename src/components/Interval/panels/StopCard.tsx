@@ -148,14 +148,13 @@ export const StopCard: React.FC<StopCardProps> = ({
       </SidebarCardList>
 
       {nearbyConnections.length > 0 && (
-        <SidebarCardSection label="Within 10 min walk">
+        <SidebarCardSection label="Nearby routes">
           {nearbyConnections.map(({ rKey, routeShortName, routeLongName, agencyName, headway, nearestStopName, distanceMeters }) => {
-            const walkMin = Math.max(1, Math.round(distanceMeters / 80));
             return (
               <CardDirectionRow
                 key={rKey}
                 label={titleCase(getRouteLabel(routeShortName, routeLongName, agencyName))}
-                subLabel={`${nearestStopName} · ${walkMin} min walk`}
+                subLabel={`${nearestStopName} · ${Math.round(distanceMeters)} m away`}
                 headway={headway ?? undefined}
                 onClick={() => openRoute(rKey)}
               />

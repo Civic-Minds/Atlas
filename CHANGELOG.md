@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Nearby stop connections now show as nearby routes with their straight-line distance instead of implying an exact walking time.
 - Fixed route-card destination hover flicker by keeping the sparkline layout stable while highlighting a branch.
 - Statically precompute cross-agency stop-hub clusters (via Union-Find spatial and name token grouping) at build-time to assign a hubId to every stop, resolving viewport boundaries and optimizing client lookup performance.
 - Consolidate overlapping stop markers on the map by rendering only one representative stop per hub below zoom 17.
