@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed branch route cards using shared trunk cadence instead of destination-specific service, so Madison R and E now show their scheduled terminal frequencies.
 - Route issue reports now include displayed service and feed freshness, while full generated metrics are copied for easy pasting without exceeding GitHub’s URL limit.
 - User-reported issue templates now use plain-text headings so the copied report can replace the placeholder cleanly.
 - Route issue diagnostics now focus on the selected period and relevant stop-level evidence instead of duplicating every raw metric.

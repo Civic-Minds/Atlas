@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway } from '../headway-utils';
+import { hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -73,5 +73,15 @@ describe('hasGenuineBranchPattern', () => {
 
   it('defaults to true (keep existing protection) when there is not enough data to tell', () => {
     expect(hasGenuineBranchPattern(30, [])).toBe(true);
+  });
+});
+
+describe('resolveTerminalPeriodHeadway', () => {
+  it('uses a branch-scoped terminal value even when it is more frequent', () => {
+    expect(resolveTerminalPeriodHeadway(7, 17, true)).toBe(7);
+  });
+
+  it('protects a branch from a better unscoped shared-terminal value', () => {
+    expect(resolveTerminalPeriodHeadway(7, 17, false)).toBe(17);
   });
 });

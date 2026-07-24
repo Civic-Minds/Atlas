@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } f
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { computePeriodHeadways, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, TIER_RANK } from './headway-utils.js';
+import { computePeriodHeadways, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -596,19 +596,22 @@ export async function processGtfsBuffer(
     // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
     const terminalStopId = onShape[onShape.length - 1]?.stopId;
     const terminalPeriodHw = terminalStopId ? allStopPeriodHw[terminalStopId] : undefined;
+    const featHeadsign = feature.properties.headsign as string | null;
+    const hsStopMap = featHeadsign
+      ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`)
+      : undefined;
+    const headsignTerminalTimes = terminalStopId ? hsStopMap?.get(terminalStopId) : undefined;
+    const headsignTerminalPeriodHw = headsignTerminalTimes && headsignTerminalTimes.length > 0
+      ? computePeriodHeadways(headsignTerminalTimes)
+      : undefined;
+    const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
     const periodMedians: HeadwayByPeriod = {};
     const periodMins: Partial<Record<PeriodKey, number>> = {};
     const branchPeriodHw = feature.properties.headwayByPeriod as HeadwayByPeriod | undefined;
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
-      const termH = terminalPeriodHw?.[pk] ?? null;
+      const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
       const bH = branchPeriodHw?.[pk] ?? null;
-      if (bH == null) {
-        periodMedians[pk] = termH;
-      } else if (termH == null) {
-        periodMedians[pk] = bH;
-      } else {
-        periodMedians[pk] = Math.max(bH, termH);
-      }
+      periodMedians[pk] = resolveTerminalPeriodHeadway(termH, bH, terminalPeriodIsBranchScoped);
       const allVals = onShape
         .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
         .filter((v): v is number => v != null);
@@ -619,48 +622,44 @@ export async function processGtfsBuffer(
 
     // Headsign-scoped trunk minimums for route-card range display. minStopHeadwayByPeriod
     // stays route-wide (combined deps) so map filters still show routes when any section qualifies.
-    const featHeadsign = feature.properties.headsign as string | null;
-    if (featHeadsign) {
-      const hsStopMap = stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`);
-      if (hsStopMap) {
-        const hsPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
-        for (const [stopId, times] of hsStopMap) {
-          times.sort((a, b) => a - b);
-          const byPeriod: Partial<Record<PeriodKey, number>> = {};
-          for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-            const ph = medianHeadwayInWindow(times, start, end, 3);
-            if (ph != null) byPeriod[pk] = ph;
-          }
-          if (Object.keys(byPeriod).length > 0) hsPeriodHw[stopId] = byPeriod;
+    if (hsStopMap) {
+      const hsPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+      for (const [stopId, times] of hsStopMap) {
+        times.sort((a, b) => a - b);
+        const byPeriod: Partial<Record<PeriodKey, number>> = {};
+        for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+          const ph = medianHeadwayInWindow(times, start, end, 3);
+          if (ph != null) byPeriod[pk] = ph;
         }
-        const headsignPeriodMins: Partial<Record<PeriodKey, number>> = {};
-        for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
-          const vals = onShape
-            .map(({ stopId }) => hsPeriodHw[stopId]?.[pk])
-            .filter((v): v is number => v != null);
-          if (vals.length > 0) headsignPeriodMins[pk] = Math.min(...vals);
-        }
-        if (Object.keys(headsignPeriodMins).length > 0) {
-          feature.properties.headsignMinStopHeadwayByPeriod = headsignPeriodMins;
-        }
+        if (Object.keys(byPeriod).length > 0) hsPeriodHw[stopId] = byPeriod;
+      }
+      const headsignPeriodMins: Partial<Record<PeriodKey, number>> = {};
+      for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
+        const vals = onShape
+          .map(({ stopId }) => hsPeriodHw[stopId]?.[pk])
+          .filter((v): v is number => v != null);
+        if (vals.length > 0) headsignPeriodMins[pk] = Math.min(...vals);
+      }
+      if (Object.keys(headsignPeriodMins).length > 0) {
+        feature.properties.headsignMinStopHeadwayByPeriod = headsignPeriodMins;
       }
     }
 
     // Hourly headways from terminal stop for the sparkline.
     const terminalHourHw = terminalStopId ? allStopHourHw[terminalStopId] : undefined;
+    const headsignTerminalHourHw = headsignTerminalTimes
+      ? Object.fromEntries(
+          SPARKLINE_HOURS.map(h => [h, medianHeadwayInWindow(headsignTerminalTimes, h * 60, h * 60 + 90, 3)]),
+        ) as HeadwayByHour
+      : undefined;
+    const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
       const mergedHourHw: HeadwayByHour = {};
       for (const h of SPARKLINE_HOURS) {
-        const termH = terminalHourHw?.[h] ?? null;
+        const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
         const bH = branchHourHw[h] ?? null;
-        if (bH == null) {
-          mergedHourHw[h] = termH;
-        } else if (termH == null) {
-          mergedHourHw[h] = bH;
-        } else {
-          mergedHourHw[h] = Math.max(bH, termH);
-        }
+        mergedHourHw[h] = resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
       }
       feature.properties.headwayByHour = mergedHourHw;
     } else if (terminalHourHw) {

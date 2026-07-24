@@ -66,6 +66,22 @@ export function resolveTerminalHeadway(
   return terminalComputedHw;
 }
 
+/**
+ * Merge a branch summary with a terminal period/hour summary. Headway data
+ * scoped to the branch's own headsign is authoritative; only unscoped/shared
+ * terminal data needs the slower-value protection used for trunk branches.
+ */
+export function resolveTerminalPeriodHeadway(
+  terminalHeadway: number | null,
+  branchHeadway: number | null,
+  terminalIsBranchScoped: boolean,
+): number | null {
+  if (terminalIsBranchScoped) return terminalHeadway ?? branchHeadway;
+  if (branchHeadway == null) return terminalHeadway;
+  if (terminalHeadway == null) return branchHeadway;
+  return Math.max(branchHeadway, terminalHeadway);
+}
+
 // route-report's own threshold for flagging a headway mismatch worth a second look — reused
 // here so "is this a real branch" uses the same bar as "is this worth flagging" elsewhere.
 export const BRANCH_MISMATCH_RATIO = 1.8;
