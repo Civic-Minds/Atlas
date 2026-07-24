@@ -174,7 +174,9 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
           if (hw == null) return null;
           const segments = stackedByHour?.[hoveredTooltip.hour] ?? [];
           const xPct = hoveredTooltip.x * 100;
-          const transform = xPct < 12 ? 'translate(0, -100%)' : xPct > 88 ? 'translate(-100%, -100%)' : 'translate(-50%, -100%)';
+          // Keep the tooltip inside the card. Translating it upward made the
+          // card's overflow clipping cut off the tooltip at the top edge.
+          const transform = xPct < 12 ? 'translate(0, 0)' : xPct > 88 ? 'translate(-100%, 0)' : 'translate(-50%, 0)';
           return (
             <div
               className="absolute text-[9px] font-bold whitespace-nowrap bg-[var(--bg-header)] border border-[var(--border-primary)] rounded-md px-1.5 py-0.5 pointer-events-none shadow-sm z-10"

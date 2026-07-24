@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Route issue reports now include displayed service and feed freshness, while full generated metrics are copied for easy pasting without exceeding GitHub’s URL limit.
 - User-reported issue templates now use plain-text headings so the copied report can replace the placeholder cleanly.
+- Sparkline hover tooltips no longer get clipped by the route card.
 - Issue-report clipboard contents now contain only the raw diagnostics, avoiding duplicate summary text when pasted into GitHub.
 - Nearby stop connections now show as nearby routes with their straight-line distance instead of implying an exact walking time.
 - Fixed route-card destination hover flicker by keeping the sparkline layout stable while highlighting a branch.
