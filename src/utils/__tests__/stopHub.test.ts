@@ -54,4 +54,15 @@ describe('collectStopHubSiblings', () => {
     expect(result.siblingIdsByAgency.yrt).toBeUndefined();
     expect(result.allRouteIds.size).toBe(0);
   });
+
+  it('includes stops of different agencies within 250m sharing a significant token', () => {
+    const midLat = 43.65 + 200 / 111320;
+    const result = collectStopHubSiblings(43.65, -79.38, 'pace-bus', 'Rosemont Cta Station', [
+      { stopId: 'pace1', agencySlug: 'pace-bus', stopName: 'Rosemont Cta Station', lat: 43.65, lon: -79.38, routeIds: ['811'] },
+      { stopId: 'cta1', agencySlug: 'cta', stopName: 'Rosemont', lat: midLat, lon: -79.38, routeIds: ['Blue'] },
+    ]);
+    expect(result.siblingIdsByAgency['pace-bus'].has('pace1')).toBe(true);
+    expect(result.siblingIdsByAgency.cta.has('cta1')).toBe(true);
+    expect(result.routesByAgency.cta.has('Blue')).toBe(true);
+  });
 });

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Group cross-agency stops within 250m that share a significant name token (e.g. Rosemont CTA Station and Rosemont) into the same station hub.
 - Exclude departing routes from the walking connections list in stop cards.
 - Fixed high-severity security vulnerability in linkify-it dependency (#275)
 - Period filters now keep routes with explicit no-service periods off the map.
