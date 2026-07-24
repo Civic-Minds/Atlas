@@ -8,7 +8,7 @@ export function openAtlasIssueReport(title: string, details: string): void {
   const plainDetails = details
     .replace(/\*\*/g, '')
     .replace(/^```(?:json)?\s*$/gm, '');
-  const body = `${plainDetails}\n\nEXPECTED:\n\nACTUAL:\n\nDIAGNOSTICS ABOVE — PLEASE DO NOT EDIT\n\nWHAT'S WRONG:\n\n\n`;
+  const body = `${plainDetails}\n\nDIAGNOSTICS ABOVE — PLEASE DO NOT EDIT\n\nWHAT'S WRONG:\n\n\n`;
   const diagnosticsMarker = '\nGenerated route metrics (loaded artifact):';
   const diagnosticsStart = body.indexOf(diagnosticsMarker);
   const issueBody = diagnosticsStart === -1
