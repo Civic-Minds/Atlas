@@ -94,7 +94,10 @@ export function shouldShowTrunkSummary(branches: ShapeProperties[], period: Time
   const trunk = groupTrunkHeadway(branches, periodKey);
   const terminal = medianTerminalHeadway(branches, period);
   if (trunk == null || terminal == null) return false;
-  return trunk <= terminal * 0.65 && terminal / trunk <= 4;
+  // A heavily branched route can have a much faster shared core than any
+  // individual destination. Keep the material-improvement check, but do not
+  // hide that core simply because the ratio is large.
+  return trunk <= terminal * 0.65;
 }
 
 /** Trunk hourly curve from combined stop headways (flat within each period). */
