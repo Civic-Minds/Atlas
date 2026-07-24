@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListCombinedCoreHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -45,15 +45,6 @@ describe('effectiveRouteHeadway', () => {
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(6);
     expect(effectiveRouteHeadway(p, 'midday')).toBe(5);
-  });
-
-  it('shows a combined core cadence only when it improves on route service', () => {
-    const branches = [
-      { ...base, headway: 30, minStopHeadway: 15, headwayByPeriod: { midday: 30, pmPeak: 30 }, minStopHeadwayByPeriod: { midday: 15, pmPeak: 30 } },
-      { ...base, headway: 30, minStopHeadway: 15, headwayByPeriod: { midday: 30, pmPeak: 30 }, minStopHeadwayByPeriod: { midday: 15, pmPeak: 30 } },
-    ] as ShapeProperties[];
-    expect(routeListCombinedCoreHeadway(branches, 'midday')).toBe(15);
-    expect(routeListCombinedCoreHeadway(branches, 'pmPeak')).toBeNull();
   });
 
   it('falls back to all-day headway when period is all', () => {

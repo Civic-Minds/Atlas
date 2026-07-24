@@ -17,20 +17,6 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
   return values.length > 0 ? Math.min(...values) : null;
 }
 
-/** Combined shared-core cadence when it is materially better than route service. */
-export function routeListCombinedCoreHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
-  const routeHeadway = routeListDisplayHeadway(features, period);
-  if (routeHeadway == null) return null;
-
-  const sharedValues = features
-    .map(feature => metricValueForPeriod(buildRouteServiceSummary(feature).shared, period))
-    .filter((value): value is number => value != null);
-  if (sharedValues.length === 0) return null;
-
-  const sharedHeadway = Math.min(...sharedValues);
-  return sharedHeadway < routeHeadway ? sharedHeadway : null;
-}
-
 /** Headway for display/filtering — mirrors passesRouteFilter period + all-day fallback. */
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   return metricValueForPeriod(buildRouteServiceSummary(p).filter, period);

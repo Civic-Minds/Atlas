@@ -44,17 +44,6 @@ describe('routeCardTrunk', () => {
     expect(shouldShowTrunkSummary(hsrWestBranches, 'evening')).toBe(true);
   });
 
-  it('keeps a much faster combined core visible for heavily branched routes', () => {
-    const branches = hsrWestBranches.map(branch => ({
-      ...branch,
-      headway: 15,
-      headwayByPeriod: { pmPeak: 15 },
-      minStopHeadway: 3,
-      minStopHeadwayByPeriod: { pmPeak: 3 },
-    }));
-    expect(shouldShowTrunkSummary(branches, 'pmPeak')).toBe(true);
-  });
-
   it('sparkline at 3 PM uses pmPeak trunk not 30-min terminal', () => {
     const byHour = trunkSparklineByHour(hsrWestBranches, [15]);
     expect(byHour[15]).toBe(8);

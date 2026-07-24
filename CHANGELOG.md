@@ -10,8 +10,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Selected routes now explain when they remain visible outside the active frequency filter (#270)
 - Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes and publishes them in PMTiles (#214)
 - Refreshed CTA and Laketran schedule artifacts and rebuilt the live PMTiles archive after the explicit no-service fix (#274)
-- Agency and route cards now call out materially faster combined core-area service instead of hiding it in the route cadence.
-- Combined core summaries now remain visible when heavily branched routes have a much faster shared section than their individual destinations.
 
 ## [3.2.9] - 2026-07-24
 
