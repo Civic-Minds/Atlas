@@ -20,7 +20,6 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Hsr: 'HSR',
   Grt: 'GRT',
   Brt: 'BRT',
-  Busplus: 'BusPlus',
   Healthline: 'HealthLine',
   Metrohealth: 'MetroHealth',
   Lrt: 'LRT',
@@ -79,6 +78,14 @@ export function fmtHeadwayRange(low: number, high: number): string {
 export function titleCase(s: string): string {
   if (!s) return s;
 
+  // Preserve camel-case branding supplied by the feed (e.g. RedLine,
+  // PurpleLine, BusPlus) instead of applying a global agency-specific list.
+  const camelCaseWords = new Map<string, string>();
+  s.replace(/\b[\p{L}]+\b/gu, word => {
+    if (/[\p{Ll}][\p{Lu}]/u.test(word)) camelCaseWords.set(word.toLowerCase(), word);
+    return word;
+  });
+
   // Clean backslashes into standard slashes
   s = s.replace(/\\/g, '/');
 
@@ -100,7 +107,7 @@ export function titleCase(s: string): string {
 
   // Build the acronym matching regex dynamically from the keys of TRANSIT_ACRONYMS
   const acronymKeys = Object.keys(TRANSIT_ACRONYMS).join('|');
-  const acronymRegex = new RegExp(`\\b(${acronymKeys})\\b`, 'g');
+  const acronymRegex = new RegExp(`\\b(${acronymKeys})\\b`, 'gi');
 
   return s
     .toLowerCase()
@@ -111,12 +118,12 @@ export function titleCase(s: string): string {
       if (offset > 0 && KEEP_LOWER.test(word)) {
         return word;
       }
-      return word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
+      return camelCaseWords.get(word) ?? word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());
     })
     .replace(acronymRegex, (m, _g1, offset, str) => {
       // Don't convert "St." (Saint abbreviation) — only the standalone GO line-code "ST"
       if (m === 'St' && str[offset + m.length] === '.') return m;
-      return TRANSIT_ACRONYMS[m] ?? m;
+      return TRANSIT_ACRONYMS[m] ?? TRANSIT_ACRONYMS[m.toLowerCase()] ?? m;
     })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
     .replace(/l'orme/gi, "l'Orme")

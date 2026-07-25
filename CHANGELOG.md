@@ -17,6 +17,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Selected-route filter notices now use the route card’s standard notice placement.
 - Stacked core sparklines now identify each destination branch by color.
 - Hovering a sparkline hour now updates the route rows to that hour's branch headways.
+- Route labels now preserve camel-case branding supplied by each agency feed.
 - Long sparkline hover details now wrap inside the route card instead of being clipped.
 
 ## [3.2.9] - 2026-07-24
