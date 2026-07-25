@@ -16,6 +16,13 @@ export function headwayToTier(h: number): string {
   return 'infrequent';
 }
 
+/** True median of an already-sorted gap array: the middle value, or the average of the two
+ * middle values for an even-length array (not the upper one -- see issue #280). */
+function medianOfSortedGaps(sortedGaps: number[]): number {
+  const mid = Math.floor(sortedGaps.length / 2);
+  return sortedGaps.length % 2 === 0 ? (sortedGaps[mid - 1] + sortedGaps[mid]) / 2 : sortedGaps[mid];
+}
+
 export function medianHeadwayInWindow(
   departureTimes: number[],
   start: number,
@@ -27,9 +34,7 @@ export function medianHeadwayInWindow(
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
   gaps.sort((a, b) => a - b);
-  const mid = Math.floor(gaps.length / 2);
-  const median = gaps.length % 2 === 0 ? (gaps[mid - 1] + gaps[mid]) / 2 : gaps[mid];
-  return Math.round(median);
+  return Math.round(medianOfSortedGaps(gaps));
 }
 
 // A single gap many times larger than the window's typical gap signals a cluster-plus-outlier
@@ -61,8 +66,7 @@ export function sustainedMedianHeadwayInWindow(
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
   gaps.sort((a, b) => a - b);
-  const mid = Math.floor(gaps.length / 2);
-  const median = gaps.length % 2 === 0 ? (gaps[mid - 1] + gaps[mid]) / 2 : gaps[mid];
+  const median = medianOfSortedGaps(gaps);
   const maxGap = gaps[gaps.length - 1];
   if (median > 0 && maxGap / median > dominantGapRatio) return null;
   return Math.round(median);
