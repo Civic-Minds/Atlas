@@ -9,6 +9,13 @@ describe('medianHeadwayInWindow', () => {
   it('keeps a real three-departure service pattern', () => {
     expect(medianHeadwayInWindow([13 * 60, 13 * 60 + 30, 14 * 60], 13 * 60, 14 * 60 + 30, 3)).toBe(30);
   });
+
+  // Issue #280: 3 departures -> 2 gaps is the floor everywhere minDeps=3 is used, so an
+  // even-length gap array is the common case, not an edge case. The true median of two
+  // values is their average, not the upper one.
+  it('averages the two middle gaps for an even-length gap array instead of taking the upper one', () => {
+    expect(medianHeadwayInWindow([13 * 60, 13 * 60 + 10, 13 * 60 + 30], 13 * 60, 14 * 60, 3)).toBe(15);
+  });
 });
 
 describe('resolveTerminalHeadway', () => {

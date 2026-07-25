@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed headway/frequency values overstating the gap (showing worse frequency than scheduled) in windows with an even number of departures (#280)
 - Stop cards now use the same back control as Live cards (#239)
 - Selected routes now explain when they remain visible outside the active frequency filter (#270)
 - Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes and publishes them in PMTiles (#214)

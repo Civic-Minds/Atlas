@@ -27,7 +27,9 @@ export function medianHeadwayInWindow(
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
   gaps.sort((a, b) => a - b);
-  return Math.round(gaps[Math.floor(gaps.length / 2)]);
+  const mid = Math.floor(gaps.length / 2);
+  const median = gaps.length % 2 === 0 ? (gaps[mid - 1] + gaps[mid]) / 2 : gaps[mid];
+  return Math.round(median);
 }
 
 // A branch's own dispatch-frequency median (computeHeadwayStats over the whole route+dir+day)
