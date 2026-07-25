@@ -2,6 +2,28 @@
 
 Atlas route surfaces should derive scheduled service values from the named projections in `RouteFacts.service`.
 
+## How the underlying numbers are computed
+
+`PIPELINE.md` describes the methodology at a high level ("median gap between departures"). This section documents the specific mechanics in `pipeline/headway-utils.ts` and `pipeline/process-core.ts` — the level of detail someone auditing a specific field's behavior actually needs.
+
+### `medianHeadwayInWindow` (the shared primitive)
+
+Filters departures to `[start, end]`, sorts them, computes consecutive gaps, sorts the gaps, and returns `gaps[Math.floor(gaps.length / 2)]`. Requires a minimum departure count (`minDeps`, default 2, but every call site in the pipeline passes `3`).
+
+**Known caveat — not a true median for an even number of gaps.** For an even-length gap array this returns the upper-middle element, not the average of the two middle values (`hasGenuineBranchPattern` a few lines down in the same file *does* average correctly for even-length arrays — this helper doesn't). Concretely: departures with gaps `[10, 20]` (the minimum passing case, since every caller requires ≥3 departures → ≥2 gaps) return `20`, not the textbook median of `15`. Since 2-gap windows are the floor for every headway field in Atlas, this is a systematic small upward bias, not a rare edge case. Tracked as a known defect — see git history / issue tracker for current status before assuming it's fixed.
+
+### `headwayByHour` — a 90-minute rolling window, not an hourly bucket
+
+Computed as `medianHeadwayInWindow(times, h*60, h*60+90, 3)` — e.g. the "8 AM" value actually covers 8:00–9:30. This is deliberate: a strict 60-minute bucket often can't produce the ≥3 departures required on 30-minute-or-better routes. The tradeoff: a schedule change at 9:00 can bleed into both the 8 AM and 9 AM values, and the field name reads as a stricter hourly measurement than what's computed. Treat it as a smoothed rolling estimate for sparklines, not a precise per-hour fact.
+
+### `headwayByPeriod` — drops gaps that straddle a period boundary
+
+Each period (AM Peak, Midday, PM Peak, etc.) filters departures to its own `[start, end]` window independently, then computes gaps only between departures inside that same window. A gap between the last departure before a boundary and the first one after it (e.g. 8:55 → 9:05 across the AM Peak/Midday line) isn't counted toward either period.
+
+### All-day per-stop headway — midday, then PM peak, not a raw all-day window
+
+`process-core.ts`'s per-stop `allStopHw` calculation is `medianHeadwayInWindow(9-15h) ?? medianHeadwayInWindow(15-19h)`, not a median over the full service day. This exists because a raw all-day median gets skewed by a departure cluster elsewhere in the day — the fix was written against a single confirmed case (an AM-peak-only route whose all-day median implied off-peak service that didn't exist) and has not yet been validated against a broader, diverse set of agencies. See [#279](https://github.com/Civic-Minds/Atlas/issues/279) for that follow-up. Returning `null` when neither window has enough departures is intentional — it's what prevents an AM-peak-only route from showing a misleading frequency dot.
+
 ## Canonical projections
 
 - `display`: the destination/branch cadence shown on route cards, agency cards, search, Recent routes, Near You, and live scheduled comparisons. It uses the period summary, then hourly data, then the all-day branch summary.
