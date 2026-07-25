@@ -32,6 +32,42 @@ export function medianHeadwayInWindow(
   return Math.round(median);
 }
 
+// A single gap many times larger than the window's typical gap signals a cluster-plus-outlier
+// pattern (issue #279 — confirmed case: Halifax route 330, a peak-only commuter express with 9
+// trips packed into 6:20-8:05am plus one isolated 2:30pm trip; gaps sorted are
+// [5,5,10,10,10,15,20,30,385] -- median is a real 10, but the 385min gap is ~38x that, meaning
+// there's no sustained service across the window, just a cluster and a stray trip hours later).
+// Median is inherently insensitive to a single extreme value, so it can't catch this on its own.
+// 4x is deliberately generous -- legitimately uneven-but-real all-day service (e.g. TTC route 32,
+// consistent 5-15min gaps literally all day with no outlier) sits nowhere near this ratio.
+export const DOMINANT_GAP_RATIO = 4;
+
+/**
+ * Like medianHeadwayInWindow, but returns null instead of a median when one gap dominates the
+ * window disproportionately (see DOMINANT_GAP_RATIO above) -- i.e. when the window doesn't
+ * actually have sustained service, just a cluster of trips and an outlier. Intended for wide/
+ * fallback windows (e.g. a raw all-day window) where a fixed-hours window like midday or PM peak
+ * would normally have already screened this out; narrower windows don't need this check.
+ */
+export function sustainedMedianHeadwayInWindow(
+  departureTimes: number[],
+  start: number,
+  end: number,
+  minDeps = 2,
+  dominantGapRatio: number = DOMINANT_GAP_RATIO,
+): number | null {
+  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+  if (times.length < minDeps) return null;
+  const gaps: number[] = [];
+  for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
+  gaps.sort((a, b) => a - b);
+  const mid = Math.floor(gaps.length / 2);
+  const median = gaps.length % 2 === 0 ? (gaps[mid - 1] + gaps[mid]) / 2 : gaps[mid];
+  const maxGap = gaps[gaps.length - 1];
+  if (median > 0 && maxGap / median > dominantGapRatio) return null;
+  return Math.round(median);
+}
+
 // A branch's own dispatch-frequency median (computeHeadwayStats over the whole route+dir+day)
 // has no minimum-sample floor, unlike the per-stop windowed values it gets compared against
 // (medianHeadwayInWindow above requires minDeps=3). On sparse branches this produces a noisy

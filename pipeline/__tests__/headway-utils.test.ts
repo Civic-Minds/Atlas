@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway } from '../headway-utils';
+import { hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -15,6 +15,28 @@ describe('medianHeadwayInWindow', () => {
   // values is their average, not the upper one.
   it('averages the two middle gaps for an even-length gap array instead of taking the upper one', () => {
     expect(medianHeadwayInWindow([13 * 60, 13 * 60 + 10, 13 * 60 + 30], 13 * 60, 14 * 60, 3)).toBe(15);
+  });
+});
+
+describe('sustainedMedianHeadwayInWindow', () => {
+  // Issue #279: Halifax route 330 direction 1, the AI-217 motivating case -- a rush-hour-only
+  // commuter express. 9 trips packed into 6:20-8:05am plus one isolated 2:30pm trip. A plain
+  // median (see medianHeadwayInWindow) is robust to that single outlier and still reports ~10min,
+  // which is exactly the misleading "all-day" number AI-217 was written to prevent. Real GTFS
+  // times (minutes since midnight): 6:20, 6:50, 6:55, 7:05, 7:15, 7:30, 7:35, 7:55, 8:05, 14:30.
+  it('rejects a peak-cluster-plus-outlier pattern (Halifax 330) instead of reporting the cluster median', () => {
+    const times = [380, 410, 415, 425, 435, 450, 455, 475, 485, 870];
+    expect(sustainedMedianHeadwayInWindow(times, 360, 1320, 3)).toBeNull();
+  });
+
+  // Issue #279: TTC route 32 has real, consistent all-day service (5-15min gaps literally all
+  // day) that happens to fall partly outside the midday/PM-peak windows at some stops -- it
+  // should NOT be suppressed just because it doesn't fit those fixed hours.
+  it('keeps a route with real, evenly-spread all-day service, even with some schedule variation', () => {
+    const times: number[] = [];
+    for (let t = 360; t <= 1320; t += 10) times.push(t); // consistent 10min service, 6am-10pm
+    // a few slower 15min gaps sprinkled in (evening slowdown) -- still nowhere near dominant
+    expect(sustainedMedianHeadwayInWindow(times, 360, 1320, 3)).toBe(10);
   });
 });
 

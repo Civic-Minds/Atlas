@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed stop-card frequency disappearing for routes with real all-day service that falls outside the midday/PM-peak windows (#279)
 - Fixed headway/frequency values overstating the gap (showing worse frequency than scheduled) in windows with an even number of departures (#280)
 - Stop cards now use the same back control as Live cards (#239)
 - Selected routes now explain when they remain visible outside the active frequency filter (#270)

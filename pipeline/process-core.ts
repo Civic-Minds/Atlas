@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } f
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { computePeriodHeadways, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, TIER_RANK } from './headway-utils.js';
+import { computePeriodHeadways, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -486,8 +486,19 @@ export async function processGtfsBuffer(
       // in a 105-min window → all-day median gap = 10 min despite no off-peak service.
       // Midday ?? PM peak correctly returns null for AM-peak-only routes, preventing them
       // from appearing with a misleading green dot in the stop card.
-      const hw = medianHeadwayInWindow(times, 540, 900, 3)   // midday 9–15h
-              ?? medianHeadwayInWindow(times, 900, 1140, 3);  // PM peak 15–19h
+      //
+      // Falls back further to a raw all-day (6–22h) window only when NEITHER midday nor PM
+      // peak found enough departures, rather than nulling the stop out entirely (issue #279).
+      // That window uses sustainedMedianHeadwayInWindow, not the plain median, specifically so
+      // it doesn't reintroduce the original Halifax 330 bug: a plain all-day median is still
+      // robust to a single outlier trip, so a route with a tight AM-peak cluster plus one stray
+      // afternoon trip (330 is a rush-hour-only commuter express, not real all-day service)
+      // would median right back down to the misleading peak-cluster gap. Rejecting a
+      // disproportionate single gap catches that case while still rescuing routes with real,
+      // consistent service that simply falls outside 9h–19h (e.g. TTC 32, 5–15min gaps all day).
+      const hw = medianHeadwayInWindow(times, 540, 900, 3)             // midday 9–15h
+              ?? medianHeadwayInWindow(times, 900, 1140, 3)            // PM peak 15–19h
+              ?? sustainedMedianHeadwayInWindow(times, 360, 1320, 3);  // last resort: raw all-day 6–22h
       if (hw != null) allStopHw[stopId] = hw;
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
