@@ -1,4 +1,5 @@
 import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
+import { DEFAULT_CRITERIA } from './defaults.js';
 
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
@@ -156,10 +157,77 @@ export function hasGenuineBranchPattern(
   return median / terminalComputedHw >= ratioThreshold;
 }
 
+/**
+ * Does this specific reported headway (T) fairly describe every gap in the window, or does at
+ * least one gap blow past it disproportionately? Uses the same grace/violation tolerance
+ * determineTier (transit-phase2.ts) uses for full-day tier classification -- calibrated, proven
+ * logic -- but applied to a period's own median rather than a fixed tier ladder. That's a
+ * different question than tier classification: not "does this route qualify for tier X" (which
+ * would wrongly flag any naturally-infrequent-but-honest route), but "is the specific number
+ * we're about to report actually representative of this window's real gaps."
+ *
+ * Issue #281 (TTC route 10, Weekday, Van Horne -> Victoria Park): midday gaps [315, 30], median
+ * 173. Grace for T=173 is max(5, round(173*0.15))=26, so 315 (>199) fails outright -- correctly
+ * flags "173" as not a fair description of that period, without inventing a new fraction-of-span
+ * or ratio-to-median threshold from scratch. Deliberately does NOT touch transit-phase2.ts's
+ * determineTier itself, which drives live tier/color for every route on the map.
+ */
+export function isSustainedHeadway(
+  gaps: number[],
+  targetHeadway: number,
+  graceMinutes: number = DEFAULT_CRITERIA.graceMinutes,
+  gracePercent: number = DEFAULT_CRITERIA.gracePercent,
+  maxGraceViolations: number = DEFAULT_CRITERIA.maxGraceViolations,
+  violationPercent: number = DEFAULT_CRITERIA.violationPercent,
+): boolean {
+  const grace = Math.max(graceMinutes, Math.round(targetHeadway * gracePercent));
+  const allowedViolations = Math.max(maxGraceViolations, Math.floor(gaps.length * violationPercent));
+  let graceCount = 0;
+  for (const gap of gaps) {
+    if (gap <= targetHeadway) continue;
+    if (gap <= targetHeadway + grace) {
+      graceCount++;
+      if (graceCount > allowedViolations) return false;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Boundary-crossing gaps are still dropped here (issue #281, open) -- computePeriodSustained
+// below only adds a parallel `sustained` annotation on top of today's existing per-period gap
+// collection. It does NOT fix the boundary undercounting; it flags a different, adjacent risk
+// (a real internal void hiding behind a single clean-looking median) that surfaced while
+// investigating #281.
 export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
     result[key] = medianHeadwayInWindow(departureTimes, start, end, 3);
+  }
+  return result;
+}
+
+/**
+ * Parallel to computePeriodHeadways -- flags whether each period's own reported median actually
+ * describes its gaps fairly (see isSustainedHeadway above). Kept as a separate field/function
+ * rather than changing headwayByPeriod's value shape: several consumers of the published
+ * headwayByPeriod field (e.g. pipeline/refresh.ts, which writes it into R2 history snapshots
+ * that already exist as bare numbers; pipeline/route-report.ts; Corridors) declare their own
+ * independent number-shaped type for this field rather than importing HeadwayByPeriod, so an
+ * object-shaped value would silently misread with no compiler error and would disagree with
+ * already-persisted history data. A purely additive parallel field avoids all of that --
+ * every existing reader of headwayByPeriod is untouched.
+ */
+export function computePeriodSustained(departureTimes: number[]): Partial<Record<PeriodKey, boolean>> {
+  const result: Partial<Record<PeriodKey, boolean>> = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+    const value = medianHeadwayInWindow(departureTimes, start, end, 3);
+    if (value == null) continue;
+    const gaps: number[] = [];
+    for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
+    result[key] = isSustainedHeadway(gaps, value);
   }
   return result;
 }

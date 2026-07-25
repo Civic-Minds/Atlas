@@ -13,11 +13,11 @@ import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from '.
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod } from '../shared/config.js';
+import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { computePeriodHeadways, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -263,6 +263,7 @@ export async function processGtfsBuffer(
         tier: result.tier,
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
+        headwayByPeriodSustained: computePeriodSustained(result.times),
         headwayByHour: (() => {
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {
@@ -478,6 +479,7 @@ export async function processGtfsBuffer(
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
     const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+    const allStopPeriodSustained: Record<string, HeadwayByPeriodSustained> = {};
     const allStopHourHw: Record<string, HeadwayByHour> = {};
     for (const [stopId, times] of metricStopMap) {
       times.sort((a, b) => a - b);
@@ -505,7 +507,10 @@ export async function processGtfsBuffer(
         const ph = medianHeadwayInWindow(times, start, end, 3);
         if (ph != null) byPeriod[pk] = ph;
       }
-      if (Object.keys(byPeriod).length > 0) allStopPeriodHw[stopId] = byPeriod;
+      if (Object.keys(byPeriod).length > 0) {
+        allStopPeriodHw[stopId] = byPeriod;
+        allStopPeriodSustained[stopId] = computePeriodSustained(times);
+      }
       // Hourly: use a 90-min window [h*60, h*60+90] so 30-min routes show up with ≥3 departures.
       const byHour: HeadwayByHour = {};
       for (const h of SPARKLINE_HOURS) {
@@ -615,20 +620,36 @@ export async function processGtfsBuffer(
     const headsignTerminalPeriodHw = headsignTerminalTimes && headsignTerminalTimes.length > 0
       ? computePeriodHeadways(headsignTerminalTimes)
       : undefined;
+    const headsignTerminalPeriodSustained = headsignTerminalTimes && headsignTerminalTimes.length > 0
+      ? computePeriodSustained(headsignTerminalTimes)
+      : undefined;
+    const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
     const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
     const periodMedians: HeadwayByPeriod = {};
+    const periodSustained: HeadwayByPeriodSustained = {};
     const periodMins: Partial<Record<PeriodKey, number>> = {};
     const branchPeriodHw = feature.properties.headwayByPeriod as HeadwayByPeriod | undefined;
+    const branchPeriodSustained = feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained | undefined;
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
       const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
       const bH = branchPeriodHw?.[pk] ?? null;
-      periodMedians[pk] = resolveTerminalPeriodHeadway(termH, bH, terminalPeriodIsBranchScoped);
+      const finalH = resolveTerminalPeriodHeadway(termH, bH, terminalPeriodIsBranchScoped);
+      periodMedians[pk] = finalH;
+      // #281: mirror whichever source (terminal vs. branch) resolveTerminalPeriodHeadway picked,
+      // rather than re-deriving the choice -- comparing the returned value against termH/bH keeps
+      // this in sync with that function's logic by construction instead of duplicating it.
+      if (finalH != null) {
+        const termS = headsignTerminalPeriodSustained?.[pk] ?? terminalPeriodSustained?.[pk];
+        const branchS = branchPeriodSustained?.[pk];
+        periodSustained[pk] = finalH === termH ? termS : (finalH === bH ? branchS : undefined);
+      }
       const allVals = onShape
         .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
         .filter((v): v is number => v != null);
       if (allVals.length > 0) periodMins[pk] = Math.min(...allVals);
     }
     feature.properties.headwayByPeriod = periodMedians;
+    feature.properties.headwayByPeriodSustained = periodSustained;
     feature.properties.minStopHeadwayByPeriod = periodMins;
 
     // Headsign-scoped trunk minimums for route-card range display. minStopHeadwayByPeriod

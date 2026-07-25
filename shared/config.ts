@@ -138,6 +138,11 @@ export const SPARKLINE_HOURS: readonly number[] = [
 
 export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
 
+/** Parallel to HeadwayByPeriod (#281) -- whether each period's own median fairly describes its
+ * gaps. Kept as a separate field rather than widening HeadwayByPeriod's value shape, since
+ * several consumers declare their own independent number-shaped type for headwayByPeriod. */
+export type HeadwayByPeriodSustained = Partial<Record<PeriodKey, boolean>>;
+
 export interface HeadwayTier {
   max: number;
   color: string;
