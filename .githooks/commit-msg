@@ -9,6 +9,14 @@
 # noticed (issue #263). Neither commit had a test or any record of checking
 # another agency. This hook exists so that decision gets written down
 # somewhere durable instead of only in an ephemeral chat session.
+#
+# List extended 2026-07-25 after an audit found the same pattern already live
+# in pipeline/shape-selection.ts (commit 1eafd76a generalized a single
+# Rennes-route fix into shared shape-selection logic with no test), and added
+# transit-corridors.ts (shares transit-calendar.ts's gated logic, zero test
+# coverage) and parseGtfs.ts (global shape-correction logic, high blast
+# radius) as structural risks of the same shape even without a confirmed
+# incident yet.
 
 msg_file="$1"
 
@@ -16,7 +24,10 @@ GATED_FILES='pipeline/process-core.ts
 pipeline/headway-utils.ts
 pipeline/transit-calendar.ts
 pipeline/transit-phase1.ts
-pipeline/transit-phase2.ts'
+pipeline/transit-phase2.ts
+pipeline/shape-selection.ts
+pipeline/transit-corridors.ts
+pipeline/parseGtfs.ts'
 
 staged=$(git diff --cached --name-only)
 
