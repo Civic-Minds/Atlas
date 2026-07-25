@@ -27,7 +27,7 @@ import { fetchAgencyGeo, getCachedAgencyGeo } from '../lib/agencyGeo';
 import { type RouteFeature, type RouteGroup } from './corridor-types';
 import { ServiceTimeline } from './ServiceTimeline';
 import { StopInput } from './StopInput';
-import { PERIOD_KEYS } from '../../shared/config';
+import { PERIOD_KEYS, type HeadwayByPeriod } from '../../shared/config';
 import type { DayType } from '../../shared/dayTypes';
 
 interface Props {
@@ -49,7 +49,7 @@ interface GeoJsonAgency {
       routeLongName?: string;
       headsign?: string;
       headway?: number;
-      headwayByPeriod?: Record<string, number | null>;
+      headwayByPeriod?: HeadwayByPeriod;
       routeColor?: string | null;
       color?: string;
       stopOrder?: string[];

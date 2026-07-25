@@ -1,3 +1,5 @@
+import type { HeadwayByPeriod } from '../../shared/config';
+
 export interface RouteFeature {
   agencySlug: string;
   agencyName: string;
@@ -5,7 +7,7 @@ export interface RouteFeature {
   routeLongName: string;
   headsign: string;
   headway: number | null;
-  headwayByPeriod: Record<string, number | null>;
+  headwayByPeriod: HeadwayByPeriod;
   fromStopHeadwayByPeriod: Record<string, number | null>;
   toStopHeadway: number | null;
   toStopHeadwayByPeriod: Record<string, number | null>;

@@ -76,7 +76,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     if (h == null) continue;
     const t = p.tier != null ? String(p.tier) : null;
     const ln = p.routeLongName ? String(p.routeLongName) : undefined;
-    const byp = p.headwayByPeriod as Record<string, number | null> | undefined;
+    const byp = p.headwayByPeriod as HeadwayByPeriod | undefined;
     if (!current[sn] || h < current[sn].headway) {
       current[sn] = {
         headway: h, tier: t,

@@ -16,6 +16,7 @@ config({ path: resolve('.env.local') });
 import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
+import type { HeadwayByPeriod } from '../shared/config.js';
 
 const MDB_API = 'https://api.mobilitydatabase.org/v1';
 
@@ -98,7 +99,7 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
 
 async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
-  const current: Record<string, { headway: number; tier: string | null; routeLongName?: string; headwayByPeriod?: Record<string, number | null> }> = {};
+  const current: Record<string, { headway: number; tier: string | null; routeLongName?: string; headwayByPeriod?: HeadwayByPeriod }> = {};
 
   for (const f of fc.features) {
     const p = f.properties;
@@ -108,7 +109,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
     if (h == null) continue;
     const t = p.tier != null ? String(p.tier) : null;
     const ln = p.routeLongName ? String(p.routeLongName) : undefined;
-    const byp = p.headwayByPeriod as Record<string, number | null> | undefined;
+    const byp = p.headwayByPeriod as HeadwayByPeriod | undefined;
     if (!current[sn] || h < current[sn].headway) {
       current[sn] = { headway: h, tier: t, routeLongName: ln ?? current[sn]?.routeLongName, headwayByPeriod: byp };
     }
