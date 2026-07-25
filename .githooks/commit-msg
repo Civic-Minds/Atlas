@@ -1,0 +1,62 @@
+#!/bin/sh
+# Gate: commits touching shared headway/tier pipeline logic must record a
+# validation status, even when the honest answer is "not applicable."
+#
+# Why: AI-217 (Halifax route 330, single agency) generalized an unvalidated
+# fix into process-core.ts's all-agency headway computation. f9001a4f
+# repeated the same pattern two days later on a single TTC case. The two
+# stacked and broke on 32 routes across 18 French cities before anyone
+# noticed (issue #263). Neither commit had a test or any record of checking
+# another agency. This hook exists so that decision gets written down
+# somewhere durable instead of only in an ephemeral chat session.
+
+msg_file="$1"
+
+GATED_FILES='pipeline/process-core.ts
+pipeline/headway-utils.ts
+pipeline/transit-calendar.ts
+pipeline/transit-phase1.ts
+pipeline/transit-phase2.ts'
+
+staged=$(git diff --cached --name-only)
+
+touched=""
+for f in $GATED_FILES; do
+  if echo "$staged" | grep -qx "$f"; then
+    touched="$touched $f"
+  fi
+done
+
+[ -z "$touched" ] && exit 0
+
+# Satisfied if a regression test changed alongside it...
+if echo "$staged" | grep -q '^pipeline/__tests__/'; then
+  exit 0
+fi
+
+# ...or the commit message explicitly records validation status.
+if grep -qiE '^Validated:' "$msg_file"; then
+  exit 0
+fi
+
+cat <<EOF
+commit-msg: blocked — this commit touches shared pipeline logic every agency runs through:
+$touched
+
+That code path has a history of single-agency reports becoming unvalidated
+app-wide changes (AI-217 -> f9001a4f -> issue #263: broke on 32 routes
+across 18 French cities before anyone noticed). This gate exists so that
+doesn't happen silently again.
+
+Add ONE of the following before committing:
+  1. A regression test under pipeline/__tests__/ covering the change, or
+  2. A "Validated:" line in the commit message, e.g.:
+       Validated: TTC, Rennes, Bordeaux, Dijon
+       Validated: n/a - pure refactor, no calculation change
+       Validated: n/a - reverts <hash>
+
+This is a record-keeping gate, not a review gate — "n/a" with a real reason
+is a legitimate answer. The point is that the decision is written down, not
+that every change needs a full audit.
+EOF
+exit 1
