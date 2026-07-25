@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -268,8 +268,9 @@ export async function processGtfsBuffer(
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {
             // Two departures can be an accidental cluster on a sparse route (e.g. HRT 967).
-            // Require three before exposing an hourly sparkline headway.
-            byHour[h] = medianHeadwayInWindow(result.times, h * 60, h * 60 + 90, 3);
+            // Require three before exposing an hourly sparkline headway -- but only widen past a
+            // strict hour when that hour doesn't already have 3 on its own (issue #282).
+            byHour[h] = adaptiveMedianHeadwayInWindow(result.times, h * 60, 3);
           }
           return byHour;
         })(),
@@ -511,10 +512,11 @@ export async function processGtfsBuffer(
         allStopPeriodHw[stopId] = byPeriod;
         allStopPeriodSustained[stopId] = computePeriodSustained(times);
       }
-      // Hourly: use a 90-min window [h*60, h*60+90] so 30-min routes show up with ≥3 departures.
+      // Hourly: widen past a strict hour only when it doesn't already have >=3 departures on its
+      // own, up to a 90-min window [h*60, h*60+90] so 30-min routes still show up (issue #282).
       const byHour: HeadwayByHour = {};
       for (const h of SPARKLINE_HOURS) {
-        const hh = medianHeadwayInWindow(times, h * 60, h * 60 + 90, 3);
+        const hh = adaptiveMedianHeadwayInWindow(times, h * 60, 3);
         byHour[h] = hh;
       }
       allStopHourHw[stopId] = byHour;
@@ -681,7 +683,7 @@ export async function processGtfsBuffer(
     const terminalHourHw = terminalStopId ? allStopHourHw[terminalStopId] : undefined;
     const headsignTerminalHourHw = headsignTerminalTimes
       ? Object.fromEntries(
-          SPARKLINE_HOURS.map(h => [h, medianHeadwayInWindow(headsignTerminalTimes, h * 60, h * 60 + 90, 3)]),
+          SPARKLINE_HOURS.map(h => [h, adaptiveMedianHeadwayInWindow(headsignTerminalTimes, h * 60, 3)]),
         ) as HeadwayByHour
       : undefined;
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;

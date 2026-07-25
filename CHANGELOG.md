@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Frequency sparkline bars now show their real time range on hover (each bar is a 90-minute window, not a strict clock hour)
+- Fixed hourly frequency values blending into a neighboring hour's service pattern when the hour already had enough departures to stand on its own (#282)
 - Fixed stop-card frequency disappearing for routes with real all-day service that falls outside the midday/PM-peak windows (#279)
 - Fixed headway/frequency values overstating the gap (showing worse frequency than scheduled) in windows with an even number of departures (#280)
 - Stop cards now use the same back control as Live cards (#239)

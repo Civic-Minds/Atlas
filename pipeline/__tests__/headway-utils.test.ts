@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -37,6 +37,33 @@ describe('sustainedMedianHeadwayInWindow', () => {
     for (let t = 360; t <= 1320; t += 10) times.push(t); // consistent 10min service, 6am-10pm
     // a few slower 15min gaps sprinkled in (evening slowdown) -- still nowhere near dominant
     expect(sustainedMedianHeadwayInWindow(times, 360, 1320, 3)).toBe(10);
+  });
+});
+
+describe('adaptiveMedianHeadwayInWindow', () => {
+  // Issue #282: TTC route 10 direction 0, Van Horne, real weekday departures 14:15/14:45/15:15/
+  // 15:45 -- a strict 60-min window for hour 14 only catches 14:15 and 14:45 (2 departures),
+  // short of the 3-departure minimum. Must still widen to the 90-min window to report the real
+  // 30-min service instead of going null.
+  it('widens past 60 minutes when the strict hour does not have enough departures on its own', () => {
+    const times = [14 * 60 + 15, 14 * 60 + 45, 15 * 60 + 15, 15 * 60 + 45];
+    expect(adaptiveMedianHeadwayInWindow(times, 14 * 60, 3)).toBe(30);
+  });
+
+  // Issue #282: TTC route 5 direction 1, real weekday AM ramp-up -- 06:00/06:20/06:40 (~20min
+  // service), then tightening from 06:48 to every ~4-9min by 07:30+. Both hour 6 and hour 7
+  // already clear 3 departures within a strict 60 minutes on their own, so the adaptive window
+  // must NOT reach into the neighboring hour and blend the two real, different frequencies.
+  it('does not widen into the next hour when the strict hour already has enough departures', () => {
+    const hour6 = [6 * 60, 6 * 60 + 20, 6 * 60 + 40];
+    const hour7 = [7 * 60 + 6, 7 * 60 + 15, 7 * 60 + 24, 7 * 60 + 32, 7 * 60 + 40, 7 * 60 + 48, 7 * 60 + 56];
+    const times = [...hour6, ...hour7];
+    expect(adaptiveMedianHeadwayInWindow(times, 6 * 60, 3)).toBe(20);
+    expect(adaptiveMedianHeadwayInWindow(times, 7 * 60, 3)).toBe(8);
+  });
+
+  it('still returns null when neither the strict nor the widened window has enough departures', () => {
+    expect(adaptiveMedianHeadwayInWindow([13 * 60 + 20, 13 * 60 + 30], 13 * 60, 3)).toBeNull();
   });
 });
 

@@ -38,6 +38,34 @@ export function medianHeadwayInWindow(
   return Math.round(medianOfSortedGaps(gaps));
 }
 
+// headwayByHour used a fixed 90-min-wide window ([h*60, h*60+90]) for every hour, because a
+// strict 60-min window can't reliably reach 3 departures on a real 30-min-or-better route (e.g.
+// TTC 10 direction 0 at Van Horne: 14:15/14:45/15:15/15:45 -- a strict [14:00,15:00] window only
+// catches 2 of those). But applying the wider window to EVERY hour, even ones that already have
+// enough departures on their own, blends real adjacent-hour differences together (issue #282 --
+// TTC 5 direction 1 has a real AM ramp from ~20min to ~5min service around 6-7am; each hour
+// already clears 3 departures within a strict 60 minutes, but the fixed 90-min window pulls the
+// tighter 7am trips into 6am's reading, understating how sparse 6am's own service actually was).
+export const ADAPTIVE_WINDOW_BASE_MINUTES = 60;
+export const ADAPTIVE_WINDOW_MAX_MINUTES = 90;
+
+/**
+ * Like medianHeadwayInWindow, but only widens past a strict `baseMinutes`-wide window when that
+ * window doesn't already have enough departures on its own -- rescuing sparse hours (TTC 10
+ * above) without blending hours that don't need it (TTC 5 above).
+ */
+export function adaptiveMedianHeadwayInWindow(
+  departureTimes: number[],
+  start: number,
+  minDeps = 3,
+  baseMinutes: number = ADAPTIVE_WINDOW_BASE_MINUTES,
+  maxMinutes: number = ADAPTIVE_WINDOW_MAX_MINUTES,
+): number | null {
+  const narrow = medianHeadwayInWindow(departureTimes, start, start + baseMinutes, minDeps);
+  if (narrow != null) return narrow;
+  return medianHeadwayInWindow(departureTimes, start, start + maxMinutes, minDeps);
+}
+
 // A single gap many times larger than the window's typical gap signals a cluster-plus-outlier
 // pattern (issue #279 — confirmed case: Halifax route 330, a peak-only commuter express with 9
 // trips packed into 6:20-8:05am plus one isolated 2:30pm trip; gaps sorted are
