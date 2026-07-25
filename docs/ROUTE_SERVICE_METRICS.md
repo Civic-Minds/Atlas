@@ -12,9 +12,13 @@ Filters departures to `[start, end]`, sorts them, computes consecutive gaps, sor
 
 **Fixed (#280, 2026-07-25).** Used to return the upper-middle element for an even-length gap array instead of averaging the two middle values (`hasGenuineBranchPattern` a few lines down in the same file already averaged correctly — this helper didn't). Now averages correctly in both cases.
 
-### `headwayByHour` — a 90-minute rolling window, not an hourly bucket
+### `headwayByHour` — an adaptive 60-to-90-minute window, not a strict hourly bucket
 
-Computed as `medianHeadwayInWindow(times, h*60, h*60+90, 3)` — e.g. the "8 AM" value actually covers 8:00–9:30. This is deliberate: a strict 60-minute bucket often can't produce the ≥3 departures required on 30-minute-or-better routes. The tradeoff: a schedule change at 9:00 can bleed into both the 8 AM and 9 AM values, and the field name reads as a stricter hourly measurement than what's computed. Treat it as a smoothed rolling estimate for sparklines, not a precise per-hour fact.
+Computed via `adaptiveMedianHeadwayInWindow` (`headway-utils.ts`): tries a strict 60-minute window (`h*60` to `h*60+60`) first, and only widens to 90 minutes when the strict window doesn't already have the ≥3 departures required. This replaced an always-90-minute window (issue #282) that blended real adjacent-hour differences together even when an hour had enough departures to stand on its own -- e.g. TTC 5's real AM ramp from ~20min to ~5min service around 6-7am had its 6am reading pulled down by borrowing 7am's tighter trips. The 90-minute ceiling still exists for hours that genuinely need it (TTC 10's real 30-min service only clears 3 departures within 90 minutes at some stops).
+
+The field name still reads as a stricter hourly measurement than what's computed -- an hour's true window is now *either* 60 or 90 minutes depending on that hour's own data, and the UI doesn't currently expose which one applies to a given bar (its tooltip states the conservative 90-minute upper bound in both cases). Treat it as a smoothed rolling estimate for sparklines, not a precise per-hour fact.
+
+This same adaptive-window computation is shared by three call sites in `process-core.ts` (the branch-level feature value, the per-stop `allStopHourHw`, and the headsign-scoped terminal value) -- all three call the one function rather than each inlining their own window logic, specifically so a future change to this window can't miss a call site the way an earlier fix attempt did (one of the three used a differently-named times variable and didn't turn up in a grep for the other two).
 
 ### `headwayByPeriod` — drops gaps that straddle a period boundary (still open — do not patch naively)
 
