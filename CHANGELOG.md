@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.10] - 2026-07-27
 
 - Fixed the weekly GTFS refresh Action crashing on transient R2 network timeouts instead of retrying (#293)
 - Frequency sparkline bars now show their real time range on hover (each bar is a 90-minute window, not a strict clock hour)
