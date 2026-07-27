@@ -48,10 +48,8 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
-      # Both steps below rebuild GLOBAL artifacts from every agency currently in
-      # R2, not just the ones this run refreshed -- skipped on a scoped smoke-test
-      # dispatch so it stays a fast, cheap check instead of a full production
-      # rebuild with a smaller first step.
+      # Skipped on a scoped smoke-test dispatch: expensive (tippecanoe + full
+      # PMTiles rebuild) and unrelated to what a scoped run is meant to verify.
       - name: Install tippecanoe
         if: ${{ !inputs.agencies }}
         run: sudo apt-get install -y tippecanoe
@@ -66,8 +64,12 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
+      # NOT gated on inputs.agencies: this always processes the entire
+      # atlas-archive/history/ tree (~12k files) regardless of which agencies
+      # were just refreshed -- it's the exact step that crashed on
+      # 2026-07-20/07-27, so a scoped smoke-test run needs it to actually
+      # verify the R2 retry fix rather than skipping the one step that matters.
       - name: Rebuild history config
-        if: ${{ !inputs.agencies }}
         run: npm run build-history
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
