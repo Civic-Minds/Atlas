@@ -5,6 +5,11 @@ on:
     # Mondays 06:00 UTC (~01:00 Toronto)
     - cron: '0 6 * * 1'
   workflow_dispatch:
+    inputs:
+      agencies:
+        description: 'Space-separated agency slugs to smoke-test (e.g. "ttc yrt"). Leave empty for a full refresh + PMTiles/history rebuild.'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -28,8 +33,13 @@ jobs:
       - name: Test
         run: npm run test
 
-      - name: Refresh all agency feeds
-        run: npm run refresh
+      - name: Refresh agency feeds
+        run: |
+          if [ -n "${{ inputs.agencies }}" ]; then
+            npm run refresh -- ${{ inputs.agencies }}
+          else
+            npm run refresh
+          fi
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -38,10 +48,16 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
+      # Both steps below rebuild GLOBAL artifacts from every agency currently in
+      # R2, not just the ones this run refreshed -- skipped on a scoped smoke-test
+      # dispatch so it stays a fast, cheap check instead of a full production
+      # rebuild with a smaller first step.
       - name: Install tippecanoe
+        if: ${{ !inputs.agencies }}
         run: sudo apt-get install -y tippecanoe
 
       - name: Rebuild PMTiles vector tiles
+        if: ${{ !inputs.agencies }}
         run: npm run build-pmtiles
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
@@ -51,6 +67,7 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
       - name: Rebuild history config
+        if: ${{ !inputs.agencies }}
         run: npm run build-history
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
