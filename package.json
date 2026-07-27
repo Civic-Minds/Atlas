@@ -55,7 +55,7 @@
     "papaparse": "^5.5.4",
     "pbf": "^5.1.2",
     "pmtiles": "^4.4.1",
-    "react": "^19.2.6",
+    "react": "^19.2.8",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.18.1"
   },
