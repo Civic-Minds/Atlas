@@ -43,9 +43,22 @@ function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function isRetryableR2Error(err: unknown): boolean {
-  const msg = err instanceof Error ? err.message : String(err);
-  return /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|timeout|socket hang up|EPIPE/i.test(msg);
+const RETRYABLE_PATTERN = /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|ENETUNREACH|EAI_AGAIN|timeout|socket hang up|EPIPE/i;
+
+/**
+ * Node's AggregateError from internalConnectMultiple (dual-stack IPv4/IPv6 connect
+ * racing) carries an empty `.message` — the real signal is `.code`/`.name`, or on
+ * the nested per-attempt errors in `.errors`. Checking `.message` alone missed this
+ * shape entirely and let connect-level timeouts crash the whole pipeline instead of
+ * retrying (e.g. the 2026-07-20 and 2026-07-27 GTFS refresh Action failures).
+ */
+export function isRetryableR2Error(err: unknown): boolean {
+  if (err == null) return false;
+  const e = err as { message?: unknown; code?: unknown; name?: unknown; errors?: unknown };
+  const haystack = [e.message, e.code, e.name].filter(v => typeof v === 'string').join(' ');
+  if (RETRYABLE_PATTERN.test(haystack)) return true;
+  if (Array.isArray(e.errors)) return e.errors.some(isRetryableR2Error);
+  return false;
 }
 
 async function rclonePutFile(key: string, filePath: string, bucket: string): Promise<void> {
