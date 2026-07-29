@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon, Search, X } from 'lucide-react';
+import { NIGHT_SERVICE_COLOR } from '../utils/colors';
 import {
   FLOATING_CARD,
   PANEL_ENTER,
@@ -42,6 +43,13 @@ export default function NightService({ active, sidebarLeft }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [filterQuery, setFilterQuery] = useState('');
+  const [introDismissed, setIntroDismissed] = useState(() => {
+    try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
+  });
+  const dismissIntro = () => {
+    setIntroDismissed(true);
+    try { localStorage.setItem('atlas_pref_night_intro_dismissed', '1'); } catch {}
+  };
 
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`)
@@ -91,7 +99,28 @@ export default function NightService({ active, sidebarLeft }: Props) {
           <span className={PANEL_TITLE}>Night Service</span>
         </div>
 
-        {data && (
+        {data && !introDismissed && (
+          <div className="relative px-4 pt-2.5 pb-3 border-b border-[var(--border-primary)]">
+            <button
+              onClick={dismissIntro}
+              aria-label="Dismiss"
+              className="absolute top-2 right-2 text-[var(--text-dim)] hover:text-[var(--text-primary)]"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+            <p className="pr-5 text-[11px] font-black text-[var(--text-primary)] leading-snug">
+              Which routes actually run through the night?
+            </p>
+            <p className="mt-1 pr-5 text-[10px] text-[var(--text-dim)] font-bold leading-snug">
+              A route counts here only if it has a departure at least every 60 minutes,
+              midnight to 6am, with no gap at either end of the window either.
+            </p>
+            <p className="mt-1.5 text-[10px] font-bold" style={{ color: NIGHT_SERVICE_COLOR }}>
+              {data.routeCount} routes across {data.agencyCount} agencies qualify right now.
+            </p>
+          </div>
+        )}
+        {data && introDismissed && (
           <p className="px-4 pt-2 pb-1 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
             {data.criteria}
           </p>
