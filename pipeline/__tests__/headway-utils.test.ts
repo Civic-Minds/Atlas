@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, hasGenuineBranchPattern, hasSustainedNightService, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -173,5 +173,44 @@ describe('hasSustainedNightService', () => {
   it('respects custom window and gap parameters', () => {
     expect(hasSustainedNightService([1440, 1470, 1500], 1440, 1500, 30)).toBe(true);
     expect(hasSustainedNightService([1440, 1500], 1440, 1500, 30)).toBe(false);
+  });
+});
+
+// Window defaults to GTFS minutes 420-1140 (7am-7pm), maxGap defaults to 15. Same boundary-gap
+// logic as hasSustainedNightService (shared helper), just a different window/threshold -- see
+// docs/DATA_FREQUENT_NETWORK.md for why 7am-7pm/15min was chosen.
+describe('hasSustainedFrequentService', () => {
+  it('is true when every gap, including both boundaries, is exactly 15 minutes', () => {
+    const times: number[] = [];
+    for (let t = 420; t <= 1140; t += 15) times.push(t);
+    expect(hasSustainedFrequentService(times)).toBe(true);
+  });
+
+  it('is false when an internal gap exceeds 15 minutes', () => {
+    expect(hasSustainedFrequentService([420, 450, 1140])).toBe(false);
+  });
+
+  it('is false when the first departure leaves the 7am boundary uncovered', () => {
+    expect(hasSustainedFrequentService([500, 515, 530, 1140])).toBe(false);
+  });
+
+  it('is false when the last departure leaves the 7pm boundary uncovered', () => {
+    expect(hasSustainedFrequentService([420, 435, 450, 1000])).toBe(false);
+  });
+
+  it('is false with no departures in the window', () => {
+    expect(hasSustainedFrequentService([])).toBe(false);
+  });
+
+  it('ignores departures outside the window and dedupes exact duplicates', () => {
+    const times: number[] = [300, 420, 420];
+    for (let t = 420; t <= 1140; t += 15) times.push(t);
+    times.push(1200);
+    expect(hasSustainedFrequentService(times)).toBe(true);
+  });
+
+  it('respects custom window and gap parameters', () => {
+    expect(hasSustainedFrequentService([420, 430, 440], 420, 440, 10)).toBe(true);
+    expect(hasSustainedFrequentService([420, 440], 420, 440, 10)).toBe(false);
   });
 });

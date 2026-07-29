@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -531,6 +531,8 @@ export async function processGtfsBuffer(
     // than false). Step 5 overwrites this with the real computed value for every feature that
     // has enough data to reach it.
     feature.properties.nightService = false;
+    // Same reasoning for frequentService (#294 follow-on, see docs/DATA_FREQUENT_NETWORK.md).
+    feature.properties.frequentService = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) continue;
@@ -717,6 +719,12 @@ export async function processGtfsBuffer(
       ? [...(terminalRawTimes ?? []), ...nightExtra]
       : terminalRawTimes;
     feature.properties.nightService = nightServiceTimes ? hasSustainedNightService(nightServiceTimes) : false;
+    // Frequent Network (#294 follow-on): entirely within normal (non-extended-hour) GTFS notation,
+    // so unlike Night Service this needs no service_id union across the midnight boundary --
+    // terminalRawTimes alone is the right input. Weekday only, per docs/DATA_FREQUENT_NETWORK.md.
+    feature.properties.frequentService = (day === 'Weekday' && terminalRawTimes)
+      ? hasSustainedFrequentService(terminalRawTimes)
+      : false;
     const headsignTerminalPeriodHw = headsignTerminalTimes && headsignTerminalTimes.length > 0
       ? computePeriodHeadways(headsignTerminalTimes)
       : undefined;

@@ -223,25 +223,20 @@ export function isSustainedHeadway(
   return true;
 }
 
-// Night Service window: GTFS hour 24 (midnight) to hour 30 (6am), matching the same extended-hour
-// convention the 'late'/'overnight' TIME_PERIODS split already uses.
-export const NIGHT_SERVICE_WINDOW_START_MIN = 24 * 60;
-export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
-export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
-
 /**
- * Does this route have sustained overnight service: at least one departure every
- * maxGapMinutes across the whole [start, end) window, with no gap -- including the
- * boundary gaps from window start to the first departure and from the last departure to
- * window end -- exceeding that. A route whose first night trip doesn't leave until 3am
- * isn't covering midnight-6am even if every trip after that is tightly spaced, so boundary
- * gaps are checked the same as internal ones.
+ * Shared by hasSustainedNightService and hasSustainedFrequentService below -- only the window
+ * and threshold differ between them. At least one departure every maxGapMinutes across the whole
+ * [start, end] window, with no gap -- including the boundary gaps from window start to the first
+ * departure and from the last departure to window end -- exceeding that. A route whose first
+ * trip in the window doesn't leave until well after it opens isn't really covering that window
+ * even if every trip after that is tightly spaced, so boundary gaps are checked the same as
+ * internal ones.
  */
-export function hasSustainedNightService(
+function hasSustainedServiceInWindow(
   departureTimes: number[],
-  start: number = NIGHT_SERVICE_WINDOW_START_MIN,
-  end: number = NIGHT_SERVICE_WINDOW_END_MIN,
-  maxGapMinutes: number = NIGHT_SERVICE_MAX_GAP_MINUTES,
+  start: number,
+  end: number,
+  maxGapMinutes: number,
 ): boolean {
   const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
   if (times.length === 0) return false;
@@ -251,6 +246,49 @@ export function hasSustainedNightService(
     if (times[i] - times[i - 1] > maxGapMinutes) return false;
   }
   return true;
+}
+
+// Night Service window: GTFS hour 24 (midnight) to hour 30 (6am), matching the same extended-hour
+// convention the 'late'/'overnight' TIME_PERIODS split already uses.
+export const NIGHT_SERVICE_WINDOW_START_MIN = 24 * 60;
+export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
+export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
+
+/**
+ * Does this route have sustained overnight service: at least one departure every
+ * maxGapMinutes across the whole [start, end] window, with no gap at either edge. See
+ * hasSustainedServiceInWindow above for the shared boundary-gap logic.
+ */
+export function hasSustainedNightService(
+  departureTimes: number[],
+  start: number = NIGHT_SERVICE_WINDOW_START_MIN,
+  end: number = NIGHT_SERVICE_WINDOW_END_MIN,
+  maxGapMinutes: number = NIGHT_SERVICE_MAX_GAP_MINUTES,
+): boolean {
+  return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes);
+}
+
+// Frequent Network window: 7am-7pm, matching Victoria (BC Transit)'s own "Frequent" product
+// definition exactly (see docs/DATA_FREQUENT_NETWORK.md for the full cross-agency survey this
+// was decided from). Weekday only -- process-core.ts only computes this for the Weekday day-type,
+// same as how Night Service's window sits outside TIME_PERIODS rather than reusing amPeak/midday/
+// pmPeak (7am cuts into amPeak's 6am start; 7pm lands exactly on pmPeak's own end).
+export const FREQUENT_SERVICE_WINDOW_START_MIN = 7 * 60;
+export const FREQUENT_SERVICE_WINDOW_END_MIN = 19 * 60;
+export const FREQUENT_SERVICE_MAX_GAP_MINUTES = 15;
+
+/**
+ * Does this route have sustained frequent service: at least one departure every
+ * maxGapMinutes across the whole 7am-7pm window, with no gap at either edge -- same boundary
+ * rule as hasSustainedNightService. Weekday only (see docs/DATA_FREQUENT_NETWORK.md).
+ */
+export function hasSustainedFrequentService(
+  departureTimes: number[],
+  start: number = FREQUENT_SERVICE_WINDOW_START_MIN,
+  end: number = FREQUENT_SERVICE_WINDOW_END_MIN,
+  maxGapMinutes: number = FREQUENT_SERVICE_MAX_GAP_MINUTES,
+): boolean {
+  return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes);
 }
 
 // Boundary-crossing gaps are still dropped here (issue #281, open) -- computePeriodSustained

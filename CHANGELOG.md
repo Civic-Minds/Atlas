@@ -14,6 +14,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
 - Fixed the night-service check missing real overnight-only service recorded under its own separate service_id instead of the day's main schedule (#297)
 - Fixed some sparse route variants never getting a night-service value at all instead of correctly showing no night service (#301)
+- Added a per-route frequent-network check: at least one weekday departure every 15 minutes, 7am-7pm, with no gap at the window edges either
+- Route features now carry a `frequentService` flag from the pipeline
 
 ## [3.2.10] - 2026-07-27
 
