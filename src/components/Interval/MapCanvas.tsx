@@ -61,6 +61,25 @@ function buildServingStopMatchExpression(
   return ['any', ...stopIds.map(id => ['!=', ['get', id, ['get', 'stopHeadways']], null])];
 }
 
+// Debug-only route highlight layer (?highlight=... -- see MapCanvasProps.highlightRoutes).
+// High-contrast palette deliberately distinct from HEADWAY_TIERS colors so it reads as an
+// overlay, not another frequency tier.
+const HIGHLIGHT_COLORS = ['#ff2d6f', '#00c2ff', '#ffd400', '#39ff6a', '#b967ff', '#ff8a1f'];
+const HIGHLIGHT_KEY_EXPR: any = ['concat', ['get', 'agencySlug'], '::', ['get', 'routeId']];
+
+function buildHighlightFilter(keys: string[]): any {
+  if (keys.length === 0) return ['==', ['literal', 0], ['literal', 1]];
+  return ['in', HIGHLIGHT_KEY_EXPR, ['literal', keys]];
+}
+
+function buildHighlightPaint(keys: string[]): any {
+  if (keys.length === 0) return '#000000';
+  const cases: any[] = ['match', HIGHLIGHT_KEY_EXPR];
+  keys.forEach((key, i) => cases.push(key, HIGHLIGHT_COLORS[i % HIGHLIGHT_COLORS.length]));
+  cases.push('#000000');
+  return cases;
+}
+
 /** Color route lines from the same effective headway metric used by filtering. */
 function buildEffectiveHeadwayColorExpression(period: TimePeriod): any {
   const headway = tileEffectiveHeadwayExpr(period);
@@ -80,6 +99,9 @@ interface MapCanvasProps {
   period: TimePeriod;
   q: string;
   selectedRoute: string | null;
+  /** Debug-only: draw these routes on the map in distinct colors, independent of selectedRoute.
+   * Not exposed in any UI -- set via ?highlight=agency::routeId,agency::routeId2 in Interval.tsx. */
+  highlightRoutes?: string[];
   /** Route key hovered in search results — highlighted on the map, others faded. */
   hoveredSearchRoute?: string | null;
   hoveredBranch?: HoveredBranch | null;
@@ -122,6 +144,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   period,
   q,
   selectedRoute,
+  highlightRoutes = [],
   hoveredSearchRoute = null,
   hoveredBranch = null,
   setSelectedRoute,
@@ -199,6 +222,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
   const selectedRouteRef = useRef(selectedRoute);
+  const highlightRoutesRef = useRef(highlightRoutes);
   const handleMapClickRef = useRef<(e: maplibregl.MapMouseEvent) => void>(() => {});
 
   const resetRoutesLayerDefaultPaint = (map: maplibregl.Map) => {
@@ -229,6 +253,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useLayoutEffect(() => {
     selectedRouteRef.current = selectedRoute;
   }, [selectedRoute]);
+
+  useLayoutEffect(() => {
+    highlightRoutesRef.current = highlightRoutes;
+  }, [highlightRoutes]);
 
   useLayoutEffect(() => {
     handleMapClickRef.current = (e: maplibregl.MapMouseEvent) => {
@@ -368,6 +396,21 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-width': 18,
           'line-opacity': 0
         }
+      });
+
+      // Debug-only route highlight layer -- see MapCanvasProps.highlightRoutes.
+      map.addLayer({
+        id: 'debug-highlight-layer',
+        type: 'line',
+        source: 'atlas-pmtiles',
+        'source-layer': 'routes',
+        paint: {
+          'line-color': buildHighlightPaint(highlightRoutesRef.current),
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3, 11, 4.5, 14, 6, 17, 8],
+          'line-opacity': 0.95,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        filter: buildHighlightFilter(highlightRoutesRef.current),
       });
 
       // Corridor static shapes layer

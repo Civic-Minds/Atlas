@@ -84,6 +84,15 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
+  // Debug-only: draw extra routes on the map in distinct colors, independent of the normal
+  // single-route selection/sidebar/fit-bounds flow. ?highlight=agency::routeId,agency::routeId2 --
+  // same key format as ?route=. Not surfaced in any UI; for investigating cases like #294 where
+  // seeing whether two routes' shapes actually overlap settles the question faster than reasoning
+  // about it in the abstract. Read-only from the URL on load, never written back.
+  const [highlightRoutes] = useState<string[]>(() => {
+    const raw = searchParams.get('highlight');
+    return raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
+  });
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
@@ -389,6 +398,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         period={period}
         q={q}
         selectedRoute={selectedRoute}
+        highlightRoutes={highlightRoutes}
         hoveredSearchRoute={hoveredSearchRoute}
         hoveredBranch={hoveredBranch}
         setSelectedRoute={setSelectedRoute}
