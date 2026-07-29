@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -264,6 +264,11 @@ export async function processGtfsBuffer(
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
+        // Branch-level dispatch times are the right scope here (unlike headwayByPeriod above,
+        // which Step 5 later re-derives from terminal-stop arrivals to correct for shared-terminal
+        // inflation) -- night service is about whether the route itself dispatches a trip every
+        // hour overnight, not about arrivals at any one stop.
+        nightService: hasSustainedNightService(result.times),
         headwayByHour: (() => {
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {
