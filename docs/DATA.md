@@ -19,6 +19,7 @@ Atlas is built from publicly available transit data and publishes the processing
 - **[Route Service Metrics](./ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
 - **[Display Naming](./DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
 - **[Population Context](./DATA_POPULATION.md)**: Proposed population-density data layer and its relationship to transit frequency.
+- **[Frequent Network Criteria](./DATA_FREQUENT_NETWORK.md)**: Proposed "Frequent" tool (Night Service's daytime counterpart) and the cross-agency research needed before picking a threshold.
 
 ## Data Freshness & Review
 
