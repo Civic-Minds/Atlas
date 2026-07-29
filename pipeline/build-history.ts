@@ -181,7 +181,7 @@ async function main() {
     periodKey: string; headway: number; routeLongName?: string; label?: string;
     headwayByPeriod?: HeadwayByPeriod;
   }>>> = {};
-  const coverageYearsBySlug: Record<string, number[]> = {};
+  const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
 
   const tasks: (() => Promise<void>)[] = [];
   for (const key of keys) {
@@ -190,9 +190,13 @@ async function main() {
       tasks.push(async () => {
         try {
           const raw = await r2GetArchive(key);
-          const years = JSON.parse(raw ?? '{}').coverageYears;
+          const metadata = JSON.parse(raw ?? '{}');
+          const years = metadata.coverageYears;
           if (Array.isArray(years)) {
-            coverageYearsBySlug[parts[1]] = years.filter((year): year is number => Number.isInteger(year));
+            coverageBySlug[parts[1]] = {
+              coverageYears: years.filter((year): year is number => Number.isInteger(year)),
+              materializeAllPeriods: metadata.materializeAllPeriods === true,
+            };
           }
         } catch (err) {
           console.error(`Failed to parse coverage metadata: ${key}`, err);
@@ -282,10 +286,15 @@ async function main() {
         return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, geometry: c.geometry };
       });
 
-      // Deduplicate: collapse consecutive identical headways (keep first occurrence)
-      const deduped = snapshots.filter((s, i) =>
-        i === 0 || s.weekdayHeadwayMin !== snapshots[i - 1].weekdayHeadwayMin
-      );
+      const materializeAllPeriods = coverageBySlug[slug]?.materializeAllPeriods === true;
+      // Normal history is change-only. The period-materialization experiment
+      // deliberately keeps each archived period so the scrubber can land on
+      // a documented schedule even when the route's headway is unchanged.
+      const deduped = materializeAllPeriods
+        ? [...snapshots]
+        : snapshots.filter((s, i) =>
+            i === 0 || s.weekdayHeadwayMin !== snapshots[i - 1].weekdayHeadwayMin
+          );
 
       // Add current Atlas data as the final point whenever it is newer than
       // the archive. Even an unchanged headway gets a current endpoint when
@@ -313,10 +322,12 @@ async function main() {
 
       if (deduped.length < 2) continue;
 
-      // Only include if headway actually changed between first and last
+      // Only include if headway actually changed between first and last in
+      // normal change-only mode. Materialized periods are intentionally kept
+      // even when a route's value stayed constant across the archive.
       const first = deduped[0];
       const last = deduped[deduped.length - 1];
-      if (first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
+      if (!materializeAllPeriods && first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
 
       const routeLongName = currentRoute?.routeLongName
         ?? changes.find(c => c.routeLongName)?.routeLongName
@@ -342,7 +353,7 @@ async function main() {
       name,
       region,
       center,
-      coverageYears: coverageYearsBySlug[slug],
+      coverageYears: coverageBySlug[slug]?.coverageYears,
       routes: agencyRoutes,
     });
     console.log(`  ${name}: ${agencyRoutes.length} routes with changes`);

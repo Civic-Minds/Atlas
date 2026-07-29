@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - History eligibility now recognizes covered schedule years without storing duplicate unchanged route snapshots, allowing well-documented timelines such as Sacramento’s to appear.
+- Added an opt-in history build mode for preserving every materialized schedule period, enabling denser timeline experiments without changing normal change-only history.
 - Fixed routes showing consistent frequency for a time period they barely run in (#299)
 - Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
 - Fixed the "report an issue" data dump silently dropping a branch with real headway data when its headsign is missing (#300)
