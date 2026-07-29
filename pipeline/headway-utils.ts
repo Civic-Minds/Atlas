@@ -236,16 +236,42 @@ export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod
   return result;
 }
 
+// A window-edge gap (period start to the first departure, or the last departure to period end)
+// many times larger than the period's own internal median signals a cluster-at-one-edge pattern
+// (issue #299 -- confirmed case: TTC Line 1 overnight, 3 departures tightly clustered near the
+// tail of the window with nothing else in it; internal gaps alone give a clean median of 5 and
+// isSustainedHeadway has nothing to object to, since it never sees the 210-minute void between
+// the window's own start and that first departure). This is deliberately compared against the
+// period's own median, not run through isSustainedHeadway's grace tolerance -- that tolerance is
+// calibrated for gap-to-gap consistency, not for a single edge void.
+//
+// The ratio was tuned against real TTC data, not picked in the abstract. 4x (matching
+// DOMINANT_GAP_RATIO) looked reasonable in isolation but real-feed validation against TTC+MiWay
+// flagged 24 amPeak and 18 pmPeak features, including TTC route 131 direction 1 (Old
+// Finch/Morningview): 9 evenly-spaced departures at a consistent 13-min headway starting 70
+// minutes into the 3-hour AM Peak window -- ratio 70/13 = 5.38, a legitimately-sustained route
+// that simply starts later than the window's nominal boundary, not a data problem. Raising the
+// ratio to 8 let that case pass while real gaps stayed caught: TTC route 32 direction 0
+// (Renforth) at ratio 72/7 = 10.3 (a genuine 40%-of-window void before frequent service starts)
+// and TTC route 952 direction 1 (Lawrence) midday at ratio ~23 (an AM/PM-peak-only commuter
+// branch with no midday service at all) both still fail at 8. Every real-feed flip sampled by
+// hand across both directions of the check (leading-edge and trailing-edge, TTC + MiWay) matched
+// a genuine service gap, not an artifact of the ratio -- see #299's closing comment for the full
+// validation trail before retuning this further.
+export const BOUNDARY_DOMINANT_RATIO = 8;
+
 /**
  * Parallel to computePeriodHeadways -- flags whether each period's own reported median actually
- * describes its gaps fairly (see isSustainedHeadway above). Kept as a separate field/function
- * rather than changing headwayByPeriod's value shape: several consumers of the published
- * headwayByPeriod field (e.g. pipeline/refresh.ts, which writes it into R2 history snapshots
- * that already exist as bare numbers; pipeline/route-report.ts; Corridors) declare their own
- * independent number-shaped type for this field rather than importing HeadwayByPeriod, so an
- * object-shaped value would silently misread with no compiler error and would disagree with
- * already-persisted history data. A purely additive parallel field avoids all of that --
- * every existing reader of headwayByPeriod is untouched.
+ * describes its gaps fairly (see isSustainedHeadway above and BOUNDARY_DOMINANT_RATIO below).
+ * Kept as a separate field/function rather than changing headwayByPeriod's value shape: several
+ * consumers of the published headwayByPeriod field (e.g. pipeline/refresh.ts, which writes it
+ * into R2 history snapshots that already exist as bare numbers; pipeline/route-report.ts;
+ * Corridors) declare their own independent number-shaped type for this field rather than
+ * importing HeadwayByPeriod, so an object-shaped value would silently misread with no compiler
+ * error and would disagree with already-persisted history data. A purely additive parallel field
+ * avoids all of that -- every existing reader of headwayByPeriod is untouched, and
+ * headwayByPeriod's own numbers (including TTC Line 1's overnight "5") are unchanged; only this
+ * flag now correctly says that "5" doesn't describe real sustained coverage.
  */
 export function computePeriodSustained(departureTimes: number[]): Partial<Record<PeriodKey, boolean>> {
   const result: Partial<Record<PeriodKey, boolean>> = {};
@@ -255,7 +281,12 @@ export function computePeriodSustained(departureTimes: number[]): Partial<Record
     if (value == null) continue;
     const gaps: number[] = [];
     for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
-    result[key] = isSustainedHeadway(gaps, value);
+    const leadingGap = times[0] - start;
+    const trailingGap = end - times[times.length - 1];
+    const boundarySustained = value > 0
+      && leadingGap / value <= BOUNDARY_DOMINANT_RATIO
+      && trailingGap / value <= BOUNDARY_DOMINANT_RATIO;
+    result[key] = isSustainedHeadway(gaps, value) && boundarySustained;
   }
   return result;
 }
