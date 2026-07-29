@@ -11,6 +11,15 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
 - Fixed the "report an issue" data dump silently dropping a branch with real headway data when its headsign is missing (#300)
 - Fixed Transit Windsor's 1A and 1C wrongly displayed as branches of one route — they're separate routes that only share a short downtown segment (#294)
+- Added a per-route night-service check: at least one departure every 60 minutes, midnight-6am, with no gap at the window edges either
+- Route features now carry a `nightService` flag from the pipeline
+- Weekly refresh now publishes an aggregate `atlas/night-service.json` across all agencies
+- Added the Night Service app: highlights overnight routes on the map with a sidebar directory to browse by agency (data populates on the next full weekly refresh)
+- Night Service now explains its criteria on first visit instead of just showing a route list
+- Fixed the night-service check missing real overnight-only service recorded under its own separate service_id instead of the day's main schedule (#297)
+- Fixed some sparse route variants never getting a night-service value at all instead of correctly showing no night service (#301)
+- Added a per-route frequent-network check: at least one weekday departure every 15 minutes, 7am-7pm, with no gap at the window edges either
+- Route features now carry a `frequentService` flag from the pipeline
 
 ## [3.2.10] - 2026-07-27
 

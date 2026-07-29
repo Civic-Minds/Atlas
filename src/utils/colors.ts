@@ -80,6 +80,10 @@ export function getFareColor(fare: number | null | undefined): string {
   return FARE_TIERS[4].color;
 }
 
+/** Flat line color for Night Service view — every visible route already passed the
+ * nightService filter, so (unlike fare/headway) there's no tier to express, just one color. */
+export const NIGHT_SERVICE_COLOR = '#818cf8';
+
 /** MapLibre case expression for fare-based line color. */
 export function buildFareColorExpression(): unknown[] {
   const expr: unknown[] = ['case'];

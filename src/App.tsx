@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
@@ -8,6 +8,7 @@ import Interval from './apps/Interval';
 import Corridors from './apps/Corridors';
 import type { StopEntry } from './apps/corridor-search';
 import History from './apps/History';
+import NightService from './apps/NightService';
 import LiveVehicles from './apps/LiveVehicles';
 import type { AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
@@ -19,6 +20,13 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import { agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
+
+// Corridors isn't good enough as a feature yet (Ryan, 2026-07-28) — off on purpose, not broken.
+// This is the one real gate: it's already effectively unreachable today because its panel
+// wrapper is `relative` instead of `absolute` (see the comment in Corridors.tsx), but that's
+// incidental CSS, not a deliberate switch. Flip this back to true only once Corridors is
+// actually ready to ship, and fix the positioning at the same time.
+const CORRIDORS_ENABLED = false;
 import { syncUrlParams } from './utils/syncUrlParams';
 
 export interface FareOverride {
@@ -73,6 +81,7 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/fares': 'fares',
   '/apps/history': 'history',
   '/apps/live': 'live',
+  '/apps/night': 'night',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -81,6 +90,7 @@ const APP_TO_PATH: Record<AppId, string> = {
   fares: '/apps/fares',
   history: '/apps/history',
   live: '/apps/live',
+  night: '/apps/night',
 };
 
 export default function App() {
@@ -184,6 +194,7 @@ export default function App() {
   const inCorridors = activeApp === 'corridors';
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
+  const inNight = activeApp === 'night';
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -204,6 +215,7 @@ export default function App() {
     : inFares ? 'Search agencies'
     : inHistory ? 'Find an agency…'
     : inCorridors ? 'Search corridors…'
+    : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
   function handleSearchClear() {
@@ -390,6 +402,18 @@ export default function App() {
           </a>
         )}
 
+        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
+
+        <a
+          href={inNight ? '/' : '/apps/night'}
+          aria-label={inNight ? 'Back to frequency map' : 'Night service'}
+          aria-pressed={inNight}
+          className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+        >
+          <Moon className="w-3.5 h-3.5" />
+          <span>Night Service</span>
+        </a>
+
         </div>
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
@@ -461,14 +485,15 @@ export default function App() {
               resetViewKey={resetViewKey}
               showUi={inFrequency}
               showSelectionUi={inLive}
-              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors}
+              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight}
               liveRoutesOnly={inLive}
               forceShowCorridors={inCorridors}
               fareView={inFares}
+              nightServiceView={inNight}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              onDirectFromStop={inFrequency ? handleDirectFromStop : undefined}
-              hideFilterPanel={inCorridors || inLive || inHistory || inFares}
+              onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
+              hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -493,6 +518,7 @@ export default function App() {
               sidebarLeft={sidebarLeft}
             />
             <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+            <NightService active={inNight} sidebarLeft={sidebarLeft} />
             {liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <LiveVehicles
