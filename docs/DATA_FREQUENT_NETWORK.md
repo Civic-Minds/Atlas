@@ -20,22 +20,65 @@ There's no single accepted industry number. Transit agencies and advocacy groups
 - Weekday-only, or does their frequent network also require weekend frequency?
 - Source each definition — agency name, the specific document/map it comes from, and the date, since these get revised.
 
-Known starting points worth checking: TransitCenter's frequent network research, individual agency "frequent network" or "high-frequency" service maps (e.g. this kind of thing has historically been published by systems like Houston METRO, King County Metro, and others — verify current ones rather than assuming), and any GTFS-based frequent-network tools that already publish their own methodology.
+## Survey findings
 
-### Examples already surfaced (verify and expand, don't just trust these)
+Collected 2026-07-29 from agency system maps / published frequent-network materials (Ryan + session notes). Where an agency publishes multiple tiers, **most-frequent tier** is treated as their "frequent" definition.
 
-- **TTC (Toronto)** — has a "10-Minute Network," still shown on the official system map as of this writing. Exact current threshold/hours not yet pulled from a primary source — confirm directly against ttc.ca rather than secondary commentary.
-- **Boise, ID (Valley Regional Transit)** — reported as 15 min headway during peak hours only, roughly 6-9am and 3-6pm. Peak-only, not all-day — a real example of the "dip allowed outside peak" pattern from the open design question below. Verify against VRT's own published materials before treating this as confirmed.
+### Published definitions
 
-## Open design question this research should settle
+| Agency | Label | Threshold | Hours / span | Days | Notes |
+|--------|-------|-----------|--------------|------|-------|
+| **TTC (Toronto)** | 10-Minute Network | ≤10 min | 6am–1am (8am start Sun) | 7 days | Hard max across full span; map + route pages |
+| **STM (Montréal)** | Lignes fréquentes | usually 2–12 min | All-day **or** peak-only (two lists) | Mon–Fri | Soft ("habituellement"); peak tier is first-class |
+| **Metro Vancouver** | Frequent Transit Network | ≤15 min | corridors, region-wide | (not specified in short def) | Corridor-based, not per-route branding only |
+| **Winnipeg** | Primary Transit Network | peak 4–15; off-peak 5–20; night/weekend 10–30 | varies by period | includes night/weekend (weaker) | Period-banded, not one number |
+| **Edmonton** | Frequent Route | ≤15 min | "most times of the day" | (not specified) | Soft span language |
+| **Victoria (BC Transit)** | Rapid / Frequent | ≤15 min | Rapid: 7am–10pm; Frequent: 7am–7pm | Rapid: 7 days; Frequent: Mon–Fri | Two products, same headway, different span |
+| **King County Metro (Seattle)** | Frequent all-day route | ≤15 min | until 6pm | Mon–Fri | Ends early evening; weekday only |
+| **LA Metro** | (frequent map) | ≤15 min | 6am–6pm | (map scope; rail + those buses) | All rail + qualifying buses |
+| **Boise (VRT)** | (frequent) | ≤15 min | peak ~6–9am, 3–6pm | (peak framing) | Peak-only — not all-day |
+| **UTA / SLC** | UVX / OGX / MVX / Frequent bus | UVX·OGX BRT 6–15; MVX BRT 15–30; Frequent bus 15–60 | product-specific | UVX Mon–Sat noted | Tiered BRT + wide "frequent bus" band |
+| **Miami-Dade** | map tiers | most-frequent: ≤10; also shows ≤15 | (map) | (map) | Map has both 10 and 15 bands; top tier = ≤10 |
+| **MBTA (Boston)** | Frequent Bus Routes | ≤15 min | (expanding network) | (not in short blurb) | "Buses that arrive every 15 minutes or less" |
 
-Atlas's own `TIME_PERIODS` already splits the day into amPeak / midday / pmPeak / evening / late / overnight (`shared/config.ts`). Once the survey above is done, decide:
+### No published frequent-network definition found
 
-- Does "frequent" require the threshold to hold in **every** daytime period, or can it dip in one (e.g. midday) as long as peaks and evening hold?
-- Is the threshold agency-relative (a route is frequent if it's in that agency's own top tier) or an absolute number Atlas applies everywhere?
+Halifax · Calgary · Kingston · Sound Transit · SDMTS (San Diego)
+
+### Patterns
+
+- **15 min** is the modal North American "frequent" number (Metro Van, Edmonton, Victoria, KCM, LA, MBTA, Boise peak).
+- **10 min** is the stricter / top tier (TTC, Miami top band; STM effectively ≤12).
+- **All-day** means different things: TTC 6am–1am; LA/KCM end by 6pm; Victoria Rapid to 10pm; Boise peak-only.
+- **Weekends** often weaker or absent (STM weekdays; KCM Mon–Fri; Victoria Frequent Mon–Fri; TTC includes weekends with Sunday later start).
+- Several systems **explicitly allow weaker off-peak** (Winnipeg bands, STM peak-only list, Boise peak-only) rather than one uniform rule.
+
+## Open design question — recommendations (not decisions)
+
+Atlas's own `TIME_PERIODS` already splits the day into amPeak / midday / pmPeak / evening / late / overnight (`shared/config.ts`). Survey → recommendations below; Ryan decides.
+
+### 1. Every daytime period vs tolerate a dip?
+
+**Recommendation: require the threshold in every core daytime period (amPeak + midday + pmPeak at minimum); do not count peak-only as "frequent."**
+
+Product question in this doc is "all day, not just rush hour." Peak-only maps (Boise, STM peak list) are real industry patterns but answer a different question. TTC / Metro Van / Victoria Rapid / LA style (threshold holds across a multi-hour daytime span including midday) matches Atlas's intent. Optional later: a separate "peak frequent" treatment if useful — don't conflate it with Frequent.
+
+### 2. Agency-relative vs absolute threshold?
+
+**Recommendation: absolute number Atlas applies everywhere (default candidate: ≤15 min), not "in that agency's top tier."**
+
+Agency-relative would make TTC's 10 and Miami's 10 and Winnipeg's period bands incomparable on one map, and would hide poor networks that brand weak service as "frequent." Absolute matches Night Service's shape and most surveyed systems (15 modal; 10 as a stricter optional tier later). Agency-published frequent lists can still be cited or overlaid later — not the filter rule.
+
+### Threshold / span candidates for a later design pass (still undecided)
+
+- Headway: **15** (common) vs **10** (strict / TTC-like)
+- Span: something like **6am–6pm** or **7am–7pm** weekdays (LA / Victoria Frequent cluster) vs longer evening (Victoria Rapid / TTC)
+- Weekends: optional second bar; most defs are weaker or weekday-first
 
 ## Not yet decided
 
 - The specific headway threshold Atlas would use
+- Exact hours that count as the frequent window
+- Whether weekends are required
 - Whether this ships as its own destination/tool (mirroring Night Service) or a different UI treatment
 - Whether "Explore" becomes a real grouping once there are two standalone tools (Night Service + this) instead of one — see conversation history, not written up separately yet
