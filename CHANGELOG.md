@@ -7,22 +7,22 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [3.2.11] - 2026-07-29
 
 - History eligibility now recognizes covered schedule years without storing duplicate unchanged route snapshots, allowing well-documented timelines such as Sacramento’s to appear.
-- Fixed routes showing consistent frequency for a time period they barely run in (#299)
-- Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
-- Fixed the "report an issue" data dump silently dropping a branch with real headway data when its headsign is missing (#300)
-- Fixed Transit Windsor's 1A and 1C wrongly displayed as branches of one route — they're separate routes that only share a short downtown segment (#294)
+- Fixed routes showing consistent frequency for a time period they barely run in ([#299](https://github.com/Civic-Minds/Atlas/issues/299))
+- Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value ([#298](https://github.com/Civic-Minds/Atlas/issues/298))
+- Fixed the "report an issue" data dump silently dropping a branch with real headway data when its headsign is missing ([#300](https://github.com/Civic-Minds/Atlas/issues/300))
+- Fixed Transit Windsor's 1A and 1C wrongly displayed as branches of one route — they're separate routes that only share a short downtown segment ([#294](https://github.com/Civic-Minds/Atlas/issues/294))
 
 ## [3.2.10] - 2026-07-27
 
-- Fixed the weekly GTFS refresh Action crashing on transient R2 network timeouts instead of retrying (#293)
+- Fixed the weekly GTFS refresh Action crashing on transient R2 network timeouts instead of retrying ([#293](https://github.com/Civic-Minds/Atlas/issues/293))
 - Frequency sparkline bars now show their real time range on hover (each bar is a 90-minute window, not a strict clock hour)
-- Fixed hourly frequency values blending into a neighboring hour's service pattern when the hour already had enough departures to stand on its own (#282)
-- Fixed stop-card frequency disappearing for routes with real all-day service that falls outside the midday/PM-peak windows (#279)
-- Fixed headway/frequency values overstating the gap (showing worse frequency than scheduled) in windows with an even number of departures (#280)
-- Stop cards now use the same back control as Live cards (#239)
-- Selected routes now explain when they remain visible outside the active frequency filter (#270)
-- Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes and publishes them in PMTiles (#214)
-- Refreshed CTA and Laketran schedule artifacts and rebuilt the live PMTiles archive after the explicit no-service fix (#274)
+- Fixed hourly frequency values blending into a neighboring hour's service pattern when the hour already had enough departures to stand on its own ([#282](https://github.com/Civic-Minds/Atlas/issues/282))
+- Fixed stop-card frequency disappearing for routes with real all-day service that falls outside the midday/PM-peak windows ([#279](https://github.com/Civic-Minds/Atlas/issues/279))
+- Fixed headway/frequency values overstating the gap (showing worse frequency than scheduled) in windows with an even number of departures ([#280](https://github.com/Civic-Minds/Atlas/issues/280))
+- Stop cards now use the same back control as Live cards ([#239](https://github.com/Civic-Minds/Atlas/issues/239))
+- Selected routes now explain when they remain visible outside the active frequency filter ([#270](https://github.com/Civic-Minds/Atlas/issues/270))
+- Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes and publishes them in PMTiles ([#214](https://github.com/Civic-Minds/Atlas/issues/214))
+- Refreshed CTA and Laketran schedule artifacts and rebuilt the live PMTiles archive after the explicit no-service fix ([#274](https://github.com/Civic-Minds/Atlas/issues/274))
 - Shared-section cadence now combines scheduled branch frequencies instead of using a fastest-stop gap.
 - Limited and infrequent branches no longer inflate shared-core frequency summaries.
 - Drop-off-only branches are excluded from shared-core frequency summaries even when feed tier metadata is inconsistent.
@@ -48,7 +48,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Consolidate overlapping stop markers on the map by rendering only one representative stop per hub below zoom 17.
 - Consolidate stop search results sharing a hubId to present a single unified transit hub result with combined routes.
 - Exclude departing routes from the walking connections list in stop cards.
-- Fixed high-severity security vulnerability in linkify-it dependency (#275)
+- Fixed high-severity security vulnerability in linkify-it dependency ([#275](https://github.com/Civic-Minds/Atlas/issues/275))
 - Period filters now keep routes with explicit no-service periods off the map.
 - History agency cards now match other cards by omitting the standalone close button.
 - History now retains current route data when an agency changes route IDs between archived and current GTFS.
@@ -79,7 +79,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [3.2.8] - 2026-07-20
 
 - **Fixed the app feeling slow/laggy on every load, even before touching Corridors**: Corridors stays mounted in the background so switching apps is instant, but its stop-search index was loading unconditionally on first page load — an unthrottled fetch of every single agency's stops file (800+ requests) firing at once, competing with the visible Frequency map for network and CPU the whole time it was still rendering. Now deferred until Corridors is actually opened.
-- **Fixed routes showing a stuck/stale frequency at their terminus** (#263): a sparse branch's own headway (computed from however few trips run that day, with no minimum sample size) could get ratcheted in over a more accurate, better terminal-specific number and never get corrected — e.g. a Rennes Sunday route showing "every 121 min" when every stop, including the terminus, actually ran every 60 min. That ratchet exists to stop a shared terminal's combined frequency from falsely improving a branch's real number, so it now only applies (a) when the branch's own number is backed by enough trips to trust, and (b) when there's an actual branch for it to protect in the first place — a route where every stop shows the same frequency has no trunk/branch split, so the ratchet was misfiring there regardless of trip count. Confirmed across Rennes, Lyon, and several France candidates during this fix, including a case (villeneuve-sur-lot) that confirms the protection still works correctly when a route genuinely does branch.
+- **Fixed routes showing a stuck/stale frequency at their terminus** ([#263](https://github.com/Civic-Minds/Atlas/issues/263)): a sparse branch's own headway (computed from however few trips run that day, with no minimum sample size) could get ratcheted in over a more accurate, better terminal-specific number and never get corrected — e.g. a Rennes Sunday route showing "every 121 min" when every stop, including the terminus, actually ran every 60 min. That ratchet exists to stop a shared terminal's combined frequency from falsely improving a branch's real number, so it now only applies (a) when the branch's own number is backed by enough trips to trust, and (b) when there's an actual branch for it to protect in the first place — a route where every stop shows the same frequency has no trunk/branch split, so the ratchet was misfiring there regardless of trip count. Confirmed across Rennes, Lyon, and several France candidates during this fix, including a case (villeneuve-sur-lot) that confirms the protection still works correctly when a route genuinely does branch.
 - **Audited the remaining 92 dry-run France candidates for the first time**: none had been individually reviewed before (only the 5 real-staged cities had). All 117 flagged shape anomalies were already auto-resolved by existing detectors (80 truncated-at-parse, 33 auto-repaired-and-verified, 5 known hardcoded fixes) — no action needed there. Found and fixed 17 real near-duplicate-headsign cases across TBM (Bordeaux, 17 across two feed snapshots), SETRAM (le Mans), Izilo (Lorient), and Qub (Quimper): each feed publishes both an ALL-CAPS/no-accent stop code and a properly-cased display name for the same destination on different trips, which was splitting headway counts across two list entries per destination instead of counting them together. Also confirmed 2 flagged pairs are NOT duplicates and left them alone: Orléans' "Quai C/D/E" are different real platforms, and Saint-Nazaire's "Redon"/"Besné" are different real origin towns.
 - **Live mode is available on phones**: the Live control was desktop-only (`hidden` below `sm`); it now shows in the header on small screens too.
 - **Map/stop selection at a hub stays consistent**: Frequency map filter and stop card now share one stop-hub expansion helper (same-name + 120 m proximity), so sibling routes at a transfer station cannot disagree between the map and the card.
