@@ -53,32 +53,19 @@ Halifax · Calgary · Kingston · Sound Transit · SDMTS (San Diego)
 - **Weekends** often weaker or absent (STM weekdays; KCM Mon–Fri; Victoria Frequent Mon–Fri; TTC includes weekends with Sunday later start).
 - Several systems **explicitly allow weaker off-peak** (Winnipeg bands, STM peak-only list, Boise peak-only) rather than one uniform rule.
 
-## Open design question — recommendations (not decisions)
+## Decision (2026-07-29)
 
-Atlas's own `TIME_PERIODS` already splits the day into amPeak / midday / pmPeak / evening / late / overnight (`shared/config.ts`). Survey → recommendations below; Ryan decides.
+**≤15 min headway, sustained 7am–7pm, weekday. No gap at either edge of the window (same boundary rule as Night Service).**
 
-### 1. Every daytime period vs tolerate a dip?
+Matches Victoria (BC Transit)'s own "Frequent" product exactly (7am–7pm, weekday, from the survey table above) — a directly-precedented choice, not an arbitrary pick. Rationale for each piece:
 
-**Recommendation: require the threshold in every core daytime period (amPeak + midday + pmPeak at minimum); do not count peak-only as "frequent."**
-
-Product question in this doc is "all day, not just rush hour." Peak-only maps (Boise, STM peak list) are real industry patterns but answer a different question. TTC / Metro Van / Victoria Rapid / LA style (threshold holds across a multi-hour daytime span including midday) matches Atlas's intent. Optional later: a separate "peak frequent" treatment if useful — don't conflate it with Frequent.
-
-### 2. Agency-relative vs absolute threshold?
-
-**Recommendation: absolute number Atlas applies everywhere (default candidate: ≤15 min), not "in that agency's top tier."**
-
-Agency-relative would make TTC's 10 and Miami's 10 and Winnipeg's period bands incomparable on one map, and would hide poor networks that brand weak service as "frequent." Absolute matches Night Service's shape and most surveyed systems (15 modal; 10 as a stricter optional tier later). Agency-published frequent lists can still be cited or overlaid later — not the filter rule.
-
-### Threshold / span candidates for a later design pass (still undecided)
-
-- Headway: **15** (common) vs **10** (strict / TTC-like)
-- Span: something like **6am–6pm** or **7am–7pm** weekdays (LA / Victoria Frequent cluster) vs longer evening (Victoria Rapid / TTC)
-- Weekends: optional second bar; most defs are weaker or weekday-first
+- **≤15 min**: the modal real-world number (6 of 12 surveyed systems), and already an existing tier boundary in Atlas's own `HEADWAY_TIERS` (`shared/config.ts`) — no new number invented. ≤10 min (TTC/Miami-style) is a plausible stricter second tier later, not v1.
+- **7am–7pm, not peak-only**: rejects the Boise/STM-peak-list pattern (real, but answers "is it good at rush hour," not "does it run frequently all day"). Matches Atlas's own product question.
+- **Weekday-only**: most surveyed definitions are weekday-only or weaker on weekends (STM, KCM, Victoria Frequent all weekday; TTC is the exception).
+- **7am–7pm doesn't align to Atlas's existing `TIME_PERIODS` boundaries** (amPeak starts 6am, pmPeak ends 7pm exactly, so 7am cuts into amPeak). This is a standalone window, same shape as Night Service's own independent window (`NIGHT_SERVICE_WINDOW_START_MIN`/`END_MIN` in `pipeline/headway-utils.ts`) rather than reusing the amPeak/midday/pmPeak split.
 
 ## Not yet decided
 
-- The specific headway threshold Atlas would use
-- Exact hours that count as the frequent window
-- Whether weekends are required
 - Whether this ships as its own destination/tool (mirroring Night Service) or a different UI treatment
 - Whether "Explore" becomes a real grouping once there are two standalone tools (Night Service + this) instead of one — see conversation history, not written up separately yet
+- A stricter ≤10 min sub-tier, if wanted later
