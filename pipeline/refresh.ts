@@ -21,6 +21,7 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2
 import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
+import { buildNightServiceIndex, extractNightServiceRoutes, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
@@ -158,6 +159,7 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
 interface AgencyEntry {
   slug: string;
   name: string;
+  region?: string | null;
   center: [number, number];
   timezone?: string | null;
   url: string;
@@ -208,7 +210,8 @@ async function downloadFeed(url: string): Promise<Buffer> {
 async function refreshAgency(
   agency: AgencyEntry,
   manualBaseFareOverride?: number,
-  logger?: { log: (msg: string) => void }
+  logger?: { log: (msg: string) => void },
+  nightServiceCollector?: NightServiceRouteEntry[],
 ): Promise<string> {
   if (!agency.feedUrl) {
     return 'skipped (no feedUrl)';
@@ -403,6 +406,14 @@ async function refreshAgency(
   const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);
   writeLog(`  history: ${histResult}\n`);
 
+  if (nightServiceCollector) {
+    const parsedFeatures = (JSON.parse(geojson) as GeoJsonFc).features as
+      Parameters<typeof extractNightServiceRoutes>[3];
+    nightServiceCollector.push(
+      ...extractNightServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
+    );
+  }
+
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return `${featureCount} features, ${kb} KB`;
 }
@@ -454,6 +465,7 @@ async function main() {
   let failures = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
+  const allNightServiceRoutes: NightServiceRouteEntry[] = [];
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
     const logger = {
@@ -473,7 +485,7 @@ async function main() {
           return;
         }
       }
-      const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
+      const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes);
       if (!summary.startsWith('skipped')) uploads++;
       console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
       // Clear staged flag once data is live so the next deploy shows the agency.
@@ -531,6 +543,17 @@ async function main() {
       console.log('  feed-refresh-meta.json → R2');
     } catch (e) {
       console.warn(`  [warn] feed-refresh-meta R2 write failed — ${e instanceof Error ? e.message : e}`);
+    }
+
+    // Only built from a full run (onlySlugs empty) — a --only-slug run only has fresh
+    // night-service data for the agencies it actually touched, and uploading that partial
+    // set here would clobber every other agency's entries with nothing.
+    try {
+      const nightServiceIndex = buildNightServiceIndex(allNightServiceRoutes);
+      await r2Put('atlas/night-service.json', JSON.stringify(nightServiceIndex));
+      console.log(`  night-service.json → R2 (${nightServiceIndex.routeCount} routes across ${nightServiceIndex.agencyCount} agencies)`);
+    } catch (e) {
+      console.warn(`  [warn] night-service.json R2 write failed — ${e instanceof Error ? e.message : e}`);
     }
   }
 }

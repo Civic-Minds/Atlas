@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Added a per-route night-service check: at least one departure every 60 minutes, midnight-6am, with no gap at the window edges either
 - Route features now carry a `nightService` flag from the pipeline (not yet surfaced in the UI)
+- Weekly refresh now publishes an aggregate `atlas/night-service.json` across all agencies (not yet surfaced in the UI)
 
 ## [3.2.10] - 2026-07-27
 
