@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
+import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -109,6 +109,7 @@ interface MapCanvasProps {
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
+  nightServiceView?: boolean;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   onTileLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
@@ -145,6 +146,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedAgencySlug,
   setSelectedAgencySlug,
   fareView = false,
+  nightServiceView = false,
   initialMapCenter,
   onTileLoadingChange,
   onClearSelection,
@@ -885,6 +887,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             : searchAnyField)
         : null;
       routeFilter = concatFilters(hasFare, searchClause);
+    } else if (nightServiceView) {
+      const isNightService = ['==', ['get', 'nightService'], true];
+      const searchClause = ql
+        ? (matchedAgencySlug
+            ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
+            : searchAnyField)
+        : null;
+      routeFilter = concatFilters(isNightService, searchClause);
     } else if (ql) {
       const searchClause = matchedAgencySlug
         ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
@@ -917,6 +927,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       let lineColorExpr: any;
       if (fareView) {
         lineColorExpr = buildFareColorExpression();
+      } else if (nightServiceView) {
+        lineColorExpr = NIGHT_SERVICE_COLOR;
       } else {
         lineColorExpr = buildEffectiveHeadwayColorExpression(period);
       }
@@ -1027,7 +1039,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, historyOverlay]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, historyOverlay]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

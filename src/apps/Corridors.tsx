@@ -506,6 +506,13 @@ export default function Corridors({
 
   const panelLeft = sidebarLeft ?? SIDEBAR_LEFT_FALLBACK;
 
+  // Intentionally invisible, not a bug: this wrapper is `relative` rather than `absolute`,
+  // so in normal document flow it renders below Interval's full-height map instead of
+  // overlaying it — the panel below never appears on screen. Left this way on purpose
+  // because Corridors isn't good enough as a feature yet (Ryan, 2026-07-28); don't "fix" the
+  // positioning without checking whether Corridors is actually ready to ship first. The
+  // working overlay pattern (root element itself `absolute`, no `relative` wrapper) is in
+  // History.tsx and NightService.tsx.
   return (
     <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div

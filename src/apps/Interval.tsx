@@ -54,12 +54,13 @@ interface Props {
   onSelectionActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
   fareView?: boolean;
+  nightServiceView?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
   const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -412,6 +413,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedAgencySlug={selectedAgencySlug}
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
+        nightServiceView={nightServiceView}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
