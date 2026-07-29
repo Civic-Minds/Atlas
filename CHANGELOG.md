@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Added a per-route night-service check: at least one departure every 60 minutes, midnight-6am, with no gap at the window edges either
+
 ## [3.2.10] - 2026-07-27
 
 - Fixed the weekly GTFS refresh Action crashing on transient R2 network timeouts instead of retrying (#293)

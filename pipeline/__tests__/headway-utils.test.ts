@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, hasGenuineBranchPattern, hasSustainedNightService, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -139,5 +139,39 @@ describe('resolveTerminalPeriodHeadway', () => {
 
   it('protects a branch from a better unscoped shared-terminal value', () => {
     expect(resolveTerminalPeriodHeadway(7, 17, false)).toBe(17);
+  });
+});
+
+// Window defaults to GTFS minutes 1440-1800 (midnight-6am), maxGap defaults to 60.
+describe('hasSustainedNightService', () => {
+  it('is true when every gap, including both boundaries, is exactly 60 minutes', () => {
+    expect(hasSustainedNightService([1440, 1500, 1560, 1620, 1680, 1740, 1800])).toBe(true);
+  });
+
+  it('is false when an internal gap exceeds 60 minutes', () => {
+    expect(hasSustainedNightService([1440, 1500, 1620, 1680, 1740, 1800])).toBe(false);
+  });
+
+  it('is false when the first departure leaves the start boundary uncovered', () => {
+    expect(hasSustainedNightService([1550, 1600, 1650, 1700, 1750, 1800])).toBe(false);
+  });
+
+  it('is false when the last departure leaves the end boundary uncovered', () => {
+    expect(hasSustainedNightService([1440, 1500, 1560, 1620, 1680, 1700])).toBe(false);
+  });
+
+  it('is false with no departures in the window', () => {
+    expect(hasSustainedNightService([])).toBe(false);
+  });
+
+  it('ignores departures outside the window and dedupes exact duplicates', () => {
+    expect(
+      hasSustainedNightService([1200, 1440, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1900]),
+    ).toBe(true);
+  });
+
+  it('respects custom window and gap parameters', () => {
+    expect(hasSustainedNightService([1440, 1470, 1500], 1440, 1500, 30)).toBe(true);
+    expect(hasSustainedNightService([1440, 1500], 1440, 1500, 30)).toBe(false);
   });
 });

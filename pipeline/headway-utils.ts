@@ -223,6 +223,36 @@ export function isSustainedHeadway(
   return true;
 }
 
+// Night Service window: GTFS hour 24 (midnight) to hour 30 (6am), matching the same extended-hour
+// convention the 'late'/'overnight' TIME_PERIODS split already uses.
+export const NIGHT_SERVICE_WINDOW_START_MIN = 24 * 60;
+export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
+export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
+
+/**
+ * Does this route have sustained overnight service: at least one departure every
+ * maxGapMinutes across the whole [start, end) window, with no gap -- including the
+ * boundary gaps from window start to the first departure and from the last departure to
+ * window end -- exceeding that. A route whose first night trip doesn't leave until 3am
+ * isn't covering midnight-6am even if every trip after that is tightly spaced, so boundary
+ * gaps are checked the same as internal ones.
+ */
+export function hasSustainedNightService(
+  departureTimes: number[],
+  start: number = NIGHT_SERVICE_WINDOW_START_MIN,
+  end: number = NIGHT_SERVICE_WINDOW_END_MIN,
+  maxGapMinutes: number = NIGHT_SERVICE_MAX_GAP_MINUTES,
+): boolean {
+  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+  if (times.length === 0) return false;
+  if (times[0] - start > maxGapMinutes) return false;
+  if (end - times[times.length - 1] > maxGapMinutes) return false;
+  for (let i = 1; i < times.length; i++) {
+    if (times[i] - times[i - 1] > maxGapMinutes) return false;
+  }
+  return true;
+}
+
 // Boundary-crossing gaps are still dropped here (issue #281, open) -- computePeriodSustained
 // below only adds a parallel `sustained` annotation on top of today's existing per-period gap
 // collection. It does NOT fix the boundary undercounting; it flags a different, adjacent risk
