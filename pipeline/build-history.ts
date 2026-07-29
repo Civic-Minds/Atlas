@@ -10,8 +10,10 @@
  *                  → current headways; used as the final data point
  *
  * Agencies auto-appear once they have ≥1 route with a recorded change that
- * differs from current atlas data. BASE_HISTORY handles manual case-study data
- * (e.g. GCRTA pre-pipeline snapshots).
+ * differs from current atlas data. Lightweight history/{slug}/coverage.json
+ * metadata can add covered schedule years without duplicating unchanged route
+ * snapshots. BASE_HISTORY handles manual case-study data (e.g. GCRTA
+ * pre-pipeline snapshots).
  */
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -179,10 +181,25 @@ async function main() {
     periodKey: string; headway: number; routeLongName?: string; label?: string;
     headwayByPeriod?: HeadwayByPeriod;
   }>>> = {};
+  const coverageYearsBySlug: Record<string, number[]> = {};
 
   const tasks: (() => Promise<void>)[] = [];
   for (const key of keys) {
     const parts = key.split('/');
+    if (parts.length === 3 && parts[0] === 'history' && parts[2] === 'coverage.json') {
+      tasks.push(async () => {
+        try {
+          const raw = await r2GetArchive(key);
+          const years = JSON.parse(raw ?? '{}').coverageYears;
+          if (Array.isArray(years)) {
+            coverageYearsBySlug[parts[1]] = years.filter((year): year is number => Number.isInteger(year));
+          }
+        } catch (err) {
+          console.error(`Failed to parse coverage metadata: ${key}`, err);
+        }
+      });
+      continue;
+    }
     // history/{slug}/{routeShortName}/{periodKey}.json → parts.length === 4
     if (parts.length !== 4) continue;
     const [, slug, routeShortName, filename] = parts;
@@ -320,7 +337,14 @@ async function main() {
     const region = registryEntry?.region ?? '';
     const center = registryEntry?.center;
 
-    historyData.push({ slug, name, region, center, routes: agencyRoutes });
+    historyData.push({
+      slug,
+      name,
+      region,
+      center,
+      coverageYears: coverageYearsBySlug[slug],
+      routes: agencyRoutes,
+    });
     console.log(`  ${name}: ${agencyRoutes.length} routes with changes`);
   }
 

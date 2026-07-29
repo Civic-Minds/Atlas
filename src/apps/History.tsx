@@ -27,6 +27,7 @@ export interface AgencyHistory {
   name: string;
   region: string;
   center?: [number, number];
+  coverageYears?: number[];
   routes: RouteHistoryEntry[];
 }
 

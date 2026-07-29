@@ -287,7 +287,7 @@ export default function App() {
       .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
-      .then((data: Array<{ slug: string; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) =>
+      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) =>
         setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistoryExplore).map(a => a.slug))),
       )
       .catch(() => setHistoryAgencySlugs(new Set()));

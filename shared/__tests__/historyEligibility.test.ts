@@ -29,4 +29,13 @@ describe('historyEligibility', () => {
       }),
     ).toBe(false);
   });
+
+  it('uses coverage metadata without requiring duplicate route snapshots', () => {
+    expect(
+      agencyQualifiesForHistoryExplore({
+        coverageYears: Array.from({ length: MIN_HISTORY_DISTINCT_YEARS }, (_, i) => 2012 + i),
+        routes: [{ snapshots: [{ year: 2012 }, { year: 2020 }] }],
+      }),
+    ).toBe(true);
+  });
 });

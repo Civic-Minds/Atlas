@@ -3,11 +3,11 @@ export const MIN_HISTORY_DISTINCT_YEARS = 10;
 
 export type HistorySnapshot = { year?: number };
 export type HistoryRoute = { snapshots?: HistorySnapshot[] };
-export type HistoryAgencyLike = { routes?: HistoryRoute[] };
+export type HistoryAgencyLike = { routes?: HistoryRoute[]; coverageYears?: number[] };
 
-/** Distinct calendar years present in any route snapshot for this agency. */
+/** Distinct calendar years covered by route snapshots or lightweight coverage metadata. */
 export function distinctSnapshotYears(agency: HistoryAgencyLike): number[] {
-  const years = new Set<number>();
+  const years = new Set<number>(agency.coverageYears ?? []);
   for (const route of agency.routes ?? []) {
     for (const snap of route.snapshots ?? []) {
       if (snap.year != null) years.add(snap.year);
