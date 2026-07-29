@@ -86,7 +86,14 @@ jobs:
           git add public/data/index.json shared/cacheBuild.ts config/agencies/
           if ! git diff --cached --quiet; then
             git commit -m "chore: weekly GTFS feed refresh"
-            git pull --rebase origin main
+            # --autostash: pipeline steps can leave other files (outside the
+            # explicit `git add` above) modified in the runner's working tree.
+            # Without this, `pull --rebase` refuses to run at all ("You have
+            # unstaged changes"), which is exactly what failed the 2026-07-27
+            # run -- the refresh itself succeeded, only this commit step
+            # failed. The runner is discarded after the job, so silently
+            # re-modifying those files on stash-pop is harmless.
+            git pull --rebase --autostash origin main
             git push
           else
             echo "No changes to commit."
