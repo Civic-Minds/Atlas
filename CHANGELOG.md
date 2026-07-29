@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
+- Fixed the "report an issue" data dump silently dropping a branch with real headway data when its headsign is missing (#300)
 
 ## [3.2.10] - 2026-07-27
 

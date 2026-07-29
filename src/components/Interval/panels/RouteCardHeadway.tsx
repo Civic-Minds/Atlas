@@ -178,11 +178,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           multipleDirections: showDirectionSections,
           sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
         });
-        if (!label) return null;
+        // resolveBranchLabel can legitimately return '' (e.g. destination redundant with a
+        // section header already shown) -- fine for the polished card, but the report text's
+        // whole job is completeness, so a branch with real data must never be silently dropped
+        // just because it has nothing distinctive to say (#300). Fall back to something, not null.
+        const reportLabel = label || direction.headsign?.trim() || `Direction ${direction.directionId ?? gi}`;
         const headway = routeCardDisplayHeadway(direction, period);
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
-        return `- ${label}: ${headway != null ? `every ${headway} min` : 'no data for this period'}`;
+        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : 'no data for this period'}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
