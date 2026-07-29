@@ -15,8 +15,8 @@
   "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-francisco-bay-area-water-emergency-transportation-authority-gtfs-3143.zip?alt=media",
   "lastFeedExpiry": "20261101",
-  "lastFeedVersion": "UTC: 24-Jun-2026 19:51",
-  "lastRefreshedAt": "2026-07-06",
+  "lastFeedVersion": "UTC: 06-Jul-2026 18:44",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Chinatown, California",
     "Oakland, California",

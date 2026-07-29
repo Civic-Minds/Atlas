@@ -15,8 +15,8 @@
   "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-soltrans-gtfs-80.zip?alt=media",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260612",
-  "lastRefreshedAt": "2026-07-06",
+  "lastFeedVersion": "20260723",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Vallejo, California",
     "Fairfield, California",

@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://www.spokanetransit.com/gtfs",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-spokane-transit-authority-sta-gtfs-290.zip?alt=media",
-  "lastFeedExpiry": "20260919",
-  "lastFeedVersion": "MAY2026v3_20260521",
-  "lastRefreshedAt": "2026-07-06",
+  "lastFeedExpiry": "20270116",
+  "lastFeedVersion": "MergedMAYSEP2026v1_20260720",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Spokane, Washington",
     "Spokane Valley, Washington"

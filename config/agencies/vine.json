@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-vine-transit-gtfs-1288.zip?alt=media",
   "lastFeedExpiry": "20261031",
   "lastFeedVersion": "UTC: 26-Jun-2026 20:52",
-  "lastRefreshedAt": "2026-07-06",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Napa, California",
     "Vallejo, California",

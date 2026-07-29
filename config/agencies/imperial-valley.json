@@ -14,5 +14,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
-  "lastRefreshedAt": "2026-07-16"
+  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null
 }
