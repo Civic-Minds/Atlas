@@ -9,7 +9,19 @@ import { DEFAULT_R2_PUBLIC_URL } from './shared/config';
 // base: '/' for local dev and Vercel, '/Atlas/' for GitHub Pages
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const r2Target = (env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
+  // Prefer process.env so `ATLAS_ENV=staging` / `VITE_R2_PUBLIC_URL=…` (npm run
+  // dev:staging) can point the /atlas-data proxy at the staging bucket without
+  // editing .env.local. Fall back to Vite-loaded env, then prod default.
+  const r2Target = (
+    process.env.VITE_R2_PUBLIC_URL
+    || process.env.R2_PUBLIC_URL
+    || env.VITE_R2_PUBLIC_URL
+    || env.R2_PUBLIC_URL
+    || DEFAULT_R2_PUBLIC_URL
+  ).replace(/\/$/, '');
+  if (process.env.ATLAS_ENV === 'staging' || /pub-5f1c48f86b024c42a8d174a4a5dd69ca/.test(r2Target)) {
+    console.log(`[vite] /atlas-data proxy → ${r2Target} (staging)`);
+  }
 
   // Dev-only: serve a locally dry-run-built atlas.pmtiles (see
   // `npm run build-pmtiles-incremental -- <slug> --dry-run`) instead of proxying
