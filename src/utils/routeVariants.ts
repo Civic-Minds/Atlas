@@ -4,6 +4,18 @@ import { effectiveRouteHeadway } from './effectiveHeadway';
 /** Numeric base + optional single letter suffix: 1, 1A, 23B — the GRTC-style variant pattern. */
 const BASE_RE = /^(\d{1,3})([A-Z])$/;
 
+/**
+ * Same-agency routes whose short names match the lettered-variant shape (BASE_RE)
+ * but aren't actually branches of one trunk route -- confirmed against the agency's
+ * own published schedules. Keyed by `${agencySlug}::${base}`. Narrow, per-agency
+ * exclusion rather than tightening BASE_RE/the matching logic itself, since this
+ * heuristic is shared by every lettered-route agency (GRTC and others) and a naming
+ * coincidence on one agency isn't evidence the general pattern is wrong (#294).
+ */
+const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
+  'windsor::1', // Transway 1A and 1C are separate routes sharing only a short downtown segment
+]);
+
 export interface VariantFamily {
   base: string;
   members: { shortName: string; routeId: string; headway: number | null }[];
@@ -20,11 +32,13 @@ export function findVariantFamily(
   agencyFeatures: ShapeProperties[],
   shortName: string | null,
   period: TimePeriod,
+  agencySlug?: string | null,
 ): VariantFamily | null {
   if (!shortName) return null;
   const m = shortName.match(BASE_RE) ?? (/^\d{1,3}$/.test(shortName) ? [shortName, shortName] : null);
   if (!m) return null;
   const base = m[1];
+  if (agencySlug && EXCLUDED_VARIANT_FAMILIES.has(`${agencySlug}::${base}`)) return null;
 
   const byShort = new Map<string, { routeId: string; best: number | null }>();
   for (const p of agencyFeatures) {

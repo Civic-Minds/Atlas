@@ -200,7 +200,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       .filter(p => p?.routeId && p.routeShortName);
     const selected = props.find(p => String(p.routeId) === routeId);
     if (!selected) return null;
-    const family = findVariantFamily(props, selected.routeShortName, period);
+    const family = findVariantFamily(props, selected.routeShortName, period, agencySlug);
     if (!family || family.members.length < 2) return null;
     return {
       agencySlug,

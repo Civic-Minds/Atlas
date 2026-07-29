@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
 - Fixed the "report an issue" data dump silently dropping a branch with real headway data when its headsign is missing (#300)
+- Fixed Transit Windsor's 1A and 1C wrongly displayed as branches of one route — they're separate routes that only share a short downtown segment (#294)
 
 ## [3.2.10] - 2026-07-27
 

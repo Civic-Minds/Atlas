@@ -373,7 +373,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const slugProps = all
       .filter(f => (f.properties as any).agencySlug === slug)
       .map(f => f.properties as unknown as ShapeProperties);
-    const fam = findVariantFamily(slugProps, first.routeShortName ?? null, period);
+    const fam = findVariantFamily(slugProps, first.routeShortName ?? null, period, slug);
     if (fam) {
       const siblingIds = new Set(fam.members.map(m => m.routeId));
       siblingIds.delete(String(first.routeId));
@@ -406,7 +406,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const feats = fc.features
       .map(f => f.properties as unknown as ShapeProperties)
       .filter(p => p.routeId && (p.day === undefined || p.day === currentDay));
-    return findVariantFamily(feats, currentRoute.routeShortName ?? null, period);
+    return findVariantFamily(feats, currentRoute.routeShortName ?? null, period, slug);
   }, [currentRoute, nonCorridorLayers, currentDay, period]);
 
   const liveAgencySlug = useMemo(() => {
