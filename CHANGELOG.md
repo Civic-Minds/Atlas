@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.11] - 2026-07-29
 
 - History eligibility now recognizes covered schedule years without storing duplicate unchanged route snapshots, allowing well-documented timelines such as Sacramento’s to appear.
 - Fixed routes showing consistent frequency for a time period they barely run in (#299)
