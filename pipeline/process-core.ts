@@ -525,6 +525,12 @@ export async function processGtfsBuffer(
   const MAX_STOP_DEV2 = MAX_STOP_DEV * MAX_STOP_DEV;
 
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
+    // #301: default before any of this loop's several sparse-data bail-outs below (a feature
+    // too thin to reach Step 5 -- e.g. a rare short-turn headsign with too few departures for
+    // any on-shape stop to get a headway -- previously left nightService unset entirely rather
+    // than false). Step 5 overwrites this with the real computed value for every feature that
+    // has enough data to reach it.
+    feature.properties.nightService = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) continue;
