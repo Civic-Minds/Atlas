@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
+
 ## [3.2.10] - 2026-07-27
 
 - Fixed the weekly GTFS refresh Action crashing on transient R2 network timeouts instead of retrying (#293)
