@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Weekly refresh now publishes an aggregate `atlas/night-service.json` across all agencies
 - Added the Night Service app: highlights overnight routes on the map with a sidebar directory to browse by agency (data populates on the next full weekly refresh)
 - Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value (#298)
+- Fixed the night-service check missing real overnight-only service recorded under its own separate service_id instead of the day's main schedule (#297)
 
 ## [3.2.10] - 2026-07-27
 

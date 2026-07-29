@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -162,7 +162,7 @@ export async function processGtfsBuffer(
       if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
     }
   }
-  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null }>();
+  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null; serviceId: string }>();
   for (const trip of gtfs.trips ?? []) {
     const dayType = serviceIdToDayType.get(trip.service_id);
     if (!dayType) continue;
@@ -184,7 +184,31 @@ export async function processGtfsBuffer(
       dayType,
       headsign,
       shapeId: trip.shape_id || null,
+      serviceId: trip.service_id,
     });
+  }
+  // Max raw stop_time minute seen anywhere for each service_id. Needed below: a service_id
+  // qualifies as a genuine overnight-only block (#297; e.g. CTA Red Line's 00:10-02:45 under
+  // its own dedicated service_id, day-type-pooled at the wrong end of the array, invisible to
+  // hasSustainedNightService's [1440,1800] window) only if its OWN entire trip set sits below
+  // the early-morning cutoff -- NOT merely "has no extended trips". A service_id whose early
+  // trip is just that day's own normal start (e.g. CTA's daytime service_id, first trip 03:00,
+  // last trip 23:52 -- no extended notation either, but clearly not overnight-only) must NOT
+  // qualify, or its early trip gets nonsensically duplicated as a "next night" departure.
+  // Verified against MiWay and NYCT Subway too: both have exactly one Monday-active service_id
+  // covering the whole day, so neither qualifies -- their apparent tail-end gap (last trip to
+  // 6am) has no other Monday service_id to borrow from, meaning the gap is genuinely absent
+  // from the feed, not stranded elsewhere. Shifting would fabricate departures, not recover them.
+  const serviceIdMaxMinute = new Map<string, number>();
+  for (const st of gtfs.stopTimes ?? []) {
+    const trip = tripGroupByTripId.get(st.trip_id);
+    if (!trip) continue;
+    const timeStr = st.departure_time || st.arrival_time;
+    if (!timeStr) continue;
+    const mins = t2m(timeStr);
+    if (mins === null) continue;
+    const prev = serviceIdMaxMinute.get(trip.serviceId);
+    if (prev === undefined || mins > prev) serviceIdMaxMinute.set(trip.serviceId, mins);
   }
   // stopDepsByGroup["routeId::dirId::dayType"] → stopId → sorted departure minutes
   const stopDepsByGroup = new Map<string, Map<string, number[]>>();
@@ -197,6 +221,15 @@ export async function processGtfsBuffer(
   // headsign alone doesn't separate them. Keying by the feature's own display shape_id
   // catches this — two trips only pool together here if they trace the same physical path.
   const stopDepsByShapeGroup = new Map<string, Map<string, number[]>>();
+  // Night-service-only mirrors of stopDepsByGroup/stopDepsByHeadsignGroup (#297): an early
+  // (pre-6am) departure on a genuinely overnight-only service_id (see serviceIdMaxMinute above)
+  // is shifted +1440 and pushed here instead, so it lands inside hasSustainedNightService's
+  // [1440,1800] window without altering the times every other consumer (headway, tier,
+  // sparkline, ...) reads from stopDepsByGroup/stopDepsByHeadsignGroup. Deliberately no
+  // shape-scoped mirror -- the Step 5 terminalRawTimes fallback bottoms out at stopDepsByGroup
+  // regardless, so this still covers every route that reaches the night-service check.
+  const stopDepsByGroupNight = new Map<string, Map<string, number[]>>();
+  const stopDepsByHeadsignGroupNight = new Map<string, Map<string, number[]>>();
   // Track first visit per (trip_id, stop_id) to avoid double-counting loop routes
   // where the terminus appears at both the start and end of the same trip.
   const stopFirstVisit = new Map<string, Set<string>>();
@@ -326,6 +359,10 @@ export async function processGtfsBuffer(
     if (stop.parent_station) childToParent.set(stop.stop_id, stop.parent_station);
   }
 
+  // A trip's own minute must be below this to be eligible for the night-service shift, AND
+  // its service_id's max (serviceIdMaxMinute) must also be below it -- see that map's comment.
+  const NIGHT_SHIFT_EARLY_CUTOFF = NIGHT_SERVICE_WINDOW_END_MIN - 1440;
+
   for (const st of gtfs.stopTimes ?? []) {
     const trip = tripById.get(st.trip_id);
     if (!trip) continue;
@@ -374,6 +411,19 @@ export async function processGtfsBuffer(
               if (!shMap) { shMap = new Map(); stopDepsByShapeGroup.set(shKey, shMap); }
               pushDep(shMap, st.stop_id, mins);
             }
+            // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
+            if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
+              const shifted = mins + 1440;
+              let nStopMap = stopDepsByGroupNight.get(gKey);
+              if (!nStopMap) { nStopMap = new Map(); stopDepsByGroupNight.set(gKey, nStopMap); }
+              pushDep(nStopMap, st.stop_id, shifted);
+              if (grp.headsign) {
+                const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
+                let nHsMap = stopDepsByHeadsignGroupNight.get(hsKey);
+                if (!nHsMap) { nHsMap = new Map(); stopDepsByHeadsignGroupNight.set(hsKey, nHsMap); }
+                pushDep(nHsMap, st.stop_id, shifted);
+              }
+            }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             if (parentId && !visitSet.has(parentId)) {
               visitSet.add(parentId);
@@ -389,6 +439,18 @@ export async function processGtfsBuffer(
                 let shMap = stopDepsByShapeGroup.get(shKey);
                 if (!shMap) { shMap = new Map(); stopDepsByShapeGroup.set(shKey, shMap); }
                 pushDep(shMap, parentId, mins);
+              }
+              if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
+                const shifted = mins + 1440;
+                let nStopMap = stopDepsByGroupNight.get(gKey);
+                if (!nStopMap) { nStopMap = new Map(); stopDepsByGroupNight.set(gKey, nStopMap); }
+                pushDep(nStopMap, parentId, shifted);
+                if (grp.headsign) {
+                  const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
+                  let nHsMap = stopDepsByHeadsignGroupNight.get(hsKey);
+                  if (!nHsMap) { nHsMap = new Map(); stopDepsByHeadsignGroupNight.set(hsKey, nHsMap); }
+                  pushDep(nHsMap, parentId, shifted);
+                }
               }
             }
           }
@@ -624,20 +686,31 @@ export async function processGtfsBuffer(
     // midnight at all, while the terminal-stop scan (stopDepsByGroup/stopDepsByHeadsignGroup,
     // built from stop_times.txt directly) correctly has them -- the same reason Step 5 overrides
     // headwayByPeriod from the terminal stop rather than trusting result.times for that either.
-    //
-    // Known remaining gap (not fixed here): agencies whose feed switches from extended-hour
-    // (24:00+) notation to normal 0-23 hour notation under the *next* calendar day's service_id
-    // partway through the night -- confirmed on CTA, whose raw feed has zero stop_times with
-    // hour>=26 at all; real 2-6am trips exist but are coded under tomorrow's service_id. Since
-    // getActiveServiceIds only pulls a single reference day, those trips never reach this scan,
-    // so nightService (and headwayByPeriod.overnight) under-report for CTA-style feeds. Fixing
-    // this means merging in the next day's early-morning service in transit-calendar.ts, which
-    // is a shared/gated file used by every agency -- needs its own validated fix, not a quick
-    // patch here.
     const terminalRawTimes = (headsignTerminalTimes && headsignTerminalTimes.length > 0)
       ? headsignTerminalTimes
       : (terminalStopId ? metricStopMap.get(terminalStopId) : undefined);
-    feature.properties.nightService = terminalRawTimes ? hasSustainedNightService(terminalRawTimes) : false;
+    // #297: day-type pooling strands a genuine overnight-only service_id's trips (normal
+    // notation, e.g. CTA Red Line 00:10-02:45 under a dedicated service_id) at the wrong end
+    // of the array, outside hasSustainedNightService's [1440,1800] window -- confirmed via
+    // direct GTFS inspection, not the earlier (wrong) theory that those trips never reach this
+    // scan at all. stopDepsByGroupNight/stopDepsByHeadsignGroupNight (built above) carry that
+    // same early-morning data pre-shifted +1440, but only for service_ids whose ENTIRE trip set
+    // sits below the early-morning cutoff (serviceIdMaxMinute) -- genuinely overnight-only, not
+    // merely "no extended trips" (CTA's own daytime service_id also has no extended trips, but
+    // spans the whole day and must not be shifted). MiWay and NYCT Subway were checked directly:
+    // both have exactly one Monday-active service_id covering the full day, so neither
+    // qualifies -- verified there's no separate service_id supplying their apparent tail-end
+    // gap, meaning that gap is genuinely absent from the feed, not stranded elsewhere.
+    const nightHsMap = featHeadsign
+      ? stopDepsByHeadsignGroupNight.get(`${shortName}::${dirId}::${day}::${featHeadsign}`)
+      : undefined;
+    const nightExtra = (terminalStopId && nightHsMap?.get(terminalStopId))
+      ?? (terminalStopId && stopDepsByGroupNight.get(gKey)?.get(terminalStopId))
+      ?? [];
+    const nightServiceTimes = nightExtra.length > 0
+      ? [...(terminalRawTimes ?? []), ...nightExtra]
+      : terminalRawTimes;
+    feature.properties.nightService = nightServiceTimes ? hasSustainedNightService(nightServiceTimes) : false;
     const headsignTerminalPeriodHw = headsignTerminalTimes && headsignTerminalTimes.length > 0
       ? computePeriodHeadways(headsignTerminalTimes)
       : undefined;
