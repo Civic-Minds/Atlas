@@ -264,11 +264,6 @@ export async function processGtfsBuffer(
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
-        // Branch-level dispatch times are the right scope here (unlike headwayByPeriod above,
-        // which Step 5 later re-derives from terminal-stop arrivals to correct for shared-terminal
-        // inflation) -- night service is about whether the route itself dispatches a trip every
-        // hour overnight, not about arrivals at any one stop.
-        nightService: hasSustainedNightService(result.times),
         headwayByHour: (() => {
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {
@@ -624,6 +619,25 @@ export async function processGtfsBuffer(
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`)
       : undefined;
     const headsignTerminalTimes = terminalStopId ? hsStopMap?.get(terminalStopId) : undefined;
+    // Night service must use terminal-stop raw times, not result.times (branch dispatch times
+    // from phase1/2) -- confirmed on TTC Line 1 that result.times has zero departures past
+    // midnight at all, while the terminal-stop scan (stopDepsByGroup/stopDepsByHeadsignGroup,
+    // built from stop_times.txt directly) correctly has them -- the same reason Step 5 overrides
+    // headwayByPeriod from the terminal stop rather than trusting result.times for that either.
+    //
+    // Known remaining gap (not fixed here): agencies whose feed switches from extended-hour
+    // (24:00+) notation to normal 0-23 hour notation under the *next* calendar day's service_id
+    // partway through the night -- confirmed on CTA, whose raw feed has zero stop_times with
+    // hour>=26 at all; real 2-6am trips exist but are coded under tomorrow's service_id. Since
+    // getActiveServiceIds only pulls a single reference day, those trips never reach this scan,
+    // so nightService (and headwayByPeriod.overnight) under-report for CTA-style feeds. Fixing
+    // this means merging in the next day's early-morning service in transit-calendar.ts, which
+    // is a shared/gated file used by every agency -- needs its own validated fix, not a quick
+    // patch here.
+    const terminalRawTimes = (headsignTerminalTimes && headsignTerminalTimes.length > 0)
+      ? headsignTerminalTimes
+      : (terminalStopId ? metricStopMap.get(terminalStopId) : undefined);
+    feature.properties.nightService = terminalRawTimes ? hasSustainedNightService(terminalRawTimes) : false;
     const headsignTerminalPeriodHw = headsignTerminalTimes && headsignTerminalTimes.length > 0
       ? computePeriodHeadways(headsignTerminalTimes)
       : undefined;
