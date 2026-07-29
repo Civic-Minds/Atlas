@@ -180,7 +180,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         });
         if (!label) return null;
         const headway = routeCardDisplayHeadway(direction, period);
-        return `- ${label}: ${headway != null ? `every ${headway} min` : 'no scheduled service'}`;
+        // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
+        // period, which can happen even when real service exists (#297). Don't assert absence.
+        return `- ${label}: ${headway != null ? `every ${headway} min` : 'no data for this period'}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
