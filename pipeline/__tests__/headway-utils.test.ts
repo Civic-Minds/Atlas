@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodSustained, hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -139,5 +139,49 @@ describe('resolveTerminalPeriodHeadway', () => {
 
   it('protects a branch from a better unscoped shared-terminal value', () => {
     expect(resolveTerminalPeriodHeadway(7, 17, false)).toBe(17);
+  });
+});
+
+describe('computePeriodSustained', () => {
+  it('flags a cluster tight against one edge of an otherwise-empty window as not sustained (#299)', () => {
+    // TTC Line 1 overnight-style case: 3 departures clustered near the tail of the overnight
+    // window [1560,1800], nothing else. Internal gaps alone (5, 5) look clean; the 210-minute
+    // void between window start and the first departure is what should fail this.
+    const result = computePeriodSustained([1770, 1775, 1780]);
+    expect(result.overnight).toBe(false);
+  });
+
+  it('does not flag a period whose service legitimately starts partway through the window', () => {
+    // TTC route 10 AM Peak: 30-min service starting a genuine 60 minutes into the 3-hour
+    // [360,540] window. isSustainedHeadway's grace tolerance alone would reject this outright;
+    // the boundary-ratio check must be lenient enough not to double-penalize it.
+    const result = computePeriodSustained([420, 450, 480, 510, 540]);
+    expect(result.amPeak).toBe(true);
+  });
+
+  it('still flags a real internal void between two clusters (#281, unchanged)', () => {
+    // TTC route 10 midday: gaps [315, 30] already fail isSustainedHeadway's grace tolerance
+    // on the internal check alone -- must stay false with the boundary check added.
+    const result = computePeriodSustained([
+      420, 450, 480, 510, 540, 855, 885, 915, 945, 975, 1005, 1035, 1065, 1095, 1125,
+    ]);
+    expect(result.midday).toBe(false);
+    expect(result.amPeak).toBe(true);
+    expect(result.pmPeak).toBe(true);
+  });
+
+  it('flags an AM/PM-peak-only branch as not sustained for midday, not just the window edges (#299)', () => {
+    // Real TTC route 952 direction 1 (Lawrence) weekday times: a peak-only commuter branch with
+    // no midday service at all. Filtered to the midday window [540,900], only the tail of the AM
+    // block (543-627) falls inside it -- a clean-looking ~12min internal median with nothing to
+    // trip isSustainedHeadway, but a 273-minute trailing void to the window's own end at 900.
+    const result = computePeriodSustained([
+      435, 447, 459, 471, 483, 495, 507, 519, 531, 543, 555, 567, 579, 591, 603, 615, 627,
+      972, 984, 996, 1008, 1020, 1032, 1044, 1056, 1068, 1080, 1092, 1101, 1112, 1123, 1133, 1144,
+      1156, 1168, 1180, 1192, 1204,
+    ]);
+    expect(result.midday).toBe(false);
+    expect(result.amPeak).toBe(true);
+    expect(result.pmPeak).toBe(true);
   });
 });
