@@ -22,6 +22,11 @@ There's no single accepted industry number. Transit agencies and advocacy groups
 
 Known starting points worth checking: TransitCenter's frequent network research, individual agency "frequent network" or "high-frequency" service maps (e.g. this kind of thing has historically been published by systems like Houston METRO, King County Metro, and others — verify current ones rather than assuming), and any GTFS-based frequent-network tools that already publish their own methodology.
 
+### Examples already surfaced (verify and expand, don't just trust these)
+
+- **TTC (Toronto)** — has a "10-Minute Network," still shown on the official system map as of this writing. Exact current threshold/hours not yet pulled from a primary source — confirm directly against ttc.ca rather than secondary commentary.
+- **Boise, ID (Valley Regional Transit)** — reported as 15 min headway during peak hours only, roughly 6-9am and 3-6pm. Peak-only, not all-day — a real example of the "dip allowed outside peak" pattern from the open design question below. Verify against VRT's own published materials before treating this as confirmed.
+
 ## Open design question this research should settle
 
 Atlas's own `TIME_PERIODS` already splits the day into amPeak / midday / pmPeak / evening / late / overnight (`shared/config.ts`). Once the survey above is done, decide:
