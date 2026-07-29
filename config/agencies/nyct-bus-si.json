@@ -14,8 +14,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
   "region": "New York",
   "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "gtfs_si_20260611T155316Z",
-  "lastRefreshedAt": "2026-07-06",
+  "lastFeedVersion": "gtfs_si_20260723T175849Z",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Staten Island, New York",
     "Bayonne, New Jersey",

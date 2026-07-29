@@ -14,8 +14,8 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip",
   "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "UTC: 10-Jul-2026 20:16",
-  "lastRefreshedAt": "2026-07-16",
+  "lastFeedVersion": "UTC: 20-Jul-2026 16:23",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Thousand Oaks, California",
     "Camarillo, California"

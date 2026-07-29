@@ -8,7 +8,7 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/radford-va-us/radford-va-us.zip",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 08-Jul-2026 17:43",
-  "lastRefreshedAt": "2026-07-15",
+  "lastRefreshedAt": "2026-07-29",
   "region": "Virginia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2415/latest.zip",
   "bbox": [

@@ -8,9 +8,9 @@
   "feedUrl": "https://passio3.com/jtran/passioTransit/gtfs/google_transit.zip",
   "region": "Mississippi",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2652/latest.zip",
-  "lastFeedExpiry": "20260812",
+  "lastFeedExpiry": "20260827",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-07-13",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Jackson, Mississippi"
   ]
