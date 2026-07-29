@@ -16,6 +16,7 @@ Atlas is built from publicly available transit data and publishes the processing
 ## Methodology
 
 - **[Pipeline Methodology](./PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
+- **History archives**: How Atlas selects, sources, and stores historical GTFS service periods.
 - **[Route Service Metrics](./ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
 - **[Display Naming](./DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
 - **[Population Context](./DATA_POPULATION.md)**: Proposed population-density data layer and its relationship to transit frequency.
@@ -34,3 +35,32 @@ Atlas is built from publicly available transit data and publishes the processing
 - **[Updating the Map](./MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
 - **[Coverage Gap Discovery](./COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
 - **[Fixing Issues](./FIXING_ISSUES.md)**: Scoping a fix to its blast radius (single agency, a group, or all agencies) and validating accordingly.
+
+## History Archives
+
+History is a curated static-schedule feature, not an automatic archive of every
+agency. Atlas prioritizes cities where historical feeds can show meaningful
+network or service changes; it does not need to backfill all 400+ cities.
+
+For each selected agency:
+
+- Use the agency’s official current and historical feeds first. Use Mobility
+  Database (MDB) as a fallback when the official archive is unavailable or
+  incomplete.
+- Keep each downloaded GTFS snapshot intact and identify it by the period for
+  which it was valid. Do not delete old local feeds or pretend one file covers
+  multiple periods merely because its contents are unchanged.
+- Store compact route-level history snapshots for distinct archived periods.
+  Change-only snapshots are sufficient for ordinary history; period-level
+  materialization is appropriate when the UI needs to let riders inspect each
+  documented schedule period, including periods where a route’s value did not
+  change.
+- Show only periods for which Atlas has usable route-level data. A coverage
+  record may document that an archive exists, but it does not fabricate route
+  facts or make a missing period selectable.
+
+Sacramento (SacRT) is the prototype for period-level materialization. Its
+official archive contains multiple dated periods, including periods with
+unchanged route values; the experiment lives on the
+`experiment/sacrt-history-periods` branch until the date-level UI and storage
+costs are evaluated.
