@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
   "lastFeedExpiry": "20260821",
-  "lastFeedVersion": "20260629044624",
+  "lastFeedVersion": "20260728044621",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media",
-  "lastRefreshedAt": "2026-07-06",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Laval, Quebec",
     "Chomedey, Quebec",

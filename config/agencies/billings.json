@@ -13,9 +13,9 @@
   ],
   "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
   "region": "Montana",
-  "lastFeedExpiry": "20260812",
+  "lastFeedExpiry": "20260827",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-07-13",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Billings, Montana"
   ]

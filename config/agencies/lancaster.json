@@ -9,8 +9,8 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2000/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260630",
-  "lastRefreshedAt": "2026-07-06",
+  "lastFeedVersion": "20260717",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Lancaster, Pennsylvania",
     "Harrisburg, Pennsylvania"

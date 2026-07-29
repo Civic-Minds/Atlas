@@ -8,10 +8,10 @@
   ],
   "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
   "lastFeedExpiry": "20260829",
-  "lastFeedVersion": null,
+  "lastFeedVersion": "2026-07-15-1726",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-pioneer-valley-transit-authority-pvta-gtfs-1234.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-06",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Springfield, Massachusetts",
     "North Chicopee, Massachusetts",

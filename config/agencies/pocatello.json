@@ -8,7 +8,7 @@
   "feedUrl": "https://pocatellotransit.com/gtfs/pocatello-regional-transit-gtfs.zip?v=current",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "14FEB26",
-  "lastRefreshedAt": "2026-07-15",
+  "lastRefreshedAt": "2026-07-29",
   "region": "Idaho",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-171/latest.zip",
   "bbox": [

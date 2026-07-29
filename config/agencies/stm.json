@@ -21,7 +21,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media",
   "gtfsFares": true,
   "fareUrl": "https://www.stm.info/en/info/fares",
-  "lastRefreshedAt": "2026-07-06",
+  "lastRefreshedAt": "2026-07-29",
   "cities": [
     "Saint-Laurent, Quebec",
     "Notre-Dame-de-Grâce, Quebec",
