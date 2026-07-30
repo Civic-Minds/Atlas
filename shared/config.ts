@@ -24,6 +24,19 @@ const getR2PublicUrl = (): string => {
 
 export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
 
+// Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
+// off by default until that's resolved. Env-driven rather than a hardcoded constant so main and
+// beta share identical source; only the Vercel env var differs per branch (VITE_LIVE_ENABLED /
+// VITE_HISTORY_ENABLED set to "true" on beta's preview env). Flip the env var to ship, no merge
+// conflicts either way.
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED'): boolean {
+  // @ts-ignore
+  return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
+}
+
+export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
+export const HISTORY_ENABLED = envFlag('VITE_HISTORY_ENABLED');
+
 /**
  * Derive the public URLs for an agency's processed artifacts.
  * This removes the need to store repetitive full R2 URLs in index.json.

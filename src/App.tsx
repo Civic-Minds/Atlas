@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useM
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import Corridors from './apps/Corridors';
@@ -86,7 +86,16 @@ const APP_TO_PATH: Record<AppId, string> = {
 export default function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const activeApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+  const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+  // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
+  // gate below -- fall back to the frequency map, and correct the URL so it doesn't lie about
+  // what's actually showing.
+  const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED);
+  const activeApp: AppId = gated ? 'frequency' : routedApp;
+
+  useEffect(() => {
+    if (gated) navigate('/', { replace: true });
+  }, [gated, navigate]);
 
   function setActiveApp(app: AppId) {
     navigate(APP_TO_PATH[app]);
@@ -188,10 +197,10 @@ export default function App() {
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
   );
-  const showLiveControl = inLive || [...loadedAgencySlugs].some(slug =>
+  const showLiveControl = LIVE_ENABLED && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
-  );
-  const showHistoryControl = inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug)));
+  ));
+  const showHistoryControl = HISTORY_ENABLED && (inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))));
   const historyAgencySlugsInView = useMemo(
     () => historyAgencySlugs ? [...loadedAgencySlugs].filter(slug => historyAgencySlugs.has(slug)) : [],
     [historyAgencySlugs, loadedAgencySlugs],
