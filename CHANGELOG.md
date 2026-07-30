@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.13] - 2026-07-30
 
 - Live and History are now beta-only — both cover too few agencies with no scaling plan yet to belong in production nav
 - Corridors is now properly gated (previously unguarded on main aside from a CSS bug hiding its panel)
+- Fixed the info panel still advertising Live/History agency counts even when both are hidden
 
 ## [3.2.12] - 2026-07-29
 

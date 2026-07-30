@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL } from '../../shared/config';
+import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -296,7 +296,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
-                  Covering {agencies.length} transit agencies. See live vehicle positions on {totalLiveAgencies}, or explore how service changed at {totalHistoryAgencies}.
+                  Covering {agencies.length} transit agencies.
+                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or explore how service changed at ${totalHistoryAgencies}.`}
+                  {LIVE_ENABLED && !HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}.`}
+                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Explore how service changed at ${totalHistoryAgencies}.`}
                 </p>
                 <div className="space-y-2">
                   <button
