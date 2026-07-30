@@ -7,9 +7,11 @@ import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import Corridors from './apps/Corridors';
 import type { StopEntry } from './apps/corridor-search';
-import History from './apps/History';
 import NightService from './apps/NightService';
-import LiveVehicles from './apps/LiveVehicles';
+// Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
+// of what main's build actually fetches, not just hidden behind a runtime check.
+const History = React.lazy(() => import('./apps/History'));
+const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 import type { AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
@@ -526,21 +528,27 @@ export default function App() {
               active={inCorridors}
               sidebarLeft={sidebarLeft}
             />
-            <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+            {HISTORY_ENABLED && (
+              <React.Suspense fallback={null}>
+                <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+              </React.Suspense>
+            )}
             <NightService active={inNight} sidebarLeft={sidebarLeft} />
-            {liveMounted && (
+            {LIVE_ENABLED && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
-                <LiveVehicles
-                  agencies={agencies}
-                  lightMode={lightMode}
-                  setLightMode={setLightMode}
-                  active={inLive}
-                  onInfoOpen={openInfo}
-                  query={deferredQuery}
-                  layers={layers}
-                  sidebarLeft={sidebarLeft}
-                  selectionActive={intervalSelectionActive}
-                />
+                <React.Suspense fallback={null}>
+                  <LiveVehicles
+                    agencies={agencies}
+                    lightMode={lightMode}
+                    setLightMode={setLightMode}
+                    active={inLive}
+                    onInfoOpen={openInfo}
+                    query={deferredQuery}
+                    layers={layers}
+                    sidebarLeft={sidebarLeft}
+                    selectionActive={intervalSelectionActive}
+                  />
+                </React.Suspense>
               </div>
             )}
           </>
