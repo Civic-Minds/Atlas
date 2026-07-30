@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Live and History are now beta-only — both cover too few agencies with no scaling plan yet to belong in production nav
+- Corridors is now properly gated (previously unguarded on main aside from a CSS bug hiding its panel)
 
 ## [3.2.12] - 2026-07-29
 
