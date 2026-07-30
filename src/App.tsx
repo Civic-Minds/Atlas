@@ -2,16 +2,16 @@ import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useM
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
-import Corridors from './apps/Corridors';
 import type { StopEntry } from './apps/corridor-search';
 import NightService from './apps/NightService';
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
+const Corridors = React.lazy(() => import('./apps/Corridors'));
 import type { AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
@@ -22,13 +22,6 @@ import type { FeedRefreshMeta } from '../shared/feedRefresh';
 import { agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
-
-// Corridors isn't good enough as a feature yet (Ryan, 2026-07-28) — off on purpose, not broken.
-// This is the one real gate: it's already effectively unreachable today because its panel
-// wrapper is `relative` instead of `absolute` (see the comment in Corridors.tsx), but that's
-// incidental CSS, not a deliberate switch. Flip this back to true only once Corridors is
-// actually ready to ship, and fix the positioning at the same time.
-const CORRIDORS_ENABLED = false;
 import { syncUrlParams } from './utils/syncUrlParams';
 
 export interface FareOverride {
@@ -99,10 +92,11 @@ export default function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
-  // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
-  // gate below -- fall back to the frequency map, and correct the URL so it doesn't lie about
-  // what's actually showing.
-  const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED);
+  // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
+  // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
+  // doesn't lie about what's actually showing.
+  const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED)
+    || (routedApp === 'corridors' && !CORRIDORS_ENABLED);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
   useEffect(() => {
@@ -522,12 +516,16 @@ export default function App() {
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}
             />
-            <Corridors
-              agencies={agencies}
-              day={day}
-              active={inCorridors}
-              sidebarLeft={sidebarLeft}
-            />
+            {CORRIDORS_ENABLED && (
+              <React.Suspense fallback={null}>
+                <Corridors
+                  agencies={agencies}
+                  day={day}
+                  active={inCorridors}
+                  sidebarLeft={sidebarLeft}
+                />
+              </React.Suspense>
+            )}
             {HISTORY_ENABLED && (
               <React.Suspense fallback={null}>
                 <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
