@@ -2,7 +2,7 @@
  * Shared configuration constants
  */
 
-export const DEFAULT_R2_PUBLIC_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+export const DEFAULT_R2_PUBLIC_URL = 'https://data.transitatlas.fyi';
 
 const getR2PublicUrl = (): string => {
   if (typeof process !== 'undefined' && process.env?.R2_PUBLIC_URL) {
