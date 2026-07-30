@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Live and History are now beta-only — both cover too few agencies with no scaling plan yet to belong in production nav
+
 ## [3.2.12] - 2026-07-29
 
 - Fixed intermittent data-loading failures (503s) across the app — switched from R2's rate-limited public dev URL to a proper custom domain
