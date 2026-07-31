@@ -52,6 +52,26 @@ describe('useIntervalStats', () => {
     expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: null }, null)).toBe(false);
   });
 
+  it('hideSpan also hides a route whose other direction has no sustained pattern at all (Halifax 330, #318)', () => {
+    // Eastbound: real 13-min tier, but the pipeline flagged the route because Westbound is span-only.
+    const eastbound = {
+      routeId: '330', agencySlug: 'halifax', headway: 13, tier: 'infrequent',
+      routeHasIrregularDirection: true,
+    } as any;
+    const filters = { ...defaultFilters, maxHeadway: 20, agencies: new Set(['halifax']), hideSpan: true };
+    expect(passesRouteFilter(eastbound, 'halifax', filters, null)).toBe(false);
+    expect(passesRouteFilter(eastbound, 'halifax', { ...filters, hideSpan: false }, null)).toBe(true);
+  });
+
+  it('hideSpan does not hide a route where every direction has some real pattern (Kingston 701, #318)', () => {
+    const viaDowntown = {
+      routeId: '701', agencySlug: 'kingston', headway: 30, tier: '60',
+      routeHasIrregularDirection: undefined,
+    } as any;
+    const filters = { ...defaultFilters, maxHeadway: 60, agencies: new Set(['kingston']), hideSpan: true };
+    expect(passesRouteFilter(viaDowntown, 'kingston', filters, null)).toBe(true);
+  });
+
   it('should return correct stats for default filters', () => {
     const { result } = renderHook(() => useIntervalStats(mockLayers, defaultFilters));
     

@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Fixed routes showing up under a frequency filter when only one direction actually met it (Kingston 701 and others) — the filter now requires every direction to qualify, not just the fastest one
+- "Hide irregular routes" now also hides a route whose *other* direction has no sustained service at all, like a peak-only commuter route (Halifax 330) — data populates on the next full weekly refresh
 
 ## [3.2.13] - 2026-07-30
 

@@ -23,7 +23,7 @@ import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
-import { stampWorstDirectionHeadways } from './worst-direction.js';
+import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 
 export type { GtfsPreprocess };
@@ -703,6 +703,7 @@ export async function processGtfsBuffer(
 
   annotateShortTurnVariants(features, shapes);
   stampWorstDirectionHeadways(features);
+  stampRouteIrregularDirection(features);
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)
   // get aggregate headway from the *union* of their departures. Emitted as small LineStrings

@@ -133,7 +133,10 @@ export function passesRouteFilter(
     }))) return false;
   }
   if (p.day !== undefined && p.day !== filters.day) return false;
-  if (filters.hideSpan && p.tier === 'span') return false;
+  // A route where any direction has no sustained/real-tier pattern at all (e.g. a peak-only
+  // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
+  // as a whole, not just in that one direction -- hide the whole route, not just that branch.
+  if (filters.hideSpan && (p.tier === 'span' || p.routeHasIrregularDirection)) return false;
   // When a specific period is active, prefer the per-stop minimum period headway (best frequency
   // anywhere on the route during that period). This ensures routes with high-frequency sections
   // pass the filter even if the all-day median doesn't meet the threshold — AI-97 clipping then
@@ -394,9 +397,13 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // (Previously forced dir 0 only.)
     }
 
-    // Span filter
+    // Span filter -- also hides a route whose *other* direction has no sustained pattern at
+    // all (#318), not just features that are themselves span-tier.
     if (hideSpan) {
-      clauses.push(['!=', ['coalesce', ['get', 'tier'], ''], 'span']);
+      clauses.push(['all',
+        ['!=', ['coalesce', ['get', 'tier'], ''], 'span'],
+        ['!=', ['coalesce', ['get', 'routeHasIrregularDirection'], false], true],
+      ]);
     }
 
     // Mode (virtual LRT rules need agencySlug + routeLongName on features)

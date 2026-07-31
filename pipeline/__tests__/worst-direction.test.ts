@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { stampWorstDirectionHeadways } from '../worst-direction.js';
+import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from '../worst-direction.js';
 import type { GeoJsonFeature } from '../geojson-types.js';
 
 function feat(
@@ -8,6 +8,7 @@ function feat(
   directionId: number,
   headway: number,
   headwayByPeriod?: Record<string, number>,
+  tier?: string,
 ): GeoJsonFeature {
   return {
     type: 'Feature',
@@ -18,6 +19,7 @@ function feat(
       directionId,
       headway,
       ...(headwayByPeriod ? { headwayByPeriod } : {}),
+      ...(tier !== undefined ? { tier } : {}),
     },
   };
 }
@@ -48,5 +50,44 @@ describe('stampWorstDirectionHeadways', () => {
 
     expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 60 });
     expect(features[2].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 90 });
+  });
+});
+
+describe('stampRouteIrregularDirection', () => {
+  it('flags every feature of a route+day when one whole direction has no real-tier pattern (Halifax 330)', () => {
+    const features = [
+      feat('330', 'Weekday', 0, undefined as unknown as number, undefined, 'span'), // Westbound: entirely span
+      feat('330', 'Weekday', 1, 13, undefined, 'infrequent'), // Eastbound: real, just infrequent tier
+    ];
+    stampRouteIrregularDirection(features);
+
+    expect(features[0].properties.routeHasIrregularDirection).toBe(true);
+    expect(features[1].properties.routeHasIrregularDirection).toBe(true);
+  });
+
+  it('does not flag a direction that has a real pattern alongside a minor span pattern (Kingston 701)', () => {
+    const features = [
+      feat('701', 'Weekday', 0, 15, undefined, '30'), // via Brock/Bath: real
+      feat('701', 'Weekday', 1, 30, undefined, '60'), // via Downtown: real
+      feat('701', 'Weekday', 1, undefined as unknown as number, undefined, 'span'), // Express - Downtown: minor span pattern, same direction
+    ];
+    stampRouteIrregularDirection(features);
+
+    expect(features[0].properties.routeHasIrregularDirection).toBeUndefined();
+    expect(features[1].properties.routeHasIrregularDirection).toBeUndefined();
+    expect(features[2].properties.routeHasIrregularDirection).toBeUndefined();
+  });
+
+  it('does not flag other routes sharing a day', () => {
+    const features = [
+      feat('330', 'Weekday', 0, undefined as unknown as number, undefined, 'span'),
+      feat('330', 'Weekday', 1, 13, undefined, 'infrequent'),
+      feat('40', 'Weekday', 0, 30, undefined, '30'),
+      feat('40', 'Weekday', 1, 30, undefined, '30'),
+    ];
+    stampRouteIrregularDirection(features);
+
+    expect(features[2].properties.routeHasIrregularDirection).toBeUndefined();
+    expect(features[3].properties.routeHasIrregularDirection).toBeUndefined();
   });
 });
