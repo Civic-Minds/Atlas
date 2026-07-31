@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
 import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../tileFilterExprs';
+import { flattenPeriodHeadwayProps } from '../pmtilesProps';
 import { VIRTUAL_LRT_MODE } from '../modes';
 
 function productionLikeFilter(maxHeadway: number, modes = new Set<number>()) {
@@ -55,6 +56,28 @@ describe('tileEffectiveHeadwayExpr', () => {
       hph_late: 15,
       headway: 60,
     }) as any)).toBe(true);
+  });
+
+  // MVT (what PMTiles actually serves) has no null type -- a flat property written as null is
+  // silently dropped by tippecanoe, not preserved the way the test above assumes. Real tiles then
+  // have the key genuinely absent, has() returns false, and this fell through to the all-day
+  // fallback -- letting an overnight-only route (TTC 320) pass a midday filter on its overnight
+  // headway. flattenPeriodHeadwayProps writes a sentinel instead of null specifically so this
+  // stays caught once the property has gone through the real tippecanoe-bound flattening step,
+  // not just in a hand-built test feature (issue #297 follow-up).
+  it('still excludes a period with no service after going through the real flatten step (not just a hand-built null property)', () => {
+    const props: Record<string, unknown> = {
+      headway: 5,
+      worstDirectionHeadway: 5,
+      headwayByPeriod: { midday: null, overnight: 5 },
+      worstDirectionHeadwayByPeriod: { midday: null, overnight: 5 },
+    };
+    flattenPeriodHeadwayProps(props);
+    // Simulates what actually reaches the client: no `hph_midday`/`wdph_midday` null property
+    // survives MVT encoding -- only the sentinel-bearing keys flattenPeriodHeadwayProps wrote.
+    const compiled = featureFilter(periodFilter('midday' as any, 10) as any);
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat(props) as any)).toBe(false);
   });
 
   it('requires wdph (worst-direction) to qualify, not just this feature\'s own hph (#314)', () => {
