@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Fixed routes showing up under a frequency filter when only one direction actually met it (Kingston 701 and others) — the filter now requires every direction to qualify, not just the fastest one
+
 ## [3.2.13] - 2026-07-30
 
 - Live and History are now beta-only — both cover too few agencies with no scaling plan yet to belong in production nav

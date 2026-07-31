@@ -127,10 +127,14 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
     display: metric(displayValue, p.headwayByPeriod, p.headwayByHour, displayProvenance),
     filter: metric(
       filterValue,
+      // wdph (worst-direction) must win: every direction has to meet the threshold, not just
+      // this one branch's own value. minStopHeadwayByPeriod is deliberately excluded — it can
+      // reflect a shared-core combined frequency that only applies to part of the route, and
+      // without geometry clipping to match, letting it drive pass/fail here would smuggle a
+      // partial match through as if the whole route qualified (#314/#315).
       firstAvailableByPeriod(
-        p.minStopHeadwayByPeriod as ShapeProperties['headwayByPeriod'] | undefined,
-        p.headwayByPeriod,
         p.worstDirectionHeadwayByPeriod,
+        p.headwayByPeriod,
       ),
       p.headwayByHour,
       filterProvenance,

@@ -313,7 +313,7 @@ describe('useIntervalStats', () => {
     expect(noisy.current.filteredLayers['ttc']).toBeUndefined();
   });
 
-  it('period filter prefers headwayByPeriod (or minStopHeadwayByPeriod) over worstDirectionHeadwayByPeriod', () => {
+  it('period filter requires worstDirectionHeadwayByPeriod to qualify, not just this branch\'s own headByPeriod (#314)', () => {
     const layers: AgencyLayers = {
       'test': {
         type: 'FeatureCollection',
@@ -332,12 +332,16 @@ describe('useIntervalStats', () => {
     };
     const base = { ...defaultFilters, maxHeadway: 30, period: 'midday' as const };
 
+    // All-day check has no period-specific worstDirectionHeadway to fall back on here, so it
+    // uses the branch's own headway (10) and passes.
     const { result: passes } = renderHook(() => useIntervalStats(layers, { ...base, period: 'all' }));
     expect(passes.current.stats?.matching).toBe(1);
 
-    // headByPeriod (10) is preferred over worst (45); route with good headBy shows under 30min midday filter
-    const { result: shows } = renderHook(() => useIntervalStats(layers, base));
-    expect(shows.current.stats?.matching).toBe(1);
+    // Kingston 701 case: this branch's own midday headway (10) would pass a 30-min filter on
+    // its own, but the route's worst direction (45) doesn't -- the route must fail entirely,
+    // not show based on one direction's optimistic number.
+    const { result: fails } = renderHook(() => useIntervalStats(layers, base));
+    expect(fails.current.stats?.matching).toBe(0);
   });
 
   it('tileFilter uses flat period keys and all-day fallback (PMTiles-safe)', () => {

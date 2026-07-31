@@ -17,10 +17,9 @@ describe('effectiveRouteHeadway', () => {
       ...base,
       headway: 10,
       headwayByPeriod: { midday: 10, pmPeak: 6 },
-      minStopHeadwayByPeriod: { pmPeak: 5 },
     } as ShapeProperties;
     expect(effectiveRouteHeadway(p, 'midday')).toBe(10);
-    expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(5);
+    expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(6);
   });
 
   it('does not expose clustered period gaps from limited-service branches', () => {
@@ -36,15 +35,15 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
   });
 
-  it('routeCardDisplayHeadway uses period summary not min-stop filter headway', () => {
+  it('routeCardDisplayHeadway uses period summary, not the worst-direction filter headway', () => {
     const p = {
       ...base,
       headway: 5,
       headwayByPeriod: { midday: 6 },
-      minStopHeadwayByPeriod: { midday: 5 },
+      worstDirectionHeadwayByPeriod: { midday: 8 },
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(6);
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(5);
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
   });
 
   it('falls back to all-day headway when period is all', () => {
@@ -73,8 +72,10 @@ describe('effectiveRouteHeadway', () => {
     // #180/#181: agency and Recent routes use the same display projection as the route card.
     expect(routeCardDisplayHeadway(p, 'pmPeak')).toBe(9);
     expect(routeCardDisplayHeadway(p, 'all')).toBe(9);
-    // #166 remains an explicit filter projection: the best qualifying stop is separate.
-    expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(1);
+    // #314: minStopHeadway no longer drives the filter metric on its own -- with no
+    // worstDirectionHeadwayByPeriod present, the filter falls back to this branch's own
+    // period headway, not the best qualifying stop.
+    expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(9);
     expect(effectiveRouteHeadway(p, 'all')).toBe(9);
   });
 
@@ -120,7 +121,9 @@ describe('effectiveRouteHeadway', () => {
     expect(routeCardDisplayHeadway(inbound, 'pmPeak')).toBe(9);
     // Agency list collapses directions — must still be 9, never the 1-min min-stop.
     expect(routeListDisplayHeadway([outbound, inbound], 'pmPeak')).toBe(9);
-    expect(effectiveRouteHeadway(inbound, 'pmPeak')).toBe(1);
+    // #314: no worstDirectionHeadwayByPeriod on this fixture, so the filter falls back to
+    // inbound's own period headway (9), not its 1-min minStopHeadway.
+    expect(effectiveRouteHeadway(inbound, 'pmPeak')).toBe(9);
   });
 
   it('Near You does not show overnight hourly spikes when period summary is null (#206)', () => {

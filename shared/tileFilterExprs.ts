@@ -17,8 +17,13 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     ['get', 'headway'],
   ];
   if (period && period !== 'all') {
-    const [msph, wdph, hph] = periodHeadwayFlatKeys(period);
-    const periodKeys = [msph, hph, wdph];
+    // wdph (worst-direction) must win: every direction has to meet the threshold, not just
+    // this one feature's own branch. msph (min-stop / shared-core) is deliberately excluded
+    // here — it can reflect a combined frequency that only applies to part of the line, and
+    // without geometry clipping to match, using it here would let a partial match pass the
+    // whole (unclipped) route through the filter (#314/#315).
+    const [, wdph, hph] = periodHeadwayFlatKeys(period);
+    const periodKeys = [wdph, hph];
     return [
       'case',
       ['any', ...periodKeys.map((key) => ['has', key])],

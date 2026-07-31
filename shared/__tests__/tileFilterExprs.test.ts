@@ -56,6 +56,31 @@ describe('tileEffectiveHeadwayExpr', () => {
       headway: 60,
     }) as any)).toBe(true);
   });
+
+  it('requires wdph (worst-direction) to qualify, not just this feature\'s own hph (#314)', () => {
+    const compiled = featureFilter(periodFilter('late', 30) as any);
+    const ctx = { zoom: 10 };
+    // Kingston 701 case: this direction's own late-period headway (10) would pass a 30-min
+    // filter alone, but the route's worst direction (45) doesn't -- must fail.
+    expect(compiled.filter(ctx, feat({
+      hph_late: 10,
+      wdph_late: 45,
+      headway: 10,
+    }) as any)).toBe(false);
+    // msph (min-stop / shared-core) must not smuggle a route past the filter either -- it can
+    // reflect a combined frequency for only part of the line, and there's no clipping to match
+    // it to (#315). Only wdph/hph decide pass/fail here.
+    expect(compiled.filter(ctx, feat({
+      msph_late: 1,
+      hph_late: 45,
+      headway: 45,
+    }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({
+      hph_late: 10,
+      wdph_late: 10,
+      headway: 10,
+    }) as any)).toBe(true);
+  });
 });
 
 describe('buildModeFilterClause', () => {
