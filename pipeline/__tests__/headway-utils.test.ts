@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computePeriodSustained, hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -64,6 +64,46 @@ describe('adaptiveMedianHeadwayInWindow', () => {
 
   it('still returns null when neither the strict nor the widened window has enough departures', () => {
     expect(adaptiveMedianHeadwayInWindow([13 * 60 + 20, 13 * 60 + 30], 13 * 60, 3)).toBeNull();
+  });
+});
+
+describe('forCrossMidnightWindow', () => {
+  it('leaves departures untouched for a window that does not cross midnight', () => {
+    const times = [420, 480, 540];
+    expect(forCrossMidnightWindow(times, 1320)).toEqual(times);
+  });
+
+  // Issue #297: CTA Red Line real overnight departures are plain-notation (e.g. 2:00am = 120),
+  // not GTFS extended notation (>=24:00). A window that crosses midnight (end > 1440) must also
+  // catch those via a +1440-shifted copy, or they never land in [start,end] on their own.
+  it('adds a +1440-shifted copy of sub-1440 times when the window crosses midnight', () => {
+    const times = [120, 260, 480]; // 2:00am, 4:20am, 8:00am
+    expect(forCrossMidnightWindow(times, 1800)).toEqual([120, 260, 480, 1560, 1700, 1920]);
+  });
+
+  it('does not drop or duplicate a genuine extended-notation departure already in range', () => {
+    const times = [1500, 1620]; // 1:00am, 3:00am extended notation
+    expect(forCrossMidnightWindow(times, 1800)).toEqual([1500, 1620]);
+  });
+});
+
+describe('adaptiveMedianHeadwayInWindow — cross-midnight (#297)', () => {
+  // CTA Red Line pattern: real 2-4am service encoded in plain notation, zero extended-notation
+  // departures. Hour 26 (2am) and 27 (3am) must resolve via the shifted equivalent (120-180,
+  // 180-240) since nothing exists in raw [1560,1620]/[1620,1680].
+  it('resolves an overnight hour from plain-notation departures with no extended-notation equivalent', () => {
+    const times = [120, 132, 144, 156, 168, 180]; // 2:00-3:00am, every 12min, plain notation
+    expect(adaptiveMedianHeadwayInWindow(times, 26 * 60, 3)).toBe(12);
+  });
+
+  it('still resolves an overnight hour normally when the feed uses extended notation', () => {
+    const times = [1560, 1572, 1584, 1596]; // 2:00-2:36am, extended notation
+    expect(adaptiveMedianHeadwayInWindow(times, 26 * 60, 3)).toBe(12);
+  });
+
+  it('does not fabricate overnight service when there truly is none in either notation', () => {
+    const times = [420, 480, 540]; // normal daytime service only
+    expect(adaptiveMedianHeadwayInWindow(times, 26 * 60, 3)).toBeNull();
   });
 });
 
@@ -183,5 +223,41 @@ describe('computePeriodSustained', () => {
     expect(result.midday).toBe(false);
     expect(result.amPeak).toBe(true);
     expect(result.pmPeak).toBe(true);
+  });
+
+  // Issue #297: same overnight service as the computePeriodHeadways test below, but checking
+  // that the sustained flag still evaluates correctly against the shifted times (boundary gaps
+  // measured against the period's own [start,end], not against where the raw minute value sits).
+  it('evaluates sustained correctly for plain-notation overnight service', () => {
+    const times: number[] = [];
+    for (let t = 120; t <= 360; t += 12) times.push(t); // 2:00-6:00am, 12min, plain notation
+    const result = computePeriodSustained(times);
+    expect(result.overnight).toBe(true);
+  });
+});
+
+describe('computePeriodHeadways — cross-midnight (#297)', () => {
+  // CTA Red Line pattern: real, sustained 2-4am service with zero extended-notation departures.
+  // Before the #297 fix, "late"/"overnight" only checked raw minutes >=1380, so this returned
+  // null despite genuine, frequent overnight service existing in the feed.
+  it('surfaces late/overnight headways from plain-notation departures', () => {
+    const times: number[] = [];
+    for (let t = 60; t <= 300; t += 12) times.push(t); // 1:00am-5:00am, every 12min, plain notation
+    const result = computePeriodHeadways(times);
+    expect(result.late).toBe(12);
+    expect(result.overnight).toBe(12);
+  });
+
+  it('does not report late/overnight service that does not exist in either notation', () => {
+    const times = [420, 480, 540, 600]; // normal daytime only
+    const result = computePeriodHeadways(times);
+    expect(result.late).toBeNull();
+    expect(result.overnight).toBeNull();
+  });
+
+  it('is unaffected for a feed already using extended notation correctly', () => {
+    const times = [1500, 1512, 1524, 1536]; // 1:00-1:36am, extended notation
+    const result = computePeriodHeadways(times);
+    expect(result.late).toBe(12);
   });
 });

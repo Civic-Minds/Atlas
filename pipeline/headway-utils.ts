@@ -38,6 +38,21 @@ export function medianHeadwayInWindow(
   return Math.round(medianOfSortedGaps(gaps));
 }
 
+// GTFS lets a trip past midnight be encoded either way: extended notation (>=24:00, continuing
+// the previous day's service_id) or plain 0-23h notation (under a service_id newly active that
+// calendar day). Windows that check only raw minute values silently miss the plain-notation
+// case entirely -- there's no minute value in [1440, 1800) for a trip written as "02:00" (issue
+// #297, confirmed on CTA: real 2-4am Red/Blue Line departures, zero of them extended-notation).
+// Supplementing (not replacing) with a +1440-shifted copy of every sub-1440 time lets a
+// midnight-crossing window catch a plain-notation trip the same way it already catches an
+// extended-notation one, without discarding or double-counting anything already in range --
+// day-of-week attribution is untouched, since that's decided by service_id/getActiveServiceIds,
+// not by which notation an agency chose for a given trip.
+export function forCrossMidnightWindow(departureTimes: number[], windowEnd: number): number[] {
+  if (windowEnd <= 1440) return departureTimes;
+  return [...departureTimes, ...departureTimes.filter(t => t < 1440).map(t => t + 1440)];
+}
+
 // headwayByHour used a fixed 90-min-wide window ([h*60, h*60+90]) for every hour, because a
 // strict 60-min window can't reliably reach 3 departures on a real 30-min-or-better route (e.g.
 // TTC 10 direction 0 at Van Horne: 14:15/14:45/15:15/15:45 -- a strict [14:00,15:00] window only
@@ -61,9 +76,11 @@ export function adaptiveMedianHeadwayInWindow(
   baseMinutes: number = ADAPTIVE_WINDOW_BASE_MINUTES,
   maxMinutes: number = ADAPTIVE_WINDOW_MAX_MINUTES,
 ): number | null {
-  const narrow = medianHeadwayInWindow(departureTimes, start, start + baseMinutes, minDeps);
+  const narrowEnd = start + baseMinutes;
+  const narrow = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, narrowEnd), start, narrowEnd, minDeps);
   if (narrow != null) return narrow;
-  return medianHeadwayInWindow(departureTimes, start, start + maxMinutes, minDeps);
+  const wideEnd = start + maxMinutes;
+  return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, wideEnd), start, wideEnd, minDeps);
 }
 
 // A single gap many times larger than the window's typical gap signals a cluster-plus-outlier
@@ -231,7 +248,7 @@ export function isSustainedHeadway(
 export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    result[key] = medianHeadwayInWindow(departureTimes, start, end, 3);
+    result[key] = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3);
   }
   return result;
 }
@@ -276,8 +293,9 @@ export const BOUNDARY_DOMINANT_RATIO = 8;
 export function computePeriodSustained(departureTimes: number[]): Partial<Record<PeriodKey, boolean>> {
   const result: Partial<Record<PeriodKey, boolean>> = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
-    const value = medianHeadwayInWindow(departureTimes, start, end, 3);
+    const dt = forCrossMidnightWindow(departureTimes, end);
+    const times = [...new Set(dt)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+    const value = medianHeadwayInWindow(dt, start, end, 3);
     if (value == null) continue;
     const gaps: number[] = [];
     for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);

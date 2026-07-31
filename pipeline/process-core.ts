@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -505,7 +505,7 @@ export async function processGtfsBuffer(
       if (hw != null) allStopHw[stopId] = hw;
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-        const ph = medianHeadwayInWindow(times, start, end, 3);
+        const ph = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3);
         if (ph != null) byPeriod[pk] = ph;
       }
       if (Object.keys(byPeriod).length > 0) {
@@ -662,7 +662,7 @@ export async function processGtfsBuffer(
         times.sort((a, b) => a - b);
         const byPeriod: Partial<Record<PeriodKey, number>> = {};
         for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-          const ph = medianHeadwayInWindow(times, start, end, 3);
+          const ph = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3);
           if (ph != null) byPeriod[pk] = ph;
         }
         if (Object.keys(byPeriod).length > 0) hsPeriodHw[stopId] = byPeriod;

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Fixed overnight-only service (e.g. CTA's 24-hour Red/Blue Lines) being invisible in Late/Overnight stats — routes whose early-morning trips are coded in plain 0-23h notation rather than GTFS's >=24:00 extended notation are now correctly picked up
+
 ## [3.2.14] - 2026-07-31
 
 - Fixed routes showing up under a frequency filter when only one direction actually met it (Kingston 701 and others) — the filter now requires every direction to qualify, not just the fastest one
