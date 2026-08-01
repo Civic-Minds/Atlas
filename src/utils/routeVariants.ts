@@ -14,6 +14,8 @@ const BASE_RE = /^(\d{1,3})([A-Z])$/;
  */
 const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
   'windsor::1', // Transway 1A and 1C are separate routes sharing only a short downtown segment
+  'thebus::1', // TheBus (Honolulu) 1 and 1L are separate routes ("Kaimuki-Kalihi" vs "Hawaii Kai-Aloha Stadium Limited") -- confirmed via #303 sweep, base "1" exists on its own but that's not evidence either way (#294)
+  'goraleigh::11', // GoRaleigh 11 and 11L are separate routes ("Avent Ferry" vs "Buck Jones Connector") -- confirmed via #303 sweep, same pattern as thebus::1
 ]);
 
 export interface VariantFamily {

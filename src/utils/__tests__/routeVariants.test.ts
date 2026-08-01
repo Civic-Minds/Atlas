@@ -35,4 +35,24 @@ describe('findVariantFamily', () => {
     const family = findVariantFamily(features, '1C', 'midday', 'other-agency');
     expect(family?.base).toBe('1');
   });
+
+  // #303 sweep: confirmed via each agency's own GTFS route_long_name (route_id "1" is
+  // "Kaimuki-Kalihi", route_id "1L" is "Hawaii Kai-Aloha Stadium Limited" -- unrelated
+  // destinations, not a trunk+branch pair).
+  it('does not group TheBus (Honolulu) 1/1L (#303)', () => {
+    const features = [
+      feature('1', '1', 20),
+      feature('1L', '1L', 10),
+    ];
+    expect(findVariantFamily(features, '1', 'midday', 'thebus')).toBeNull();
+  });
+
+  // #303 sweep: GoRaleigh route_id "11" is "Avent Ferry", "11L" is "Buck Jones Connector".
+  it('does not group GoRaleigh 11/11L (#303)', () => {
+    const features = [
+      feature('11', '11', 20),
+      feature('11L', '11L', 10),
+    ];
+    expect(findVariantFamily(features, '11', 'midday', 'goraleigh')).toBeNull();
+  });
 });
