@@ -125,9 +125,11 @@ function buildEffectiveHeadwayColorExpression(period: TimePeriod): any {
 interface MapCanvasProps {
   agencies: Agency[];
   layers?: Record<string, GeoJSON.FeatureCollection>;
-  /** Same as `layers` but pre-filtered by day/agency/mode/hideSpan/live-polling/frequency
-   *  (useIntervalStats' passesRouteFilter) -- used for the #317 qualifying-segment overlay so it
-   *  never draws service from a day-type or agency that's currently filtered off the map. */
+  /** Same as `layers` but pre-filtered by day/agency/mode/hideSpan/live-polling (useIntervalStats'
+   *  passesRouteFilter, with skipFrequency) -- used for the #317 qualifying-segment overlay so it
+   *  never draws service from a day-type or agency that's currently filtered off the map.
+   *  Deliberately NOT frequency-filtered: computeFrequencySegmentOverlay needs partial-match
+   *  routes the frequency check would otherwise exclude, and does its own per-stop-range check. */
   filteredLayers?: Record<string, GeoJSON.FeatureCollection>;
   maxHeadway: number;
   period: TimePeriod;

@@ -91,6 +91,13 @@ export function passesRouteFilter(
   slug: string,
   filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
+  // skipFrequency: day/agency/mode/hideSpan/live-polling still apply, but the worst-direction
+  // frequency check (#314/#315) does not. Used only for the #317 qualifying-segment overlay,
+  // which needs partial-match routes (frequent on part of their length, not the whole thing) --
+  // exactly what the frequency check exists to exclude everywhere else. The overlay does its own
+  // per-stop-range check via computeFrequencySegmentOverlay, so this doesn't let an unqualified
+  // route appear as if it fully passed; it only lets it *in* so that function can look.
+  options?: { skipFrequency?: boolean },
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
@@ -137,10 +144,14 @@ export function passesRouteFilter(
   // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
   // as a whole, not just in that one direction -- hide the whole route, not just that branch.
   if (filters.hideSpan && (p.tier === 'span' || p.routeHasIrregularDirection)) return false;
-  // When a specific period is active, prefer the per-stop minimum period headway (best frequency
-  // anywhere on the route during that period). This ensures routes with high-frequency sections
-  // pass the filter even if the all-day median doesn't meet the threshold — AI-97 clipping then
-  // visually restricts the displayed geometry to the qualifying section.
+  if (options?.skipFrequency) return true;
+  // When a specific period is active, use the route's worst-direction headway for that period
+  // (falling back to the branch's own headwayByPeriod) -- both directions must qualify, not just
+  // this one branch. minStopHeadwayByPeriod is deliberately NOT used as a fallback here: it can
+  // reflect a shared-core combined frequency, or one good stop, that only applies to part of the
+  // route -- letting it drive pass/fail without clipping geometry to match would show a partial
+  // route as if the whole thing qualified (#314/#315). The #317 overlay is the one place that
+  // wants exactly those partial routes, and it opts in via skipFrequency above.
   if (filters.period && filters.period !== 'all') {
     const periodHw = effectiveRouteHeadway(p, filters.period);
     if (periodHw != null) {
@@ -306,12 +317,16 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
+  // Feeds the #317 qualifying-segment overlay (computeFrequencySegmentOverlay), which needs
+  // partial-match routes the frequency check would otherwise exclude entirely -- see
+  // skipFrequency's doc comment on passesRouteFilter. maxHeadway/period are intentionally not
+  // deps here since skipFrequency means they no longer affect this computation.
   const filteredLayers = useMemo(() => {
     const result: AgencyLayers = {};
     for (const [slug, fc] of Object.entries(layers)) {
       const filteredFeatures = fc.features.filter(f => {
         const p = f.properties as unknown as ShapeProperties;
-        return passesRouteFilter(p, slug, filters, routesForStop);
+        return passesRouteFilter(p, slug, filters, routesForStop, { skipFrequency: true });
       });
       if (filteredFeatures.length > 0) {
         result[slug] = { ...fc, features: filteredFeatures };
@@ -319,7 +334,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     }
     return result;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
+  }, [layers, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
 
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
