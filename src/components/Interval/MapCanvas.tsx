@@ -22,6 +22,7 @@ import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
+import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression } from '../../utils/frequencySegments';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -50,15 +51,44 @@ function concatFilters(...parts: any[]): any {
   return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
 }
 
-/** True when a route feature serves any sibling stop of the selected hub (via stopHeadways). */
+/**
+ * True when a route feature serves any sibling stop of the selected hub.
+ *
+ * Originally read `['get', id, ['get', 'stopHeadways']]` against the PMTiles feature -- but
+ * tippecanoe JSON-stringifies nested properties like `stopHeadways` into scalar strings in the
+ * tile output (confirmed by decoding a production tile, #317 investigation), so that nested `get`
+ * always evaluated against a string, not an object, and silently matched nothing. Uses the real
+ * per-agency GeoJSON already held in `layers` (parsed, not tile-serialized) to find which routes
+ * actually serve the sibling stops, then matches by route key -- the same pattern already used for
+ * selectedRoute/hoveredSearchRoute matching below.
+ */
 function buildServingStopMatchExpression(
+  layers: Record<string, GeoJSON.FeatureCollection> | undefined,
   siblingIdsByAgency: Record<string, Set<string>> | undefined,
 ): any {
-  const stopIds = siblingIdsByAgency
-    ? [...new Set(Object.values(siblingIdsByAgency).flatMap(s => [...s]))]
-    : [];
-  if (stopIds.length === 0) return false;
-  return ['any', ...stopIds.map(id => ['!=', ['get', id, ['get', 'stopHeadways']], null])];
+  if (!layers || !siblingIdsByAgency) return false;
+  const keys = new Set<string>();
+  for (const [slug, stopIds] of Object.entries(siblingIdsByAgency)) {
+    if (stopIds.size === 0) continue;
+    const fc = layers[slug];
+    if (!fc) continue;
+    for (const f of fc.features) {
+      if (f.geometry.type !== 'LineString') continue;
+      const p = f.properties as Record<string, unknown> | null;
+      const routeId = p?.routeId as string | undefined;
+      const stopHeadways = p?.stopHeadways as Record<string, number | null> | undefined;
+      if (!routeId || !stopHeadways) continue;
+      for (const id of stopIds) {
+        if (Object.prototype.hasOwnProperty.call(stopHeadways, id)) {
+          keys.add(`${slug}::${routeId}`);
+          break;
+        }
+      }
+    }
+  }
+  if (keys.size === 0) return false;
+  const routeKeyExpr: any = ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']];
+  return ['in', routeKeyExpr, ['literal', [...keys]]];
 }
 
 // Debug-only route highlight layer (?highlight=... -- see MapCanvasProps.highlightRoutes).
@@ -95,6 +125,10 @@ function buildEffectiveHeadwayColorExpression(period: TimePeriod): any {
 interface MapCanvasProps {
   agencies: Agency[];
   layers?: Record<string, GeoJSON.FeatureCollection>;
+  /** Same as `layers` but pre-filtered by day/agency/mode/hideSpan/live-polling/frequency
+   *  (useIntervalStats' passesRouteFilter) -- used for the #317 qualifying-segment overlay so it
+   *  never draws service from a day-type or agency that's currently filtered off the map. */
+  filteredLayers?: Record<string, GeoJSON.FeatureCollection>;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -140,6 +174,7 @@ interface MapCanvasProps {
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencies,
   layers,
+  filteredLayers,
   maxHeadway,
   period,
   q,
@@ -224,6 +259,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const selectedRouteRef = useRef(selectedRoute);
   const highlightRoutesRef = useRef(highlightRoutes);
   const handleMapClickRef = useRef<(e: maplibregl.MapMouseEvent) => void>(() => {});
+  // Read by resetRoutesLayerDefaultPaint (called from several places, not just the main filter
+  // effect) so the #317 partial-match dim survives a paint reset instead of being wiped back to
+  // an undimmed default -- see the frequencySegmentOverlay useMemo + its sync effect below.
+  const frequencySegmentOverlayRef = useRef<{ partialMatches: ReturnType<typeof computeFrequencySegmentOverlay>['partialMatches'] }>({ partialMatches: [] });
 
   const resetRoutesLayerDefaultPaint = (map: maplibregl.Map) => {
     if (!map.getLayer('routes-layer')) return;
@@ -235,7 +274,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       'interpolate', ['linear'], ['zoom'],
       8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5,
     ]);
-    map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
+    const defaultOpacity = buildDefaultRouteLineOpacityExpression(headwayExpr) as any;
+    const partialMatches = frequencySegmentOverlayRef.current.partialMatches;
+    if (partialMatches.length > 0) {
+      const partialMatch = buildPartialMatchFilterExpression(partialMatches);
+      map.setPaintProperty('routes-layer', 'line-opacity', ['case', partialMatch, 0.35, defaultOpacity]);
+    } else {
+      map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
+    }
   };
 
   const clearMapSelection = () => {
@@ -339,6 +385,33 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
   const hasSavedView = useMemo(() => getSavedView() !== null, []);
+
+  // Frequency filter partial-match segments (#317): when a route only qualifies for the active
+  // frequency filter because part of its stops meet the threshold (not the whole shape), computed
+  // from the real per-agency GeoJSON -- see frequencySegments.ts for why this can't be done with
+  // PMTiles filter/paint expressions. Uses `filteredLayers` (already day/agency/mode/hideSpan/
+  // live-polling-filtered via passesRouteFilter), not raw `layers` -- otherwise this would draw a
+  // qualifying-segment overlay for a day type or agency the user has filtered off the map entirely.
+  // Only relevant to the plain Frequency Map view.
+  const frequencySegmentOverlay = useMemo(() => {
+    if (!showRouteLayers || fareView || !filteredLayers) {
+      return { segments: [], partialMatches: [] };
+    }
+    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
+  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView]);
+
+  useLayoutEffect(() => {
+    frequencySegmentOverlayRef.current = frequencySegmentOverlay;
+  }, [frequencySegmentOverlay]);
+
+  // Push the qualifying-segment overlay geometry to its GeoJSON source whenever it changes.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('frequency-qualifying-segments') as maplibregl.GeoJSONSource | undefined;
+    if (!source) return;
+    source.setData({ type: 'FeatureCollection', features: frequencySegmentOverlay.segments });
+  }, [frequencySegmentOverlay, mapLoaded]);
 
   // Initialize MapLibre Map
   useEffect(() => {
@@ -452,6 +525,28 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'circle-stroke-width': 1,
           'circle-opacity': 0.75,
           'circle-stroke-opacity': 0.6
+        }
+      });
+
+      // Frequency filter qualifying-segment overlay (#317): bright line drawn on top of the
+      // (dimmed) base route for the stretch of stops that actually meets the active frequency
+      // filter, when only part of the route does. See frequencySegmentOverlay above.
+      map.addSource('frequency-qualifying-segments', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      });
+      map.addLayer({
+        id: 'frequency-qualifying-segments-layer',
+        type: 'line',
+        source: 'frequency-qualifying-segments',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2.0, 11, 2.6, 14, 3.2, 17, 4.5],
+          'line-opacity': 1.0
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
         }
       });
 
@@ -1012,7 +1107,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
         map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
-        const servingMatch = buildServingStopMatchExpression(routesForStop.siblingIdsByAgency);
+        const servingMatch = buildServingStopMatchExpression(layers, routesForStop.siblingIdsByAgency);
         map.setPaintProperty('routes-layer', 'line-opacity', [
           'case', servingMatch, 1.0, DIM_OPACITY,
         ]);
@@ -1029,7 +1124,38 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           14, 2.5,
           17, 3.5,
         ]);
-        map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
+        // Dim routes that only pass the active frequency filter because part of their stops
+        // qualify (#317) -- the bright frequency-qualifying-segments-layer overlay above draws
+        // the real qualifying stretch on top, so the full-length base line reads as background
+        // context, not a (wrong) claim that the whole route runs at that frequency. Scoped to
+        // this default state only: a selected/hovered/stop-focused route already gets its own
+        // full-geometry-at-full-opacity treatment above by design (selecting a route bypasses
+        // the frequency filter entirely), so this doesn't need to layer on top of those too.
+        const defaultOpacity = buildDefaultRouteLineOpacityExpression(headwayExpr) as any;
+        if (frequencySegmentOverlay.partialMatches.length > 0) {
+          const partialMatch = buildPartialMatchFilterExpression(frequencySegmentOverlay.partialMatches);
+          map.setPaintProperty('routes-layer', 'line-opacity', [
+            'case', partialMatch, 0.35, defaultOpacity,
+          ]);
+        } else {
+          map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
+        }
+      }
+
+      // The bright qualifying-segment overlay only makes sense alongside the dimmed-base-route
+      // treatment above (default state, nothing else focused) -- otherwise it would draw a bright
+      // "this part qualifies" line over routes a selection/hover/stop-focus state has already
+      // dimmed for an unrelated reason, or fight a route's own full-opacity focused treatment.
+      const isDefaultRouteFocusState = !historyOverlay?.routeShortName
+        && !selectedRoute
+        && !hoveredSearchRoute
+        && !(selectedStop && routesForStop?.siblingIdsByAgency);
+      if (map.getLayer('frequency-qualifying-segments-layer')) {
+        map.setLayoutProperty(
+          'frequency-qualifying-segments-layer',
+          'visibility',
+          isDefaultRouteFocusState ? 'visible' : 'none',
+        );
       }
     }
 
@@ -1070,7 +1196,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, historyOverlay]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, historyOverlay, layers, frequencySegmentOverlay]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
