@@ -131,3 +131,17 @@ export function buildPartialMatchFilterExpression(keys: FrequencySegmentRouteKey
     ['==', ['coalesce', ['get', 'day'], ''], k.day ?? ''],
   ])];
 }
+
+/**
+ * routes-layer's own tileFilter excludes a route whose worst-direction headway fails the active
+ * frequency filter -- by design (#314/#315), same reasoning as passesRouteFilter/filteredLayers.
+ * But partialMatches are routes computeFrequencySegmentOverlay already confirmed have a real
+ * qualifying stretch, so pull those specific features back into the layer's filter, or the
+ * "dimmed remainder" line-opacity case expression has nothing to apply to (the feature was never
+ * in the layer to begin with) and hovering/selecting one -- which needs the base feature present
+ * to highlight -- shows nothing instead of the expected full-route highlight.
+ */
+export function broadenFilterForPartialMatches(baseFilter: any, partialMatches: FrequencySegmentRouteKey[]): any {
+  if (partialMatches.length === 0) return baseFilter;
+  return ['any', baseFilter, buildPartialMatchFilterExpression(partialMatches)];
+}

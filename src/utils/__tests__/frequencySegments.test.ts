@@ -3,6 +3,7 @@ import {
   findQualifyingStopRanges,
   computeFrequencySegmentOverlay,
   buildPartialMatchFilterExpression,
+  broadenFilterForPartialMatches,
 } from '../frequencySegments';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 
@@ -217,5 +218,22 @@ describe('buildPartialMatchFilterExpression', () => {
     expect(expr[0]).toBe('any');
     expect(expr).toHaveLength(2);
     expect(expr[1][0]).toBe('all');
+  });
+});
+
+describe('broadenFilterForPartialMatches', () => {
+  it('returns the base filter unchanged when there are no partial matches', () => {
+    const base = ['<=', ['get', 'headway'], 15];
+    expect(broadenFilterForPartialMatches(base, [])).toBe(base);
+  });
+
+  it('ORs the base filter with a partial-match expression, so a route excluded by the base', () => {
+    // filter (e.g. worst-direction headway too high) is pulled back in when it's a confirmed
+    // partial match -- this is what lets a route render (and be hoverable/selectable) at all
+    // for the #317 overlay's dimmed remainder, instead of just being absent from the map.
+    const base = ['<=', ['get', 'wdph_midday'], 15];
+    const keys = [{ agencySlug: 'octranspo', routeId: '6', directionId: 0, headsign: 'Greenboro', day: 'Saturday' }];
+    const expr = broadenFilterForPartialMatches(base, keys);
+    expect(expr).toEqual(['any', base, buildPartialMatchFilterExpression(keys)]);
   });
 });

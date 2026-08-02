@@ -22,7 +22,7 @@ import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
-import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression } from '../../utils/frequencySegments';
+import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 
 const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
 
@@ -1012,6 +1012,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ['>=', ['index-of', ql, ['downcase', ['coalesce', ['get', prop], '']]], 0];
     const searchAnyField: any = ['any', contains('routeShortName'), contains('routeId'), contains('agencySlug')];
 
+    // See broadenFilterForPartialMatches' doc comment: pulls #317 partial-match routes back into
+    // routes-layer's filter, which tileFilter's own headway clause otherwise excludes them from.
+    const effectiveTileFilter: any = broadenFilterForPartialMatches(tileFilter, frequencySegmentOverlay.partialMatches);
+
     // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
     // MapCanvas only adds map-state-specific clauses on top.
     let routeFilter: any = null;
@@ -1029,9 +1033,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const searchClause = matchedAgencySlug
         ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
         : searchAnyField;
-      routeFilter = concatFilters(tileFilter, searchClause);
+      routeFilter = concatFilters(effectiveTileFilter, searchClause);
     } else {
-      routeFilter = tileFilter;
+      routeFilter = effectiveTileFilter;
     }
 
     if (filterToAgencies && agencies.length > 0) {
