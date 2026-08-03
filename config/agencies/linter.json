@@ -13,9 +13,9 @@
     -73.73
   ],
   "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=linter",
-  "lastFeedExpiry": "20260802",
-  "lastFeedVersion": "1771259558641",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20270807",
+  "lastFeedVersion": "1782390972805",
+  "lastRefreshedAt": "2026-08-03",
   "cities": [
     "Saint-Jérôme, Quebec"
   ]

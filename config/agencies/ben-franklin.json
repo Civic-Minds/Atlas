@@ -6,9 +6,9 @@
     -119.14
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
-  "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "0626 Fixed Rev 1",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "0626 Fixed Rev 2",
+  "lastRefreshedAt": "2026-08-03",
   "region": "Washington",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
   "bbox": [

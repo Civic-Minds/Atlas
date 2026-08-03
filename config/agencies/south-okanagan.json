@@ -7,9 +7,9 @@
     -119.586
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
-  "lastFeedExpiry": "20260907",
-  "lastFeedVersion": "202607280/20260727 21:00:00/20260728 04:00:00",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20270906",
+  "lastFeedVersion": "202608030/20260802 21:00:00/20260803 04:00:00",
+  "lastRefreshedAt": "2026-08-03",
   "cities": [
     "Kelowna, British Columbia"
   ]
