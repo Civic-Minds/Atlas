@@ -61,7 +61,8 @@
   },
   "overrides": {
     "@emnapi/core": "1.11.3",
-    "@emnapi/runtime": "1.11.3"
+    "@emnapi/runtime": "1.11.3",
+    "brace-expansion": "^2.1.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260731.1",

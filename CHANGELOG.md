@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Patched a dependency vulnerability (brace-expansion DoS, GHSA-mh99-v99m-4gvg)
 - Frequency filter now highlights only the actual qualifying stretch of a route, dimming the rest, instead of showing the whole route at full weight when just part of it meets the threshold (#317)
 - Fixed a sidebar map highlight (serving-stop match) that was silently broken and matching nothing
 - Fixed overnight-only service (e.g. CTA's 24-hour Red/Blue Lines) being invisible in Late/Overnight stats — routes whose early-morning trips are coded in plain 0-23h notation rather than GTFS's >=24:00 extended notation are now correctly picked up
