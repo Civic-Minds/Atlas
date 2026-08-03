@@ -26,12 +26,19 @@ export interface ShapeProperties {
   busSubType?: 'brt' | 'express' | 'coach' | 'local';
   worstDirectionHeadway?: number;
   worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
+  /** #318: at least one direction of this route+day has no sustained/real-tier pattern at all. */
+  routeHasIrregularDirection?: boolean;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
   /** Per-stop service projections used by stop cards and corridor legs. */
   stopHeadways?: Record<string, number | null>;
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
+  /** On-shape stop IDs in shape order, and their normalized (0-1) position along the shape.
+   *  Real per-agency GeoJSON only -- PMTiles serializes these as JSON-stringified scalar
+   *  properties, not usable for map filters/expressions (#317). */
+  stopOrder?: string[];
+  stopPositions?: number[];
 }
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;

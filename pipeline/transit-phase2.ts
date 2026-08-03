@@ -163,8 +163,21 @@ export function applyAnalysisCriteria(
         if (!dayConfig) continue;
 
         const { start, end } = dayConfig.timeWindow;
-        const windowedTimes = raw.departureTimes.filter(t => t >= start && t <= end);
-        if (windowedTimes.length < 2) continue;
+        let windowedTimes = raw.departureTimes.filter(t => t >= start && t <= end);
+        let isOvernightFallback = false;
+        if (windowedTimes.length < 2) {
+            // Entirely outside the daytime analysis window -- e.g. TTC Blue Night, whose service
+            // runs ~1:30-5:30am with zero departures in the 07:00-22:00 window (#313). Without
+            // this, such a route is silently dropped from the output entirely, not just missing
+            // a flag. Fall back to the full raw departure list so genuinely overnight-only
+            // service still gets a real tier/headway instead of vanishing. Only fires when the
+            // daytime window produced <2 trips, so this can never affect a route that already
+            // works today -- purely additive.
+            const allTimes = [...raw.departureTimes].sort((a, b) => a - b);
+            if (allTimes.length < 2) continue; // truly can't compute a headway from <2 total departures
+            windowedTimes = allTimes;
+            isOvernightFallback = true;
+        }
 
         // For all rail routes, use the midday window (09:30–14:30) for tier classification
         // and display stats. Outbound (dir=0): peak short-turn trains cluster every 8–10 min
@@ -197,8 +210,12 @@ export function applyAnalysisCriteria(
         // Routes that don't provide sustained all-day service — classify as span:
         // - trips compressed into ≤90 minutes (school runs, shuttle bursts)
         // - active span covers <40% of the analysis window (rush-hour-only, e.g. GO Milton)
+        // The coverage term has no meaning for the overnight fallback -- there's no fixed
+        // "window" a genuinely overnight-only route's span should be compared against (a tight
+        // 2-5am owl route would otherwise get misclassified as span the same way it was
+        // missing entirely before this fix). Rely on the ≤90min burst check alone there.
         const coverage = analysisWindowMins > 0 ? spanMins / analysisWindowMins : 0;
-        const isLimitedService = spanMins <= 90 || coverage < 0.4;
+        const isLimitedService = spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
         const tierRaw = isLimitedService
             ? 'span'
             : determineTier(analysisGaps, analysisWindow.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations, criteria.gracePercent, criteria.violationPercent);
@@ -239,7 +256,9 @@ export function applyAnalysisCriteria(
             routeType: raw.routeType,
             modeName: raw.modeName,
             serviceIds: raw.serviceIds,
-            warnings: raw.warnings,
+            warnings: isOvernightFallback
+                ? [...(raw.warnings ?? []), 'Overnight-only service (outside daytime analysis window)']
+                : raw.warnings,
             daysIncluded: [raw.day],
             headsign: raw.headsign,
             ...resourceStats

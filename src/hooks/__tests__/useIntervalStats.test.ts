@@ -52,6 +52,26 @@ describe('useIntervalStats', () => {
     expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: null }, null)).toBe(false);
   });
 
+  it('hideSpan also hides a route whose other direction has no sustained pattern at all (Halifax 330, #318)', () => {
+    // Eastbound: real 13-min tier, but the pipeline flagged the route because Westbound is span-only.
+    const eastbound = {
+      routeId: '330', agencySlug: 'halifax', headway: 13, tier: 'infrequent',
+      routeHasIrregularDirection: true,
+    } as any;
+    const filters = { ...defaultFilters, maxHeadway: 20, agencies: new Set(['halifax']), hideSpan: true };
+    expect(passesRouteFilter(eastbound, 'halifax', filters, null)).toBe(false);
+    expect(passesRouteFilter(eastbound, 'halifax', { ...filters, hideSpan: false }, null)).toBe(true);
+  });
+
+  it('hideSpan does not hide a route where every direction has some real pattern (Kingston 701, #318)', () => {
+    const viaDowntown = {
+      routeId: '701', agencySlug: 'kingston', headway: 30, tier: '60',
+      routeHasIrregularDirection: undefined,
+    } as any;
+    const filters = { ...defaultFilters, maxHeadway: 60, agencies: new Set(['kingston']), hideSpan: true };
+    expect(passesRouteFilter(viaDowntown, 'kingston', filters, null)).toBe(true);
+  });
+
   it('should return correct stats for default filters', () => {
     const { result } = renderHook(() => useIntervalStats(mockLayers, defaultFilters));
     
@@ -313,7 +333,7 @@ describe('useIntervalStats', () => {
     expect(noisy.current.filteredLayers['ttc']).toBeUndefined();
   });
 
-  it('period filter prefers headwayByPeriod (or minStopHeadwayByPeriod) over worstDirectionHeadwayByPeriod', () => {
+  it('period filter requires worstDirectionHeadwayByPeriod to qualify, not just this branch\'s own headByPeriod (#314)', () => {
     const layers: AgencyLayers = {
       'test': {
         type: 'FeatureCollection',
@@ -332,12 +352,45 @@ describe('useIntervalStats', () => {
     };
     const base = { ...defaultFilters, maxHeadway: 30, period: 'midday' as const };
 
+    // All-day check has no period-specific worstDirectionHeadway to fall back on here, so it
+    // uses the branch's own headway (10) and passes.
     const { result: passes } = renderHook(() => useIntervalStats(layers, { ...base, period: 'all' }));
     expect(passes.current.stats?.matching).toBe(1);
 
-    // headByPeriod (10) is preferred over worst (45); route with good headBy shows under 30min midday filter
-    const { result: shows } = renderHook(() => useIntervalStats(layers, base));
-    expect(shows.current.stats?.matching).toBe(1);
+    // Kingston 701 case: this branch's own midday headway (10) would pass a 30-min filter on
+    // its own, but the route's worst direction (45) doesn't -- the route must fail entirely,
+    // not show based on one direction's optimistic number.
+    const { result: fails } = renderHook(() => useIntervalStats(layers, base));
+    expect(fails.current.stats?.matching).toBe(0);
+  });
+
+  it('filteredLayers includes worst-direction-failing routes for the #317 overlay to inspect (skipFrequency)', () => {
+    // Same Kingston 701 shape as the #314 test above: this route correctly fails the plain
+    // frequency filter (visibleFeatures/stats), but the #317 qualifying-segment overlay still
+    // needs to see it in filteredLayers so it can find/clip a real qualifying sub-stretch.
+    const layers: AgencyLayers = {
+      test: {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: {
+            routeId: '701',
+            headway: 10,
+            tier: '10',
+            headwayByPeriod: { midday: 10 },
+            worstDirectionHeadwayByPeriod: { midday: 45 },
+          },
+        }],
+      },
+    };
+    const filters = { ...defaultFilters, maxHeadway: 30, period: 'midday' as const };
+
+    const { result } = renderHook(() => useIntervalStats(layers, filters));
+    // Fails the plain filter (mirrors the #314 test)...
+    expect(result.current.stats?.matching).toBe(0);
+    // ...but is still present in filteredLayers for the overlay to look at.
+    expect(result.current.filteredLayers['test']?.features.length).toBe(1);
   });
 
   it('tileFilter uses flat period keys and all-day fallback (PMTiles-safe)', () => {

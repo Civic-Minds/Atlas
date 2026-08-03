@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
   "lastFeedExpiry": "20230927",
   "lastFeedVersion": "UTC: 14-Mar-2023 23:56",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-03",
   "websiteUrl": "http://www.uctransit.org",
   "cities": [
     "Union City, California"

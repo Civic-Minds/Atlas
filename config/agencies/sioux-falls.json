@@ -8,7 +8,7 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip",
   "lastFeedExpiry": "20240401",
   "lastFeedVersion": "UTC: 01-Nov-2023 21:05",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-03",
   "region": "South Dakota",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-192/latest.zip",
   "bbox": [

@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [3.2.15] - 2026-08-03
+
+- Patched a dependency vulnerability (brace-expansion DoS, GHSA-mh99-v99m-4gvg)
+- Frequency filter now highlights only the actual qualifying stretch of a route, dimming the rest, instead of showing the whole route at full weight when just part of it meets the threshold (#317)
+- Fixed a sidebar map highlight (serving-stop match) that was silently broken and matching nothing
+- Fixed overnight-only service (e.g. CTA's 24-hour Red/Blue Lines) being invisible in Late/Overnight stats — routes whose early-morning trips are coded in plain 0-23h notation rather than GTFS's >=24:00 extended notation are now correctly picked up
+- Fixed an overnight-only route (e.g. TTC's Blue Night Network) still showing on the map under an unrelated period's frequency filter (e.g. Midday) — a PMTiles encoding quirk was dropping the "no service this period" signal before it reached the map
+- Fixed a malformed "Recently viewed" search entry (raw internal route key shown instead of a route name) that could persist in your browser from an older build — now cleaned up automatically on load
+- Fixed TheBus (Honolulu) 1/1L and GoRaleigh 11/11L being wrongly combined into one route's frequency — they're separate routes ("L" isn't always a branch letter), not the same GRTC-style trunk-and-branch pattern this check is designed for
+
+## [3.2.14] - 2026-07-31
+
+- Fixed routes showing up under a frequency filter when only one direction actually met it (Kingston 701 and others) — the filter now requires every direction to qualify, not just the fastest one
+- "Hide irregular routes" now also hides a route whose *other* direction has no sustained service at all, like a peak-only commuter route (Halifax 330) — data populates on the next full weekly refresh
+- Fixed routes with entirely overnight-only service (e.g. TTC's Blue Night Network) being silently dropped from processing rather than just missing a flag — data populates on the next full weekly refresh
+
 ## [3.2.13] - 2026-07-30
 
 - Live and History are now beta-only — both cover too few agencies with no scaling plan yet to belong in production nav

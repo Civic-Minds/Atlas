@@ -13,10 +13,10 @@
     -75.99
   ],
   "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
-  "lastFeedExpiry": "20270726",
-  "lastFeedVersion": "1/20260726 09:57:36/20260727 04:00:00",
+  "lastFeedExpiry": "20270731",
+  "lastFeedVersion": "1/20260731 21:12:23/20260801 04:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-kingston-transit-gtfs-733.zip?alt=media",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-03",
   "cities": [
     "Kingston, Ontario"
   ]

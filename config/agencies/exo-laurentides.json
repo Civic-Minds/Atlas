@@ -13,11 +13,11 @@
     -73.4
   ],
   "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
-  "lastFeedExpiry": "20260823",
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-03",
   "cities": [
     "Saint-Louis-de-Terrebonne, Quebec",
     "Saint-Jérôme, Quebec",

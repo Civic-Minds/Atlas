@@ -186,7 +186,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       if (qRecents) setRecentSearches(JSON.parse(qRecents));
 
       const rRecents = localStorage.getItem('atlas_recently_viewed_routes');
-      if (rRecents) setRecentlyViewed(JSON.parse(rRecents));
+      if (rRecents) {
+        const parsed: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }> = JSON.parse(rRecents);
+        // Defends against a stale localStorage entry saved by an older, buggy build (e.g. the
+        // raw "agencySlug::routeId" key leaking into shortName instead of a real display name)
+        // -- a code fix can't retroactively clean up what's already sitting in a browser's own
+        // localStorage, so this has to be re-checked every load, not just fixed at the save site.
+        const cleaned = parsed.filter(r => r.shortName && !r.shortName.includes('::'));
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem('atlas_recently_viewed_routes', JSON.stringify(cleaned));
+        }
+        setRecentlyViewed(cleaned);
+      }
     } catch (e) {
       console.error(e);
     }

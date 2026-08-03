@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-03",
   "cities": [
     "West Sacramento, California",
     "Woodland, California",
