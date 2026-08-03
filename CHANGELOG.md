@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Patched a dependency vulnerability (brace-expansion DoS, GHSA-mh99-v99m-4gvg)
 - Fixed overnight-only service (e.g. CTA's 24-hour Red/Blue Lines) being invisible in Late/Overnight stats — routes whose early-morning trips are coded in plain 0-23h notation rather than GTFS's >=24:00 extended notation are now correctly picked up
 - Fixed an overnight-only route (e.g. TTC's Blue Night Network) still showing on the map under an unrelated period's frequency filter (e.g. Midday) — a PMTiles encoding quirk was dropping the "no service this period" signal before it reached the map
 - Fixed a malformed "Recently viewed" search entry (raw internal route key shown instead of a route name) that could persist in your browser from an older build — now cleaned up automatically on load
