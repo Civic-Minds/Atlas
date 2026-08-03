@@ -364,6 +364,35 @@ describe('useIntervalStats', () => {
     expect(fails.current.stats?.matching).toBe(0);
   });
 
+  it('filteredLayers includes worst-direction-failing routes for the #317 overlay to inspect (skipFrequency)', () => {
+    // Same Kingston 701 shape as the #314 test above: this route correctly fails the plain
+    // frequency filter (visibleFeatures/stats), but the #317 qualifying-segment overlay still
+    // needs to see it in filteredLayers so it can find/clip a real qualifying sub-stretch.
+    const layers: AgencyLayers = {
+      test: {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+          properties: {
+            routeId: '701',
+            headway: 10,
+            tier: '10',
+            headwayByPeriod: { midday: 10 },
+            worstDirectionHeadwayByPeriod: { midday: 45 },
+          },
+        }],
+      },
+    };
+    const filters = { ...defaultFilters, maxHeadway: 30, period: 'midday' as const };
+
+    const { result } = renderHook(() => useIntervalStats(layers, filters));
+    // Fails the plain filter (mirrors the #314 test)...
+    expect(result.current.stats?.matching).toBe(0);
+    // ...but is still present in filteredLayers for the overlay to look at.
+    expect(result.current.filteredLayers['test']?.features.length).toBe(1);
+  });
+
   it('tileFilter uses flat period keys and all-day fallback (PMTiles-safe)', () => {
     const layers: AgencyLayers = {
       'test': {
