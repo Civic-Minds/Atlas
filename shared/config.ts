@@ -29,7 +29,7 @@ export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
 // beta share identical source; only the Vercel env var differs per branch (VITE_LIVE_ENABLED /
 // VITE_HISTORY_ENABLED set to "true" on beta's preview env). Flip the env var to ship, no merge
 // conflicts either way.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD'): boolean {
   // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
@@ -38,6 +38,10 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 export const HISTORY_ENABLED = envFlag('VITE_HISTORY_ENABLED');
 // Corridors isn't good enough as a feature yet (Ryan, 2026-07-28) -- off everywhere for now.
 export const CORRIDORS_ENABLED = envFlag('VITE_CORRIDORS_ENABLED');
+// Same env-driven pattern as the flags above: identical source on main and beta, only the
+// Vercel preview env var differs (VITE_BETA_BUILD="true" set on beta only). Distinguishes the
+// two in the browser tab title so beta doesn't look identical to production.
+export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
 
 /**
  * Derive the public URLs for an agency's processed artifacts.

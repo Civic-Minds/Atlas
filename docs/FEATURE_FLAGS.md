@@ -43,3 +43,7 @@ Once a feature's flag is off on `main` and on for `beta`, further work on it can
 1. Merge whatever's accumulated on `beta` into `main` (or cherry-pick the relevant commits).
 2. Set the corresponding `VITE_*_ENABLED` var to `"true"` on `main`'s production Vercel environment.
 3. No code change needed — the gate itself doesn't move.
+
+## `VITE_BETA_BUILD`
+
+Not an app gate — same env-driven pattern, but purely cosmetic. Prefixes the browser tab title with `[Beta]` (`src/main.tsx`) so the beta deployment doesn't look identical to production. Set to `"true"` on `beta`'s preview environment only; stays that way indefinitely, nothing to graduate.

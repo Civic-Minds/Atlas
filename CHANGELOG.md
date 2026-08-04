@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Patched a dependency vulnerability (react-router CSRF bypass in RSC mode)
+- Beta deployment's browser tab now reads "[Beta] Atlas by Civic Minds" instead of looking identical to production
+
 ## [3.2.15] - 2026-08-03
 
 - Patched a dependency vulnerability (brace-expansion DoS, GHSA-mh99-v99m-4gvg)
