@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Patched a dependency vulnerability (react-router CSRF bypass in RSC mode)
 - Beta deployment's browser tab now reads "[Beta] Atlas by Civic Minds" instead of looking identical to production
 - Fixed Halifax Transit 7A/7B showing a bogus combined frequency and wrong direction labels — they're clockwise/counterclockwise around one loop, not corridor branches (#335, #336)
+- Time filter can no longer be deselected into a silent, unexplained "all day" state — always shows one real time-of-day period, same as Day
 
 ## [3.2.15] - 2026-08-03
 
