@@ -299,6 +299,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <div>
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
+                <button onClick={() => setPeriod('all')} className={compactOptBtn(period === 'all')}>
+                  {PERIOD_LABELS.all}
+                </button>
                 {PERIOD_KEYS.map(p => (
                   <button key={p} onClick={() => setPeriod(period === p ? 'all' : p)} className={compactOptBtn(period === p)}>
                     {PERIOD_LABELS[p]}
@@ -371,12 +374,19 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
       {/* Period */}
       <div className="relative hidden lg:block">
-        <button onClick={() => toggle('period')} className={chipClass(period !== 'all')}>
+        <button onClick={() => toggle('period')} className={chipClass(true)}>
           Time
-          <Dot show={period !== 'all'} />
+          <Dot show={true} />
         </button>
         {openChip === 'period' && (
           <div className={`${PANEL} w-36`}>
+            <button
+              onClick={() => { setPeriod('all'); setOpenChip(null); }}
+              className={`${rowBtn(period === 'all')} flex items-center justify-between gap-3`}
+            >
+              <span>{PERIOD_LABELS.all}</span>
+              <span className="text-[9px] text-[var(--text-dim)] shrink-0">Whole day</span>
+            </button>
             {PERIOD_KEYS.map((p) => (
               <button
                 key={p}
