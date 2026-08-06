@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed NJ Transit branch labels showing the raw "Exact Fare" fare instruction
 - Route cards now show the longest service gap when a period's median frequency is uneven (#281)
 - Fixed Visalia routes losing their selection when switching between weekday and weekend schedules (#302)
 - Fixed GCRTA route 51-51A showing a false 4-minute midday frequency (#337)
