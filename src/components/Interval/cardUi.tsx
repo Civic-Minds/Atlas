@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Flag, Radio } from 'lucide-react';
+import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, PANEL_ENTER_LEFT } from '../../styles';
@@ -12,17 +12,161 @@ export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading
 export const CARD_LIST_ROUTE = 'text-[11px] font-bold text-[var(--text-primary)] leading-snug';
 export const CARD_SECTION = 'text-[9px] font-black uppercase tracking-wider text-[var(--text-dim)]';
 
+const REPORT_REASONS = [
+  'Route or agency is missing',
+  'Route or branch is incorrectly combined',
+  'Route name, number, destination, or direction is wrong',
+  'Frequency is wrong',
+  'Schedule, day, or time-period service is wrong',
+  'Route line is missing or follows the wrong path',
+  'Stop is missing, misplaced, or assigned incorrectly',
+  'Filter, search, or route selection is wrong',
+  'Live vehicle information is missing or wrong',
+  'Route data is stale',
+] as const;
+
+const FREQUENCY_REASONS = [
+  'Too frequent',
+  'Not frequent enough',
+  'Assigned to the wrong branch or line',
+  'Shown in the wrong time period',
+  'Does not match the current schedule',
+] as const;
+
 export function CardReportButton({ title, details }: { title: string; details: string }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const dialogTitleId = React.useId();
+  const [selectedReasons, setSelectedReasons] = React.useState<string[]>([]);
+  const [frequencyReasons, setFrequencyReasons] = React.useState<string[]>([]);
+  const [description, setDescription] = React.useState('');
+  const [validationError, setValidationError] = React.useState('');
+
+  const reset = () => {
+    setIsOpen(false);
+    setSelectedReasons([]);
+    setFrequencyReasons([]);
+    setDescription('');
+    setValidationError('');
+  };
+
+  const toggleReason = (reason: string, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    setter(current => current.includes(reason) ? current.filter(item => item !== reason) : [...current, reason]);
+  };
+
+  const hasFrequencyReason = selectedReasons.includes('Frequency is wrong');
+
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (hasFrequencyReason && frequencyReasons.length === 0) {
+      setValidationError('Select at least one frequency detail.');
+      return;
+    }
+    if (!description.trim()) {
+      setValidationError('Describe what is wrong.');
+      return;
+    }
+    openAtlasIssueReport(title, details, {
+      reasons: selectedReasons,
+      frequencyReasons: hasFrequencyReason ? frequencyReasons : [],
+      description,
+    });
+    reset();
+  };
+
   return (
-    <button
-      type="button"
-      onClick={() => openAtlasIssueReport(title, details)}
-      aria-label="Report a problem with this card"
-      title="Report a problem with this card"
-      className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
-    >
-      <Flag className="w-3.5 h-3.5" />
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Report a problem with this card"
+        title="Report a problem with this card"
+        className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+      >
+        <Flag className="w-3.5 h-3.5" />
+      </button>
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-[1600] flex items-center justify-center bg-black/40 p-4"
+          onMouseDown={event => { if (event.target === event.currentTarget) reset(); }}
+        >
+          <form
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={dialogTitleId}
+            onSubmit={submit}
+            onMouseDown={event => event.stopPropagation()}
+            className="w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl"
+          >
+            <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border-primary)]">
+              <div>
+                <h2 id={dialogTitleId} className="text-sm font-black text-[var(--text-primary)]">Report a problem</h2>
+                <p className="text-[10px] font-bold text-[var(--text-dim)] mt-0.5">Select all that apply (optional).</p>
+              </div>
+              <button type="button" onClick={reset} aria-label="Close report form" className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)]">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="px-5 py-4 space-y-4">
+              <fieldset className="space-y-1.5">
+                <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">What is wrong?</legend>
+                {REPORT_REASONS.map(reason => (
+                  <label key={reason} className="flex items-start gap-2 px-2.5 py-2 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedReasons.includes(reason)}
+                      onChange={() => {
+                        setValidationError('');
+                        if (reason === 'Frequency is wrong' && hasFrequencyReason) setFrequencyReasons([]);
+                        toggleReason(reason, setSelectedReasons);
+                      }}
+                      className="mt-0.5 accent-[var(--accent)]"
+                    />
+                    <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
+                  </label>
+                ))}
+              </fieldset>
+
+              {hasFrequencyReason && (
+                <fieldset className="space-y-1.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
+                  <legend className="px-1 text-[10px] font-black text-[var(--text-muted)]">Frequency details</legend>
+                  {FREQUENCY_REASONS.map(reason => (
+                    <label key={reason} className="flex items-start gap-2 px-1.5 py-1.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={frequencyReasons.includes(reason)}
+                        onChange={() => { setValidationError(''); toggleReason(reason, setFrequencyReasons); }}
+                        className="mt-0.5 accent-[var(--accent)]"
+                      />
+                      <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
+                    </label>
+                  ))}
+                </fieldset>
+              )}
+
+              <label className="block">
+                <span className="text-[10px] font-black text-[var(--text-muted)]">What’s wrong? <span className="text-[var(--accent)]">Required</span></span>
+                <textarea
+                  value={description}
+                  onChange={event => { setDescription(event.target.value); setValidationError(''); }}
+                  required
+                  rows={4}
+                  placeholder="Describe what you saw and what you expected."
+                  className="mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]"
+                />
+              </label>
+              {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
+            </div>
+
+            <div className="flex justify-end gap-2 px-5 pb-4">
+              <button type="button" onClick={reset} className="px-3 py-2 rounded-lg text-[11px] font-black text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]">Cancel</button>
+              <button type="submit" className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-[11px] font-black hover:opacity-90">Open GitHub report</button>
+            </div>
+          </form>
+        </div>
+      )}
+    </>
   );
 }
 
