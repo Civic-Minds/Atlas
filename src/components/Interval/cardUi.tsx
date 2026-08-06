@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
-import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT } from '../../styles';
+import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { openAtlasIssueReport } from '../../utils/reportIssue';
 import { CARD_CLICK_TO_FLAG_ENABLED } from '../../../shared/config';
 
@@ -35,6 +35,27 @@ const FREQUENCY_REASONS = [
   'Does not match the current schedule',
 ] as const;
 
+const REPORT_REASON_LABELS: Record<string, string> = {
+  'Route or agency is missing': 'The route or agency is missing',
+  'Route or branch is incorrectly combined': 'The route or branch is combined incorrectly',
+  'Route name, number, destination, or direction is wrong': 'The route name, number, destination, or direction is wrong',
+  'Frequency is wrong': 'The frequency is wrong',
+  'Schedule, day, or time-period service is wrong': 'The schedule, day, or time-period service is wrong',
+  'Route line is missing or follows the wrong path': 'The route line is missing or follows the wrong path',
+  'Stop is missing, misplaced, or assigned incorrectly': 'The stop is missing, misplaced, or assigned incorrectly',
+  'Filter, search, or route selection is wrong': 'The map, filter, search, or route selection is wrong',
+  'Live vehicle information is missing or wrong': 'The live vehicle information is missing or wrong',
+  'Route data is stale': 'The route data is stale',
+};
+
+const FREQUENCY_REASON_LABELS: Record<string, string> = {
+  'Too frequent': 'The route is too frequent',
+  'Not frequent enough': 'The route is not frequent enough',
+  'Assigned to the wrong branch or line': 'The frequency is assigned to the wrong branch or line',
+  'Shown in the wrong time period': 'The frequency is shown in the wrong time period',
+  'Does not match the current schedule': 'The frequency does not match the current schedule',
+};
+
 const REPORT_CATEGORIES = [
   {
     key: 'route',
@@ -58,7 +79,7 @@ const REPORT_CATEGORIES = [
   },
   {
     key: 'filter',
-    label: 'Map or filter',
+    label: 'Map, filter, or search',
     description: 'Search, filter, or route selection',
     reasons: ['Filter, search, or route selection is wrong'],
   },
@@ -93,28 +114,29 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const [validationError, setValidationError] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState<ReportCategoryKey | null>(null);
   const reportButtonRef = React.useRef<HTMLButtonElement>(null);
-  const [reportCardPosition, setReportCardPosition] = React.useState<{ top: number; left: number } | null>(null);
+  const [reportCardPosition, setReportCardPosition] = React.useState<{ top: number; left: number; width: number } | null>(null);
 
   const updateReportCardPosition = React.useCallback(() => {
     const button = reportButtonRef.current;
     if (!button || typeof window === 'undefined') return;
     const anchor = button.closest<HTMLElement>('[data-report-anchor]') ?? button;
     const rect = anchor.getBoundingClientRect();
-    const cardWidth = 384;
     const edge = 16;
+    const cardWidth = Math.min(rect.width, window.innerWidth - edge * 2);
     if (window.innerWidth < 640) {
-      setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left: edge });
+      setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left: edge, width: cardWidth });
       return;
     }
     const rightPosition = rect.right + 12;
     const left = rightPosition + cardWidth <= window.innerWidth - edge
       ? rightPosition
       : Math.max(edge, rect.left - cardWidth - 12);
-    setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left });
+    setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left, width: cardWidth });
   }, []);
 
   const openReport = () => {
     setIsOpen(true);
+    if (availableCategories.length === 1) setSelectedCategory(availableCategories[0].key);
     requestAnimationFrame(updateReportCardPosition);
     window.dispatchEvent(new CustomEvent(REPORT_MODE_EVENT, { detail: { reportRef: ref, active: true } }));
   };
@@ -166,6 +188,13 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const selectedCategoryReasons = selectedCategoryDetails?.reasons.filter(reason =>
     reportReasons.includes(reason as (typeof REPORT_REASONS)[number]),
   ) ?? [];
+  const selectedCategoryQuestion = selectedCategory === 'route'
+    ? 'What is wrong with this route?'
+    : selectedCategory === 'stop'
+      ? 'What is wrong with this stop?'
+      : selectedCategory === 'filter'
+        ? 'What is wrong with the map, filter, or search?'
+        : 'What is wrong with the live vehicle information?';
   const copiesDiagnostics = details.includes('Generated route metrics from the loaded artifact:')
     || details.includes('Generated route metrics (loaded artifact):');
 
@@ -211,10 +240,14 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             aria-labelledby={dialogTitleId}
             onSubmit={submit}
             onMouseDown={event => event.stopPropagation()}
-            className={`pointer-events-auto absolute w-[min(24rem,calc(100vw-2rem))] max-h-[calc(100vh-2rem)] overflow-y-auto ${FLOATING_CARD}`}
-            style={{ top: reportCardPosition?.top ?? 16, left: reportCardPosition?.left ?? 16 }}
+            className={`pointer-events-auto absolute ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-2rem)] overflow-y-auto ${FLOATING_CARD}`}
+            style={{
+              top: reportCardPosition?.top ?? 16,
+              left: reportCardPosition?.left ?? 16,
+              ...(reportCardPosition ? { width: `${reportCardPosition.width}px` } : {}),
+            }}
           >
-            <div className="flex items-center justify-between px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)]">
+            <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
@@ -224,7 +257,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               </button>
             </div>
 
-            <div className="px-4 py-3 space-y-3">
+            <div className="px-4 py-4 space-y-3">
               {!selectedCategory ? (
                 <fieldset>
                   <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">I have an issue with a…</legend>
@@ -245,7 +278,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               ) : (
                 <fieldset>
                   <div className="flex items-center justify-between mb-2">
-                    <legend className="text-[10px] font-black text-[var(--text-muted)]">What is wrong with this {selectedCategoryDetails?.label.toLowerCase()}?</legend>
+                    <legend className="text-[10px] font-black text-[var(--text-muted)]">{selectedCategoryQuestion}</legend>
                     <button
                       type="button"
                       onClick={() => { setValidationError(''); setSelectedCategory(null); }}
@@ -267,7 +300,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                           }}
                           className="mt-0.5 accent-[var(--accent)]"
                         />
-                        <span className={CARD_LIST_ROUTE}>{reason}</span>
+                        <span className={CARD_LIST_ROUTE}>{REPORT_REASON_LABELS[reason] ?? reason}</span>
                       </label>
                     ))}
                   </div>
@@ -285,14 +318,14 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                         onChange={() => { setValidationError(''); toggleReason(reason, setFrequencyReasons); }}
                         className="mt-0.5 accent-[var(--accent)]"
                       />
-                      <span className={CARD_LIST_ROUTE}>{reason}</span>
+                      <span className={CARD_LIST_ROUTE}>{FREQUENCY_REASON_LABELS[reason] ?? reason}</span>
                     </label>
                   ))}
                 </fieldset>
               )}
 
               {selectedCategory && <label className="block">
-                <span className="text-[10px] font-black text-[var(--text-muted)]">What’s wrong? {selectedReasons.length === 0 && <span className="text-[var(--accent)]">Required</span>}</span>
+                <span className="text-[10px] font-black text-[var(--text-muted)]">Additional details {selectedReasons.length === 0 && <span className="text-[var(--accent)]">(required if no reason is selected)</span>}</span>
                 <textarea
                   value={description}
                   onChange={event => { setDescription(event.target.value); setValidationError(''); }}
@@ -309,9 +342,9 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
             </div>
 
-            <div className="flex justify-end gap-2 px-4 pb-3">
-              <button type="button" onClick={reset} className="px-3 py-2 rounded-lg text-[11px] font-black text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]">Cancel</button>
-              {selectedCategory && <button type="submit" className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-[11px] font-black hover:opacity-90">Open GitHub report</button>}
+            <div className="flex justify-end gap-2 px-4 pb-4">
+              <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-[10px] font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">Cancel</button>
+              {selectedCategory && <button type="submit" className="h-8 px-3 rounded-lg bg-[var(--accent)] text-[10px] font-black text-white hover:opacity-90 transition-opacity">Open GitHub report</button>}
             </div>
           </form>
         </div>,
