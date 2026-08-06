@@ -15,6 +15,8 @@ import {
   SidebarCardList,
   SidebarCardShell,
   CardReportButton,
+  FlaggableValue,
+  type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
@@ -141,12 +143,19 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
+  const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
     group.span.length > 0,
   );
+  const unevenPeriodMaxGap = period !== 'all'
+    ? Math.max(0, ...directionGroups
+        .flatMap(group => group.realTier)
+        .filter(direction => direction.headwayByPeriodSustained?.[period] === false)
+        .map(direction => direction.maxGapByPeriod?.[period] ?? 0))
+    : 0;
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
   const primaryMultiBranch = directionGroups
@@ -229,6 +238,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       `  Raw headway: ${direction.headway ?? 'none'} min`,
       `  Displayed headway: ${routeCardDisplayHeadway(direction, period) ?? 'none'} min`,
       `  Headway by period: ${formatMetricMap(direction.headwayByPeriod)}`,
+      `  Longest gap by period: ${formatMetricMap(direction.maxGapByPeriod)}`,
+      `  Sustained by period: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
       `  Hourly headways for ${period}: ${formatMetricMap(selectedPeriodHourlyHeadways)}`,
       `  Minimum stop headway by period: ${formatMetricMap(direction.minStopHeadwayByPeriod)}`,
       `  Headsign minimum stop headway by period: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod)}`,
@@ -268,8 +279,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             />
           </div>
           <CardReportButton
+            ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             details={reportDetails}
+            showLiveReason={!!liveRouteInfo && liveStatus !== 'noData'}
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -345,6 +359,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </p>
         </div>
       )}
+      {selectedPeriod && unevenPeriodMaxGap > 0 && (
+        <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
+          <p className="text-[10px] font-black text-[var(--text-primary)]">
+            Service is uneven during {selectedPeriod.label}.
+          </p>
+          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
+            Longest gap: {unevenPeriodMaxGap} minutes.
+          </p>
+        </div>
+      )}
       <SidebarCardList>
         {selectedRouteOutOfFilter && (
           <div className={CARD_NOTICE_FOOTER}>
@@ -411,15 +435,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
                       return (
-                        <CardDirectionRow
-                          key={`r${i}`}
-                          label={label}
-                          headway={displayH ?? undefined}
-                          trunkHeadway={trunkHw}
-                          allowTrunkRange={multiBranchGroup(group)}
-                          dimmed={dimmed}
-                          {...branchHoverProps(group.dirId, d.headsign)}
-                        />
+                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                          <CardDirectionRow
+                            label={label}
+                            headway={displayH ?? undefined}
+                            trunkHeadway={trunkHw}
+                            allowTrunkRange={multiBranchGroup(group)}
+                            dimmed={dimmed}
+                            {...branchHoverProps(group.dirId, d.headsign)}
+                          />
+                        </FlaggableValue>
                       );
                     })();
                   })}

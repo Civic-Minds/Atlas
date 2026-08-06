@@ -1,9 +1,11 @@
 import React from 'react';
-import { ArrowLeft, Flag, Radio } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, PANEL_ENTER_LEFT } from '../../styles';
 import { openAtlasIssueReport } from '../../utils/reportIssue';
+import { CARD_CLICK_TO_FLAG_ENABLED } from '../../../shared/config';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -12,16 +14,207 @@ export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading
 export const CARD_LIST_ROUTE = 'text-[11px] font-bold text-[var(--text-primary)] leading-snug';
 export const CARD_SECTION = 'text-[9px] font-black uppercase tracking-wider text-[var(--text-dim)]';
 
-export function CardReportButton({ title, details }: { title: string; details: string }) {
+const REPORT_REASONS = [
+  'Route or agency is missing',
+  'Route or branch is incorrectly combined',
+  'Route name, number, destination, or direction is wrong',
+  'Frequency is wrong',
+  'Schedule, day, or time-period service is wrong',
+  'Route line is missing or follows the wrong path',
+  'Stop is missing, misplaced, or assigned incorrectly',
+  'Filter, search, or route selection is wrong',
+  'Live vehicle information is missing or wrong',
+  'Route data is stale',
+] as const;
+
+const FREQUENCY_REASONS = [
+  'Too frequent',
+  'Not frequent enough',
+  'Assigned to the wrong branch or line',
+  'Shown in the wrong time period',
+  'Does not match the current schedule',
+] as const;
+
+export interface CardReportButtonHandle {
+  /** Opens the report dialog with the given reason pre-checked (used by FlaggableValue). */
+  openWithReason: (reason: string) => void;
+}
+
+export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: string[] }>(
+  function CardReportButton({ title, details, showLiveReason = false, excludeReasons = [] }, ref) {
+  const reportReasons = REPORT_REASONS.filter(reason => {
+    if (reason === 'Live vehicle information is missing or wrong') return showLiveReason;
+    return !excludeReasons.includes(reason);
+  });
+  const [isOpen, setIsOpen] = React.useState(false);
+  const dialogTitleId = React.useId();
+  const [selectedReasons, setSelectedReasons] = React.useState<string[]>([]);
+  const [frequencyReasons, setFrequencyReasons] = React.useState<string[]>([]);
+  const [description, setDescription] = React.useState('');
+  const [validationError, setValidationError] = React.useState('');
+
+  React.useImperativeHandle(ref, () => ({
+    openWithReason: (reason: string) => {
+      if (reportReasons.includes(reason as (typeof REPORT_REASONS)[number])) {
+        setSelectedReasons(current => current.includes(reason) ? current : [...current, reason]);
+      }
+      setIsOpen(true);
+    },
+  }), [reportReasons]);
+
+  const reset = () => {
+    setIsOpen(false);
+    setSelectedReasons([]);
+    setFrequencyReasons([]);
+    setDescription('');
+    setValidationError('');
+  };
+
+  const toggleReason = (reason: string, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    setter(current => current.includes(reason) ? current.filter(item => item !== reason) : [...current, reason]);
+  };
+
+  const hasFrequencyReason = selectedReasons.includes('Frequency is wrong');
+
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (hasFrequencyReason && frequencyReasons.length === 0) {
+      setValidationError('Select at least one frequency detail.');
+      return;
+    }
+    if (selectedReasons.length === 0 && !description.trim()) {
+      setValidationError('Select a reason or describe what is wrong.');
+      return;
+    }
+    openAtlasIssueReport(title, details, {
+      reasons: selectedReasons,
+      frequencyReasons: hasFrequencyReason ? frequencyReasons : [],
+      description,
+    });
+    reset();
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Report a problem with this card"
+        title="Report a problem with this card"
+        className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+      >
+        <Flag className="w-3.5 h-3.5" />
+      </button>
+
+      {isOpen && createPortal(
+        <div
+          className="fixed inset-0 z-[1600] flex items-center justify-center bg-black/40 p-4"
+          onMouseDown={event => { if (event.target === event.currentTarget) reset(); }}
+        >
+          <form
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={dialogTitleId}
+            onSubmit={submit}
+            onMouseDown={event => event.stopPropagation()}
+            className="w-full max-w-xl max-h-[85vh] overflow-y-auto rounded-2xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl"
+          >
+            <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border-primary)]">
+              <div>
+                <h2 id={dialogTitleId} className="text-sm font-black text-[var(--text-primary)]">Report a problem</h2>
+                <p className="text-[10px] font-bold text-[var(--text-dim)] mt-0.5">Select all that apply (optional).</p>
+              </div>
+              <button type="button" onClick={reset} aria-label="Close report form" className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)]">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="px-5 py-4 space-y-4">
+              <fieldset>
+                <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">What is wrong?</legend>
+                <div className="grid grid-cols-2 gap-x-1 gap-y-0">
+                {reportReasons.map(reason => (
+                  <label key={reason} className="flex items-start gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedReasons.includes(reason)}
+                      onChange={() => {
+                        setValidationError('');
+                        if (reason === 'Frequency is wrong' && hasFrequencyReason) setFrequencyReasons([]);
+                        toggleReason(reason, setSelectedReasons);
+                      }}
+                      className="mt-0.5 accent-[var(--accent)]"
+                    />
+                    <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
+                  </label>
+                ))}
+                </div>
+              </fieldset>
+
+              {hasFrequencyReason && (
+                <fieldset className="space-y-1.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
+                  <legend className="px-1 text-[10px] font-black text-[var(--text-muted)]">Frequency details</legend>
+                  {FREQUENCY_REASONS.map(reason => (
+                    <label key={reason} className="flex items-start gap-2 px-1.5 py-1.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={frequencyReasons.includes(reason)}
+                        onChange={() => { setValidationError(''); toggleReason(reason, setFrequencyReasons); }}
+                        className="mt-0.5 accent-[var(--accent)]"
+                      />
+                      <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
+                    </label>
+                  ))}
+                </fieldset>
+              )}
+
+              <label className="block">
+                <span className="text-[10px] font-black text-[var(--text-muted)]">What’s wrong? {selectedReasons.length === 0 && <span className="text-[var(--accent)]">Required</span>}</span>
+                <textarea
+                  value={description}
+                  onChange={event => { setDescription(event.target.value); setValidationError(''); }}
+                  rows={4}
+                  placeholder="Describe what you saw and what you expected."
+                  className="mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]"
+                />
+              </label>
+              {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
+            </div>
+
+            <div className="flex justify-end gap-2 px-5 pb-4">
+              <button type="button" onClick={reset} className="px-3 py-2 rounded-lg text-[11px] font-black text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]">Cancel</button>
+              <button type="submit" className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-[11px] font-black hover:opacity-90">Open GitHub report</button>
+            </div>
+          </form>
+        </div>,
+        document.body
+      )}
+    </>
+  );
+});
+
+/**
+ * Wraps a card value that can be clicked directly to report a problem with it — no typing
+ * required, the reason is pre-checked. Beta-gated (CARD_CLICK_TO_FLAG_ENABLED): new, unproven
+ * interaction, renders children unwrapped everywhere else.
+ */
+export function FlaggableValue({ reason, reportRef, children, className = 'inline-flex items-center gap-1' }: {
+  reason: string;
+  reportRef: React.RefObject<CardReportButtonHandle | null>;
+  children: React.ReactNode;
+  /** Full control over layout — replaces the default `inline-flex items-center gap-1`, doesn't merge with it. */
+  className?: string;
+}) {
+  if (!CARD_CLICK_TO_FLAG_ENABLED) return <>{children}</>;
   return (
     <button
       type="button"
-      onClick={() => openAtlasIssueReport(title, details)}
-      aria-label="Report a problem with this card"
-      title="Report a problem with this card"
-      className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+      onClick={() => reportRef.current?.openWithReason(reason)}
+      title={`Flag: ${reason}`}
+      className={`group/flag rounded hover:bg-[var(--bg-btn-hover)] transition-colors ${className}`}
     >
-      <Flag className="w-3.5 h-3.5" />
+      {children}
+      <Flag className="w-2.5 h-2.5 text-[var(--text-dim)] opacity-0 group-hover/flag:opacity-100 group-hover/flag:text-[var(--accent)] transition-opacity shrink-0" />
     </button>
   );
 }

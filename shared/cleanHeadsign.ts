@@ -24,6 +24,10 @@ export function cleanHeadsign(
 
   if (isMiwayExpressHeadsign(h)) return '';
 
+  // NJ Transit appends fare instructions to trip headsigns (e.g. "-Exact Fare").
+  // This is not part of the destination and should not appear in route cards.
+  h = h.replace(/\s*-\s*Exact Fare\s*$/i, '');
+
   // REM (Montreal): branch prefixes like "A3 - Anse-à-l'Orme"
   h = h.replace(/^A[0-9]+\s*-\s*/i, '');
 

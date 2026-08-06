@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -332,5 +332,21 @@ describe('hasSustainedFrequentService', () => {
   it('respects custom window and gap parameters', () => {
     expect(hasSustainedFrequentService([420, 430, 440], 420, 440, 10)).toBe(true);
     expect(hasSustainedFrequentService([420, 440], 420, 440, 10)).toBe(false);
+  });
+});
+
+describe('computePeriodMaxGaps (#281)', () => {
+  it('exposes the dominant gap without changing the existing median', () => {
+    const times = [
+      420, 450, 480, 510, 540, 855, 885, 915, 945, 975, 1005, 1035, 1065, 1095, 1125,
+    ];
+    expect(computePeriodHeadways(times).midday).toBe(173);
+    expect(computePeriodMaxGaps(times).midday).toBe(315);
+  });
+
+  it('keeps a gap that crosses a period boundary instead of dropping it', () => {
+    const result = computePeriodMaxGaps([840, 915, 945, 975]);
+    expect(result.midday).toBe(60); // 8:00–9:15, clipped to the 9:00–15:00 window
+    expect(result.pmPeak).toBe(30); // the same gap contributes 15 minutes after 9:00, below 30
   });
 });

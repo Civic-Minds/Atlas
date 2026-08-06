@@ -55,4 +55,16 @@ describe('findVariantFamily', () => {
     ];
     expect(findVariantFamily(features, '11', 'midday', 'goraleigh')).toBeNull();
   });
+
+  // #335/#336: 7A and 7B are clockwise/counterclockwise around the same loop (confirmed
+  // against the agency's GTFS -- only 2 shared stops total, both at the terminal turning
+  // loop), not corridor branches. Combining their headways produced a bogus "~8 min" figure
+  // no rider ever experiences, since a single stop is only ever served by one of the two.
+  it('does not group Halifax Transit 7A/7B (#335, #336)', () => {
+    const features = [
+      feature('7A', '7A', 15),
+      feature('7B', '7B', 15),
+    ];
+    expect(findVariantFamily(features, '7A', 'midday', 'halifax')).toBeNull();
+  });
 });

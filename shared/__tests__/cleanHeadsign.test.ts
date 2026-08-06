@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { cleanHeadsign, getRouteLabel, isMiwayExpressHeadsign } from '../cleanHeadsign';
 
 describe('cleanHeadsign', () => {
+  it('removes NJ Transit fare instructions from destination headsigns', () => {
+    expect(cleanHeadsign('31 VAILSBURG S ORANGE-Exact Fare', '31', null)).toBe('VAILSBURG S ORANGE');
+    expect(cleanHeadsign('31 VAILSBURG DOVER ST LOOP-Exact Fare', '31', null)).toBe('VAILSBURG DOVER ST LOOP');
+  });
+
   it('keeps TTC station destination when it shares the route long name', () => {
     const hs = 'South - 68 Warden towards Warden Station';
     expect(cleanHeadsign(hs, '68', 'Warden')).toBe('Warden Station');

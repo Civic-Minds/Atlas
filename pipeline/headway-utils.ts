@@ -1,4 +1,4 @@
-import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
+import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type PeriodKey } from '../shared/config.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
 
 const PERIODS = Object.fromEntries(
@@ -308,15 +308,40 @@ export function hasSustainedFrequentService(
   return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes);
 }
 
-// Boundary-crossing gaps are still dropped here (issue #281, open) -- computePeriodSustained
-// below only adds a parallel `sustained` annotation on top of today's existing per-period gap
-// collection. It does NOT fix the boundary undercounting; it flags a different, adjacent risk
-// (a real internal void hiding behind a single clean-looking median) that surfaced while
-// investigating #281.
+// The median deliberately stays based on departures inside the period. A separate max-gap value
+// below captures the part of every departure gap that overlaps the period, including boundary-
+// crossing gaps, without letting one large gap change the existing median.
 export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
     result[key] = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3);
+  }
+  return result;
+}
+
+/**
+ * Return the longest wait represented inside each period.
+ *
+ * A gap crossing a period boundary is clipped to the period window. For example, a gap from
+ * 8:00 to 10:00 contributes 60 minutes to the 9:00–15:00 period, because that is the portion of
+ * the wait inside the period. This keeps the value useful to riders while ensuring the gap is not
+ * silently dropped from both adjacent periods (#281).
+ */
+export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodMaxGap {
+  const result: HeadwayByPeriodMaxGap = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
+      .sort((a, b) => a - b);
+    let maxGap: number | null = null;
+    for (let i = 1; i < times.length; i++) {
+      const overlapStart = Math.max(start, times[i - 1]);
+      const overlapEnd = Math.min(end, times[i]);
+      if (overlapEnd > overlapStart) {
+        const gap = overlapEnd - overlapStart;
+        maxGap = maxGap == null ? gap : Math.max(maxGap, gap);
+      }
+    }
+    result[key] = maxGap;
   }
   return result;
 }

@@ -380,8 +380,25 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
             if (dateStr > maxDate) maxDate = dateStr;
         }
 
-        // A day is "active" if it appears in at least 20% of the weeks covered, or at least 2 times
-        const totalWeeks = Math.max(1, dates.length / 7);
+        // A day is "active" if it appears in at least 20% of the weeks covered, or at least 2 times.
+        // "Weeks covered" must come from the actual date span (maxDate - minDate), not from
+        // dates.length / 7: a service_id with a long real span but only a couple of stray
+        // dates on another day-of-week (e.g. a Sunday-schedule service_id whose calendar_dates
+        // also list two Monday and two Thursday holiday-observed dates, spanning nearly a full
+        // year) previously computed totalWeeks from its total occurrence count, which for a
+        // sparse holiday-exception day-of-week stayed low enough to pin the threshold at the
+        // floor of 2 -- exactly matching those 2 holiday dates, so Monday/Thursday got flagged
+        // as regular weekly service. That promotes it out of calendar_dates.txt into a
+        // synthesized calendar.txt entry, which Step 1 of getActiveServiceIds trusts
+        // unconditionally with no occurrence-count check -- bypassing Step 2's existing
+        // anti-holiday-contamination heuristic (>=4 occurrences, or >=3 with exact 7-day gaps)
+        // entirely. Result: every Monday and Thursday pooled that service_id's low-frequency
+        // Sunday trips in with the real weekday trips (Suffolk County Transit route 66: real
+        // ~30 min weekday headway computed as 16/22 min, #338).
+        const my = parseInt(minDate.substring(0, 4)), mm = parseInt(minDate.substring(4, 6)) - 1, md = parseInt(minDate.substring(6, 8));
+        const xy = parseInt(maxDate.substring(0, 4)), xm = parseInt(maxDate.substring(4, 6)) - 1, xd = parseInt(maxDate.substring(6, 8));
+        const spanDays = (new Date(xy, xm, xd).getTime() - new Date(my, mm, md).getTime()) / 86400000;
+        const totalWeeks = Math.max(1, spanDays / 7);
         const threshold = Math.max(2, totalWeeks * 0.2);
 
         const entry: GtfsCalendar = {

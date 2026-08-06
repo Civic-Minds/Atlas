@@ -448,6 +448,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           <CardReportButton
             title={`Agency issue: ${agency.name}`}
             details={`**Agency:** ${agency.name}\n**Agency slug:** ${agency.slug}\n**Day:** ${day}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
           />
         </div>
       </div>

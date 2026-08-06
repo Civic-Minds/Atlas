@@ -11,6 +11,8 @@ import {
   SidebarCardShell,
   CardReportButton,
   CardBackButton,
+  FlaggableValue,
+  type CardReportButtonHandle,
 } from '../cardUi';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import StopRouteGroup, { stopRouteBestHeadway } from './StopRouteGroup';
@@ -74,6 +76,7 @@ export const StopCard: React.FC<StopCardProps> = ({
   onDirectFromStop,
   liveStop,
 }) => {
+  const reportRef = React.useRef<CardReportButtonHandle>(null);
   const openRoute = (rKey: string) => {
     setSelectedStop(null);
     setSelectedRoute(rKey);
@@ -96,11 +99,13 @@ export const StopCard: React.FC<StopCardProps> = ({
           <CardBackButton onClick={() => setSelectedStop(null)} label="Back to map" />
           <div className="flex-1 min-w-0">
             {stopAgencies.length === 1 ? (
-              <SidebarCardHeader
-                eyebrow={stopAgencies[0]}
-                title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
-                titleClamp
-              />
+              <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+                <SidebarCardHeader
+                  eyebrow={stopAgencies[0]}
+                  title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                  titleClamp
+                />
+              </FlaggableValue>
             ) : (
               <>
                 <AgencyFilterChips
@@ -108,16 +113,21 @@ export const StopCard: React.FC<StopCardProps> = ({
                   selected={stopAgencyFilter}
                   onSelect={setStopAgencyFilter}
                 />
-                <SidebarCardHeader
-                  title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
-                  titleClamp
-                />
+                <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+                  <SidebarCardHeader
+                    title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
+                    titleClamp
+                  />
+                </FlaggableValue>
               </>
             )}
           </div>
           <CardReportButton
+            ref={reportRef}
             title={`Stop issue: ${titleCase(currentStop.stopName)}`}
             details={`**Stop:** ${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}\n**Agencies:** ${stopAgencies.join(', ') || 'Unknown'}\n**Period:** ${period}\n**Atlas URL:** ${currentAtlasUrl()}`}
+            showLiveReason={!!liveStop}
+            excludeReasons={['Route line is missing or follows the wrong path']}
           />
         </div>
       </SidebarCardHeaderBlock>
