@@ -58,7 +58,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const updateReportCardPosition = React.useCallback(() => {
     const button = reportButtonRef.current;
     if (!button || typeof window === 'undefined') return;
-    const rect = button.getBoundingClientRect();
+    const anchor = button.closest<HTMLElement>('[data-report-anchor]') ?? button;
+    const rect = anchor.getBoundingClientRect();
     const cardWidth = 384;
     const edge = 16;
     if (window.innerWidth < 640) {

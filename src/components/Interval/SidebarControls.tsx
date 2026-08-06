@@ -966,6 +966,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       {(panelStop || panelRoute || hasSearchResults) && <div
         ref={scrollRef}
         onScroll={checkScroll}
+        data-report-anchor="true"
         className={`relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
       >
         {panelStop && (

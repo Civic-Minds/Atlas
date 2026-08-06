@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Report cards now align with the route or stop panel they open beside
 - Report forms now open as floating cards beside the route or stop panel instead of centered modals
 - Copied issue reports now label route diagnostics clearly so stop IDs and gap values are easier to interpret
 - Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
