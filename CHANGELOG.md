@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
+- Route selection now clears cleanly on partially filtered routes — MapLibre no longer rejects the dimming expression ([#340](https://github.com/Civic-Minds/Atlas/issues/340))
 
 ## [3.2.16] - 2026-08-06
 

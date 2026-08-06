@@ -282,7 +282,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const partialMatches = frequencySegmentOverlayRef.current.partialMatches;
     if (partialMatches.length > 0) {
       const partialMatch = buildPartialMatchFilterExpression(partialMatches);
-      map.setPaintProperty('routes-layer', 'line-opacity', ['case', partialMatch, 0.35, defaultOpacity]);
+      map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
     } else {
       map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
     }
@@ -1139,14 +1139,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         // this default state only: a selected/hovered/stop-focused route already gets its own
         // full-geometry-at-full-opacity treatment above by design (selecting a route bypasses
         // the frequency filter entirely), so this doesn't need to layer on top of those too.
-        const defaultOpacity = buildDefaultRouteLineOpacityExpression(headwayExpr) as any;
         if (frequencySegmentOverlay.partialMatches.length > 0) {
           const partialMatch = buildPartialMatchFilterExpression(frequencySegmentOverlay.partialMatches);
-          map.setPaintProperty('routes-layer', 'line-opacity', [
-            'case', partialMatch, 0.35, defaultOpacity,
-          ]);
+          map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
         } else {
-          map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
+          map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
         }
       }
 
