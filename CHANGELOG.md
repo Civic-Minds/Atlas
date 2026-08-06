@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed GCRTA route 51-51A showing a false 4-minute midday frequency (#337)
 - Live history now archives vehicle positions for TTC, Burlington, Hamilton, and STM
 - Patched a dependency vulnerability (react-router CSRF bypass in RSC mode)
 - Beta deployment's browser tab now reads "[Beta] Atlas by Civic Minds" instead of looking identical to production

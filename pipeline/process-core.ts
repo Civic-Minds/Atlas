@@ -31,6 +31,18 @@ export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 export type { GeoJsonFeature, StopEntry };
 
+/**
+ * Prefer departures from the feature's physical shape over a headsign-wide pool.
+ * A single displayed route can contain multiple patterns with the same headsign;
+ * pooling them at the terminal creates a false high-frequency result.
+ */
+export function selectTerminalDepartureTimes(
+  shapeTimes: number[] | undefined,
+  headsignTimes: number[] | undefined,
+): number[] | undefined {
+  return shapeTimes ?? headsignTimes;
+}
+
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
 ) as Record<string, { start: number; end: number }>;
@@ -619,11 +631,15 @@ export async function processGtfsBuffer(
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featHeadsign}`)
       : undefined;
     const headsignTerminalTimes = terminalStopId ? hsStopMap?.get(terminalStopId) : undefined;
-    const headsignTerminalPeriodHw = headsignTerminalTimes && headsignTerminalTimes.length > 0
-      ? computePeriodHeadways(headsignTerminalTimes)
+    const terminalScopedTimes = selectTerminalDepartureTimes(
+      terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
+      headsignTerminalTimes,
+    );
+    const headsignTerminalPeriodHw = terminalScopedTimes && terminalScopedTimes.length > 0
+      ? computePeriodHeadways(terminalScopedTimes)
       : undefined;
-    const headsignTerminalPeriodSustained = headsignTerminalTimes && headsignTerminalTimes.length > 0
-      ? computePeriodSustained(headsignTerminalTimes)
+    const headsignTerminalPeriodSustained = terminalScopedTimes && terminalScopedTimes.length > 0
+      ? computePeriodSustained(terminalScopedTimes)
       : undefined;
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
     const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
@@ -681,9 +697,9 @@ export async function processGtfsBuffer(
 
     // Hourly headways from terminal stop for the sparkline.
     const terminalHourHw = terminalStopId ? allStopHourHw[terminalStopId] : undefined;
-    const headsignTerminalHourHw = headsignTerminalTimes
+    const headsignTerminalHourHw = terminalScopedTimes
       ? Object.fromEntries(
-          SPARKLINE_HOURS.map(h => [h, adaptiveMedianHeadwayInWindow(headsignTerminalTimes, h * 60, 3)]),
+          SPARKLINE_HOURS.map(h => [h, adaptiveMedianHeadwayInWindow(terminalScopedTimes, h * 60, 3)]),
         ) as HeadwayByHour
       : undefined;
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
