@@ -15,6 +15,8 @@ import {
   SidebarCardList,
   SidebarCardShell,
   CardReportButton,
+  FlaggableValue,
+  type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
@@ -141,6 +143,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
+  const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
@@ -276,8 +279,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             />
           </div>
           <CardReportButton
+            ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${currentRoute.routeShortName ?? 'Unknown route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             details={reportDetails}
+            showLiveReason={!!liveRouteInfo && liveStatus !== 'noData'}
+            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -429,15 +435,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
                       return (
-                        <CardDirectionRow
-                          key={`r${i}`}
-                          label={label}
-                          headway={displayH ?? undefined}
-                          trunkHeadway={trunkHw}
-                          allowTrunkRange={multiBranchGroup(group)}
-                          dimmed={dimmed}
-                          {...branchHoverProps(group.dirId, d.headsign)}
-                        />
+                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                          <CardDirectionRow
+                            label={label}
+                            headway={displayH ?? undefined}
+                            trunkHeadway={trunkHw}
+                            allowTrunkRange={multiBranchGroup(group)}
+                            dimmed={dimmed}
+                            {...branchHoverProps(group.dirId, d.headsign)}
+                          />
+                        </FlaggableValue>
                       );
                     })();
                   })}

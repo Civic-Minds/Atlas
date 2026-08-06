@@ -5,6 +5,7 @@ import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, PANEL_ENTER_LEFT } from '../../styles';
 import { openAtlasIssueReport } from '../../utils/reportIssue';
+import { CARD_CLICK_TO_FLAG_ENABLED } from '../../../shared/config';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -34,13 +35,32 @@ const FREQUENCY_REASONS = [
   'Does not match the current schedule',
 ] as const;
 
-export function CardReportButton({ title, details }: { title: string; details: string }) {
+export interface CardReportButtonHandle {
+  /** Opens the report dialog with the given reason pre-checked (used by FlaggableValue). */
+  openWithReason: (reason: string) => void;
+}
+
+export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: string[] }>(
+  function CardReportButton({ title, details, showLiveReason = false, excludeReasons = [] }, ref) {
+  const reportReasons = REPORT_REASONS.filter(reason => {
+    if (reason === 'Live vehicle information is missing or wrong') return showLiveReason;
+    return !excludeReasons.includes(reason);
+  });
   const [isOpen, setIsOpen] = React.useState(false);
   const dialogTitleId = React.useId();
   const [selectedReasons, setSelectedReasons] = React.useState<string[]>([]);
   const [frequencyReasons, setFrequencyReasons] = React.useState<string[]>([]);
   const [description, setDescription] = React.useState('');
   const [validationError, setValidationError] = React.useState('');
+
+  React.useImperativeHandle(ref, () => ({
+    openWithReason: (reason: string) => {
+      if (reportReasons.includes(reason as (typeof REPORT_REASONS)[number])) {
+        setSelectedReasons(current => current.includes(reason) ? current : [...current, reason]);
+      }
+      setIsOpen(true);
+    },
+  }), [reportReasons]);
 
   const reset = () => {
     setIsOpen(false);
@@ -62,8 +82,8 @@ export function CardReportButton({ title, details }: { title: string; details: s
       setValidationError('Select at least one frequency detail.');
       return;
     }
-    if (!description.trim()) {
-      setValidationError('Describe what is wrong.');
+    if (selectedReasons.length === 0 && !description.trim()) {
+      setValidationError('Select a reason or describe what is wrong.');
       return;
     }
     openAtlasIssueReport(title, details, {
@@ -112,9 +132,9 @@ export function CardReportButton({ title, details }: { title: string; details: s
             <div className="px-5 py-4 space-y-4">
               <fieldset>
                 <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">What is wrong?</legend>
-                <div className="grid grid-cols-2 gap-1">
-                {REPORT_REASONS.map(reason => (
-                  <label key={reason} className="flex items-start gap-2 px-2.5 py-2 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                <div className="grid grid-cols-2 gap-x-1 gap-y-0">
+                {reportReasons.map(reason => (
+                  <label key={reason} className="flex items-start gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={selectedReasons.includes(reason)}
@@ -149,11 +169,10 @@ export function CardReportButton({ title, details }: { title: string; details: s
               )}
 
               <label className="block">
-                <span className="text-[10px] font-black text-[var(--text-muted)]">What’s wrong? <span className="text-[var(--accent)]">Required</span></span>
+                <span className="text-[10px] font-black text-[var(--text-muted)]">What’s wrong? {selectedReasons.length === 0 && <span className="text-[var(--accent)]">Required</span>}</span>
                 <textarea
                   value={description}
                   onChange={event => { setDescription(event.target.value); setValidationError(''); }}
-                  required
                   rows={4}
                   placeholder="Describe what you saw and what you expected."
                   className="mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]"
@@ -171,6 +190,32 @@ export function CardReportButton({ title, details }: { title: string; details: s
         document.body
       )}
     </>
+  );
+});
+
+/**
+ * Wraps a card value that can be clicked directly to report a problem with it — no typing
+ * required, the reason is pre-checked. Beta-gated (CARD_CLICK_TO_FLAG_ENABLED): new, unproven
+ * interaction, renders children unwrapped everywhere else.
+ */
+export function FlaggableValue({ reason, reportRef, children, className = 'inline-flex items-center gap-1' }: {
+  reason: string;
+  reportRef: React.RefObject<CardReportButtonHandle | null>;
+  children: React.ReactNode;
+  /** Full control over layout — replaces the default `inline-flex items-center gap-1`, doesn't merge with it. */
+  className?: string;
+}) {
+  if (!CARD_CLICK_TO_FLAG_ENABLED) return <>{children}</>;
+  return (
+    <button
+      type="button"
+      onClick={() => reportRef.current?.openWithReason(reason)}
+      title={`Flag: ${reason}`}
+      className={`group/flag rounded hover:bg-[var(--bg-btn-hover)] transition-colors ${className}`}
+    >
+      {children}
+      <Flag className="w-2.5 h-2.5 text-[var(--text-dim)] opacity-0 group-hover/flag:opacity-100 group-hover/flag:text-[var(--accent)] transition-opacity shrink-0" />
+    </button>
   );
 }
 

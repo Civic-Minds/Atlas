@@ -8,6 +8,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
 - Route selection now clears cleanly on partially filtered routes — MapLibre no longer rejects the dimming expression ([#340](https://github.com/Civic-Minds/Atlas/issues/340))
+- Report-a-problem no longer requires typing a description if a reason is already checked, and its reason list now only shows options relevant to what you're reporting from
+- Beta: click a value directly on a card (a frequency, a stop name) to report it, with the right reason pre-checked and no typing required
 
 ## [3.2.16] - 2026-08-06
 
