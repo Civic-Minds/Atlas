@@ -4,19 +4,19 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.16] - 2026-08-06
 
 - Fixed the map briefly showing wrong route visibility/opacity right after deselecting a route or closing its card
 - Route-card report buttons now collect structured reasons and a required problem description before opening GitHub
-- Fixed Suffolk County Transit showing badly wrong weekday frequencies feed-wide — holiday exception dates were being counted as regular weekly service (#338)
+- Fixed Suffolk County Transit showing badly wrong weekday frequencies feed-wide — holiday exception dates were being counted as regular weekly service ([#338](https://github.com/Civic-Minds/Atlas/issues/338))
 - Fixed NJ Transit branch labels showing the raw "Exact Fare" fare instruction
-- Route cards now show the longest service gap when a period's median frequency is uneven (#281)
-- Fixed Visalia routes losing their selection when switching between weekday and weekend schedules (#302)
-- Fixed GCRTA route 51-51A showing a false 4-minute midday frequency (#337)
+- Route cards now show the longest service gap when a period's median frequency is uneven ([#281](https://github.com/Civic-Minds/Atlas/issues/281))
+- Fixed Visalia routes losing their selection when switching between weekday and weekend schedules ([#302](https://github.com/Civic-Minds/Atlas/issues/302))
+- Fixed GCRTA route 51-51A showing a false 4-minute midday frequency ([#337](https://github.com/Civic-Minds/Atlas/issues/337))
 - Live history now archives vehicle positions for TTC, Burlington, Hamilton, and STM
 - Patched a dependency vulnerability (react-router CSRF bypass in RSC mode)
 - Beta deployment's browser tab now reads "[Beta] Atlas by Civic Minds" instead of looking identical to production
-- Fixed Halifax Transit 7A/7B showing a bogus combined frequency and wrong direction labels — they're clockwise/counterclockwise around one loop, not corridor branches (#335, #336)
+- Fixed Halifax Transit 7A/7B showing a bogus combined frequency and wrong direction labels — they're clockwise/counterclockwise around one loop, not corridor branches ([#335](https://github.com/Civic-Minds/Atlas/issues/335), [#336](https://github.com/Civic-Minds/Atlas/issues/336))
 - Time filter can no longer be deselected into a silent, unexplained "all day" state — always shows one real time-of-day period, same as Day
 
 ## [3.2.15] - 2026-08-03
