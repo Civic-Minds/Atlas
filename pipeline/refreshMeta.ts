@@ -9,6 +9,23 @@ export interface FeedMetaFields {
   lastRefreshedAt?: string | null;
 }
 
+/** Whether a feed's declared service end date is before the refresh date. */
+export function isFeedExpired(feedExpiry: string | null | undefined, todayYmd: string): boolean {
+  return !!feedExpiry && /^\d{8}$/.test(feedExpiry) && feedExpiry < todayYmd;
+}
+
+/**
+ * Stop a scheduled refresh only when every feed part declares an expiry and all
+ * of those dates are already past. An undated part is not enough evidence to
+ * reject the update.
+ */
+export function shouldSkipAllExpiredFeeds(feedExpiries: Array<string | null | undefined>, todayYmd: string): boolean {
+  const knownExpiries = feedExpiries.filter((expiry): expiry is string => !!expiry && /^\d{8}$/.test(expiry));
+  return knownExpiries.length === feedExpiries.length
+    && knownExpiries.length > 0
+    && knownExpiries.every(expiry => isFeedExpired(expiry, todayYmd));
+}
+
 /**
  * Whether a successful refresh should update lastFeed* on the agency record.
  * Zero-feature and validation-failed runs must leave metadata alone so

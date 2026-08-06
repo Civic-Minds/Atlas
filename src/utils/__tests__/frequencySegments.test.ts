@@ -103,7 +103,7 @@ describe('computeFrequencySegmentOverlay', () => {
   // Saturday midday -- minStopHeadwayByPeriod 12, headwayByPeriod (terminal) 24,
   // worstDirectionHeadwayByPeriod 38. The route passes a 15-min midday filter because of one
   // good stop, but most of the route only runs every 24 min.
-  it('flags a route as partial and clips only the qualifying stretch (OC Transpo 6 shape)', () => {
+  it('does not re-add a route when only one direction has a qualifying stretch', () => {
     const stopIds = ['s1', 's2', 's3', 's4', 's5'];
     const layers: AgencyLayers = {
       octranspo: {
@@ -121,6 +121,35 @@ describe('computeFrequencySegmentOverlay', () => {
           },
         })],
       },
+    };
+
+    const overlay = computeFrequencySegmentOverlay(layers, 'midday', 15);
+
+    expect(overlay.partialMatches).toEqual([]);
+    expect(overlay.segments).toEqual([]);
+  });
+
+  it('clips uneven stop coverage after the route-level both-direction metric passes', () => {
+    const stopIds = ['s1', 's2', 's3', 's4', 's5'];
+    const feature = makeRouteFeature({
+      routeId: '6',
+      headsign: 'Greenboro',
+      stopIds,
+      stopPeriodHeadways: {
+        s1: { midday: 24 },
+        s2: { midday: 15 },
+        s3: { midday: 12 },
+        s4: { midday: 13 },
+        s5: { midday: 24 },
+      },
+    });
+    feature.properties = {
+      ...feature.properties,
+      worstDirectionHeadway: 15,
+      worstDirectionHeadwayByPeriod: { midday: 15 },
+    };
+    const layers: AgencyLayers = {
+      octranspo: { type: 'FeatureCollection', features: [feature] },
     };
 
     const overlay = computeFrequencySegmentOverlay(layers, 'midday', 15);
@@ -174,14 +203,16 @@ describe('computeFrequencySegmentOverlay', () => {
 
   it('uses stopHeadways (not stopPeriodHeadways) for the all-day period', () => {
     const stopIds = ['s1', 's2', 's3'];
+    const feature = makeRouteFeature({
+      routeId: 'C',
+      stopIds,
+      stopHeadways: { s1: 30, s2: 12, s3: 13 },
+    });
+    feature.properties = { ...feature.properties, worstDirectionHeadway: 15 };
     const layers: AgencyLayers = {
       agency: {
         type: 'FeatureCollection',
-        features: [makeRouteFeature({
-          routeId: 'C',
-          stopIds,
-          stopHeadways: { s1: 30, s2: 12, s3: 13 },
-        })],
+        features: [feature],
       },
     };
     const overlay = computeFrequencySegmentOverlay(layers, 'all', 15);

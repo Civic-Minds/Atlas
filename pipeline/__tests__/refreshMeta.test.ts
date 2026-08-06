@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+import { isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+
+describe('feed expiry checks', () => {
+  it('recognizes a feed that ended before the refresh date', () => {
+    expect(isFeedExpired('20241221', '20260806')).toBe(true);
+    expect(isFeedExpired('20260807', '20260806')).toBe(false);
+    expect(isFeedExpired(null, '20260806')).toBe(false);
+  });
+
+  it('skips only when every dated feed is expired', () => {
+    expect(shouldSkipAllExpiredFeeds(['20241221', '20241011'], '20260806')).toBe(true);
+    expect(shouldSkipAllExpiredFeeds(['20241221', '20260807'], '20260806')).toBe(false);
+    expect(shouldSkipAllExpiredFeeds(['20241221', null], '20260806')).toBe(false);
+    expect(shouldSkipAllExpiredFeeds([null, undefined], '20260806')).toBe(false);
+  });
+});
 
 describe('shouldStampFeedMeta', () => {
   it('stamps only when featureCount > 0', () => {

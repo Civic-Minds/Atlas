@@ -36,7 +36,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -247,16 +247,43 @@ async function refreshAgency(
   const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
-  if (peekedExpiry && peekedExpiry < today) {
+  if (isFeedExpired(peekedExpiry, today)) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
     const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
   }
 
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
-  const feedExpired = !!(peekedExpiry && peekedExpiry < today);
+  const supplementalFeeds: Array<{
+    url: string;
+    buf: Buffer;
+    feedExpiry: string | null;
+    feedVersion: string | null;
+  }> = [];
 
-  if (!forceRefresh && !hasSupplementals && !feedExpired) {
+  // Download and inspect every part before rebuilding anything. A primary feed
+  // can be expired while a supplemental feed is still current, so only skip
+  // when all dated parts have ended.
+  if (agency.supplementalFeedUrls?.length) {
+    for (const suppUrl of agency.supplementalFeedUrls) {
+      const suppBuf = await downloadFeed(suppUrl);
+      if (suppBuf.length < 4 || suppBuf[0] !== 0x50 || suppBuf[1] !== 0x4b) {
+        throw new Error(`not a zip file (got ${suppBuf.length} bytes starting ${suppBuf.subarray(0, 4).toString('hex')})`);
+      }
+      const { feedExpiry, feedVersion } = await peekFeedInfo(suppBuf);
+      supplementalFeeds.push({ url: suppUrl, buf: suppBuf, feedExpiry, feedVersion });
+    }
+  }
+
+  if (!forceRefresh && shouldSkipAllExpiredFeeds(
+    [peekedExpiry, ...supplementalFeeds.map(feed => feed.feedExpiry)],
+    today,
+  )) {
+    writeLog(`\n  [warn] all feeds ended before refresh date — skipping update\n  `);
+    return 'all feeds expired, skipped';
+  }
+
+  if (!forceRefresh && !hasSupplementals && !isFeedExpired(peekedExpiry, today)) {
     if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
       return `skipped (same schedule period: ${peekedExpiry})`;
     }
@@ -318,10 +345,9 @@ async function refreshAgency(
     const tripsIndex = JSON.parse(tripsJson) as Record<string, unknown>;
     const stopsMeta = JSON.parse(stopsMetaJson) as { generatedAt: string; stopCount: number; stops: unknown[] };
 
-    for (const suppUrl of agency.supplementalFeedUrls) {
+    for (const { url: suppUrl, buf: suppBuf } of supplementalFeeds) {
       const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
       writeLog(`\n    ↳ ${label} ... `);
-      const suppBuf = await downloadFeed(suppUrl);
       const supp = await processGtfsBuffer(suppBuf, undefined, {
         routeTypes: agency.routeTypes,
         agencyId: agency.agencyId,

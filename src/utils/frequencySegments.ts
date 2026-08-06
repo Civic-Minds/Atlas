@@ -3,6 +3,7 @@ import type { AgencyLayers } from '../hooks/useAgencyData';
 import type { PeriodKey } from '../../shared/config';
 import { clipBetweenStopIndices } from '../apps/corridor-geometry';
 import { headwayToTierColor } from './colors';
+import { effectiveRouteHeadway } from './effectiveHeadway';
 
 /** Identifies one route feature (a single direction/headsign/day shape) for MapLibre filter matching. */
 export interface FrequencySegmentRouteKey {
@@ -57,6 +58,16 @@ function stopHeadwayAt(p: ShapeProperties, period: TimePeriod, stopId: string): 
 }
 
 /**
+ * Partial-segment rendering is only allowed after the route itself passes the same
+ * route-level frequency metric as the main filter. Otherwise one direction with a
+ * qualifying stretch can pull an otherwise excluded route back onto the map.
+ */
+function routePassesFrequencyFilter(p: ShapeProperties, period: TimePeriod, maxHeadway: number): boolean {
+  const routeHeadway = effectiveRouteHeadway(p, period);
+  return routeHeadway != null && routeHeadway <= maxHeadway;
+}
+
+/**
  * Client-side stand-in for per-segment PMTiles rendering (not possible -- #317: tippecanoe
  * JSON-stringifies stopOrder/stopPositions/stopHeadways into scalar tile properties, unusable in
  * MapLibre filter/paint expressions, and line-gradient needs a GeoJSON source with lineMetrics,
@@ -65,8 +76,8 @@ function stopHeadwayAt(p: ShapeProperties, period: TimePeriod, stopId: string): 
  * frequency filter is passing only because of a sub-stretch of stops, not the whole shape.
  *
  * Generalized across periods (including 'all') rather than gated to the period case that was
- * reported: the all-day path is now usually protected by worstDirectionHeadway (#314) but can
- * still fall back to minStopHeadway in the same way, so the same bug is possible there too.
+ * reported. A route must pass the route-level metric first; this overlay only explains uneven
+ * stop-level coverage within a route that already qualifies in both directions.
  */
 export function computeFrequencySegmentOverlay(
   layers: AgencyLayers,
@@ -82,6 +93,7 @@ export function computeFrequencySegmentOverlay(
     for (const f of fc.features) {
       if (f.geometry.type !== 'LineString') continue;
       const p = f.properties as unknown as ShapeProperties;
+      if (!routePassesFrequencyFilter(p, period, maxHeadway)) continue;
       const stopOrder = p.stopOrder;
       const stopPositions = p.stopPositions;
       if (!stopOrder || !stopPositions || stopOrder.length < 2 || stopPositions.length !== stopOrder.length) continue;
@@ -135,8 +147,9 @@ export function buildPartialMatchFilterExpression(keys: FrequencySegmentRouteKey
 /**
  * routes-layer's own tileFilter excludes a route whose worst-direction headway fails the active
  * frequency filter -- by design (#314/#315), same reasoning as passesRouteFilter/filteredLayers.
- * But partialMatches are routes computeFrequencySegmentOverlay already confirmed have a real
- * qualifying stretch, so pull those specific features back into the layer's filter, or the
+ * Partial matches are now limited to routes that already pass that route-level check, so pull
+ * those specific features back into the layer's filter only to keep their dimmed remainder
+ * available, or the
  * "dimmed remainder" line-opacity case expression has nothing to apply to (the feature was never
  * in the layer to begin with) and hovering/selecting one -- which needs the base feature present
  * to highlight -- shows nothing instead of the expected full-route highlight.
