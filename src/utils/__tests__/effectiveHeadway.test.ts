@@ -46,6 +46,20 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
   });
 
+  it('uses the stable branch headway when a period median is not sustained (#319)', () => {
+    const p = {
+      ...base,
+      headway: 10,
+      headwayByPeriod: { midday: 2 },
+      headwayByPeriodSustained: { midday: false },
+    } as ShapeProperties;
+
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
+    expect(routeListDisplayHeadway([p], 'midday')).toBe(10);
+    // The filter still uses the raw period metric; this change is display-only.
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(2);
+  });
+
   it('falls back to all-day headway when period is all', () => {
     const p = {
       ...base,
