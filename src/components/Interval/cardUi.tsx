@@ -210,17 +210,17 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             className={`absolute w-[min(24rem,calc(100vw-2rem))] max-h-[calc(100vh-2rem)] overflow-y-auto ${FLOATING_CARD}`}
             style={{ top: reportCardPosition?.top ?? 16, left: reportCardPosition?.left ?? 16 }}
           >
-            <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border-primary)]">
+            <div className="flex items-center justify-between px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)]">
               <div>
-                <h2 id={dialogTitleId} className="text-sm font-black text-[var(--text-primary)]">Report a problem</h2>
-                <p className="text-[10px] font-bold text-[var(--text-dim)] mt-0.5">Select all that apply (optional).</p>
+                <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
+                <p className={`${CARD_NOTICE} mt-0.5`}>Select all that apply (optional).</p>
               </div>
               <button type="button" onClick={reset} aria-label="Close report form" className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)]">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="px-5 py-4 space-y-4">
+            <div className="px-4 py-3 space-y-3">
               {!selectedCategory ? (
                 <fieldset>
                   <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">I have an issue with a…</legend>
@@ -232,8 +232,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                         onClick={() => { setValidationError(''); setSelectedCategory(category.key); }}
                         className="w-full rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)] px-3 py-2.5 text-left hover:bg-[var(--bg-btn-hover)] transition-colors"
                       >
-                        <span className="block text-[11px] font-black text-[var(--text-primary)]">{category.label}</span>
-                        <span className="block mt-0.5 text-[10px] font-bold text-[var(--text-dim)]">{category.description}</span>
+                        <span className={`block ${CARD_LIST_ROUTE} font-black`}>{category.label}</span>
+                        <span className={`block mt-0.5 ${CARD_NOTICE}`}>{category.description}</span>
                       </button>
                     ))}
                   </div>
@@ -263,7 +263,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                           }}
                           className="mt-0.5 accent-[var(--accent)]"
                         />
-                        <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
+                        <span className={CARD_LIST_ROUTE}>{reason}</span>
                       </label>
                     ))}
                   </div>
@@ -281,7 +281,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                         onChange={() => { setValidationError(''); toggleReason(reason, setFrequencyReasons); }}
                         className="mt-0.5 accent-[var(--accent)]"
                       />
-                      <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
+                      <span className={CARD_LIST_ROUTE}>{reason}</span>
                     </label>
                   ))}
                 </fieldset>
@@ -294,7 +294,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                   onChange={event => { setDescription(event.target.value); setValidationError(''); }}
                   rows={4}
                   placeholder="Describe what you saw and what you expected."
-                  className="mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]"
+                  className={`mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 ${CARD_LIST_ROUTE} placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]`}
                 />
               </label>}
               {selectedCategory && copiesDiagnostics && (
@@ -305,7 +305,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
             </div>
 
-            <div className="flex justify-end gap-2 px-5 pb-4">
+            <div className="flex justify-end gap-2 px-4 pb-3">
               <button type="button" onClick={reset} className="px-3 py-2 rounded-lg text-[11px] font-black text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]">Cancel</button>
               {selectedCategory && <button type="submit" className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-[11px] font-black hover:opacity-90">Open GitHub report</button>}
             </div>

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Report-card typography, colours, and spacing now reuse the route and stop card styles for a more consistent report flow
 - Report forms now ask whether the issue is about a route, stop, or filter before showing relevant reasons and explaining the clipboard step
 - Report cards now align with the route or stop panel they open beside
 - Report forms now open as floating cards beside the route or stop panel instead of centered modals
