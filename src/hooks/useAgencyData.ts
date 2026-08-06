@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
-import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByPeriod, type HeadwayByPeriodSustained } from '../../shared/config';
+import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../../shared/config';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
 
-export type { HeadwayByPeriod, HeadwayByPeriodSustained };
+export type { HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodSustained };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
 export interface ShapeProperties {
@@ -16,7 +16,9 @@ export interface ShapeProperties {
   tier: string | null;
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
-  /** #281: parallel diagnostic flag -- whether each period's own median fairly describes its gaps. Not consumed by any UI yet. */
+  /** #281: longest departure gap touching each period, clipped to the period window. */
+  maxGapByPeriod?: HeadwayByPeriodMaxGap;
+  /** #281: whether each period's own median fairly describes its gaps. */
   headwayByPeriodSustained?: HeadwayByPeriodSustained;
   headwayByHour?: HeadwayByHour;
   routeShortName: string | null;

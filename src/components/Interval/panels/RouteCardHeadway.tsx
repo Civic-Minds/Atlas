@@ -147,6 +147,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
     group.span.length > 0,
   );
+  const unevenPeriodMaxGap = period !== 'all'
+    ? Math.max(0, ...directionGroups
+        .flatMap(group => group.realTier)
+        .filter(direction => direction.headwayByPeriodSustained?.[period] === false)
+        .map(direction => direction.maxGapByPeriod?.[period] ?? 0))
+    : 0;
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
   const primaryMultiBranch = directionGroups
@@ -229,6 +235,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       `  Raw headway: ${direction.headway ?? 'none'} min`,
       `  Displayed headway: ${routeCardDisplayHeadway(direction, period) ?? 'none'} min`,
       `  Headway by period: ${formatMetricMap(direction.headwayByPeriod)}`,
+      `  Longest gap by period: ${formatMetricMap(direction.maxGapByPeriod)}`,
+      `  Sustained by period: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
       `  Hourly headways for ${period}: ${formatMetricMap(selectedPeriodHourlyHeadways)}`,
       `  Minimum stop headway by period: ${formatMetricMap(direction.minStopHeadwayByPeriod)}`,
       `  Headsign minimum stop headway by period: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod)}`,
@@ -342,6 +350,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
             {formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. This route may run during another period.
+          </p>
+        </div>
+      )}
+      {selectedPeriod && unevenPeriodMaxGap > 0 && (
+        <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
+          <p className="text-[10px] font-black text-[var(--text-primary)]">
+            Service is uneven during {selectedPeriod.label}.
+          </p>
+          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
+            Longest gap: {unevenPeriodMaxGap} minutes.
           </p>
         </div>
       )}

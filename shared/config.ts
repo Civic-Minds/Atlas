@@ -162,6 +162,9 @@ export type HeadwayByPeriod = Partial<Record<PeriodKey, number | null>>;
  * several consumers declare their own independent number-shaped type for headwayByPeriod. */
 export type HeadwayByPeriodSustained = Partial<Record<PeriodKey, boolean>>;
 
+/** Longest departure gap touching each period, clipped to the period window (#281). */
+export type HeadwayByPeriodMaxGap = Partial<Record<PeriodKey, number | null>>;
+
 export interface HeadwayTier {
   max: number;
   color: string;
