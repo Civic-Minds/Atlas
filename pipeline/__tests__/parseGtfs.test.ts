@@ -1,5 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { truncateAtImplausibleJump, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints } from '../parseGtfs.js';
+import { truncateAtImplausibleJump, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
+import type { GtfsCalendarDate } from '../../types/gtfs.js';
+
+/** YYYYMMDD for a date offset by `days` from 2025-01-05 (a Sunday), for building fixture date lists. */
+function dateStr(days: number): string {
+  const d = new Date(2025, 0, 5 + days);
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function addedDates(serviceId: string, days: number[]): GtfsCalendarDate[] {
+  return days.map(day => ({ service_id: serviceId, date: dateStr(day), exception_type: '1' }));
+}
 
 describe('truncateAtImplausibleJump', () => {
   it('leaves a well-formed, evenly-spaced shape untouched', () => {
@@ -357,5 +368,52 @@ describe('excludeKnownIsolatedPoints', () => {
     const result = excludeKnownIsolatedPoints('some-other-shape-id', points);
     expect(result.removed).toBe(false);
     expect(result.points).toEqual(points);
+  });
+});
+
+describe('synthesizeCalendarFromDates', () => {
+  it('does not promote holiday-observed cross-day-type dates to regular weekly service (SCT route 66, #338)', () => {
+    // A year-round Sunday-schedule service_id, plus a handful of holiday dates where the
+    // agency ran Sunday-level service on a weekday holiday instead -- the real-world SCT
+    // "66-01 (SUN)" pattern: 52 real Sundays, 2 holiday Mondays, 2 holiday Thursdays, 1
+    // holiday Wednesday, 1 holiday Friday (58 dates total, spanning the full year).
+    const sundays = Array.from({ length: 52 }, (_, i) => i * 7); // day-of-week offsets landing on Sunday
+    const dates: GtfsCalendarDate[] = [
+      ...addedDates('66-01 (SUN)', sundays),
+      ...addedDates('66-01 (SUN)', [1, 204]), // two holiday Mondays
+      ...addedDates('66-01 (SUN)', [4, 249]), // two holiday Thursdays
+      ...addedDates('66-01 (SUN)', [3]), // one holiday Wednesday
+      ...addedDates('66-01 (SUN)', [5]), // one holiday Friday
+    ];
+    const result = synthesizeCalendarFromDates(dates);
+    const entry = result.find(c => c.service_id === '66-01 (SUN)');
+    expect(entry).toBeDefined();
+    expect(entry).toMatchObject({
+      monday: '0', tuesday: '0', wednesday: '0', thursday: '0', friday: '0', saturday: '0',
+      sunday: '1',
+    });
+  });
+
+  it('still flags a genuine short-period single-day-of-week block (e.g. a real 3-week Monday-only service)', () => {
+    const dates = addedDates('holiday-shuttle', [1, 8, 15]); // three consecutive Mondays
+    const result = synthesizeCalendarFromDates(dates);
+    const entry = result.find(c => c.service_id === 'holiday-shuttle');
+    expect(entry).toMatchObject({ monday: '1', tuesday: '0', wednesday: '0', thursday: '0', friday: '0', saturday: '0', sunday: '0' });
+  });
+
+  it('drops a single-occurrence service_id entirely, leaving it to getActiveServiceIds Step 2 (WSF/GO-Transit-style daily service_ids)', () => {
+    const dates = addedDates('20250115', [10]);
+    const result = synthesizeCalendarFromDates(dates);
+    expect(result.find(c => c.service_id === '20250115')).toBeUndefined();
+  });
+
+  it('still flags a normal full-year Monday-Friday service on all five weekdays (no regression on the common case)', () => {
+    const weekdayOffsets = Array.from({ length: 52 }, (_, week) => [1, 2, 3, 4, 5].map(d => week * 7 + d)).flat();
+    const dates = addedDates('regular-weekday', weekdayOffsets);
+    const result = synthesizeCalendarFromDates(dates);
+    const entry = result.find(c => c.service_id === 'regular-weekday');
+    expect(entry).toMatchObject({
+      monday: '1', tuesday: '1', wednesday: '1', thursday: '1', friday: '1', saturday: '0', sunday: '0',
+    });
   });
 });

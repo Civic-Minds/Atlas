@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed Suffolk County Transit showing badly wrong weekday frequencies feed-wide — holiday exception dates were being counted as regular weekly service (#338)
 - Fixed NJ Transit branch labels showing the raw "Exact Fare" fare instruction
 - Route cards now show the longest service gap when a period's median frequency is uneven (#281)
 - Fixed Visalia routes losing their selection when switching between weekday and weekend schedules (#302)
