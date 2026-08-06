@@ -40,11 +40,16 @@ function medianHeadway(values: number[]): number {
   return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 }
 
-function formatMetricMap(values: Record<string, number | null | undefined> | null | undefined): string {
+function formatMetricMap(
+  values: Record<string, number | null | undefined> | null | undefined,
+  keyLabel = 'key',
+  valueLabel = 'value',
+  separator = '; ',
+): string {
   if (!values) return 'none';
   const entries = Object.entries(values);
   return entries.length > 0
-    ? entries.map(([key, value]) => `${key}=${value ?? 'none'}`).join(', ')
+    ? entries.map(([key, value]) => `${keyLabel}=${key}, ${valueLabel}=${value ?? 'none'}`).join(separator)
     : 'none';
 }
 
@@ -231,31 +236,34 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         );
     return [
       `Branch ${index + 1}:`,
-      `  Route ID: ${direction.routeId}`,
-      `  Direction ID: ${direction.directionId}`,
-      `  Headsign: ${direction.headsign ?? 'none'}`,
-      `  Tier: ${direction.tier ?? 'none'}`,
-      `  Raw headway: ${direction.headway ?? 'none'} min`,
-      `  Displayed headway: ${routeCardDisplayHeadway(direction, period) ?? 'none'} min`,
-      `  Headway by period: ${formatMetricMap(direction.headwayByPeriod)}`,
-      `  Longest gap by period: ${formatMetricMap(direction.maxGapByPeriod)}`,
-      `  Sustained by period: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
-      `  Hourly headways for ${period}: ${formatMetricMap(selectedPeriodHourlyHeadways)}`,
-      `  Minimum stop headway by period: ${formatMetricMap(direction.minStopHeadwayByPeriod)}`,
-      `  Headsign minimum stop headway by period: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod)}`,
-      `  Stop headways for ${period}: ${formatMetricMap(selectedPeriodStopHeadways)}`,
+      `  routeId=${direction.routeId}`,
+      `  directionId=${direction.directionId}`,
+      `  headsign=${direction.headsign ?? 'none'}`,
+      `  tier=${direction.tier ?? 'none'}`,
+      `  rawHeadwayMinutes=${direction.headway ?? 'none'}`,
+      `  displayedHeadwayMinutes=${routeCardDisplayHeadway(direction, period) ?? 'none'}`,
+      `  headwayByPeriod: ${formatMetricMap(direction.headwayByPeriod, 'period', 'typicalGapMinutes')}`,
+      `  longestGapByPeriod: ${formatMetricMap(direction.maxGapByPeriod, 'period', 'longestGapMinutes')}`,
+      `  sustainedByPeriod: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
+      `  hourlyHeadways (${period}): ${formatMetricMap(selectedPeriodHourlyHeadways, 'hour', 'typicalGapMinutes')}`,
+      `  minimumStopHeadwayByPeriod: ${formatMetricMap(direction.minStopHeadwayByPeriod, 'period', 'minimumGapMinutes')}`,
+      `  headsignMinimumStopHeadwayByPeriod: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod, 'period', 'minimumGapMinutes')}`,
+      `  stopHeadways (${period}): ${formatMetricMap(selectedPeriodStopHeadways, 'stopId', 'typicalGapMinutes', '\n    ')}`,
     ].join('\n');
   }).join('\n\n');
+  const reportPeriod = selectedPeriod
+    ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
+    : 'All day';
   const reportDetails = [
     `**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}`,
     `**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`,
-    `**Period:** ${period}`,
+    `**Period:** ${reportPeriod}`,
     `**Agency data refreshed:** ${routeAgency?.lastRefreshedAt ?? 'unknown'}`,
     `**Feed expiry:** ${routeAgency?.lastFeedExpiry ?? 'unknown'}`,
     '**Displayed service:**',
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',
-    '**Generated route metrics (loaded artifact):**',
+    '**Generated route metrics from the loaded artifact:**',
     reportRawMetrics,
     `**Atlas URL:** ${currentAtlasUrl()}`,
   ].join('\n');
