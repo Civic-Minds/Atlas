@@ -17,6 +17,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Report cards now align with the route or stop panel they open beside
 - Report forms now open as floating cards beside the route or stop panel instead of centered modals
 - Copied issue reports now label route diagnostics clearly so stop IDs and gap values are easier to interpret
+- Route cards now use a stable branch frequency when a period's median is not sustained, preventing false 2-minute readings ([#319](https://github.com/Civic-Minds/Atlas/issues/319))
 - Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
 - Route selection now clears cleanly on partially filtered routes — MapLibre no longer rejects the dimming expression ([#340](https://github.com/Civic-Minds/Atlas/issues/340))
 - Report-a-problem no longer requires typing a description if a reason is already checked, and its reason list now only shows options relevant to what you're reporting from
