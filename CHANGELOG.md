@@ -4,19 +4,20 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
 ## [3.2.16] - 2026-08-06
 
-- Fixed the map briefly showing wrong route visibility/opacity right after deselecting a route or closing its card
+- Deselecting a route now correctly restores every other route's normal visibility on the map right away
 - Route-card report buttons now collect structured reasons and a required problem description before opening GitHub
-- Fixed Suffolk County Transit showing badly wrong weekday frequencies feed-wide — holiday exception dates were being counted as regular weekly service ([#338](https://github.com/Civic-Minds/Atlas/issues/338))
-- Fixed NJ Transit branch labels showing the raw "Exact Fare" fare instruction
+- Suffolk County Transit now shows accurate weekday frequencies across the whole feed, instead of numbers inflated by miscounted holiday service ([#338](https://github.com/Civic-Minds/Atlas/issues/338))
 - Route cards now show the longest service gap when a period's median frequency is uneven ([#281](https://github.com/Civic-Minds/Atlas/issues/281))
-- Fixed Visalia routes losing their selection when switching between weekday and weekend schedules ([#302](https://github.com/Civic-Minds/Atlas/issues/302))
-- Fixed GCRTA route 51-51A showing a false 4-minute midday frequency ([#337](https://github.com/Civic-Minds/Atlas/issues/337))
+- Visalia routes now keep their selection when switching between weekday and weekend schedules ([#302](https://github.com/Civic-Minds/Atlas/issues/302))
+- GCRTA route 51-51A's midday frequency is now accurate — combining two different trip patterns under one displayed branch had inflated it to a false 4 minutes ([#337](https://github.com/Civic-Minds/Atlas/issues/337))
 - Live history now archives vehicle positions for TTC, Burlington, Hamilton, and STM
 - Patched a dependency vulnerability (react-router CSRF bypass in RSC mode)
 - Beta deployment's browser tab now reads "[Beta] Atlas by Civic Minds" instead of looking identical to production
-- Fixed Halifax Transit 7A/7B showing a bogus combined frequency and wrong direction labels — they're clockwise/counterclockwise around one loop, not corridor branches ([#335](https://github.com/Civic-Minds/Atlas/issues/335), [#336](https://github.com/Civic-Minds/Atlas/issues/336))
+- Halifax Transit 7A/7B now show correct direction labels and real frequencies — they're clockwise/counterclockwise around one loop, not corridor branches ([#335](https://github.com/Civic-Minds/Atlas/issues/335), [#336](https://github.com/Civic-Minds/Atlas/issues/336))
 - Time filter can no longer be deselected into a silent, unexplained "all day" state — always shows one real time-of-day period, same as Day
 
 ## [3.2.15] - 2026-08-03
@@ -490,49 +491,43 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [3.0.8] — 2026-07-06
 
-### Added
-- **History adherence tests** ([#130](https://github.com/Civic-Minds/Atlas/issues/130)): Unit tests for `computeHistoryAdherence` timezone bucketing.
-- **Stop click route highlight** ([#104](https://github.com/Civic-Minds/Atlas/issues/104)): Selecting a stop keeps connecting routes at full color/width; other visible routes fade to 15% opacity.
-
-### Changed
-- **CI typecheck** ([#111](https://github.com/Civic-Minds/Atlas/issues/111)): Added `tsconfig.api.json` — API routes type-checked in CI alongside `src`/`shared`.
-- **validate-index in CI** ([#112](https://github.com/Civic-Minds/Atlas/issues/112)): `npm run validate-index` runs on every PR.
-- **R2 URL centralization** ([#127](https://github.com/Civic-Minds/Atlas/issues/127)): `DEFAULT_R2_PUBLIC_URL` exported from `shared/config.ts`.
-- **Dead code removed** ([#126](https://github.com/Civic-Minds/Atlas/issues/126)): Deleted `dev-api-server.ts` and `pipeline/mapStyles.ts`.
-- **Deps cleanup** ([#125](https://github.com/Civic-Minds/Atlas/issues/125)): Removed unused Leaflet and Playwright packages.
-- **Docs** ([#128](https://github.com/Civic-Minds/Atlas/issues/128)): README and ROADMAP updated to MapLibre GL stack.
-- **refresh-feeds CI** ([#131](https://github.com/Civic-Minds/Atlas/issues/131)): Weekly workflow runs typecheck and tests before commit.
-- **Worker gitignore**: Fixed pattern that incorrectly ignored `gtfs-rt-archiver/src/`.
-- **Sidebar card primitives** ([#103](https://github.com/Civic-Minds/Atlas/issues/103)): `SidebarCardShell`, shared list/section wrappers, and `CardDirectionRow` — stop, route, and agency cards share one layout system; removed duplicate route-card wrapper margin.
-- **Stop card period labels**: Dropped redundant "Evening" (etc.) suffix on every headway — active period is already in the sidebar filter.
-- **Stop card debug panel**: Removed internal "debug headways" toggle from the public stop card.
-
-### Fixed
-- **CI**: Synced `package-lock.json` after dependency cleanup (restores optional `@emnapi` entries required by `npm ci` on Node 22).
-- **Route card sparkline overnight** ([#100](https://github.com/Civic-Minds/Atlas/issues/100)): Hourly chart runs 6 AM → 2 AM left-to-right with 5 AM grouped at the end; restored 3 AM and 4 AM bars (GTFS hours 27–28) in the overnight tail ([#133](https://github.com/Civic-Minds/Atlas/issues/133)).
-- **Frequency filter** ([#132](https://github.com/Civic-Minds/Atlas/issues/132)): Map tile filter uses flat PMTiles period headway keys (`wdph_midday`, etc.) instead of nested GeoJSON objects tippecanoe drops; all-day `worstDirectionHeadway` fallback and tier parsing aligned with sidebar logic.
-- **History timezone** ([#105](https://github.com/Civic-Minds/Atlas/issues/105)): Hourly delay buckets use per-agency IANA timezones instead of hardcoded UTC−4.
-- **Supplemental feed skip** ([#106](https://github.com/Civic-Minds/Atlas/issues/106)): Weekly refresh no longer skips agencies with unchanged primary feeds when supplementals exist.
-- **Per-stop GTFS times** ([#107](https://github.com/Civic-Minds/Atlas/issues/107)): Pipeline uses `t2m()` for stop headways (supports >24:00 overnight times).
-- **Stale feed expiry** ([#108](https://github.com/Civic-Minds/Atlas/issues/108)): Expired `feed_end_date` forces reprocess instead of indefinite skip.
-- **Live Vehicles bboxes** ([#109](https://github.com/Civic-Minds/Atlas/issues/109)): TransLink and STM added to `LIVE_AGENCY_BBOXES`.
-- **Live config drift** ([#110](https://github.com/Civic-Minds/Atlas/issues/110)): TTC 503 and STM 55 `scheduleOffsetMin` stop IDs aligned with `targetStops`.
-- **Agency index load** ([#113](https://github.com/Civic-Minds/Atlas/issues/113)): Failed `index.json` fetch shows retry UI instead of infinite Loading.
-- **History API env** ([#114](https://github.com/Civic-Minds/Atlas/issues/114)): `history-adherence` fails fast on missing R2 credentials.
-- **App navigation** ([#115](https://github.com/Civic-Minds/Atlas/issues/115)): Re-enabled `AppDrawer` for Corridors, History, and Fares.
-- **Error boundaries** ([#116](https://github.com/Civic-Minds/Atlas/issues/116)): Map shell wrapped in recoverable `ErrorBoundary`.
-- **Map zoom UX** ([#117](https://github.com/Civic-Minds/Atlas/issues/117)): Low-zoom stop clicks fly in; route disambiguation and geolocation show hints.
-- **Search a11y** ([#118](https://github.com/Civic-Minds/Atlas/issues/118)): Main search input has `aria-label` per app mode.
-- **Map attribution** ([#119](https://github.com/Civic-Minds/Atlas/issues/119)): Compact MapLibre attribution control restored.
-- **process-gtfs parity** ([#120](https://github.com/Civic-Minds/Atlas/issues/120)): Manual process archives zip and updates `lastFeedExpiry`/`lastFeedVersion`.
-- **Supplemental options** ([#121](https://github.com/Civic-Minds/Atlas/issues/121)): Supplemental feeds receive full `ProcessOptions` in refresh.
-- **IDB cache bust** ([#122](https://github.com/Civic-Minds/Atlas/issues/122)): `CACHE_BUILD` auto-increments on successful refresh uploads.
-- **Corridor tiers** ([#123](https://github.com/Civic-Minds/Atlas/issues/123)): Corridor features use `HEADWAY_TIERS` bucket labels.
-- **peekFeedInfo CSV** ([#124](https://github.com/Civic-Minds/Atlas/issues/124)): Feed info parsing uses Papa CSV instead of naive split.
-- **Route card trunk frequency** ([#99](https://github.com/Civic-Minds/Atlas/issues/99)): Multi-branch routes (e.g. HSR 5) show combined shared-section headway in the sparkline by default; destination rows show terminal wait ranges. Branch hover switches sparkline to that branch.
-- **Sidebar card continuity** ([#101](https://github.com/Civic-Minds/Atlas/issues/101)): Stop and agency cards reuse `RouteDirectionRow` styling — stacked labels/headways, shared `to …` branch formatting, consistent dots and typography.
-- **Stop card route groups** ([#102](https://github.com/Civic-Minds/Atlas/issues/102)): Shared headway collapsed into one line per route with compact destination list — flat layout, no nested route cards.
-- **Route card limited destinations**: Limited-service hint no longer repeats destinations already shown with regular headways (e.g. GO 41 Square One).
+- Clicking a stop now keeps its serving routes fully visible while fading every other route on the map ([#104](https://github.com/Civic-Minds/Atlas/issues/104))
+- API routes are now type-checked in CI alongside the rest of the app ([#111](https://github.com/Civic-Minds/Atlas/issues/111))
+- Agency index validation now runs automatically on every pull request ([#112](https://github.com/Civic-Minds/Atlas/issues/112))
+- Consolidated the R2 public data URL into one shared config value instead of several copies ([#127](https://github.com/Civic-Minds/Atlas/issues/127))
+- Removed unused Leaflet and Playwright dependencies, and some dead internal dev-server code ([#125](https://github.com/Civic-Minds/Atlas/issues/125), [#126](https://github.com/Civic-Minds/Atlas/issues/126))
+- Updated the README and roadmap docs for the MapLibre GL stack ([#128](https://github.com/Civic-Minds/Atlas/issues/128))
+- The weekly feed-refresh workflow now runs typecheck and tests before committing ([#131](https://github.com/Civic-Minds/Atlas/issues/131))
+- Fixed a gitignore pattern that was incorrectly excluding the live-vehicle archiver's own source code
+- Unified stop, route, and agency cards onto one shared layout system ([#103](https://github.com/Civic-Minds/Atlas/issues/103))
+- Removed a redundant period label ("Evening", etc.) that repeated on every stop card headway when the period was already shown in the filter
+- Removed an internal debug toggle that had been left visible on the public stop card
+- Fixed a broken CI install caused by an out-of-sync dependency lockfile
+- Fixed the route card's hourly chart mishandling overnight hours, including two missing early-morning bars ([#100](https://github.com/Civic-Minds/Atlas/issues/100), [#133](https://github.com/Civic-Minds/Atlas/issues/133))
+- Fixed the map's frequency filter disagreeing with the sidebar's own frequency numbers for the same route ([#132](https://github.com/Civic-Minds/Atlas/issues/132))
+- Fixed History showing delay times in the wrong timezone for agencies outside Eastern time ([#105](https://github.com/Civic-Minds/Atlas/issues/105))
+- Fixed the weekly refresh skipping agencies whose supplemental feed had updates even when their primary feed hadn't changed ([#106](https://github.com/Civic-Minds/Atlas/issues/106))
+- Fixed stop-level frequency miscalculating times after midnight ([#107](https://github.com/Civic-Minds/Atlas/issues/107))
+- Fixed an expired feed being skipped indefinitely instead of triggering a reprocess ([#108](https://github.com/Civic-Minds/Atlas/issues/108))
+- Added TransLink and STM to Live Vehicles' tracked regions ([#109](https://github.com/Civic-Minds/Atlas/issues/109))
+- Fixed live vehicle tracking for TTC 503 and STM 55 after a stop ID mismatch ([#110](https://github.com/Civic-Minds/Atlas/issues/110))
+- Fixed a failed agency list load showing an infinite loading spinner instead of a retry option ([#113](https://github.com/Civic-Minds/Atlas/issues/113))
+- Fixed History's live-adherence API failing silently instead of erroring clearly when credentials are missing ([#114](https://github.com/Civic-Minds/Atlas/issues/114))
+- Re-enabled navigation to Corridors, History, and Fares ([#115](https://github.com/Civic-Minds/Atlas/issues/115))
+- The map no longer crashes the whole page on an error — it now shows a recoverable error message instead ([#116](https://github.com/Civic-Minds/Atlas/issues/116))
+- Clicking a stop at a low zoom level now flies in instead of doing nothing; an ambiguous route or stop click now shows a hint to zoom in ([#117](https://github.com/Civic-Minds/Atlas/issues/117))
+- Improved screen-reader support for the main search bar ([#118](https://github.com/Civic-Minds/Atlas/issues/118))
+- Restored the map's attribution control ([#119](https://github.com/Civic-Minds/Atlas/issues/119))
+- Manually processing a feed now archives the source file and updates its expiry info the same way the automated weekly refresh does ([#120](https://github.com/Civic-Minds/Atlas/issues/120))
+- Fixed supplemental feed processing not receiving the same options as the primary feed ([#121](https://github.com/Civic-Minds/Atlas/issues/121))
+- Fixed the local data cache not refreshing after a successful update ([#122](https://github.com/Civic-Minds/Atlas/issues/122))
+- Corridors now use the same frequency-tier color labels as the rest of the map ([#123](https://github.com/Civic-Minds/Atlas/issues/123))
+- Fixed feed metadata parsing breaking on more complex CSV formatting ([#124](https://github.com/Civic-Minds/Atlas/issues/124))
+- Multi-branch routes now show their combined shared-section frequency by default, switching to a specific branch's frequency on hover ([#99](https://github.com/Civic-Minds/Atlas/issues/99))
+- Stop and agency cards now share the same route-row styling as route cards ([#101](https://github.com/Civic-Minds/Atlas/issues/101))
+- Stop cards now group each route's shared frequency under one line instead of nesting a full route card per route ([#102](https://github.com/Civic-Minds/Atlas/issues/102))
+- Fixed limited-service routes repeating a destination that was already shown elsewhere with its regular frequency
+- Added test coverage for History's timezone-bucketed delay calculations ([#130](https://github.com/Civic-Minds/Atlas/issues/130))
 
 ## [3.0.7] — 2026-07-06
 
