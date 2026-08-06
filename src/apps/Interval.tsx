@@ -18,6 +18,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
+import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
 
@@ -335,11 +336,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
-    const hasMatch = fc.features.some(f => {
-      const p = { ...(f.properties as object), agencySlug: slug } as ShapeProperties;
-      return routeKey(p) === selectedRoute && (p.day === undefined || p.day === day);
-    });
-    if (!hasMatch) clearMapSelection();
+    const resolvedRoute = resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day);
+    if (resolvedRoute && resolvedRoute !== selectedRoute) {
+      setSelectedRoute(resolvedRoute);
+    } else if (!resolvedRoute) {
+      clearMapSelection();
+    }
   }, [selectedRoute, layers, day, clearMapSelection]);
 
   // Route card is hidden while search is focused — blur so the card appears on map select.
