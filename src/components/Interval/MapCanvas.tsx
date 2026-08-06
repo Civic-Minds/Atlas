@@ -268,10 +268,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const resetRoutesLayerDefaultPaint = (map: maplibregl.Map) => {
     if (!map.getLayer('routes-layer')) return;
-    const headwayExpr: any = ['case',
-      ['==', ['get', 'tier'], 'infrequent'], 9999,
-      ['coalesce', ['get', 'headway'], 9999],
-    ];
+    // Must match the main filter effect's headwayExpr (tileEffectiveHeadwayExpr(period)) exactly --
+    // this used to be a separately hand-maintained all-day-only expression that ignored the active
+    // period filter, so a route whose all-day headway differs from its period-specific headway could
+    // get a different zoom-gate opacity/visibility here than the main effect would compute for the
+    // same route, until something else triggered the main effect to re-run and overwrite it.
+    const headwayExpr: any = tileEffectiveHeadwayExpr(period);
     map.setPaintProperty('routes-layer', 'line-width', [
       'interpolate', ['linear'], ['zoom'],
       8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5,
