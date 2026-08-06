@@ -54,7 +54,7 @@ LA Metro parked).
 ### 2. Background Worker archiver
 
 Hardcoded feed lists in `workers/gtfs-rt-archiver/src/index.ts` (not `LIVE_POLLING_ROUTES`):
-trip-updates for **ttc, burlington, hamilton, stm**; positions for **ttc streetcars** only.
+trip-updates for **ttc, burlington, hamilton, stm**; vehicle positions for **ttc streetcars, burlington, hamilton, and stm**.
 Writes private `atlas-live`. Expand only after canary health + contract checks.
 
 ### 3. Provider consumers (snapshot / replay)

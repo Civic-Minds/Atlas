@@ -36,11 +36,15 @@ interface PositionFeedConfig {
   url: string;
   /** Only archive vehicles whose route_id matches (e.g. TTC streetcars). */
   routeFilter: RegExp;
+  apiKeyHeader?: keyof Env;
 }
 
-// Vehicle positions archived at positions/{slug}/{date}/{ts}.json for speed analysis
+// Vehicle positions archived at positions/{slug}/{date}/{ts}.json for live history
 const POSITION_FEEDS: PositionFeedConfig[] = [
   { slug: 'ttc', url: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary', routeFilter: /^5(0[1345679]|1[012])$/ },
+  { slug: 'burlington', url: 'https://opendata.burlington.ca/gtfs-rt/GTFS_VehiclePositions.pb', routeFilter: /.+/ },
+  { slug: 'hamilton', url: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb', routeFilter: /.+/ },
+  { slug: 'stm', url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/vehiclePositions', routeFilter: /.+/, apiKeyHeader: 'STM_API_KEY' },
 ];
 
 const MIN_FEED_BYTES = 5_000;
@@ -321,9 +325,14 @@ export default {
     const ts = Math.floor(now.getTime() / 1000);
 
     const positionResults = await Promise.allSettled(
-      POSITION_FEEDS.map(async ({ slug, url, routeFilter }) => {
+      POSITION_FEEDS.map(async ({ slug, url, routeFilter, apiKeyHeader }) => {
+        const headers: Record<string, string> = { 'User-Agent': USER_AGENT };
+        if (apiKeyHeader) {
+          const key = env[apiKeyHeader] as string | undefined;
+          if (key) headers['apikey'] = key;
+        }
         const res = await fetch(url, {
-          headers: { 'User-Agent': USER_AGENT },
+          headers,
           signal: AbortSignal.timeout(15_000),
         });
         if (!res.ok) throw new Error(`positions/${slug}: HTTP ${res.status}`);

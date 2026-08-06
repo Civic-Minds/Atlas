@@ -70,11 +70,14 @@ Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Powers `/api/history-adher
 
 ### Vehicle-position archives (every 1 min)
 
-Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Used for measured headway/speed analysis (e.g. TTC streetcars).
+Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Used for live history and measured headway/speed analysis.
 
 | Agency | Slug | Filter |
 |--------|------|--------|
 | Toronto Transit Commission | `ttc` | Streetcar route_ids only (`/^5(0[1345679]|1[012])$/`) |
+| Burlington Transit | `burlington` | All vehicle positions |
+| Hamilton Street Railway | `hamilton` | All vehicle positions |
+| STM (Montreal) | `stm` | All vehicle positions; requires Worker secret `STM_API_KEY` |
 
 All other agencies: **static** history snapshots only (headway diffs via `atlas-archive`, written on each pipeline refresh) — not GTFS-RT archives.
 
