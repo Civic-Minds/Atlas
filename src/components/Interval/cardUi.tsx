@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
@@ -85,7 +86,7 @@ export function CardReportButton({ title, details }: { title: string; details: s
         <Flag className="w-3.5 h-3.5" />
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
           className="fixed inset-0 z-[1600] flex items-center justify-center bg-black/40 p-4"
           onMouseDown={event => { if (event.target === event.currentTarget) reset(); }}
@@ -96,7 +97,7 @@ export function CardReportButton({ title, details }: { title: string; details: s
             aria-labelledby={dialogTitleId}
             onSubmit={submit}
             onMouseDown={event => event.stopPropagation()}
-            className="w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl"
+            className="w-full max-w-xl max-h-[85vh] overflow-y-auto rounded-2xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl"
           >
             <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border-primary)]">
               <div>
@@ -109,8 +110,9 @@ export function CardReportButton({ title, details }: { title: string; details: s
             </div>
 
             <div className="px-5 py-4 space-y-4">
-              <fieldset className="space-y-1.5">
+              <fieldset>
                 <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">What is wrong?</legend>
+                <div className="grid grid-cols-2 gap-1">
                 {REPORT_REASONS.map(reason => (
                   <label key={reason} className="flex items-start gap-2 px-2.5 py-2 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
                     <input
@@ -126,6 +128,7 @@ export function CardReportButton({ title, details }: { title: string; details: s
                     <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
                   </label>
                 ))}
+                </div>
               </fieldset>
 
               {hasFrequencyReason && (
@@ -164,7 +167,8 @@ export function CardReportButton({ title, details }: { title: string; details: s
               <button type="submit" className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-[11px] font-black hover:opacity-90">Open GitHub report</button>
             </div>
           </form>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

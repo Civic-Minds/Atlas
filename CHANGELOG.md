@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
+
 ## [3.2.16] - 2026-08-06
 
 - Deselecting a route now correctly restores every other route's normal visibility on the map right away
