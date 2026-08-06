@@ -73,9 +73,11 @@ const REPORT_CATEGORIES = [
 type ReportCategoryKey = (typeof REPORT_CATEGORIES)[number]['key'];
 
 export interface CardReportButtonHandle {
-  /** Opens the report dialog with the given reason pre-checked (used by FlaggableValue). */
+  /** Opens the report dialog with the given reason pre-checked after report mode is active. */
   openWithReason: (reason: string) => void;
 }
+
+const REPORT_MODE_EVENT = 'atlas-report-mode';
 
 export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: string[] }>(
   function CardReportButton({ title, details, showLiveReason = false, excludeReasons = [] }, ref) {
@@ -114,6 +116,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const openReport = () => {
     setIsOpen(true);
     requestAnimationFrame(updateReportCardPosition);
+    window.dispatchEvent(new CustomEvent(REPORT_MODE_EVENT, { detail: { reportRef: ref, active: true } }));
   };
 
   React.useEffect(() => {
@@ -140,6 +143,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
   const reset = () => {
     setIsOpen(false);
+    window.dispatchEvent(new CustomEvent(REPORT_MODE_EVENT, { detail: { reportRef: ref, active: false } }));
     setSelectedReasons([]);
     setFrequencyReasons([]);
     setDescription('');
@@ -198,7 +202,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
       {isOpen && createPortal(
         <div
-          className="fixed inset-0 z-[1600]"
+          className="fixed inset-0 z-[1600] pointer-events-none"
           onMouseDown={event => { if (event.target === event.currentTarget) reset(); }}
         >
           <form
@@ -207,13 +211,13 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             aria-labelledby={dialogTitleId}
             onSubmit={submit}
             onMouseDown={event => event.stopPropagation()}
-            className={`absolute w-[min(24rem,calc(100vw-2rem))] max-h-[calc(100vh-2rem)] overflow-y-auto ${FLOATING_CARD}`}
+            className={`pointer-events-auto absolute w-[min(24rem,calc(100vw-2rem))] max-h-[calc(100vh-2rem)] overflow-y-auto ${FLOATING_CARD}`}
             style={{ top: reportCardPosition?.top ?? 16, left: reportCardPosition?.left ?? 16 }}
           >
             <div className="flex items-center justify-between px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)]">
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
-                <p className={`${CARD_NOTICE} mt-0.5`}>Select all that apply (optional).</p>
+                <p className={`${CARD_NOTICE} mt-0.5`}>Choose a category, or click a card value to preselect its reason.</p>
               </div>
               <button type="button" onClick={reset} aria-label="Close report form" className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)]">
                 <X className="w-3.5 h-3.5" />
@@ -318,9 +322,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 });
 
 /**
- * Wraps a card value that can be clicked directly to report a problem with it — no typing
- * required, the reason is pre-checked. Beta-gated (CARD_CLICK_TO_FLAG_ENABLED): new, unproven
- * interaction, renders children unwrapped everywhere else.
+ * Wraps a card value that can be clicked to report a problem after the card's report button has
+ * activated report mode. The reason is pre-checked. Beta-gated (CARD_CLICK_TO_FLAG_ENABLED).
  */
 export function FlaggableValue({ reason, reportRef, children, className = 'inline-flex items-center gap-1' }: {
   reason: string;
@@ -329,7 +332,19 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
   /** Full control over layout — replaces the default `inline-flex items-center gap-1`, doesn't merge with it. */
   className?: string;
 }) {
-  if (!CARD_CLICK_TO_FLAG_ENABLED) return <>{children}</>;
+  const [reportModeActive, setReportModeActive] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!CARD_CLICK_TO_FLAG_ENABLED) return;
+    const onReportMode = (event: Event) => {
+      const detail = (event as CustomEvent<{ reportRef: unknown; active: boolean }>).detail;
+      if (detail?.reportRef === reportRef) setReportModeActive(detail.active);
+    };
+    window.addEventListener(REPORT_MODE_EVENT, onReportMode);
+    return () => window.removeEventListener(REPORT_MODE_EVENT, onReportMode);
+  }, [reportRef]);
+
+  if (!CARD_CLICK_TO_FLAG_ENABLED || !reportModeActive) return <>{children}</>;
   return (
     <button
       type="button"

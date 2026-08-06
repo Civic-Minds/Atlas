@@ -429,7 +429,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {showDirectionSections && group.boundLabel && (
                   <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                 )}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {group.realTier.map((d, i) => {
                     const filterHw = buildRouteServiceSummary(d).filter;
                     const dimmed = maxHeadway !== Infinity && (metricValueForPeriod(filterHw, period) ?? Infinity) > maxHeadway;

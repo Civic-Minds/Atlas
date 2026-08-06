@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Report-field click targets now appear only after opening the report button, and multi-destination route rows use tighter spacing
 - Report-card typography, colours, and spacing now reuse the route and stop card styles for a more consistent report flow
 - Report forms now ask whether the issue is about a route, stop, or filter before showing relevant reasons and explaining the clipboard step
 - Report cards now align with the route or stop panel they open beside
