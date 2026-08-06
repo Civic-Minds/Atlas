@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Route selection now clears cleanly on partially filtered routes — MapLibre no longer rejects the dimming expression ([#340](https://github.com/Civic-Minds/Atlas/issues/340))
 - Report-a-problem no longer requires typing a description if a reason is already checked, and its reason list now only shows options relevant to what you're reporting from
 - Beta: click a value directly on a card (a frequency, a stop name) to report it, with the right reason pre-checked and no typing required
+- Beta: new internal route table (`/apps/diagnostics`) — every route across chosen agencies in one filterable, sortable list, for spotting bad-looking data without clicking through the map one route at a time
 
 ## [3.2.16] - 2026-08-06
 

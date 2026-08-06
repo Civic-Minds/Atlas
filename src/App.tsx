@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useM
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, DIAGNOSTICS_ENABLED } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -11,6 +11,7 @@ import type { StopEntry } from './apps/corridor-search';
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Corridors = React.lazy(() => import('./apps/Corridors'));
+const Diagnostics = React.lazy(() => import('./apps/Diagnostics'));
 import type { AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
@@ -75,6 +76,7 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/fares': 'fares',
   '/apps/history': 'history',
   '/apps/live': 'live',
+  '/apps/diagnostics': 'diagnostics',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -83,6 +85,7 @@ const APP_TO_PATH: Record<AppId, string> = {
   fares: '/apps/fares',
   history: '/apps/history',
   live: '/apps/live',
+  diagnostics: '/apps/diagnostics',
 };
 
 export default function App() {
@@ -93,7 +96,7 @@ export default function App() {
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
   const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED)
-    || (routedApp === 'corridors' && !CORRIDORS_ENABLED);
+    || (routedApp === 'corridors' && !CORRIDORS_ENABLED) || (routedApp === 'diagnostics' && !DIAGNOSTICS_ENABLED);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
   useEffect(() => {
@@ -196,6 +199,7 @@ export default function App() {
   const inCorridors = activeApp === 'corridors';
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
+  const inDiagnostics = activeApp === 'diagnostics';
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -454,6 +458,10 @@ export default function App() {
               Retry
             </button>
           </div>
+        ) : inDiagnostics ? (
+          <React.Suspense fallback={null}>
+            <Diagnostics agencies={agencies} />
+          </React.Suspense>
         ) : (
           <ErrorBoundary label="The map encountered an error.">
           <>

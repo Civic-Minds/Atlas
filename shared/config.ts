@@ -29,7 +29,7 @@ export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
 // beta share identical source; only the Vercel env var differs per branch (VITE_LIVE_ENABLED /
 // VITE_HISTORY_ENABLED set to "true" on beta's preview env). Flip the env var to ship, no merge
 // conflicts either way.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_DIAGNOSTICS_ENABLED'): boolean {
   // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
@@ -41,6 +41,9 @@ export const CORRIDORS_ENABLED = envFlag('VITE_CORRIDORS_ENABLED');
 // Click-to-flag a specific value on a card (frequency, route name, etc.) to report it directly,
 // no typing required. New/unproven interaction -- beta only until it's been used for real.
 export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABLED');
+// Internal route table for spot-checking data quality (/apps/diagnostics). Never meant for the
+// public -- not a "graduating" feature like the others, just kept off the production domain.
+export const DIAGNOSTICS_ENABLED = envFlag('VITE_DIAGNOSTICS_ENABLED');
 // Same env-driven pattern as the flags above: identical source on main and beta, only the
 // Vercel preview env var differs (VITE_BETA_BUILD="true" set on beta only). Distinguishes the
 // two in the browser tab title so beta doesn't look identical to production.
