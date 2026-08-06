@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Report forms now ask whether the issue is about a route, stop, or filter before showing relevant reasons and explaining the clipboard step
 - Report cards now align with the route or stop panel they open beside
 - Report forms now open as floating cards beside the route or stop panel instead of centered modals
 - Copied issue reports now label route diagnostics clearly so stop IDs and gap values are easier to interpret

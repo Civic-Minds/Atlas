@@ -35,6 +35,43 @@ const FREQUENCY_REASONS = [
   'Does not match the current schedule',
 ] as const;
 
+const REPORT_CATEGORIES = [
+  {
+    key: 'route',
+    label: 'Route',
+    description: 'Name, branch, line, frequency, or schedule',
+    reasons: [
+      'Route or agency is missing',
+      'Route or branch is incorrectly combined',
+      'Route name, number, destination, or direction is wrong',
+      'Frequency is wrong',
+      'Schedule, day, or time-period service is wrong',
+      'Route line is missing or follows the wrong path',
+      'Route data is stale',
+    ],
+  },
+  {
+    key: 'stop',
+    label: 'Stop',
+    description: 'Missing, misplaced, or assigned incorrectly',
+    reasons: ['Stop is missing, misplaced, or assigned incorrectly'],
+  },
+  {
+    key: 'filter',
+    label: 'Map or filter',
+    description: 'Search, filter, or route selection',
+    reasons: ['Filter, search, or route selection is wrong'],
+  },
+  {
+    key: 'live',
+    label: 'Live vehicle',
+    description: 'Missing or incorrect live information',
+    reasons: ['Live vehicle information is missing or wrong'],
+  },
+] as const;
+
+type ReportCategoryKey = (typeof REPORT_CATEGORIES)[number]['key'];
+
 export interface CardReportButtonHandle {
   /** Opens the report dialog with the given reason pre-checked (used by FlaggableValue). */
   openWithReason: (reason: string) => void;
@@ -52,6 +89,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const [frequencyReasons, setFrequencyReasons] = React.useState<string[]>([]);
   const [description, setDescription] = React.useState('');
   const [validationError, setValidationError] = React.useState('');
+  const [selectedCategory, setSelectedCategory] = React.useState<ReportCategoryKey | null>(null);
   const reportButtonRef = React.useRef<HTMLButtonElement>(null);
   const [reportCardPosition, setReportCardPosition] = React.useState<{ top: number; left: number } | null>(null);
 
@@ -91,6 +129,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
   React.useImperativeHandle(ref, () => ({
     openWithReason: (reason: string) => {
+      const category = REPORT_CATEGORIES.find(item => item.reasons.includes(reason as never));
+      setSelectedCategory(category?.key ?? null);
       if (reportReasons.includes(reason as (typeof REPORT_REASONS)[number])) {
         setSelectedReasons(current => current.includes(reason) ? current : [...current, reason]);
       }
@@ -105,6 +145,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     setDescription('');
     setValidationError('');
     setReportCardPosition(null);
+    setSelectedCategory(null);
   };
 
   const toggleReason = (reason: string, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
@@ -112,6 +153,17 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   };
 
   const hasFrequencyReason = selectedReasons.includes('Frequency is wrong');
+  const availableCategories = REPORT_CATEGORIES.filter(category =>
+    category.reasons.some(reason => reportReasons.includes(reason as (typeof REPORT_REASONS)[number])),
+  );
+  const selectedCategoryDetails = selectedCategory
+    ? REPORT_CATEGORIES.find(category => category.key === selectedCategory)
+    : undefined;
+  const selectedCategoryReasons = selectedCategoryDetails?.reasons.filter(reason =>
+    reportReasons.includes(reason as (typeof REPORT_REASONS)[number]),
+  ) ?? [];
+  const copiesDiagnostics = details.includes('Generated route metrics from the loaded artifact:')
+    || details.includes('Generated route metrics (loaded artifact):');
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -169,28 +221,56 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             </div>
 
             <div className="px-5 py-4 space-y-4">
-              <fieldset>
-                <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">What is wrong?</legend>
-                <div className="grid grid-cols-2 gap-x-1 gap-y-0">
-                {reportReasons.map(reason => (
-                  <label key={reason} className="flex items-start gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedReasons.includes(reason)}
-                      onChange={() => {
-                        setValidationError('');
-                        if (reason === 'Frequency is wrong' && hasFrequencyReason) setFrequencyReasons([]);
-                        toggleReason(reason, setSelectedReasons);
-                      }}
-                      className="mt-0.5 accent-[var(--accent)]"
-                    />
-                    <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
-                  </label>
-                ))}
-                </div>
-              </fieldset>
+              {!selectedCategory ? (
+                <fieldset>
+                  <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">I have an issue with a…</legend>
+                  <div className="space-y-2">
+                    {availableCategories.map(category => (
+                      <button
+                        key={category.key}
+                        type="button"
+                        onClick={() => { setValidationError(''); setSelectedCategory(category.key); }}
+                        className="w-full rounded-xl border border-[var(--border-primary)] bg-[var(--bg-app)] px-3 py-2.5 text-left hover:bg-[var(--bg-btn-hover)] transition-colors"
+                      >
+                        <span className="block text-[11px] font-black text-[var(--text-primary)]">{category.label}</span>
+                        <span className="block mt-0.5 text-[10px] font-bold text-[var(--text-dim)]">{category.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : (
+                <fieldset>
+                  <div className="flex items-center justify-between mb-2">
+                    <legend className="text-[10px] font-black text-[var(--text-muted)]">What is wrong with this {selectedCategoryDetails?.label.toLowerCase()}?</legend>
+                    <button
+                      type="button"
+                      onClick={() => { setValidationError(''); setSelectedCategory(null); }}
+                      className="text-[10px] font-black text-[var(--text-muted)] hover:text-[var(--accent)]"
+                    >
+                      Change
+                    </button>
+                  </div>
+                  <div className="space-y-0.5">
+                    {selectedCategoryReasons.map(reason => (
+                      <label key={reason} className="flex items-start gap-1.5 px-1.5 py-1 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedReasons.includes(reason)}
+                          onChange={() => {
+                            setValidationError('');
+                            if (reason === 'Frequency is wrong' && hasFrequencyReason) setFrequencyReasons([]);
+                            toggleReason(reason, setSelectedReasons);
+                          }}
+                          className="mt-0.5 accent-[var(--accent)]"
+                        />
+                        <span className="text-[11px] font-bold text-[var(--text-primary)] leading-snug">{reason}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
 
-              {hasFrequencyReason && (
+              {selectedCategory && hasFrequencyReason && (
                 <fieldset className="space-y-1.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
                   <legend className="px-1 text-[10px] font-black text-[var(--text-muted)]">Frequency details</legend>
                   {FREQUENCY_REASONS.map(reason => (
@@ -207,7 +287,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 </fieldset>
               )}
 
-              <label className="block">
+              {selectedCategory && <label className="block">
                 <span className="text-[10px] font-black text-[var(--text-muted)]">What’s wrong? {selectedReasons.length === 0 && <span className="text-[var(--accent)]">Required</span>}</span>
                 <textarea
                   value={description}
@@ -216,13 +296,18 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                   placeholder="Describe what you saw and what you expected."
                   className="mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 text-[11px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]"
                 />
-              </label>
+              </label>}
+              {selectedCategory && copiesDiagnostics && (
+                <p className="text-[10px] font-bold text-[var(--text-dim)]">
+                  Submitting copies route diagnostics to your clipboard so you can paste them into GitHub.
+                </p>
+              )}
               {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
             </div>
 
             <div className="flex justify-end gap-2 px-5 pb-4">
               <button type="button" onClick={reset} className="px-3 py-2 rounded-lg text-[11px] font-black text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]">Cancel</button>
-              <button type="submit" className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-[11px] font-black hover:opacity-90">Open GitHub report</button>
+              {selectedCategory && <button type="submit" className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-[11px] font-black hover:opacity-90">Open GitHub report</button>}
             </div>
           </form>
         </div>,
