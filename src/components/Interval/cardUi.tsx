@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
-import { CARD_NOTICE, CARD_NOTICE_ACTION, PANEL_ENTER_LEFT } from '../../styles';
+import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT } from '../../styles';
 import { openAtlasIssueReport } from '../../utils/reportIssue';
 import { CARD_CLICK_TO_FLAG_ENABLED } from '../../../shared/config';
 
@@ -52,13 +52,48 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const [frequencyReasons, setFrequencyReasons] = React.useState<string[]>([]);
   const [description, setDescription] = React.useState('');
   const [validationError, setValidationError] = React.useState('');
+  const reportButtonRef = React.useRef<HTMLButtonElement>(null);
+  const [reportCardPosition, setReportCardPosition] = React.useState<{ top: number; left: number } | null>(null);
+
+  const updateReportCardPosition = React.useCallback(() => {
+    const button = reportButtonRef.current;
+    if (!button || typeof window === 'undefined') return;
+    const rect = button.getBoundingClientRect();
+    const cardWidth = 384;
+    const edge = 16;
+    if (window.innerWidth < 640) {
+      setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left: edge });
+      return;
+    }
+    const rightPosition = rect.right + 12;
+    const left = rightPosition + cardWidth <= window.innerWidth - edge
+      ? rightPosition
+      : Math.max(edge, rect.left - cardWidth - 12);
+    setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left });
+  }, []);
+
+  const openReport = () => {
+    setIsOpen(true);
+    requestAnimationFrame(updateReportCardPosition);
+  };
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    updateReportCardPosition();
+    window.addEventListener('resize', updateReportCardPosition);
+    window.addEventListener('scroll', updateReportCardPosition, true);
+    return () => {
+      window.removeEventListener('resize', updateReportCardPosition);
+      window.removeEventListener('scroll', updateReportCardPosition, true);
+    };
+  }, [isOpen, updateReportCardPosition]);
 
   React.useImperativeHandle(ref, () => ({
     openWithReason: (reason: string) => {
       if (reportReasons.includes(reason as (typeof REPORT_REASONS)[number])) {
         setSelectedReasons(current => current.includes(reason) ? current : [...current, reason]);
       }
-      setIsOpen(true);
+      openReport();
     },
   }), [reportReasons]);
 
@@ -68,6 +103,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     setFrequencyReasons([]);
     setDescription('');
     setValidationError('');
+    setReportCardPosition(null);
   };
 
   const toggleReason = (reason: string, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
@@ -98,7 +134,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
+        ref={reportButtonRef}
+        onClick={openReport}
         aria-label="Report a problem with this card"
         title="Report a problem with this card"
         className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
@@ -108,7 +145,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
       {isOpen && createPortal(
         <div
-          className="fixed inset-0 z-[1600] flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-[1600]"
           onMouseDown={event => { if (event.target === event.currentTarget) reset(); }}
         >
           <form
@@ -117,7 +154,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             aria-labelledby={dialogTitleId}
             onSubmit={submit}
             onMouseDown={event => event.stopPropagation()}
-            className="w-full max-w-xl max-h-[85vh] overflow-y-auto rounded-2xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl"
+            className={`absolute w-[min(24rem,calc(100vw-2rem))] max-h-[calc(100vh-2rem)] overflow-y-auto ${FLOATING_CARD}`}
+            style={{ top: reportCardPosition?.top ?? 16, left: reportCardPosition?.left ?? 16 }}
           >
             <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border-primary)]">
               <div>

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Report forms now open as floating cards beside the route or stop panel instead of centered modals
 - Copied issue reports now label route diagnostics clearly so stop IDs and gap values are easier to interpret
 - Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
 - Route selection now clears cleanly on partially filtered routes — MapLibre no longer rejects the dimming expression ([#340](https://github.com/Civic-Minds/Atlas/issues/340))
