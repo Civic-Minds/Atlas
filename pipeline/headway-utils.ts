@@ -272,6 +272,21 @@ export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
 export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
 
 /**
+ * Normalize both GTFS overnight notations before the Night Service gap check:
+ * plain 00:00-05:59 times need a +24-hour copy, while overnight-only service
+ * IDs already arrive in `overnightOnlyTimes` shifted into the same window.
+ */
+export function nightServiceDepartureTimes(
+  routeTimes: number[] | undefined,
+  overnightOnlyTimes: number[] = [],
+): number[] {
+  return forCrossMidnightWindow(
+    [...(routeTimes ?? []), ...overnightOnlyTimes],
+    NIGHT_SERVICE_WINDOW_END_MIN,
+  );
+}
+
+/**
  * Does this route have sustained overnight service: at least one departure every
  * maxGapMinutes across the whole [start, end] window, with no gap at either edge. See
  * hasSustainedServiceInWindow above for the shared boundary-gap logic.

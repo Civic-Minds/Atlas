@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -293,6 +293,20 @@ describe('hasSustainedNightService', () => {
   it('respects custom window and gap parameters', () => {
     expect(hasSustainedNightService([1440, 1470, 1500], 1440, 1500, 30)).toBe(true);
     expect(hasSustainedNightService([1440, 1500], 1440, 1500, 30)).toBe(false);
+  });
+});
+
+describe('nightServiceDepartureTimes', () => {
+  it('shifts plain midnight-to-6am departures into the Night Service window', () => {
+    const times = [0, 60, 120, 180, 240, 300];
+    expect(nightServiceDepartureTimes(times)).toEqual([0, 60, 120, 180, 240, 300, 1440, 1500, 1560, 1620, 1680, 1740]);
+    expect(hasSustainedNightService(nightServiceDepartureTimes(times))).toBe(true);
+  });
+
+  it('keeps already-shifted overnight-only departures in the same window', () => {
+    const times = [1440, 1500, 1560, 1620, 1680, 1740];
+    expect(nightServiceDepartureTimes(undefined, times)).toEqual(times);
+    expect(hasSustainedNightService(nightServiceDepartureTimes(undefined, times))).toBe(true);
   });
 });
 

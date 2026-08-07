@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Night Service now finds overnight-only routes, including route numbers shared across daytime and overnight patterns
 - Report forms now match route-card width, spacing, and wording, with single-category reports opening directly to their relevant question
 - Beta now exposes the diagnostics table from a Tools button beside Info
 - Frequency-filter overlays no longer bring back routes when only one direction qualifies, and refreshes skip feeds when every dated part has expired
