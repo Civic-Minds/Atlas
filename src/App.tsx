@@ -79,7 +79,7 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/history': 'history',
   '/apps/live': 'live',
   '/apps/night': 'night',
-  '/apps/diagnostics': 'diagnostics',
+  '/apps/diagnostics/table': 'diagnostics',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -89,7 +89,7 @@ const APP_TO_PATH: Record<AppId, string> = {
   history: '/apps/history',
   live: '/apps/live',
   night: '/apps/night',
-  diagnostics: '/apps/diagnostics',
+  diagnostics: '/apps/diagnostics/table',
 };
 
 export default function App() {
@@ -412,17 +412,21 @@ export default function App() {
           </a>
         )}
 
-        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
+        {!inDiagnostics && (
+          <>
+            <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
-        <a
-          href={inNight ? '/' : '/apps/night'}
-          aria-label={inNight ? 'Back to frequency map' : 'Night service'}
-          aria-pressed={inNight}
-          className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
-        >
-          <Moon className="w-3.5 h-3.5" />
-          <span>Night Service</span>
-        </a>
+            <a
+              href={inNight ? '/' : '/apps/night'}
+              aria-label={inNight ? 'Back to frequency map' : 'Night service'}
+              aria-pressed={inNight}
+              className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+            >
+              <Moon className="w-3.5 h-3.5" />
+              <span>Night Service</span>
+            </a>
+          </>
+        )}
 
         </div>
       </div>
