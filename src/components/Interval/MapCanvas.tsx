@@ -819,7 +819,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         map.flyTo({ center: [coords.longitude, coords.latitude], zoom: 14, duration: 1200 });
         onLocate?.(coords.latitude, coords.longitude);
       },
-      () => showMapHint('Location unavailable — check browser permissions'),
+      error => {
+        // error.code: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT. The old
+        // message blamed "browser permissions" for all three, which is wrong (and confusing)
+        // for the other two -- POSITION_UNAVAILABLE is usually the OS's own location services
+        // being off for this browser, not a site-permission problem at all.
+        const message = error.code === error.PERMISSION_DENIED
+          ? 'Location access denied — check your browser\'s site permissions'
+          : error.code === error.TIMEOUT
+          ? 'Location request timed out — try again'
+          : 'Couldn\'t determine your location — check your device\'s location services';
+        showMapHint(message);
+      },
       { timeout: 8000 }
     );
   };
