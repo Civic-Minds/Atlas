@@ -5,12 +5,17 @@ import type { ShapeProperties } from '../hooks/useAgencyData';
 import { buildRouteFacts, metricValueForPeriod } from '../utils/routeFacts';
 import { TIME_PERIODS, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../../shared/dayTypes';
+import { SURFACE, FLOATING_CARD } from '../styles';
 
 // useAgencyData normally loads by viewport bbox intersection. This table isn't tied to a map
 // viewport, so cover the whole world -- what actually loads is controlled by which agencies are
 // passed in (the region/search filters below), not by this bounds check.
 const WORLD_BOUNDS = { s: -85, w: -180, n: 85, e: 180 };
 const EMPTY_AGENCIES: Agency[] = [];
+// Distinct from the '' "nothing picked yet" sentinel below, so explicitly choosing "All
+// regions" is a real scope choice (loads everything) rather than indistinguishable from
+// the untouched default state.
+const ALL_REGIONS = '__all__';
 
 interface DiagnosticsProps {
   agencies: Agency[];
@@ -43,7 +48,7 @@ const COLUMNS: { key: SortKey; label: string }[] = [
  * linked from the nav; reachable only by navigating to /apps/diagnostics directly.
  */
 export default function Diagnostics({ agencies }: DiagnosticsProps) {
-  const [regionFilter, setRegionFilter] = useState('');
+  const [regionFilter, setRegionFilter] = useState(ALL_REGIONS);
   const [agencySearch, setAgencySearch] = useState('');
   const [day, setDay] = useState<DayType>(getNowDay());
   const [period, setPeriod] = useState<PeriodKey | 'all'>('midday');
@@ -61,14 +66,15 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
   const filteredAgencies = useMemo(() => {
     const q = agencySearch.trim().toLowerCase();
     return agencies.filter(a => {
-      if (regionFilter && a.region !== regionFilter) return false;
+      if (regionFilter && regionFilter !== ALL_REGIONS && a.region !== regionFilter) return false;
       if (q && !a.name.toLowerCase().includes(q) && !a.slug.toLowerCase().includes(q)) return false;
       return true;
     });
   }, [agencies, regionFilter, agencySearch]);
 
-  // Nothing fetches until a scope is picked -- loading all 400+ agencies' GeoJSON at once by
-  // default would be a real amount of data for a page that's just for spot-checking.
+  // Defaults to All regions so the table has something in it on load. Clearing the region
+  // dropdown to "Select a region..." (regionFilter === '') opts back out of loading anything,
+  // for whenever you specifically want to search one agency without pulling in everyone else.
   const hasScope = regionFilter !== '' || agencySearch.trim() !== '';
   const { layers, isLoading } = useAgencyData(hasScope ? filteredAgencies : EMPTY_AGENCIES, WORLD_BOUNDS);
 
@@ -135,71 +141,92 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
     else { setSortKey(key); setSortDir('asc'); }
   };
 
-  const inputClass = 'text-xs font-bold px-2 py-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-panel)] text-[var(--text-primary)]';
+  const inputClass = `h-8 px-3 text-xs font-bold rounded-full ${SURFACE} text-[var(--text-primary)] shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]`;
 
   return (
     <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4 pt-24">
-      <h1 className="text-lg font-black mb-3">
-        Route Diagnostics <span className="text-[10px] font-bold text-[var(--text-dim)] align-middle">internal, beta only</span>
-      </h1>
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-lg font-black mb-4">Route Diagnostics</h1>
 
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className={inputClass}>
-          <option value="">All regions…</option>
-          {regions.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
-        <input
-          value={agencySearch}
-          onChange={e => setAgencySearch(e.target.value)}
-          placeholder="Search agency name or slug…"
-          className={`${inputClass} w-56`}
-        />
-        <select value={day} onChange={e => setDay(e.target.value as DayType)} className={inputClass}>
-          {DAY_TYPES.map(d => <option key={d} value={d}>{d}</option>)}
-        </select>
-        <select value={period} onChange={e => setPeriod(e.target.value as PeriodKey | 'all')} className={inputClass}>
-          <option value="all">All day</option>
-          {TIME_PERIODS.map(p => <option key={p.key} value={p.key}>{p.label}</option>)}
-        </select>
-        <input value={minFreq} onChange={e => setMinFreq(e.target.value)} placeholder="Min min" type="number" className={`${inputClass} w-20`} />
-        <input value={maxFreq} onChange={e => setMaxFreq(e.target.value)} placeholder="Max min" type="number" className={`${inputClass} w-20`} />
-        <span className="text-[10px] font-bold text-[var(--text-dim)]">
-          {sortedRows.length} rows{isLoading ? ' · loading…' : ''}
-        </span>
+        <div className="flex flex-wrap items-end gap-3 mb-5">
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Region</span>
+            <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className={inputClass}>
+              <option value="">Select a region…</option>
+              <option value={ALL_REGIONS}>All regions</option>
+              {regions.map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Agency</span>
+            <input
+              value={agencySearch}
+              onChange={e => setAgencySearch(e.target.value)}
+              placeholder="Search name or slug…"
+              className={`${inputClass} w-56`}
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Day</span>
+            <select value={day} onChange={e => setDay(e.target.value as DayType)} className={inputClass}>
+              {DAY_TYPES.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Period</span>
+            <select value={period} onChange={e => setPeriod(e.target.value as PeriodKey | 'all')} className={inputClass}>
+              <option value="all">All day</option>
+              {TIME_PERIODS.map(p => <option key={p.key} value={p.key}>{p.label}</option>)}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Min freq</span>
+            <input value={minFreq} onChange={e => setMinFreq(e.target.value)} placeholder="min" type="number" className={`${inputClass} w-24`} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Max freq</span>
+            <input value={maxFreq} onChange={e => setMaxFreq(e.target.value)} placeholder="min" type="number" className={`${inputClass} w-24`} />
+          </label>
+          <span className="text-[10px] font-bold text-[var(--text-dim)] pb-2">
+            {sortedRows.length} rows{isLoading ? ' · loading…' : ''}
+          </span>
+        </div>
+
+        {!hasScope ? (
+          <p className="text-xs font-bold text-[var(--text-dim)]">
+            Pick a region or search an agency to load its routes — nothing loads by default.
+          </p>
+        ) : (
+          <div className={`${FLOATING_CARD} overflow-hidden`}>
+            <table className="w-full text-xs border-collapse">
+              <thead>
+                <tr className="text-left border-b border-[var(--border-primary)]">
+                  {COLUMNS.map(({ key, label }) => (
+                    <th
+                      key={key}
+                      onClick={() => toggleSort(key)}
+                      className="cursor-pointer select-none px-4 py-2.5 font-black hover:text-[var(--accent)] whitespace-nowrap"
+                    >
+                      {label}{sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {sortedRows.map(r => (
+                  <tr key={r.key} className="border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors">
+                    <td className="px-4 py-2 font-bold whitespace-nowrap">{r.agencyName}</td>
+                    <td className="px-4 py-2 font-black whitespace-nowrap">{r.routeLabel}</td>
+                    <td className="px-4 py-2">{r.headsign}</td>
+                    <td className="px-4 py-2">{r.tier ?? '—'}</td>
+                    <td className="px-4 py-2 font-black whitespace-nowrap">{r.frequency != null ? `every ${r.frequency} min` : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-
-      {!hasScope ? (
-        <p className="text-xs font-bold text-[var(--text-dim)]">
-          Pick a region or search an agency to load its routes — nothing loads by default.
-        </p>
-      ) : (
-        <table className="w-full text-xs border-collapse">
-          <thead>
-            <tr className="text-left border-b border-[var(--border-primary)]">
-              {COLUMNS.map(({ key, label }) => (
-                <th
-                  key={key}
-                  onClick={() => toggleSort(key)}
-                  className="cursor-pointer select-none px-2 py-1.5 font-black hover:text-[var(--accent)] whitespace-nowrap"
-                >
-                  {label}{sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sortedRows.map(r => (
-              <tr key={r.key} className="border-b border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)]">
-                <td className="px-2 py-1 font-bold whitespace-nowrap">{r.agencyName}</td>
-                <td className="px-2 py-1 font-black whitespace-nowrap">{r.routeLabel}</td>
-                <td className="px-2 py-1">{r.headsign}</td>
-                <td className="px-2 py-1">{r.tier ?? '—'}</td>
-                <td className="px-2 py-1 font-black whitespace-nowrap">{r.frequency != null ? `every ${r.frequency} min` : '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
     </div>
   );
 }
