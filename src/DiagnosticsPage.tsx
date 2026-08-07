@@ -31,7 +31,7 @@ export default function DiagnosticsPage() {
           </div>
         </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
-        <span className="text-sm sm:text-base font-black text-[var(--text-primary)] leading-[25px] sm:leading-[30px]">Route Diagnostics</span>
+        <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] leading-none">Route Diagnostics</span>
       </div>
 
       <main className="absolute inset-0 overflow-hidden">
