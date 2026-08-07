@@ -221,44 +221,43 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
 
   return (
     <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4 pt-24">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-lg font-black mb-4">Route Diagnostics</h1>
+      <h1 className="text-lg font-black mb-4">Route Diagnostics</h1>
 
-        <div className="flex flex-wrap items-end gap-3 mb-3">
+      <div className="flex items-start gap-4">
+        <aside className={`w-64 shrink-0 sticky top-24 ${FLOATING_CARD} p-4 flex flex-col gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto`}>
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Region</span>
-            <select value={regionFilter} onChange={e => { setRegionFilter(e.target.value); resetPage(); }} className={inputClass}>
+            <span className="text-[10px] font-bold text-[var(--text-dim)]">Region</span>
+            <select value={regionFilter} onChange={e => { setRegionFilter(e.target.value); resetPage(); }} className={`${inputClass} w-full`}>
               <option value="">Select a region…</option>
               <option value={ALL_REGIONS}>All regions</option>
               {regions.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Agency</span>
+            <span className="text-[10px] font-bold text-[var(--text-dim)]">Agency</span>
             <input
               value={agencySearch}
               onChange={e => { setAgencySearch(e.target.value); resetPage(); }}
               placeholder="Search name or slug…"
-              className={`${inputClass} w-56`}
+              className={`${inputClass} w-full`}
             />
           </label>
-          <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Min freq</span>
-            <input value={minFreq} onChange={e => { setMinFreq(e.target.value); resetPage(); }} placeholder="min" type="number" className={`${inputClass} w-24`} />
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-[var(--text-dim)] px-1">Max freq</span>
-            <input value={maxFreq} onChange={e => { setMaxFreq(e.target.value); resetPage(); }} placeholder="min" type="number" className={`${inputClass} w-24`} />
-          </label>
-          <span className="text-[10px] font-bold text-[var(--text-dim)] pb-2">
-            {sortedRows.length} rows{isLoading ? ' · loading…' : ''}
-          </span>
-        </div>
+          <div className="flex gap-2">
+            <label className="flex flex-col gap-1 flex-1 min-w-0">
+              <span className="text-[10px] font-bold text-[var(--text-dim)]">Min freq</span>
+              <input value={minFreq} onChange={e => { setMinFreq(e.target.value); resetPage(); }} placeholder="min" type="number" className={`${inputClass} w-full`} />
+            </label>
+            <label className="flex flex-col gap-1 flex-1 min-w-0">
+              <span className="text-[10px] font-bold text-[var(--text-dim)]">Max freq</span>
+              <input value={maxFreq} onChange={e => { setMaxFreq(e.target.value); resetPage(); }} placeholder="min" type="number" className={`${inputClass} w-full`} />
+            </label>
+          </div>
 
-        <div className={`${FLOATING_CARD} px-4 py-3 mb-5 flex flex-wrap gap-x-6 gap-y-3`}>
+          <div className="h-px bg-[var(--border-primary)]" />
+
           <div>
             <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide mb-1.5">Day of Service</p>
-            <div className="flex gap-1.5">
+            <div className="flex flex-wrap gap-1.5">
               {DAY_TYPES.map(d => (
                 <FilterPill key={d} active={day === d} onClick={() => { setDay(d); resetPage(); }}>{d}</FilterPill>
               ))}
@@ -281,7 +280,7 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
               ))}
             </div>
           </div>
-          {availableTiers.length > 0 && (
+          {!isLoading && availableTiers.length > 0 && (
             <div>
               <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide mb-1.5">Tier</p>
               <div className="flex flex-wrap gap-1.5">
@@ -291,12 +290,23 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
               </div>
             </div>
           )}
-        </div>
 
+          <div className="h-px bg-[var(--border-primary)]" />
+          <span className="text-[10px] font-bold text-[var(--text-dim)]">
+            {sortedRows.length} rows{isLoading ? ' · loading…' : ''}
+          </span>
+        </aside>
+
+        <div className="flex-1 min-w-0">
         {!hasScope ? (
           <p className="text-xs font-bold text-[var(--text-dim)]">
             Pick a region or search an agency to load its routes — nothing loads by default.
           </p>
+        ) : isLoading ? (
+          // Rows stream in one agency at a time and get re-sorted on every arrival -- rendering
+          // that live was a visible, constant reshuffle. Wait for the full set before showing
+          // anything so the table appears once, already sorted.
+          <p className="text-xs font-bold text-[var(--text-dim)]">Loading routes…</p>
         ) : (
           <>
             <div className={`${FLOATING_CARD} overflow-hidden`}>
@@ -335,12 +345,12 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                           onClick={() => setExpandedKey(expanded ? null : r.key)}
                           className={`cursor-pointer border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors ${expanded ? 'bg-[var(--bg-btn-hover)]' : ''}`}
                         >
-                          <td className="px-4 py-2 font-bold whitespace-nowrap">{r.agencyName}</td>
+                          <td className="px-4 py-2 font-bold max-w-[220px] truncate" title={r.agencyName}>{r.agencyName}</td>
                           <td className="px-4 py-2 font-black whitespace-nowrap">{r.routeLabel}</td>
-                          <td className="px-4 py-2">{r.headsign}</td>
+                          <td className="px-4 py-2 max-w-[260px] truncate" title={r.headsign}>{r.headsign}</td>
                           <td className="px-4 py-2 whitespace-nowrap">{r.modeLabel}</td>
                           <td className="px-4 py-2">{r.tier ?? '—'}</td>
-                          <td className="px-4 py-2 font-black whitespace-nowrap">{r.frequency != null ? `every ${r.frequency} min` : '—'}</td>
+                          <td className="px-4 py-2 font-black whitespace-nowrap">{r.frequency != null ? `${r.frequency} min` : '—'}</td>
                         </tr>
                         {expanded && (
                           <tr className="border-b border-[var(--border-primary)] last:border-0 bg-[var(--bg-app)]">
@@ -393,6 +403,7 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
             )}
           </>
         )}
+        </div>
       </div>
     </div>
   );
