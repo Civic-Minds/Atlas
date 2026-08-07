@@ -364,7 +364,10 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                                   <div><dt className="text-[var(--text-dim)] font-bold">Period</dt><dd className="font-bold">{period}</dd></div>
                                   <div><dt className="text-[var(--text-dim)] font-bold">Agency slug</dt><dd className="font-bold">{r.agencySlug}</dd></div>
                                 </dl>
-                                <div className="shrink-0">
+                                {/* CardReportButton sizes/positions its dialog off this anchor's rect -- without an
+                                    explicit width it falls back to the bare flag icon (~14px), placing the dialog
+                                    as a sliver at the table's right edge instead of a normal-sized popover. */}
+                                <div className="shrink-0 w-72 flex justify-end" data-report-anchor>
                                   <CardReportButton title={title} details={details} />
                                 </div>
                               </div>
