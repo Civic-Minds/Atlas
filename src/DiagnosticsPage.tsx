@@ -21,13 +21,15 @@ export default function DiagnosticsPage() {
   return (
     <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden">
       <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
-        <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl">
-          <MapIcon className="w-3.5 h-3.5 text-white" />
-        </div>
-        <div className="flex flex-col leading-tight">
-          <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-          <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
-        </div>
+        <a href="/" aria-label="Back to the frequency map" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity">
+            <MapIcon className="w-3.5 h-3.5 text-white" />
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
+            <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
+          </div>
+        </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
         <span className="text-sm sm:text-base font-black text-[var(--text-primary)] leading-[25px] sm:leading-[30px]">Route Diagnostics</span>
       </div>
