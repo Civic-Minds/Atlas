@@ -35,16 +35,16 @@ export default function ToolsMenu() {
       </button>
 
       {open && (
-        <div className={`absolute top-10 right-0 w-56 ${FLOATING_CARD} overflow-hidden ${Z_DROPDOWN} py-1.5`}>
+        <div className={`absolute top-10 right-0 w-64 ${FLOATING_CARD} overflow-hidden ${Z_DROPDOWN} py-1.5`}>
           <a
             href="/apps/diagnostics/table"
             onClick={() => setOpen(false)}
             className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[var(--bg-hover)] transition-colors"
           >
-            <Table2 className="w-5 h-5 text-[var(--text-dim)]" />
+            <Table2 className="w-5 h-5 text-[var(--text-dim)] shrink-0" />
             <span className="min-w-0">
               <span className="block text-xs font-bold text-[var(--text-primary)]">Diagnostics table</span>
-              <span className="block text-[10px] text-[var(--text-muted)] truncate">Inspect route data across agencies</span>
+              <span className="block text-[10px] text-[var(--text-muted)]">Inspect route data across agencies</span>
             </span>
           </a>
         </div>

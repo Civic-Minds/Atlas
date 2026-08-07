@@ -114,6 +114,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const [validationError, setValidationError] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState<ReportCategoryKey | null>(null);
   const reportButtonRef = React.useRef<HTMLButtonElement>(null);
+  const formRef = React.useRef<HTMLFormElement>(null);
   const [reportCardPosition, setReportCardPosition] = React.useState<{ top: number; left: number; width: number } | null>(null);
 
   const updateReportCardPosition = React.useCallback(() => {
@@ -123,15 +124,20 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     const rect = anchor.getBoundingClientRect();
     const edge = 16;
     const cardWidth = Math.min(rect.width, window.innerWidth - edge * 2);
+    // Clamp against the form's actual rendered height, not a flat guess -- checking "Frequency is
+    // wrong" (or any other content growth) can add 100s of px after the dialog first opens, and a
+    // fixed offset let the submit button end up clipped below the viewport with no way to scroll to it.
+    const formHeight = formRef.current?.getBoundingClientRect().height ?? 120;
+    const top = Math.max(edge, Math.min(rect.top, window.innerHeight - edge - formHeight));
     if (window.innerWidth < 640) {
-      setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left: edge, width: cardWidth });
+      setReportCardPosition({ top, left: edge, width: cardWidth });
       return;
     }
     const rightPosition = rect.right + 12;
     const left = rightPosition + cardWidth <= window.innerWidth - edge
       ? rightPosition
       : Math.max(edge, rect.left - cardWidth - 12);
-    setReportCardPosition({ top: Math.max(edge, Math.min(rect.top, window.innerHeight - 120)), left, width: cardWidth });
+    setReportCardPosition({ top, left, width: cardWidth });
   }, []);
 
   const openReport = () => {
@@ -150,6 +156,17 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
       window.removeEventListener('resize', updateReportCardPosition);
       window.removeEventListener('scroll', updateReportCardPosition, true);
     };
+  }, [isOpen, updateReportCardPosition]);
+
+  // Re-clamp whenever the dialog's own content changes height (e.g. checking "Frequency is
+  // wrong" reveals 5 more checkboxes) -- the effect above only reacts to isOpen/resize/scroll.
+  React.useEffect(() => {
+    if (!isOpen || typeof ResizeObserver === 'undefined') return;
+    const form = formRef.current;
+    if (!form) return;
+    const observer = new ResizeObserver(() => updateReportCardPosition());
+    observer.observe(form);
+    return () => observer.disconnect();
   }, [isOpen, updateReportCardPosition]);
 
   React.useImperativeHandle(ref, () => ({
@@ -235,12 +252,13 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
           onMouseDown={event => { if (event.target === event.currentTarget) reset(); }}
         >
           <form
+            ref={formRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby={dialogTitleId}
             onSubmit={submit}
             onMouseDown={event => event.stopPropagation()}
-            className={`pointer-events-auto absolute ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-2rem)] overflow-y-auto ${FLOATING_CARD}`}
+            className={`pointer-events-auto absolute ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain ${FLOATING_CARD}`}
             style={{
               top: reportCardPosition?.top ?? 16,
               left: reportCardPosition?.left ?? 16,
@@ -257,7 +275,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               </button>
             </div>
 
-            <div className="px-4 py-4 space-y-3">
+            <div className="px-4 py-3 space-y-2">
               {!selectedCategory ? (
                 <fieldset>
                   <legend className="text-[10px] font-black text-[var(--text-muted)] mb-2">I have an issue with a…</legend>
@@ -287,9 +305,9 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                       Change
                     </button>
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0">
                     {selectedCategoryReasons.map(reason => (
-                      <label key={reason} className="flex items-start gap-1.5 px-1.5 py-1 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                      <label key={reason} className="flex items-start gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={selectedReasons.includes(reason)}
@@ -308,10 +326,10 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               )}
 
               {selectedCategory && hasFrequencyReason && (
-                <fieldset className="space-y-1.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
+                <fieldset className="space-y-0.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] p-3">
                   <legend className="px-1 text-[10px] font-black text-[var(--text-muted)]">Frequency details</legend>
                   {FREQUENCY_REASONS.map(reason => (
-                    <label key={reason} className="flex items-start gap-2 px-1.5 py-1.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+                    <label key={reason} className="flex items-start gap-2 px-1.5 py-1 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={frequencyReasons.includes(reason)}
@@ -342,7 +360,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
             </div>
 
-            <div className="flex justify-end gap-2 px-4 pb-4">
+            <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
               <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-[10px] font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">Cancel</button>
               {selectedCategory && <button type="submit" className="h-8 px-3 rounded-lg bg-[var(--accent)] text-[10px] font-black text-white hover:opacity-90 transition-opacity">Open GitHub report</button>}
             </div>
