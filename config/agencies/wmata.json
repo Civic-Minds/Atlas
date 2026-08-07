@@ -12,11 +12,11 @@
     39.1562,
     -76.7167
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1846.zip?alt=media",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
   "supplementalFeedUrls": [
-    "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1847.zip?alt=media"
+    "https://files.mobilitydatabase.org/mdb-1847/latest.zip"
   ],
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-district-of-columbia-washington-wmata-gtfs-1846.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
   "lastFeedExpiry": "20241221",
   "lastFeedVersion": "S1000219",
   "lastRefreshedAt": "2026-08-03",
