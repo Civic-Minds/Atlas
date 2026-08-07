@@ -76,7 +76,7 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/fares': 'fares',
   '/apps/history': 'history',
   '/apps/live': 'live',
-  '/apps/diagnostics': 'diagnostics',
+  '/apps/diagnostics/table': 'diagnostics',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -85,7 +85,7 @@ const APP_TO_PATH: Record<AppId, string> = {
   fares: '/apps/fares',
   history: '/apps/history',
   live: '/apps/live',
-  diagnostics: '/apps/diagnostics',
+  diagnostics: '/apps/diagnostics/table',
 };
 
 export default function App() {
