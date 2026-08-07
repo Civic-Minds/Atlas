@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed caching issue during PMTiles compilation by appending cache-buster parameters to R2 GeoJSON fetches
 - Updated WMATA's feed URLs to the active Mobility Database endpoints because the legacy GCS mirrors were frozen in late 2024
 - Route cards now use a stable branch frequency when a period's median is not sustained, preventing false 2-minute readings ([#319](https://github.com/Civic-Minds/Atlas/issues/319))
 - Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup

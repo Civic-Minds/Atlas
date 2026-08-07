@@ -22,9 +22,10 @@ interface FeatureCollection {
 }
 
 async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | null> {
+  const urlWithBuster = url.includes('?') ? `${url}&v=${Date.now()}` : `${url}?v=${Date.now()}`;
   for (let i = 0; i < retries; i++) {
     try {
-      const res = await fetch(url);
+      const res = await fetch(urlWithBuster);
       if (!res.ok) {
         console.warn(`fetch ${url} not ok ${res.status}, retry ${i+1}`);
         const retryAfter = Number(res.headers.get('retry-after'));
