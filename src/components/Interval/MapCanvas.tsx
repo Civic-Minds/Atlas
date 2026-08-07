@@ -820,16 +820,30 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         onLocate?.(coords.latitude, coords.longitude);
       },
       error => {
-        // error.code: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT. The old
-        // message blamed "browser permissions" for all three, which is wrong (and confusing)
-        // for the other two -- POSITION_UNAVAILABLE is usually the OS's own location services
-        // being off for this browser, not a site-permission problem at all.
-        const message = error.code === error.PERMISSION_DENIED
-          ? 'Location access denied — check your browser\'s site permissions'
-          : error.code === error.TIMEOUT
-          ? 'Location request timed out — try again'
-          : 'Couldn\'t determine your location — check your device\'s location services';
-        showMapHint(message);
+        // error.code: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT.
+        // POSITION_UNAVAILABLE/TIMEOUT are usually Wi-Fi-based positioning failing to
+        // triangulate anything (Ethernet-only, Wi-Fi off) -- that fails identically for every
+        // site on the machine, not just this one, so fall back to an approximate (city-level)
+        // fix from Vercel's edge IP-geolocation headers rather than just erroring out. Skip the
+        // fallback for PERMISSION_DENIED -- the user explicitly said no, respect that.
+        if (error.code === error.PERMISSION_DENIED) {
+          showMapHint('Location access denied — check your browser\'s site permissions');
+          return;
+        }
+        fetch('/api/geo')
+          .then(r => (r.ok ? r.json() : null))
+          .then((geo: { latitude: number; longitude: number; city?: string | null } | null) => {
+            if (!geo) throw new Error('no approximate location');
+            map.flyTo({ center: [geo.longitude, geo.latitude], zoom: 10, duration: 1200 });
+            onLocate?.(geo.latitude, geo.longitude);
+            showMapHint(geo.city ? `Showing the approximate area of ${geo.city} — precise location wasn't available` : 'Showing an approximate location — precise location wasn\'t available');
+          })
+          .catch(() => {
+            const message = error.code === error.TIMEOUT
+              ? 'Location request timed out — try again'
+              : 'Couldn\'t determine your location — check your device\'s location services';
+            showMapHint(message);
+          });
       },
       { timeout: 8000 }
     );
