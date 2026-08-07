@@ -221,8 +221,6 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
 
   return (
     <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4 pt-24">
-      <h1 className="text-lg font-black mb-4">Route Diagnostics</h1>
-
       <div className="flex items-start gap-4">
         <aside className={`w-64 shrink-0 sticky top-24 ${FLOATING_CARD} p-4 flex flex-col gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto`}>
           <label className="flex flex-col gap-1">

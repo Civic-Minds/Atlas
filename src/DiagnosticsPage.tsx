@@ -28,6 +28,8 @@ export default function DiagnosticsPage() {
           <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
           <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
+        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
+        <span className="text-sm font-black text-[var(--text-primary)]">Route Diagnostics</span>
       </div>
 
       <main className="absolute inset-0 overflow-hidden">
