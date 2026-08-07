@@ -103,6 +103,12 @@ export default function App() {
     if (gated) navigate('/', { replace: true });
   }, [gated, navigate]);
 
+  // Diagnostics moved from /apps/diagnostics to /apps/diagnostics/table -- redirect the old
+  // bookmarked/typed URL instead of silently falling through to the frequency map.
+  useEffect(() => {
+    if (pathname === '/apps/diagnostics') navigate('/apps/diagnostics/table', { replace: true });
+  }, [pathname, navigate]);
+
   function setActiveApp(app: AppId) {
     navigate(APP_TO_PATH[app]);
   }
