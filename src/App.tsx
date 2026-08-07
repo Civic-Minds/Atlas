@@ -350,6 +350,7 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
+        {!inDiagnostics && (
         <div className="flex-1 min-w-0 sm:flex">
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -388,6 +389,7 @@ export default function App() {
           )}
         </div>
         </div>
+        )}
 
         {showLiveControl && (
           <button
