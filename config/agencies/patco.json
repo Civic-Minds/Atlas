@@ -9,8 +9,8 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "16",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedVersion": "17",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Cherry Hill, New Jersey",
     "Center City, Pennsylvania",

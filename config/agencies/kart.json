@@ -8,8 +8,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2204/latest.zip",
   "region": "California",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260720",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedVersion": "20260806",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Hanford, California"
   ]

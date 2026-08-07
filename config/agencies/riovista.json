@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-rio-vista-delta-breeze-gtfs-81.zip?alt=media",
   "lastFeedExpiry": "20250131",
   "lastFeedVersion": "UTC: 23-Feb-2024 22:27",
-  "lastRefreshedAt": "2026-08-03",
+  "lastRefreshedAt": "2026-08-07",
   "websiteUrl": "https://www.riovistacity.com/deltabreeze/page/delta-breeze-transit-schedule",
   "cities": [
     "Fairfield, California"

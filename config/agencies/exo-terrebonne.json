@@ -17,7 +17,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Terrebonne, Quebec",
     "Saint-Louis-de-Terrebonne, Quebec",

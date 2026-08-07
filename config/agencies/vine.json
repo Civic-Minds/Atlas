@@ -15,8 +15,8 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-vine-transit-gtfs-1288.zip?alt=media",
   "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "UTC: 26-Jun-2026 20:52",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedVersion": "UTC: 05-Aug-2026 20:29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Napa, California",
     "Vallejo, California",

@@ -13,9 +13,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-301/latest.zip",
   "region": "Minnesota",
-  "lastFeedExpiry": "20260829",
-  "lastFeedVersion": "20260507094754",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20261205",
+  "lastFeedVersion": "20260803152651",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Duluth, Minnesota"
   ]

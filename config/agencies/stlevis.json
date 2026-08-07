@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
   "lastFeedExpiry": "20261220",
-  "lastFeedVersion": "20260728",
+  "lastFeedVersion": "20260807",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-levis-gtfs-763.zip?alt=media",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Sainte-Foy, Quebec",
     "Lévis, Quebec",

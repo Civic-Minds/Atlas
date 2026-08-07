@@ -15,7 +15,7 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-sound-transit-gtfs-268.zip?alt=media",
   "lastFeedExpiry": "20260828",
   "lastFeedVersion": "SC-Spring-2026.8",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Seattle, Washington",
     "Tacoma, Washington",

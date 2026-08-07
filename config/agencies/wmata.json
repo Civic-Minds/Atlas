@@ -17,9 +17,9 @@
     "https://files.mobilitydatabase.org/mdb-1847/latest.zip"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
-  "lastFeedExpiry": "20241221",
-  "lastFeedVersion": "S1000219",
-  "lastRefreshedAt": "2026-08-03",
+  "lastFeedExpiry": "20260912",
+  "lastFeedVersion": "S1000250",
+  "lastRefreshedAt": "2026-08-07",
   "websiteUrl": "https://www.wmata.com",
   "cities": [
     "Downtown DC, District of Columbia",

@@ -13,11 +13,11 @@
     -72
   ],
   "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip",
-  "lastFeedExpiry": "20260823",
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Pierrefonds, Quebec",
     "Notre-Dame-de-Grâce, Quebec",

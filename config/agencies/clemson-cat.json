@@ -8,7 +8,7 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip",
   "lastFeedExpiry": "20191213",
   "lastFeedVersion": "UTC: 29-Apr-2019 14:52",
-  "lastRefreshedAt": "2026-08-03",
+  "lastRefreshedAt": "2026-08-07",
   "region": "South Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
   "bbox": [

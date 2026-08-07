@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-county-transit-sct-gtfs-70.zip?alt=media",
   "lastFeedExpiry": "20260808",
   "lastFeedVersion": "UTC: 01-Jul-2026 17:39",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Santa Rosa, California",
     "Petaluma, California",

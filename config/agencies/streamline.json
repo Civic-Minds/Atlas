@@ -8,7 +8,7 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip",
   "lastFeedExpiry": "20281231",
   "lastFeedVersion": "UTC: 23-Jan-2025 11:14",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "region": "Montana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-295/latest.zip",
   "bbox": [

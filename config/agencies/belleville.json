@@ -16,7 +16,7 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-belleville-transit-gtfs-1858.zip?alt=media",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Belleville, Ontario"
   ]

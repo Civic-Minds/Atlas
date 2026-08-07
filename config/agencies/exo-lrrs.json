@@ -17,7 +17,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Brossard, Quebec",
     "Verdun, Quebec",

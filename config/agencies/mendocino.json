@@ -15,6 +15,6 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-mendocino-transit-authority-gtfs-69.zip?alt=media",
   "lastFeedExpiry": "20260831",
-  "lastFeedVersion": "UTC: 23-Jul-2026 22:08",
-  "lastRefreshedAt": "2026-07-29"
+  "lastFeedVersion": "UTC: 07-Aug-2026 19:07",
+  "lastRefreshedAt": "2026-08-07"
 }

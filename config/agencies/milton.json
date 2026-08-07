@@ -16,7 +16,7 @@
   "lastFeedExpiry": "20260906",
   "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-milton-transit-gtfs-759.zip?alt=media",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Milton, Ontario",
     "Brampton, Ontario"
