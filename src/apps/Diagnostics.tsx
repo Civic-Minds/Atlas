@@ -366,7 +366,11 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                                     explicit width it falls back to the bare flag icon (~14px), placing the dialog
                                     as a sliver at the table's right edge instead of a normal-sized popover. */}
                                 <div className="shrink-0 w-72 flex justify-end" data-report-anchor>
-                                  <CardReportButton title={title} details={details} />
+                                  <CardReportButton
+                                    title={title}
+                                    details={details}
+                                    excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+                                  />
                                 </div>
                               </div>
                             </td>
