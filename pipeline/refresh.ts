@@ -42,6 +42,7 @@ import {
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -408,6 +409,9 @@ async function refreshAgency(
 }
 
 function bumpCacheBuild(): void {
+  // Bundle-local fallback only — primary bust is atlas/data-version.json on R2
+  // (see bumpPublicDataVersion). Still bump so deploys that ship this file stay
+  // aligned with weekly refresh, and offline clients without data-version still rotate.
   const cachePath = resolve('shared/cacheBuild.ts');
   const content = readFileSync(cachePath, 'utf8');
   const match = content.match(/export const CACHE_BUILD = (\d+)/);
@@ -415,7 +419,7 @@ function bumpCacheBuild(): void {
   const next = parseInt(match[1], 10) + 1;
   writeFileSync(
     cachePath,
-    `/** Bumped by pipeline refresh when R2 artifacts change (busts browser IDB cache). */\nexport const CACHE_BUILD = ${next};\n`,
+    `/** Bumped by pipeline refresh when R2 artifacts change (bundle-local fallback; R2 data-version is primary). */\nexport const CACHE_BUILD = ${next};\n`,
   );
 }
 
@@ -504,6 +508,11 @@ async function main() {
   if (uploads > 0) {
     bumpCacheBuild();
     console.log(`  cache build bumped (${uploads} agencies uploaded)`);
+    try {
+      await bumpPublicDataVersion(`refresh ${uploads} agencies`);
+    } catch (e) {
+      console.warn(`  [warn] data-version R2 write failed — ${e instanceof Error ? e.message : e}`);
+    }
   }
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);

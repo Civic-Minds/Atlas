@@ -88,7 +88,14 @@ async function rclonePutFile(key: string, filePath: string, bucket: string): Pro
   console.log(`  rclone upload complete: ${key}`);
 }
 
-async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string, contentLength?: number): Promise<void> {
+async function r2PutRaw(
+  key: string,
+  body: string | Buffer | import('fs').ReadStream,
+  contentType: string,
+  bucket: string,
+  contentLength?: number,
+  cacheControl?: string,
+): Promise<void> {
   const client = getR2Client();
   const maxAttempts = 4;
   let lastErr: unknown;
@@ -97,6 +104,7 @@ async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadSt
     try {
       const params: any = { Bucket: bucket, Key: key, Body: body, ContentType: contentType };
       if (contentLength != null) params.ContentLength = contentLength;
+      if (cacheControl) params.CacheControl = cacheControl;
       await client.send(new PutObjectCommand(params));
       return;
     } catch (err) {
@@ -111,8 +119,18 @@ async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadSt
   throw lastErr;
 }
 
-export async function r2Put(key: string, body: string, contentType = 'application/json'): Promise<string> {
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
+export async function r2Put(
+  key: string,
+  body: string,
+  contentType = 'application/json',
+  cacheControl?: string,
+): Promise<string> {
+  // data-version is the client cache-busting signal — must not stick in CDN/browser HTTP cache.
+  const cc = cacheControl
+    ?? (key === 'atlas/data-version.json'
+      ? 'public, max-age=0, must-revalidate'
+      : undefined);
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), undefined, cc);
   return r2PublicUrl(key);
 }
 

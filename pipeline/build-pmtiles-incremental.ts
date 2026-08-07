@@ -76,6 +76,7 @@ import {
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -398,6 +399,11 @@ async function main() {
     console.log(`\nUploading merged atlas.pmtiles to Cloudflare R2 (streaming)...`);
     await r2PutFile('atlas.pmtiles', mergedPath, 'application/octet-stream');
     console.log(`PMTiles uploaded: ${pmtilesUrl}`);
+    try {
+      await bumpPublicDataVersion(`build-pmtiles-incremental ${slug}`);
+    } catch (e) {
+      console.warn(`  [warn] data-version R2 write failed — ${e instanceof Error ? e.message : e}`);
+    }
     console.log(`Incremental build complete for "${slug}". Consider running \`npm run verify-pmtiles-coverage\` to confirm.`);
 
     console.log(`Cleaning up temporary files...`);

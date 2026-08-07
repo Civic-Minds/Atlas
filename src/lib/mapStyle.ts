@@ -1,16 +1,19 @@
 import maplibregl from 'maplibre-gl';
 import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { agencyGeoWeekVersion } from './agencyGeo';
+import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
 
 function atlasPmtilesUrl(): string {
-  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${agencyGeoWeekVersion()}`;
+  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
 }
 
 const protocol = new Protocol();
 let protocolRegistered = false;
-export function registerProtocol() {
+
+/** Resolve live data-version then register the PMTiles protocol (await before creating the map). */
+export async function registerProtocol() {
+  await resolveAgencyDataVersion();
   if (!protocolRegistered) {
     maplibregl.addProtocol('pmtiles', protocol.tile);
     protocolRegistered = true;

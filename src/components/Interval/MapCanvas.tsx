@@ -420,29 +420,40 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Initialize MapLibre Map
   useEffect(() => {
     if (!mapContainerRef.current) return;
-    registerProtocol();
+    let cancelled = false;
+    let map: maplibregl.Map | null = null;
 
-    const accent = lightMode ? '#3f3f46' : '#e4e4e7';
-    const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
-    const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    void (async () => {
+      await registerProtocol();
+      if (cancelled || !mapContainerRef.current) return;
 
-    const saved = getSavedView();
-    const initialCenter = initialMapCenter
-      ?? (hasSavedView && saved ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom } : null)
-      ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
+      const accent = lightMode ? '#3f3f46' : '#e4e4e7';
+      const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
+      const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
 
-    const map = new maplibregl.Map({
-      container: mapContainerRef.current,
-      style: getMapStyle(lightMode),
-      center: [initialCenter.lon, initialCenter.lat],
-      zoom: initialCenter.zoom,
-      attributionControl: false,
-      canvasContextAttributes: { antialias: true },
-    });
+      const saved = getSavedView();
+      const initialCenter = initialMapCenter
+        ?? (hasSavedView && saved ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom } : null)
+        ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
 
-    mapRef.current = map;
+      map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: getMapStyle(lightMode),
+        center: [initialCenter.lon, initialCenter.lat],
+        zoom: initialCenter.zoom,
+        attributionControl: false,
+        canvasContextAttributes: { antialias: true },
+      });
 
-    map.on('load', () => {
+      if (cancelled) {
+        map.remove();
+        return;
+      }
+
+      mapRef.current = map;
+
+      map.on('load', () => {
+      if (cancelled || !map) return;
       setZoom(map.getZoom());
 
       // Add route shapes (line) layers
@@ -647,15 +658,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // paint — without the onBoundsChange call, a URL for a new area sits empty
     // until the user pans (agency loading only listened to moveend).
     map.once('idle', () => {
+      if (cancelled || !map) return;
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
       onBoundsChangeRef.current(bounds);
       setBoundsAndZoom(bounds, map.getZoom());
     });
+    })();
 
     return () => {
-      map.remove();
-      mapRef.current = null;
+      cancelled = true;
+      if (map) {
+        map.remove();
+        mapRef.current = null;
+      }
     };
   }, []);
 

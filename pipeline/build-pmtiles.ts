@@ -7,6 +7,7 @@ import { r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -206,6 +207,11 @@ async function main() {
   console.log("Uploading atlas.pmtiles to Cloudflare R2 (streaming)...");
   await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
   console.log("PMTiles uploaded: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles");
+  try {
+    await bumpPublicDataVersion('build-pmtiles');
+  } catch (e) {
+    console.warn(`  [warn] data-version R2 write failed — ${e instanceof Error ? e.message : e}`);
+  }
 
   // Cleanup
   console.log(`Cleaning up temporary files...`);

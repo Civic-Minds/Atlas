@@ -41,6 +41,7 @@ import {
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -242,6 +243,8 @@ async function main() {
   }
   const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
+  // Bust browser IDB/CDN query keys immediately — do not wait for a SPA deploy.
+  await bumpPublicDataVersion(`process ${slug}`);
 
   const archiveKey = feedExpiry ?? feedVersion;
   if (archiveKey) {

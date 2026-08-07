@@ -150,11 +150,25 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
     group.span.length > 0,
   );
+  // Only primary patterns per direction drive the uneven banner. A rare short-turn
+  // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when
+  // the direction's real service is even — that gap is not the rider message.
   const unevenPeriodMaxGap = period !== 'all'
-    ? Math.max(0, ...directionGroups
-        .flatMap(group => group.realTier)
-        .filter(direction => direction.headwayByPeriodSustained?.[period] === false)
-        .map(direction => direction.maxGapByPeriod?.[period] ?? 0))
+    ? Math.max(0, ...directionGroups.flatMap(group => {
+        const primaryHw = Math.min(
+          ...group.realTier
+            .map(d => d.headway)
+            .filter((h): h is number => h != null),
+        );
+        return group.realTier
+          .filter(direction => {
+            if (direction.headwayByPeriodSustained?.[period] !== false) return false;
+            if (primaryHw === Infinity) return true;
+            // Keep primary / near-primary; drop branches clearly sparser short-turns.
+            return direction.headway == null || direction.headway <= primaryHw * 1.5;
+          })
+          .map(direction => direction.maxGapByPeriod?.[period] ?? 0);
+      }))
     : 0;
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.

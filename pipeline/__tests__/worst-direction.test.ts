@@ -9,6 +9,7 @@ function feat(
   headway: number,
   headwayByPeriod?: Record<string, number>,
   tier?: string,
+  headwayByPeriodSustained?: Record<string, boolean>,
 ): GeoJsonFeature {
   return {
     type: 'Feature',
@@ -19,6 +20,7 @@ function feat(
       directionId,
       headway,
       ...(headwayByPeriod ? { headwayByPeriod } : {}),
+      ...(headwayByPeriodSustained ? { headwayByPeriodSustained } : {}),
       ...(tier !== undefined ? { tier } : {}),
     },
   };
@@ -50,6 +52,17 @@ describe('stampWorstDirectionHeadways', () => {
 
     expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 60 });
     expect(features[2].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 90 });
+  });
+
+  it('ignores sparse short-turn branch when same direction has frequent primary service', () => {
+    const features = [
+      feat('63', 'Weekday', 0, 10, { midday: 10 }, '10', { midday: true }),
+      feat('63', 'Weekday', 1, 10, { midday: 10 }, '10', { midday: true }),
+      feat('63', 'Weekday', 1, 175, { midday: 175 }, 'infrequent', { midday: false }),
+    ];
+    stampWorstDirectionHeadways(features);
+    expect(features[0].properties.worstDirectionHeadway).toBe(10);
+    expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 10 });
   });
 });
 
