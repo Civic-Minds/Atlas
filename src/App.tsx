@@ -12,7 +12,6 @@ import NightService from './apps/NightService';
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Corridors = React.lazy(() => import('./apps/Corridors'));
-const Diagnostics = React.lazy(() => import('./apps/Diagnostics'));
 import type { AppId } from './components/AppDrawer';
 import ToolsMenu from './components/ToolsMenu';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
@@ -79,7 +78,6 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/history': 'history',
   '/apps/live': 'live',
   '/apps/night': 'night',
-  '/apps/diagnostics/table': 'diagnostics',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -89,7 +87,6 @@ const APP_TO_PATH: Record<AppId, string> = {
   history: '/apps/history',
   live: '/apps/live',
   night: '/apps/night',
-  diagnostics: '/apps/diagnostics/table',
 };
 
 export default function App() {
@@ -100,18 +97,12 @@ export default function App() {
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
   const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED)
-    || (routedApp === 'corridors' && !CORRIDORS_ENABLED) || (routedApp === 'diagnostics' && !DIAGNOSTICS_ENABLED);
+    || (routedApp === 'corridors' && !CORRIDORS_ENABLED);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
   useEffect(() => {
     if (gated) navigate('/', { replace: true });
   }, [gated, navigate]);
-
-  // Diagnostics moved from /apps/diagnostics to /apps/diagnostics/table -- redirect the old
-  // bookmarked/typed URL instead of silently falling through to the frequency map.
-  useEffect(() => {
-    if (pathname === '/apps/diagnostics') navigate('/apps/diagnostics/table', { replace: true });
-  }, [pathname, navigate]);
 
   function setActiveApp(app: AppId) {
     navigate(APP_TO_PATH[app]);
@@ -210,7 +201,6 @@ export default function App() {
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
   const inNight = activeApp === 'night';
-  const inDiagnostics = activeApp === 'diagnostics';
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -356,7 +346,6 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
-        {!inDiagnostics && (
         <div className="flex-1 min-w-0 sm:flex">
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -395,7 +384,6 @@ export default function App() {
           )}
         </div>
         </div>
-        )}
 
         {showLiveControl && (
           <button
@@ -420,21 +408,17 @@ export default function App() {
           </a>
         )}
 
-        {!inDiagnostics && (
-          <>
-            <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
+        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
-            <a
-              href={inNight ? '/' : '/apps/night'}
-              aria-label={inNight ? 'Back to frequency map' : 'Night service'}
-              aria-pressed={inNight}
-              className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
-            >
-              <Moon className="w-3.5 h-3.5" />
-              <span>Night Service</span>
-            </a>
-          </>
-        )}
+        <a
+          href={inNight ? '/' : '/apps/night'}
+          aria-label={inNight ? 'Back to frequency map' : 'Night service'}
+          aria-pressed={inNight}
+          className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+        >
+          <Moon className="w-3.5 h-3.5" />
+          <span>Night Service</span>
+        </a>
 
         </div>
       </div>
@@ -489,10 +473,6 @@ export default function App() {
               Retry
             </button>
           </div>
-        ) : inDiagnostics ? (
-          <React.Suspense fallback={null}>
-            <Diagnostics agencies={agencies} />
-          </React.Suspense>
         ) : (
           <ErrorBoundary label="The map encountered an error.">
           <>

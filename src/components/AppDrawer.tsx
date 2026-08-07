@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeftRight, Clock, DollarSign, Moon } from 'lucide-react';
 import { FLOATING_CARD, Z_DROPDOWN } from '../styles';
 
-export type AppId = 'frequency' | 'corridors' | 'history' | 'live' | 'fares' | 'night' | 'diagnostics';
+export type AppId = 'frequency' | 'corridors' | 'history' | 'live' | 'fares' | 'night';
 
 interface AppEntry {
   id: AppId;

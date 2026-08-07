@@ -37,7 +37,7 @@ export default function ToolsMenu() {
       {open && (
         <div className={`absolute top-10 right-0 w-56 ${FLOATING_CARD} overflow-hidden ${Z_DROPDOWN} py-1.5`}>
           <a
-            href="/apps/diagnostics"
+            href="/apps/diagnostics/table"
             onClick={() => setOpen(false)}
             className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[var(--bg-hover)] transition-colors"
           >
