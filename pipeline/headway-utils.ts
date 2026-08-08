@@ -154,16 +154,27 @@ export function resolveTerminalHeadway(
 }
 
 /**
- * Merge a branch summary with a terminal period/hour summary. Headway data
- * scoped to the branch's own headsign is authoritative; only unscoped/shared
- * terminal data needs the slower-value protection used for trunk branches.
+ * Merge a branch summary with a terminal period/hour summary.
+ *
+ * When terminal data is already scoped to this branch's headsign/shape (trips that
+ * reach the destination), prefer the **branch trip-start** period median: it counts
+ * how often that pattern *departs* during the window. Times recorded only at the
+ * far terminus and filtered into the same clock window drop late-departing trips
+ * whose travel time lands the arrival after the period ends (GO 94 Pickering:
+ * Square One leave ~13:35 is real midday service to Pickering; it only clocks in
+ * at Pickering after 15:00, so a terminal-window median looked like ~120 min while
+ * dispatch was ~55–60). Fall back to terminal-window times when the branch has no
+ * period value.
+ *
+ * Unscoped / shared terminal data still needs slower-value protection so a dense
+ * hub stop cannot outrank this branch's own cadence.
  */
 export function resolveTerminalPeriodHeadway(
   terminalHeadway: number | null,
   branchHeadway: number | null,
   terminalIsBranchScoped: boolean,
 ): number | null {
-  if (terminalIsBranchScoped) return terminalHeadway ?? branchHeadway;
+  if (terminalIsBranchScoped) return branchHeadway ?? terminalHeadway;
   if (branchHeadway == null) return terminalHeadway;
   if (terminalHeadway == null) return branchHeadway;
   return Math.max(branchHeadway, terminalHeadway);

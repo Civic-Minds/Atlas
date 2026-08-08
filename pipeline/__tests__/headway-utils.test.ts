@@ -173,8 +173,18 @@ describe('hasGenuineBranchPattern', () => {
 });
 
 describe('resolveTerminalPeriodHeadway', () => {
-  it('uses a branch-scoped terminal value even when it is more frequent', () => {
-    expect(resolveTerminalPeriodHeadway(7, 17, true)).toBe(7);
+  // GO 94 Pickering: terminal-in-window midday looks ~120 because long runtime pushes late
+  // midday departures past 15:00 at the far end, while trip-start midday is ~55.
+  it('prefers branch-scoped trip-dispatch period over sparser terminal-window times (GO 94)', () => {
+    expect(resolveTerminalPeriodHeadway(120, 55, true)).toBe(55);
+  });
+
+  it('falls back to branch-scoped terminal when branch has no period value', () => {
+    expect(resolveTerminalPeriodHeadway(7, null, true)).toBe(7);
+  });
+
+  it('falls back to branch when branch-scoped terminal has no period value', () => {
+    expect(resolveTerminalPeriodHeadway(null, 17, true)).toBe(17);
   });
 
   it('protects a branch from a better unscoped shared-terminal value', () => {

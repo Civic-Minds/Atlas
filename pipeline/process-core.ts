@@ -572,19 +572,29 @@ export async function processGtfsBuffer(
     // Step 4: override feature headway + tier using the terminal stop's headway.
     // "to Niagara Falls GO every 15 min" is wrong — that's trunk frequency, not branch frequency.
     // Only trips that reach the terminal stop contribute to its headway, so it correctly reflects
-    // how often a train actually goes there. Falls back to all-stop median if terminal has no data.
+    // how often service actually goes there. Falls back to all-stop median if terminal has no data.
+    //
+    // Headline period uses trip-dispatch midday when that's denser than times-at-terminus-in-window:
+    // long trip runtimes drop late-midday departures from the terminal clock window (GO 94).
     if (feature.properties.tier !== 'span') {
       const terminalId = onShape[onShape.length - 1]?.stopId;
       const terminalHw = terminalId ? allStopHw[terminalId] : undefined;
       // Use midday as the headline headway — consistent with the "Midday" filter period and
       // avoids all-day averages being inflated by low-frequency overnight/early-morning runs.
       const terminalMiddayHw = terminalId ? allStopPeriodHw[terminalId]?.['midday'] : undefined;
+      const branchMiddayHw = (feature.properties.headwayByPeriod as HeadwayByPeriod | undefined)?.midday ?? undefined;
       const hwVals = Object.values(stopHeadways).sort((a, b) => a - b);
       const mid = Math.floor(hwVals.length / 2);
       const allStopMedian = hwVals.length % 2 === 0
         ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
         : hwVals[mid];
-      const terminalComputedHw = terminalMiddayHw ?? terminalHw ?? allStopMedian;
+      // Prefer denser branch-dispatch midday over sparser terminus-in-window (travel-time lag).
+      // Shared-terminal denser-than-branch is still handled by resolveTerminalHeadway below.
+      const terminalOrBranchMidday =
+        branchMiddayHw != null && terminalMiddayHw != null && branchMiddayHw < terminalMiddayHw
+          ? branchMiddayHw
+          : (terminalMiddayHw ?? branchMiddayHw);
+      const terminalComputedHw = terminalOrBranchMidday ?? terminalHw ?? allStopMedian;
 
       // If the terminal stop is shared, the combined terminal headway might be lower (better)
       // than the branch-specific headway. Do not override with the combined headway in that case.
@@ -619,11 +629,11 @@ export async function processGtfsBuffer(
       feature.properties.minStopHeadway = hwVals[0];
     }
 
-    // Step 5: set headwayByPeriod from the terminal stop only.
-    // "to Niagara Falls GO every 30 min AM Peak" means trains arrive at Niagara Falls every
-    // 30 min — not at a station 75 km away. Using the full-shape median inflates the period
-    // headway by borrowing from other headsigns that share the trunk but don't go to the
-    // terminal. The terminal stop (highest t in onShape) is the authoritative source.
+    // Step 5: set headwayByPeriod — merge terminal-at-stop period medians with the branch
+    // (trip-start) period medians via resolveTerminalPeriodHeadway.
+    // Branch-scoped terminal data must only count trips that reach this destination; unscoped
+    // shared terminals cannot look denser than the real branch. For branch-scoped merges, trip
+    // *departures* win the period (see resolveTerminalPeriodHeadway / GO 94).
     //
     // minStopHeadwayByPeriod uses all on-shape stops so the filter correctly shows the route
     // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
