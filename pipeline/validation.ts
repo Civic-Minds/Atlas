@@ -45,8 +45,19 @@ export interface ValidationReport {
 
 const REQUIRED_ROUTE_FIELDS = ['route_id', 'route_type'] as const;
 const REQUIRED_TRIP_FIELDS = ['route_id', 'service_id', 'trip_id'] as const;
-const REQUIRED_STOP_FIELDS = ['stop_id', 'stop_name', 'stop_lat', 'stop_lon'] as const;
+/** stop_id only — name/lat/lon are conditionally required by location_type (GTFS). */
+const REQUIRED_STOP_FIELDS = ['stop_id'] as const;
 const REQUIRED_STOP_TIME_FIELDS = ['trip_id', 'stop_id', 'stop_sequence'] as const;
+/**
+ * location_type 3 (generic node) and 4 (boarding area) may omit stop_name and
+ * stop_lat/stop_lon. MBTA pathway graph nodes do this extensively; requiring
+ * coords there hard-fails process and causes weekly refresh to soft-skip MBTA.
+ * Spec: https://gtfs.org/schedule/reference/#stopstxt
+ */
+function stopRequiresNameAndCoords(locationType: string | undefined): boolean {
+    const t = (locationType ?? '0').trim();
+    return t === '' || t === '0' || t === '1' || t === '2';
+}
 const REQUIRED_CALENDAR_FIELDS = [
     'service_id', 'monday', 'tuesday', 'wednesday', 'thursday',
     'friday', 'saturday', 'sunday', 'start_date', 'end_date'
@@ -119,6 +130,40 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
     }
     if (gtfs.stops?.length) {
         validateRequiredFields(gtfs.stops, REQUIRED_STOP_FIELDS, 'stops.txt', 'stop_id', issues);
+
+        const needsName = gtfs.stops.filter(s =>
+            stopRequiresNameAndCoords(s.location_type)
+            && (s.stop_name === undefined || s.stop_name === null || String(s.stop_name).trim() === ''),
+        );
+        if (needsName.length > 0) {
+            issues.push({
+                severity: 'error',
+                code: 'E040_stop_name',
+                file: 'stops.txt',
+                field: 'stop_name',
+                message: `${needsName.length} records in stops.txt are missing required field "stop_name".`,
+                count: needsName.length,
+                examples: needsName.slice(0, 5).map(s => s.stop_id),
+            });
+        }
+
+        for (const field of ['stop_lat', 'stop_lon'] as const) {
+            const missing = gtfs.stops.filter(s =>
+                stopRequiresNameAndCoords(s.location_type)
+                && (s[field] === undefined || s[field] === null || String(s[field]).trim() === ''),
+            );
+            if (missing.length > 0) {
+                issues.push({
+                    severity: 'error',
+                    code: `E040_${field}`,
+                    file: 'stops.txt',
+                    field,
+                    message: `${missing.length} records in stops.txt are missing required field "${field}".`,
+                    count: missing.length,
+                    examples: missing.slice(0, 5).map(s => s.stop_id),
+                });
+            }
+        }
     }
     if (gtfs.stopTimes?.length) {
         validateRequiredFields(gtfs.stopTimes, REQUIRED_STOP_TIME_FIELDS, 'stop_times.txt', 'trip_id', issues);
@@ -188,11 +233,16 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
 
     // --- Data quality checks ---
 
-    // Invalid coordinates
+    // Invalid coordinates (only for location types that require coords, or when coords are present)
     if (gtfs.stops?.length) {
         const badCoords = gtfs.stops.filter(s => {
-            const lat = parseFloat(s.stop_lat);
-            const lon = parseFloat(s.stop_lon);
+            const latRaw = s.stop_lat != null ? String(s.stop_lat).trim() : '';
+            const lonRaw = s.stop_lon != null ? String(s.stop_lon).trim() : '';
+            const requires = stopRequiresNameAndCoords(s.location_type);
+            // Optional location_types may omit both; if either is present both must parse.
+            if (!requires && latRaw === '' && lonRaw === '') return false;
+            const lat = parseFloat(latRaw);
+            const lon = parseFloat(lonRaw);
             return isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180;
         });
         if (badCoords.length > 0) {
@@ -204,10 +254,13 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
             });
         }
 
-        // Stops at (0, 0) — common data error
-        const nullIsland = gtfs.stops.filter(s =>
-            parseFloat(s.stop_lat) === 0 && parseFloat(s.stop_lon) === 0
-        );
+        // Stops at (0, 0) — common data error (skip empty optional coords)
+        const nullIsland = gtfs.stops.filter(s => {
+            const latRaw = s.stop_lat != null ? String(s.stop_lat).trim() : '';
+            const lonRaw = s.stop_lon != null ? String(s.stop_lon).trim() : '';
+            if (latRaw === '' || lonRaw === '') return false;
+            return parseFloat(latRaw) === 0 && parseFloat(lonRaw) === 0;
+        });
         if (nullIsland.length > 0) {
             issues.push({
                 severity: 'warning', code: 'W020', file: 'stops.txt', field: 'stop_lat/stop_lon',

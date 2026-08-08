@@ -56,4 +56,28 @@ describe('validateGtfs', () => {
     expect(report.errors).toBeGreaterThan(0);
     expect(report.issues.some(i => i.code === 'E010')).toBe(true);
   });
+
+  it('allows location_type 3 pathway nodes without stop_lat/stop_lon (MBTA style)', () => {
+    const gtfs = minimalValidGtfs();
+    gtfs.stops!.push({
+      stop_id: 'node-1-platform',
+      stop_name: 'Andrew',
+      stop_lat: '',
+      stop_lon: '',
+      location_type: '3',
+      parent_station: 'place-andrw',
+    } as any);
+    const report = validateGtfs(gtfs, 'mbta-pathway');
+    expect(report.errors).toBe(0);
+    expect(report.issues.some(i => i.code === 'E020' || String(i.code).startsWith('E040_stop_'))).toBe(false);
+  });
+
+  it('still requires coordinates on ordinary stops (location_type 0)', () => {
+    const gtfs = minimalValidGtfs();
+    gtfs.stops![0].stop_lat = '';
+    gtfs.stops![0].stop_lon = '';
+    const report = validateGtfs(gtfs, 'bad-stop');
+    expect(report.errors).toBeGreaterThan(0);
+    expect(report.issues.some(i => i.code === 'E040_stop_lat' || i.code === 'E020')).toBe(true);
+  });
 });
