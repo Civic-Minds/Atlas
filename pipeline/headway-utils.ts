@@ -202,11 +202,23 @@ export function hasGenuineBranchPattern(
 }
 
 // How many minutes a wait has to exceed the reported headway by before it's worth telling a
-// rider about. This is deliberately an absolute-minutes bar, not a ratio: a rider on a 5-min
-// subway who waits 10 min hasn't had a bad night (5 min excess); a rider told "every 10 min" who
-// waits 45 (35 min excess) has. A ratio-only bar can't tell those apart -- 2x reads identical in
-// both cases -- and the original motivating case (#281 below) is itself only ~1.8x.
+// rider about. Excess alone isn't enough: a route with a 40-min typical wait hitting 60 min once
+// (a normal last-trip-of-the-night taper on plenty of real feeds) clears any reasonable minutes
+// floor but is not "uneven" -- it's an ordinary infrequent route. Needs to pair with a ratio floor
+// below to only fire when the wait is both a lot of extra minutes AND proportionally much longer.
 export const MIN_UNSUSTAINED_EXCESS_MINUTES = 15;
+
+// The worst gap must also be at least this multiple of the target headway. Chosen from real-feed
+// data (2026-08-08), sandwiched between two hard constraints found on opposite sides:
+// - Must stay BELOW ~1.82 -- issue #281 (TTC route 10 midday, gaps [315,30], median 173) is the
+//   case this whole feature exists to catch, and its own ratio is only 315/173=1.82.
+// - Must stay ABOVE ~1.6 -- ordinary evening wind-down on infrequent routes (Bordeaux 5: 41-min
+//   median hitting a 60-min last gap, ratio 1.46; GO BR: 38 to 60, ratio 1.58) is not a real
+//   problem and was getting caught by excess-only checking.
+// 1.7 sits in that gap with room on both sides; the lowest-ratio real anomalies found across
+// TTC/Bordeaux/GO/GCRTA at this threshold (routes 60, 927, 504, GCRTA 1) all still read as
+// genuine service problems, not noise.
+export const MIN_UNSUSTAINED_RATIO = 1.7;
 
 /**
  * Does this specific reported headway (T) fairly describe every gap in the window, or does the
@@ -220,24 +232,31 @@ export const MIN_UNSUSTAINED_EXCESS_MINUTES = 15;
  * is alarming, but enough of them cluster in the "somewhat above the 3-min median" band to trip
  * the violation count). Real-feed validation (2026-08-08) found this misfiring across ordinary
  * TTC bus and subway routes -- "every 9 min" flagged uneven over a 10-min gap, Line 1 flagged
- * over a 5-min gap on a 3-4 min service. Checking only the single worst gap against an absolute
- * excess floor fixes that: gradual tapering never produces one big outlier, so it no longer
- * trips, while a genuine void still does.
+ * over a 5-min gap on a 3-4 min service.
+ *
+ * An excess-minutes-only replacement fixed those but broke the opposite direction: infrequent
+ * routes (20-60 min headway) that simply wind down toward one longer gap at the end of service
+ * cleared a minutes floor easily without being genuinely uneven. Requiring both an absolute
+ * excess AND a ratio -- the wait has to be a lot of extra minutes AND roughly double what was
+ * promised -- is what actually distinguishes a real gap in service from an ordinary taper, on
+ * both high- and low-frequency routes.
  *
  * Issue #281 (TTC route 10, Weekday, Van Horne -> Victoria Park): midday gaps [315, 30], median
- * 173. Excess is 315-173=142, far past the floor -- still correctly flags "173" as not a fair
- * description of that period. Deliberately does NOT touch transit-phase2.ts's determineTier
- * itself, which drives live tier/color for every route on the map and is unrelated to this
- * rider-facing signal.
+ * 173. Excess is 315-173=142 and ratio is 315/173=1.82 -- clears both bars, still correctly
+ * flags "173" as not a fair description of that period. Deliberately does NOT touch
+ * transit-phase2.ts's determineTier itself, which drives live tier/color for every route on the
+ * map and is unrelated to this rider-facing signal.
  */
 export function isSustainedHeadway(
   gaps: number[],
   targetHeadway: number,
   minExcessMinutes: number = MIN_UNSUSTAINED_EXCESS_MINUTES,
+  minRatio: number = MIN_UNSUSTAINED_RATIO,
 ): boolean {
-  if (gaps.length === 0) return true;
+  if (gaps.length === 0 || targetHeadway <= 0) return true;
   const maxGap = Math.max(...gaps);
-  return maxGap - targetHeadway < minExcessMinutes;
+  const isRealGap = (maxGap - targetHeadway >= minExcessMinutes) && (maxGap / targetHeadway >= minRatio);
+  return !isRealGap;
 }
 
 // The median deliberately stays based on departures inside the period. A separate max-gap value
