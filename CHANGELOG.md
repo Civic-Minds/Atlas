@@ -11,7 +11,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Whole-route frequency filters use every destination that actually runs in that period (skipping peak-only thin branches), so TTC 63 midday stays every ~10 minutes while routes with two real ends (e.g. 507) follow the slower one
 - Schedule updates now show up on a normal page reload — the app no longer keeps serving old agency data from browser storage after a feed refresh
 - Fixed caching issue during PMTiles compilation by appending cache-buster parameters to R2 GeoJSON fetches
-- Updated WMATA's feed URLs to the active Mobility Database endpoints because the legacy GCS mirrors were frozen in late 2024
 - Route cards now use a stable branch frequency when a period's median is not sustained, preventing false 2-minute readings ([#319](https://github.com/Civic-Minds/Atlas/issues/319))
 - Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
 - Route selection now clears cleanly on partially filtered routes — MapLibre no longer rejects the dimming expression ([#340](https://github.com/Civic-Minds/Atlas/issues/340))
@@ -78,32 +77,32 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Selected routes now explain when they remain visible outside the active frequency filter ([#270](https://github.com/Civic-Minds/Atlas/issues/270))
 - Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes and publishes them in PMTiles ([#214](https://github.com/Civic-Minds/Atlas/issues/214))
 - Refreshed CTA and Laketran schedule artifacts and rebuilt the live PMTiles archive after the explicit no-service fix ([#274](https://github.com/Civic-Minds/Atlas/issues/274))
-- Shared-section cadence now combines scheduled branch frequencies instead of using a fastest-stop gap.
-- Limited and infrequent branches no longer inflate shared-core frequency summaries.
-- Drop-off-only branches are excluded from shared-core frequency summaries even when feed tier metadata is inconsistent.
-- Hovering a shared-core summary now highlights its sustained branches on the map.
-- Selected-route filter notices now use the route card’s standard notice placement.
-- Stacked core sparklines now identify each destination branch by color.
-- Hovering a sparkline hour now updates the route rows to that hour's branch headways.
-- Route labels now preserve camel-case branding supplied by each agency feed.
-- Long sparkline hover details now wrap inside the route card instead of being clipped.
+- The shared trunk section of a multi-branch route now shows a real combined frequency instead of just copying its fastest branch's number
+- Rarely-running branches no longer make a route's shared trunk section look more frequent than it actually is
+- Drop-off-only branches are correctly excluded from a route's shared trunk frequency, even on feeds with inconsistent service-tier data
+- Hovering a route's shared trunk frequency now highlights which branches are actually contributing to it on the map
+- Notices on a selected but filtered-out route now appear in the same place as other route-card notices, instead of a one-off spot
+- Sparkline bars for a multi-branch route now color-code each destination so you can tell them apart
+- Hovering an hour on the sparkline now updates each branch's frequency shown below it
+- Route labels now keep an agency's own capitalization (e.g. "GoTriangle") instead of flattening it
+- Long sparkline hover details no longer get cut off inside the route card
 
 ## [3.2.9] - 2026-07-24
 
-- Removed blank EXPECTED/ACTUAL prompts from end-user issue reports; maintainers add those fields during triage.
-- Fixed branch route cards using shared trunk cadence instead of destination-specific service, so Madison D, R, and E now show their scheduled terminal frequencies.
-- Route issue reports now include displayed service and feed freshness, while full generated metrics are copied for easy pasting without exceeding GitHub’s URL limit.
-- User-reported issue templates now use plain-text headings so the copied report can replace the placeholder cleanly.
-- Route issue diagnostics now focus on the selected period and relevant stop-level evidence instead of duplicating every raw metric.
-- Sparkline hover tooltips no longer get clipped by the route card.
-- Issue-report clipboard contents now contain only the raw diagnostics, avoiding duplicate summary text when pasted into GitHub.
-- Nearby stop connections now show as nearby routes with their straight-line distance instead of implying an exact walking time.
-- Fixed route-card destination hover flicker by keeping the sparkline layout stable while highlighting a branch.
-- Statically precompute cross-agency stop-hub clusters (via Union-Find spatial and name token grouping) at build-time to assign a hubId to every stop, resolving viewport boundaries and optimizing client lookup performance.
-- Consolidate overlapping stop markers on the map by rendering only one representative stop per hub below zoom 17.
-- Consolidate stop search results sharing a hubId to present a single unified transit hub result with combined routes.
-- Exclude departing routes from the walking connections list in stop cards.
-- Fixed high-severity security vulnerability in linkify-it dependency ([#275](https://github.com/Civic-Minds/Atlas/issues/275))
+- Reporting a problem no longer shows blank technical fields to fill in — maintainers add those during triage instead
+- Madison routes D, R, and E now show their real scheduled frequency to each destination — they were showing one shared trunk average instead
+- Copied issue reports now include the frequency shown on screen and how fresh the feed data is, kept short enough to fit in a GitHub link
+- Copied issue reports now paste over GitHub's placeholder text cleanly instead of leaving formatting artifacts behind
+- Copied issue reports now show only the evidence for the time period you're viewing, not every raw metric on the route
+- Sparkline hover tooltips no longer get cut off by the edge of the route card
+- Copied issue reports no longer repeat the summary text twice when pasted into GitHub
+- Nearby stop connections now show straight-line distance instead of an implied walking time that wasn't actually accurate
+- Fixed a flicker when hovering over a destination on the route card
+- Stops that are really the same hub (like a station with multiple platforms) are grouped together more reliably now, and load faster
+- The map now shows one marker per transit hub instead of a cluster of overlapping stop dots when zoomed out
+- Searching for a stop that's part of a larger hub now returns one combined result with all its routes, instead of several near-duplicate entries
+- Stop cards no longer suggest walking to a route you could already board directly
+- Patched a high-severity security vulnerability in a dependency (linkify-it) ([#275](https://github.com/Civic-Minds/Atlas/issues/275))
 - Period filters now keep routes with explicit no-service periods off the map.
 - History agency cards now match other cards by omitting the standalone close button.
 - History now retains current route data when an agency changes route IDs between archived and current GTFS.
