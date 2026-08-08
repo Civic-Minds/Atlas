@@ -19,7 +19,7 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import {
@@ -153,7 +153,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // Only primary patterns per direction drive the uneven banner. A rare short-turn
   // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when
   // the direction's real service is even — that gap is not the rider message.
-  const unevenPeriodMaxGap = period !== 'all'
+  const unevenPeriodMaxGap = UNEVEN_BANNER_ENABLED && period !== 'all'
     ? Math.max(0, ...directionGroups.flatMap(group => {
         const primaryHw = Math.min(
           ...group.realTier
