@@ -270,6 +270,20 @@ describe('computePeriodSustained', () => {
     const result = computePeriodSustained(times);
     expect(result.amPeak).toBe(false);
   });
+
+  // 2026-08-08 follow-up: an excess-minutes-only version of this check (no ratio) still failed,
+  // just on the opposite end of the frequency spectrum -- an infrequent route's ordinary
+  // last-trip-of-the-night taper clears any reasonable minutes floor on its own.
+  it('does not flag an infrequent route winding down toward one longer gap at the end of service (real Bordeaux route 5 shape)', () => {
+    // Evening [1140,1380]: gaps grow from 30 to 60 as the route winds down for the night --
+    // a normal taper, not a service gap. Worst gap (60) vs. median (~41) is 19 min excess
+    // (clears a minutes-only floor) but only 1.46x (well under the 1.7x ratio floor).
+    const gaps = [30, 40, 41, 49, 60];
+    const times = [1140];
+    for (const g of gaps) times.push(times[times.length - 1] + g);
+    const result = computePeriodSustained(times);
+    expect(result.evening).toBe(true);
+  });
 });
 
 describe('isSustainedHeadway', () => {
@@ -277,8 +291,16 @@ describe('isSustainedHeadway', () => {
     expect(isSustainedHeadway([9, 10, 9, 14], 9)).toBe(true); // 14-9=5 excess
   });
 
-  it('fails once the worst gap crosses the noticeable-excess floor', () => {
-    expect(isSustainedHeadway([9, 10, 9, 25], 9)).toBe(false); // 25-9=16 excess
+  it('fails once the worst gap crosses both the excess and ratio floors', () => {
+    expect(isSustainedHeadway([9, 10, 9, 25], 9)).toBe(false); // 25-9=16 excess, 25/9=2.78 ratio
+  });
+
+  it('passes when excess clears the floor but the ratio does not (ordinary infrequent-route taper)', () => {
+    expect(isSustainedHeadway([30, 40, 41, 49, 60], 41)).toBe(true); // 19 excess, only 1.46 ratio
+  });
+
+  it('passes when the ratio clears the floor but excess does not (small headway, small absolute wait)', () => {
+    expect(isSustainedHeadway([8, 16, 8, 8], 8)).toBe(true); // 2.0 ratio, only 8 excess
   });
 });
 
