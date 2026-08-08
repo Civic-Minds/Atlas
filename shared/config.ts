@@ -29,7 +29,7 @@ export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
 // beta share identical source; only the Vercel env var differs per branch (VITE_LIVE_ENABLED /
 // VITE_HISTORY_ENABLED set to "true" on beta's preview env). Flip the env var to ship, no merge
 // conflicts either way.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_DIAGNOSTICS_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_DIAGNOSTICS_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED'): boolean {
   // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
@@ -44,6 +44,10 @@ export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABL
 // Internal route table for spot-checking data quality (/apps/diagnostics). Never meant for the
 // public -- not a "graduating" feature like the others, just kept off the production domain.
 export const DIAGNOSTICS_ENABLED = envFlag('VITE_DIAGNOSTICS_ENABLED');
+// "Service is uneven" route-card banner. The threshold that decides when a period's worst gap
+// is worth surfacing to a rider needed more real-feed tuning than a single main push should
+// carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
+export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 // Same env-driven pattern as the flags above: identical source on main and beta, only the
 // Vercel preview env var differs (VITE_BETA_BUILD="true" set on beta only). Distinguishes the
 // two in the browser tab title so beta doesn't look identical to production.

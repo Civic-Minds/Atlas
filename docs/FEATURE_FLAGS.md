@@ -10,6 +10,8 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `HISTORY_ENABLED` | History pill, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of 400+. Same reason. |
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
 | `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). Its panel is also broken by a CSS bug independent of this flag. |
+| `DIAGNOSTICS_ENABLED` | Tools/wrench menu, `/apps/diagnostics/table`, `DiagnosticsPage.tsx` + `Diagnostics.tsx` | **doesn't exist** | on | Internal spot-check tool, never meant to reach production — not a "graduating" feature like the others above. **The code itself must not exist on `main`**, not just be gated off: `DiagnosticsPage.tsx`, `apps/Diagnostics.tsx`, and `hooks/useAgencies.ts` live only on `beta`. All Diagnostics work happens on `beta` only; do not port it to `main` (2026-08-07 — it had drifted onto `main` and back off again, causing repeated merge conflicts before this rule was written down). |
+| `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
 
 ## How it works
 
