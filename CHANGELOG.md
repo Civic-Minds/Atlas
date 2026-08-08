@@ -6,8 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Whole-route frequency filters use every destination that actually runs in that period (skipping peak-only thin branches), so TTC 63 midday stays every ~10 minutes while routes with two real ends (e.g. 507) follow the slower one
 - Schedule updates now show up on a normal page reload — the app no longer keeps serving old agency data from browser storage after a feed refresh
-- TTC 63 midday is no longer treated as "every ~3 hours" just because a rare St Clair short-turn exists on the same direction as the every-10-min Cedarvale service
 - Fixed caching issue during PMTiles compilation by appending cache-buster parameters to R2 GeoJSON fetches
 - Updated WMATA's feed URLs to the active Mobility Database endpoints because the legacy GCS mirrors were frozen in late 2024
 - Route cards now use a stable branch frequency when a period's median is not sustained, preventing false 2-minute readings ([#319](https://github.com/Civic-Minds/Atlas/issues/319))

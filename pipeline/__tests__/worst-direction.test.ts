@@ -54,7 +54,7 @@ describe('stampWorstDirectionHeadways', () => {
     expect(features[2].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 90 });
   });
 
-  it('ignores sparse short-turn branch when same direction has frequent primary service', () => {
+  it('ignores unsustained peak short-turn branch at midday (TTC 63)', () => {
     const features = [
       feat('63', 'Weekday', 0, 10, { midday: 10 }, '10', { midday: true }),
       feat('63', 'Weekday', 1, 10, { midday: 10 }, '10', { midday: true }),
@@ -63,6 +63,16 @@ describe('stampWorstDirectionHeadways', () => {
     stampWorstDirectionHeadways(features);
     expect(features[0].properties.worstDirectionHeadway).toBe(10);
     expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 10 });
+  });
+
+  it('keeps the slower of two real midday destinations (TTC 507)', () => {
+    const features = [
+      feat('507', 'Weekday', 1, 8, { midday: 8 }, '10', { midday: true }),
+      feat('507', 'Weekday', 1, 25, { midday: 25 }, '30', { midday: true }),
+    ];
+    stampWorstDirectionHeadways(features);
+    expect(features[0].properties.worstDirectionHeadway).toBe(25);
+    expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 25 });
   });
 });
 

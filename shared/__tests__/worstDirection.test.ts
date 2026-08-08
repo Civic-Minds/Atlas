@@ -71,8 +71,8 @@ describe('stampWorstDirectionHeadways', () => {
     expect(features[2].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 90 });
   });
 
-  it('does not let a rare short-turn branch gate a direction that has frequent primary service (TTC 63)', () => {
-    // Northbound: Cedarvale every 10 (primary), St Clair every ~3h sparse short-turn.
+  it('does not let a peak short-turn with no real midday service gate the route (TTC 63)', () => {
+    // Northbound: Cedarvale every 10 (primary), St Clair peak short-turn thin at midday.
     // Southbound: Liberty Village every 10.
     const features = [
       feat({
@@ -118,6 +118,36 @@ describe('stampWorstDirectionHeadways', () => {
     // St Clair still carries its own branch stats; only route-level worst is corrected.
     expect(features[2].properties.headwayByPeriod?.midday).toBe(175);
     expect(features[2].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 10 });
+  });
+
+  it('uses the slower real destination when both run all midday (TTC 507 dual terminus)', () => {
+    // Long Branch every 8 + Marine Parade every 25 — both sustained midday.
+    // Whole-route filter must use 25 (outer cadence), not 8 from the denser short end.
+    const features = [
+      feat({
+        routeShortName: '507',
+        day: 'Weekday',
+        directionId: 0,
+        headway: 8,
+        tier: '10',
+        headwayByPeriod: { midday: 8 },
+        headwayByPeriodSustained: { midday: true },
+      }),
+      feat({
+        routeShortName: '507',
+        day: 'Weekday',
+        directionId: 0,
+        headway: 25,
+        tier: '30',
+        headwayByPeriod: { midday: 25 },
+        headwayByPeriodSustained: { midday: true },
+      }),
+    ];
+    stampWorstDirectionHeadways(features);
+
+    expect(features[0].properties.worstDirectionHeadway).toBe(25);
+    expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 25 });
+    expect(features[1].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 25 });
   });
 
   it('still fails a route when the opposing direction is genuinely worse (Kingston-style)', () => {

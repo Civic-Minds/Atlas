@@ -19,31 +19,32 @@ function routeDayKey(routeShortName: string, day: unknown): string {
   return `${routeShortName}::${day ?? ''}`;
 }
 
-function minNum(a: number | undefined, b: number): number {
-  return a == null ? b : Math.min(a, b);
-}
-
 function maxNum(a: number | undefined, b: number): number {
   return a == null ? b : Math.max(a, b);
+}
+
+/** Real destination tiers — not limited/span-only decoration. */
+function isInfrequentTier(tier: string | null | undefined): boolean {
+  return tier === 'infrequent';
 }
 
 /**
  * Stamp worst-direction headway on every feature for client-side filter gating (AI-182).
  *
- * Semantics (revised): for each direction, take the **best** (lowest) headway among non-span
- * patterns, then take the **worst** of those across directions. That way a rare short-turn
- * branch on the same direction as a frequent primary branch (TTC 63 midday St Clair vs
- * Cedarvale) cannot gate the whole route off a 20-minute filter — while a genuinely worse
- * opposite direction still can.
- *
- * Unsustained period medians are also ignored for per-period stamping: they are edge clusters
- * / sparse short-turns, not a rider-facing cadence for that window.
+ * Whole-route filter semantics:
+ * 1. Period: among destinations that are **real in that period** (not marked unsustained),
+ *    take the **worst** (largest) headway per direction, then the worst of the two directions.
+ *    Peak-only / ghost period patterns (TTC 63 St Clair midday) are unsustained and drop out.
+ *    Two real destinations with different cadence (TTC 507 Long Branch 8 vs Marine Parade 25)
+ *    keep the outer bar — dense trunk service is the frequency cut-back / stop path, not this score.
+ * 2. All-day: same worst-direction idea, but drop pure `infrequent` siblings when the direction
+ *    also has a regular tier pattern (peak short-turn debris shouldn't set all-day filter).
  */
 export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): void {
-  // route+day → directionId → best (min) all-day headway
-  const dirBestHw = new Map<string, Map<number, number>>();
-  // route+day → directionId → period → best (min) period headway
-  const dirBestByPeriod = new Map<string, Map<number, HeadwayByPeriod>>();
+  // route+day → directionId → candidate all-day headways with tier
+  const dirAllDay = new Map<string, Map<number, Array<{ hw: number; tier: string | null | undefined }>>>();
+  // route+day → directionId → period → worst (max) real period headway
+  const dirWorstByPeriod = new Map<string, Map<number, HeadwayByPeriod>>();
 
   for (const f of features) {
     if (f.properties.tier === 'span') continue;
@@ -56,21 +57,26 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
 
     const hw = f.properties.headway;
     if (hw != null) {
-      let dirs = dirBestHw.get(key);
+      let dirs = dirAllDay.get(key);
       if (!dirs) {
         dirs = new Map();
-        dirBestHw.set(key, dirs);
+        dirAllDay.set(key, dirs);
       }
-      dirs.set(dirId, minNum(dirs.get(dirId), hw));
+      let list = dirs.get(dirId);
+      if (!list) {
+        list = [];
+        dirs.set(dirId, list);
+      }
+      list.push({ hw, tier: f.properties.tier });
     }
 
     const byPeriod = f.properties.headwayByPeriod;
     if (byPeriod) {
       const sustained = f.properties.headwayByPeriodSustained;
-      let dirMap = dirBestByPeriod.get(key);
+      let dirMap = dirWorstByPeriod.get(key);
       if (!dirMap) {
         dirMap = new Map();
-        dirBestByPeriod.set(key, dirMap);
+        dirWorstByPeriod.set(key, dirMap);
       }
       let existing = dirMap.get(dirId);
       if (!existing) {
@@ -79,24 +85,32 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
       }
       for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null | undefined][]) {
         if (v == null) continue;
-        // Sparse short-turns publish huge unsustained medians; don't let them gate the route.
+        // Not real cadence for this window (edge bunch / barely-running short-turn) — skip.
         if (sustained?.[pk] === false) continue;
+        // Worst real destination in this direction for the period (not the densest).
         const cur = existing[pk];
-        existing[pk] = cur == null ? v : Math.min(cur, v);
+        existing[pk] = cur == null ? v : Math.max(cur, v);
       }
     }
   }
 
-  // Collapse direction-bests → route worst (max across directions).
+  // All-day: per direction, max among regular-tier candidates when mixed with infrequent.
   const routeWorstHw = new Map<string, number>();
-  for (const [key, dirs] of dirBestHw) {
-    let worst: number | undefined;
-    for (const v of dirs.values()) worst = maxNum(worst, v);
-    if (worst != null) routeWorstHw.set(key, worst);
+  for (const [key, dirs] of dirAllDay) {
+    let routeWorst: number | undefined;
+    for (const candidates of dirs.values()) {
+      if (candidates.length === 0) continue;
+      const regular = candidates.filter(c => !isInfrequentTier(c.tier));
+      const pool = regular.length > 0 ? regular : candidates;
+      const dirWorst = Math.max(...pool.map(c => c.hw));
+      routeWorst = maxNum(routeWorst, dirWorst);
+    }
+    if (routeWorst != null) routeWorstHw.set(key, routeWorst);
   }
 
+  // Period: already per-direction max of real values — collapse max across directions.
   const routeWorstHwByPeriod = new Map<string, HeadwayByPeriod>();
-  for (const [key, dirMap] of dirBestByPeriod) {
+  for (const [key, dirMap] of dirWorstByPeriod) {
     const worst: HeadwayByPeriod = {};
     for (const byPeriod of dirMap.values()) {
       for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null | undefined][]) {
