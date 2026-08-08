@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, isSustainedHeadway, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -233,6 +233,52 @@ describe('computePeriodSustained', () => {
     for (let t = 120; t <= 360; t += 12) times.push(t); // 2:00-6:00am, 12min, plain notation
     const result = computePeriodSustained(times);
     expect(result.overnight).toBe(true);
+  });
+
+  // 2026-08-08: the old grace/violation-count check counted *how many* gaps landed somewhat
+  // above the period median, which flagged routes whose frequency legitimately tapers across a
+  // multi-hour period even though no single wait was ever bad. Real TTC data hit this constantly.
+  it('does not flag a subway direction that legitimately runs faster early in the period than late (real TTC Line 1 evening shape)', () => {
+    // Evening [1140,1380]: ~2-3 min headway early, tapering to 4-5 min late. Worst single gap
+    // is 5 min against a ~3 min median -- 2 min excess, nowhere near noticeable to a rider.
+    const gaps = [
+      2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 3, 4, 3, 4, 3, 4, 3, 4, 3, 3, 4, 3, 4, 3,
+      4, 3, 4, 3, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 3, 4, 3, 4, 3, 4, 3, 4, 3, 5, 5, 5, 5, 5, 5,
+      5, 5, 5, 5, 5, 5, 5,
+    ];
+    const times = [1140];
+    for (const g of gaps) times.push(times[times.length - 1] + g);
+    const result = computePeriodSustained(times);
+    expect(result.evening).toBe(true);
+  });
+
+  it('does not flag a bus direction whose worst gap is only a few minutes past its headway (real TTC 45 shape)', () => {
+    // AM Peak [360,540]: steady 8-min headway with one 16-min gap -- 8 min excess, still under
+    // the 15-min noticeable-wait floor.
+    const gaps = [8, 16, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];
+    const times = [360];
+    for (const g of gaps) times.push(times[times.length - 1] + g);
+    const result = computePeriodSustained(times);
+    expect(result.amPeak).toBe(true);
+  });
+
+  it('still flags a bus direction whose worst gap is a large, noticeable jump past its headway', () => {
+    // Same 8-min shape, but one gap balloons to 35 min (27 min excess) -- past the floor.
+    const gaps = [8, 35, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];
+    const times = [360];
+    for (const g of gaps) times.push(times[times.length - 1] + g);
+    const result = computePeriodSustained(times);
+    expect(result.amPeak).toBe(false);
+  });
+});
+
+describe('isSustainedHeadway', () => {
+  it('passes when the worst gap is under the noticeable-excess floor', () => {
+    expect(isSustainedHeadway([9, 10, 9, 14], 9)).toBe(true); // 14-9=5 excess
+  });
+
+  it('fails once the worst gap crosses the noticeable-excess floor', () => {
+    expect(isSustainedHeadway([9, 10, 9, 25], 9)).toBe(false); // 25-9=16 excess
   });
 });
 

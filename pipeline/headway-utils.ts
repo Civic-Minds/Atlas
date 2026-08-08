@@ -1,5 +1,4 @@
 import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type PeriodKey } from '../shared/config.js';
-import { DEFAULT_CRITERIA } from './defaults.js';
 
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
@@ -202,42 +201,43 @@ export function hasGenuineBranchPattern(
   return median / terminalComputedHw >= ratioThreshold;
 }
 
+// How many minutes a wait has to exceed the reported headway by before it's worth telling a
+// rider about. This is deliberately an absolute-minutes bar, not a ratio: a rider on a 5-min
+// subway who waits 10 min hasn't had a bad night (5 min excess); a rider told "every 10 min" who
+// waits 45 (35 min excess) has. A ratio-only bar can't tell those apart -- 2x reads identical in
+// both cases -- and the original motivating case (#281 below) is itself only ~1.8x.
+export const MIN_UNSUSTAINED_EXCESS_MINUTES = 15;
+
 /**
- * Does this specific reported headway (T) fairly describe every gap in the window, or does at
- * least one gap blow past it disproportionately? Uses the same grace/violation tolerance
- * determineTier (transit-phase2.ts) uses for full-day tier classification -- calibrated, proven
- * logic -- but applied to a period's own median rather than a fixed tier ladder. That's a
- * different question than tier classification: not "does this route qualify for tier X" (which
- * would wrongly flag any naturally-infrequent-but-honest route), but "is the specific number
- * we're about to report actually representative of this window's real gaps."
+ * Does this specific reported headway (T) fairly describe every gap in the window, or does the
+ * single worst gap blow past it by enough that a rider would actually notice? "Is the specific
+ * number we're about to report actually representative of this window's real gaps."
+ *
+ * Previously used the same grace/violation-count tolerance determineTier (transit-phase2.ts)
+ * uses for full-day tier classification. That tolerance counts *how many* gaps land somewhat
+ * above the median, which made it fail on routes whose frequency legitimately tapers across a
+ * multi-hour period (a subway running 2-3 min early evening, 4-5 min late evening: no single gap
+ * is alarming, but enough of them cluster in the "somewhat above the 3-min median" band to trip
+ * the violation count). Real-feed validation (2026-08-08) found this misfiring across ordinary
+ * TTC bus and subway routes -- "every 9 min" flagged uneven over a 10-min gap, Line 1 flagged
+ * over a 5-min gap on a 3-4 min service. Checking only the single worst gap against an absolute
+ * excess floor fixes that: gradual tapering never produces one big outlier, so it no longer
+ * trips, while a genuine void still does.
  *
  * Issue #281 (TTC route 10, Weekday, Van Horne -> Victoria Park): midday gaps [315, 30], median
- * 173. Grace for T=173 is max(5, round(173*0.15))=26, so 315 (>199) fails outright -- correctly
- * flags "173" as not a fair description of that period, without inventing a new fraction-of-span
- * or ratio-to-median threshold from scratch. Deliberately does NOT touch transit-phase2.ts's
- * determineTier itself, which drives live tier/color for every route on the map.
+ * 173. Excess is 315-173=142, far past the floor -- still correctly flags "173" as not a fair
+ * description of that period. Deliberately does NOT touch transit-phase2.ts's determineTier
+ * itself, which drives live tier/color for every route on the map and is unrelated to this
+ * rider-facing signal.
  */
 export function isSustainedHeadway(
   gaps: number[],
   targetHeadway: number,
-  graceMinutes: number = DEFAULT_CRITERIA.graceMinutes,
-  gracePercent: number = DEFAULT_CRITERIA.gracePercent,
-  maxGraceViolations: number = DEFAULT_CRITERIA.maxGraceViolations,
-  violationPercent: number = DEFAULT_CRITERIA.violationPercent,
+  minExcessMinutes: number = MIN_UNSUSTAINED_EXCESS_MINUTES,
 ): boolean {
-  const grace = Math.max(graceMinutes, Math.round(targetHeadway * gracePercent));
-  const allowedViolations = Math.max(maxGraceViolations, Math.floor(gaps.length * violationPercent));
-  let graceCount = 0;
-  for (const gap of gaps) {
-    if (gap <= targetHeadway) continue;
-    if (gap <= targetHeadway + grace) {
-      graceCount++;
-      if (graceCount > allowedViolations) return false;
-    } else {
-      return false;
-    }
-  }
-  return true;
+  if (gaps.length === 0) return true;
+  const maxGap = Math.max(...gaps);
+  return maxGap - targetHeadway < minExcessMinutes;
 }
 
 // The median deliberately stays based on departures inside the period. A separate max-gap value
