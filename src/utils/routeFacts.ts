@@ -1,6 +1,7 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import { TIME_PERIODS, type PeriodKey } from '../../shared/config';
+import { buildRouteKey } from './routeKey';
 
 export type ServicePeriod = PeriodKey | 'all';
 
@@ -168,6 +169,7 @@ export interface RouteFacts {
   routeId: string;
   shortName: string;
   longName: string | null;
+  routeBranch: string | null;
   directionId: number;
   headsign: string | null;
   routeType?: number;
@@ -183,12 +185,13 @@ export function buildRouteFacts(p: ShapeProperties, agencySlug?: string): RouteF
   const routeId = p.routeId;
 
   return {
-    key: `${resolvedAgencySlug}::${routeId}`,
+    key: buildRouteKey(resolvedAgencySlug, routeId, p.routeBranch),
     agencySlug: resolvedAgencySlug,
     agencyName: p.agencyName || resolvedAgencySlug,
     routeId,
     shortName: p.routeShortName || routeId,
     longName: p.routeLongName || null,
+    routeBranch: p.routeBranch ?? null,
     directionId: p.directionId ?? 0,
     headsign: p.headsign ?? null,
     routeType: (p as ShapeProperties & { routeType?: number }).routeType,

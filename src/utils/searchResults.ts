@@ -214,7 +214,11 @@ export function routeQueryMatchRank(p: ShapeProperties, query: string): number {
   const shortNorm = stripLeadingZeros(shortName);
   const routeId = (p.routeId ?? '').toLowerCase();
   const longName = (p.routeLongName ?? '').toLowerCase();
+  const branch = (p.routeBranch ?? '').toLowerCase();
+  const displayName = branch ? `${shortName} ${branch}` : shortName;
 
+  if (displayName === q) return 0;
+  if (displayName.startsWith(q)) return 1;
   if (shortName === q || shortNorm === qNorm) return 0;
   if (shortName.startsWith(q) || shortNorm.startsWith(qNorm)) return 1;
   if (routeId === q) return 2;
@@ -222,6 +226,7 @@ export function routeQueryMatchRank(p: ShapeProperties, query: string): number {
   if (shortName.includes(q) || shortNorm.includes(qNorm)) return 4;
   if (routeId.includes(q)) return 5;
   if (q.length >= 2 && longName.includes(q)) return 6;
+  if (q.length >= 2 && branch.includes(q)) return 6;
   const agencySlug = ((p as { agencySlug?: string }).agencySlug ?? '').toLowerCase();
   if (agencySlug.startsWith(q)) return 7;
   return 8;
@@ -262,7 +267,7 @@ export function searchRouteResults(
     const facts = buildRouteFacts(p);
     if (!matchesRouteQuery(p, q)) continue;
 
-    const displayKey = `${facts.agencySlug}::${facts.shortName}::${facts.longName ?? ''}`;
+    const displayKey = `${facts.agencySlug}::${facts.shortName}::${facts.longName ?? ''}::${facts.routeBranch ?? ''}`;
     const inView = bounds ? featureInViewport(f, bounds) : false;
     const distanceM = featureDistanceM(f, bounds);
     const matchRank = routeQueryMatchRank(p, q);
@@ -286,7 +291,7 @@ export function searchRouteResults(
       const facts = buildRouteFacts(p);
       return {
         key,
-        routeShortName: facts.shortName,
+        routeShortName: facts.routeBranch ? `${facts.shortName} ${facts.routeBranch}` : facts.shortName,
         routeLongName: facts.longName,
         agencyName: facts.agencyName,
         inView,

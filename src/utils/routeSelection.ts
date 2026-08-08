@@ -1,9 +1,11 @@
 import type { GeoJSON } from 'geojson';
+import { buildRouteKey, splitRouteKey } from './routeKey';
 
 interface RouteSelectionProperties {
   routeId?: string;
   routeShortName?: string | null;
   routeLongName?: string | null;
+  routeBranch?: string | null;
   day?: string;
 }
 
@@ -20,20 +22,18 @@ export function resolveRouteSelectionForDay(
   features: GeoJSON.Feature[],
   day: string,
 ): string | null {
-  const separator = selectedRoute.indexOf('::');
-  if (separator < 0) return null;
-  const selectedRouteId = selectedRoute.slice(separator + 2);
+  const { routeId: selectedRouteId, routeBranch: selectedBranch } = splitRouteKey(selectedRoute);
   if (!selectedRouteId) return null;
 
   const routeFeatures = features
     .map(f => f.properties as RouteSelectionProperties | null)
     .filter((p): p is RouteSelectionProperties => !!p?.routeId);
-  const selectedFeature = routeFeatures.find(p => p.routeId === selectedRouteId);
+  const selectedFeature = routeFeatures.find(p => p.routeId === selectedRouteId && (p.routeBranch ?? undefined) === selectedBranch);
   if (!selectedFeature) return null;
 
   const isActiveDay = (p: RouteSelectionProperties) => p.day === undefined || p.day === day;
-  if (routeFeatures.some(p => p.routeId === selectedRouteId && isActiveDay(p))) {
-    return `${agencySlug}::${selectedRouteId}`;
+  if (routeFeatures.some(p => p.routeId === selectedRouteId && (p.routeBranch ?? undefined) === selectedBranch && isActiveDay(p))) {
+    return buildRouteKey(agencySlug, selectedRouteId, selectedBranch);
   }
 
   const sameLogicalRouteIds = new Set(
@@ -41,12 +41,13 @@ export function resolveRouteSelectionForDay(
       .filter(p =>
         isActiveDay(p) &&
         p.routeShortName === selectedFeature.routeShortName &&
-        (p.routeLongName ?? null) === (selectedFeature.routeLongName ?? null),
+        (p.routeLongName ?? null) === (selectedFeature.routeLongName ?? null) &&
+        (p.routeBranch ?? null) === (selectedFeature.routeBranch ?? null),
       )
       .map(p => p.routeId as string),
   );
 
   return sameLogicalRouteIds.size === 1
-    ? `${agencySlug}::${[...sameLogicalRouteIds][0]}`
+    ? buildRouteKey(agencySlug, [...sameLogicalRouteIds][0], selectedBranch)
     : null;
 }

@@ -24,6 +24,7 @@ import { projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
+import { deriveRouteBranch } from '../shared/routeBranch.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 
 export type { GtfsPreprocess };
@@ -289,6 +290,7 @@ export async function processGtfsBuffer(
         })(),
         routeShortName: shortName,
         routeLongName: route?.route_long_name ?? null,
+        routeBranch: deriveRouteBranch(options?.slug, shortName, resolveDisplayHeadsign(result.headsign, shortName, routeLongName)),
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         busSubType: detectBusSubType(result.routeType, shortName, route?.route_long_name ?? null, options?.slug),

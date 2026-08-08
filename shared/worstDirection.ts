@@ -3,6 +3,7 @@ import type { HeadwayByPeriod, HeadwayByPeriodSustained, PeriodKey } from './con
 export type WorstDirectionFeature = {
   properties: {
     routeShortName?: string | null;
+    routeBranch?: string | null;
     day?: unknown;
     directionId?: number | null;
     tier?: string | null;
@@ -15,8 +16,8 @@ export type WorstDirectionFeature = {
   };
 };
 
-function routeDayKey(routeShortName: string, day: unknown): string {
-  return `${routeShortName}::${day ?? ''}`;
+function routeDayKey(routeShortName: string, routeBranch: string | null | undefined, day: unknown): string {
+  return `${routeShortName}::${routeBranch ?? ''}::${day ?? ''}`;
 }
 
 function maxNum(a: number | undefined, b: number): number {
@@ -53,7 +54,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     const dirId = f.properties.directionId;
     if (dirId == null) continue;
 
-    const key = routeDayKey(sn, f.properties.day);
+    const key = routeDayKey(sn, f.properties.routeBranch, f.properties.day);
 
     const hw = f.properties.headway;
     if (hw != null) {
@@ -125,7 +126,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   for (const f of features) {
     const sn = f.properties.routeShortName as string | undefined;
     if (!sn) continue;
-    const key = routeDayKey(sn, f.properties.day);
+    const key = routeDayKey(sn, f.properties.routeBranch, f.properties.day);
     const worst = routeWorstHw.get(key);
     if (worst != null) f.properties.worstDirectionHeadway = worst;
     else delete f.properties.worstDirectionHeadway;

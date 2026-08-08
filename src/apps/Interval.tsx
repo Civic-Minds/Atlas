@@ -18,6 +18,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
+import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
@@ -200,10 +201,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const selectedCorridorFamily = useMemo(() => {
     if (!selectedRoute) return null;
-    const separator = selectedRoute.indexOf('::');
-    if (separator < 0) return null;
-    const agencySlug = selectedRoute.slice(0, separator);
-    const routeId = selectedRoute.slice(separator + 2);
+    const { agencySlug, routeId } = splitRouteKey(selectedRoute);
     const features = layers[agencySlug]?.features ?? [];
     const props = features
       .map(f => f.properties as ShapeProperties)
@@ -254,16 +252,14 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || maxHeadway === Infinity) return false;
-    const separator = selectedRoute.indexOf('::');
-    if (separator < 0) return false;
-    const slug = selectedRoute.slice(0, separator);
-    const routeId = selectedRoute.slice(separator + 2);
-    const feature = layers[slug]?.features.find(f => {
+    const { agencySlug: selectedSlug, routeId } = splitRouteKey(selectedRoute);
+    const selectedRouteSlug = selectedSlug;
+    const feature = layers[selectedRouteSlug]?.features.find(f => {
       const p = f.properties as ShapeProperties;
-      return p?.routeId === routeId && (p.day === undefined || p.day === day);
+      return p?.routeId === routeId && routeKey({ ...p, agencySlug: selectedRouteSlug }) === selectedRoute && (p.day === undefined || p.day === day);
     });
     if (!feature) return false;
-    return !passesRouteFilter(feature.properties as ShapeProperties, slug, {
+    return !passesRouteFilter(feature.properties as ShapeProperties, selectedRouteSlug, {
       maxHeadway,
       agencies: selectedAgencies,
       modes: selectedModes,
@@ -333,7 +329,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   // Drop stale selection when the route card has no data (day change, agency unload, etc.)
   useEffect(() => {
     if (!selectedRoute) return;
-    const [slug] = selectedRoute.split('::');
+    const { agencySlug: slug } = splitRouteKey(selectedRoute);
     const fc = layers[slug];
     if (!fc) return;
     const resolvedRoute = resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day);

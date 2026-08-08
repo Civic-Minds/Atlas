@@ -18,7 +18,7 @@ import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { findPlaceByName } from '../../../shared/placeLookup';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
-import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
+import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
@@ -80,14 +80,14 @@ function buildServingStopMatchExpression(
       if (!routeId || !stopHeadways) continue;
       for (const id of stopIds) {
         if (Object.prototype.hasOwnProperty.call(stopHeadways, id)) {
-          keys.add(`${slug}::${routeId}`);
+          keys.add(routeKey({ ...(p as any), agencySlug: slug } as any));
           break;
         }
       }
     }
   }
   if (keys.size === 0) return false;
-  const routeKeyExpr: any = ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']];
+  const routeKeyExpr: any = tileRouteKeyExpr();
   return ['in', routeKeyExpr, ['literal', [...keys]]];
 }
 
@@ -95,7 +95,7 @@ function buildServingStopMatchExpression(
 // High-contrast palette deliberately distinct from HEADWAY_TIERS colors so it reads as an
 // overlay, not another frequency tier.
 const HIGHLIGHT_COLORS = ['#ff2d6f', '#00c2ff', '#ffd400', '#39ff6a', '#b967ff', '#ff8a1f'];
-const HIGHLIGHT_KEY_EXPR: any = ['concat', ['get', 'agencySlug'], '::', ['get', 'routeId']];
+const HIGHLIGHT_KEY_EXPR: any = tileRouteKeyExpr();
 
 function buildHighlightFilter(keys: string[]): any {
   if (keys.length === 0) return ['==', ['literal', 0], ['literal', 1]];
@@ -943,7 +943,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // Compute full-route bounds from GeoJSON layer data.
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
     // so match by slug (from selectedRoute key) + routeId separately.
-    const { agencySlug: routeSlug, routeId } = splitRouteKey(selectedRoute);
+    const { agencySlug: routeSlug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
     let found = false;
 
@@ -951,6 +951,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (fc) {
       for (const f of fc.features) {
         if ((f.properties as any)?.routeId !== routeId) continue;
+        if (((f.properties as any)?.routeBranch ?? undefined) !== routeBranch) continue;
         const geom = f.geometry as any;
         if (!geom?.coordinates) continue;
         const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
@@ -1128,7 +1129,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
       } else if (selectedRoute) {
         const selKey = selectedRoute;
-        const routeMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey];
+        const routeMatch: any = ['==', tileRouteKeyExpr(), selKey];
         if (hoveredBranch) {
           const branchHeadSignMatch: any = hoveredBranch.headsigns?.length
             ? ['in', ['get', 'headsign'], ['literal', hoveredBranch.headsigns]]
@@ -1151,7 +1152,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         }
       } else if (hoveredSearchRoute) {
         // Hovering a search result: spotlight that route, fade the rest
-        const hoverMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], hoveredSearchRoute];
+        const hoverMatch: any = ['==', tileRouteKeyExpr(), hoveredSearchRoute];
         const focusedPaint = buildFocusedRoutePaint(hoverMatch, DIM_OPACITY, DIM_WIDTH);
         map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
         map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);

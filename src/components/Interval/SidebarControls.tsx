@@ -241,16 +241,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // Save recently viewed route
   useEffect(() => {
     if (!selectedRoute) return;
-    const [slug, routeId] = selectedRoute.split('::');
+    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     const fc = nonCorridorLayers[slug];
     if (!fc) return;
     const feat = fc.features.find(f => {
       const p = f.properties as any;
-      return p.routeId === routeId && (p.day === undefined || p.day === currentDay);
+      return p.routeId === routeId && (p.routeBranch ?? undefined) === routeBranch && (p.day === undefined || p.day === currentDay);
     });
     if (feat) {
       const facts = buildRouteFacts(feat.properties as ShapeProperties, slug);
-      const shortName = facts.shortName;
+      const shortName = facts.routeBranch ? `${facts.shortName} ${facts.routeBranch}` : facts.shortName;
       const longName = facts.longName || '';
       const agencyName = shortenAgencyName(facts.agencyName);
 
@@ -294,7 +294,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           })
           .map(candidate => candidate.properties as ShapeProperties);
         const headway = routeListDisplayHeadway(routeFeatures, period) ?? 999;
-        const shortName = facts.shortName;
+        const shortName = facts.routeBranch ? `${facts.shortName} ${facts.routeBranch}` : facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
         routes.push({ key, shortName, longName, agencyName, headway });
@@ -309,17 +309,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [notableRoutes, recentlyViewed]);
 
   const headwayForRouteKey = useCallback((key: string): number | null => {
-    const [slug, routeId] = key.split('::');
+    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(key);
     const fc = nonCorridorLayers[slug];
     const feat = fc?.features.find(f => {
       const p = f.properties as ShapeProperties;
-      return p.routeId === routeId && !(p as { stopId?: string }).stopId;
+      return p.routeId === routeId && (p.routeBranch ?? undefined) === routeBranch && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return null;
     const routeFeatures = fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
-        return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === currentDay);
+        return !p.stopId && p.routeId === routeId && (p.routeBranch ?? undefined) === routeBranch && (p.day === undefined || p.day === currentDay);
       })
       .map(candidate => candidate.properties as ShapeProperties) ?? [];
     return routeListDisplayHeadway(routeFeatures, period);
@@ -405,7 +405,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (aH !== bH) return aH - bH;
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
-    return { ...first, routeShortName: firstFacts.shortName, routeLongName: firstFacts.longName, directions, features };
+    return {
+      ...first,
+      routeShortName: firstFacts.routeBranch ? `${firstFacts.shortName} ${firstFacts.routeBranch}` : firstFacts.shortName,
+      routeLongName: firstFacts.longName,
+      directions,
+      features,
+    };
   }, [selectedRoute, nonCorridorLayers, currentDay, period]);
 
   // Lettered variant family (GRTC 1/1A/1B/1C style) for the selected route
