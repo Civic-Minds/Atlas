@@ -6,8 +6,8 @@ import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
-import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
+import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -80,13 +80,11 @@ async function main() {
     if (url) {
       const data = await fetchJson(url, 5);
       if (data && data.features) {
-        data.features.forEach(f => {
-          if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
-          f.properties = f.properties || {};
-          f.properties.agencySlug = slug;
-          flattenPeriodHeadwayProps(f.properties);
+        // Re-stamp worst-direction (e.g. drop TTC 63 St Clair midday from whole-route
+        // score) before baking flat wdph_* props into tiles — published JSON may lag.
+        for (const f of prepareAgencyRouteFeaturesForTiles(data.features, slug)) {
           allRoutes.push(f);
-        });
+        }
       } else if (!data) {
         if (agency.pmtilesPending) {
           console.warn(`  Skipping ${slug}: marked "pmtilesPending" (no route data published yet — excluded from fail-closed check, not from the map once it is).`);

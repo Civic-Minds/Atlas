@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Map tiles now recompute whole-route frequency the same way the app does before publish, so a peak-only short turn (e.g. TTC 63 to St Clair at midday) no longer sticks in the live map filter after the code fix already cleared the sidebar
 - Whole-route frequency filters use every destination that actually runs in that period (skipping peak-only thin branches), so TTC 63 midday stays every ~10 minutes while routes with two real ends (e.g. 507) follow the slower one
 - Schedule updates now show up on a normal page reload — the app no longer keeps serving old agency data from browser storage after a feed refresh
 - Fixed caching issue during PMTiles compilation by appending cache-buster parameters to R2 GeoJSON fetches
