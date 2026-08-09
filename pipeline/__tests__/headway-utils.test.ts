@@ -179,6 +179,13 @@ describe('resolveTerminalPeriodHeadway', () => {
     expect(resolveTerminalPeriodHeadway(120, 55, true)).toBe(55);
   });
 
+  // GRTC 201 (and similar flat infrequent routes): branch-scoped terminal can honestly be
+  // denser than trip-start for a period (e.g. three midday arrivals, gaps [90,120] → 105).
+  // Period rows must not show the sparser trip-start value while headline already used 105.
+  it('prefers denser branch-scoped terminal-window over sparser trip-dispatch (GRTC 201)', () => {
+    expect(resolveTerminalPeriodHeadway(105, 120, true)).toBe(105);
+  });
+
   it('falls back to branch-scoped terminal when branch has no period value', () => {
     expect(resolveTerminalPeriodHeadway(7, null, true)).toBe(7);
   });

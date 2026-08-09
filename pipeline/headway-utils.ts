@@ -157,14 +157,17 @@ export function resolveTerminalHeadway(
  * Merge a branch summary with a terminal period/hour summary.
  *
  * When terminal data is already scoped to this branch's headsign/shape (trips that
- * reach the destination), prefer the **branch trip-start** period median: it counts
- * how often that pattern *departs* during the window. Times recorded only at the
- * far terminus and filtered into the same clock window drop late-departing trips
- * whose travel time lands the arrival after the period ends (GO 94 Pickering:
- * Square One leave ~13:35 is real midday service to Pickering; it only clocks in
- * at Pickering after 15:00, so a terminal-window median looked like ~120 min while
- * dispatch was ~55–60). Fall back to terminal-window times when the branch has no
- * period value.
+ * reach the destination), pick the **denser** (lower) of branch trip-start vs
+ * terminal-in-window medians:
+ * - Branch wins when travel time makes terminus clock-in lag the period window (GO
+ *   94 Pickering: Square One leave ~13:35 is real midday service; it only clocks in
+ *   at Pickering after 15:00, so terminal-window looked ~120 while dispatch was
+ *   ~55–60).
+ * - Terminal wins when stop-level gaps are denser than trip-start but still on this
+ *   same branch (GRTC 201: three midday arrivals with [90,120] medians to 105, vs
+ *   trip-start 120). Always preferring branch here made period rows *sparser* than
+ *   the headline headway, which already uses denser of the two.
+ * Fall back to whichever side has a value when the other is null.
  *
  * Unscoped / shared terminal data still needs slower-value protection so a dense
  * hub stop cannot outrank this branch's own cadence.
@@ -174,7 +177,11 @@ export function resolveTerminalPeriodHeadway(
   branchHeadway: number | null,
   terminalIsBranchScoped: boolean,
 ): number | null {
-  if (terminalIsBranchScoped) return branchHeadway ?? terminalHeadway;
+  if (terminalIsBranchScoped) {
+    if (branchHeadway == null) return terminalHeadway;
+    if (terminalHeadway == null) return branchHeadway;
+    return Math.min(branchHeadway, terminalHeadway);
+  }
   if (branchHeadway == null) return terminalHeadway;
   if (terminalHeadway == null) return branchHeadway;
   return Math.max(branchHeadway, terminalHeadway);

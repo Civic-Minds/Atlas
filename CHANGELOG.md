@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Period frequencies on a destination branch now use the denser of trip-start vs end-stop timing, so cards no longer show a sparser midday than the headline wait (e.g. GRTC 201)
 - Live over Halifax now dots buses on every weekday-midday route that runs every 15 minutes or better (vehicles only — full adherence stays on Route 1)
 - Corridors panel is visible again (it was rendering below the map fold) and "Corridors from here…" actually pre-fills From
 - Corridor frequency bars are labeled as departure-stop wait times so they no longer read like destination headways

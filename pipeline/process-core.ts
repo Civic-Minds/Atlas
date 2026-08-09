@@ -634,8 +634,8 @@ export async function processGtfsBuffer(
     // Step 5: set headwayByPeriod — merge terminal-at-stop period medians with the branch
     // (trip-start) period medians via resolveTerminalPeriodHeadway.
     // Branch-scoped terminal data must only count trips that reach this destination; unscoped
-    // shared terminals cannot look denser than the real branch. For branch-scoped merges, trip
-    // *departures* win the period (see resolveTerminalPeriodHeadway / GO 94).
+    // shared terminals cannot look denser than the real branch. For branch-scoped merges, the
+    // denser of trip-start vs terminal-in-window wins (GO 94 lag vs GRTC 201 stop cadence).
     //
     // minStopHeadwayByPeriod uses all on-shape stops so the filter correctly shows the route
     // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
