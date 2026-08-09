@@ -35,14 +35,14 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
   });
 
-  it('routeCardDisplayHeadway uses period summary, not the worst-direction filter headway', () => {
+  it('routeCardDisplayHeadway uses the same route-level metric as the filter', () => {
     const p = {
       ...base,
       headway: 5,
       headwayByPeriod: { midday: 6 },
       worstDirectionHeadwayByPeriod: { midday: 8 },
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'midday')).toBe(6);
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(8);
     expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
   });
 
@@ -58,6 +58,19 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBe(10);
     // The filter still uses the raw period metric; this change is display-only.
     expect(effectiveRouteHeadway(p, 'midday')).toBe(2);
+  });
+
+  it('does not show a false composite 2-minute branch when route-level service is 12 minutes', () => {
+    const p = {
+      ...base,
+      headway: 3,
+      headwayByPeriod: { midday: 2 },
+      worstDirectionHeadway: 12,
+      worstDirectionHeadwayByPeriod: { midday: 12 },
+      headwayByPeriodSustained: { midday: true },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(12);
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(12);
   });
 
   it('falls back to all-day headway when period is all', () => {

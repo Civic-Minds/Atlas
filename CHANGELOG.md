@@ -16,6 +16,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Moved the uneven-service warning to beta**: it was flagging normal routes while its thresholds are tuned against more real feeds.
 - **Refreshed Brampton schedule data**: Route 502 no longer shows a false uneven-service warning in the evening.
 - **Fixed truncated rail geometry**: UP Express now renders the full route to Pearson Airport.
+- **Aligned route-card frequencies with route filters**: combined branch patterns can no longer make a route look faster than its actual route-level service.
 
 ## [3.2.16] - 2026-08-06
 
