@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Weekly refresh now reprocesses when only the feed version changes (not just the end date), so mid-period schedule edits like MBTA’s no longer sit stale for weeks
+- Refresh prints and records soft-skipped / failed agencies so stuck feeds don’t disappear into a green action log
 - MBTA (and other feeds with pathway graph nodes) can refresh again — empty stop coordinates on location_type 3/4 nodes are valid in GTFS and no longer fail validation
 - Ride On Flash now shows Orange and Blue separately, so each branch keeps its own schedule while shared stops can still show combined service
 - Route cards now count how often a destination pattern actually *departs* in each time period, so long runs like GO 94 to Pickering no longer look twice as sparse midday just because buses still finish after 3pm

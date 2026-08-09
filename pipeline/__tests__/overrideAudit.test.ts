@@ -73,6 +73,25 @@ describe('upstreamFeedChanged', () => {
       'S1000045',
     )).toBe(false);
   });
+
+  it('is true when feed_version changes under the same feed_end_date', () => {
+    expect(upstreamFeedChanged(
+      {
+        lastFeedExpiry: '20260905',
+        lastFeedVersion: 'Summer 2026, 2026-06-26T19:57:52+00:00, version D',
+      },
+      '20260905',
+      'Summer 2026, 2026-08-07T15:32:18+00:00, version D',
+    )).toBe(true);
+  });
+
+  it('is false when both end date and version match', () => {
+    expect(upstreamFeedChanged(
+      { lastFeedExpiry: '20260905', lastFeedVersion: 'v1' },
+      '20260905',
+      'v1',
+    )).toBe(false);
+  });
 });
 
 describe('clearOverrideUserFacingOnFeedChange', () => {

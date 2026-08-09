@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+import { decideRefreshSkipUnchanged, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
 
 describe('shouldStampFeedMeta', () => {
   it('stamps only when featureCount > 0', () => {
@@ -47,5 +47,81 @@ describe('stampFeedMeta', () => {
     });
     expect(agency.lastFeedExpiry).toBe('20250101');
     expect(agency.lastFeedVersion).toBe('peek');
+  });
+});
+
+describe('decideRefreshSkipUnchanged', () => {
+  const base = {
+    forceRefresh: false,
+    hasSupplementals: false,
+    feedExpired: false,
+  };
+
+  it('reprocesses when feed_version changes under the same end date (MBTA)', () => {
+    const d = decideRefreshSkipUnchanged({
+      ...base,
+      peekedExpiry: '20260905',
+      peekedVersion: 'Summer 2026, 2026-08-07T15:32:18+00:00, version D',
+      lastFeedExpiry: '20260905',
+      lastFeedVersion: 'Summer 2026, 2026-06-26T19:57:52+00:00, version D',
+    });
+    expect(d.skip).toBe(false);
+  });
+
+  it('skips when both end date and version match', () => {
+    const d = decideRefreshSkipUnchanged({
+      ...base,
+      peekedExpiry: '20270131',
+      peekedVersion: 'UTC: 10-Jun-2026 22:25',
+      lastFeedExpiry: '20270131',
+      lastFeedVersion: 'UTC: 10-Jun-2026 22:25',
+    });
+    expect(d).toEqual({ skip: true, reason: 'skipped (same schedule period: 20270131)' });
+  });
+
+  it('skips on matching end date when version is missing on either side', () => {
+    const d = decideRefreshSkipUnchanged({
+      ...base,
+      peekedExpiry: '20261201',
+      peekedVersion: null,
+      lastFeedExpiry: '20261201',
+      lastFeedVersion: 'UTC: 21-May-2026 20:09',
+    });
+    expect(d.skip).toBe(true);
+  });
+
+  it('reprocesses expired feeds even when metadata matches', () => {
+    const d = decideRefreshSkipUnchanged({
+      ...base,
+      feedExpired: true,
+      peekedExpiry: '20260801',
+      peekedVersion: 'v202606282',
+      lastFeedExpiry: '20260801',
+      lastFeedVersion: 'v202606282',
+    });
+    expect(d.skip).toBe(false);
+  });
+
+  it('skips version-only agencies when version is unchanged', () => {
+    const d = decideRefreshSkipUnchanged({
+      ...base,
+      peekedExpiry: null,
+      peekedVersion: '7/30/2026',
+      lastFeedExpiry: null,
+      lastFeedVersion: '7/30/2026',
+    });
+    expect(d).toEqual({ skip: true, reason: 'skipped (same feed version: 7/30/2026)' });
+  });
+
+  it('never skips under --force', () => {
+    const d = decideRefreshSkipUnchanged({
+      ...base,
+      forceRefresh: true,
+      peekedExpiry: '20270131',
+      peekedVersion: 'same',
+      lastFeedExpiry: '20270131',
+      lastFeedVersion: 'same',
+    });
+    expect(d.skip).toBe(false);
   });
 });

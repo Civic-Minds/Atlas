@@ -35,7 +35,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { decideRefreshSkipUnchanged, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -240,8 +240,9 @@ async function refreshAgency(
     throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
   }
 
-  // Skip processing if the feed hasn't changed since last refresh.
-  // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
+  // Skip processing only when feed identity is unchanged (expiry *and* version).
+  // Matching end-date alone is not enough — MBTA keeps end-date fixed while
+  // shipping mid-period patches under a new feed_version (see decideRefreshSkipUnchanged).
   const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
@@ -254,13 +255,17 @@ async function refreshAgency(
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
   const feedExpired = !!(peekedExpiry && peekedExpiry < today);
 
-  if (!forceRefresh && !hasSupplementals && !feedExpired) {
-    if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
-      return `skipped (same schedule period: ${peekedExpiry})`;
-    }
-    if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
-      return `skipped (same feed version: ${peekedVersion})`;
-    }
+  const skipDecision = decideRefreshSkipUnchanged({
+    forceRefresh,
+    hasSupplementals,
+    feedExpired,
+    peekedExpiry,
+    peekedVersion,
+    lastFeedExpiry: agency.lastFeedExpiry,
+    lastFeedVersion: agency.lastFeedVersion,
+  });
+  if (skipDecision.skip) {
+    return skipDecision.reason;
   }
 
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
@@ -458,6 +463,9 @@ async function main() {
   let failures = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
+  const validationSoftSkips: string[] = [];
+  const zeroFeatureSkips: string[] = [];
+  const failedSlugs: string[] = [];
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
     const logger = {
@@ -478,7 +486,9 @@ async function main() {
         }
       }
       const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
-      if (!summary.startsWith('skipped')) uploads++;
+      if (summary === 'validation failed, skipped') validationSoftSkips.push(agency.slug);
+      else if (summary === '0 features, skipped') zeroFeatureSkips.push(agency.slug);
+      else if (!summary.startsWith('skipped')) uploads++;
       console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
       // Clear staged flag once data is live so the next deploy shows the agency.
       if (agency.staged) delete agency.staged;
@@ -487,6 +497,7 @@ async function main() {
       writeAgencySource(agency);
     } catch (e) {
       failures++;
+      failedSlugs.push(agency.slug);
       console.log(`  ${agency.slug.padEnd(12)} ... FAILED — ${e instanceof Error ? e.message : e}${logBuffer}`);
     }
   });
@@ -503,6 +514,16 @@ async function main() {
   if (countryLaunchSkips > 0) {
     console.log(
       `  ${countryLaunchSkips} skipped — unlaunched country (no production-visible agencies yet)`,
+    );
+  }
+  if (validationSoftSkips.length > 0) {
+    console.warn(
+      `  [warn] ${validationSoftSkips.length} validation soft-skips (left previous R2 data): ${validationSoftSkips.join(', ')}`,
+    );
+  }
+  if (zeroFeatureSkips.length > 0) {
+    console.warn(
+      `  [warn] ${zeroFeatureSkips.length} zero-feature soft-skips: ${zeroFeatureSkips.join(', ')}`,
     );
   }
   if (uploads > 0) {
@@ -531,11 +552,17 @@ async function main() {
     console.warn(`  [warn] agencies.json R2 write failed — ${e instanceof Error ? e.message : e}`);
   }
 
-  // Last-run timestamp on R2 only — avoids a git commit when feeds are unchanged.
+  // Last-run summary on R2 — includes soft-skips so stuck agencies aren't silent in CI logs only.
   if (onlySlugs.length === 0) {
     try {
       await r2Put('atlas/feed-refresh-meta.json', JSON.stringify({
         lastCompletedAt: new Date().toISOString(),
+        uploads,
+        failures,
+        failedSlugs,
+        validationSoftSkips,
+        zeroFeatureSkips,
+        countryLaunchSkips,
       }));
       console.log('  feed-refresh-meta.json → R2');
     } catch (e) {

@@ -37,7 +37,11 @@ export type FeedVersionSnapshot = {
   lastFeedVersion?: string | null;
 };
 
-/** True when upstream feed_info differs from the last processed snapshot in index.json. */
+/**
+ * True when upstream feed_info differs from the last processed snapshot in index.json.
+ * Expiry *or* version changing counts: agencies often keep feed_end_date fixed while
+ * bumping feed_version for mid-period schedule patches (e.g. MBTA summer pack).
+ */
 export function upstreamFeedChanged(
   agency: FeedVersionSnapshot,
   peekedExpiry: string | null,
@@ -45,14 +49,27 @@ export function upstreamFeedChanged(
 ): boolean {
   if (!agency.lastFeedExpiry && !agency.lastFeedVersion) return false;
 
-  if (peekedExpiry && agency.lastFeedExpiry) {
-    return peekedExpiry !== agency.lastFeedExpiry;
+  if (
+    peekedExpiry
+    && agency.lastFeedExpiry
+    && peekedExpiry !== agency.lastFeedExpiry
+  ) {
+    return true;
   }
-  if (peekedVersion && agency.lastFeedVersion) {
-    return peekedVersion !== agency.lastFeedVersion;
+  if (
+    peekedVersion
+    && agency.lastFeedVersion
+    && peekedVersion !== agency.lastFeedVersion
+  ) {
+    return true;
   }
-  if (peekedExpiry && peekedExpiry !== agency.lastFeedExpiry) return true;
-  if (peekedVersion && peekedVersion !== agency.lastFeedVersion) return true;
+  // New field appeared that we never stamped before — treat as change so we reprocess.
+  if (peekedExpiry && !agency.lastFeedExpiry && agency.lastFeedVersion) {
+    return true;
+  }
+  if (peekedVersion && !agency.lastFeedVersion && agency.lastFeedExpiry) {
+    return true;
+  }
   return false;
 }
 

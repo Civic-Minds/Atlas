@@ -1,5 +1,5 @@
 /**
- * Pure helpers for refresh.ts feed-metadata stamping.
+ * Pure helpers for refresh.ts feed-metadata stamping and skip-if-unchanged.
  * Separated so unit tests can cover stamp decisions without R2.
  */
 
@@ -32,4 +32,62 @@ export function stampFeedMeta(
   agency.lastFeedExpiry = opts.feedExpiry ?? opts.peekedExpiry ?? null;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
+}
+
+export type RefreshSkipReason =
+  | { skip: true; reason: string }
+  | { skip: false };
+
+/**
+ * Decide whether refresh can skip full reprocess for an unchanged feed.
+ *
+ * Rules (in order):
+ * 1. Never skip under force, supplemental feeds, or an expired feed_end_date
+ *    (expired always re-attempt so a fixed URL / fixed validator can unstick them).
+ * 2. If feed_version is known on both sides and differs → reprocess
+ *    (MBTA keeps feed_end_date constant while shipping mid-period edits).
+ * 3. If feed_end_date is known on both sides and matches → skip only when
+ *    version is also unknown or also matches.
+ * 4. No expiry → skip only when version is known on both sides and matches.
+ *
+ * Historical bug: step 3 used to skip on matching expiry alone, so version
+ * bumps never reached process/validation (stuck MBTA for weeks).
+ */
+export function decideRefreshSkipUnchanged(opts: {
+  forceRefresh: boolean;
+  hasSupplementals: boolean;
+  feedExpired: boolean;
+  peekedExpiry: string | null;
+  peekedVersion: string | null;
+  lastFeedExpiry?: string | null;
+  lastFeedVersion?: string | null;
+}): RefreshSkipReason {
+  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired) {
+    return { skip: false };
+  }
+
+  const { peekedExpiry, peekedVersion, lastFeedExpiry, lastFeedVersion } = opts;
+
+  const versionKnown =
+    peekedVersion != null &&
+    peekedVersion !== '' &&
+    lastFeedVersion != null &&
+    lastFeedVersion !== '';
+  if (versionKnown && peekedVersion !== lastFeedVersion) {
+    return { skip: false };
+  }
+
+  if (peekedExpiry && lastFeedExpiry && peekedExpiry === lastFeedExpiry) {
+    // Both versions known → only reachable here if they match (see above).
+    // Either-side missing version still trusts expiry (no signal of a mid-period edit).
+    if (!versionKnown || peekedVersion === lastFeedVersion) {
+      return { skip: true, reason: `skipped (same schedule period: ${peekedExpiry})` };
+    }
+  }
+
+  if (!peekedExpiry && versionKnown && peekedVersion === lastFeedVersion) {
+    return { skip: true, reason: `skipped (same feed version: ${peekedVersion})` };
+  }
+
+  return { skip: false };
 }
