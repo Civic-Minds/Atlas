@@ -43,6 +43,7 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 ## Pipeline & CI
 
 - [ ] **Split weekly feed refresh per country/region**: currently one combined `refresh-feeds.yml` job refreshes all 466 agencies together, so one bad feed can't easily be isolated or re-run independently. Splitting refresh by country wouldn't fully decouple things on its own, though — `build-pmtiles` still merges every agency into one combined tileset regardless of how refresh is split, so this needs a real design (does PMTiles building become incremental/per-region too, or stay combined?) before it's an actionable task. Prompted by considering UK/Europe as a new region to validate.
+- [ ] **Targeted PMTiles refreshes for existing agencies**: keep the safe full-atlas rebuild for updates to agencies already in the published archive. Revisit a replacement-aware incremental workflow later; the current incremental tool is intentionally limited to new, geographically isolated agencies because tile-joining refreshed data would leave stale features behind.
 
 ## Data Quality
 
