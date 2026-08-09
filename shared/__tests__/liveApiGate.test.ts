@@ -1,9 +1,38 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import {
+  getLiveRouteConfig,
   isLiveApiServable,
   isLiveEligibleSlug,
   LIVE_POLLING_ROUTES,
 } from '../livePollingConfig';
+
+describe('getLiveRouteConfig / vehiclesOnly', () => {
+  it('keeps Halifax route 1 as full adherence and excludes vehiclesOnly siblings', () => {
+    const full = getLiveRouteConfig('halifax', '1');
+    expect(full).toBeTruthy();
+    expect(full!.vehiclesOnly).toBeFalsy();
+    expect(Object.keys(full!.targetStops).length).toBeGreaterThan(0);
+
+    for (const rsn of ['2', '4', '5', '7A', '7B', 'FerD']) {
+      expect(getLiveRouteConfig('halifax', rsn)).toBeUndefined();
+      const vo = LIVE_POLLING_ROUTES.find(
+        r => r.slug === 'halifax' && r.displayRouteShortName === rsn,
+      );
+      expect(vo?.vehiclesOnly).toBe(true);
+      expect(vo?.routeIds).toEqual([rsn]);
+    }
+  });
+
+  it('lists multiple Halifax vehiclesOnly routes under one shared vehicle feed URL', () => {
+    const halifax = LIVE_POLLING_ROUTES.filter(r => r.slug === 'halifax');
+    const feedUrls = new Set(halifax.map(r => r.vehiclePositionsUrl));
+    expect(feedUrls.size).toBe(1);
+    expect(halifax.some(r => !r.vehiclesOnly && r.displayRouteShortName === '1')).toBe(true);
+    expect(halifax.filter(r => r.vehiclesOnly).map(r => r.displayRouteShortName).sort()).toEqual(
+      ['2', '4', '5', '7A', '7B', 'FerD'].sort(),
+    );
+  });
+});
 
 describe('isLiveEligibleSlug / isLiveApiServable', () => {
   const saved: Record<string, string | undefined> = {};

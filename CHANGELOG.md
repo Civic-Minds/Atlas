@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Live over Halifax now dots buses on every weekday-midday route that runs every 15 minutes or better (vehicles only — full adherence stays on Route 1)
 - Corridors panel is visible again (it was rendering below the map fold) and "Corridors from here…" actually pre-fills From
 - Corridor frequency bars are labeled as departure-stop wait times so they no longer read like destination headways
 - Click-to-flag on route and stop cards now hits the whole row reliably and always opens the report dialog with the right reason pre-checked — layout no longer hid the flag under the row

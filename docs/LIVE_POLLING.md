@@ -21,7 +21,7 @@ Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while 
 | Hamilton Street Railway | `hamilton` | 01, 10 | none | opendata.hamilton.ca |
 | Edmonton Transit System | `edmonton` | 004 | none | gtfs.edmonton.ca |
 | York Region Transit | `yrt` | VIVA Blue | none | rtu.york.ca |
-| Halifax Transit | `halifax` | 1 | none | gtfs.halifax.ca |
+| Halifax Transit | `halifax` | 1 (adherence); 2, 4, 5, 7A, 7B, FerD (vehiclesOnly — weekday midday ≤15) | none | gtfs.halifax.ca |
 | SF Muni | `sfmta` | J, K, L, M, N, T | `MUNI_511_API_KEY` | api.511.org |
 
 ### Configured but parked
