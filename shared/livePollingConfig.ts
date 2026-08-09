@@ -461,3 +461,11 @@ export const LIVE_TRIP_UPDATES_FEEDS: Record<string, string> = Object.fromEntrie
     LIVE_POLLING_ROUTES.find(c => c.slug === slug)!.tripUpdatesUrl,
   ]),
 );
+
+/** Per-agency VehiclePositions PB URL (same slug set as LIVE_TRIP_UPDATES_FEEDS). */
+export const LIVE_VEHICLE_POSITIONS_FEEDS: Record<string, string> = Object.fromEntries(
+  [...new Set(LIVE_POLLING_ROUTES.map(c => c.slug))].map(slug => [
+    slug,
+    LIVE_POLLING_ROUTES.find(c => c.slug === slug)!.vehiclePositionsUrl,
+  ]),
+);

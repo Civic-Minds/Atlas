@@ -12,6 +12,10 @@
  */
 
 import { LIVE_SNAPSHOT_SCHEMA_VERSION } from '../../../shared/liveContract';
+import {
+  LIVE_ARCHIVE_POSITION_FEEDS,
+  LIVE_ARCHIVE_TRIP_FEEDS,
+} from '../../../shared/liveArchiveFeeds';
 
 interface Env {
   BUCKET: R2Bucket;
@@ -24,12 +28,12 @@ interface FeedConfig {
   apiKeyHeader?: keyof Env;
 }
 
-const FEEDS: FeedConfig[] = [
-  { slug: 'ttc',        url: 'https://gtfsrt.ttc.ca/trips/update?format=binary' },
-  { slug: 'burlington', url: 'https://opendata.burlington.ca/gtfs-rt/GTFS_TripUpdates.pb' },
-  { slug: 'hamilton',   url: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb' },
-  { slug: 'stm',        url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/tripUpdates', apiKeyHeader: 'STM_API_KEY' },
-];
+// Archive membership + URLs: shared/liveArchiveFeeds.ts (kept in sync with LIVE_POLLING via test).
+const FEEDS: FeedConfig[] = LIVE_ARCHIVE_TRIP_FEEDS.map(f => ({
+  slug: f.slug,
+  url: f.url,
+  ...(f.apiKeyHeader ? { apiKeyHeader: f.apiKeyHeader } : {}),
+}));
 
 interface PositionFeedConfig {
   slug: string;
@@ -40,12 +44,12 @@ interface PositionFeedConfig {
 }
 
 // Vehicle positions archived at positions/{slug}/{date}/{ts}.json for live history
-const POSITION_FEEDS: PositionFeedConfig[] = [
-  { slug: 'ttc', url: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary', routeFilter: /^5(0[1345679]|1[012])$/ },
-  { slug: 'burlington', url: 'https://opendata.burlington.ca/gtfs-rt/GTFS_VehiclePositions.pb', routeFilter: /.+/ },
-  { slug: 'hamilton', url: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb', routeFilter: /.+/ },
-  { slug: 'stm', url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/vehiclePositions', routeFilter: /.+/, apiKeyHeader: 'STM_API_KEY' },
-];
+const POSITION_FEEDS: PositionFeedConfig[] = LIVE_ARCHIVE_POSITION_FEEDS.map(f => ({
+  slug: f.slug,
+  url: f.url,
+  routeFilter: new RegExp(f.routeFilterSource),
+  ...(f.apiKeyHeader ? { apiKeyHeader: f.apiKeyHeader } : {}),
+}));
 
 const MIN_FEED_BYTES = 5_000;
 const RETENTION_DAYS = 30;
