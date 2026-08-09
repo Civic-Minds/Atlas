@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Fixed several frequency accuracy problems**: weekday/weekend shape mix-ups, long-trip terminal timing, unsustained medians, and peak-only short turns could make routes look falsely sparse or frequent, or remain visible under the wrong filter.
+- **Fixed route-level frequency filtering**: intermediate-stop gaps no longer make a whole route look frequent when its endpoint service is slower ([#317](https://github.com/Civic-Minds/Atlas/issues/317)).
 - **Fixed Ride On Flash being treated as one route**: Orange and Blue now keep separate schedules, while shared stops can still show combined service.
 - **Fixed stale map and schedule state**: deselecting a partially filtered route now restores normal visibility, and a normal reload now picks up refreshed schedule data.
 - **Improved weekly feed refresh reliability**: valid feeds with duplicate trip IDs, GTFS-Flex records, changed versions, or empty pathway-node coordinates can refresh, and skipped or failed agencies are now reported.

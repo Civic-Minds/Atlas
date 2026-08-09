@@ -88,7 +88,7 @@ function resolveTierVal(p: ShapeProperties): number | null {
   return null;
 }
 
-// Shared filter predicate for both visibleFeatures and filteredLayers.
+// Shared filter predicate for route features shown in the map and sidebar.
 // slug is passed explicitly so the caller can use p.agencySlug (flat array path)
 // or the layer key (per-layer iteration path).
 export function passesRouteFilter(
@@ -96,13 +96,6 @@ export function passesRouteFilter(
   slug: string,
   filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
-  // skipFrequency: day/agency/mode/hideSpan/live-polling still apply, but the worst-direction
-  // frequency check (#314/#315) does not. Used only for the #317 qualifying-segment overlay,
-  // which needs partial-match routes (frequent on part of their length, not the whole thing) --
-  // exactly what the frequency check exists to exclude everywhere else. The overlay does its own
-  // per-stop-range check via computeFrequencySegmentOverlay, so this doesn't let an unqualified
-  // route appear as if it fully passed; it only lets it *in* so that function can look.
-  options?: { skipFrequency?: boolean },
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
@@ -149,14 +142,10 @@ export function passesRouteFilter(
   // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
   // as a whole, not just in that one direction -- hide the whole route, not just that branch.
   if (filters.hideSpan && (p.tier === 'span' || p.routeHasIrregularDirection)) return false;
-  if (options?.skipFrequency) return true;
   // When a specific period is active, use the route's worst-direction headway for that period
   // (falling back to the branch's own headwayByPeriod) -- both directions must qualify, not just
-  // this one branch. minStopHeadwayByPeriod is deliberately NOT used as a fallback here: it can
-  // reflect a shared-core combined frequency, or one good stop, that only applies to part of the
-  // route -- letting it drive pass/fail without clipping geometry to match would show a partial
-  // route as if the whole thing qualified (#314/#315). The #317 overlay is the one place that
-  // wants exactly those partial routes, and it opts in via skipFrequency above.
+  // this one branch. Stop-specific metrics are deliberately not used here: they belong to the
+  // stop card, not the route-level filter or route card.
   if (filters.period && filters.period !== 'all') {
     const periodHw = effectiveRouteHeadway(p, filters.period);
     if (periodHw != null) {
@@ -175,7 +164,7 @@ export function passesRouteFilter(
     // No period data — fall through to all-day check below.
   }
   // All-day check: use worst-direction headway (AI-182) so both directions must qualify.
-  // Falls back to minStopHeadway for routes without bidirectional data.
+  // Falls back to the route's own headway when no direction summary exists.
   const filterHw = effectiveRouteHeadway(p, 'all');
   if (filterHw != null) {
     if (filterHw > filters.maxHeadway) return false;
@@ -322,25 +311,6 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
-  // Feeds the #317 qualifying-segment overlay (computeFrequencySegmentOverlay), which needs
-  // partial-match routes the frequency check would otherwise exclude entirely -- see
-  // skipFrequency's doc comment on passesRouteFilter. maxHeadway/period are intentionally not
-  // deps here since skipFrequency means they no longer affect this computation.
-  const filteredLayers = useMemo(() => {
-    const result: AgencyLayers = {};
-    for (const [slug, fc] of Object.entries(layers)) {
-      const filteredFeatures = fc.features.filter(f => {
-        const p = f.properties as unknown as ShapeProperties;
-        return passesRouteFilter(p, slug, filters, routesForStop, { skipFrequency: true });
-      });
-      if (filteredFeatures.length > 0) {
-        result[slug] = { ...fc, features: filteredFeatures };
-      }
-    }
-    return result;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
-
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
     // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in.
@@ -445,5 +415,5 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agencies, day, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
-  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
+  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, routesForStop, tileFilter };
 }

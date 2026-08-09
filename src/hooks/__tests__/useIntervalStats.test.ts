@@ -278,61 +278,6 @@ describe('useIntervalStats', () => {
     expect(unscoped.current.stats).toEqual({ total: 2, matching: 2 });
   });
 
-  it('should handle combined-frequency corridors', () => {
-    const layersWithCorridor: AgencyLayers = {
-      'ttc': {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { 
-              isCorridor: true, 
-              headway: 5, 
-              routeIds: ['1', '2', '3'], 
-              agencyName: 'TTC' 
-            }
-          }
-        ]
-      }
-    };
-
-    // By default corridors are hidden (showCorridors is false)
-    const { result: hidden } = renderHook(() => useIntervalStats(layersWithCorridor, defaultFilters));
-    expect(hidden.current.filteredLayers['ttc']).toBeUndefined();
-
-    // When enabled, corridors should appear if they meet the criteria (3+ routes or high freq)
-    const { result: visible } = renderHook(() => useIntervalStats(layersWithCorridor, { 
-      ...defaultFilters, 
-      showCorridors: true 
-    }));
-    expect(visible.current.filteredLayers['ttc'].features.length).toBe(1);
-
-    // Corridors with few routes and low frequency should stay hidden
-    const layersWithNoisyCorridor: AgencyLayers = {
-      'ttc': {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-            properties: { 
-              isCorridor: true, 
-              headway: 20, 
-              routeIds: ['1', '2'], 
-              agencyName: 'TTC' 
-            }
-          }
-        ]
-      }
-    };
-    const { result: noisy } = renderHook(() => useIntervalStats(layersWithNoisyCorridor, { 
-      ...defaultFilters, 
-      showCorridors: true 
-    }));
-    expect(noisy.current.filteredLayers['ttc']).toBeUndefined();
-  });
-
   it('period filter requires worstDirectionHeadwayByPeriod to qualify, not just this branch\'s own headByPeriod (#314)', () => {
     const layers: AgencyLayers = {
       'test': {
@@ -362,35 +307,6 @@ describe('useIntervalStats', () => {
     // not show based on one direction's optimistic number.
     const { result: fails } = renderHook(() => useIntervalStats(layers, base));
     expect(fails.current.stats?.matching).toBe(0);
-  });
-
-  it('filteredLayers includes worst-direction-failing routes for the #317 overlay to inspect (skipFrequency)', () => {
-    // Same Kingston 701 shape as the #314 test above: this route correctly fails the plain
-    // frequency filter (visibleFeatures/stats), but the #317 qualifying-segment overlay still
-    // needs to see it in filteredLayers so it can find/clip a real qualifying sub-stretch.
-    const layers: AgencyLayers = {
-      test: {
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-          properties: {
-            routeId: '701',
-            headway: 10,
-            tier: '10',
-            headwayByPeriod: { midday: 10 },
-            worstDirectionHeadwayByPeriod: { midday: 45 },
-          },
-        }],
-      },
-    };
-    const filters = { ...defaultFilters, maxHeadway: 30, period: 'midday' as const };
-
-    const { result } = renderHook(() => useIntervalStats(layers, filters));
-    // Fails the plain filter (mirrors the #314 test)...
-    expect(result.current.stats?.matching).toBe(0);
-    // ...but is still present in filteredLayers for the overlay to look at.
-    expect(result.current.filteredLayers['test']?.features.length).toBe(1);
   });
 
   it('tileFilter uses flat period keys and all-day fallback (PMTiles-safe)', () => {

@@ -35,19 +35,3 @@ describe('getVehicleStatus', () => {
     expect(getVehicleStatus(10)).toBe('late');
   });
 });
-
-describe('buildDefaultRouteLineOpacityExpression', () => {
-  it('keeps partial-match dimming inside the top-level zoom expression', () => {
-    const expression = buildDefaultRouteLineOpacityExpression(['get', 'headway'], ['==', ['get', 'routeId'], 'partial']);
-
-    expect(expression[0]).toBe('interpolate');
-    expect(expression[2]).toEqual(['zoom']);
-    expect(expression.slice(3).filter((value) => value === 'zoom')).toHaveLength(0);
-    expect(expression[4]).toEqual([
-      'case',
-      ['==', ['get', 'routeId'], 'partial'],
-      0.35,
-      ['case', ['>', ['get', 'headway'], 20], 0, 0.7],
-    ]);
-  });
-});

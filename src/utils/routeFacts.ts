@@ -119,20 +119,18 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
   const displayValue = branchValue;
   const displayProvenance: HeadwayProvenance = p.headwayByPeriod
     ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
-  const filterValue = p.worstDirectionHeadway ?? p.minStopHeadway ?? branchValue;
+  const filterValue = p.worstDirectionHeadway ?? branchValue;
   const filterProvenance: HeadwayProvenance = p.worstDirectionHeadway != null
     ? 'worst-direction'
-    : p.minStopHeadway != null ? 'minimum-stop' : branchProvenance;
+    : branchProvenance;
 
   return {
     display: metric(displayValue, p.headwayByPeriod, p.headwayByHour, displayProvenance),
     filter: metric(
       filterValue,
       // wdph (worst-direction) must win: every direction has to meet the threshold, not just
-      // this one branch's own value. minStopHeadwayByPeriod is deliberately excluded — it can
-      // reflect a shared-core combined frequency that only applies to part of the route, and
-      // without geometry clipping to match, letting it drive pass/fail here would smuggle a
-      // partial match through as if the whole route qualified (#314/#315).
+      // this one branch's own value. Stop-specific metrics are deliberately excluded — they
+      // belong to the stop card, not the route-level filter or route card.
       firstAvailableByPeriod(
         p.worstDirectionHeadwayByPeriod,
         p.headwayByPeriod,
