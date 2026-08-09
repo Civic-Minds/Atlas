@@ -12,7 +12,8 @@ const TIMELINE_PERIODS = TIME_PERIODS.map(p => ({
   flex: 1,
 }));
 
-const LABEL_W = 136;
+// Narrow enough that 6 period columns still fit in SIDEBAR_PANEL_WIDTH (~288–320px).
+const LABEL_W = 96;
 
 export function ServiceTimeline({
   results,
@@ -33,18 +34,23 @@ export function ServiceTimeline({
     );
   }
 
+  const fromLabel = fromStop?.displayName;
   return (
     <div className="overflow-y-auto px-4 py-3">
-      <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mb-3">
+      <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mb-1">
         {results.length} route{results.length !== 1 ? 's' : ''} · {day}
+      </p>
+      <p className="text-[9px] font-bold text-[var(--text-dim)] mb-3 leading-snug">
+        Frequencies at the departure stop
+        {fromLabel ? ` (${fromLabel})` : ''} — where you wait
       </p>
 
       <div className="flex items-end mb-2">
         <div style={{ width: LABEL_W }} className="shrink-0" />
         {TIMELINE_PERIODS.map(p => (
-          <div key={p.key} className="flex-1 flex flex-col">
-            <span className="text-[10px] font-bold text-[var(--text-primary)] leading-none">{p.label}</span>
-            <span className="text-[9px] text-[var(--text-dim)] mt-0.5">{p.time}</span>
+          <div key={p.key} className="flex-1 flex flex-col min-w-0">
+            <span className="text-[9px] sm:text-[10px] font-bold text-[var(--text-primary)] leading-none truncate">{p.label}</span>
+            <span className="text-[8px] sm:text-[9px] text-[var(--text-dim)] mt-0.5 truncate">{p.time}</span>
           </div>
         ))}
       </div>

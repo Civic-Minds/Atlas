@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Corridors panel is visible again (it was rendering below the map fold) and "Corridors from here…" actually pre-fills From
+- Corridor frequency bars are labeled as departure-stop wait times so they no longer read like destination headways
 - Click-to-flag on route and stop cards now hits the whole row reliably and always opens the report dialog with the right reason pre-checked — layout no longer hid the flag under the row
 - Duplicate trip_ids in a feed no longer block weekly refresh — the pipeline already keeps one row per id, so a hard fail only froze otherwise-good schedules (e.g. Valley Metro Roanoke)
 - GTFS-Flex stop_times that use location_id without stop_id now warn instead of failing validation, so mixed fixed-route + flex feeds (e.g. Cascades East) can refresh their mapped routes

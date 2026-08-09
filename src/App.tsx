@@ -222,10 +222,15 @@ export default function App() {
     setQuery('');
   }
 
+  // Stop-card "Corridors from here…" — seed the From field once Corridors mounts.
+  const [pendingCorridorsFrom, setPendingCorridorsFrom] = useState<StopEntry | null>(null);
   const handleDirectFromStop = useCallback((stop: StopEntry) => {
-    setQuery(stop.displayName);
+    setPendingCorridorsFrom(stop);
     setActiveApp('corridors');
-  }, [setQuery]);
+  }, []);
+  const handleCorridorsFromHandled = useCallback(() => {
+    setPendingCorridorsFrom(null);
+  }, []);
 
   useEffect(() => {
     const measure = () => {
@@ -505,6 +510,8 @@ export default function App() {
                   day={day}
                   active={inCorridors}
                   sidebarLeft={sidebarLeft}
+                  initialFrom={pendingCorridorsFrom}
+                  onInitialFromHandled={handleCorridorsFromHandled}
                 />
               </React.Suspense>
             )}
