@@ -144,8 +144,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
   const [stopAgencyFilter, setStopAgencyFilter] = useState<string | null>(null);
-  const [showDebug, setShowDebug] = useState(false);
-
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Array<{ key: string; shortName: string; longName: string; agencyName: string; headway?: number }>>([]);
   const [showAllSearchResults, setShowAllSearchResults] = useState(false);
@@ -1135,11 +1133,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         <LiveAdherenceCard
           liveRouteInfo={liveRouteInfo as LiveRouteInfoData}
           liveStatus={liveStatus}
-          showDebug={showDebug}
-          setShowDebug={setShowDebug}
-          hasCurrentRoute={!!currentRoute}
-          nonCorridorLayers={nonCorridorLayers}
-          selectedRoute={selectedRoute}
           setSelectedRoute={setSelectedRoute}
           setSelectedStop={setSelectedStop}
         />
