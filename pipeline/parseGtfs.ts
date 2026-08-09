@@ -269,7 +269,7 @@ export function repairClusteredJumps(points: [number, number][]): { points: [num
  * Also reports which shapes needed correction (duplicate-sequence de-interleaving
  * and/or implausible-jump truncation) so QA tooling can flag them (#219/#244 pattern).
  */
-const groupShapes = (parsed: any[]): { shapes: GtfsShape[]; anomalies: ShapeAnomaly[] } => {
+export const groupShapes = (parsed: any[], railShapeIds: ReadonlySet<string> = new Set()): { shapes: GtfsShape[]; anomalies: ShapeAnomaly[] } => {
     const grouped = new Map<string, { seq: number; lat: number; lon: number }[]>();
     for (const p of parsed) {
         if (!p.shape_id) continue;
@@ -287,7 +287,12 @@ const groupShapes = (parsed: any[]): { shapes: GtfsShape[]; anomalies: ShapeAnom
     const shapes = Array.from(grouped.entries()).map(([id, pts]) => {
         const hadDuplicateSequences = new Set(pts.map(p => p.seq)).size < pts.length;
         const deinterleaved = deinterleaveDuplicateSequences(pts);
-        const truncated = truncateAtImplausibleJump(deinterleaved);
+        // Rail feeds commonly leave multi-kilometre gaps between shape points along a
+        // continuous corridor. The generic corruption guard is intended for dense street
+        // shapes and would otherwise cut valid rail lines in half (UP Express, for example).
+        const truncated = railShapeIds.has(id)
+            ? deinterleaved
+            : truncateAtImplausibleJump(deinterleaved);
         const wasTruncated = truncated.length < deinterleaved.length;
         const knownFix = excludeKnownIsolatedPoints(id, truncated);
         const hasClusteredJumps = detectClusteredJumps(knownFix.points);
@@ -472,6 +477,7 @@ export const parseGtfsZip = async (
         fareLegRules: []
     };
 
+    let rawShapes: any[] | null = null;
     for (const [key, filename] of Object.entries(GTFS_FILES)) {
         onStatus?.(`Parsing ${filename}...`);
         const zipFile = zip.file(basePath + filename);
@@ -481,15 +487,29 @@ export const parseGtfsZip = async (
             const parsed = parseCsv(text);
 
             if (key === 'shapes') {
-                const { shapes, anomalies } = groupShapes(parsed as any[]);
-                gtfsData.shapes = shapes;
-                if (anomalies.length > 0) gtfsData.shapeAnomalies = anomalies;
+                rawShapes = parsed as any[];
             } else {
                 (gtfsData as any)[key] = parsed;
             }
         } else if (!OPTIONAL_FILES.has(key)) {
             throw new Error(`Missing required GTFS file: ${filename}`);
         }
+    }
+
+    if (rawShapes) {
+        const railRouteIds = new Set(
+            (gtfsData.routes ?? [])
+                .filter(route => Number(route.route_type) === 2)
+                .map(route => route.route_id),
+        );
+        const railShapeIds = new Set(
+            (gtfsData.trips ?? [])
+                .filter(trip => railRouteIds.has(trip.route_id) && trip.shape_id)
+                .map(trip => trip.shape_id as string),
+        );
+        const { shapes, anomalies } = groupShapes(rawShapes, railShapeIds);
+        gtfsData.shapes = shapes;
+        if (anomalies.length > 0) gtfsData.shapeAnomalies = anomalies;
     }
 
     // If calendar.txt is missing but calendar_dates.txt exists, synthesize calendar entries

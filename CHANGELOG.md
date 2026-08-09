@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Added Halifax to Live history**: trip delays and vehicle positions are now archived alongside existing agencies.
 - **Moved the uneven-service warning to beta**: it was flagging normal routes while its thresholds are tuned against more real feeds.
 - **Refreshed Brampton schedule data**: Route 502 no longer shows a false uneven-service warning in the evening.
+- **Fixed truncated rail geometry**: UP Express now renders the full route to Pearson Airport.
 
 ## [3.2.16] - 2026-08-06
 
