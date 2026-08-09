@@ -1,7 +1,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
-/** Headway shown on route card rows and route lists — period summary, not min-stop filter headway. */
+/** Headway shown on route cards and lists — the same route-level metric used by the filter. */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
@@ -12,7 +12,9 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
     return p.headway ?? null;
   }
-  return metricValueForPeriod(buildRouteServiceSummary(p).display, period);
+  const summary = buildRouteServiceSummary(p);
+  return metricValueForPeriod(summary.filter, period)
+    ?? metricValueForPeriod(summary.display, period);
 }
 
 /** Display the best active-period cadence across a route's direction/branch rows. */

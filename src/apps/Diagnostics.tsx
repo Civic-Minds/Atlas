@@ -137,7 +137,7 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
           routeLongName: facts.longName,
           headsign: facts.headsign ?? '—',
           tier: facts.tier,
-          frequency: metricValueForPeriod(facts.service.display, period),
+          frequency: metricValueForPeriod(facts.service.filter, period),
           mode,
           modeLabel: MODE_LABELS.get(mode) ?? 'Other',
         });
@@ -315,8 +315,16 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                 visible on an ancestor becomes the sticky containing block -- since this div itself
                 never scrolls, that silently broke the sticky table header below (nothing to stick
                 relative to). The opaque sticky header sits flush over the card's corners instead. */}
-            <div className={FLOATING_CARD}>
-              <table className="w-full text-xs border-collapse">
+            <div className={`${FLOATING_CARD} overflow-x-auto`}>
+              <table className="w-full min-w-[760px] table-fixed text-xs border-collapse">
+                <colgroup>
+                  <col className="w-[22%]" />
+                  <col className="w-[10%]" />
+                  <col className="w-[32%]" />
+                  <col className="w-[14%]" />
+                  <col className="w-[10%]" />
+                  <col className="w-[12%]" />
+                </colgroup>
                 <thead>
                   <tr className="text-left border-b border-[var(--border-primary)]">
                     {COLUMNS.map(({ key, label }) => (
@@ -351,9 +359,9 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                           onClick={() => setExpandedKey(expanded ? null : r.key)}
                           className={`cursor-pointer border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors ${expanded ? 'bg-[var(--bg-btn-hover)]' : ''}`}
                         >
-                          <td className="px-4 py-2 font-bold max-w-[220px] truncate" title={r.agencyName}>{r.agencyName}</td>
-                          <td className="px-4 py-2 font-black whitespace-nowrap">{r.routeLabel}</td>
-                          <td className="px-4 py-2 max-w-[260px] truncate" title={r.headsign}>{r.headsign}</td>
+                          <td className="px-4 py-2 font-bold" title={r.agencyName}><span className="block truncate">{r.agencyName}</span></td>
+                          <td className="px-4 py-2 font-black whitespace-nowrap"><span className="block truncate">{r.routeLabel}</span></td>
+                          <td className="px-4 py-2" title={r.headsign}><span className="block truncate">{r.headsign}</span></td>
                           <td className="px-4 py-2 whitespace-nowrap">{r.modeLabel}</td>
                           <td className="px-4 py-2">{r.tier ?? '—'}</td>
                           <td className="px-4 py-2 font-black whitespace-nowrap">{r.frequency != null ? `${r.frequency} min` : '—'}</td>
