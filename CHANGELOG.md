@@ -14,6 +14,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Improved Corridors and reporting workflows**: Corridors is visible and seeds the starting stop correctly, its bars explain wait times, and route/stop reports open from the full row with the relevant reason preselected.
 - **Added Halifax to Live history**: trip delays and vehicle positions are now archived alongside existing agencies.
 - **Moved the uneven-service warning to beta**: it was flagging normal routes while its thresholds are tuned against more real feeds.
+- **Refreshed Brampton schedule data**: Route 502 no longer shows a false uneven-service warning in the evening.
 
 ## [3.2.16] - 2026-08-06
 
