@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Live adherence cards now leave “fetching…” when the live endpoint does not respond.
 - Fixed selected-route notices showing the wrong agency and wrapping into overlapping lines.
 
 - Beta now warns when an open page is outdated after a new deployment and lets people refresh it

@@ -5,6 +5,15 @@ import { requestHeader } from '../shared/request.js';
 
 export const config = { maxDuration: 60 };
 
+const LIVE_COMPUTE_TIMEOUT_MS = 20_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>(resolve => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 function queryParams(req: Request & { url?: string }): URLSearchParams {
   const raw = req.url ?? '';
   const qs = raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : raw;
@@ -28,7 +37,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const data = await computeLiveAdherence(agency, route);
+    const data = await withTimeout(computeLiveAdherence(agency, route), LIVE_COMPUTE_TIMEOUT_MS, null);
     if (!data || data.arrivals.length === 0) {
       return new Response(JSON.stringify({ noData: true }), {
         status: 200,

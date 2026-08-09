@@ -26,6 +26,8 @@ export interface LiveAdherenceData {
 
 export type LiveStatus = 'pending' | 'noData' | 'live';
 
+export const LIVE_ADHERENCE_FETCH_TIMEOUT_MS = 15_000;
+
 /** Fetch live GTFS-RT adherence on demand when a covered route is selected. */
 export function useLiveAdherence(
   agencySlug: string | null,
@@ -49,9 +51,12 @@ export function useLiveAdherence(
     setStatus('pending');
 
     async function poll() {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), LIVE_ADHERENCE_FETCH_TIMEOUT_MS);
       try {
         const res = await fetch(
           `/api/live-adherence?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(route)}`,
+          { signal: controller.signal },
         );
         if (!res.ok) { if (!cancelled) setStatus('noData'); return; }
         const json = await res.json();
@@ -65,6 +70,8 @@ export function useLiveAdherence(
         }
       } catch {
         if (!cancelled) setStatus('noData');
+      } finally {
+        clearTimeout(timeoutId);
       }
     }
 
