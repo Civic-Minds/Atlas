@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Route shapes now stay scoped to the correct day type, preventing false frequency readings when weekday and weekend patterns differ ([#339](https://github.com/Civic-Minds/Atlas/issues/339))
 - Live history now archives Halifax trip delays and vehicle positions alongside TTC, Burlington, Hamilton, and STM
 - Period frequencies on a destination branch now use the denser of trip-start vs end-stop timing, so cards no longer show a sparser midday than the headline wait (e.g. GRTC 201)
 - Live over Halifax now dots buses on every weekday-midday route that runs every 15 minutes or better (vehicles only — full adherence stays on Route 1)

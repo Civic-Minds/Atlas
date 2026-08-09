@@ -130,14 +130,23 @@ export async function processGtfsBuffer(
   // one of its route::dir keys silently excluded from shape selection, dropping
   // otherwise-valid phase1/phase2 results with `if (!shapeId) continue` further
   // down (Fredericksburg Regional Transit pattern).
+  const activeServiceIdsByDay = new Map<DayType, Set<string>>();
+  for (const dayType of DAY_TYPES) {
+    const calDay = dayType === 'Weekday' ? 'Monday' : dayType;
+    activeServiceIdsByDay.set(
+      dayType,
+      new Set(getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], calDay, refDate)),
+    );
+  }
   const activeForShapes = new Set<string>(
     ALL_DAYS.flatMap(day => [...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
   );
-  const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes);
+  const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes, activeServiceIdsByDay);
   const {
     shapeById,
     shapeCounts,
     headsignDisplayShape,
+    headsignDisplayShapeByDay,
     routeDirToHeadsign,
     routeDirToDisplayShape,
     routeDirToAnalysisShapes,
@@ -231,7 +240,10 @@ export async function processGtfsBuffer(
     // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
     // bidirectional bus routes with a shared direction_id) maps to its own correctly-lengthed geometry.
     const hKey = (result.headsign) ? `${key}::${result.headsign}` : null;
-    const shapeId = (hKey && headsignDisplayShape.has(hKey))
+    const dayHKey = hKey && result.day ? `${hKey}::${result.day}` : null;
+    const shapeId = (dayHKey && headsignDisplayShapeByDay.has(dayHKey))
+      ? headsignDisplayShapeByDay.get(dayHKey)
+      : (hKey && headsignDisplayShape.has(hKey))
       ? headsignDisplayShape.get(hKey)
       : routeDirToDisplayShape.get(key);
     if (!shapeId) continue;
