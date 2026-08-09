@@ -68,14 +68,18 @@ async function fetchSidecar(agency: string): Promise<Record<string, any> | null>
   const allowed = new Set(LIVE_POLLING_ROUTES.map(c => c.slug));
   if (!allowed.has(agency)) return null;
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8_000);
   try {
     const safe = encodeURIComponent(agency);
-    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${safe}.json`);
+    const res = await fetch(`${R2_PUBLIC_URL}/atlas/live-polling/${safe}.json`, { signal: controller.signal });
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
     console.error('Failed to fetch sidecar for agency', agency, err);
     return null;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

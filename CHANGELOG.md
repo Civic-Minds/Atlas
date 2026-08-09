@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Live adherence cards now leave “fetching…” when the live endpoint does not respond.
 - **Fixed several frequency accuracy problems**: weekday/weekend shape mix-ups, long-trip terminal timing, unsustained medians, and peak-only short turns could make routes look falsely sparse or frequent, or remain visible under the wrong filter.
 - **Fixed route-level frequency filtering**: intermediate-stop gaps no longer make a whole route look frequent when its endpoint service is slower ([#317](https://github.com/Civic-Minds/Atlas/issues/317)).
 - **Fixed Ride On Flash being treated as one route**: Orange and Blue now keep separate schedules, while shared stops can still show combined service.
