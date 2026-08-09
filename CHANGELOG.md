@@ -28,6 +28,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Beta: click a value directly on a card (a frequency, a stop name) to report it, with the right reason pre-checked and no typing required
 - Beta: new internal route table (`/apps/diagnostics`) — every route across chosen agencies in one filterable, sortable list, for spotting bad-looking data without clicking through the map one route at a time
 - The "Service is uneven" notice no longer fires on ordinary service — it was flagging routes like TTC 45 (every 9 min) and Line 1 (every 4-5 min) over gaps only a minute or two longer than normal ([#345](https://github.com/Civic-Minds/Atlas/issues/345))
+ - Beta now renders the complete UP Express route geometry to Pearson Airport
 
 ## [3.2.16] - 2026-08-06
 

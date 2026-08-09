@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { truncateAtImplausibleJump, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
+import { truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
 import type { GtfsCalendarDate } from '../../types/gtfs.js';
 
 /** YYYYMMDD for a date offset by `days` from 2025-01-05 (a Sunday), for building fixture date lists. */
@@ -43,6 +43,19 @@ describe('truncateAtImplausibleJump', () => {
   it('leaves short shapes (fewer than 4 points) untouched', () => {
     const points: [number, number][] = [[20.0, -103.0], [25.0, -108.0]];
     expect(truncateAtImplausibleJump(points)).toEqual(points);
+  });
+});
+
+describe('groupShapes', () => {
+  it('keeps a continuous rail shape with naturally long gaps intact', () => {
+    const points = [
+      { shape_id: 'UP', shape_pt_lat: '43.70', shape_pt_lon: '-79.51', shape_pt_sequence: '1' },
+      { shape_id: 'UP', shape_pt_lat: '43.701', shape_pt_lon: '-79.509', shape_pt_sequence: '2' },
+      { shape_id: 'UP', shape_pt_lat: '43.702', shape_pt_lon: '-79.508', shape_pt_sequence: '3' },
+      { shape_id: 'UP', shape_pt_lat: '43.72', shape_pt_lon: '-79.40', shape_pt_sequence: '4' },
+      { shape_id: 'UP', shape_pt_lat: '43.721', shape_pt_lon: '-79.399', shape_pt_sequence: '5' },
+    ];
+    expect(groupShapes(points, new Set(['UP'])).shapes[0].points).toHaveLength(5);
   });
 });
 
