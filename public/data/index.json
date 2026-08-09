@@ -5512,7 +5512,7 @@
       "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "13-May 3, 2026_20260423",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-09",
       "cities": [
         "Rockville, Maryland",
         "Silver Spring, Maryland",
@@ -5521,7 +5521,8 @@
         "Germantown, Maryland",
         "Leesburg, Virginia",
         "Reston, Virginia"
-      ]
+      ],
+      "timezone": "America/New_York"
     },
     {
       "slug": "fairfax",
