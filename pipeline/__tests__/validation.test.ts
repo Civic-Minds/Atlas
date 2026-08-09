@@ -80,4 +80,44 @@ describe('validateGtfs', () => {
     expect(report.errors).toBeGreaterThan(0);
     expect(report.issues.some(i => i.code === 'E040_stop_lat' || i.code === 'E020')).toBe(true);
   });
+
+  it('treats duplicate trip_ids as warnings (pipeline keeps one row per id)', () => {
+    const gtfs = minimalValidGtfs();
+    gtfs.trips!.push({ route_id: 'R1', service_id: 'WK', trip_id: 'T1' });
+    const report = validateGtfs(gtfs, 'dup-trip');
+    expect(report.errors).toBe(0);
+    const e032 = report.issues.find(i => i.code === 'E032');
+    expect(e032?.severity).toBe('warning');
+    expect(e032?.count).toBe(1);
+  });
+
+  it('warns on GTFS-Flex stop_times that use location_id without stop_id (no hard fail)', () => {
+    const gtfs = minimalValidGtfs();
+    gtfs.stopTimes!.push({
+      trip_id: 'T1',
+      stop_id: '',
+      stop_sequence: '2',
+      arrival_time: '',
+      departure_time: '',
+      location_id: 'area_146',
+    });
+    const report = validateGtfs(gtfs, 'flex');
+    expect(report.errors).toBe(0);
+    expect(report.issues.some(i => i.code === 'W032' && i.severity === 'warning')).toBe(true);
+    expect(report.issues.some(i => i.code === 'E040_stop_id')).toBe(false);
+  });
+
+  it('still errors when stop_id is missing without a flex location_id', () => {
+    const gtfs = minimalValidGtfs();
+    gtfs.stopTimes!.push({
+      trip_id: 'T1',
+      stop_id: '',
+      stop_sequence: '2',
+      arrival_time: '08:05:00',
+      departure_time: '08:05:00',
+    });
+    const report = validateGtfs(gtfs, 'missing-stop');
+    expect(report.errors).toBeGreaterThan(0);
+    expect(report.issues.some(i => i.code === 'E040_stop_id' && i.severity === 'error')).toBe(true);
+  });
 });

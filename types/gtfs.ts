@@ -47,6 +47,8 @@ export interface GtfsStopTime {
     pickup_type?: string;
     drop_off_type?: string;
     shape_dist_traveled?: string;
+    /** GTFS-Flex: zone / area id when stop_id is omitted. */
+    location_id?: string;
 }
 
 export interface GtfsCalendar {

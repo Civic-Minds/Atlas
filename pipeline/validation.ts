@@ -47,7 +47,8 @@ const REQUIRED_ROUTE_FIELDS = ['route_id', 'route_type'] as const;
 const REQUIRED_TRIP_FIELDS = ['route_id', 'service_id', 'trip_id'] as const;
 /** stop_id only — name/lat/lon are conditionally required by location_type (GTFS). */
 const REQUIRED_STOP_FIELDS = ['stop_id'] as const;
-const REQUIRED_STOP_TIME_FIELDS = ['trip_id', 'stop_id', 'stop_sequence'] as const;
+/** stop_id is checked separately — GTFS-Flex may use location_id instead. */
+const REQUIRED_STOP_TIME_FIELDS = ['trip_id', 'stop_sequence'] as const;
 /**
  * location_type 3 (generic node) and 4 (boarding area) may omit stop_name and
  * stop_lat/stop_lon. MBTA pathway graph nodes do this extensively; requiring
@@ -167,6 +168,46 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
     }
     if (gtfs.stopTimes?.length) {
         validateRequiredFields(gtfs.stopTimes, REQUIRED_STOP_TIME_FIELDS, 'stop_times.txt', 'trip_id', issues);
+        // stop_id is required for fixed-route stop_times; GTFS-Flex zone rows may set
+        // location_id instead (no stop_id). Atlas can't map flex zones yet, so those
+        // rows only warn — they produce no usable fixed-route features either way.
+        // Cascades East Transit: 34/6931 stop_times are flex-only (empty stop_id +
+        // location_id); treating that as E040 blocked weekly refresh soft-skip forever.
+        const missingStopId = gtfs.stopTimes.filter(st =>
+            st.stop_id === undefined || st.stop_id === null || String(st.stop_id).trim() === '',
+        );
+        if (missingStopId.length > 0) {
+            const flexRows = missingStopId.filter(st =>
+                st.location_id !== undefined && st.location_id !== null && String(st.location_id).trim() !== '',
+            );
+            const hard = missingStopId.filter(st =>
+                st.location_id === undefined || st.location_id === null || String(st.location_id).trim() === '',
+            );
+            if (flexRows.length > 0) {
+                issues.push({
+                    severity: 'warning',
+                    code: 'W032',
+                    file: 'stop_times.txt',
+                    field: 'stop_id',
+                    message: `${flexRows.length} stop_times use location_id (GTFS-Flex) without stop_id — skipped for fixed-route analysis.`,
+                    count: flexRows.length,
+                    examples: flexRows.slice(0, 5).map(st =>
+                        `trip ${st.trip_id}, location ${st.location_id}`,
+                    ),
+                });
+            }
+            if (hard.length > 0) {
+                issues.push({
+                    severity: 'error',
+                    code: 'E040_stop_id',
+                    file: 'stop_times.txt',
+                    field: 'stop_id',
+                    message: `${hard.length} records in stop_times.txt are missing required field "stop_id".`,
+                    count: hard.length,
+                    examples: hard.slice(0, 5).map(st => String(st.trip_id || 'unknown')),
+                });
+            }
+        }
     }
     if (gtfs.calendar?.length) {
         validateRequiredFields(gtfs.calendar, REQUIRED_CALENDAR_FIELDS, 'calendar.txt', 'service_id', issues);
@@ -312,9 +353,13 @@ export function validateGtfs(gtfs: GtfsData, feedName: string = 'Uploaded Feed')
     if (gtfs.trips?.length) {
         const dupes = findDuplicates(gtfs.trips.map(t => t.trip_id));
         if (dupes.length > 0) {
+            // Warning, not error: process-core / maps keyed by trip_id already keep one
+            // row per id (later wins). Treating this as a hard fail soft-skipped productive
+            // feeds like Valley Metro Roanoke (1 exact-duplicate trip_id in an otherwise
+            // valid schedule) while the pipeline would have continued fine.
             issues.push({
-                severity: 'error', code: 'E032', file: 'trips.txt', field: 'trip_id',
-                message: `${dupes.length} duplicate trip_id values found. Duplicate trips are silently dropped by the pipeline — each trip_id must be unique.`,
+                severity: 'warning', code: 'E032', file: 'trips.txt', field: 'trip_id',
+                message: `${dupes.length} duplicate trip_id values found — later rows win; each trip_id should be unique.`,
                 count: dupes.length,
                 examples: dupes.slice(0, 5),
             });

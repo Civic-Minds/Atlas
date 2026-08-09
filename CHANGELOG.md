@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Duplicate trip_ids in a feed no longer block weekly refresh — the pipeline already keeps one row per id, so a hard fail only froze otherwise-good schedules (e.g. Valley Metro Roanoke)
+- GTFS-Flex stop_times that use location_id without stop_id now warn instead of failing validation, so mixed fixed-route + flex feeds (e.g. Cascades East) can refresh their mapped routes
 - Weekly refresh now reprocesses when only the feed version changes (not just the end date), so mid-period schedule edits like MBTA’s no longer sit stale for weeks
 - Refresh prints and records soft-skipped / failed agencies so stuck feeds don’t disappear into a green action log
 - MBTA (and other feeds with pathway graph nodes) can refresh again — empty stop coordinates on location_type 3/4 nodes are valid in GTFS and no longer fail validation
