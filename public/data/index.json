@@ -7090,11 +7090,11 @@
         37.664,
         -77.303
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-902/latest.zip",
+      "feedUrl": "https://www.ridegrtc.com/wp-content/uploads/2025/02/gtfs.zip",
       "region": "Virginia",
-      "lastFeedExpiry": "20240518",
-      "lastFeedVersion": "S1000151",
-      "lastRefreshedAt": "2026-08-03",
+      "lastFeedExpiry": "20261017",
+      "lastFeedVersion": "S1000181",
+      "lastRefreshedAt": "2026-08-09",
       "websiteUrl": "http://www.ridegrtc.com",
       "cities": [
         "Richmond, Virginia"
