@@ -2,18 +2,20 @@ import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
 import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED } from '../../shared/config';
+import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED, BETA_BUILD } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyHistoryTier, agencyQualifiesForHistory, historyTierLabel } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
+import { isFeedExpired } from '../utils/feedFreshness';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
 type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
+type AgencyListFilter = InfoFeatureFilter | 'outdated';
 export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data';
 export type HelpContext = {
   topic: HelpTopic;
@@ -64,7 +66,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
-  const [agencyFeatureFilter, setAgencyFeatureFilter] = useState<InfoFeatureFilter>('all');
+  const [agencyFeatureFilter, setAgencyFeatureFilter] = useState<AgencyListFilter>('all');
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -166,6 +168,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     for (const a of agencies) {
       if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) continue;
       if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) continue;
+      if (agencyFeatureFilter === 'outdated' && !isFeedExpired(a.lastFeedExpiry)) continue;
       seen.add(a.region ?? 'Other');
     }
     return [...seen].sort();
@@ -182,6 +185,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     return agencies.filter(a => {
       if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) return false;
       if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) return false;
+      if (agencyFeatureFilter === 'outdated' && !isFeedExpired(a.lastFeedExpiry)) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;
       return a.name.toLowerCase().includes(q)
@@ -212,6 +216,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   const totalLiveAgencies = liveBySlug.size;
   const totalHistoryAgencies = historyBySlug.size;
+  const agencyFilterOptions: Array<[AgencyListFilter, string]> = [
+    ['all', 'All'],
+    ['live', 'Live'],
+    ['history', 'History'],
+    ...(BETA_BUILD ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
+  ];
 
   const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;
   const selectedLiveRoutes = selectedSlug ? (liveBySlug.get(selectedSlug) ?? []) : [];
@@ -365,11 +375,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   )}
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
-                  {([
-                    ['all', 'All'],
-                    ['live', 'Live'],
-                    ['history', 'History'],
-                  ] as const).map(([id, label]) => {
+                  {agencyFilterOptions.map(([id, label]) => {
                     const on = agencyFeatureFilter === id;
                     return (
                       <button
