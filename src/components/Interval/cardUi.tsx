@@ -42,10 +42,15 @@ export interface CardReportButtonHandle {
 
 export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: string[] }>(
   function CardReportButton({ title, details, showLiveReason = false, excludeReasons = [] }, ref) {
-  const reportReasons = REPORT_REASONS.filter(reason => {
-    if (reason === 'Live vehicle information is missing or wrong') return showLiveReason;
-    return !excludeReasons.includes(reason);
-  });
+  // Content key (not array identity) so openWithReason does not thrash when parents pass a fresh literal.
+  const excludeKey = excludeReasons.join('\0');
+  const reportReasons = React.useMemo(() => {
+    const excluded = new Set(excludeKey ? excludeKey.split('\0') : []);
+    return REPORT_REASONS.filter(reason => {
+      if (reason === 'Live vehicle information is missing or wrong') return showLiveReason;
+      return !excluded.has(reason);
+    });
+  }, [showLiveReason, excludeKey]);
   const [isOpen, setIsOpen] = React.useState(false);
   const dialogTitleId = React.useId();
   const [selectedReasons, setSelectedReasons] = React.useState<string[]>([]);
@@ -55,9 +60,13 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
   React.useImperativeHandle(ref, () => ({
     openWithReason: (reason: string) => {
-      if (reportReasons.includes(reason as (typeof REPORT_REASONS)[number])) {
-        setSelectedReasons(current => current.includes(reason) ? current : [...current, reason]);
-      }
+      // Always open a clean dialog; force the pre-selected reason when it is in the card's list.
+      setValidationError('');
+      setDescription('');
+      setFrequencyReasons([]);
+      setSelectedReasons(
+        reportReasons.includes(reason as (typeof REPORT_REASONS)[number]) ? [reason] : [],
+      );
       setIsOpen(true);
     },
   }), [reportReasons]);
@@ -197,25 +206,45 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
  * Wraps a card value that can be clicked directly to report a problem with it — no typing
  * required, the reason is pre-checked. Beta-gated (CARD_CLICK_TO_FLAG_ENABLED): new, unproven
  * interaction, renders children unwrapped everywhere else.
+ *
+ * Uses role="button" (not a native button element) so children can include interactive controls without
+ * nesting buttons, and always lays content out as flex + trailing flag so `className` overrides
+ * like `block` cannot push the affordance under the row.
  */
-export function FlaggableValue({ reason, reportRef, children, className = 'inline-flex items-center gap-1' }: {
+export function FlaggableValue({ reason, reportRef, children, className = '' }: {
   reason: string;
   reportRef: React.RefObject<CardReportButtonHandle | null>;
   children: React.ReactNode;
-  /** Full control over layout — replaces the default `inline-flex items-center gap-1`, doesn't merge with it. */
+  /** Extra classes on the outer shell (merged with the flex hit-target layout). */
   className?: string;
 }) {
   if (!CARD_CLICK_TO_FLAG_ENABLED) return <>{children}</>;
+
+  const open = () => {
+    reportRef.current?.openWithReason(reason);
+  };
+
   return (
-    <button
-      type="button"
-      onClick={() => reportRef.current?.openWithReason(reason)}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={open}
+      onKeyDown={event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          open();
+        }
+      }}
       title={`Flag: ${reason}`}
-      className={`group/flag rounded hover:bg-[var(--bg-btn-hover)] transition-colors ${className}`}
+      aria-label={`Flag as: ${reason}`}
+      className={`group/flag flex w-full items-start gap-1 text-left rounded cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)] ${className}`}
     >
-      {children}
-      <Flag className="w-2.5 h-2.5 text-[var(--text-dim)] opacity-0 group-hover/flag:opacity-100 group-hover/flag:text-[var(--accent)] transition-opacity shrink-0" />
-    </button>
+      <div className="min-w-0 flex-1">{children}</div>
+      <Flag
+        aria-hidden
+        className="mt-1 w-2.5 h-2.5 text-[var(--text-dim)] opacity-40 group-hover/flag:opacity-100 group-focus-within/flag:opacity-100 group-hover/flag:text-[var(--accent)] group-focus-within/flag:text-[var(--accent)] transition-opacity shrink-0 pointer-events-none"
+      />
+    </div>
   );
 }
 

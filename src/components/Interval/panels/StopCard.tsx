@@ -99,7 +99,7 @@ export const StopCard: React.FC<StopCardProps> = ({
           <CardBackButton onClick={() => setSelectedStop(null)} label="Back to map" />
           <div className="flex-1 min-w-0">
             {stopAgencies.length === 1 ? (
-              <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+              <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef}>
                 <SidebarCardHeader
                   eyebrow={stopAgencies[0]}
                   title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
@@ -113,7 +113,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                   selected={stopAgencyFilter}
                   onSelect={setStopAgencyFilter}
                 />
-                <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+                <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef}>
                   <SidebarCardHeader
                     title={`${titleCase(currentStop.stopName)}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                     titleClamp

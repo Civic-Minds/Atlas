@@ -449,7 +449,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
                       return (
-                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef}>
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
