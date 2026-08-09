@@ -5,7 +5,7 @@ import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
-import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
+import { agencyHistoryTier, agencyQualifiesForHistory, historyTierLabel } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 
@@ -147,7 +147,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const historyBySlug = useMemo(() => {
     const map = new Map<string, HistoryAgencySummary>();
     for (const a of historyAgencies ?? []) {
-      if (agencyQualifiesForHistoryExplore(a as any)) map.set(a.slug, a);
+      if (agencyQualifiesForHistory(a as any)) map.set(a.slug, a);
+    }
+    return map;
+  }, [historyAgencies]);
+
+  const historyTierBySlug = useMemo(() => {
+    const map = new Map<string, 'explore' | 'recent'>();
+    for (const a of historyAgencies ?? []) {
+      const tier = agencyHistoryTier(a as any);
+      if (tier) map.set(a.slug, tier);
     }
     return map;
   }, [historyAgencies]);
@@ -297,9 +306,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies.
-                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or explore how service changed at ${totalHistoryAgencies}.`}
+                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryAgencies} (Explore + Recent).`}
                   {LIVE_ENABLED && !HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}.`}
-                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Explore how service changed at ${totalHistoryAgencies}.`}
+                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Check History on ${totalHistoryAgencies} agencies (Explore + Recent).`}
                 </p>
                 <div className="space-y-2">
                   <button
@@ -438,7 +447,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live</span>
                                   )}
                                   {showHistoryBadge && (
-                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">History</span>
+                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                                      {historyTierLabel(historyTierBySlug.get(a.slug) ?? 'recent')}
+                                    </span>
                                   )}
                                 </div>
                               )}
@@ -619,10 +630,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedHistory && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">History</span>
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                          {selectedSlug && historyTierBySlug.get(selectedSlug)
+                            ? historyTierLabel(historyTierBySlug.get(selectedSlug)!)
+                            : 'History'}
+                        </span>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
-                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
+                        {selectedSlug && historyTierBySlug.get(selectedSlug) === 'recent'
+                          ? `Recent frequency snapshots for ${selectedHistory.routes.length} routes${historyYearsText ? ` ${historyYearsText}` : ''}.`
+                          : `Historical frequency data available for ${selectedHistory.routes.length} routes ${historyYearsText}.`}
                       </p>
                     </div>
                   )}

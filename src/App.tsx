@@ -20,7 +20,7 @@ import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions, type HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
-import { agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
+import { agencyQualifiesForHistory } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -306,7 +306,7 @@ export default function App() {
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
       .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) =>
-        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistoryExplore).map(a => a.slug))),
+        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug))),
       )
       .catch(() => setHistoryAgencySlugs(new Set()));
   }, []);
