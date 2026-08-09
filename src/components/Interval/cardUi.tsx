@@ -558,12 +558,12 @@ export function CardHelpNotice({
   actionLabel?: string;
 }) {
   return (
-    <p className={CARD_NOTICE}>
-      {message}{' '}
-      <button type="button" onClick={onLearnMore} className={CARD_NOTICE_ACTION}>
+    <div className={`${CARD_NOTICE} flex min-w-0 items-center gap-1`}>
+      <span className="min-w-0 truncate">{message}</span>
+      <button type="button" onClick={onLearnMore} className={`${CARD_NOTICE_ACTION} shrink-0`}>
         {actionLabel}
       </button>
-    </p>
+    </div>
   );
 }
 

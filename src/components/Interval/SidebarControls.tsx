@@ -406,7 +406,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (aH !== bH) return aH - bH;
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
-    return { ...first, routeShortName: firstFacts.shortName, routeLongName: firstFacts.longName, directions, features };
+    return {
+      ...first,
+      agencySlug: slug,
+      routeShortName: firstFacts.shortName,
+      routeLongName: firstFacts.longName,
+      directions,
+      features,
+    };
   }, [selectedRoute, nonCorridorLayers, currentDay, period]);
 
   // Lettered variant family (GRTC 1/1A/1B/1C style) for the selected route
@@ -912,7 +919,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     }
   }, [hasContent]);
 
-  const routeSlug = currentRoute ? (currentRoute as any).agencySlug as string | undefined : undefined;
+  const routeSlug = selectedRoute
+    ? splitRouteKey(selectedRoute).agencySlug
+    : currentRoute
+      ? (currentRoute as any).agencySlug as string | undefined
+      : undefined;
   const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
   const routeBaseFare = fareView && routeSlug
     ? (((currentRoute as any).baseFare as number | undefined) ?? fareOverrides[routeSlug]?.adult ?? routeAgency?.fare ?? null)

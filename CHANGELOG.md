@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed selected-route notices showing the wrong agency and wrapping into overlapping lines.
+
 - Beta now warns when an open page is outdated after a new deployment and lets people refresh it
 - Beta’s Agencies list can now show only agencies with outdated schedule warnings
 - Beta route cards and diagnostics now use the same route-level frequency metric as the filter, preventing false composite readings such as TTC 95 appearing every 2 minutes
