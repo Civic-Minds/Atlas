@@ -97,6 +97,13 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
+    define: {
+      // Vercel provides the commit that produced each deployment. The beta client uses this
+      // value to tell whether an already-open tab is running an older build.
+      __ATLAS_BUILD_ID__: JSON.stringify(
+        process.env.VERCEL_GIT_COMMIT_SHA || process.env.VERCEL_DEPLOYMENT_ID || 'local',
+      ),
+    },
     base: process.env.GITHUB_ACTIONS ? '/Atlas/' : '/',
     plugins: [
       react(),

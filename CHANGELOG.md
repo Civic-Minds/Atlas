@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Beta now warns when an open page is outdated after a new deployment and lets people refresh it
 - History on beta now includes a Recent tier (shorter multi-snapshot series) alongside Explore (10+ years), labeled so deep-archive agencies stay distinct
 - Night Service now finds overnight-only routes, including route numbers shared across daytime and overnight patterns
 - Report forms now match route-card width, spacing, and wording, with single-category reports opening directly to their relevant question

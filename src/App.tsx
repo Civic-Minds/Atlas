@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useM
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, DIAGNOSTICS_ENABLED } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, DIAGNOSTICS_ENABLED, BETA_BUILD } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -24,6 +24,7 @@ import { agencyQualifiesForHistory } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
+import AppUpdateBanner from './components/AppUpdateBanner';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -435,6 +436,7 @@ export default function App() {
         </button>
       </div>
       </div>
+      {BETA_BUILD && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
         {agenciesLoadState === 'loading' ? (
