@@ -151,8 +151,8 @@
       "name": "GO Transit",
       "region": "Ontario",
       "center": [
-        43.645,
-        -79.38
+        43.6536,
+        -79.5844
       ],
       "bbox": [
         42.3,
@@ -163,7 +163,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
       "lastFeedExpiry": "20260904",
       "lastFeedVersion": "20260529182459",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-08",
       "cities": [
         "Mississauga, Ontario",
         "Brampton, Ontario",
@@ -175,7 +175,8 @@
         "Caledon, Ontario",
         "Pickering, Ontario",
         "Barrie, Ontario"
-      ]
+      ],
+      "timezone": "America/Toronto"
     },
     {
       "slug": "grt",
@@ -518,8 +519,8 @@
       ],
       "region": "Ontario",
       "center": [
-        43.6532,
-        -79.3832
+        43.7187,
+        -79.4077
       ],
       "bbox": [
         43.25,
@@ -531,7 +532,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-08",
       "cities": [
         "Toronto, Ontario",
         "Etobicoke, Ontario",
@@ -541,7 +542,8 @@
         "Willowdale, Ontario",
         "Markham, Ontario",
         "Vaughan, Ontario"
-      ]
+      ],
+      "timezone": "America/Toronto"
     },
     {
       "slug": "windsor",
@@ -1227,10 +1229,10 @@
         -113.15
       ],
       "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
-      "lastFeedExpiry": "20260829",
-      "lastFeedVersion": "260623_1347",
+      "lastFeedExpiry": "20260919",
+      "lastFeedVersion": "260731_1622",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-edmonton-transit-system-gtfs-714.zip?alt=media",
-      "lastRefreshedAt": "2026-07-06",
+      "lastRefreshedAt": "2026-08-09",
       "cities": [
         "Edmonton, Alberta",
         "St. Albert, Alberta",
@@ -1843,10 +1845,10 @@
       ],
       "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
       "lastFeedExpiry": "20260905",
-      "lastFeedVersion": "Summer 2026, 2026-06-26T19:57:52+00:00, version D",
+      "lastFeedVersion": "Summer 2026, 2026-08-07T15:32:18+00:00, version D",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
       "gtfsFares": true,
-      "lastRefreshedAt": "2026-07-06",
+      "lastRefreshedAt": "2026-08-09",
       "cities": [
         "Dorchester, Massachusetts",
         "Brookline, Massachusetts",
@@ -5384,7 +5386,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
       "lastFeedExpiry": "20260801",
       "lastFeedVersion": "v202606282",
-      "lastRefreshedAt": "2026-07-13",
+      "lastRefreshedAt": "2026-08-09",
       "cities": [
         "Havertown, Pennsylvania",
         "Philadelphia, Pennsylvania",
@@ -7116,8 +7118,8 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
       "region": "Virginia",
       "lastFeedExpiry": "",
-      "lastFeedVersion": "04/06/26",
-      "lastRefreshedAt": "2026-07-06",
+      "lastFeedVersion": "7/30/2026",
+      "lastRefreshedAt": "2026-08-09",
       "cities": [
         "Roanoke, Virginia"
       ]
@@ -8220,7 +8222,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-170/latest.zip",
       "lastFeedExpiry": "20260805",
       "lastFeedVersion": "20250228",
-      "lastRefreshedAt": "2026-07-06",
+      "lastRefreshedAt": "2026-08-09",
       "cities": [
         "Bend, Oregon"
       ]

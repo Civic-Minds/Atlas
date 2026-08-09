@@ -1,2 +1,2 @@
-/** Bumped by pipeline refresh (bundle-local IDB fallback). Primary bust is R2 atlas/data-version.json. */
-export const CACHE_BUILD = 29;
+/** Bumped by pipeline refresh when R2 artifacts change (bundle-local fallback; R2 data-version is primary). */
+export const CACHE_BUILD = 31;

@@ -3,8 +3,8 @@
   "name": "GO Transit",
   "region": "Ontario",
   "center": [
-    43.645,
-    -79.38
+    43.6536,
+    -79.5844
   ],
   "bbox": [
     42.3,
@@ -15,7 +15,7 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
   "lastFeedExpiry": "20260904",
   "lastFeedVersion": "20260529182459",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-08",
   "cities": [
     "Mississauga, Ontario",
     "Brampton, Ontario",
@@ -27,5 +27,6 @@
     "Caledon, Ontario",
     "Pickering, Ontario",
     "Barrie, Ontario"
-  ]
+  ],
+  "timezone": "America/Toronto"
 }
