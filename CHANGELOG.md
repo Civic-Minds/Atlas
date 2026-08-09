@@ -6,30 +6,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Route shapes now stay scoped to the correct day type, preventing false frequency readings when weekday and weekend patterns differ ([#339](https://github.com/Civic-Minds/Atlas/issues/339))
-- Live history now archives Halifax trip delays and vehicle positions alongside TTC, Burlington, Hamilton, and STM
-- Period frequencies on a destination branch now use the denser of trip-start vs end-stop timing, so cards no longer show a sparser midday than the headline wait (e.g. GRTC 201)
-- Live over Halifax now dots buses on every weekday-midday route that runs every 15 minutes or better (vehicles only — full adherence stays on Route 1)
-- Corridors panel is visible again (it was rendering below the map fold) and "Corridors from here…" actually pre-fills From
-- Corridor frequency bars are labeled as departure-stop wait times so they no longer read like destination headways
-- Click-to-flag on route and stop cards now hits the whole row reliably and always opens the report dialog with the right reason pre-checked — layout no longer hid the flag under the row
-- Duplicate trip_ids in a feed no longer block weekly refresh — the pipeline already keeps one row per id, so a hard fail only froze otherwise-good schedules (e.g. Valley Metro Roanoke)
-- GTFS-Flex stop_times that use location_id without stop_id now warn instead of failing validation, so mixed fixed-route + flex feeds (e.g. Cascades East) can refresh their mapped routes
-- Weekly refresh now reprocesses when only the feed version changes (not just the end date), so mid-period schedule edits like MBTA’s no longer sit stale for weeks
-- Refresh prints and records soft-skipped / failed agencies so stuck feeds don’t disappear into a green action log
-- MBTA (and other feeds with pathway graph nodes) can refresh again — empty stop coordinates on location_type 3/4 nodes are valid in GTFS and no longer fail validation
-- Ride On Flash now shows Orange and Blue separately, so each branch keeps its own schedule while shared stops can still show combined service
-- Route cards now count how often a destination pattern actually *departs* in each time period, so long runs like GO 94 to Pickering no longer look twice as sparse midday just because buses still finish after 3pm
-- Map tiles now recompute whole-route frequency the same way the app does before publish, so a peak-only short turn (e.g. TTC 63 to St Clair at midday) no longer sticks in the live map filter after the code fix already cleared the sidebar
-- Whole-route frequency filters use every destination that actually runs in that period (skipping peak-only thin branches), so TTC 63 midday stays every ~10 minutes while routes with two real ends (e.g. 507) follow the slower one
-- Schedule updates now show up on a normal page reload — the app no longer keeps serving old agency data from browser storage after a feed refresh
-- Fixed caching issue during PMTiles compilation by appending cache-buster parameters to R2 GeoJSON fetches
-- Route cards now use a stable branch frequency when a period's median is not sustained, preventing false 2-minute readings ([#319](https://github.com/Civic-Minds/Atlas/issues/319))
-- Fixed the report-a-problem dialog rendering squeezed into a narrow, scrolling column instead of a normal centered popup
-- Route selection now clears cleanly on partially filtered routes — MapLibre no longer rejects the dimming expression ([#340](https://github.com/Civic-Minds/Atlas/issues/340))
-- Report-a-problem no longer requires typing a description if a reason is already checked, and its reason list now only shows options relevant to what you're reporting from
-- Beta: click a value directly on a card (a frequency, a stop name) to report it, with the right reason pre-checked and no typing required
-- The "Service is uneven" notice is now beta-only while its threshold gets more real-feed tuning — it was flagging routes like TTC 45 (every 9 min) and Line 1 (every 4-5 min) over gaps only a minute or two longer than normal ([#345](https://github.com/Civic-Minds/Atlas/issues/345))
+- **Fixed several frequency accuracy problems**: weekday/weekend shape mix-ups, long-trip terminal timing, unsustained medians, and peak-only short turns could make routes look falsely sparse or frequent, or remain visible under the wrong filter.
+- **Fixed Ride On Flash being treated as one route**: Orange and Blue now keep separate schedules, while shared stops can still show combined service.
+- **Fixed stale map and schedule state**: deselecting a partially filtered route now restores normal visibility, and a normal reload now picks up refreshed schedule data.
+- **Improved weekly feed refresh reliability**: valid feeds with duplicate trip IDs, GTFS-Flex records, changed versions, or empty pathway-node coordinates can refresh, and skipped or failed agencies are now reported.
+- **Improved Corridors and reporting workflows**: Corridors is visible and seeds the starting stop correctly, its bars explain wait times, and route/stop reports open from the full row with the relevant reason preselected.
+- **Added Halifax to Live history**: trip delays and vehicle positions are now archived alongside existing agencies.
+- **Moved the uneven-service warning to beta**: it was flagging normal routes while its thresholds are tuned against more real feeds.
 
 ## [3.2.16] - 2026-08-06
 
