@@ -6,6 +6,7 @@ import {
 } from '../types/gtfs';
 import { t2m, getModeName } from './transit-utils';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
+import { isRailLikeRoute } from '../shared/modes';
 
 /**
  * Expand frequency-based trips into individual departure times.
@@ -137,7 +138,7 @@ function deduplicateDepartures(times: number[]): number[] {
  * Produces one RawRouteDepartures per route/direction/day (Mon–Sun).
  * No time window filtering, no tier classification — all gaps preserved.
  */
-export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, Set<string>>): RawRouteDepartures[] {
+export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, Set<string>>, agencySlug?: string): RawRouteDepartures[] {
     const { routes, calendar, calendarDates } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
 
@@ -215,6 +216,12 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 day,
                 routeType,
                 modeName: getModeName(routeType),
+                railLike: isRailLikeRoute({
+                    routeType,
+                    routeLongName: route?.route_long_name,
+                    routeShortName: route?.route_short_name,
+                    agencySlug,
+                }),
                 departureTimes,
                 gaps,
                 serviceSpan: {

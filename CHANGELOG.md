@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Rail headways now use one representative weekday, so subway and other rail lines no longer show fake high frequency when daily schedules are offset by a minute.
+
 ## [3.2.17] - 2026-08-10
 
 - Route cards and frequency filters now use consistent whole-route service, with destination departures and terminal patterns handled without false sparse or frequent readings.

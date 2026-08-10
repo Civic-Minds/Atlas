@@ -216,6 +216,8 @@ export interface RawRouteDepartures {
     day: DayName;
     routeType: string;
     modeName: string;
+    /** Subway, commuter rail, monorail, or explicitly identified LRT. */
+    railLike?: boolean;
     /** For rail routes split by terminus — e.g. "Kitchener GO" vs "Bramalea GO" */
     headsign?: string;
 
@@ -299,6 +301,8 @@ export interface AnalysisResult {
     serviceSpan?: { start: number; end: number };
     routeType?: string;
     modeName?: string;
+    /** Subway, commuter rail, monorail, or explicitly identified LRT. */
+    railLike?: boolean;
     
     // Resource & Financial Modeling
     pvr?: number;             // Peak Vehicle Requirement

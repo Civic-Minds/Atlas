@@ -168,7 +168,7 @@ export async function processGtfsBuffer(
   const activeForShapes = new Set<string>(
     ALL_DAYS.flatMap(day => [...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
   );
-  const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes, activeServiceIdsByDay);
+  const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes, activeServiceIdsByDay, options?.slug);
   const {
     shapeById,
     shapeCounts,
@@ -183,7 +183,7 @@ export async function processGtfsBuffer(
   } = shapes;
 
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1);
+  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
   onStatus?.('Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 

@@ -94,4 +94,18 @@ describe('applyAnalysisCriteria', () => {
     expect(results.map(r => r.shapeId).sort()).toEqual(['branch-a', 'branch-b']);
     expect(results.every(r => r.medianHeadway === 60)).toBe(true);
   });
+
+  it('uses a representative weekday for subway schedules instead of merging small daily offsets', () => {
+    const results = applyAnalysisCriteria(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day, i) => raw({
+      route: 'marta-blue',
+      day,
+      routeType: '1',
+      departureTimes: [600 + i, 612 + i, 624 + i, 636 + i, 648 + i, 660 + i],
+    })));
+    const r = results.find(x => x.route === 'marta-blue');
+    expect(r).toBeDefined();
+    expect(r!.medianHeadway).toBe(12);
+    expect(r!.railLike).toBe(true);
+    expect(r!.times).toEqual([600, 612, 624, 636, 648, 660]);
+  });
 });
