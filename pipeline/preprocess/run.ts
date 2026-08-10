@@ -5,6 +5,7 @@ import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
 import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
 import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
+import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 
 export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes';
 
@@ -15,6 +16,7 @@ export interface GtfsTransformOptions {
   excludeRouteShortNames?: string[];
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
+  mergeEquivalentShapeVariants?: boolean;
 }
 
 /** Parse → filter → merge branches → agency preprocess → synthesize trip metadata. */
@@ -78,5 +80,15 @@ export function normalizeGtfs(
     const after = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
     onStatus?.(`Metrolink shape linkage: ${after - before} trips linked`);
   }
-  return synthesizeMissingDirections(synthesizeTripHeadsigns(gtfs));
+  gtfs = synthesizeTripHeadsigns(gtfs);
+  if (options?.mergeEquivalentShapeVariants) {
+    const merged = mergeEquivalentShapeVariants(gtfs);
+    gtfs = merged.gtfs;
+    if (merged.mergedTrips > 0) {
+      onStatus?.(
+        `Equivalent shape variants: merged ${merged.mergedTrips} platform trips across ${merged.mergedGroups} shape groups`,
+      );
+    }
+  }
+  return synthesizeMissingDirections(gtfs);
 }

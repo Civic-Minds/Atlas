@@ -4485,6 +4485,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-147/mdb-147-202606300020/mdb-147-202606300020.zip",
       "lastFeedExpiry": "20261025",
       "lastFeedVersion": "GTFS_v4.5_20260616",
+      "mergeEquivalentShapeVariants": true,
       "region": "Arizona",
       "lastRefreshedAt": "2026-08-07",
       "cities": [

@@ -191,6 +191,7 @@ interface AgencyEntry {
   excludeRouteShortNames?: string[];
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
+  mergeEquivalentShapeVariants?: boolean;
   staged?: boolean;
   fare?: number;
   issueUrl?: string;
@@ -336,6 +337,7 @@ async function refreshAgency(
       excludeRouteShortNames: agency.excludeRouteShortNames,
       excludeTripHeadsigns: agency.excludeTripHeadsigns,
       skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
+      mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
       slug: agency.slug,
       manualBaseFare: manualBaseFareOverride,
       // Soft: skip this agency rather than aborting the whole weekly refresh.
@@ -378,6 +380,7 @@ async function refreshAgency(
         preprocess: agency.preprocess,
         excludeRouteShortNames: agency.excludeRouteShortNames,
         excludeTripHeadsigns: agency.excludeTripHeadsigns,
+        mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
         slug: agency.slug,
         manualBaseFare: manualBaseFareOverride,
       });

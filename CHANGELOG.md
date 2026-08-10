@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Valley Metro B Line now combines equivalent platform variants for accurate 12-minute service, and corridor bands stay hidden when disabled.
 - Branch frequencies now use the actual branch schedule and mark mixed short-headway periods as varying instead of showing false exact numbers.
 - Terminal frequency metrics no longer mix departures when agencies reuse a shape across route or branch patterns ([#367](https://github.com/Civic-Minds/Atlas/issues/367)).
 - Route cards now explain standard data corrections while non-passenger trips and placeholder destinations stay out of rider-facing service.

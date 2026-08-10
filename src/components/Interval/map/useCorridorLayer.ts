@@ -16,7 +16,7 @@ export function useCorridorLayer(
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     if (map.getLayer('corridor-shapes-layer')) {
-      const familyFilter = selectedFamily && selectedFamily.routeIds.length > 1
+      const familyFilter = showCorridorBand && selectedFamily && selectedFamily.routeIds.length > 1
         ? ['all',
             ['==', ['get', 'agencySlug'], selectedFamily.agencySlug],
             ['any', ...selectedFamily.routeIds.map(id => ['in', id, ['get', 'routeIds']])],
