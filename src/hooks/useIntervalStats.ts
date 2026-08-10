@@ -8,6 +8,7 @@ import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../../shared/ti
 import { effectiveMode } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
+import { isHiddenByIrregularFilter } from '../../shared/irregularRoutes';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -143,7 +144,7 @@ export function passesRouteFilter(
   // A route where any direction has no sustained/real-tier pattern at all (e.g. a peak-only
   // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
   // as a whole, not just in that one direction -- hide the whole route, not just that branch.
-  if (filters.hideSpan && (p.tier === 'span' || p.routeHasIrregularDirection)) return false;
+  if (filters.hideSpan && isHiddenByIrregularFilter(p)) return false;
   if (options?.skipFrequency) return true;
   // When a specific period is active, use the route's worst-direction headway for that period
   // (falling back to the branch's own headwayByPeriod) -- both directions must qualify, not just

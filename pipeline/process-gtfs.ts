@@ -24,7 +24,7 @@ import { resolve, dirname } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { processGtfsBuffer } from './process-core.js';
-import { r2Put, r2PutArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchive } from './r2.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   formatOverrideResolvedLog,
@@ -41,6 +41,7 @@ import {
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
+import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -281,6 +282,21 @@ async function main() {
   const savedAgency = index.agencies.find(a => a.slug === slug);
   if (savedAgency) writeAgencySource(savedAgency);
   console.log(`  index.json updated\n`);
+
+  try {
+    let existing: HiddenRoutesFile | null = null;
+    const raw = await r2Get('atlas/hidden-routes.json');
+    if (raw) existing = JSON.parse(raw) as HiddenRoutesFile;
+    const hiddenRoutes = mergeHiddenRoutes(
+      existing,
+      [{ agencySlug: slug, routes: buildHiddenRoutesForAgency({ slug, name: agencyName, region: savedAgency?.region ?? null }, geojson) }],
+      new Set(index.agencies.filter(a => !a.staged && !a.hiddenInProduction).map(a => a.slug)),
+    );
+    await r2Put('atlas/hidden-routes.json', JSON.stringify(hiddenRoutes));
+    console.log(`  hidden-routes.json → R2 (${hiddenRoutes.routeCount} routes)`);
+  } catch (e) {
+    console.warn(`  [warn] hidden-routes.json write failed — ${e instanceof Error ? e.message : e}`);
+  }
 }
 
 main().catch(e => {
