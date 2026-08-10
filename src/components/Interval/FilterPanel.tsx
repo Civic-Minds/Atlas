@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Radio, Sun, Moon, Zap, ArrowLeft, Search } from 'lucide-react';
+import { Settings, X, Sun, Moon, Zap, ArrowLeft, Search } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
@@ -66,12 +66,6 @@ const SETTINGS = [
     icon: Zap,
     label: 'Combined corridors',
     description: 'Highlights segments where multiple routes overlap and shows their combined service in one band.',
-  },
-  {
-    id: 'live',
-    icon: Radio,
-    label: 'Live tracking only',
-    description: 'Show only routes covered by Atlas\'s real-time schedule adherence monitoring. Currently limited to a small set of agencies.',
   },
   {
     id: 'span',
@@ -368,14 +362,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length})` : ''} →
                             </button>
                           </>
-                        )}
-                        {id === 'live' && onInfoOpen && (
-                          <button
-                            onClick={() => { onInfoOpen('live'); close(); }}
-                            className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
-                          >
-                            See which routes →
-                          </button>
                         )}
                       </div>
                     </div>

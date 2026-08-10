@@ -212,6 +212,12 @@ export default function App() {
   const showLiveControl = LIVE_ENABLED && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
+  const liveAgencyCount = useMemo(
+    () => new Set(LIVE_POLLING_ROUTES
+      .filter(route => (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar) || route.active)
+      .map(route => route.slug)).size,
+    [],
+  );
   const showHistoryControl = HISTORY_ENABLED && (inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))));
   const historyAgencySlugsInView = useMemo(
     () => historyAgencySlugs ? [...loadedAgencySlugs].filter(slug => historyAgencySlugs.has(slug)) : [],
@@ -397,6 +403,7 @@ export default function App() {
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
             <span>Live</span>
+            <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
           </button>
         )}
 
@@ -409,6 +416,7 @@ export default function App() {
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
+            {historyAgencySlugs && <span className="font-normal text-[var(--text-dim)]">{historyAgencySlugs.size}</span>}
           </a>
         )}
 
