@@ -9720,7 +9720,7 @@
         -82.84
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip",
-      "lastFeedExpiry": "20191213",
+      "lastFeedExpiry": "20200101",
       "lastFeedVersion": "UTC: 29-Apr-2019 14:52",
       "lastRefreshedAt": "2026-08-10",
       "region": "South Carolina",
@@ -9809,7 +9809,7 @@
         -82.1
       ],
       "feedUrl": "https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip",
-      "lastFeedExpiry": "20231231",
+      "lastFeedExpiry": "20241231",
       "lastFeedVersion": "1.0 - Jan 9, 2023",
       "lastRefreshedAt": "2026-08-10",
       "region": "Ohio",
