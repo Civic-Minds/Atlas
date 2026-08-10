@@ -273,7 +273,7 @@ async function main() {
   const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
   if (copiedPreviousCurrent) console.log(`  Archived previous current feed → gtfs/archive/${slug}/${previousRawFeedArchiveKey}.zip`);
-  console.log(`  Current raw feed → atlas/gtfs/current/${slug}.zip`);
+  console.log(`  Current raw feed → atlas/gtfs/${slug}.zip`);
   // Bust browser IDB/CDN query keys immediately — do not wait for a SPA deploy.
   await bumpPublicDataVersion(`process ${slug}`);
 

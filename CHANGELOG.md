@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Open pages now warn when refreshed schedule data or a newer app version is available.
 - Current raw GTFS snapshots now live in public Atlas while replaced or expired snapshots move to the private archive, making bucket membership reflect currentness.
+- Current raw GTFS files now sit at the Atlas bucket root, so the bucket itself identifies current data.
 - Public Atlas data now excludes expired or metadata-unknown feeds; those ZIPs remain in the private history archive instead of being served as current schedules.
 - Local GTFS snapshots now migrate into the private archive with calendar-aware dates and collision-safe agency paths.
 - Fixed the production map failing to render routes after refresh because its MapLibre worker was being rewritten to the app shell.

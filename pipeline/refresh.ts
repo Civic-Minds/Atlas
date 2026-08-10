@@ -464,7 +464,7 @@ async function refreshAgency(
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
     if (peekedExpiry >= today) {
       await r2PutCurrentFeed(agency.slug, buf);
-      writeLog(`  current raw feed → atlas/gtfs/current/${agency.slug}.zip\n`);
+      writeLog(`  current raw feed → atlas/gtfs/${agency.slug}.zip\n`);
     }
     writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
     return { summary: '0 features, skipped' };
@@ -504,7 +504,7 @@ async function refreshAgency(
     r2PutArchiveJson(stopBaselineKey, stopsSnapshot),
   ]);
 
-  writeLog(`  current raw feed → atlas/gtfs/current/${agency.slug}.zip\n`);
+  writeLog(`  current raw feed → atlas/gtfs/${agency.slug}.zip\n`);
   if (shouldStampFeedMeta(featureCount)) {
     stampFeedMeta(agency, {
       feedExpiry,

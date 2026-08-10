@@ -13,7 +13,7 @@ feeds must not remain public current data.
 - `atlas/{slug}.json` — route GeoJSON for each agency
 - `atlas/{slug}-stops.json` — stops index
 - `atlas/{slug}-corridors.json` — corridor overlap data
-- `gtfs/current/{slug}.zip` — the one current raw GTFS snapshot for each agency
+- `gtfs/{slug}.zip` — the one current raw GTFS snapshot for each agency
 - `atlas/go-stops.json` — GO rail stops (separate extract)
 
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`
@@ -75,9 +75,9 @@ meaning of “history” than RT delay archives.
   feedUrl (agency's GTFS zip)
   -> pipeline/refresh.ts
     -> parse GTFS
-    -> if current: archive previous raw ZIP, write gtfs/current/{slug}.zip,
+    -> if current: archive previous raw ZIP, write gtfs/{slug}.zip,
        and write atlas/{slug}.json (public, replaces previous)
-    -> if expired: move gtfs/current/{slug}.zip to atlas-archive,
+    -> if expired: move gtfs/{slug}.zip to atlas-archive,
        archive the downloaded expired ZIP if needed, and remove old atlas/{slug}* artifacts
     -> write atlas/{slug}-stops.json    (public)
     -> write atlas/{slug}-corridors.json (public)
@@ -88,7 +88,7 @@ meaning of “history” than RT delay archives.
 Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
 
 The current raw ZIP is the bucket-level marker for currentness: exactly one
-current snapshot lives at `atlas/gtfs/current/{slug}.zip`. When it is replaced
+current snapshot lives at `atlas/gtfs/{slug}.zip`. When it is replaced
 or expires, the previous object is copied server-side into `atlas-archive`
 before the public object is replaced or deleted. If no current source exists,
 the raw ZIP is retained in `atlas-archive` and the old public artifacts are

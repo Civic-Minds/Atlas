@@ -209,7 +209,7 @@ const CURRENT_GTFS_CACHE_CONTROL = 'public, max-age=0, must-revalidate';
 /** Upload the one current raw GTFS snapshot for an agency to the public bucket. */
 export async function r2PutCurrentFeed(slug: string, body: Buffer): Promise<void> {
   await r2PutRaw(
-    `gtfs/current/${slug}.zip`,
+    `gtfs/${slug}.zip`,
     body,
     'application/zip',
     requireEnv('R2_BUCKET_NAME'),
@@ -227,7 +227,7 @@ export async function r2CopyCurrentFeedToArchive(slug: string, archiveKey: strin
   if (!archiveKey) return false;
   const publicBucket = requireEnv('R2_BUCKET_NAME');
   const archiveBucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
-  const sourceKey = `gtfs/current/${slug}.zip`;
+  const sourceKey = `gtfs/${slug}.zip`;
   const destinationKey = `gtfs/archive/${slug}/${archiveKey}.zip`;
   const client = getR2Client();
 
@@ -252,7 +252,7 @@ export async function r2CopyCurrentFeedToArchive(slug: string, archiveKey: strin
 export async function r2MoveCurrentFeedToArchive(slug: string, archiveKey: string | null): Promise<boolean> {
   const copied = await r2CopyCurrentFeedToArchive(slug, archiveKey);
   if (!copied) return false;
-  await r2Delete(`gtfs/current/${slug}.zip`);
+  await r2Delete(`gtfs/${slug}.zip`);
   return true;
 }
 
@@ -261,7 +261,7 @@ export async function r2MoveArchiveFeedToCurrent(slug: string, archiveKey: strin
   const publicBucket = requireEnv('R2_BUCKET_NAME');
   const archiveBucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
   const sourceKey = `gtfs/archive/${slug}/${archiveKey}.zip`;
-  const destinationKey = `gtfs/current/${slug}.zip`;
+  const destinationKey = `gtfs/${slug}.zip`;
   const client = getR2Client();
 
   await client.send(new CopyObjectCommand({
