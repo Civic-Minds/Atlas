@@ -107,7 +107,7 @@ export function useLiveVehiclesLayer(
       const deck = await ensureDeckOverlay();
       if (cancelled || !deck) return;
 
-      const { ScatterplotLayer, TextLayer } = await import('deck.gl');
+      const { ScatterplotLayer, TextLayer } = await import('@deck.gl/layers');
       if (cancelled) return;
 
       lastDeckFpRef.current = fp;

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed an unused Deck.gl package bundle that pulled vulnerable `image-size`; dependency audit is now clean.
 - Hidden-route counts now use readable thousands separators.
 - Combined corridors now appear on the Frequency map by default, with wider bands for heavier route overlap.
 - Routes with confirmed source geometry problems now stay visible with a clear warning instead of hiding the whole agency.
