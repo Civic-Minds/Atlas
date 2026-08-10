@@ -1,4 +1,5 @@
 import * as maplibregl from 'maplibre-gl';
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
@@ -10,6 +11,10 @@ function atlasPmtilesUrl(): string {
 
 const protocol = new Protocol();
 let protocolRegistered = false;
+
+// MapLibre 6 uses a module worker URL by default. Import it through Vite so the
+// worker is emitted as a real asset instead of falling through the SPA rewrite.
+maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 /** Resolve live data-version then register the PMTiles protocol (await before creating the map). */
 export async function registerProtocol() {

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed the production map failing to render routes after refresh because its MapLibre worker was being rewritten to the app shell.
 - Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.
 - SkyConnect now appears under Tampa International Airport instead of HART, matching the GTFS operator.
 - Rail headways now use one representative weekday, so subway and other rail lines no longer show fake high frequency when daily schedules are offset by a minute.
