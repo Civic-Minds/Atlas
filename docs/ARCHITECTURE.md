@@ -6,13 +6,14 @@ Three Cloudflare R2 buckets. Public access means the browser fetches directly; p
 
 ### atlas (public)
 
-Current static GTFS data served to the frontend. An agency belongs here only
-when its effective GTFS service end date is today or later; expired or
-metadata-unknown feeds must not remain public current data.
+Current GTFS data served to the frontend. An agency belongs here only when its
+effective GTFS service end date is today or later; expired or metadata-unknown
+feeds must not remain public current data.
 
 - `atlas/{slug}.json` — route GeoJSON for each agency
 - `atlas/{slug}-stops.json` — stops index
 - `atlas/{slug}-corridors.json` — corridor overlap data
+- `gtfs/current/{slug}.zip` — the one current raw GTFS snapshot for each agency
 - `atlas/go-stops.json` — GO rail stops (separate extract)
 
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`
@@ -20,9 +21,11 @@ Read by: browser directly via `R2_PUBLIC_URL`
 
 ### atlas-archive (private)
 
-Historical and reference data not needed at runtime.
+Historical and reference data not needed at runtime. A raw ZIP is moved here
+when a newer current snapshot replaces it or when its service expires.
 
-- `gtfs/archive/{slug}/{feed-end-date}.zip` — raw GTFS zip snapshots, one per feed version
+- `gtfs/archive/{slug}/{feed-end-date}.zip` — replaced/expired raw GTFS snapshots
+- `gtfs/historical/{path-slug}/{feed-end-date}.zip` — imported local historical snapshots
 - `history/{slug}/latest.json` — most recent headway snapshot for diff detection
 - `history/{slug}/{feed-end-date}.json` — versioned headway snapshots (pipeline diff-detection; not read by frontend)
 
@@ -69,22 +72,26 @@ meaning of “history” than RT delay archives.
 ## Data Flow: Weekly Refresh
 
 ```
-feedUrl (agency's GTFS zip) 
+  feedUrl (agency's GTFS zip)
   -> pipeline/refresh.ts
     -> parse GTFS
-    -> if current: write atlas/{slug}.json (public, replaces previous)
-    -> if expired: archive ZIP, remove old atlas/{slug}* artifacts
+    -> if current: archive previous raw ZIP, write gtfs/current/{slug}.zip,
+       and write atlas/{slug}.json (public, replaces previous)
+    -> if expired: move gtfs/current/{slug}.zip to atlas-archive,
+       archive the downloaded expired ZIP if needed, and remove old atlas/{slug}* artifacts
     -> write atlas/{slug}-stops.json    (public)
     -> write atlas/{slug}-corridors.json (public)
-    -> write gtfs/archive/{slug}/*.zip  (atlas-archive, append)
     -> compare vs history/{slug}/latest.json (atlas-archive)
     -> if changed: write history/{slug}/{period}.json + latest.json (atlas-archive)
 ```
 
 Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
 
-The raw ZIP is archived before current-data publication. If no current source
-exists, the ZIP is retained in `atlas-archive` but the old public artifacts are
+The current raw ZIP is the bucket-level marker for currentness: exactly one
+current snapshot lives at `atlas/gtfs/current/{slug}.zip`. When it is replaced
+or expires, the previous object is copied server-side into `atlas-archive`
+before the public object is replaced or deleted. If no current source exists,
+the raw ZIP is retained in `atlas-archive` and the old public artifacts are
 removed; the frontend, public agency directory, hidden-route inventory, and
 PMTiles build all use the same current-feed filter.
 

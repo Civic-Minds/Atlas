@@ -17,7 +17,7 @@ import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2Delete } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2Delete, r2PutCurrentFeed, r2CopyCurrentFeedToArchive, r2MoveCurrentFeedToArchive } from './r2.js';
 import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
@@ -93,6 +93,10 @@ async function archiveRawFeed(slug: string, buf: Buffer, feedExpiry: string | nu
 
 async function removePublicAgencyArtifacts(slug: string): Promise<void> {
   await Promise.all(PUBLIC_AGENCY_ARTIFACT_KEYS.map(keyForSlug => r2Delete(keyForSlug(slug))));
+}
+
+function previousRawFeedArchiveKey(agency: AgencyEntry): string {
+  return agency.lastFeedExpiry ?? agency.lastFeedVersion ?? `unknown-${todayUtcYmd().replace(/-/g, '')}`;
 }
 
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
@@ -288,7 +292,10 @@ async function refreshAgency(
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
   if (!peekedExpiry) {
+    const previousKey = previousRawFeedArchiveKey(agency);
+    const movedCurrent = await r2MoveCurrentFeedToArchive(agency.slug, previousKey);
     const archivedKey = await archiveRawFeed(agency.slug, buf, null, peekedVersion);
+    if (movedCurrent) writeLog(`\n  [info] moved previous current raw feed → gtfs/archive/${agency.slug}/${previousKey}.zip\n  `);
     if (archivedKey) writeLog(`\n  [info] archived feed with unknown service end → ${archivedKey}\n  `);
     await removePublicAgencyArtifacts(agency.slug);
     stampFeedMeta(agency, {
@@ -327,7 +334,10 @@ async function refreshAgency(
   }
 
   if (peekedExpiry < today) {
+    const previousKey = previousRawFeedArchiveKey(agency);
+    const movedCurrent = await r2MoveCurrentFeedToArchive(agency.slug, previousKey);
     const archivedKey = await archiveRawFeed(agency.slug, buf, peekedExpiry, peekedVersion);
+    if (movedCurrent) writeLog(`\n  [info] moved previous current raw feed → gtfs/archive/${agency.slug}/${previousKey}.zip\n  `);
     if (archivedKey) writeLog(`\n  [info] archived expired feed → ${archivedKey}\n  `);
     await removePublicAgencyArtifacts(agency.slug);
     stampFeedMeta(agency, {
@@ -452,6 +462,10 @@ async function refreshAgency(
   if (featureCount === 0) {
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
+    if (peekedExpiry >= today) {
+      await r2PutCurrentFeed(agency.slug, buf);
+      writeLog(`  current raw feed → atlas/gtfs/current/${agency.slug}.zip\n`);
+    }
     writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
     return { summary: '0 features, skipped' };
   }
@@ -471,13 +485,17 @@ async function refreshAgency(
     r2Put(`atlas/${agency.slug}-corridors.json`, corridorsGeojson),
     r2Put(`atlas/${agency.slug}-trips.json`, tripsJson),
     r2Put(`atlas/${agency.slug}-stops-meta.json`, stopsMetaJson),
+    r2PutCurrentFeed(agency.slug, buf),
   ];
   if (primary.livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${agency.slug}.json`, JSON.stringify(primary.livePollingSidecar, null, 2)));
   }
   // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
   // The uploads still happen so the files exist on R2.
+  const previousKey = previousRawFeedArchiveKey(agency);
+  const copiedPreviousCurrent = await r2CopyCurrentFeedToArchive(agency.slug, previousKey);
   await Promise.all(uploads);
+  if (copiedPreviousCurrent) writeLog(`  archived previous current raw feed → gtfs/archive/${agency.slug}/${previousKey}.zip\n`);
 
   const stopsSnapshot = JSON.stringify({ generatedAt: new Date().toISOString(), stops: currentStops });
   const stopSnapshotKey = `stops-meta/${agency.slug}/${feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion ?? today}.json`;
@@ -486,18 +504,7 @@ async function refreshAgency(
     r2PutArchiveJson(stopBaselineKey, stopsSnapshot),
   ]);
 
-  // Archive the raw zip to the private atlas-archive bucket, keyed by service end date.
-  const archivedKey = await archiveRawFeed(
-    agency.slug,
-    buf,
-    feedExpiry ?? peekedExpiry,
-    feedVersion ?? peekedVersion,
-  );
-  if (archivedKey) {
-    writeLog(`  archived → ${archivedKey}\n`);
-  } else {
-    writeLog(`  [warn] no feed_end_date or feed_version — zip not archived\n`);
-  }
+  writeLog(`  current raw feed → atlas/gtfs/current/${agency.slug}.zip\n`);
   if (shouldStampFeedMeta(featureCount)) {
     stampFeedMeta(agency, {
       feedExpiry,

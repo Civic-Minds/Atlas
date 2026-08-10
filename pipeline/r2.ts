@@ -4,13 +4,13 @@
  *
  * Required env vars (add to .env.local):
  *   R2_ACCOUNT_ID
- *   R2_BUCKET_NAME        — public bucket (live GeoJSON)
+ *   R2_BUCKET_NAME        — public bucket (live GeoJSON + current raw GTFS)
  *   R2_PUBLIC_URL         — e.g. https://pub-xxx.r2.dev
  *   R2_ARCHIVE_BUCKET_NAME — private bucket (raw GTFS zip archive)
  *   R2_ACCESS_KEY_ID
  *   R2_SECRET_ACCESS_KEY
  */
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, CopyObjectCommand, HeadObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { promisify } from 'node:util';
 
@@ -202,6 +202,78 @@ export async function r2PutArchive(key: string, body: Buffer, contentType: strin
 /** Upload JSON text to the private archive bucket. */
 export async function r2PutArchiveJson(key: string, body: string): Promise<void> {
   await r2PutRaw(key, body, 'application/json', requireEnv('R2_ARCHIVE_BUCKET_NAME'));
+}
+
+const CURRENT_GTFS_CACHE_CONTROL = 'public, max-age=0, must-revalidate';
+
+/** Upload the one current raw GTFS snapshot for an agency to the public bucket. */
+export async function r2PutCurrentFeed(slug: string, body: Buffer): Promise<void> {
+  await r2PutRaw(
+    `gtfs/current/${slug}.zip`,
+    body,
+    'application/zip',
+    requireEnv('R2_BUCKET_NAME'),
+    body.length,
+    CURRENT_GTFS_CACHE_CONTROL,
+  );
+}
+
+/**
+ * Copy the current raw feed into the private archive without downloading it.
+ * The source is deliberately left in place so a later public upload can replace
+ * it safely; callers handling expiry should use r2MoveCurrentFeedToArchive.
+ */
+export async function r2CopyCurrentFeedToArchive(slug: string, archiveKey: string | null): Promise<boolean> {
+  if (!archiveKey) return false;
+  const publicBucket = requireEnv('R2_BUCKET_NAME');
+  const archiveBucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
+  const sourceKey = `gtfs/current/${slug}.zip`;
+  const destinationKey = `gtfs/archive/${slug}/${archiveKey}.zip`;
+  const client = getR2Client();
+
+  try {
+    await client.send(new CopyObjectCommand({
+      Bucket: archiveBucket,
+      Key: destinationKey,
+      CopySource: encodeURIComponent(`${publicBucket}/${sourceKey}`),
+    }));
+    // Do not delete the source until the destination is confirmed readable.
+    await client.send(new HeadObjectCommand({ Bucket: archiveBucket, Key: destinationKey }));
+    return true;
+  } catch (err: any) {
+    if (err?.name === 'NoSuchKey' || err?.name === 'NotFound' || err?.$metadata?.httpStatusCode === 404) {
+      return false;
+    }
+    throw err;
+  }
+}
+
+/** Move an expired current raw feed after the server-side copy succeeds. */
+export async function r2MoveCurrentFeedToArchive(slug: string, archiveKey: string | null): Promise<boolean> {
+  const copied = await r2CopyCurrentFeedToArchive(slug, archiveKey);
+  if (!copied) return false;
+  await r2Delete(`gtfs/current/${slug}.zip`);
+  return true;
+}
+
+/** Move a raw snapshot from the private archive into the public current-feed path. */
+export async function r2MoveArchiveFeedToCurrent(slug: string, archiveKey: string): Promise<void> {
+  const publicBucket = requireEnv('R2_BUCKET_NAME');
+  const archiveBucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
+  const sourceKey = `gtfs/archive/${slug}/${archiveKey}.zip`;
+  const destinationKey = `gtfs/current/${slug}.zip`;
+  const client = getR2Client();
+
+  await client.send(new CopyObjectCommand({
+    Bucket: publicBucket,
+    Key: destinationKey,
+    CopySource: encodeURIComponent(`${archiveBucket}/${sourceKey}`),
+    ContentType: 'application/zip',
+    CacheControl: CURRENT_GTFS_CACHE_CONTROL,
+    MetadataDirective: 'REPLACE',
+  }));
+  await client.send(new HeadObjectCommand({ Bucket: publicBucket, Key: destinationKey }));
+  await client.send(new DeleteObjectCommand({ Bucket: archiveBucket, Key: sourceKey }));
 }
 
 /** Delete a public current-data artifact. Historical data lives in atlas-archive and is not touched. */

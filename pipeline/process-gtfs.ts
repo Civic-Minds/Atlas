@@ -24,7 +24,7 @@ import { resolve, dirname } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { processGtfsBuffer } from './process-core.js';
-import { r2Put, r2Get, r2PutArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutCurrentFeed, r2CopyCurrentFeedToArchive, r2MoveCurrentFeedToArchive } from './r2.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   formatOverrideResolvedLog,
@@ -168,11 +168,13 @@ async function main() {
   let mergeEquivalentShapeVariants: boolean | undefined;
   let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
+  let previousRawFeedArchiveKey: string | null = null;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number }>;
+      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null; lastFeedVersion?: string | null }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
+    previousRawFeedArchiveKey = entry?.lastFeedExpiry ?? entry?.lastFeedVersion ?? null;
     preprocess = entry?.preprocess;
     agencyId = entry?.agencyId;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
@@ -208,7 +210,13 @@ async function main() {
   const todayYmd = todayUtcYmd().replace(/-/g, '');
   if (!dryRun && (!feedExpiry || feedExpiry < todayYmd)) {
     const archiveKey = feedExpiry ?? feedVersion;
-    if (archiveKey) {
+    const movedCurrent = await r2MoveCurrentFeedToArchive(
+      slug,
+      previousRawFeedArchiveKey ?? archiveKey ?? `unknown-${todayYmd}`,
+    );
+    if (movedCurrent) {
+      console.log(`  Moved previous current feed → gtfs/archive/${slug}/${previousRawFeedArchiveKey ?? archiveKey ?? `unknown-${todayYmd}`}.zip`);
+    } else if (archiveKey) {
       await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
       console.log(`  Archived non-current feed → gtfs/archive/${slug}/${archiveKey}.zip`);
     }
@@ -256,20 +264,18 @@ async function main() {
     r2Put(`atlas/${slug}-corridors.json`, corridorsGeojson),
     r2Put(`atlas/${slug}-trips.json`, tripsJson),
     r2Put(`atlas/${slug}-stops-meta.json`, stopsMetaJson),
+    r2PutCurrentFeed(slug, buf),
   ];
   if (livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${slug}.json`, JSON.stringify(livePollingSidecar, null, 2)));
   }
+  const copiedPreviousCurrent = await r2CopyCurrentFeedToArchive(slug, previousRawFeedArchiveKey);
   const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
+  if (copiedPreviousCurrent) console.log(`  Archived previous current feed → gtfs/archive/${slug}/${previousRawFeedArchiveKey}.zip`);
+  console.log(`  Current raw feed → atlas/gtfs/current/${slug}.zip`);
   // Bust browser IDB/CDN query keys immediately — do not wait for a SPA deploy.
   await bumpPublicDataVersion(`process ${slug}`);
-
-  const archiveKey = feedExpiry ?? feedVersion;
-  if (archiveKey) {
-    await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
-    console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
-  }
 
   let index: { agencies: any[] } = { agencies: [] };
   if (existsSync(indexPath)) {
