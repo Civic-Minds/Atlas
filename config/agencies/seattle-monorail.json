@@ -12,11 +12,12 @@
     47.6413,
     -122.3169
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/seattlemonorail-wa-us/seattlemonorail-wa-us.zip",
-  "lastFeedExpiry": "20240501",
-  "lastFeedVersion": "UTC: 28-Nov-2023 22:52",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://github.com/Seattle-Monorail-Services/gtfs/raw/refs/heads/main/96_gtfs.zip",
+  "lastFeedExpiry": "20270530",
+  "lastFeedVersion": "2026-Apr-A",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Seattle, Washington"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2290/tld-2290-202604210048/tld-2290-202604210048.zip"
 }

@@ -12,9 +12,9 @@
     32.44,
     -106.651
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2075/mdb-2075-202607070135/mdb-2075-202607070135.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2075/latest.zip",
-  "lastFeedExpiry": "20260805",
+  "feedUrl": "https://passio3.com/roadrunner/passioTransit/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2075/mdb-2075-202608100019/mdb-2075-202608100019.zip",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "2026-08-10"
 }

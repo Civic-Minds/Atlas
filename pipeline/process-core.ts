@@ -23,6 +23,7 @@ import { buildStopsMeta } from './stopsMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
+import { effectiveFeedExpiry } from './feedFreshness.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
@@ -849,6 +850,11 @@ export async function processGtfsBuffer(
   }
 
   const feedInfo = gtfs.feedInfo?.[0];
+  const feedExpiry = effectiveFeedExpiry({
+    feedInfoEnd: feedInfo?.feed_end_date,
+    calendarEnds: (gtfs.calendar ?? []).map(c => c.end_date),
+    calendarDates: (gtfs.calendarDates ?? []).map(c => ({ date: c.date, exception_type: c.exception_type })),
+  });
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   const mainFeatures = [...features, ...stopFeatures];
 
@@ -902,7 +908,7 @@ export async function processGtfsBuffer(
     featureCount: mainFeatures.length,
     center,
     timezone,
-    feedExpiry: feedInfo?.feed_end_date ?? null,
+    feedExpiry,
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,

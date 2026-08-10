@@ -13,9 +13,9 @@
     -71.9532
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260907",
   "lastFeedVersion": "GO201_26",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Hempstead, New York",
     "Brentwood, New York",

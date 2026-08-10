@@ -12,10 +12,11 @@
     41.1559,
     -72.1918
   ],
-  "feedUrl": "https://suffolkcountyny.gov/Portals/0/formsdocs/publicworks/Zip/google_transit.zip",
-  "lastFeedExpiry": null,
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://tracksctbus.org/gtfs",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/mdb-3115-202608100203/mdb-3115-202608100203.zip",
+  "lastFeedExpiry": "20991231",
+  "lastFeedVersion": "272-7/15/2026,262-7/17/2026,265-7/30/2026",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Brentwood, New York",
     "Levittown, New York",

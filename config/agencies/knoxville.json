@@ -8,9 +8,9 @@
   "feedUrl": "http://www.knoxvilletn.gov/UserFiles/Servers/Server_109478/File/KAT/gtfs-kat.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1121/latest.zip",
   "region": "Tennessee",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20991231",
   "lastFeedVersion": "MARCH 3/14",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Knoxville, Tennessee"
   ]

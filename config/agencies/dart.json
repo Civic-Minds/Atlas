@@ -5,11 +5,12 @@
     32.78,
     -96.8
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202606120106/mdb-152-202606120106.zip",
-  "lastFeedExpiry": "20260719",
-  "lastFeedVersion": "V702-215-214-20260608",
+  "feedUrl": "http://www.dart.org/transitdata/latest/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202607200103/mdb-152-202607200103.zip",
+  "lastFeedExpiry": "20260913",
+  "lastFeedVersion": "V716-215-216-20260720",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Dallas, Texas",
     "Richardson, Texas",

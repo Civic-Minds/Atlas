@@ -13,9 +13,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20991231",
   "lastFeedVersion": "7/30/2026",
-  "lastRefreshedAt": "2026-08-09",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Roanoke, Virginia"
   ]

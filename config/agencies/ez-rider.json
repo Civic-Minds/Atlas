@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2634/mdb-2634-202505211819/mdb-2634-202505211819.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2634/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20501230",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Midland, Texas",
     "Odessa, Texas"

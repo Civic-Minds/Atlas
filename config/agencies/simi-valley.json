@@ -12,12 +12,13 @@
     34.3521,
     -118.5489
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
-  "lastFeedExpiry": "20230601",
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip",
+  "lastFeedExpiry": "20301231",
   "lastFeedVersion": "UTC: 02-Nov-2022 23:01",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Simi Valley, California",
     "Canoga Park, California"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-40/mdb-40-202402080004/mdb-40-202402080004.zip"
 }

@@ -6,9 +6,9 @@
     -120.51
   ],
   "feedUrl": "https://yakimatransit.org/gtfs/yakima_gtfs.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20351231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "region": "Washington",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-276/latest.zip",
   "bbox": [

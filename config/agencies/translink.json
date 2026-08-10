@@ -12,11 +12,12 @@
     49.5,
     -122.2
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-translink-vancouver-gtfs-1222.zip?alt=media",
-  "lastFeedExpiry": null,
-  "lastFeedVersion": null,
+  "feedUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-696/mdb-696-202608080041/mdb-696-202608080041.zip",
+  "lastFeedExpiry": "20260906",
+  "lastFeedVersion": "26JUN_20260807",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Vancouver, British Columbia",
     "North Vancouver, British Columbia",

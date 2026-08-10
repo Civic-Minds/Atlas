@@ -5,13 +5,14 @@
     36.74,
     -119.78
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202605220140/mdb-90-202605220140.zip",
-  "lastFeedExpiry": "20260809",
-  "lastFeedVersion": "6.1.26 Production_20260515",
+  "feedUrl": "https://gis4u.fresno.gov/downloads/fax_gtfs.zip",
+  "lastFeedExpiry": "20261101",
+  "lastFeedVersion": "8.10.26 Production_20260729",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Fresno, California",
     "Clovis, California"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202608050001/mdb-90-202608050001.zip"
 }

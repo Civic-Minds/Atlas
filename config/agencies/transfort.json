@@ -6,6 +6,7 @@
     -105.0844
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
+  "mdbFeedUrl": null,
   "lastFeedExpiry": "20240511",
   "lastFeedVersion": "S1000201",
   "region": "Colorado",

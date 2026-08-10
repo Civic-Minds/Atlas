@@ -12,10 +12,11 @@
     47.65,
     -52.57
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-newfoundland-metrobus-transit-gtfs-758.zip?alt=media",
-  "lastFeedExpiry": null,
+  "feedUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-758/mdb-758-202606160013/mdb-758-202606160013.zip",
+  "lastFeedExpiry": "20260907",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "St. John's, Newfoundland and Labrador"
   ]

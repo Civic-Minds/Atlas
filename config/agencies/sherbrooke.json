@@ -12,10 +12,11 @@
     45.48,
     -71.82
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-sherbrooke-gtfs-1996.zip?alt=media",
-  "lastFeedExpiry": null,
+  "feedUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1996/mdb-1996-202608070111/mdb-1996-202608070111.zip",
+  "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Sherbrooke, Quebec"
   ]

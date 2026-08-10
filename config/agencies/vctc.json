@@ -5,11 +5,12 @@
     34.27,
     -119.23
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-31/mdb-31-202507150038/mdb-31-202507150038.zip",
-  "lastFeedExpiry": "20250815",
-  "lastFeedVersion": "UTC: 07-May-2025 21:06",
+  "feedUrl": "https://www.goventura.org/wp-content/uploads/2026/02/20260213-GMV_Schedule.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3096/mdb-3096-202603231600/mdb-3096-202603231600.zip",
+  "lastFeedExpiry": "20301231",
+  "lastFeedVersion": "UTC: 13-Feb-2026 16:48",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://www.goventura.org/",
   "cities": [
     "Ventura, California",

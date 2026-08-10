@@ -6,7 +6,8 @@
     -90.2
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
-  "lastFeedExpiry": null,
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
+  "lastFeedExpiry": "20260614",
   "lastFeedVersion": null,
   "region": "Missouri",
   "lastRefreshedAt": "2026-08-07",

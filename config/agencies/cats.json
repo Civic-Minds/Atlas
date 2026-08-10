@@ -6,10 +6,10 @@
     -80.84
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2265/mdb-2265-202606120001/mdb-2265-202606120001.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20261004",
   "lastFeedVersion": null,
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Charlotte, North Carolina",
     "Huntersville, North Carolina"

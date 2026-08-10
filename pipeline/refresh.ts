@@ -44,6 +44,7 @@ import {
 } from './countryLaunchGate.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
+import { effectiveFeedExpiry } from './feedFreshness.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -145,16 +146,24 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
 async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
   try {
     const zip = await JSZip.loadAsync(buf);
-    const entry = zip.file('feed_info.txt') ?? zip.file(
-      Object.keys(zip.files).find(f => f.endsWith('/feed_info.txt') && !zip.files[f].dir) ?? ''
+    const findEntry = (name: string) => zip.file(name) ?? zip.file(
+      Object.keys(zip.files).find(f => f.endsWith(`/${name}`) && !zip.files[f].dir) ?? ''
     );
-    if (!entry) return { feedExpiry: null, feedVersion: null };
-    const text = await entry.async('text');
-    const rows = parseCsv<Record<string, string>>(text);
-    if (rows.length === 0) return { feedExpiry: null, feedVersion: null };
-    const row = rows[0];
+    const readRows = async (name: string) => {
+      const entry = findEntry(name);
+      if (!entry) return [] as Array<Record<string, string>>;
+      return parseCsv<Record<string, string>>(await entry.async('text'));
+    };
+    const feedInfoRows = await readRows('feed_info.txt');
+    const row = feedInfoRows[0] ?? {};
+    const calendarRows = await readRows('calendar.txt');
+    const calendarDateRows = await readRows('calendar_dates.txt');
     return {
-      feedExpiry: row.feed_end_date || null,
+      feedExpiry: effectiveFeedExpiry({
+        feedInfoEnd: row.feed_end_date,
+        calendarEnds: calendarRows.map(calendar => calendar.end_date),
+        calendarDates: calendarDateRows,
+      }),
       feedVersion: row.feed_version || null,
     };
   } catch {
@@ -251,13 +260,36 @@ async function refreshAgency(
   // Skip processing only when feed identity is unchanged (expiry *and* version).
   // Matching end-date alone is not enough — MBTA keeps end-date fixed while
   // shipping mid-period patches under a new feed_version (see decideRefreshSkipUnchanged).
-  const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
+  let { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
   if (peekedExpiry && peekedExpiry < today) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
     const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
+
+    // A stale primary URL is common when an agency's official endpoint moved
+    // but the configured Mobility Database mirror kept receiving updates.
+    // Prefer that fallback only when it actually contains a current schedule.
+    if (agency.mdbFeedUrl && agency.mdbFeedUrl !== agency.feedUrl) {
+      try {
+        const fallbackBuf = await downloadFeed(agency.mdbFeedUrl);
+        const fallbackMeta = await peekFeedInfo(fallbackBuf);
+        if (fallbackMeta.feedExpiry && fallbackMeta.feedExpiry >= today) {
+          buf = fallbackBuf;
+          peekedExpiry = fallbackMeta.feedExpiry;
+          peekedVersion = fallbackMeta.feedVersion;
+          writeLog(`\n  [info] primary expired; using current MDB fallback (${fallbackMeta.feedExpiry})\n  `);
+        }
+      } catch (fallbackErr) {
+        writeLog(`\n  [warn] current-feed fallback failed — ${fallbackErr instanceof Error ? fallbackErr.message : fallbackErr}\n  `);
+      }
+    }
+  }
+
+  if (peekedExpiry && peekedExpiry < today) {
+    writeLog(`\n  [warn] no current schedule source — leaving the published artifact unchanged\n  `);
+    return { summary: 'expired feed, skipped' };
   }
 
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
@@ -319,6 +351,11 @@ async function refreshAgency(
 
   let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
+
+  if (!feedExpiry && !peekedExpiry) {
+    writeLog('\n  [warn] feed has no usable service end date — leaving the published artifact unchanged\n');
+    return { summary: 'missing feed metadata, skipped' };
+  }
 
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
   // Skip-if-unchanged only checks the primary feed; supplemental feeds always reprocess.
@@ -476,6 +513,8 @@ async function main() {
   let countryLaunchSkips = 0;
   const validationSoftSkips: string[] = [];
   const zeroFeatureSkips: string[] = [];
+  const expiredFeedSkips: string[] = [];
+  const missingFeedMetadataSkips: string[] = [];
   const failedSlugs: string[] = [];
   const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
@@ -501,6 +540,8 @@ async function main() {
       const summary = result.summary;
       if (summary === 'validation failed, skipped') validationSoftSkips.push(agency.slug);
       else if (summary === '0 features, skipped') zeroFeatureSkips.push(agency.slug);
+      else if (summary === 'expired feed, skipped') expiredFeedSkips.push(agency.slug);
+      else if (summary === 'missing feed metadata, skipped') missingFeedMetadataSkips.push(agency.slug);
       else if (!summary.startsWith('skipped')) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
@@ -540,6 +581,16 @@ async function main() {
   if (zeroFeatureSkips.length > 0) {
     console.warn(
       `  [warn] ${zeroFeatureSkips.length} zero-feature soft-skips: ${zeroFeatureSkips.join(', ')}`,
+    );
+  }
+  if (expiredFeedSkips.length > 0) {
+    console.warn(
+      `  [warn] ${expiredFeedSkips.length} expired-feed skips (left previous R2 data): ${expiredFeedSkips.join(', ')}`,
+    );
+  }
+  if (missingFeedMetadataSkips.length > 0) {
+    console.warn(
+      `  [warn] ${missingFeedMetadataSkips.length} missing-metadata skips (left previous R2 data): ${missingFeedMetadataSkips.join(', ')}`,
     );
   }
   if (uploads > 0) {
@@ -596,6 +647,8 @@ async function main() {
         failedSlugs,
         validationSoftSkips,
         zeroFeatureSkips,
+        expiredFeedSkips,
+        missingFeedMetadataSkips,
         countryLaunchSkips,
       }));
       console.log('  feed-refresh-meta.json → R2');

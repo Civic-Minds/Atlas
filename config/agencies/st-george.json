@@ -6,9 +6,9 @@
     -113.58
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20310130",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "region": "Utah",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
   "bbox": [

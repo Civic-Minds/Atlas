@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- GTFS refreshes now use active service calendars and leave stale or metadata-less feeds unpublished instead of silently replacing current schedules.
 - Live and History pills now show the number of agencies with coverage.
 - Removed an unused Deck.gl package bundle that pulled vulnerable `image-size`; dependency audit is now clean.
 - Combined corridor bands now use a subtle neutral casing so the underlying route colours stay readable.

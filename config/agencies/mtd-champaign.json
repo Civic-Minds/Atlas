@@ -9,8 +9,8 @@
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 07/08/2026 9:32:27)",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 09/08/2026 12:30:29)",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Champaign, Illinois"
   ]

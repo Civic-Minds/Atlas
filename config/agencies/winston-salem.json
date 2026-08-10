@@ -8,9 +8,9 @@
   "feedUrl": "https://ridewsta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://ridewsta.com/gtfs",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20991231",
   "lastFeedVersion": "GTFS 8-30-26 R2,Jan 4th 2026 GTFS",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Winston-Salem, North Carolina"
   ]

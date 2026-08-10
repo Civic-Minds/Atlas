@@ -16,10 +16,10 @@
     -78.88
   ],
   "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260905",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
-  "lastRefreshedAt": "2026-08-08",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Toronto, Ontario",
     "Etobicoke, Ontario",

@@ -6,11 +6,11 @@
     37.69,
     -97.34
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-185/mdb-185-202402080052/mdb-185-202402080052.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-185/mdb-185-202402080052/mdb-185-202402080052.zip",
-  "lastFeedExpiry": null,
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-395/tld-395-202606120001/tld-395-202606120001.zip",
+  "lastFeedExpiry": "20260814",
+  "lastFeedVersion": "20260611",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Wichita, Kansas"
   ]

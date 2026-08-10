@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20501230",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Brownsville, Texas"
   ]

@@ -7,10 +7,10 @@
     -71.802
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260811",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-worcester-regional-transit-authority-wrta-gtfs-432.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Worcester, Massachusetts"
   ]

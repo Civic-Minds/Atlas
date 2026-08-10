@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-40063/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40063/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20290629",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Melbourne, Florida",
     "Palm Bay, Florida",

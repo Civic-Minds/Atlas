@@ -5,11 +5,12 @@
     33.84,
     -117.91
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-15/mdb-15-202605100002/mdb-15-202605100002.zip",
-  "lastFeedExpiry": null,
+  "feedUrl": "https://www.octa.net/current/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-15/mdb-15-202608100000/mdb-15-202608100000.zip",
+  "lastFeedExpiry": "20261107",
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Santa Ana, California",
     "Westminster, California",

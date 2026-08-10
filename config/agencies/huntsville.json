@@ -13,9 +13,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2081/latest.zip",
   "region": "Alabama",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Huntsville, Alabama"
   ]

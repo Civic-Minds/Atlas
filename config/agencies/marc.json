@@ -13,9 +13,9 @@
     -76.0733
   ],
   "feedUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Silver Spring, Maryland",
     "Baltimore, Maryland",

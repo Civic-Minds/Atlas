@@ -13,9 +13,9 @@
     -73.9196
   ],
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/TOR_Transport_of_Rockland.zip",
-  "lastFeedExpiry": "20260630",
+  "lastFeedExpiry": "20261031",
   "lastFeedVersion": "TRANSDEV-v1",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://rocklandgov.com/departments/public-transportation/transport-of-rockland/",
   "cities": [
     "Greenburgh, New York",

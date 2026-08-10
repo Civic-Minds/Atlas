@@ -13,10 +13,10 @@
     -75.391
   ],
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20261004",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Gatineau, Quebec",
     "Aylmer, Quebec",

@@ -5,11 +5,11 @@
     38.5,
     -77.3
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-1156/mdb-1156-202604020037/mdb-1156-202604020037.zip",
-  "lastFeedExpiry": "20260725",
-  "lastFeedVersion": "2026 March_20260326",
+  "feedUrl": "http://omniride.com/omniride/assets/File/google_transit.zip",
+  "lastFeedExpiry": "20270130",
+  "lastFeedVersion": "2026 July_20260724",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Dale City, Virginia",
     "Centreville, Virginia",
@@ -17,5 +17,6 @@
     "Downtown DC, District of Columbia",
     "Arlington, Virginia",
     "Alexandria, Virginia"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1156/mdb-1156-202607280037/mdb-1156-202607280037.zip"
 }

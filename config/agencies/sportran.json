@@ -11,13 +11,14 @@
     32.6,
     -93.5
   ],
-  "feedUrl": "https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx",
+  "feedUrl": "http://sportranbus.com/gtfs",
   "region": "Louisiana",
-  "lastFeedExpiry": "20260802",
-  "lastFeedVersion": "20260428",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20991231",
+  "lastFeedVersion": "Service 10/13/2024",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Bossier City, Louisiana",
     "Shreveport, Louisiana"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1060/mdb-1060-202503200012/mdb-1060-202503200012.zip"
 }

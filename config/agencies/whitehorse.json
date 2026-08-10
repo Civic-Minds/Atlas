@@ -6,9 +6,9 @@
     -135.05
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20501230",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "region": "Yukon",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
   "bbox": [

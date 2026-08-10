@@ -12,10 +12,11 @@
     43.9,
     -70
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-greater-portland-metro-bus-gtfs-2642.zip?alt=media",
-  "lastFeedExpiry": null,
+  "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/mdb-2642-202608100103/mdb-2642-202608100103.zip",
+  "lastFeedExpiry": "20260909",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Portland, Maine"
   ]

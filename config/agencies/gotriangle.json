@@ -5,11 +5,11 @@
     35.99,
     -78.9
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-3183/mdb-3183-202605281945/mdb-3183-202605281945.zip",
-  "lastFeedExpiry": "20260801",
-  "lastFeedVersion": "2026-03 service V1",
+  "feedUrl": "http://gotriangle.org/gtfs",
+  "lastFeedExpiry": "20270213",
+  "lastFeedVersion": "2026-08 service V1",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Durham, North Carolina",
     "Cary, North Carolina",
@@ -17,5 +17,6 @@
     "West Raleigh, North Carolina",
     "Raleigh, North Carolina",
     "Burlington, North Carolina"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3183/mdb-3183-202608040111/mdb-3183-202608040111.zip"
 }

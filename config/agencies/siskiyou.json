@@ -14,7 +14,7 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-siskiyou-county-gtfs-117.zip?alt=media",
-  "lastFeedExpiry": "20300725",
+  "lastFeedExpiry": "20300925",
   "lastFeedVersion": "UTC: 02-Jul-2026 18:56",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "2026-08-10"
 }

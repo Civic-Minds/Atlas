@@ -5,11 +5,12 @@
     33.89,
     -118.31
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2270/mdb-2270-202606300031/mdb-2270-202606300031.zip",
-  "lastFeedExpiry": "20260718",
-  "lastFeedVersion": "S1000131",
+  "feedUrl": "https://ridegtrans.com/gtfs.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2270/mdb-2270-202607210042/mdb-2270-202607210042.zip",
+  "lastFeedExpiry": "20261010",
+  "lastFeedVersion": "S1000133",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Gardena, California",
     "Carson, California",

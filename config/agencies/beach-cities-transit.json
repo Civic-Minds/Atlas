@@ -6,9 +6,9 @@
     -118.3884
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-beach-cities-transit-gtfs-1999.zip?alt=media",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20991231",
   "lastFeedVersion": "Transit Center Trip Split",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Redondo Beach, California",
     "Hawthorne, California",

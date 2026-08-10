@@ -12,11 +12,11 @@
     45.023,
     -120.792
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/tld-170/tld-170-202607070151/tld-170-202607070151.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-170/latest.zip",
-  "lastFeedExpiry": "20260805",
+  "feedUrl": "https://passio3.com/cet/passioTransit/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-170/tld-170-202608100153/tld-170-202608100153.zip",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-09",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Bend, Oregon"
   ]

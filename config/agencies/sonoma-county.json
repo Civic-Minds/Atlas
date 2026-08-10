@@ -14,9 +14,9 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/sonomacounty-ca-us/sonomacounty-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sonoma-county-transit-sct-gtfs-70.zip?alt=media",
-  "lastFeedExpiry": "20260808",
-  "lastFeedVersion": "UTC: 01-Jul-2026 17:39",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20310608",
+  "lastFeedVersion": "UTC: 29-May-2026 14:31",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Santa Rosa, California",
     "Petaluma, California",

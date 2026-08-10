@@ -13,10 +13,10 @@
     -121.89
   ],
   "feedUrl": "https://api.actransit.org/transit/gtfs/download",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-alameda-contra-costa-transit-district-ac-transit-gtfs-1244.zip?alt=media",
-  "lastFeedExpiry": "20240302",
-  "lastFeedVersion": "S1000222",
-  "lastRefreshedAt": "2026-08-07",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2455/mdb-2455-202608100019/mdb-2455-202608100019.zip",
+  "lastFeedExpiry": "20270403",
+  "lastFeedVersion": "S1000256",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://www.actransit.org",
   "cities": [
     "Berkeley, California",

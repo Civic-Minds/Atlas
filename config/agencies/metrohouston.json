@@ -5,11 +5,11 @@
     29.76,
     -95.37
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202606160113/mdb-2060-202606160113.zip",
-  "lastFeedExpiry": "20260711",
-  "lastFeedVersion": "FIFA2026IVOMS_20260612",
+  "feedUrl": "https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip",
+  "lastFeedExpiry": "20270206",
+  "lastFeedVersion": "Feb2026IVOMS_20260710",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Houston, Texas",
     "Alief, Texas",
@@ -21,5 +21,6 @@
     "Cypress, Texas",
     "League City, Texas",
     "Baytown, Texas"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202607120126/mdb-2060-202607120126.zip"
 }

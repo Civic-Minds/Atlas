@@ -11,11 +11,12 @@
     27.7,
     -82.1
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-327/latest.zip",
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-348/mdb-348-202404220004/mdb-348-202404220004.zip",
   "region": "Florida",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20290629",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Sarasota, Florida",
     "North Port, Florida",
