@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+## [3.2.17] - 2026-08-10
+
 - Route cards and frequency filters now use consistent whole-route service, with destination departures and terminal patterns handled without false sparse or frequent readings.
 - Weekday and weekend schedules no longer mix when selecting representative route shapes, and refreshed feeds no longer leave stale map data behind.
 - Non-passenger trips and placeholder destinations stay out of rider-facing service, while standard data corrections are explained on affected route cards.
