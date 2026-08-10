@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, X, Radio, Sun, Moon, Zap, Info } from 'lucide-react';
+import { Settings, X, Sun, Moon, Info } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
@@ -32,6 +32,15 @@ interface FilterPanelProps {
   selectedAgencies?: Set<string>;
   setSelectedAgencies?: (agencies: Set<string>) => void;
   bounds?: any;
+  hiddenRoutes?: HiddenRoute[];
+}
+
+export interface HiddenRoute {
+  key: string;
+  agencyName: string;
+  routeShortName: string;
+  routeLongName?: string | null;
+  reason: string;
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -52,20 +61,8 @@ function Toggle({ on }: { on: boolean }) {
 
 const SETTINGS = [
   {
-    id: 'corridors',
-    icon: Zap,
-    label: 'Combined corridors',
-    description: 'Highlights segments where multiple routes overlap, showing the combined frequency instead of each route separately. Useful for identifying corridors with de-facto rapid transit.',
-  },
-  {
-    id: 'live',
-    icon: Radio,
-    label: 'Live tracking only',
-    description: 'Show only routes covered by Atlas\'s real-time schedule adherence monitoring. Currently limited to a small set of agencies.',
-  },
-  {
     id: 'span',
-    icon: () => <span className="w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0">≠</span>,
+    icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
     label: 'Hide irregular routes',
     description: 'Hides peak-only routes, school buses, and demand-responsive shuttles — anything that doesn\'t run a consistent all-day schedule. Useful for focusing on everyday service.',
   },
@@ -94,9 +91,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   selectedAgencies,
   setSelectedAgencies,
   bounds,
+  hiddenRoutes = [],
 }) => {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [showHiddenRoutes, setShowHiddenRoutes] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -195,13 +194,27 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <div className="min-w-0">
                         <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
                         <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
-                        {id === 'live' && onInfoOpen && (
-                          <button
-                            onClick={() => { onInfoOpen('live'); close(); }}
-                            className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
-                          >
-                            See which routes →
-                          </button>
+                        {id === 'span' && (
+                          <>
+                            <button
+                              onClick={() => setShowHiddenRoutes(v => !v)}
+                              className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                            >
+                              {showHiddenRoutes ? 'Hide hidden routes ↑' : `See hidden routes${hiddenRoutes.length ? ` (${hiddenRoutes.length})` : ''} →`}
+                            </button>
+                            {showHiddenRoutes && (
+                              <div className="mt-2 max-h-44 overflow-y-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] px-2.5 py-1.5 space-y-1.5">
+                                {hiddenRoutes.length > 0 ? hiddenRoutes.map(route => (
+                                  <div key={route.key} className="text-[10px] leading-snug">
+                                    <p className="font-bold text-[var(--text-primary)]">{route.routeShortName} · {route.agencyName}</p>
+                                    <p className="text-[var(--text-muted)]">{route.reason}</p>
+                                  </div>
+                                )) : (
+                                  <p className="text-[10px] text-[var(--text-muted)]">No irregular routes are loaded in this map area.</p>
+                                )}
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
