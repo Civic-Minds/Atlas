@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Settings, X, Sun, Moon, Info } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Settings, X, Sun, Moon, ArrowLeft, Search } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
+import { R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
 
 interface FilterPanelProps {
@@ -32,15 +33,17 @@ interface FilterPanelProps {
   selectedAgencies?: Set<string>;
   setSelectedAgencies?: (agencies: Set<string>) => void;
   bounds?: any;
-  hiddenRoutes?: HiddenRoute[];
 }
 
 export interface HiddenRoute {
   key: string;
+  agencySlug: string;
   agencyName: string;
+  region?: string | null;
   routeShortName: string;
   routeLongName?: string | null;
   reason: string;
+  days: string[];
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -91,11 +94,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   selectedAgencies,
   setSelectedAgencies,
   bounds,
-  hiddenRoutes = [],
 }) => {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [showHiddenRoutes, setShowHiddenRoutes] = useState(false);
+  const [view, setView] = useState<'settings' | 'hidden-routes'>('settings');
+  const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
+  const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
+  const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
+  const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (open) {
@@ -106,7 +112,62 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     }
   }, [open]);
 
-  const close = () => setOpen(false);
+  useEffect(() => {
+    if (!open || hiddenRoutes.length > 0) return;
+    let cancelled = false;
+    setHiddenRoutesLoading(true);
+    fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
+      .then(response => response.ok ? response.json() : { routes: [] })
+      .then(data => {
+        if (!cancelled) setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
+      })
+      .catch(() => {
+        if (!cancelled) setHiddenRoutes([]);
+      })
+      .finally(() => {
+        if (!cancelled) setHiddenRoutesLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [hiddenRoutes.length, open]);
+
+  const close = () => {
+    setOpen(false);
+    setView('settings');
+    setHiddenRoutesQuery('');
+    setHiddenRegionFilter(new Set());
+  };
+
+  const filteredHiddenRoutes = useMemo(() => {
+    const q = hiddenRoutesQuery.trim().toLowerCase();
+    return hiddenRoutes.filter(route => [
+      route.routeShortName,
+      route.routeLongName ?? '',
+      route.agencyName,
+      route.region ?? '',
+    ].some(value => value.toLowerCase().includes(q))
+      && (hiddenRegionFilter.size === 0 || hiddenRegionFilter.has(route.region ?? 'Other')));
+  }, [hiddenRoutes, hiddenRoutesQuery, hiddenRegionFilter]);
+
+  const hiddenRouteRegions = useMemo(
+    () => [...new Set(hiddenRoutes.map(route => route.region ?? 'Other'))].sort(),
+    [hiddenRoutes],
+  );
+
+  useEffect(() => {
+    if (hiddenRegionFilter.size === 0) return;
+    const next = new Set([...hiddenRegionFilter].filter(region => hiddenRouteRegions.includes(region)));
+    if (next.size !== hiddenRegionFilter.size) setHiddenRegionFilter(next);
+  }, [hiddenRegionFilter, hiddenRouteRegions]);
+
+  const hiddenRoutesByRegion = useMemo(() => {
+    const grouped = new Map<string, HiddenRoute[]>();
+    for (const route of filteredHiddenRoutes) {
+      const region = route.region || 'Other';
+      if (!grouped.has(region)) grouped.set(region, []);
+      grouped.get(region)!.push(route);
+    }
+    return new Map([...grouped.entries()].sort(([a], [b]) => a.localeCompare(b)));
+  }, [filteredHiddenRoutes]);
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
   const hasActiveFilters = hideSpan || livePollingOnly || showCorridors || hasActiveCoreFilter;
@@ -146,7 +207,20 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--border-primary)] shrink-0">
-              <h2 className="text-xs font-black text-[var(--text-primary)]">Settings</h2>
+              <div className="flex items-center gap-1.5">
+                {view === 'hidden-routes' && (
+                  <button
+                    onClick={() => { setView('settings'); setHiddenRoutesQuery(''); }}
+                    className="w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
+                    aria-label="Back to settings"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <h2 className="text-xs font-black text-[var(--text-primary)]">
+                  {view === 'hidden-routes' ? 'Hidden routes' : 'Settings'}
+                </h2>
+              </div>
               <button
                 onClick={close}
                 className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
@@ -157,6 +231,83 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             </div>
 
             <div className="overflow-y-auto flex flex-col">
+              {view === 'hidden-routes' ? (
+                <>
+                  <div className="px-5 pt-4 pb-3">
+                    <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                      {hiddenRoutes.length > 0
+                        ? `${hiddenRoutes.length} routes never appear when this filter is on.`
+                        : 'Loading the full list of hidden routes…'}
+                    </p>
+                    <label className="relative block mt-3">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)]" />
+                      <input
+                        value={hiddenRoutesQuery}
+                        onChange={event => setHiddenRoutesQuery(event.target.value)}
+                        placeholder="Search hidden routes…"
+                        className="w-full h-8 pl-9 pr-3 rounded-lg bg-[var(--bg-app)] border border-[var(--border-primary)] text-[11px] text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none focus:border-[var(--accent-border)]"
+                        autoFocus
+                      />
+                    </label>
+                    <div className="flex gap-1.5 overflow-x-auto items-center mt-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                      {['All', ...hiddenRouteRegions].map(region => {
+                        const key = region === 'All' ? '' : region;
+                        const active = key === '' ? hiddenRegionFilter.size === 0 : hiddenRegionFilter.has(key);
+                        return (
+                          <button
+                            key={region}
+                            onClick={() => setHiddenRegionFilter(prev => {
+                              if (key === '') return new Set();
+                              const next = new Set(prev);
+                              if (next.has(key)) next.delete(key);
+                              else next.add(key);
+                              return next;
+                            })}
+                            aria-pressed={active}
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
+                              active
+                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
+                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                            }`}
+                          >
+                            {region}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {hiddenRoutesLoading ? (
+                    <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">Loading hidden routes…</p>
+                  ) : filteredHiddenRoutes.length === 0 ? (
+                    <p className="px-5 py-4 text-[10px] text-[var(--text-muted)]">
+                      {hiddenRoutes.length === 0 ? 'The hidden-route list is unavailable right now.' : 'No hidden routes match your search.'}
+                    </p>
+                  ) : (
+                    <div className="px-5 pb-4">
+                      {[...hiddenRoutesByRegion.entries()].map(([region, routes]) => (
+                        <div key={region}>
+                          <p className="pt-2 pb-1 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
+                          <div className="divide-y divide-[var(--border-primary)]">
+                            {routes.map(route => (
+                              <div key={route.key} className="py-2.5">
+                                <div className="flex items-baseline justify-between gap-3">
+                                  <p className="text-[11px] font-bold text-[var(--text-primary)] truncate">{route.routeShortName}</p>
+                                  <p className="text-[9px] text-[var(--text-dim)] shrink-0">{route.agencyName}</p>
+                                </div>
+                                {route.routeLongName && route.routeLongName !== route.routeShortName && (
+                                  <p className="text-[10px] text-[var(--text-secondary)] truncate mt-0.5">{route.routeLongName}</p>
+                                )}
+                                <p className="text-[9px] text-[var(--text-muted)] mt-1">{route.reason} · {route.days.join(', ')}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
               {/* Appearance */}
               <div className="px-5 pt-4 pb-1">
                 <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
@@ -197,23 +348,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         {id === 'span' && (
                           <>
                             <button
-                              onClick={() => setShowHiddenRoutes(v => !v)}
+                              onClick={() => setView('hidden-routes')}
                               className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
                             >
-                              {showHiddenRoutes ? 'Hide hidden routes ↑' : `See hidden routes${hiddenRoutes.length ? ` (${hiddenRoutes.length})` : ''} →`}
+                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length})` : ''} →
                             </button>
-                            {showHiddenRoutes && (
-                              <div className="mt-2 max-h-44 overflow-y-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] px-2.5 py-1.5 space-y-1.5">
-                                {hiddenRoutes.length > 0 ? hiddenRoutes.map(route => (
-                                  <div key={route.key} className="text-[10px] leading-snug">
-                                    <p className="font-bold text-[var(--text-primary)]">{route.routeShortName} · {route.agencyName}</p>
-                                    <p className="text-[var(--text-muted)]">{route.reason}</p>
-                                  </div>
-                                )) : (
-                                  <p className="text-[10px] text-[var(--text-muted)]">No irregular routes are loaded in this map area.</p>
-                                )}
-                              </div>
-                            )}
                           </>
                         )}
                       </div>
@@ -331,6 +470,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     })}
                   </div>
                 </div>
+              )}
+                </>
               )}
             </div>
           </div>

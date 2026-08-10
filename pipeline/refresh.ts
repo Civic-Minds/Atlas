@@ -43,6 +43,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
+import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -64,6 +65,11 @@ interface RouteSummary {
   tier: string | null;
   routeLongName?: string;
   headwayByPeriod?: HeadwayByPeriod;
+}
+
+interface RefreshAgencyResult {
+  summary: string;
+  hiddenRoutes?: HiddenRouteRecord[];
 }
 
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
@@ -212,9 +218,9 @@ async function refreshAgency(
   agency: AgencyEntry,
   manualBaseFareOverride?: number,
   logger?: { log: (msg: string) => void }
-): Promise<string> {
+): Promise<RefreshAgencyResult> {
   if (!agency.feedUrl) {
-    return 'skipped (no feedUrl)';
+    return { summary: 'skipped (no feedUrl)' };
   }
 
   const writeLog = (msg: string) => {
@@ -267,7 +273,7 @@ async function refreshAgency(
     lastFeedVersion: agency.lastFeedVersion,
   });
   if (skipDecision.skip) {
-    return skipDecision.reason;
+    return { summary: skipDecision.reason };
   }
 
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
@@ -306,7 +312,7 @@ async function refreshAgency(
     if (err instanceof GtfsValidationError) {
       writeLog(`  [warn] GTFS validation failed (${err.report.errors} error(s)) — skipping update\n`);
       // Do not stamp lastFeed* — leave previous metadata so a later good feed can run.
-      return 'validation failed, skipped';
+      return { summary: 'validation failed, skipped' };
     }
     throw err;
   }
@@ -357,7 +363,7 @@ async function refreshAgency(
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
     writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
-    return '0 features, skipped';
+    return { summary: '0 features, skipped' };
   }
 
   const currentStops = (JSON.parse(stopsMetaJson) as { stops?: AuditedStop[] }).stops ?? [];
@@ -412,7 +418,10 @@ async function refreshAgency(
   writeLog(`  history: ${histResult}\n`);
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
-  return `${featureCount} features, ${kb} KB`;
+  return {
+    summary: `${featureCount} features, ${kb} KB`,
+    hiddenRoutes: buildHiddenRoutesForAgency(agency, geojson),
+  };
 }
 
 function bumpCacheBuild(): void {
@@ -468,6 +477,7 @@ async function main() {
   const validationSoftSkips: string[] = [];
   const zeroFeatureSkips: string[] = [];
   const failedSlugs: string[] = [];
+  const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
     const logger = {
@@ -487,10 +497,14 @@ async function main() {
           return;
         }
       }
-      const summary = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
+      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
+      const summary = result.summary;
       if (summary === 'validation failed, skipped') validationSoftSkips.push(agency.slug);
       else if (summary === '0 features, skipped') zeroFeatureSkips.push(agency.slug);
-      else if (!summary.startsWith('skipped')) uploads++;
+      else if (!summary.startsWith('skipped')) {
+        uploads++;
+        if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
+      }
       console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
       // Clear staged flag once data is live so the next deploy shows the agency.
       if (agency.staged) delete agency.staged;
@@ -540,6 +554,24 @@ async function main() {
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
     // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)
+  }
+
+  // Keep the complete Hide irregular routes inventory current without downloading every
+  // agency on every refresh. Each successful agency replaces its own records; unchanged
+  // agencies remain in the previous aggregate.
+  try {
+    let existing: HiddenRoutesFile | null = null;
+    const raw = await r2Get('atlas/hidden-routes.json');
+    if (raw) existing = JSON.parse(raw) as HiddenRoutesFile;
+    const hiddenRoutes = mergeHiddenRoutes(
+      existing,
+      [...refreshedHiddenRoutes.entries()].map(([agencySlug, routes]) => ({ agencySlug, routes })),
+      new Set(index.agencies.filter(a => !a.staged && !a.hiddenInProduction).map(a => a.slug)),
+    );
+    await r2Put('atlas/hidden-routes.json', JSON.stringify(hiddenRoutes));
+    console.log(`  hidden-routes.json → R2 (${hiddenRoutes.routeCount} routes)`);
+  } catch (e) {
+    console.warn(`  [warn] hidden-routes.json write failed — ${e instanceof Error ? e.message : e}`);
   }
 
   // Public agency directory (slug/name/region/center/bbox only) — lets consumers

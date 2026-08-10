@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Hidden-route inventory now lists only routes that never appear with the filter enabled and can be narrowed by state or province.
 - Settings now explain which irregular routes are hidden; experimental combined corridors remain beta-only.
 - Live panel stops now follow the route order instead of being sorted by delay.
 - Niagara route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
