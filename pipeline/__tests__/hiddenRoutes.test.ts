@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes } from '../hiddenRoutes';
 
 describe('hidden route inventory', () => {
-  it('lists every route with hidden service, across all days', () => {
+  it('lists only routes whose service is entirely hidden', () => {
     const routes = buildHiddenRoutesForAgency(
       { slug: 'demo', name: 'Demo Transit', region: 'Ontario' },
       { features: [
@@ -17,15 +17,13 @@ describe('hidden route inventory', () => {
     );
     expect(routes).toEqual([expect.objectContaining({
       key: 'demo::10::Main',
-      days: ['Sunday', 'Weekday'],
-      reason: 'All service is hidden because it is irregular.',
     })]);
     expect(routes.some(route => route.routeShortName === '30')).toBe(false);
     expect(routes.some(route => route.routeShortName === '40')).toBe(false);
   });
 
   it('replaces only the agency that was refreshed', () => {
-    const existing = mergeHiddenRoutes(null, [{ agencySlug: 'a', routes: [{ key: 'a::1::', agencySlug: 'a', agencyName: 'A', region: 'Ontario', routeShortName: '1', routeLongName: null, reason: 'old', days: ['Sunday'] }] }]);
+    const existing = mergeHiddenRoutes(null, [{ agencySlug: 'a', routes: [{ key: 'a::1::', agencySlug: 'a', agencyName: 'A', region: 'Ontario', routeShortName: '1', routeLongName: null }] }]);
     const updated = mergeHiddenRoutes(existing, [{ agencySlug: 'b', routes: [] }]);
     expect(updated.routes.map(route => route.key)).toEqual(['a::1::']);
   });
