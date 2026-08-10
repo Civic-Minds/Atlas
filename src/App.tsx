@@ -24,6 +24,7 @@ import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import type { CorrectionNotice } from '../shared/correctionNotices';
 import { isCurrentProductionFeed } from '../shared/feedAvailability';
+import AppUpdateBanner from './components/AppUpdateBanner';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -436,6 +437,8 @@ export default function App() {
         </button>
       </div>
       </div>
+
+      <AppUpdateBanner />
 
       <main className="absolute inset-0 overflow-hidden">
         {agenciesLoadState === 'loading' ? (

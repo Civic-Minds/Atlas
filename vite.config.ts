@@ -110,6 +110,11 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
+    define: {
+      __ATLAS_BUILD_ID__: JSON.stringify(
+        process.env.VERCEL_GIT_COMMIT_SHA || process.env.VERCEL_DEPLOYMENT_ID || 'local',
+      ),
+    },
     base: process.env.GITHUB_ACTIONS ? '/Atlas/' : '/',
     plugins: [
       react(),

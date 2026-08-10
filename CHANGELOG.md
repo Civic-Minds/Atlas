@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Open pages now warn when refreshed schedule data or a newer app version is available.
 - Public Atlas data now excludes expired or metadata-unknown feeds; those ZIPs remain in the private history archive instead of being served as current schedules.
 - Local GTFS snapshots now migrate into the private archive with calendar-aware dates and collision-safe agency paths.
 - Fixed the production map failing to render routes after refresh because its MapLibre worker was being rewritten to the app shell.
