@@ -23,7 +23,9 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 
-const CORRIDOR_BAND_COLOR = '#7c3aed';
+// A neutral casing keeps the route tier colours readable underneath it. The
+// corridor should feel like a trunk emphasis, not a second purple network.
+const CORRIDOR_BAND_COLOR = '#64748b';
 
 const CORRIDOR_ROUTE_COUNT: any = ['length', ['get', 'routeIds']];
 
@@ -474,16 +476,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           // A shared segment should read as one trunk, while the width still
           // communicates whether two routes or five routes are contributing.
           'line-width': ['interpolate', ['linear'], ['zoom'],
-            8, corridorWidthExpression([3.5, 4.5, 5.5, 6.5]),
-            14, corridorWidthExpression([7, 9, 11, 13]),
-            17, corridorWidthExpression([10, 12, 14, 16]),
+            8, corridorWidthExpression([3, 3.5, 4, 4.5]),
+            14, corridorWidthExpression([5.5, 6.5, 7.5, 8.5]),
+            17, corridorWidthExpression([8, 9, 10, 11]),
           ],
           'line-gap-width': ['interpolate', ['linear'], ['zoom'],
-            8, corridorWidthExpression([1.5, 2, 2.5, 3]),
-            14, corridorWidthExpression([3, 4, 5, 6]),
-            17, corridorWidthExpression([4, 5, 6, 7]),
+            8, corridorWidthExpression([1.5, 1.75, 2, 2.25]),
+            14, corridorWidthExpression([2.5, 3, 3.5, 4]),
+            17, corridorWidthExpression([3.5, 4, 4.5, 5]),
           ],
-          'line-opacity': ['interpolate', ['linear'], CORRIDOR_ROUTE_COUNT, 2, 0.5, 5, 0.7]
+          'line-opacity': ['interpolate', ['linear'], CORRIDOR_ROUTE_COUNT, 2, 0.2, 5, 0.3]
         },
         filter: ['==', ['get', 'agencySlug'], ''] as any
       });
