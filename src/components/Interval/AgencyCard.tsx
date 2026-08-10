@@ -439,6 +439,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     agencyName: agency.name,
                     overrideNote: agency.overrideNote,
                     issueUrl: agency.issueUrl,
+                    issueUrls: agency.issueUrls,
                   })}
                 />
               )}

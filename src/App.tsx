@@ -54,7 +54,9 @@ export interface Agency {
   /** Excluded from the production build (real, processed data — unlike `staged`) until country coverage is validated. Visible in local dev for QA (#222). */
   hiddenInProduction?: boolean;
   issueUrl?: string;
+  issueUrls?: string[];
   overrideNote?: string;
+  overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
   fare?: number;
   gtfsFares?: boolean;
@@ -135,6 +137,7 @@ export default function App() {
       websiteUrl: opts.websiteUrl,
       overrideNote: opts.overrideNote,
       issueUrl: opts.issueUrl,
+      issueUrls: opts.issueUrls,
     } : null);
     setInfoOpen(true);
   }, []);

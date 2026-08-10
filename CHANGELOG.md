@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Live panel stops now follow the route order instead of being sorted by delay.
+- Niagara route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
 - Live API routes now return normally on Vercel instead of timing out before the handler responds.
 - Live adherence cards now leave “fetching…” when the live endpoint does not respond.
 - Fixed selected-route notices showing the wrong agency and wrapping into overlapping lines.

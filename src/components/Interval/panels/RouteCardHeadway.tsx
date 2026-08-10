@@ -150,6 +150,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
+  const routeOverrideNote = routeAgency?.overrideNote
+    && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
+    ? routeAgency.overrideNote
+    : undefined;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
@@ -489,7 +493,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeAgency?.overrideNote) && onInfoOpen && (
+        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {routeIsStale && (
               <CardHelpNotice
@@ -508,20 +512,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 message="New schedule data is being verified."
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'new-schedule-data',
-                  agencyName: routeAgency.name,
+                  agencyName: routeAgency?.name,
                   lastRefreshedAt: routeAgency.lastRefreshedAt ?? undefined,
                   websiteUrl: routeAgency.websiteUrl ?? undefined,
                 })}
               />
             )}
-            {routeAgency?.overrideNote && (
+            {routeOverrideNote && (
               <CardHelpNotice
                 message="We corrected this data."
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'corrected-data',
-                  agencyName: routeAgency.name,
-                  overrideNote: routeAgency.overrideNote,
-                  issueUrl: routeAgency.issueUrl,
+                  agencyName: routeAgency?.name,
+                  overrideNote: routeOverrideNote,
+                  issueUrl: routeAgency?.issueUrl,
+                  issueUrls: routeAgency?.issueUrls,
                 })}
               />
             )}
