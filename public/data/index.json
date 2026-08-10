@@ -200,7 +200,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Waterloo, Ontario",
         "Kitchener, Ontario",
@@ -225,7 +225,7 @@
       "lastFeedExpiry": "20250830",
       "lastFeedVersion": "2025 May _20250801",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.guelphtransit.ca",
       "cities": [
         "Guelph, Ontario"
@@ -931,7 +931,7 @@
       "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Saint-Hyacinthe, Quebec"
       ]
@@ -1316,7 +1316,7 @@
       ],
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Saskatoon, Saskatchewan",
         "Confederation, Saskatchewan",
@@ -1559,7 +1559,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-qline-detroit-gtfs-802.zip?alt=media",
       "lastFeedExpiry": "20251231",
       "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://qlinedetroit.com/",
       "cities": [
         "Detroit, Michigan"
@@ -1741,7 +1741,7 @@
       "feedUrl": "http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip",
       "lastFeedExpiry": "20231101",
       "lastFeedVersion": "UTC: 22-Jun-2023 22:03",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.ride-the-e.com/",
       "cities": [
         "Erie, Pennsylvania"
@@ -1984,7 +1984,7 @@
       "feedUrl": "https://moosejaw.ca/wp-content/uploads/2023/11/moosejaw-GTFS.zip",
       "lastFeedExpiry": "20240331",
       "lastFeedVersion": "1",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://moosejaw.ca"
     },
     {
@@ -2353,7 +2353,7 @@
       "feedUrl": "https://www.skagittransit.org/gtfs/google_transit.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Bellingham, Washington",
         "Everett, Washington",
@@ -2518,7 +2518,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-herkimer-oneida-counties-transportation-study-hocts-gtfs-588.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true
     },
@@ -2539,7 +2539,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
       "lastFeedExpiry": "",
       "lastFeedVersion": "",
-      "lastRefreshedAt": "2026-08-07"
+      "lastRefreshedAt": "2026-08-10"
     },
     {
       "slug": "watertowncitibus",
@@ -2723,7 +2723,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
       "lastFeedExpiry": "20260131",
       "lastFeedVersion": "",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.ltd.org",
       "cities": [
         "Eugene, Oregon",
@@ -2748,7 +2748,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Salem, Oregon",
         "Tigard, Oregon"
@@ -3295,7 +3295,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
       "lastFeedExpiry": "20260430",
       "lastFeedVersion": "January_26_01_20260327",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://wheelsbus.com/",
       "cities": [
         "Livermore, California",
@@ -3321,7 +3321,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
       "lastFeedExpiry": "20230927",
       "lastFeedVersion": "UTC: 14-Mar-2023 23:56",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.uctransit.org",
       "cities": [
         "Union City, California"
@@ -3345,7 +3345,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-west-berkeley-shuttle-gtfs-2238.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Berkeley, California"
       ]
@@ -3415,7 +3415,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-fairfield-and-suisun-transit-fast-transit-gtfs-76.zip?alt=media",
       "lastFeedExpiry": "20260630",
       "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.fasttransit.org/",
       "cities": [
         "Fairfield, California"
@@ -3439,7 +3439,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
       "lastFeedExpiry": "20260630",
       "lastFeedVersion": "2.2.26",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://citycoach.com/",
       "cities": [
         "Vacaville, California"
@@ -3463,7 +3463,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-rio-vista-delta-breeze-gtfs-81.zip?alt=media",
       "lastFeedExpiry": "20250131",
       "lastFeedVersion": "UTC: 23-Feb-2024 22:27",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://www.riovistacity.com/deltabreeze/page/delta-breeze-transit-schedule",
       "cities": [
         "Fairfield, California"
@@ -3559,7 +3559,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redwood-coast-transit-rct-gtfs-20.zip?alt=media",
       "lastFeedExpiry": "20260523",
       "lastFeedVersion": "UTC: 20-Jan-2026 15:30",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.redwoodcoasttransit.org/"
     },
     {
@@ -3704,7 +3704,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sacramento-regional-transit-gtfs-2137.zip?alt=media",
       "lastFeedExpiry": "20250405",
       "lastFeedVersion": "January_2025",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.sacrt.com",
       "cities": [
         "Sacramento, California",
@@ -3736,7 +3736,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "West Sacramento, California",
         "Woodland, California",
@@ -3947,7 +3947,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-torrance-transit-gtfs-34.zip?alt=media",
       "lastFeedExpiry": "20240113",
       "lastFeedVersion": "S1000154",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Torrance, California",
         "Gardena, California",
@@ -3989,7 +3989,7 @@
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
       "lastFeedExpiry": "20210701",
       "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Carson, California",
         "Compton, California",
@@ -4012,7 +4012,7 @@
       ],
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Oxnard, California",
         "Ventura, California"
@@ -4126,7 +4126,7 @@
       "lastFeedExpiry": "20210801",
       "lastFeedVersion": "20210503",
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.avta.com",
       "cities": [
         "Lancaster, California",
@@ -4528,7 +4528,7 @@
       "lastFeedExpiry": "20250927",
       "lastFeedVersion": "2025 (1) Spring_20250421",
       "region": "Colorado",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.mmtransit.com",
       "cities": [
         "Colorado Springs, Colorado"
@@ -4616,7 +4616,7 @@
       "lastFeedExpiry": "20260330",
       "lastFeedVersion": "2024-12-14T14:31:44Z",
       "region": "New Mexico",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://www.santafenm.gov/transit",
       "cities": [
         "Santa Fe, New Mexico"
@@ -4765,7 +4765,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "region": "Arkansas",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Little Rock, Arkansas",
         "North Little Rock, Arkansas"
@@ -4802,7 +4802,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "region": "Tennessee",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Memphis, Tennessee",
         "New South Memphis, Tennessee",
@@ -4888,7 +4888,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "region": "Wisconsin",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Milwaukee, Wisconsin",
         "West Allis, Wisconsin"
@@ -4906,7 +4906,7 @@
       "lastFeedExpiry": "20260614",
       "lastFeedVersion": null,
       "region": "Missouri",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "St. Louis, Missouri",
         "Florissant, Missouri",
@@ -4989,7 +4989,7 @@
       "lastFeedExpiry": "20260712",
       "lastFeedVersion": "S1000250_2026.01.09",
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Mid-City, California",
         "Inglewood, California",
@@ -5063,7 +5063,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Glendale, California",
         "Burbank, California",
@@ -5162,7 +5162,7 @@
       "lastFeedExpiry": "20250329",
       "lastFeedVersion": "2024.09",
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://vvta.org/",
       "cities": [
         "Victorville, California",
@@ -5208,7 +5208,7 @@
       "lastFeedExpiry": "20251031",
       "lastFeedVersion": "UTC: 29-Feb-2024 18:42",
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx",
       "cities": [
         "El Monte, California"
@@ -5411,7 +5411,7 @@
       "lastFeedExpiry": "20240511",
       "lastFeedVersion": "S1000201",
       "region": "Colorado",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.ridetransfort.com/",
       "cities": [
         "Fort Collins, Colorado",
@@ -5952,7 +5952,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-508/mdb-508-202607010134/mdb-508-202607010134.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Trenton, New Jersey",
         "Passaic, New Jersey",
@@ -5983,7 +5983,7 @@
       "feedUrl": "https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip",
       "lastFeedExpiry": "20260601",
       "lastFeedVersion": "UTC: 22-May-2025 18:06",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.panynj.gov/path/",
       "cities": [
         "East Village, New York",
@@ -6300,7 +6300,7 @@
       "lastFeedExpiry": "20250607",
       "lastFeedVersion": "20250305",
       "region": "Indiana",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.indygo.net",
       "cities": [
         "Indianapolis, Indiana",
@@ -6437,7 +6437,7 @@
       "lastFeedExpiry": "20260606",
       "lastFeedVersion": "S1000242",
       "region": "Florida",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.psta.net",
       "cities": [
         "St. Petersburg, Florida",
@@ -6504,7 +6504,7 @@
       "lastFeedExpiry": "20220115",
       "lastFeedVersion": "20210223",
       "region": "Florida",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.votran.org",
       "cities": [
         "Daytona Beach, Florida",
@@ -6563,7 +6563,7 @@
       "lastFeedExpiry": "20250705",
       "lastFeedVersion": "S1000101",
       "region": "Georgia",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.xpressga.com/",
       "cities": [
         "Atlanta, Georgia",
@@ -6665,7 +6665,7 @@
       "lastFeedExpiry": "20250630",
       "lastFeedVersion": "20230718",
       "region": "Washington DC",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://www.dcstreetcar.com/",
       "cities": [
         "Downtown DC, District of Columbia"
@@ -6682,7 +6682,7 @@
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "region": "Virginia",
-      "lastRefreshedAt": "2026-08-07"
+      "lastRefreshedAt": "2026-08-10"
     },
     {
       "slug": "hrt",
@@ -6794,7 +6794,7 @@
       "region": "Florida",
       "lastFeedExpiry": "20240901",
       "lastFeedVersion": "UTC: 07-May-2024 20:44",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.talgov.com/starmetro",
       "cities": [
         "Tallahassee, Florida"
@@ -6886,7 +6886,7 @@
       "region": "Georgia",
       "lastFeedExpiry": "20250727",
       "lastFeedVersion": "S1000046",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.catchacat.org",
       "cities": [
         "Savannah, Georgia"
@@ -6932,7 +6932,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2354/latest.zip",
       "region": "Arizona",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "lastFeedExpiry": "20260516",
       "lastFeedVersion": "Feb1526_20260121",
       "cities": [
@@ -7022,7 +7022,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2082/latest.zip",
       "region": "Tennessee",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "lastFeedExpiry": "20240817",
       "lastFeedVersion": "S1000099",
       "cities": [
@@ -7270,7 +7270,7 @@
       "region": "Texas",
       "lastFeedExpiry": "20260613",
       "lastFeedVersion": "November 16, 2025_20260409",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.sunmetro.net",
       "cities": [
         "El Paso, Texas"
@@ -7293,7 +7293,7 @@
       "region": "Texas",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Corpus Christi, Texas"
       ]
@@ -7338,7 +7338,7 @@
       "region": "Texas",
       "lastFeedExpiry": "20211231",
       "lastFeedVersion": "1.0",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://amarillo.gov/departments/community-services/transit",
       "cities": [
         "Amarillo, Texas"
@@ -7429,7 +7429,7 @@
       "region": "Florida",
       "lastFeedExpiry": "20221101",
       "lastFeedVersion": "UTC: 24-Feb-2022 22:06",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://goecat.com/",
       "cities": [
         "Pensacola, Florida",
@@ -7453,7 +7453,7 @@
       "region": "Florida",
       "lastFeedExpiry": "20250817",
       "lastFeedVersion": "2501",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.go-rts.com/",
       "cities": [
         "Gainesville, Florida"
@@ -7706,7 +7706,7 @@
       "region": "Wisconsin",
       "lastFeedExpiry": "20250601",
       "lastFeedVersion": "UTC: 22-Jan-2025 18:29",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://www.waukesha-wi.gov/residents/getting_around/public-transportation.php",
       "cities": [
         "Waukesha, Wisconsin",
@@ -7755,7 +7755,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
       "lastFeedExpiry": "20201231",
       "lastFeedVersion": "",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
       "cities": [
         "Green Bay, Wisconsin"
@@ -7914,7 +7914,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07"
+      "lastRefreshedAt": "2026-08-10"
     },
     {
       "slug": "lincoln",
@@ -8123,7 +8123,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
       "lastFeedExpiry": "20250228",
       "lastFeedVersion": "2024-06-28T20:55:07Z",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
       "cities": [
         "Greensboro, North Carolina",
@@ -8711,7 +8711,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
       "lastFeedExpiry": "20250115",
       "lastFeedVersion": "20240618",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "Indiana",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
       "bbox": [
@@ -8734,7 +8734,7 @@
       "feedUrl": "https://data.trilliumtransit.com/gtfs/kenosha-wi-us/kenosha-wi-us.zip",
       "lastFeedExpiry": "20240901",
       "lastFeedVersion": "UTC: 04-Aug-2023 15:47",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "Wisconsin",
       "bbox": [
         42.4973,
@@ -8874,7 +8874,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "Virginia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
       "bbox": [
@@ -9353,7 +9353,7 @@
       "feedUrl": "http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip",
       "lastFeedExpiry": "20240401",
       "lastFeedVersion": "UTC: 01-Nov-2023 21:05",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "South Dakota",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-192/latest.zip",
       "bbox": [
@@ -9476,7 +9476,7 @@
       "feedUrl": "https://data.trilliumtransit.com/gtfs/davenport-ia-us/davenport-ia-us.zip",
       "lastFeedExpiry": "20241231",
       "lastFeedVersion": "UTC: 29-May-2024 19:01",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "Iowa",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
       "bbox": [
@@ -9568,7 +9568,7 @@
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11834/ats_albany_ga_us(2).zip",
       "lastFeedExpiry": "20240630",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "Georgia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2146/latest.zip",
       "bbox": [
@@ -9637,7 +9637,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
       "lastFeedExpiry": "20251105",
       "lastFeedVersion": "Nov_05_2024",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "Colorado",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
       "bbox": [
@@ -9703,7 +9703,7 @@
       "feedUrl": "http://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip",
       "lastFeedExpiry": "20191213",
       "lastFeedVersion": "UTC: 29-Apr-2019 14:52",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "South Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
       "bbox": [
@@ -9749,7 +9749,7 @@
       "feedUrl": "http://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip",
       "lastFeedExpiry": "20250810",
       "lastFeedVersion": "UTC: 05-May-2025 09:20",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "North Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-378/latest.zip",
       "bbox": [
@@ -9792,7 +9792,7 @@
       "feedUrl": "https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip",
       "lastFeedExpiry": "20231231",
       "lastFeedVersion": "1.0 - Jan 9, 2023",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "region": "Ohio",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1973/latest.zip",
       "bbox": [
@@ -9888,7 +9888,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07"
+      "lastRefreshedAt": "2026-08-10"
     },
     {
       "slug": "staten-island-ferry",
@@ -10008,7 +10008,7 @@
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip",
       "lastFeedExpiry": null,
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Cheyenne, Wyoming"
       ]
@@ -10074,7 +10074,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "lastFeedExpiry": null,
       "lastFeedVersion": null
     },
@@ -10298,7 +10298,7 @@
       "feedUrl": "https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip",
       "lastFeedExpiry": "20211231",
       "lastFeedVersion": "UTC: 22-Nov-2021 17:16",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Bakersfield, California"
       ]
@@ -10342,7 +10342,7 @@
       "feedUrl": "https://data.trilliumtransit.com/gtfs/valleyexpress-ca-us/valleyexpress-ca-us.zip",
       "lastFeedExpiry": "20250815",
       "lastFeedVersion": "UTC: 25-Feb-2025 03:38",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Simi Valley, California",
         "Camarillo, California"
@@ -10388,7 +10388,7 @@
       "feedUrl": "https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip",
       "lastFeedExpiry": "20211231",
       "lastFeedVersion": "UTC: 17-Feb-2021 22:17",
-      "lastRefreshedAt": "2026-08-07"
+      "lastRefreshedAt": "2026-08-10"
     },
     {
       "slug": "seattle-monorail",
