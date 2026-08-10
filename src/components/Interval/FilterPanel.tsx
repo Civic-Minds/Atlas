@@ -353,7 +353,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               onClick={() => setView('hidden-routes')}
                               className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
                             >
-                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length})` : ''} →
+                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
                             </button>
                           </>
                         )}
