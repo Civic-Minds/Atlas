@@ -16,7 +16,7 @@ export default function AppUpdateBanner() {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed top-[4.5rem] left-1/2 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${PILL_SURFACE} gap-3 px-3 text-[10px] font-bold text-[var(--text-muted)]`}
+      className={`fixed bottom-[4.5rem] left-1/2 max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:bottom-6 ${Z_HEADER} ${PILL_SURFACE} gap-3 px-3 text-[10px] font-bold text-[var(--text-muted)]`}
     >
       <span className="truncate">{message} Refresh to update.</span>
       <button
