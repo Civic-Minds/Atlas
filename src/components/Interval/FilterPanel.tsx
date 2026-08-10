@@ -42,8 +42,6 @@ export interface HiddenRoute {
   region?: string | null;
   routeShortName: string;
   routeLongName?: string | null;
-  reason: string;
-  days: string[];
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -113,7 +111,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (!open || hiddenRoutes.length > 0) return;
+    if (view !== 'hidden-routes' || hiddenRoutes.length > 0) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
@@ -128,7 +126,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         if (!cancelled) setHiddenRoutesLoading(false);
       });
     return () => { cancelled = true; };
-  }, [hiddenRoutes.length, open]);
+  }, [hiddenRoutes.length, view]);
 
   const close = () => {
     setOpen(false);
@@ -159,14 +157,25 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     if (next.size !== hiddenRegionFilter.size) setHiddenRegionFilter(next);
   }, [hiddenRegionFilter, hiddenRouteRegions]);
 
-  const hiddenRoutesByRegion = useMemo(() => {
-    const grouped = new Map<string, HiddenRoute[]>();
+  const hiddenRoutesByAgency = useMemo(() => {
+    const grouped = new Map<string, { agencyName: string; routes: HiddenRoute[] }>();
     for (const route of filteredHiddenRoutes) {
-      const region = route.region || 'Other';
-      if (!grouped.has(region)) grouped.set(region, []);
-      grouped.get(region)!.push(route);
+      const group = grouped.get(route.agencySlug) ?? { agencyName: route.agencyName, routes: [] };
+      group.routes.push(route);
+      grouped.set(route.agencySlug, group);
     }
-    return new Map([...grouped.entries()].sort(([a], [b]) => a.localeCompare(b)));
+    return [...grouped.entries()]
+      .sort(([, a], [, b]) => a.agencyName.localeCompare(b.agencyName))
+      .map(([agencySlug, group]) => [
+        agencySlug,
+        {
+          ...group,
+          routes: group.routes.sort((a, b) =>
+            a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true })
+            || (a.routeLongName ?? '').localeCompare(b.routeLongName ?? ''),
+          ),
+        },
+      ] as const);
   }, [filteredHiddenRoutes]);
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
@@ -234,12 +243,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {view === 'hidden-routes' ? (
                 <>
                   <div className="px-5 pt-4 pb-3">
-                    <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
-                      {hiddenRoutes.length > 0
-                        ? `${hiddenRoutes.length} routes never appear when this filter is on.`
-                        : 'Loading the full list of hidden routes…'}
-                    </p>
-                    <label className="relative block mt-3">
+                    <label className="relative block">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)]" />
                       <input
                         value={hiddenRoutesQuery}
@@ -284,20 +288,18 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </p>
                   ) : (
                     <div className="px-5 pb-4">
-                      {[...hiddenRoutesByRegion.entries()].map(([region, routes]) => (
-                        <div key={region}>
-                          <p className="pt-2 pb-1 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
+                      {hiddenRoutesByAgency.map(([agencySlug, group]) => (
+                        <div key={agencySlug}>
+                          <p className="pt-2 pb-1 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{group.agencyName}</p>
                           <div className="divide-y divide-[var(--border-primary)]">
-                            {routes.map(route => (
+                            {group.routes.map(route => (
                               <div key={route.key} className="py-2.5">
                                 <div className="flex items-baseline justify-between gap-3">
                                   <p className="text-[11px] font-bold text-[var(--text-primary)] truncate">{route.routeShortName}</p>
-                                  <p className="text-[9px] text-[var(--text-dim)] shrink-0">{route.agencyName}</p>
                                 </div>
                                 {route.routeLongName && route.routeLongName !== route.routeShortName && (
                                   <p className="text-[10px] text-[var(--text-secondary)] truncate mt-0.5">{route.routeLongName}</p>
                                 )}
-                                <p className="text-[9px] text-[var(--text-muted)] mt-1">{route.reason} · {route.days.join(', ')}</p>
                               </div>
                             ))}
                           </div>

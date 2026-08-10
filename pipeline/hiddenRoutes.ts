@@ -8,8 +8,6 @@ export interface HiddenRouteRecord {
   region: string | null;
   routeShortName: string;
   routeLongName: string | null;
-  reason: string;
-  days: string[];
 }
 
 export interface HiddenRoutesFile {
@@ -33,8 +31,6 @@ export function buildHiddenRoutesForAgency(
   const byRoute = new Map<string, {
     routeShortName: string;
     routeLongName: string | null;
-    days: Set<string>;
-    hasIrregularDirection: boolean;
     hasVisibleFeature: boolean;
   }>();
 
@@ -43,17 +39,12 @@ export function buildHiddenRoutesForAgency(
     const shortName = typeof p.routeShortName === 'string' ? p.routeShortName.trim() : '';
     if (!shortName || p.isCorridor) continue;
     const longName = typeof p.routeLongName === 'string' ? p.routeLongName.trim() || null : null;
-    const day = typeof p.day === 'string' ? p.day : 'All days';
     const key = `${agency.slug}::${shortName}::${longName ?? ''}`;
     const current = byRoute.get(key) ?? {
       routeShortName: shortName,
       routeLongName: longName,
-      days: new Set(),
-      hasIrregularDirection: false,
       hasVisibleFeature: false,
     };
-    current.days.add(day);
-    if (p.routeHasIrregularDirection === true) current.hasIrregularDirection = true;
     if (!isHiddenByIrregularFilter(p)) current.hasVisibleFeature = true;
     byRoute.set(key, current);
   }
@@ -68,10 +59,6 @@ export function buildHiddenRoutesForAgency(
         region: agency.region ?? null,
         routeShortName: route.routeShortName,
         routeLongName: route.routeLongName,
-        reason: route.hasIrregularDirection
-          ? 'All service is hidden because it is irregular.'
-          : 'All service is hidden because it is peak-only or irregular.',
-        days: [...route.days].sort(),
       };
     })
     .filter((route): route is HiddenRouteRecord => route !== null);
