@@ -8,9 +8,9 @@
   "feedUrl": "https://passio3.com/transpo/passioTransit/gtfs/google_transit.zip",
   "region": "Indiana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7019/latest.zip",
-  "lastFeedExpiry": "20260906",
+  "lastFeedExpiry": "20260909",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "South Bend, Indiana",
     "Elkhart, Indiana"

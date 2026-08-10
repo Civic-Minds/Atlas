@@ -9,8 +9,8 @@
   "region": "Michigan",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-674/latest.zip",
   "lastFeedExpiry": "20260928",
-  "lastFeedVersion": "20260729",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260808",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Kalamazoo, Michigan"
   ]

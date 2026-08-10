@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-fairfield-and-suisun-transit-fast-transit-gtfs-76.zip?alt=media",
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://www.fasttransit.org/",
   "cities": [
     "Fairfield, California"

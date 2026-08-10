@@ -8,7 +8,7 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/kenosha-wi-us/kenosha-wi-us.zip",
   "lastFeedExpiry": "20240901",
   "lastFeedVersion": "UTC: 04-Aug-2023 15:47",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "region": "Wisconsin",
   "bbox": [
     42.4973,

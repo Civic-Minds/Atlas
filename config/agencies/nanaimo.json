@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=41",
   "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "202608070/20260806 21:00:00/20260807 04:00:00",
+  "lastFeedVersion": "202608100/20260809 21:00:00/20260810 04:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-nanaimo-gtfs-2473.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Nanaimo, British Columbia",
     "Saanich, British Columbia"

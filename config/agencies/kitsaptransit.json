@@ -15,7 +15,7 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-kitsap-transit-gtfs-1304.zip?alt=media",
   "lastFeedExpiry": "20211231",
   "lastFeedVersion": "20210606",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://www.kitsaptransit.com",
   "cities": [
     "Seattle, Washington",
