@@ -43,6 +43,7 @@ import {
 } from './countryLaunchGate.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
+import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -204,6 +205,19 @@ async function main() {
   }, { agencyId, preprocess, excludeRouteShortNames, excludeTripHeadsigns, mergeEquivalentShapeVariants, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
 
+  const todayYmd = todayUtcYmd().replace(/-/g, '');
+  if (!dryRun && (!feedExpiry || feedExpiry < todayYmd)) {
+    const archiveKey = feedExpiry ?? feedVersion;
+    if (archiveKey) {
+      await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
+      console.log(`  Archived non-current feed → gtfs/archive/${slug}/${archiveKey}.zip`);
+    }
+    throw new Error(
+      `Refusing to publish ${slug}: feed service ends ${feedExpiry ?? 'unknown'}; ` +
+      `only feeds current through ${todayYmd} may enter the public atlas bucket.`,
+    );
+  }
+
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
 
   if (dryRun) {
@@ -304,7 +318,7 @@ async function main() {
           geojson,
         ),
       }],
-      new Set(index.agencies.filter(a => !a.staged && !a.hiddenInProduction).map(a => a.slug)),
+      new Set(index.agencies.filter(a => isCurrentProductionFeed(a)).map(a => a.slug)),
     );
     await r2Put('atlas/hidden-routes.json', JSON.stringify(hiddenRoutes));
     console.log(`  hidden-routes.json → R2 (${hiddenRoutes.routeCount} routes)`);

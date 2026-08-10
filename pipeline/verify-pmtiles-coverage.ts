@@ -19,6 +19,7 @@ import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
+import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
 
 interface Agency {
   slug: string;
@@ -30,6 +31,9 @@ interface Agency {
   // checker doesn't fail loudly on agencies with a known cause; still sampled
   // so we notice (and print) if the underlying issue actually gets resolved.
   pmtilesPending?: boolean;
+  lastFeedExpiry?: string | null;
+  staged?: boolean;
+  hiddenInProduction?: boolean;
 }
 
 // Matches the app's own fallback bbox padding (shared/config.ts AGENCY_BBOX_PAD)
@@ -132,7 +136,7 @@ async function getZxyWithRetry(
 async function main() {
   console.log('Loading agency index from public/data/index.json...');
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: Agency[] };
-  const agencies = index.agencies || [];
+  const agencies = (index.agencies || []).filter(agency => isCurrentProductionFeed(agency));
   console.log(`Found ${agencies.length} agencies.`);
 
   const pmtilesUrl = `${R2_PUBLIC_URL}/atlas.pmtiles`;

@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Public Atlas data now excludes expired or metadata-unknown feeds; those ZIPs remain in the private history archive instead of being served as current schedules.
+- Local GTFS snapshots now migrate into the private archive with calendar-aware dates and collision-safe agency paths.
 - Fixed the production map failing to render routes after refresh because its MapLibre worker was being rewritten to the app shell.
 - Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.
 - SkyConnect now appears under Tampa International Airport instead of HART, matching the GTFS operator.

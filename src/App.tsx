@@ -23,6 +23,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import type { CorrectionNotice } from '../shared/correctionNotices';
+import { isCurrentProductionFeed } from '../shared/feedAvailability';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -289,7 +290,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV))
+          .filter((a: Agency) => isCurrentProductionFeed(a) || (import.meta.env.DEV && !a.staged && a.hiddenInProduction))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug);

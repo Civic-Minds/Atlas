@@ -1,3 +1,5 @@
+import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
+
 /**
  * agencyIndex.ts — derive a small public agency directory from index.json,
  * for export as atlas/agencies.json.
@@ -17,6 +19,7 @@ export interface AgencyIndexSourceEntry {
   bbox?: [number, number, number, number];
   staged?: boolean;
   hiddenInProduction?: boolean;
+  lastFeedExpiry?: string | null;
 }
 
 export interface AgencyIndexEntry {
@@ -41,7 +44,7 @@ export interface AgencyIndexFile {
  */
 export function buildAgencyIndex(source: AgencyIndexSourceEntry[]): AgencyIndexFile {
   const agencies = source
-    .filter(a => !a.staged && !a.hiddenInProduction)
+    .filter(a => isCurrentProductionFeed(a))
     .map(a => ({
       slug: a.slug,
       name: a.name,

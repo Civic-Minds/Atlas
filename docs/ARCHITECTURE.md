@@ -6,7 +6,9 @@ Three Cloudflare R2 buckets. Public access means the browser fetches directly; p
 
 ### atlas (public)
 
-Current static GTFS data served to the frontend.
+Current static GTFS data served to the frontend. An agency belongs here only
+when its effective GTFS service end date is today or later; expired or
+metadata-unknown feeds must not remain public current data.
 
 - `atlas/{slug}.json` — route GeoJSON for each agency
 - `atlas/{slug}-stops.json` — stops index
@@ -70,7 +72,8 @@ meaning of “history” than RT delay archives.
 feedUrl (agency's GTFS zip) 
   -> pipeline/refresh.ts
     -> parse GTFS
-    -> write atlas/{slug}.json          (public, replaces previous)
+    -> if current: write atlas/{slug}.json (public, replaces previous)
+    -> if expired: archive ZIP, remove old atlas/{slug}* artifacts
     -> write atlas/{slug}-stops.json    (public)
     -> write atlas/{slug}-corridors.json (public)
     -> write gtfs/archive/{slug}/*.zip  (atlas-archive, append)
@@ -79,6 +82,11 @@ feedUrl (agency's GTFS zip)
 ```
 
 Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
+
+The raw ZIP is archived before current-data publication. If no current source
+exists, the ZIP is retained in `atlas-archive` but the old public artifacts are
+removed; the frontend, public agency directory, hidden-route inventory, and
+PMTiles build all use the same current-feed filter.
 
 
 ## Vercel API Routes

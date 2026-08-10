@@ -10,7 +10,7 @@
  *   R2_ACCESS_KEY_ID
  *   R2_SECRET_ACCESS_KEY
  */
-import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { promisify } from 'node:util';
 
@@ -202,6 +202,12 @@ export async function r2PutArchive(key: string, body: Buffer, contentType: strin
 /** Upload JSON text to the private archive bucket. */
 export async function r2PutArchiveJson(key: string, body: string): Promise<void> {
   await r2PutRaw(key, body, 'application/json', requireEnv('R2_ARCHIVE_BUCKET_NAME'));
+}
+
+/** Delete a public current-data artifact. Historical data lives in atlas-archive and is not touched. */
+export async function r2Delete(key: string): Promise<void> {
+  const client = getR2Client();
+  await client.send(new DeleteObjectCommand({ Bucket: requireEnv('R2_BUCKET_NAME'), Key: key }));
 }
 
 async function r2GetRaw(key: string, bucket: string): Promise<string | null> {

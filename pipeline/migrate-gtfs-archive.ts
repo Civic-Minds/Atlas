@@ -2,8 +2,8 @@
 /**
  * migrate-gtfs-archive.ts — upload existing local GTFS zips to the atlas-archive R2 bucket.
  *
- * Walks a local directory of GTFS zip files, peeks at feed_info.txt inside each to get
- * the service end date, and uploads to gtfs/archive/{slug}/{feedExpiry}.zip.
+ * Walks a local directory of GTFS zip files, derives the effective service end date
+ * from feed_info/calendar data, and uploads to gtfs/historical/{path-slug}/{feedExpiry}.zip.
  *
  * Usage:
  *   npm run migrate-archive                                    → scans default GTFS path
@@ -14,10 +14,12 @@
  * Requires R2_ARCHIVE_BUCKET_NAME and R2_* credentials in .env.local.
  */
 import { readdirSync, statSync, readFileSync } from 'fs';
-import { resolve, join, basename, extname } from 'path';
+import { resolve, join, basename, extname, relative } from 'path';
 import { config } from 'dotenv';
 import JSZip from 'jszip';
 import { r2PutArchive } from './r2.js';
+import { parseCsv } from './parseGtfs.js';
+import { effectiveFeedExpiry } from './feedFreshness.js';
 
 config({ path: resolve('.env.local') });
 
@@ -53,20 +55,24 @@ function walkZips(dir: string): string[] {
 async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
   try {
     const zip = await JSZip.loadAsync(buf);
-    const entry = zip.file('feed_info.txt') ?? zip.file(
-      Object.keys(zip.files).find(f => f.endsWith('/feed_info.txt') && !zip.files[f].dir) ?? ''
+    const findEntry = (name: string) => zip.file(name) ?? zip.file(
+      Object.keys(zip.files).find(f => f.endsWith(`/${name}`) && !zip.files[f].dir) ?? ''
     );
-    if (!entry) return { feedExpiry: null, feedVersion: null };
-    const text = await entry.async('text');
-    const lines = text.trim().split(/\r?\n/);
-    if (lines.length < 2) return { feedExpiry: null, feedVersion: null };
-    const headers = lines[0].split(',').map(h => h.trim());
-    const values = lines[1].split(',').map(v => v.trim());
-    const get = (col: string) => {
-      const i = headers.indexOf(col);
-      return i >= 0 ? (values[i] || null) : null;
+    const readRows = async (name: string) => {
+      const entry = findEntry(name);
+      return entry ? parseCsv<Record<string, string>>(await entry.async('text')) : [];
     };
-    return { feedExpiry: get('feed_end_date'), feedVersion: get('feed_version') };
+    const feedInfo = (await readRows('feed_info.txt'))[0] ?? {};
+    const calendar = await readRows('calendar.txt');
+    const calendarDates = await readRows('calendar_dates.txt');
+    return {
+      feedExpiry: effectiveFeedExpiry({
+        feedInfoEnd: feedInfo.feed_end_date,
+        calendarEnds: calendar.map(row => row.end_date),
+        calendarDates,
+      }),
+      feedVersion: feedInfo.feed_version || null,
+    };
   } catch {
     return { feedExpiry: null, feedVersion: null };
   }
@@ -84,7 +90,9 @@ async function main() {
 
   for (const zipPath of zips) {
     const filename = basename(zipPath, extname(zipPath));
-    const slug = slugify(filename);
+    // Include the relative folder so same-named feeds from different agencies
+    // cannot overwrite one another in the private archive.
+    const archiveSlug = slugify(relative(gtfsDir, zipPath).replace(/\.zip$/i, ''));
     const buf = readFileSync(zipPath);
 
     // Sanity check
@@ -98,14 +106,14 @@ async function main() {
     const archiveKey = feedExpiry ?? feedVersion;
 
     if (!archiveKey) {
-      console.log(`  SKIP (no feed_end_date or feed_version) ${slug}`);
+      console.log(`  SKIP (no usable service end date or feed version) ${archiveSlug}`);
       skipped++;
       continue;
     }
 
     // Use gtfs/historical/ prefix (not gtfs/archive/) — local filenames don't match
     // Atlas agency slugs, so keep them separate from pipeline-generated archives.
-    const r2Key = `gtfs/historical/${slug}/${archiveKey}.zip`;
+    const r2Key = `gtfs/historical/${archiveSlug}/${archiveKey}.zip`;
     const kb = Math.round(buf.length / 1024);
 
     if (dryRun) {

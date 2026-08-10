@@ -7,6 +7,7 @@ import { R2_PUBLIC_URL } from '../shared/config.js';
 import { r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes } from './hiddenRoutes.js';
+import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
 
 interface Agency {
   slug: string;
@@ -14,10 +15,11 @@ interface Agency {
   region?: string | null;
   staged?: boolean;
   hiddenInProduction?: boolean;
+  lastFeedExpiry?: string | null;
 }
 
 const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as { agencies: Agency[] };
-const agencies = index.agencies.filter(a => !a.staged && !a.hiddenInProduction);
+const agencies = index.agencies.filter(a => isCurrentProductionFeed(a));
 const results: Array<{ agency: Agency; routes: ReturnType<typeof buildHiddenRoutesForAgency> }> = [];
 let failures = 0;
 
