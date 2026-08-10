@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Routes with confirmed source geometry problems now stay visible with a clear warning instead of hiding the whole agency.
 - Hidden-route inventory now lists routes fully removed by the filter in searchable, agency-grouped lists with state and province filters.
 - Settings now explain which irregular routes are hidden; experimental combined corridors remain beta-only.
 - Live panel stops now follow the route order instead of being sorted by delay.

@@ -20,6 +20,7 @@ import { t2m } from './transit-utils.js';
 import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
+import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
@@ -285,6 +286,7 @@ export async function processGtfsBuffer(
       properties: {
         routeId: result.route,
         directionId: parseInt(result.dir),
+        routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         tier: result.tier,
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
