@@ -6,6 +6,7 @@ import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
+import type { RouteDataQualityWarning } from '../../shared/routeDataQuality';
 
 export type { HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodSustained };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
@@ -23,6 +24,7 @@ export interface ShapeProperties {
   headwayByHour?: HeadwayByHour;
   routeShortName: string | null;
   routeLongName: string | null;
+  routeDataQualityWarning?: RouteDataQualityWarning;
   routeBranch?: string | null;
   agencyName?: string;
   headsign?: string | null;
