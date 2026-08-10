@@ -7,9 +7,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Hidden-route counts now use readable thousands separators.
+- Combined corridors now appear on the Frequency map by default, with wider bands for heavier route overlap.
 - Routes with confirmed source geometry problems now stay visible with a clear warning instead of hiding the whole agency.
 - Hidden-route inventory now lists routes fully removed by the filter in searchable, agency-grouped lists with state and province filters.
-- Settings now explain which irregular routes are hidden; experimental combined corridors remain beta-only.
+- Settings now explain which irregular routes are hidden; the separate Corridors app remains beta-only.
 - Live panel stops now follow the route order instead of being sorted by delay.
 - Niagara route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
 - Live API routes now return normally on Vercel instead of timing out before the handler responds.

@@ -25,6 +25,13 @@ import { splitRouteKey } from '../../utils/routeKey';
 
 const CORRIDOR_BAND_COLOR = '#7c3aed';
 
+const CORRIDOR_ROUTE_COUNT: any = ['length', ['get', 'routeIds']];
+
+function corridorWidthExpression(zoomWidths: [number, number, number, number]): any {
+  const [twoRoutes, threeRoutes, fourRoutes, fiveRoutes] = zoomWidths;
+  return ['step', CORRIDOR_ROUTE_COUNT, twoRoutes, 3, threeRoutes, 4, fourRoutes, 5, fiveRoutes];
+}
+
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
 function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
   let best: Agency | undefined;
@@ -464,9 +471,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         'source-layer': 'corridors',
         paint: {
           'line-color': CORRIDOR_BAND_COLOR,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 4, 14, 8, 17, 11],
-          'line-gap-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 14, 3, 17, 4],
-          'line-opacity': 0.5
+          // A shared segment should read as one trunk, while the width still
+          // communicates whether two routes or five routes are contributing.
+          'line-width': ['interpolate', ['linear'], ['zoom'],
+            8, corridorWidthExpression([3.5, 4.5, 5.5, 6.5]),
+            14, corridorWidthExpression([7, 9, 11, 13]),
+            17, corridorWidthExpression([10, 12, 14, 16]),
+          ],
+          'line-gap-width': ['interpolate', ['linear'], ['zoom'],
+            8, corridorWidthExpression([1.5, 2, 2.5, 3]),
+            14, corridorWidthExpression([3, 4, 5, 6]),
+            17, corridorWidthExpression([4, 5, 6, 7]),
+          ],
+          'line-opacity': ['interpolate', ['linear'], CORRIDOR_ROUTE_COUNT, 2, 0.5, 5, 0.7]
         },
         filter: ['==', ['get', 'agencySlug'], ''] as any
       });

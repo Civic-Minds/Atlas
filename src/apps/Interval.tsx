@@ -166,10 +166,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   });
   const [hideSpan, setHideSpan] = useState(true);
   const [livePollingOnly, setLivePollingOnly] = useState(false);
-  const [showCorridors, setShowCorridors] = useState(forceShowCorridors);
+  const [showCorridors, setShowCorridors] = useState(forceShowCorridors || showUi);
   useEffect(() => {
-    if (forceShowCorridors) setShowCorridors(true);
-  }, [forceShowCorridors]);
+    // Combined corridors are part of the Frequency map's normal reading of the
+    // network. Other apps keep them hidden unless they explicitly request them.
+    setShowCorridors(forceShowCorridors || showUi);
+  }, [forceShowCorridors, showUi]);
 
   const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || fareView || selectionUiVisible;
