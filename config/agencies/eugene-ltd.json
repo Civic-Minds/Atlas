@@ -15,7 +15,7 @@
   "feedUrl": "https://www.ltd.org/files/library/ltdgtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
   "lastFeedExpiry": "20260131",
-  "lastFeedVersion": "",
+  "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://www.ltd.org",
   "cities": [

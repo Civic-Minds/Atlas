@@ -13,7 +13,7 @@
     -72.75
   ],
   "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20241231",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
   "cities": [

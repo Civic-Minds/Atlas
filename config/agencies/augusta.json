@@ -8,7 +8,7 @@
   "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20240224",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10"
 }

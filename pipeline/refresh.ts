@@ -633,7 +633,7 @@ async function main() {
   }
   if (validationSoftSkips.length > 0) {
     console.warn(
-      `  [warn] ${validationSoftSkips.length} validation soft-skips (left previous R2 data): ${validationSoftSkips.join(', ')}`,
+      `  [warn] ${validationSoftSkips.length} validation soft-skips (left public R2 data unchanged): ${validationSoftSkips.join(', ')}`,
     );
   }
   if (zeroFeatureSkips.length > 0) {
@@ -643,12 +643,12 @@ async function main() {
   }
   if (expiredFeedSkips.length > 0) {
     console.warn(
-      `  [warn] ${expiredFeedSkips.length} expired-feed skips (left previous R2 data): ${expiredFeedSkips.join(', ')}`,
+      `  [warn] ${expiredFeedSkips.length} expired-feed skips (archived and removed from public R2): ${expiredFeedSkips.join(', ')}`,
     );
   }
   if (missingFeedMetadataSkips.length > 0) {
     console.warn(
-      `  [warn] ${missingFeedMetadataSkips.length} missing-metadata skips (left previous R2 data): ${missingFeedMetadataSkips.join(', ')}`,
+      `  [warn] ${missingFeedMetadataSkips.length} missing-metadata skips (archived and removed from public R2): ${missingFeedMetadataSkips.join(', ')}`,
     );
   }
   if (uploads > 0) {

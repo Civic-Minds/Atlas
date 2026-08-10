@@ -18,7 +18,7 @@
     -79.99
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260426",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
   "cities": [

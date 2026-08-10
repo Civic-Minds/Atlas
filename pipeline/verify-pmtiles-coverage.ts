@@ -52,7 +52,10 @@ const PREFERRED_ZOOM = 12;
 // (see #215). Instead cover every tile in the bbox up to this cap; beyond it
 // (large/statewide agencies) fall back to an evenly-strided grid so total
 // fetch cost stays bounded.
-const MAX_TILES_PER_AGENCY = 100;
+// Keep smaller service areas fully covered. A 100-tile cap can sample away
+// from a compact agency's actual routes even when its fallback bbox is only a
+// degree wide (for example, an airport shuttle).
+const MAX_TILES_PER_AGENCY = 256;
 
 function lonLatToTile(lon: number, lat: number, zoom: number): { x: number; y: number } {
   const n = 2 ** zoom;

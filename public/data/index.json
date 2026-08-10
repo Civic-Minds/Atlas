@@ -198,7 +198,7 @@
         -79.99
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20260426",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -929,7 +929,7 @@
         -72.75
       ],
       "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20241231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -1314,7 +1314,7 @@
         52.24,
         -106.5
       ],
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20250830",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -2351,7 +2351,7 @@
         -121.9
       ],
       "feedUrl": "https://www.skagittransit.org/gtfs/google_transit.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20251024",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -2516,7 +2516,7 @@
         -74.9
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-herkimer-oneida-counties-transportation-study-hocts-gtfs-588.zip?alt=media",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20211231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
@@ -2537,8 +2537,8 @@
         -73.4
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
-      "lastFeedExpiry": "",
-      "lastFeedVersion": "",
+      "lastFeedExpiry": "20231231",
+      "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10"
     },
     {
@@ -2722,7 +2722,7 @@
       "feedUrl": "https://www.ltd.org/files/library/ltdgtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
       "lastFeedExpiry": "20260131",
-      "lastFeedVersion": "",
+      "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.ltd.org",
       "cities": [
@@ -2746,7 +2746,7 @@
       ],
       "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20260102",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -3343,7 +3343,7 @@
       ],
       "feedUrl": "https://gtfs.calitp.org/production/WestBerkeleyShuttleGTFS.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-west-berkeley-shuttle-gtfs-2238.zip?alt=media",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20211231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -3557,7 +3557,7 @@
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redwood-coast-transit-rct-gtfs-20.zip?alt=media",
-      "lastFeedExpiry": "20260523",
+      "lastFeedExpiry": "20260530",
       "lastFeedVersion": "UTC: 20-Jan-2026 15:30",
       "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "http://www.redwoodcoasttransit.org/"
@@ -3734,7 +3734,7 @@
       ],
       "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20260201",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -3987,7 +3987,7 @@
         -118.282
       ],
       "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
-      "lastFeedExpiry": "20210701",
+      "lastFeedExpiry": "20211111",
       "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -4010,7 +4010,7 @@
         34.4,
         -118.8
       ],
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20260808",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -4173,10 +4173,10 @@
         -117.39
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20250517",
       "lastFeedVersion": "Version_20250205",
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Vista, California",
         "Escondido, California",
@@ -4762,7 +4762,7 @@
         -92.29
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2264/mdb-2264-202507280407/mdb-2264-202507280407.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20251019",
       "lastFeedVersion": null,
       "region": "Arkansas",
       "lastRefreshedAt": "2026-08-10",
@@ -4799,7 +4799,7 @@
         -90.05
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2352/mdb-2352-202502100036/mdb-2352-202502100036.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20250310",
       "lastFeedVersion": null,
       "region": "Tennessee",
       "lastRefreshedAt": "2026-08-10",
@@ -4885,7 +4885,7 @@
         -87.91
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20250823",
       "lastFeedVersion": null,
       "region": "Wisconsin",
       "lastRefreshedAt": "2026-08-10",
@@ -5060,7 +5060,7 @@
         -118.26
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20220831",
       "lastFeedVersion": null,
       "region": "California",
       "lastRefreshedAt": "2026-08-10",
@@ -6520,7 +6520,7 @@
         -81
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-349/mdb-349-202605300114/mdb-349-202605300114.zip",
-      "lastFeedExpiry": "20220115",
+      "lastFeedExpiry": "20220223",
       "lastFeedVersion": "20210223",
       "region": "Florida",
       "lastRefreshedAt": "2026-08-10",
@@ -6698,7 +6698,7 @@
         -77.46
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20250331",
       "lastFeedVersion": null,
       "region": "Virginia",
       "lastRefreshedAt": "2026-08-10"
@@ -7310,7 +7310,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
       "region": "Texas",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20250531",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -7773,7 +7773,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
       "lastFeedExpiry": "20201231",
-      "lastFeedVersion": "",
+      "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
       "cities": [
@@ -7931,7 +7931,7 @@
       "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
       "region": "Georgia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20240224",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10"
     },
@@ -8891,7 +8891,7 @@
         -80.41
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20260731",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "region": "Virginia",
@@ -9370,7 +9370,7 @@
         -96.73
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip",
-      "lastFeedExpiry": "20240401",
+      "lastFeedExpiry": "20240403",
       "lastFeedVersion": "UTC: 01-Nov-2023 21:05",
       "lastRefreshedAt": "2026-08-10",
       "region": "South Dakota",
@@ -9905,7 +9905,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-522/latest.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20211231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10"
     },
@@ -10025,7 +10025,7 @@
         -104.7193
       ],
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20250914",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -10094,7 +10094,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
       "lastRefreshedAt": "2026-08-10",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20251231",
       "lastFeedVersion": null
     },
     {
@@ -10405,7 +10405,7 @@
         -119.3487
       ],
       "feedUrl": "https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip",
-      "lastFeedExpiry": "20211231",
+      "lastFeedExpiry": "20220101",
       "lastFeedVersion": "UTC: 17-Feb-2021 22:17",
       "lastRefreshedAt": "2026-08-10"
     },

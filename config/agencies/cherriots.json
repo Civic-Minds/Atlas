@@ -14,7 +14,7 @@
   ],
   "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260102",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
   "cities": [

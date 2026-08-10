@@ -13,7 +13,7 @@
     -73.4
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
-  "lastFeedExpiry": "",
-  "lastFeedVersion": "",
+  "lastFeedExpiry": "20231231",
+  "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10"
 }

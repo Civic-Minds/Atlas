@@ -14,7 +14,7 @@
   ],
   "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260201",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
   "cities": [
