@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Sun, Moon, ArrowLeft, Search, Zap } from 'lucide-react';
+import { Settings, X, Sun, Moon, ArrowLeft, Search } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
@@ -61,12 +61,6 @@ function Toggle({ on }: { on: boolean }) {
 }
 
 const SETTINGS = [
-  {
-    id: 'corridors',
-    icon: Zap,
-    label: 'Combined corridors',
-    description: 'Shows shared street segments as a thicker band, making overlapping routes easy to spot at a glance.',
-  },
   {
     id: 'span',
     icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
