@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Terminal frequency metrics no longer mix departures when agencies reuse a shape across route or branch patterns ([#367](https://github.com/Civic-Minds/Atlas/issues/367)).
 - Route cards now explain standard data corrections while non-passenger trips and placeholder destinations stay out of rider-facing service.
 - Direction labels now fall back to Westbound/Eastbound when a feed repeats the same destination in both directions.
 - Schedule notices now wrap so their full dates remain readable on narrow route cards.
