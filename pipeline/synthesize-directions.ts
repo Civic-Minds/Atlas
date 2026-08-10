@@ -1,4 +1,5 @@
 import type { GtfsData } from '../types/gtfs.js';
+import { isRedundantWithRouteName } from '../shared/headsignDisplay.js';
 
 function LevenshteinDistance(a: string, b: string): number {
   const tmp: number[][] = [];
@@ -88,5 +89,39 @@ export function synthesizeMissingDirections(gtfs: GtfsData): GtfsData {
     console.log(`Synthesized direction_id for ${synthesizedCount} trips across routes lacking direction_id.`);
   }
 
+  return gtfs;
+}
+
+/**
+ * Replace missing or route-name-only trip headsigns with the trip's terminal stop.
+ * Feeds sometimes publish a line name (e.g. "GREEN LINE") as the headsign for
+ * both directions, which leaves route cards without a useful destination.
+ */
+export function synthesizeTripHeadsigns(gtfs: GtfsData): GtfsData {
+  const lastStopByTrip = new Map<string, string>();
+  const maxSeqByTrip = new Map<string, number>();
+  for (const st of gtfs.stopTimes ?? []) {
+    const seq = parseInt(st.stop_sequence);
+    if (Number.isNaN(seq)) continue;
+    const currentMax = maxSeqByTrip.get(st.trip_id) ?? -1;
+    if (seq > currentMax) {
+      maxSeqByTrip.set(st.trip_id, seq);
+      lastStopByTrip.set(st.trip_id, st.stop_id);
+    }
+  }
+
+  const stopNameById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
+  const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
+  for (const trip of gtfs.trips ?? []) {
+    const route = routeById.get(trip.route_id);
+    const terminalName = stopNameById.get(lastStopByTrip.get(trip.trip_id) ?? '')?.trim();
+    if (!route || !terminalName) continue;
+    const raw = trip.trip_headsign?.trim() ?? '';
+    if (!raw || isRedundantWithRouteName(raw, route.route_short_name ?? null, route.route_long_name ?? null)) {
+      if (!isRedundantWithRouteName(terminalName, route.route_short_name ?? null, route.route_long_name ?? null)) {
+        trip.trip_headsign = terminalName;
+      }
+    }
+  }
   return gtfs;
 }

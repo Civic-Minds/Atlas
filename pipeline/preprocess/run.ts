@@ -1,6 +1,6 @@
 import type { GtfsData } from '../../types/gtfs.js';
 import { filterGtfsByAgencyId, filterGtfsByExcludedShortNames, filterGtfsByRouteTypes } from '../filterGtfs.js';
-import { synthesizeMissingDirections } from '../synthesize-directions.js';
+import { synthesizeMissingDirections, synthesizeTripHeadsigns } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
 import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
@@ -16,7 +16,7 @@ export interface GtfsTransformOptions {
   skipLetterSuffixMerge?: boolean;
 }
 
-/** Parse → filter → merge branches → agency preprocess → synthesize directions. */
+/** Parse → filter → merge branches → agency preprocess → synthesize trip metadata. */
 export function normalizeGtfs(
   gtfs: GtfsData,
   options: GtfsTransformOptions | undefined,
@@ -71,5 +71,5 @@ export function normalizeGtfs(
     const after = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
     onStatus?.(`Metrolink shape linkage: ${after - before} trips linked`);
   }
-  return synthesizeMissingDirections(gtfs);
+  return synthesizeMissingDirections(synthesizeTripHeadsigns(gtfs));
 }

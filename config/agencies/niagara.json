@@ -18,16 +18,26 @@
     "RED",
     "BLUE"
   ],
-  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/243",
-  "overrideNote": "Niagara Transit’s GTFS feed included auxiliary two- and three-stop records for routes 209 and 216 that made those routes appear to run every 1–5 minutes. We filtered those records so the map reflects the published 30-minute-plus service. Separately, routes 301 and 401 don't consistently use direction to mean outbound vs. inbound — one direction bucket mixes trips from two unrelated destinations under the same generic headsign — which made the Hospital stop look far more frequent than the real 30-minute (301) / hourly (401) service. We corrected the frequency calculation to stop conflating those trips. See issues #194 and #243.",
+  "issueUrls": [
+    "https://github.com/Civic-Minds/Atlas/issues/194",
+    "https://github.com/Civic-Minds/Atlas/issues/243"
+  ],
+  "overrideNoteRoutes": [
+    "209",
+    "216",
+    "301",
+    "401"
+  ],
+  "overrideNote": "We removed a few incomplete schedule records from Routes 209 and 216 and separated overlapping patterns on Routes 301 and 401. Those routes now show the published service more accurately.",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "S1000282",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "https://nrtransit.ca/",
   "cities": [
     "St. Catharines, Ontario",
     "Niagara Falls, Ontario",
     "Welland, Ontario",
     "Buffalo, New York"
-  ]
+  ],
+  "timezone": "America/New_York"
 }

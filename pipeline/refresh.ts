@@ -178,7 +178,9 @@ interface AgencyEntry {
   staged?: boolean;
   fare?: number;
   issueUrl?: string;
+  issueUrls?: string[];
   overrideNote?: string;
+  overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
 }
 
