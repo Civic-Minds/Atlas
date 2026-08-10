@@ -6338,6 +6338,7 @@
         27.96,
         -82.46
       ],
+      "agencyId": "1",
       "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
       "lastFeedExpiry": "20260815",
       "lastFeedVersion": "2606.2",
@@ -6348,6 +6349,24 @@
         "Town 'n' Country, Florida",
         "Brandon, Florida",
         "Riverview, Florida"
+      ]
+    },
+    {
+      "slug": "tampa-international-airport",
+      "name": "Tampa International Airport",
+      "center": [
+        27.9701,
+        -82.5348
+      ],
+      "agencyId": "2",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "2606.2",
+      "lastRefreshedAt": "2026-08-10",
+      "websiteUrl": "https://www.tampaairport.com/",
+      "cities": [
+        "Tampa, Florida"
       ]
     },
     {
