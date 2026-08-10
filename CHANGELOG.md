@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Live API routes now return normally on Vercel instead of timing out before the handler responds.
 - Live adherence cards now leave “fetching…” when the live endpoint does not respond.
 - Fixed selected-route notices showing the wrong agency and wrapping into overlapping lines.
 

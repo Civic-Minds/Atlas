@@ -18,7 +18,7 @@ const FEEDS = {
   hamilton: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
 };
 
-export default async function handler(req: Request) {
+async function handler(req: Request) {
   const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) {
     return rateLimitWebResponse();
@@ -71,3 +71,5 @@ export default async function handler(req: Request) {
     });
   }
 }
+
+export default { fetch: handler };

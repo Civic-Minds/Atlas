@@ -17,11 +17,11 @@ async function loadHandlers() {
   const { default: liveAdherence } = await import('./api/live-adherence.js');
   const { default: historyAdherence } = await import('./api/history-adherence.js');
   const { default: gtfsRt } = await import('./api/gtfs-rt.js');
-  handlers['/api/live-vehicles'] = liveVehicles;
-  handlers['/api/live-stop'] = liveStop;
-  handlers['/api/live-adherence'] = liveAdherence;
-  handlers['/api/history-adherence'] = historyAdherence;
-  handlers['/api/gtfs-rt'] = gtfsRt;
+  handlers['/api/live-vehicles'] = liveVehicles.fetch;
+  handlers['/api/live-stop'] = liveStop.fetch;
+  handlers['/api/live-adherence'] = liveAdherence.fetch;
+  handlers['/api/history-adherence'] = historyAdherence.fetch;
+  handlers['/api/gtfs-rt'] = gtfsRt.fetch;
 }
 
 await loadHandlers();
