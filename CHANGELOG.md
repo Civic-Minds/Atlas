@@ -6,38 +6,19 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Valley Metro B Line now combines equivalent platform variants for accurate 12-minute service, and corridor bands stay hidden when disabled.
-- Branch frequencies now use the actual branch schedule and mark mixed short-headway periods as varying instead of showing false exact numbers.
-- Terminal frequency metrics no longer mix departures when agencies reuse a shape across route or branch patterns ([#367](https://github.com/Civic-Minds/Atlas/issues/367)).
-- Route cards now explain standard data corrections while non-passenger trips and placeholder destinations stay out of rider-facing service.
-- Direction labels now fall back to Westbound/Eastbound when a feed repeats the same destination in both directions.
-- Schedule notices now wrap so their full dates remain readable on narrow route cards.
-- Combined corridor overlays are no longer shown on the public Frequency map; the Corridors experience remains beta-only.
-- GTFS refreshes now use active service calendars and leave stale or metadata-less feeds unpublished instead of silently replacing current schedules.
-- Live and History pills now show the number of agencies with coverage.
-- Removed an unused Deck.gl package bundle that pulled vulnerable `image-size`; dependency audit is now clean.
-- Combined corridor bands now use a subtle neutral casing so the underlying route colours stay readable.
-- Hidden-route counts now use readable thousands separators.
-- Combined corridors now appear on the Frequency map by default, with wider bands for heavier route overlap.
-- Routes with confirmed source geometry problems now stay visible with a clear warning instead of hiding the whole agency.
-- Hidden-route inventory now lists routes fully removed by the filter in searchable, agency-grouped lists with state and province filters.
-- Settings now explain which irregular routes are hidden; the separate Corridors app remains beta-only.
-- Live panel stops now follow the route order instead of being sorted by delay.
-- Niagara route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
-- Live API routes now return normally on Vercel instead of timing out before the handler responds.
-- Selected-route notices now show the correct agency and stay on one line.
-- Live adherence cards now leave “fetching…” when the live endpoint does not respond.
-- **Fixed several frequency accuracy problems**: weekday/weekend shape mix-ups, long-trip terminal timing, unsustained medians, and peak-only short turns could make routes look falsely sparse or frequent, or remain visible under the wrong filter.
-- **Fixed route-level frequency filtering**: intermediate-stop gaps no longer make a whole route look frequent when its endpoint service is slower ([#317](https://github.com/Civic-Minds/Atlas/issues/317)).
-- **Fixed Ride On Flash being treated as one route**: Orange and Blue now keep separate schedules, while shared stops can still show combined service.
-- **Fixed stale map and schedule state**: deselecting a partially filtered route now restores normal visibility, and a normal reload now picks up refreshed schedule data.
-- **Improved weekly feed refresh reliability**: valid feeds with duplicate trip IDs, GTFS-Flex records, changed versions, or empty pathway-node coordinates can refresh, and skipped or failed agencies are now reported.
-- **Improved Corridors and reporting workflows**: Corridors is visible and seeds the starting stop correctly, its bars explain wait times, and route/stop reports open from the full row with the relevant reason preselected.
-- **Added Halifax to Live history**: trip delays and vehicle positions are now archived alongside existing agencies.
-- **Moved the uneven-service warning to beta**: it was flagging normal routes while its thresholds are tuned against more real feeds.
-- **Refreshed Brampton schedule data**: Route 502 no longer shows a false uneven-service warning in the evening.
-- **Fixed truncated rail geometry**: UP Express now renders the full route to Pearson Airport.
-- **Aligned route-card frequencies with route filters**: combined branch patterns can no longer make a route look faster than its actual route-level service.
+- Valley Metro B Line now shows its actual 12-minute midday service by combining equivalent platform variants.
+- Route cards and frequency filters now use consistent whole-route service, with destination departures and terminal patterns handled without false sparse or frequent readings.
+- Weekday and weekend schedules no longer mix when selecting representative route shapes, and refreshed feeds no longer leave stale map data behind.
+- Non-passenger trips and placeholder destinations stay out of rider-facing service, while standard data corrections are explained on affected route cards.
+- Routes with confirmed geometry problems remain visible with a clear warning, and UP Express now renders its full route to Pearson Airport.
+- Duplicate direction labels now fall back to Westbound/Eastbound, and schedule notices remain readable on narrow route cards.
+- Combined corridor overlays stay off the public Frequency map, and selecting a route no longer bypasses the disabled corridor setting.
+- Weekly feed refreshes now handle duplicate trip IDs, GTFS-Flex records, changed versions, and empty pathway-node coordinates without silently replacing or dropping valid schedules.
+- Live and History coverage counts are shown, Halifax trip delays and vehicle positions are archived, and live cards no longer hang on failed responses.
+- Hidden-route inventory is searchable and grouped by agency, with readable counts and clearer irregular-route settings.
+- Corridors and reporting workflows now open from the relevant route or stop context with clearer wait-time and reason labels.
+- The uneven-service warning is beta-only while its thresholds are tuned against more real feeds, and Brampton Route 502 no longer shows a false evening warning.
+- Removed an unused dependency path that pulled vulnerable `image-size` code.
 
 ## [3.2.16] - 2026-08-06
 
