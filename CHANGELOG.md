@@ -6,18 +6,17 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Valley Metro B Line now shows its actual 12-minute midday service by combining equivalent platform variants.
 - Route cards and frequency filters now use consistent whole-route service, with destination departures and terminal patterns handled without false sparse or frequent readings.
 - Weekday and weekend schedules no longer mix when selecting representative route shapes, and refreshed feeds no longer leave stale map data behind.
 - Non-passenger trips and placeholder destinations stay out of rider-facing service, while standard data corrections are explained on affected route cards.
-- Routes with confirmed geometry problems remain visible with a clear warning, and UP Express now renders its full route to Pearson Airport.
+- Routes with confirmed geometry problems remain visible with a clear warning.
 - Duplicate direction labels now fall back to Westbound/Eastbound, and schedule notices remain readable on narrow route cards.
 - Combined corridor overlays stay off the public Frequency map, and selecting a route no longer bypasses the disabled corridor setting.
 - Weekly feed refreshes now handle duplicate trip IDs, GTFS-Flex records, changed versions, and empty pathway-node coordinates without silently replacing or dropping valid schedules.
-- Live and History coverage counts are shown, Halifax trip delays and vehicle positions are archived, and live cards no longer hang on failed responses.
+- Live and History coverage counts are shown, and live cards no longer hang on failed responses.
 - Hidden-route inventory is searchable and grouped by agency, with readable counts and clearer irregular-route settings.
 - Corridors and reporting workflows now open from the relevant route or stop context with clearer wait-time and reason labels.
-- The uneven-service warning is beta-only while its thresholds are tuned against more real feeds, and Brampton Route 502 no longer shows a false evening warning.
+- The uneven-service warning is beta-only while its thresholds are tuned against more real feeds.
 - Removed an unused dependency path that pulled vulnerable `image-size` code.
 
 ## [3.2.16] - 2026-08-06
