@@ -175,6 +175,14 @@ export type HeadwayByPeriodSustained = Partial<Record<PeriodKey, boolean>>;
 /** Longest departure gap touching each period, clipped to the period window (#281). */
 export type HeadwayByPeriodMaxGap = Partial<Record<PeriodKey, number | null>>;
 
+/** Typical scheduled departure-gap range inside each period. */
+export interface HeadwayPeriodRange {
+  min: number;
+  max: number;
+}
+
+export type HeadwayByPeriodRange = Partial<Record<PeriodKey, HeadwayPeriodRange | null>>;
+
 export interface HeadwayTier {
   max: number;
   color: string;

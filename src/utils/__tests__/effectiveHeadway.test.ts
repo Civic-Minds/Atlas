@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -58,6 +58,17 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
     // The filter still uses the raw period metric; this change is display-only.
     expect(effectiveRouteHeadway(p, 'midday')).toBe(2);
+  });
+
+  it('shows the typical range and exceptional longest gap for an irregular period', () => {
+    const p = {
+      ...base,
+      headwayByPeriodSustained: { midday: false },
+      headwayRangeByPeriod: { midday: { min: 20, max: 25 } },
+      maxGapByPeriod: { midday: 45 },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadwayRange(p, 'midday')).toBe('typically every 20–25 min · longest gap 45 min');
+    expect(routeCardDisplayHeadwayRange(p, 'all')).toBeNull();
   });
 
   it('does not show a false composite 2-minute branch when route-level service is 12 minutes', () => {

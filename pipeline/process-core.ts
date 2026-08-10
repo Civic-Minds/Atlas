@@ -13,11 +13,11 @@ import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from '.
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
@@ -322,6 +322,7 @@ export async function processGtfsBuffer(
         tier: result.tier,
         headway: newHeadway,
         headwayByPeriod: initialPeriodHeadways,
+        headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
         headwayByHour: (() => {
@@ -557,6 +558,7 @@ export async function processGtfsBuffer(
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
     const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+    const allStopPeriodRanges: Record<string, HeadwayByPeriodRange> = {};
     const allStopPeriodMaxGaps: Record<string, HeadwayByPeriodMaxGap> = {};
     const allStopPeriodSustained: Record<string, HeadwayByPeriodSustained> = {};
     const allStopHourHw: Record<string, HeadwayByHour> = {};
@@ -586,6 +588,7 @@ export async function processGtfsBuffer(
         const ph = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3);
         if (ph != null) byPeriod[pk] = ph;
       }
+      allStopPeriodRanges[stopId] = computePeriodHeadwayRanges(times);
       allStopPeriodMaxGaps[stopId] = computePeriodMaxGaps(times);
       if (Object.keys(byPeriod).length > 0) {
         allStopPeriodHw[stopId] = byPeriod;
@@ -718,6 +721,9 @@ export async function processGtfsBuffer(
     const headsignTerminalPeriodHw = terminalScopedTimes && terminalScopedTimes.length > 0
       ? computePeriodHeadways(terminalScopedTimes)
       : undefined;
+    const headsignTerminalPeriodRanges = terminalScopedTimes && terminalScopedTimes.length > 0
+      ? computePeriodHeadwayRanges(terminalScopedTimes)
+      : undefined;
     const headsignTerminalMaxGaps = terminalScopedTimes && terminalScopedTimes.length > 0
       ? computePeriodMaxGaps(terminalScopedTimes)
       : undefined;
@@ -725,12 +731,15 @@ export async function processGtfsBuffer(
       ? computePeriodSustained(terminalScopedTimes)
       : undefined;
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
+    const terminalPeriodRanges = terminalStopId ? allStopPeriodRanges[terminalStopId] : undefined;
     const terminalPeriodMaxGaps = terminalStopId ? allStopPeriodMaxGaps[terminalStopId] : undefined;
     const periodMedians: HeadwayByPeriod = {};
+    const periodRanges: HeadwayByPeriodRange = {};
     const periodMaxGaps: HeadwayByPeriodMaxGap = {};
     const periodSustained: HeadwayByPeriodSustained = {};
     const periodMins: Partial<Record<PeriodKey, number>> = {};
     const branchPeriodHw = feature.properties.headwayByPeriod as HeadwayByPeriod | undefined;
+    const branchPeriodRanges = feature.properties.headwayRangeByPeriod as HeadwayByPeriodRange | undefined;
     const branchPeriodMaxGaps = feature.properties.maxGapByPeriod as HeadwayByPeriodMaxGap | undefined;
     const branchPeriodSustained = feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained | undefined;
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
@@ -738,6 +747,9 @@ export async function processGtfsBuffer(
       const bH = branchPeriodHw?.[pk] ?? null;
       const finalH = bH ?? termH;
       periodMedians[pk] = finalH;
+      const branchRange = branchPeriodRanges?.[pk] ?? null;
+      const termRange = headsignTerminalPeriodRanges?.[pk] ?? terminalPeriodRanges?.[pk] ?? null;
+      periodRanges[pk] = bH != null ? branchRange : termRange;
       const branchMaxGap = branchPeriodMaxGaps?.[pk] ?? null;
       const termMaxGap = headsignTerminalMaxGaps?.[pk] ?? terminalPeriodMaxGaps?.[pk] ?? null;
       periodMaxGaps[pk] = bH != null ? branchMaxGap : termMaxGap;
@@ -752,6 +764,7 @@ export async function processGtfsBuffer(
       if (allVals.length > 0) periodMins[pk] = Math.min(...allVals);
     }
     feature.properties.headwayByPeriod = periodMedians;
+    feature.properties.headwayRangeByPeriod = periodRanges;
     feature.properties.maxGapByPeriod = periodMaxGaps;
     feature.properties.headwayByPeriodSustained = periodSustained;
     feature.properties.minStopHeadwayByPeriod = periodMins;

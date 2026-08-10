@@ -20,7 +20,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
+import { routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import {
   dirIdNum,
@@ -227,7 +227,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const varies = period !== 'all' && direction.headwayByPeriodSustained?.[period] === false;
-        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : varies ? 'frequency varies' : 'no data for this period'}`;
+        const range = routeCardDisplayHeadwayRange(direction, period);
+        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : range ?? (varies ? 'frequency varies' : 'no data for this period')}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -270,6 +271,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       `  Raw headway: ${direction.headway ?? 'none'} min`,
       `  Displayed headway: ${routeCardDisplayHeadway(direction, period) ?? 'none'} min`,
       `  Headway by period: ${formatMetricMap(direction.headwayByPeriod)}`,
+      `  Typical gap range by period: ${JSON.stringify(direction.headwayRangeByPeriod ?? {})}`,
       `  Longest gap by period: ${formatMetricMap(direction.maxGapByPeriod)}`,
       `  Sustained by period: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
       `  Hourly headways for ${period}: ${formatMetricMap(selectedPeriodHourlyHeadways)}`,
@@ -461,11 +463,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const filterHw = buildRouteServiceSummary(d).filter;
                     const dimmed = maxHeadway !== Infinity && (metricValueForPeriod(filterHw, period) ?? Infinity) > maxHeadway;
                     return (() => {
-                      const displayH = hoveredHour != null
+                      const varies = period !== 'all' && d.headwayByPeriodSustained?.[period] === false;
+                      const displayH = varies ? undefined : hoveredHour != null
                         ? buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? routeCardDisplayHeadway(d, period)
                         : routeCardDisplayHeadway(d, period);
+                      const displayRange = routeCardDisplayHeadwayRange(d, period);
                       const label = branchLabel(group, d.headsign, gi);
-                      if (!label && !collapseGroups && displayH == null) return null;
+                      if (!label && !collapseGroups && displayH == null && displayRange == null) return null;
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
@@ -474,7 +478,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
-                            headwayStatus={period !== 'all' && d.headwayByPeriodSustained?.[period] === false ? 'varies' : undefined}
+                            headwayStatus={displayRange ?? (varies ? 'varies' : undefined)}
                             trunkHeadway={trunkHw}
                             allowTrunkRange={multiBranchGroup(group)}
                             dimmed={dimmed}

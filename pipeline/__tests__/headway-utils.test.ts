@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, isSustainedHeadway, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, isSustainedHeadway, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -365,5 +365,17 @@ describe('computePeriodMaxGaps (#281)', () => {
     const result = computePeriodMaxGaps([840, 915, 945, 975]);
     expect(result.midday).toBe(60); // 8:00–9:15, clipped to the 9:00–15:00 window
     expect(result.pmPeak).toBe(30); // the same gap contributes 15 minutes after 9:00, below 30
+  });
+});
+
+describe('computePeriodHeadwayRanges', () => {
+  it('keeps a single exceptional gap out of the normal range', () => {
+    const times = [540, 560, 585, 630]; // 20, 25, then an exceptional 45-minute gap
+    expect(computePeriodHeadwayRanges(times).midday).toEqual({ min: 20, max: 25 });
+    expect(computePeriodMaxGaps(times).midday).toBe(45);
+  });
+
+  it('retains a genuinely variable schedule in the range', () => {
+    expect(computePeriodHeadwayRanges([540, 560, 600, 640]).midday).toEqual({ min: 20, max: 40 });
   });
 });

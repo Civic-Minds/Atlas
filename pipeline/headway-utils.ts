@@ -1,4 +1,4 @@
-import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type PeriodKey } from '../shared/config.js';
+import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
@@ -328,6 +328,40 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
       }
     }
     result[key] = maxGap;
+  }
+  return result;
+}
+
+/**
+ * Return the normal gap range for each period without letting one exceptional gap widen it.
+ * The separate max-gap field still preserves that exceptional wait for rider-facing warnings.
+ */
+export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
+  const result: HeadwayByPeriodRange = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
+      .filter(t => t >= start && t <= end)
+      .sort((a, b) => a - b);
+    if (times.length < 3) {
+      result[key] = null;
+      continue;
+    }
+    const gaps: number[] = [];
+    for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
+    gaps.sort((a, b) => a - b);
+
+    // A single gap that is both at least 10 minutes longer and 1.6x the next gap is an
+    // exceptional hole, matching the sustained-service test's notion of a real outlier.
+    const typicalGaps = [...gaps];
+    const last = typicalGaps[typicalGaps.length - 1];
+    const next = typicalGaps[typicalGaps.length - 2];
+    if (typicalGaps.length >= 3 && last - next >= 10 && last / next >= 1.6) {
+      typicalGaps.pop();
+    }
+    result[key] = {
+      min: Math.round(typicalGaps[0]),
+      max: Math.round(typicalGaps[typicalGaps.length - 1]),
+    };
   }
   return result;
 }
