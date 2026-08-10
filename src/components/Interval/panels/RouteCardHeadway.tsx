@@ -30,7 +30,7 @@ import {
   shouldShowTrunkSummary,
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
-import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
+import { hasDuplicateDirectionHeadsigns, shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
@@ -197,16 +197,18 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const displayGroups = collapseGroups ? [directionGroups[0]] : directionGroups;
   const needsNumbered = allLackHeadsigns && !collapseGroups && directionGroups.length > 1;
   const showDirectionSections = shouldShowDirectionSections(displayGroups);
+  const duplicateDirectionHeadsigns = hasDuplicateDirectionHeadsigns(displayGroups);
   const reportServiceLines = displayGroups.flatMap((group, gi) => {
     const section = showDirectionSections && group.boundLabel ? [`${group.boundLabel}:`] : [];
     const branchLines = group.realTier
       .map(direction => {
         const label = resolveBranchLabel({
-          headsign: direction.headsign,
+          headsign: duplicateDirectionHeadsigns && group.boundLabel ? null : direction.headsign,
           shortName: currentRoute.routeShortName ?? '',
           longName: currentRoute.routeLongName ?? '',
           directionId: needsNumbered ? gi : group.dirId,
-          multipleDirections: showDirectionSections,
+          boundLabel: group.boundLabel,
+          multipleDirections: showDirectionSections || duplicateDirectionHeadsigns,
           sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
         });
         // resolveBranchLabel can legitimately return '' (e.g. destination redundant with a
@@ -402,11 +404,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {(() => {
           const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
             resolveBranchLabel({
-              headsign,
+              // Some feeds repeat one generic headsign in both directions. The existing
+              // bound labels are more useful to riders than rendering the same destination twice.
+              headsign: duplicateDirectionHeadsigns && group.boundLabel ? null : headsign,
               shortName: currentRoute.routeShortName ?? '',
               longName: currentRoute.routeLongName ?? '',
               directionId: needsNumbered ? gi : group.dirId,
-              multipleDirections: showDirectionSections,
+              boundLabel: group.boundLabel,
+              multipleDirections: showDirectionSections || duplicateDirectionHeadsigns,
               sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
             });
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
