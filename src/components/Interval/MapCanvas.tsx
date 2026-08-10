@@ -23,7 +23,7 @@ import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 
-const CORRIDOR_BAND_COLOR = '#7c3aed';
+const CORRIDOR_BAND_COLOR = '#64748b';
 
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
 function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
@@ -503,9 +503,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         'source-layer': 'corridors',
         paint: {
           'line-color': CORRIDOR_BAND_COLOR,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 4, 14, 8, 17, 11],
-          'line-gap-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 14, 3, 17, 4],
-          'line-opacity': 0.5
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 14, 2.5, 17, 3.5],
+          'line-dasharray': [0.1, 1.4],
+          'line-opacity': 0.65
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
         },
         filter: ['==', ['get', 'agencySlug'], ''] as any
       });
