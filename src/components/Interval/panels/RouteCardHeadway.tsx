@@ -162,7 +162,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   );
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
-    group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
+    group.realTier.some(direction => metricValueForPeriod(buildRouteServiceSummary(direction).branch, period) != null) ||
     group.span.length > 0,
   );
   // Only primary patterns per direction drive the uneven banner. A rare short-turn
@@ -226,7 +226,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const headway = routeCardDisplayHeadway(direction, period);
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
-        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : 'no data for this period'}`;
+        const varies = period !== 'all' && direction.headwayByPeriodSustained?.[period] === false;
+        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : varies ? 'frequency varies' : 'no data for this period'}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -473,6 +474,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
+                            headwayStatus={period !== 'all' && d.headwayByPeriodSustained?.[period] === false ? 'varies' : undefined}
                             trunkHeadway={trunkHw}
                             allowTrunkRange={multiBranchGroup(group)}
                             dimmed={dimmed}

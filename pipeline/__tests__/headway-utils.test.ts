@@ -301,6 +301,11 @@ describe('computePeriodSustained', () => {
     const result = computePeriodSustained(times);
     expect(result.evening).toBe(true);
   });
+
+  it('does not present a mixed short-headway schedule as one exact frequency', () => {
+    const result = computePeriodSustained([540, 565, 609, 636, 661, 702]);
+    expect(result.midday).toBe(false);
+  });
 });
 
 describe('isSustainedHeadway', () => {

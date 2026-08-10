@@ -261,15 +261,16 @@ export function applyAnalysisCriteria(
                 : raw.warnings,
             daysIncluded: [raw.day],
             headsign: raw.headsign,
+            shapeId: raw.shapeId,
             ...resourceStats
         };
-        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
+        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
     }
 
     // Roll up per-day results into day-type summaries
     const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult }[] }>();
     for (const [, entry] of perDayResults) {
-        const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.dayType}`;
+        const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.result.shapeId ?? ''}::${entry.dayType}`;
         if (!rollupGroups.has(key)) rollupGroups.set(key, { dayType: entry.dayType, entries: [] });
         rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result });
     }
@@ -359,6 +360,7 @@ export function applyAnalysisCriteria(
             warnings: allWarnings.length > 0 ? allWarnings : undefined,
             daysIncluded,
             headsign: rep.headsign,
+            shapeId: rep.shapeId,
             ...resourceStats
         });
     }

@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, headwayToTier, medianHeadwayInWindow, resolveTerminalHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
@@ -269,7 +269,9 @@ export async function processGtfsBuffer(
     // bidirectional bus routes with a shared direction_id) maps to its own correctly-lengthed geometry.
     const hKey = (result.headsign) ? `${key}::${result.headsign}` : null;
     const dayHKey = hKey && result.day ? `${hKey}::${result.day}` : null;
-    const shapeId = (dayHKey && headsignDisplayShapeByDay.has(dayHKey))
+    const shapeId = (result.shapeId && shapeById.has(result.shapeId))
+      ? result.shapeId
+      : (dayHKey && headsignDisplayShapeByDay.has(dayHKey))
       ? headsignDisplayShapeByDay.get(dayHKey)
       : (hKey && headsignDisplayShape.has(hKey))
       ? headsignDisplayShape.get(hKey)
@@ -291,7 +293,10 @@ export async function processGtfsBuffer(
       : `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
-    const newHeadway = result.tier === 'span' ? null : Math.round(result.medianHeadway);
+    const initialPeriodHeadways = computePeriodHeadways(result.times);
+    const newHeadway = result.tier === 'span'
+      ? null
+      : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
     // Skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
@@ -316,7 +321,7 @@ export async function processGtfsBuffer(
         routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         tier: result.tier,
         headway: newHeadway,
-        headwayByPeriod: computePeriodHeadways(result.times),
+        headwayByPeriod: initialPeriodHeadways,
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
         headwayByHour: (() => {
@@ -647,12 +652,11 @@ export async function processGtfsBuffer(
       const allStopMedian = hwVals.length % 2 === 0
         ? Math.round((hwVals[mid - 1] + hwVals[mid]) / 2)
         : hwVals[mid];
-      // Prefer denser branch-dispatch midday over sparser terminus-in-window (travel-time lag).
-      // Shared-terminal denser-than-branch is still handled by resolveTerminalHeadway below.
-      const terminalOrBranchMidday =
-        branchMiddayHw != null && terminalMiddayHw != null && branchMiddayHw < terminalMiddayHw
-          ? branchMiddayHw
-          : (terminalMiddayHw ?? branchMiddayHw);
+      // The route headline is a scheduled dispatch frequency, so prefer the branch's origin
+      // departures. Arrival spacing at the terminal can be 1–2 minutes different because of
+      // running-time padding and should remain a stop-level metric, not change "every 30" to
+      // "every 29" for the whole route.
+      const terminalOrBranchMidday = branchMiddayHw ?? terminalMiddayHw;
       const terminalComputedHw = terminalOrBranchMidday ?? terminalHw ?? allStopMedian;
 
       // If the terminal stop is shared, the combined terminal headway might be lower (better)
@@ -668,9 +672,11 @@ export async function processGtfsBuffer(
       const nonTerminalStopHws = onShape.slice(0, -1)
         .map(({ stopId }) => stopHeadways[stopId])
         .filter((v): v is number => v != null);
-      const headway = hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
-        ? resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount)
-        : terminalComputedHw;
+      const headway = branchMiddayHw != null
+        ? branchMiddayHw
+        : (hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
+          ? resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount)
+          : terminalComputedHw);
       feature.properties.headway = headway;
 
       // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),
@@ -688,11 +694,10 @@ export async function processGtfsBuffer(
       feature.properties.minStopHeadway = hwVals[0];
     }
 
-    // Step 5: set headwayByPeriod — merge terminal-at-stop period medians with the branch
-    // (trip-start) period medians via resolveTerminalPeriodHeadway.
-    // Branch-scoped terminal data must only count trips that reach this destination; unscoped
-    // shared terminals cannot look denser than the real branch. For branch-scoped merges, the
-    // denser of trip-start vs terminal-in-window wins (GO 94 lag vs GRTC 201 stop cadence).
+    // Step 5: set headwayByPeriod. The route-level period is the branch's scheduled dispatch
+    // cadence. Terminal-at-stop period medians remain available through stopPeriodHeadways;
+    // they must not change a route's published "every 30" into "every 29" because travel-time
+    // padding shifts the arrival minutes at the destination.
     //
     // minStopHeadwayByPeriod uses all on-shape stops so the filter correctly shows the route
     // when ANY part of it meets the active threshold (pairs with AI-97 shape clipping).
@@ -721,7 +726,6 @@ export async function processGtfsBuffer(
       : undefined;
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
     const terminalPeriodMaxGaps = terminalStopId ? allStopPeriodMaxGaps[terminalStopId] : undefined;
-    const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
     const periodMedians: HeadwayByPeriod = {};
     const periodMaxGaps: HeadwayByPeriodMaxGap = {};
     const periodSustained: HeadwayByPeriodSustained = {};
@@ -732,18 +736,15 @@ export async function processGtfsBuffer(
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
       const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
       const bH = branchPeriodHw?.[pk] ?? null;
-      const finalH = resolveTerminalPeriodHeadway(termH, bH, terminalPeriodIsBranchScoped);
+      const finalH = bH ?? termH;
       periodMedians[pk] = finalH;
-      const termMaxGap = headsignTerminalMaxGaps?.[pk] ?? terminalPeriodMaxGaps?.[pk] ?? null;
       const branchMaxGap = branchPeriodMaxGaps?.[pk] ?? null;
-      periodMaxGaps[pk] = finalH === termH ? termMaxGap : (finalH === bH ? branchMaxGap : termMaxGap);
-      // #281: mirror whichever source (terminal vs. branch) resolveTerminalPeriodHeadway picked,
-      // rather than re-deriving the choice -- comparing the returned value against termH/bH keeps
-      // this in sync with that function's logic by construction instead of duplicating it.
+      const termMaxGap = headsignTerminalMaxGaps?.[pk] ?? terminalPeriodMaxGaps?.[pk] ?? null;
+      periodMaxGaps[pk] = bH != null ? branchMaxGap : termMaxGap;
       if (finalH != null) {
         const termS = headsignTerminalPeriodSustained?.[pk] ?? terminalPeriodSustained?.[pk];
         const branchS = branchPeriodSustained?.[pk];
-        periodSustained[pk] = finalH === termH ? termS : (finalH === bH ? branchS : undefined);
+        periodSustained[pk] = bH != null ? branchS : termS;
       }
       const allVals = onShape
         .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
@@ -787,14 +788,13 @@ export async function processGtfsBuffer(
           SPARKLINE_HOURS.map(h => [h, adaptiveMedianHeadwayInWindow(terminalScopedTimes, h * 60, 3)]),
         ) as HeadwayByHour
       : undefined;
-    const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
       const mergedHourHw: HeadwayByHour = {};
       for (const h of SPARKLINE_HOURS) {
         const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
         const bH = branchHourHw[h] ?? null;
-        mergedHourHw[h] = resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
+        mergedHourHw[h] = bH ?? termH;
       }
       feature.properties.headwayByHour = mergedHourHw;
     } else if (terminalHourHw) {

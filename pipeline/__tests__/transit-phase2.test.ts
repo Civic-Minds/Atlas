@@ -84,4 +84,14 @@ describe('applyAnalysisCriteria', () => {
     expect(r).toBeDefined();
     expect(['span', 'infrequent']).toContain(r!.tier);
   });
+
+  it('does not merge same-headsign shape branches during weekday rollup', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: '14', headsign: 'Appleby GO', shapeId: 'branch-a', departureTimes: [540, 600, 660, 720, 780, 840] }),
+      raw({ route: '14', headsign: 'Appleby GO', shapeId: 'branch-b', departureTimes: [570, 630, 690, 750, 810, 870] }),
+    ]);
+    expect(results).toHaveLength(2);
+    expect(results.map(r => r.shapeId).sort()).toEqual(['branch-a', 'branch-b']);
+    expect(results.every(r => r.medianHeadway === 60)).toBe(true);
+  });
 });

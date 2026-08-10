@@ -6,11 +6,11 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
-  // A period median marked as unsustained is a bunching/edge-cluster signal, not a
-  // reliable rider-facing cadence. Use the branch's stable headline headway instead
-  // of displaying a value like TTC 63's false 2-minute midday median (#319).
+  // A period median marked as unsustained is not a reliable rider-facing cadence. Do not
+  // replace it with another number: that would turn an irregular 25/44/27-minute pattern
+  // into a different-looking but equally false frequency. The card renders "varies" instead.
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
-    return p.headway ?? null;
+    return null;
   }
   const summary = buildRouteServiceSummary(p);
   return metricValueForPeriod(summary.filter, period)

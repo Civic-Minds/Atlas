@@ -238,6 +238,23 @@ export const MIN_UNSUSTAINED_EXCESS_MINUTES = 15;
 // genuine service problems, not noise.
 export const MIN_UNSUSTAINED_RATIO = 1.7;
 
+// A median below 30 minutes is not a useful rider-facing frequency when a period contains
+// two clearly different gap regimes (for example 25/44/27/25/41/30). The existing
+// isSustainedHeadway check intentionally ignores moderate repeated variation so it can catch
+// large service holes without flagging ordinary tapering. This narrower display check handles
+// the opposite problem: a non-round median that is mathematically valid but not a real cadence.
+export const MIN_VARIABLE_SPREAD_MINUTES = 10;
+export const MIN_VARIABLE_SPREAD_RATIO = 1.6;
+
+function hasVariableShortHeadwaySpread(gaps: number[], targetHeadway: number): boolean {
+  if (targetHeadway > 30 || gaps.length < 2) return false;
+  const minGap = Math.min(...gaps);
+  const maxGap = Math.max(...gaps);
+  return minGap > 0
+    && maxGap - minGap >= MIN_VARIABLE_SPREAD_MINUTES
+    && maxGap / minGap >= MIN_VARIABLE_SPREAD_RATIO;
+}
+
 /**
  * Does this specific reported headway (T) fairly describe every gap in the window, or does the
  * single worst gap blow past it by enough that a rider would actually notice? "Is the specific
@@ -366,7 +383,9 @@ export function computePeriodSustained(departureTimes: number[]): Partial<Record
     const boundarySustained = value > 0
       && leadingGap / value <= BOUNDARY_DOMINANT_RATIO
       && trailingGap / value <= BOUNDARY_DOMINANT_RATIO;
-    result[key] = isSustainedHeadway(gaps, value) && boundarySustained;
+    result[key] = isSustainedHeadway(gaps, value)
+      && boundarySustained
+      && !hasVariableShortHeadwaySpread(gaps, value);
   }
   return result;
 }
