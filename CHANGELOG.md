@@ -11,14 +11,14 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Hidden-route inventory now lists routes fully removed by the filter in searchable, agency-grouped lists with state and province filters.
 - Settings now explain which irregular routes are hidden, and combined corridors now use a distinct map overlay.
 - Live panel stops now follow the route order instead of being sorted by delay.
-- Niagara route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
+- Route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
 - Live API routes now return normally on Vercel instead of timing out before the handler responds.
 - Live adherence cards now leave “fetching…” when the live endpoint does not respond.
 - Fixed selected-route notices showing the wrong agency and wrapping into overlapping lines.
 
 - Beta now warns when an open page is outdated after a new deployment and lets people refresh it
 - Beta’s Agencies list can now show only agencies with outdated schedule warnings
-- Beta route cards and diagnostics now use the same route-level frequency metric as the filter, preventing false composite readings such as TTC 95 appearing every 2 minutes
+- Beta route cards and diagnostics now use the same route-level frequency metric as the filter, preventing false composite readings.
 - Diagnostics table columns now contain long agency and headsign text instead of letting it overlap adjacent values
 - History on beta now includes a Recent tier (shorter multi-snapshot series) alongside Explore (10+ years), labeled so deep-archive agencies stay distinct
 - Night Service now finds overnight-only routes, including route numbers shared across daytime and overnight patterns
@@ -37,8 +37,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Report-a-problem no longer requires typing a description if a reason is already checked, and its reason list now only shows options relevant to what you're reporting from
 - Beta: click a value directly on a card (a frequency, a stop name) to report it, with the right reason pre-checked and no typing required
 - Beta: new internal route table (`/apps/diagnostics`) — every route across chosen agencies in one filterable, sortable list, for spotting bad-looking data without clicking through the map one route at a time
-- The "Service is uneven" notice no longer fires on ordinary service — it was flagging routes like TTC 45 (every 9 min) and Line 1 (every 4-5 min) over gaps only a minute or two longer than normal ([#345](https://github.com/Civic-Minds/Atlas/issues/345))
- - Beta now renders the complete UP Express route geometry to Pearson Airport
+- The "Service is uneven" notice no longer fires on ordinary service because its threshold is now tuned to normal schedule variation ([#345](https://github.com/Civic-Minds/Atlas/issues/345))
 
 ## [3.2.16] - 2026-08-06
 
