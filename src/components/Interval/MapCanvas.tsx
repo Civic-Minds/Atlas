@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
@@ -330,7 +330,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const routeHits = map.queryRenderedFeatures(bbox, { layers: ['routes-hit-layer'] });
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
-        const uniqueRouteKeys = Array.from(new Set(routeHits.map(f => {
+        const uniqueRouteKeys: string[] = Array.from(new Set(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
           const p = f.properties;
           return routeKey({ ...p, agencySlug: p.agencySlug } as any);
         })));
@@ -920,7 +920,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     if (!found && map.getLayer('routes-layer')) {
       const rendered = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-        .filter(f => routeKey(f.properties as any) === selectedRoute);
+        .filter((f: maplibregl.MapGeoJSONFeature) => routeKey(f.properties as any) === selectedRoute);
       for (const f of rendered) {
         const geom = f.geometry as any;
         const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import { useCorridorMapOverlay } from '../../../context/CorridorMapOverlay';
 
 /** Corridor map layers: static corridor band visibility + dynamic corridor overlay lines. */
