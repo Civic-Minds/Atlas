@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Live and History pills now show the number of agencies with coverage.
 - Removed an unused Deck.gl package bundle that pulled vulnerable `image-size`; dependency audit is now clean.
 - Combined corridor bands now use a subtle neutral casing so the underlying route colours stay readable.
 - Hidden-route counts now use readable thousands separators.
