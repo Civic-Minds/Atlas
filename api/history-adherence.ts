@@ -80,7 +80,7 @@ async function fetchSidecar(agency: string): Promise<Record<string, any> | null>
   }
 }
 
-export default async function handler(req: Request) {
+async function handler(req: Request) {
   const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   // Stricter budget: multi List/Get on private R2 (in-memory only — multi-instance gap known).
   if (isRateLimited(ip, 20)) {
@@ -150,3 +150,5 @@ export default async function handler(req: Request) {
     });
   }
 }
+
+export default { fetch: handler };

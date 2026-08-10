@@ -61,7 +61,7 @@ async function fetchObservedArrivals(
  * (TTC only today), also returns recently *observed* passages from GPS —
  * what actually happened, not just what the feed predicts.
  */
-export default async function handler(req: Request) {
+async function handler(req: Request) {
   const ip = requestHeader(req, 'x-real-ip') ?? requestHeader(req, 'x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1';
   if (isRateLimited(ip)) {
     return rateLimitWebResponse();
@@ -183,3 +183,5 @@ export default async function handler(req: Request) {
     });
   }
 }
+
+export default { fetch: handler };
