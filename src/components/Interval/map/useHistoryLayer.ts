@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { StopCardHtml } from '../../../lib/mapHtml';
@@ -89,7 +89,7 @@ export function useHistoryLayer(
           const tryZoom = () => {
             if (!map.getLayer('routes-layer')) return;
             const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-              .filter(f => String(f.properties?.routeShortName ?? '') === rsn);
+              .filter((f: maplibregl.MapGeoJSONFeature) => String(f.properties?.routeShortName ?? '') === rsn);
             if (features.length === 0) return;
             let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
             features.forEach(f => {
