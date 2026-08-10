@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Schedule notices now wrap so their full dates remain readable on narrow route cards.
 - Combined corridor overlays are no longer shown on the public Frequency map; the Corridors experience remains beta-only.
 - GTFS refreshes now use active service calendars and leave stale or metadata-less feeds unpublished instead of silently replacing current schedules.
 - Live and History pills now show the number of agencies with coverage.

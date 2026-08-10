@@ -397,8 +397,8 @@ export function CardHelpNotice({
   actionLabel?: string;
 }) {
   return (
-    <div className={`${CARD_NOTICE} flex min-w-0 items-center gap-1`}>
-      <span className="min-w-0 truncate">{message}</span>
+    <div className={`${CARD_NOTICE} flex min-w-0 items-start gap-1`}>
+      <span className="min-w-0 flex-1 whitespace-normal leading-relaxed">{message}</span>
       <button type="button" onClick={onLearnMore} className={`${CARD_NOTICE_ACTION} shrink-0`}>
         {actionLabel}
       </button>
