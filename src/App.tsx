@@ -22,6 +22,7 @@ import { agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
+import type { CorrectionNotice } from '../shared/correctionNotices';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -54,6 +55,8 @@ export interface Agency {
   issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
+  overrideNoteRouteIds?: string[];
+  correctionNotices?: CorrectionNotice[];
   feedReviewStatus?: 'review' | 'verified';
   fare?: number;
   gtfsFares?: boolean;

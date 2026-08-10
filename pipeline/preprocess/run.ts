@@ -1,5 +1,5 @@
 import type { GtfsData } from '../../types/gtfs.js';
-import { filterGtfsByAgencyId, filterGtfsByExcludedShortNames, filterGtfsByRouteTypes } from '../filterGtfs.js';
+import { filterGtfsByAgencyId, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns, filterGtfsByRouteTypes } from '../filterGtfs.js';
 import { synthesizeMissingDirections, synthesizeTripHeadsigns } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
@@ -13,6 +13,7 @@ export interface GtfsTransformOptions {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
 }
 
@@ -31,6 +32,12 @@ export function normalizeGtfs(
   }
   if (options?.excludeRouteShortNames?.length) {
     gtfs = filterGtfsByExcludedShortNames(gtfs, options.excludeRouteShortNames);
+  }
+  if (options?.excludeTripHeadsigns?.length) {
+    const before = gtfs.trips?.length ?? 0;
+    gtfs = filterGtfsByExcludedTripHeadsigns(gtfs, options.excludeTripHeadsigns);
+    const removed = before - (gtfs.trips?.length ?? 0);
+    if (removed > 0) onStatus?.(`Headsign filter: removed ${removed} non-passenger trip(s)`);
   }
   if (!options?.skipLetterSuffixMerge) {
     const { gtfs: merged, result } = mergeLetterSuffixBranches(gtfs);

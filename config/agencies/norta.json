@@ -8,6 +8,15 @@
   "feedUrl": "https://files.mobilitydatabase.org/ntd-60032/ntd-60032-202605140120/ntd-60032-202605140120.zip",
   "lastFeedExpiry": "20270124",
   "lastFeedVersion": "S1000253",
+  "excludeTripHeadsigns": [
+    "Not in Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": ["12", "47", "48"]
+    }
+  ],
   "region": "Louisiana",
   "lastRefreshedAt": "2026-08-07",
   "cities": [

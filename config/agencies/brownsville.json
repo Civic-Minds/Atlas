@@ -16,6 +16,12 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
   "lastFeedExpiry": "20501230",
   "lastFeedVersion": null,
+  "correctionNotices": [
+    {
+      "type": "removedPlaceholderDestination",
+      "routeIds": ["TL-58"]
+    }
+  ],
   "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Brownsville, Texas"

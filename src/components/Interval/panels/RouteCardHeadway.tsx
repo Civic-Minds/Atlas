@@ -34,6 +34,7 @@ import { hasDuplicateDirectionHeadsigns, shouldShowDirectionSections } from '../
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
+import { correctionNoticeApplies, correctionNoticeText } from '../../../../shared/correctionNotices';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -94,6 +95,7 @@ export interface DirectionGroup {
 }
 
 export interface CurrentRouteData {
+  routeId: string;
   routeShortName: string | null;
   routeLongName: string | null;
   directions: ShapeProperties[];
@@ -146,10 +148,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
-  const routeOverrideNote = routeAgency?.overrideNote
+  const legacyOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
+    && (!routeAgency.overrideNoteRouteIds?.length || routeAgency.overrideNoteRouteIds.includes(currentRoute.routeId))
     ? routeAgency.overrideNote
     : undefined;
+  const correctionNotes = (routeAgency?.correctionNotices ?? [])
+    .filter(notice => correctionNoticeApplies(notice, currentRoute.routeShortName, currentRoute.routeId))
+    .map(notice => correctionNoticeText(notice.type));
+  const routeOverrideNote = [legacyOverrideNote, ...correctionNotes].filter(Boolean).join('\n\n') || undefined;
   const hasRouteDataQualityWarning = currentRoute.directions.some(
     direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING,
   );

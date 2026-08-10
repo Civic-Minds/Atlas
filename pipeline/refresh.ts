@@ -189,6 +189,7 @@ interface AgencyEntry {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   staged?: boolean;
   fare?: number;
@@ -333,6 +334,7 @@ async function refreshAgency(
       agencyId: agency.agencyId,
       preprocess: agency.preprocess,
       excludeRouteShortNames: agency.excludeRouteShortNames,
+      excludeTripHeadsigns: agency.excludeTripHeadsigns,
       skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
       slug: agency.slug,
       manualBaseFare: manualBaseFareOverride,
@@ -375,6 +377,7 @@ async function refreshAgency(
         agencyId: agency.agencyId,
         preprocess: agency.preprocess,
         excludeRouteShortNames: agency.excludeRouteShortNames,
+        excludeTripHeadsigns: agency.excludeTripHeadsigns,
         slug: agency.slug,
         manualBaseFare: manualBaseFareOverride,
       });
