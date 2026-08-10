@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.
 - Combined corridor bands now stay hidden when the setting is off, including after selecting a route variant.
 - Live and History pills now show the number of agencies with coverage, and the redundant Live tracking only setting is gone.
 - Hidden-route inventory now lists routes fully removed by the filter in searchable, agency-grouped lists with state and province filters.

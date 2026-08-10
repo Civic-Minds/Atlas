@@ -16,7 +16,6 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
-import { findPlaceByName } from '../../../shared/placeLookup';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -871,41 +870,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     }
   }, [selectedAgencySlug, agencies, mapLoaded]);
-
-  // A recognizable place/agency query should navigate the map even before the
-  // user selects a result. Keep the result list visible for route/stop
-  // selection, but make place search useful on its own.
-  //
-  // Debounced so this only evaluates once typing pauses: without it, this ran
-  // on every keystroke, and a merely-in-progress prefix (e.g. "Bellev" while
-  // typing "Bellevue") could be a unique match for a completely unrelated
-  // place (Belleville Transit) and fly there — then silently do nothing once
-  // the finished query stopped matching anything, leaving the camera stuck.
-  useEffect(() => {
-    const map = mapRef.current;
-    const query = q.trim().toLowerCase();
-    if (!map || query.length < 4 || selectedAgencySlug) return;
-    const timer = setTimeout(() => {
-      // Try an exact city-name match first — independent of how many agencies
-      // serve it. A unique-agency match alone breaks down for any city with
-      // more than one operator (e.g. "denver" matches both RTD Denver and
-      // Bustang, which passes through Denver on its statewide routes).
-      const place = findPlaceByName(query);
-      if (place) {
-        map.flyTo({ center: [place.lon, place.lat], zoom: 11, duration: 900, essential: true });
-        return;
-      }
-      const matches = agencies.filter(agency => {
-        const fields = [agency.name, agency.region ?? '', ...(agency.searchAliases ?? []), ...(agency.cities ?? [])]
-          .map(value => value.toLowerCase());
-        return fields.some(value => value === query || value.includes(query));
-      });
-      if (matches.length !== 1) return;
-      const [lat, lon] = matches[0].center;
-      map.flyTo({ center: [lon, lat], zoom: 12, duration: 900, essential: true });
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [q, agencies, selectedAgencySlug]);
 
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
