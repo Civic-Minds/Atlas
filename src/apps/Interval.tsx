@@ -9,7 +9,7 @@ import { MapCanvas } from '../components/Interval/MapCanvas';
 import { MapAttribution } from '../components/Interval/MapAttribution';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
-import { FilterPanel } from '../components/Interval/FilterPanel';
+import { FilterPanel, type HiddenRoute } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
 import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../styles';
@@ -195,9 +195,52 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [isTilesLoading, setIsTilesLoading] = useState(false);
 
   const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, {
-    showCorridorBand,
+    showCorridorBand: showCorridorBand || showCorridors,
     searchQuery: searchFocused ? query : '',
   });
+
+  const hiddenRoutes = useMemo<HiddenRoute[]>(() => {
+    const grouped = new Map<string, {
+      agencyName: string;
+      routeShortName: string;
+      routeLongName?: string | null;
+      hasRegularPattern: boolean;
+      hasSpanPattern: boolean;
+      hasIrregularDirection: boolean;
+    }>();
+    for (const [slug, fc] of Object.entries(layers)) {
+      if (slug.endsWith('-corridors') || !selectedAgencies.has(slug)) continue;
+      for (const feature of fc.features) {
+        const p = feature.properties as ShapeProperties;
+        if (!p.routeId || !p.routeShortName || (p.day !== undefined && p.day !== day)) continue;
+        const key = `${slug}::${p.routeId}`;
+        const current = grouped.get(key) ?? {
+          agencyName: agencies.find(agency => agency.slug === slug)?.name ?? p.agencyName ?? slug,
+          routeShortName: p.routeShortName,
+          routeLongName: p.routeLongName,
+          hasRegularPattern: false,
+          hasSpanPattern: false,
+          hasIrregularDirection: false,
+        };
+        if (p.tier === 'span') current.hasSpanPattern = true;
+        else current.hasRegularPattern = true;
+        if (p.routeHasIrregularDirection) current.hasIrregularDirection = true;
+        grouped.set(key, current);
+      }
+    }
+    return Array.from(grouped.entries())
+      .filter(([, route]) => route.hasIrregularDirection || (route.hasSpanPattern && !route.hasRegularPattern))
+      .map(([key, route]) => ({
+        key,
+        agencyName: route.agencyName,
+        routeShortName: route.routeShortName,
+        routeLongName: route.routeLongName,
+        reason: route.hasIrregularDirection
+          ? 'Has an irregular or peak-only service pattern.'
+          : 'Only has peak-only or irregular service.',
+      }))
+      .sort((a, b) => a.agencyName.localeCompare(b.agencyName) || a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true }));
+  }, [agencies, day, layers, selectedAgencies]);
 
   const selectedCorridorFamily = useMemo(() => {
     if (!selectedRoute) return null;
@@ -418,6 +461,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         showRouteLayers={showRouteLayers}
         liveRoutesOnly={liveRoutesOnly}
         showCorridorBand={showCorridorBand}
+        showCorridors={showCorridors}
         selectedCorridorFamily={selectedCorridorFamily}
         hideSpan={hideSpan}
         filterToAgencies={filterToAgencies}
@@ -535,6 +579,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
               bounds={bounds}
+              hiddenRoutes={hiddenRoutes}
             />
           )}
         </div>,

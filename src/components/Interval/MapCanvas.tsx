@@ -24,7 +24,7 @@ import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 
-const CORRIDOR_BAND_COLOR = HEADWAY_TIERS[0].color;
+const CORRIDOR_BAND_COLOR = '#7c3aed';
 
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
 function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
@@ -159,6 +159,7 @@ interface MapCanvasProps {
   showRouteLayers?: boolean;
   liveRoutesOnly?: boolean;
   showCorridorBand?: boolean;
+  showCorridors?: boolean;
   selectedCorridorFamily?: { agencySlug: string; routeIds: string[] } | null;
   hideSpan?: boolean;
   filterToAgencies?: boolean;
@@ -198,6 +199,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   showRouteLayers = true,
   liveRoutesOnly = false,
   showCorridorBand = false,
+  showCorridors = false,
   selectedCorridorFamily = null,
   hideSpan = false,
   filterToAgencies = false,
@@ -502,8 +504,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         'source-layer': 'corridors',
         paint: {
           'line-color': CORRIDOR_BAND_COLOR,
-          'line-width': 3.5,
-          'line-opacity': 0.75
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 4, 14, 8, 17, 11],
+          'line-gap-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 14, 3, 17, 4],
+          'line-opacity': 0.5
         },
         filter: ['==', ['get', 'agencySlug'], ''] as any
       });
@@ -1251,7 +1254,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   }, [selectedRoute, mapLoaded, historyOverlay]);
 
   // Overlay layers (corridors, history, live vehicles) — extracted to hooks
-  useCorridorLayer(mapRef, mapLoaded, showCorridorBand, selectedCorridorFamily);
+  useCorridorLayer(mapRef, mapLoaded, showCorridorBand || showCorridors, selectedCorridorFamily);
   useHistoryLayer(mapRef, mapLoaded);
   useLiveVehiclesLayer(mapRef, deckOverlayRef, mapLoaded);
 
