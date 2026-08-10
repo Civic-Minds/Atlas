@@ -1,4 +1,4 @@
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
