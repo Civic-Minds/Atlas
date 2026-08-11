@@ -20,7 +20,7 @@ import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions, type HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
-import { agencyQualifiesForHistory } from '../shared/historyEligibility';
+import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -114,6 +114,7 @@ export default function App() {
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
+  const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
   const [query, setQuery] = useState('');
   // Search scans / map filters / prefetch run from this so keystrokes can paint first.
   const deferredQuery = useDeferredValue(query);
@@ -315,10 +316,14 @@ export default function App() {
       .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
-      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) =>
-        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug))),
-      )
-      .catch(() => setHistoryAgencySlugs(new Set()));
+      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) => {
+        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug)));
+        setHistoryExploreAgencyCount(data.filter(agencyQualifiesForHistoryExplore).length);
+      })
+      .catch(() => {
+        setHistoryAgencySlugs(new Set());
+        setHistoryExploreAgencyCount(0);
+      });
   }, []);
 
   useEffect(() => {
@@ -416,7 +421,7 @@ export default function App() {
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
-            {historyAgencySlugs && <span className="font-normal text-[var(--text-dim)]">{historyAgencySlugs.size}</span>}
+            {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}</span>}
           </a>
         )}
 
