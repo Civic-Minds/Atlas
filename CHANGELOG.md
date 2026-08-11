@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Route names now preserve KC capitalization, including KC Streetcar.
 - Open pages now warn when refreshed schedule data or a newer app version is available.
 - Current raw GTFS snapshots now live in public Atlas while replaced or expired snapshots move to the private archive, making bucket membership reflect currentness.
 - Current raw GTFS files now sit at the Atlas bucket root, so the bucket itself identifies current data.
