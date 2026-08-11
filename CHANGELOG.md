@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Hidden-route agency headers now use the same standard agency names and comma-formatted counts as the Agencies list.
 - Route names now preserve KC capitalization, including KC Streetcar.
 - Open pages now warn when refreshed schedule data or a newer app version is available.
 - Current raw GTFS snapshots now live in public Atlas while replaced or expired snapshots move to the private archive, making bucket membership reflect currentness.
