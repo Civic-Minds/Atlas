@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.18] - 2026-08-10
 
 - Hidden-route agency headers now use the same standard agency names and comma-formatted counts as the Agencies list.
 - Route names now preserve KC capitalization, including KC Streetcar.
