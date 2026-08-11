@@ -2,8 +2,8 @@
   "slug": "sun-tran",
   "name": "Sun Tran (Tucson)",
   "center": [
-    32.22,
-    -110.93
+    35.3348,
+    -120.7143
   ],
   "bbox": [
     31.9,
@@ -13,12 +13,14 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2354/latest.zip",
   "region": "Arizona",
-  "lastRefreshedAt": "2026-08-10",
-  "lastFeedExpiry": "20260516",
-  "lastFeedVersion": "Feb1526_20260121",
+  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260611",
   "cities": [
     "Tucson, Arizona",
     "Casas Adobes, Arizona",
     "Catalina Foothills, Arizona"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20271231-2ed8a35496817003"
 }

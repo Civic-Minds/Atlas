@@ -2,14 +2,14 @@
   "slug": "vvta",
   "name": "Victor Valley Transit Authority (VVTA)",
   "center": [
-    34.54,
-    -117.29
+    34.5885,
+    -117.2393
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-99/mdb-99-202410070003/mdb-99-202410070003.zip",
   "lastFeedExpiry": "20250329",
   "lastFeedVersion": "2024.09",
   "region": "California",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://vvta.org/",
   "cities": [
     "Victorville, California",
@@ -19,5 +19,7 @@
     "Fontana, California",
     "Colton, California",
     "Rancho Cucamonga, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20250329-3f568bd33b3ddb28"
 }

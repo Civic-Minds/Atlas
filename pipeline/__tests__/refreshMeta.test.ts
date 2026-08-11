@@ -14,6 +14,7 @@ describe('stampFeedMeta', () => {
     const agency: {
       lastFeedExpiry?: string | null;
       lastFeedVersion?: string | null;
+      lastRawArchiveKey?: string | null;
       lastRefreshedAt?: string | null;
     } = {
       lastFeedExpiry: 'old',
@@ -23,12 +24,14 @@ describe('stampFeedMeta', () => {
     stampFeedMeta(agency, {
       feedExpiry: '20251231',
       feedVersion: 'v2',
+      rawArchiveKey: '20251231-deadbeef',
       peekedExpiry: 'peeked',
       peekedVersion: 'peeked-v',
       todayYmd: '2026-07-19',
     });
     expect(agency.lastFeedExpiry).toBe('20251231');
     expect(agency.lastFeedVersion).toBe('v2');
+    expect(agency.lastRawArchiveKey).toBe('20251231-deadbeef');
     expect(agency.lastRefreshedAt).toBe('2026-07-19');
   });
 
@@ -36,17 +39,20 @@ describe('stampFeedMeta', () => {
     const agency: {
       lastFeedExpiry?: string | null;
       lastFeedVersion?: string | null;
+      lastRawArchiveKey?: string | null;
       lastRefreshedAt?: string | null;
     } = {};
     stampFeedMeta(agency, {
       feedExpiry: null,
       feedVersion: null,
+      rawArchiveKey: '20250101-cafebabe',
       peekedExpiry: '20250101',
       peekedVersion: 'peek',
       todayYmd: '2026-07-19',
     });
     expect(agency.lastFeedExpiry).toBe('20250101');
     expect(agency.lastFeedVersion).toBe('peek');
+    expect(agency.lastRawArchiveKey).toBe('20250101-cafebabe');
   });
 });
 

@@ -2,14 +2,14 @@
   "slug": "psta",
   "name": "Pinellas Suncoast Transit Authority (PSTA)",
   "center": [
-    27.9,
-    -82.7
+    27.8704,
+    -82.7219
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-326/mdb-326-202511300039/mdb-326-202511300039.zip",
   "lastFeedExpiry": "20260606",
   "lastFeedVersion": "S1000242",
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.psta.net",
   "cities": [
     "St. Petersburg, Florida",
@@ -19,5 +19,7 @@
     "Palm Harbor, Florida",
     "Town 'n' Country, Florida",
     "Tampa, Florida"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20260606-face4e6e47319b36"
 }

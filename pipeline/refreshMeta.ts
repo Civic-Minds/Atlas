@@ -6,6 +6,7 @@
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
+  lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
 }
 
@@ -24,6 +25,7 @@ export function stampFeedMeta(
   opts: {
     feedExpiry: string | null;
     feedVersion: string | null;
+    rawArchiveKey: string;
     peekedExpiry: string | null;
     peekedVersion: string | null;
     todayYmd: string;
@@ -31,6 +33,7 @@ export function stampFeedMeta(
 ): void {
   agency.lastFeedExpiry = opts.feedExpiry ?? opts.peekedExpiry ?? null;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
+  agency.lastRawArchiveKey = opts.rawArchiveKey;
   agency.lastRefreshedAt = opts.todayYmd;
 }
 

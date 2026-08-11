@@ -2,6 +2,8 @@
 
 Snapshot from the full production refresh on 2026-08-10.
 
+This snapshot predates the active-fallback policy. The refresh pipeline now keeps the newest available snapshot public when a source is expired or has no usable date, and the app marks that schedule as potentially outdated.
+
 The refresh checked 465 production-visible agencies. It uploaded 116 current feeds and left the previous artifact unchanged for 73 agencies whose configured sources had no current service date. Two additional agencies failed to download and are listed below. The 143 agencies in countries not launched in production were not checked.
 
 Freshness is derived from the latest date in `feed_info.txt`, `calendar.txt`, and added `calendar_dates.txt` entries. An expired or metadata-less source is now skipped and reported in `atlas/feed-refresh-meta.json` instead of silently replacing the published artifact.

@@ -8,8 +8,8 @@
   ],
   "region": "Ontario",
   "center": [
-    43.4516,
-    -80.4925
+    43.426,
+    -80.4417
   ],
   "bbox": [
     43.05,
@@ -20,10 +20,12 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
   "lastFeedExpiry": "20260426",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Waterloo, Ontario",
     "Kitchener, Ontario",
     "Cambridge, Ontario"
-  ]
+  ],
+  "timezone": "America/Toronto",
+  "lastRawArchiveKey": "20260426-071369b92e6aeb7d"
 }

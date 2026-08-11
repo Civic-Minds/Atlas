@@ -2,8 +2,8 @@
   "slug": "cherriots",
   "name": "Cherriots (Salem, OR)",
   "center": [
-    44.9377,
-    -123.0187
+    44.9396,
+    -122.9975
   ],
   "region": "Oregon",
   "bbox": [
@@ -16,9 +16,11 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
   "lastFeedExpiry": "20260102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Salem, Oregon",
     "Tigard, Oregon"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260102-024bddedbb9eacbd"
 }

@@ -2,20 +2,22 @@
   "slug": "transfort",
   "name": "Transfort (Fort Collins)",
   "center": [
-    40.5853,
-    -105.0844
+    40.4552,
+    -105.0936
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
   "mdbFeedUrl": null,
   "lastFeedExpiry": "20240511",
   "lastFeedVersion": "S1000201",
   "region": "Colorado",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.ridetransfort.com/",
   "cities": [
     "Fort Collins, Colorado",
     "Loveland, Colorado",
     "Longmont, Colorado",
     "Boulder, Colorado"
-  ]
+  ],
+  "timezone": "America/Denver",
+  "lastRawArchiveKey": "20240511-1765080d3133e8df"
 }

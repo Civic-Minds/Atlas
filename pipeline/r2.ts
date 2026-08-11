@@ -12,6 +12,7 @@
  */
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, CopyObjectCommand, HeadObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 
 function requireEnv(key: string): string {
@@ -206,6 +207,16 @@ export async function r2PutArchiveJson(key: string, body: string): Promise<void>
 
 const CURRENT_GTFS_CACHE_CONTROL = 'public, max-age=0, must-revalidate';
 
+/** Stable, collision-safe archive stem for a raw GTFS snapshot. */
+export function rawFeedArchiveKey(feedExpiry: string | null, feedVersion: string | null, body: Buffer): string {
+  const label = (feedExpiry ?? feedVersion ?? 'unknown')
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'unknown';
+  const digest = createHash('sha256').update(body).digest('hex').slice(0, 16);
+  return `${label}-${digest}`;
+}
+
 /** Upload the one current raw GTFS snapshot for an agency to the public bucket. */
 export async function r2PutCurrentFeed(slug: string, body: Buffer): Promise<void> {
   await r2PutRaw(
@@ -307,6 +318,23 @@ async function r2GetRaw(key: string, bucket: string): Promise<string | null> {
 /** Read text from the private archive bucket. */
 export async function r2GetArchive(key: string): Promise<string | null> {
   return r2GetRaw(key, requireEnv('R2_ARCHIVE_BUCKET_NAME'));
+}
+
+/** Read binary content from the private archive bucket. */
+export async function r2GetArchiveBuffer(key: string): Promise<Buffer | null> {
+  const client = getR2Client();
+  try {
+    const res = await client.send(new GetObjectCommand({
+      Bucket: requireEnv('R2_ARCHIVE_BUCKET_NAME'),
+      Key: key,
+    }));
+    return Buffer.from(await res.Body!.transformToByteArray());
+  } catch (err: any) {
+    if (err?.name === 'NoSuchKey' || err?.name === 'NotFound' || err?.$metadata?.httpStatusCode === 404) {
+      return null;
+    }
+    throw err;
+  }
 }
 
 export async function r2Get(key: string): Promise<string | null> {

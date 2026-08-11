@@ -38,6 +38,7 @@ import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
+import { isStaleProductionFeed } from '../../../shared/feedAvailability';
 
 interface SidebarControlsProps {
   query: string;
@@ -924,12 +925,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const routeBaseFare = fareView && routeSlug
     ? (((currentRoute as any).baseFare as number | undefined) ?? fareOverrides[routeSlug]?.adult ?? routeAgency?.fare ?? null)
     : null;
-  const routeIsStale = (() => {
-    const exp = routeAgency?.lastFeedExpiry;
-    if (!exp || exp.length !== 8) return false;
-    const expDate = new Date(`${exp.slice(0, 4)}-${exp.slice(4, 6)}-${exp.slice(6, 8)}`);
-    return expDate < new Date();
-  })();
+  const routeIsStale = routeAgency ? isStaleProductionFeed(routeAgency) : false;
   const expDateStr = (() => {
     const exp = routeAgency?.lastFeedExpiry;
     if (!exp || exp.length !== 8) return '';

@@ -10,14 +10,36 @@ export function todayUtcYmd(now = new Date()): string {
 
 export interface FeedAvailabilityEntry {
   lastFeedExpiry?: string | null;
+  lastRefreshedAt?: string | null;
   staged?: boolean;
   hiddenInProduction?: boolean;
 }
 
-/** Production-visible means both published and current; unknown expiry is not current. */
+/** Production-visible excludes staged and explicitly hidden agencies. */
+export function isProductionVisibleFeed(agency: FeedAvailabilityEntry): boolean {
+  return !agency.staged && !agency.hiddenInProduction;
+}
+
+/** The latest snapshot Atlas has published, whether current or stale. */
+export function isActiveProductionFeed(agency: FeedAvailabilityEntry, today = todayUtcYmd()): boolean {
+  return isProductionVisibleFeed(agency) && (
+    (typeof agency.lastRefreshedAt === 'string' && agency.lastRefreshedAt.length > 0) ||
+    isCurrentFeedExpiry(agency.lastFeedExpiry, today)
+  );
+}
+
+/** Production-visible and current through the requested UTC date. */
 export function isCurrentProductionFeed(
   agency: FeedAvailabilityEntry,
   today = todayUtcYmd(),
 ): boolean {
-  return !agency.staged && !agency.hiddenInProduction && isCurrentFeedExpiry(agency.lastFeedExpiry, today);
+  return isActiveProductionFeed(agency, today) && isCurrentFeedExpiry(agency.lastFeedExpiry, today);
+}
+
+/** An active production feed whose published schedule may be outdated. */
+export function isStaleProductionFeed(
+  agency: FeedAvailabilityEntry,
+  today = todayUtcYmd(),
+): boolean {
+  return isActiveProductionFeed(agency, today) && !isCurrentFeedExpiry(agency.lastFeedExpiry, today);
 }

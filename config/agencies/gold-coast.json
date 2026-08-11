@@ -2,8 +2,8 @@
   "slug": "gold-coast",
   "name": "Gold Coast Transit District (Oxnard)",
   "center": [
-    34.1975,
-    -119.177
+    34.2396,
+    -119.2042
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
   "bbox": [
@@ -14,9 +14,11 @@
   ],
   "lastFeedExpiry": "20260808",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Oxnard, California",
     "Ventura, California"
-  ]
+  ],
+  "timezone": "America/Vancouver",
+  "lastRawArchiveKey": "20260808-26a2b10b0d954217"
 }

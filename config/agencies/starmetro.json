@@ -2,8 +2,8 @@
   "slug": "starmetro",
   "name": "StarMetro (Tallahassee)",
   "center": [
-    30.46,
-    -84.28
+    30.4459,
+    -84.2889
   ],
   "bbox": [
     30.376,
@@ -15,9 +15,11 @@
   "region": "Florida",
   "lastFeedExpiry": "20240901",
   "lastFeedVersion": "UTC: 07-May-2024 20:44",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.talgov.com/starmetro",
   "cities": [
     "Tallahassee, Florida"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20240901-cca38c6c6d9dd482"
 }

@@ -2,8 +2,8 @@
   "slug": "sun-metro",
   "name": "Sun Metro (El Paso)",
   "center": [
-    31.77,
-    -106.42
+    31.7888,
+    -106.4113
   ],
   "bbox": [
     31.58,
@@ -15,9 +15,11 @@
   "region": "Texas",
   "lastFeedExpiry": "20260613",
   "lastFeedVersion": "November 16, 2025_20260409",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.sunmetro.net",
   "cities": [
     "El Paso, Texas"
-  ]
+  ],
+  "timezone": "America/Denver",
+  "lastRawArchiveKey": "20260613-c56de1a2d238fe79"
 }

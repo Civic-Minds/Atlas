@@ -2,16 +2,18 @@
   "slug": "mountainmetro",
   "name": "Mountain Metropolitan Transit (Colorado Springs)",
   "center": [
-    38.83,
-    -104.82
+    38.845,
+    -104.7974
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2356/mdb-2356-202504260208/mdb-2356-202504260208.zip",
   "lastFeedExpiry": "20250927",
   "lastFeedVersion": "2025 (1) Spring_20250421",
   "region": "Colorado",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.mmtransit.com",
   "cities": [
     "Colorado Springs, Colorado"
-  ]
+  ],
+  "timezone": "America/Denver",
+  "lastRawArchiveKey": "20250927-1abb7aaac18b1cfe"
 }

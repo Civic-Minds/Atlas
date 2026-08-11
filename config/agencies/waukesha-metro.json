@@ -2,18 +2,20 @@
   "slug": "waukesha-metro",
   "name": "Waukesha Metro Transit",
   "center": [
-    43.01,
-    -88.23
+    43.0187,
+    -88.1993
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
   "region": "Wisconsin",
   "lastFeedExpiry": "20250601",
   "lastFeedVersion": "UTC: 22-Jan-2025 18:29",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://www.waukesha-wi.gov/residents/getting_around/public-transportation.php",
   "cities": [
     "Waukesha, Wisconsin",
     "West Allis, Wisconsin"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20250601-9d45b36319c36615"
 }

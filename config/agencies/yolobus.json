@@ -2,8 +2,8 @@
   "slug": "yolobus",
   "name": "Yolo County Transportation District (Yolobus)",
   "center": [
-    38.603,
-    -121.6672
+    38.6169,
+    -121.682
   ],
   "region": "California",
   "bbox": [
@@ -16,11 +16,13 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
   "lastFeedExpiry": "20260201",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "West Sacramento, California",
     "Woodland, California",
     "Davis, California",
     "Sacramento, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260201-a6cccff8306719af"
 }

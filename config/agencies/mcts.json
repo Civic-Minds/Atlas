@@ -2,16 +2,18 @@
   "slug": "mcts",
   "name": "Milwaukee County Transit System (MCTS)",
   "center": [
-    43.04,
-    -87.91
+    43.0481,
+    -87.9598
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
   "lastFeedExpiry": "20250823",
   "lastFeedVersion": null,
   "region": "Wisconsin",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Milwaukee, Wisconsin",
     "West Allis, Wisconsin"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20250823-972ecde587d298f8"
 }

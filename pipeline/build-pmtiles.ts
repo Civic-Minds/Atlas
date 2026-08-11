@@ -8,7 +8,7 @@ import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/confi
 import { runWithConcurrency } from './utils.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
-import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
+import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -53,7 +53,7 @@ async function main() {
   }
   console.log(`Loading agency index from public/data/index.json...`);
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: any[] };
-  const agencies = (index.agencies || []).filter(agency => isCurrentProductionFeed(agency));
+  const agencies = (index.agencies || []).filter(agency => isActiveProductionFeed(agency));
   
   console.log(`Found ${agencies.length} agencies to process.`);
 

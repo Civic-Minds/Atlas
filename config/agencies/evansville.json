@@ -2,13 +2,13 @@
   "slug": "evansville",
   "name": "METS (Evansville)",
   "center": [
-    37.9716,
-    -87.5711
+    37.9812,
+    -87.5622
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
   "lastFeedExpiry": "20250115",
   "lastFeedVersion": "20240618",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "region": "Indiana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
   "bbox": [
@@ -19,5 +19,7 @@
   ],
   "cities": [
     "Evansville, Indiana"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20250115-762408ee68963c10"
 }

@@ -2,8 +2,8 @@
   "slug": "carta-chattanooga",
   "name": "Chattanooga Area Regional Transportation Authority",
   "center": [
-    35.05,
-    -85.31
+    37.9735,
+    -122.5732
   ],
   "bbox": [
     34.8,
@@ -13,11 +13,13 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2082/latest.zip",
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-08-10",
-  "lastFeedExpiry": "20240817",
-  "lastFeedVersion": "S1000099",
+  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20260110",
+  "lastFeedVersion": "UTC: 24-Jul-2025 22:32",
   "cities": [
     "Chattanooga, Tennessee",
     "East Chattanooga, Tennessee"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260110-43ad9b4912295a43"
 }

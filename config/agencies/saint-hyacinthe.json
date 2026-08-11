@@ -3,8 +3,8 @@
   "name": "Ville de Saint-Hyacinthe",
   "region": "Quebec",
   "center": [
-    45.63,
-    -72.95
+    45.6335,
+    -72.9601
   ],
   "bbox": [
     45.43,
@@ -15,8 +15,10 @@
   "feedUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs",
   "lastFeedExpiry": "20241231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Saint-Hyacinthe, Quebec"
-  ]
+  ],
+  "timezone": "America/Toronto",
+  "lastRawArchiveKey": "20241231-ab9230a3408482f5"
 }

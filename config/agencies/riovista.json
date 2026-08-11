@@ -2,8 +2,8 @@
   "slug": "riovista",
   "name": "Rio Vista Delta Breeze",
   "center": [
-    38.1861,
-    -121.8006
+    38.219,
+    -121.907
   ],
   "region": "California",
   "bbox": [
@@ -16,9 +16,11 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-rio-vista-delta-breeze-gtfs-81.zip?alt=media",
   "lastFeedExpiry": "20250131",
   "lastFeedVersion": "UTC: 23-Feb-2024 22:27",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://www.riovistacity.com/deltabreeze/page/delta-breeze-transit-schedule",
   "cities": [
     "Fairfield, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20250131-ef82facebacb419b"
 }

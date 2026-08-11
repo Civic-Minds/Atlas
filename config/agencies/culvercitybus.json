@@ -2,17 +2,19 @@
   "slug": "culvercitybus",
   "name": "Culver City Bus",
   "center": [
-    34,
-    -118.4
+    34.0073,
+    -118.4077
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-38/mdb-38-202605300008/mdb-38-202605300008.zip",
   "lastFeedExpiry": "20260712",
   "lastFeedVersion": "S1000250_2026.01.09",
   "region": "California",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Mid-City, California",
     "Inglewood, California",
     "Santa Monica, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260712-b7c46c977165e86f"
 }

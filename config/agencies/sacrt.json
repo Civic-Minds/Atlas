@@ -2,8 +2,8 @@
   "slug": "sacrt",
   "name": "Sacramento Regional Transit (SacRT)",
   "center": [
-    38.5827,
-    -121.4066
+    38.5939,
+    -121.4032
   ],
   "region": "California",
   "bbox": [
@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://www.sacrt.com/wp-content/uploads/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sacramento-regional-transit-gtfs-2137.zip?alt=media",
-  "lastFeedExpiry": "20250405",
-  "lastFeedVersion": "January_2025",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20260613",
+  "lastFeedVersion": "Spring_2026",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.sacrt.com",
   "cities": [
     "Sacramento, California",
@@ -28,5 +28,7 @@
     "Elk Grove, California",
     "Folsom, California",
     "Davis, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260613-5e822cf6a9ea298f"
 }

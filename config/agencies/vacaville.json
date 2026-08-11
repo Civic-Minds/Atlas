@@ -2,8 +2,8 @@
   "slug": "vacaville",
   "name": "City Coach (Vacaville)",
   "center": [
-    38.3568,
-    -121.9708
+    38.3618,
+    -121.9668
   ],
   "region": "California",
   "bbox": [
@@ -16,9 +16,11 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "2.2.26",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://citycoach.com/",
   "cities": [
     "Vacaville, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260630-9771867b4141da3d"
 }

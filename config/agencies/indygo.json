@@ -2,19 +2,21 @@
   "slug": "indygo",
   "name": "IndyGo (Indianapolis)",
   "center": [
-    39.77,
-    -86.16
+    39.7921,
+    -86.153
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-50050/ntd-50050-202503060058/ntd-50050-202503060058.zip",
   "lastFeedExpiry": "20250607",
   "lastFeedVersion": "20250305",
   "region": "Indiana",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.indygo.net",
   "cities": [
     "Indianapolis, Indiana",
     "Carmel, Indiana",
     "Greenwood, Indiana",
     "Fishers, Indiana"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20250607-c00a632c8badd09b"
 }

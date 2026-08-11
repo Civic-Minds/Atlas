@@ -2,8 +2,8 @@
   "slug": "rts",
   "name": "RTS (Gainesville)",
   "center": [
-    29.64,
-    -82.33
+    29.6463,
+    -82.3596
   ],
   "bbox": [
     29.4,
@@ -15,9 +15,11 @@
   "region": "Florida",
   "lastFeedExpiry": "20250817",
   "lastFeedVersion": "2501",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.go-rts.com/",
   "cities": [
     "Gainesville, Florida"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20250817-826a9fab634aebc4"
 }

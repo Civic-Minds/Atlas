@@ -17,6 +17,7 @@
     "process:staging": "ATLAS_ENV=staging npx tsx pipeline/process-gtfs.ts",
     "refresh": "npx tsx pipeline/refresh.ts",
     "refresh:staging": "ATLAS_ENV=staging npx tsx pipeline/refresh.ts",
+    "restore-active-feeds": "npx tsx pipeline/restore-active-feeds.ts",
     "build-pmtiles": "npx tsx pipeline/build-pmtiles.ts",
     "build-pmtiles:staging": "ATLAS_ENV=staging npx tsx pipeline/build-pmtiles.ts",
     "build-pmtiles-incremental": "npx tsx pipeline/build-pmtiles-incremental.ts",

@@ -3,8 +3,8 @@
   "name": "Imperial Valley Transit",
   "region": "California",
   "center": [
-    32.8667,
-    -115.5497
+    32.8402,
+    -115.5336
   ],
   "bbox": [
     32.6176,
@@ -14,7 +14,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "lastFeedExpiry": "20251231",
-  "lastFeedVersion": null
+  "lastFeedVersion": null,
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20251231-915e28c519db2c9f"
 }

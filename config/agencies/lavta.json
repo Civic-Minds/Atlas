@@ -2,8 +2,8 @@
   "slug": "lavta",
   "name": "Livermore Amador Valley Transit Authority",
   "center": [
-    37.6916,
-    -121.8495
+    37.6915,
+    -121.8397
   ],
   "region": "California",
   "bbox": [
@@ -16,11 +16,13 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
   "lastFeedExpiry": "20260430",
   "lastFeedVersion": "January_26_01_20260327",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://wheelsbus.com/",
   "cities": [
     "Livermore, California",
     "Pleasanton, California",
     "Dublin, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260430-d4b24aea487f70da"
 }

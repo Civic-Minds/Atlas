@@ -3,12 +3,14 @@
   "name": "Moose Jaw Transit",
   "region": "Saskatchewan",
   "center": [
-    50.393,
-    -105.535
+    50.3983,
+    -105.5478
   ],
   "feedUrl": "https://moosejaw.ca/wp-content/uploads/2023/11/moosejaw-GTFS.zip",
   "lastFeedExpiry": "20240331",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-08-10",
-  "websiteUrl": "https://moosejaw.ca"
+  "lastRefreshedAt": "20260811",
+  "websiteUrl": "https://moosejaw.ca",
+  "timezone": "America/Regina",
+  "lastRawArchiveKey": "20240331-79d15cce8428630e"
 }

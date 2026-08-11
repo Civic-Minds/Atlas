@@ -19,7 +19,7 @@ import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
-import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
+import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 
 interface Agency {
   slug: string;
@@ -139,7 +139,7 @@ async function getZxyWithRetry(
 async function main() {
   console.log('Loading agency index from public/data/index.json...');
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: Agency[] };
-  const agencies = (index.agencies || []).filter(agency => isCurrentProductionFeed(agency));
+  const agencies = (index.agencies || []).filter(agency => isActiveProductionFeed(agency));
   console.log(`Found ${agencies.length} agencies.`);
 
   const pmtilesUrl = `${R2_PUBLIC_URL}/atlas.pmtiles`;

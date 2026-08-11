@@ -2,16 +2,18 @@
   "slug": "santafetrails",
   "name": "Santa Fe Trails",
   "center": [
-    35.69,
-    -105.94
+    35.6532,
+    -105.9769
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-839/mdb-839-202412160115/mdb-839-202412160115.zip",
   "lastFeedExpiry": "20260330",
   "lastFeedVersion": "2024-12-14T14:31:44Z",
   "region": "New Mexico",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://www.santafenm.gov/transit",
   "cities": [
     "Santa Fe, New Mexico"
-  ]
+  ],
+  "timezone": "America/Denver",
+  "lastRawArchiveKey": "20260330-d16bafca3fa50d8f"
 }

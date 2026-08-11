@@ -2,13 +2,13 @@
   "slug": "grand-junction",
   "name": "Grand Valley Transit",
   "center": [
-    39.07,
-    -108.55
+    39.0871,
+    -108.5512
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
   "lastFeedExpiry": "20251105",
   "lastFeedVersion": "Nov_05_2024",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
   "bbox": [
@@ -16,5 +16,7 @@
     -108.7584,
     39.1844,
     -108.3284
-  ]
+  ],
+  "timezone": "America/Denver",
+  "lastRawArchiveKey": "20251105-a5ee28f94a564f8e"
 }

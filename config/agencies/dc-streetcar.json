@@ -2,16 +2,18 @@
   "slug": "dc-streetcar",
   "name": "DC Streetcar",
   "center": [
-    38.9,
-    -77
+    38.8995,
+    -76.9841
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2223/mdb-2223-202411271818/mdb-2223-202411271818.zip",
   "lastFeedExpiry": "20250630",
   "lastFeedVersion": "20230718",
   "region": "Washington DC",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://www.dcstreetcar.com/",
   "cities": [
     "Downtown DC, District of Columbia"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20250630-3b299905c0a7023a"
 }

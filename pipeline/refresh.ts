@@ -17,7 +17,7 @@ import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2Delete, r2PutCurrentFeed, r2CopyCurrentFeedToArchive, r2MoveCurrentFeedToArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchiveJson, r2GetArchive, r2PutCurrentFeed, r2CopyCurrentFeedToArchive, rawFeedArchiveKey } from './r2.js';
 import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
@@ -45,7 +45,7 @@ import {
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
-import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
+import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -74,29 +74,8 @@ interface RefreshAgencyResult {
   hiddenRoutes?: HiddenRouteRecord[];
 }
 
-const PUBLIC_AGENCY_ARTIFACT_KEYS = [
-  (slug: string) => `atlas/${slug}.json`,
-  (slug: string) => `atlas/${slug}-stops.json`,
-  (slug: string) => `atlas/${slug}-corridors.json`,
-  (slug: string) => `atlas/${slug}-trips.json`,
-  (slug: string) => `atlas/${slug}-stops-meta.json`,
-  (slug: string) => `atlas/live-polling/${slug}.json`,
-];
-
-async function archiveRawFeed(slug: string, buf: Buffer, feedExpiry: string | null, feedVersion: string | null): Promise<string | null> {
-  const archiveKey = feedExpiry ?? feedVersion;
-  if (!archiveKey) return null;
-  const key = `gtfs/archive/${slug}/${archiveKey}.zip`;
-  await r2PutArchive(key, buf, 'application/zip');
-  return key;
-}
-
-async function removePublicAgencyArtifacts(slug: string): Promise<void> {
-  await Promise.all(PUBLIC_AGENCY_ARTIFACT_KEYS.map(keyForSlug => r2Delete(keyForSlug(slug))));
-}
-
 function previousRawFeedArchiveKey(agency: AgencyEntry): string {
-  return agency.lastFeedExpiry ?? agency.lastFeedVersion ?? `unknown-${todayUtcYmd().replace(/-/g, '')}`;
+  return agency.lastRawArchiveKey ?? agency.lastFeedExpiry ?? agency.lastFeedVersion ?? `unknown-${todayUtcYmd().replace(/-/g, '')}`;
 }
 
 async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: string | null, feedVersion: string | null): Promise<string> {
@@ -210,6 +189,7 @@ interface AgencyEntry {
   supplementalFeedUrls?: string[];
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
+  lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
   agencyId?: string;
   routeTypes?: number[];
@@ -291,25 +271,7 @@ async function refreshAgency(
   let { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
-  if (!peekedExpiry) {
-    const previousKey = previousRawFeedArchiveKey(agency);
-    const movedCurrent = await r2MoveCurrentFeedToArchive(agency.slug, previousKey);
-    const archivedKey = await archiveRawFeed(agency.slug, buf, null, peekedVersion);
-    if (movedCurrent) writeLog(`\n  [info] moved previous current raw feed → gtfs/archive/${agency.slug}/${previousKey}.zip\n  `);
-    if (archivedKey) writeLog(`\n  [info] archived feed with unknown service end → ${archivedKey}\n  `);
-    await removePublicAgencyArtifacts(agency.slug);
-    stampFeedMeta(agency, {
-      feedExpiry: null,
-      feedVersion: peekedVersion,
-      peekedExpiry: null,
-      peekedVersion,
-      todayYmd: todayUtcYmd(),
-    });
-    writeLog(`\n  [warn] feed has no usable service end date — removed public current artifacts\n  `);
-    return { summary: 'missing feed metadata, skipped' };
-  }
-
-  if (peekedExpiry < today) {
+  if (peekedExpiry && peekedExpiry < today) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
     const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
@@ -333,22 +295,8 @@ async function refreshAgency(
     }
   }
 
-  if (peekedExpiry < today) {
-    const previousKey = previousRawFeedArchiveKey(agency);
-    const movedCurrent = await r2MoveCurrentFeedToArchive(agency.slug, previousKey);
-    const archivedKey = await archiveRawFeed(agency.slug, buf, peekedExpiry, peekedVersion);
-    if (movedCurrent) writeLog(`\n  [info] moved previous current raw feed → gtfs/archive/${agency.slug}/${previousKey}.zip\n  `);
-    if (archivedKey) writeLog(`\n  [info] archived expired feed → ${archivedKey}\n  `);
-    await removePublicAgencyArtifacts(agency.slug);
-    stampFeedMeta(agency, {
-      feedExpiry: peekedExpiry,
-      feedVersion: peekedVersion,
-      peekedExpiry,
-      peekedVersion,
-      todayYmd: todayUtcYmd(),
-    });
-    writeLog(`\n  [warn] no current schedule source — removed public current artifacts\n  `);
-    return { summary: 'expired feed, skipped' };
+  if (peekedExpiry == null) {
+    writeLog('\n  [warn] feed has no usable service end date — publishing as the latest available schedule\n  ');
   }
 
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
@@ -413,11 +361,6 @@ async function refreshAgency(
   let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
 
-  if (!feedExpiry && !peekedExpiry) {
-    writeLog('\n  [warn] feed has no usable service end date — leaving the published artifact unchanged\n');
-    return { summary: 'missing feed metadata, skipped' };
-  }
-
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
   // Skip-if-unchanged only checks the primary feed; supplemental feeds always reprocess.
   if (agency.supplementalFeedUrls?.length) {
@@ -462,10 +405,8 @@ async function refreshAgency(
   if (featureCount === 0) {
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
-    if (peekedExpiry >= today) {
-      await r2PutCurrentFeed(agency.slug, buf);
-      writeLog(`  current raw feed → atlas/gtfs/${agency.slug}.zip\n`);
-    }
+    await r2PutCurrentFeed(agency.slug, buf);
+    writeLog(`  latest raw feed → atlas/gtfs/${agency.slug}.zip\n`);
     writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
     return { summary: '0 features, skipped' };
   }
@@ -504,11 +445,12 @@ async function refreshAgency(
     r2PutArchiveJson(stopBaselineKey, stopsSnapshot),
   ]);
 
-  writeLog(`  current raw feed → atlas/gtfs/${agency.slug}.zip\n`);
+  writeLog(`  active raw feed → atlas/gtfs/${agency.slug}.zip\n`);
   if (shouldStampFeedMeta(featureCount)) {
     stampFeedMeta(agency, {
       feedExpiry,
       feedVersion,
+      rawArchiveKey: rawFeedArchiveKey(feedExpiry, feedVersion, buf),
       peekedExpiry,
       peekedVersion,
       todayYmd: todayUtcYmd(),
@@ -578,8 +520,7 @@ async function main() {
   let countryLaunchSkips = 0;
   const validationSoftSkips: string[] = [];
   const zeroFeatureSkips: string[] = [];
-  const expiredFeedSkips: string[] = [];
-  const missingFeedMetadataSkips: string[] = [];
+  const staleFeedPublishes: string[] = [];
   const failedSlugs: string[] = [];
   const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
@@ -603,11 +544,12 @@ async function main() {
       }
       const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
       const summary = result.summary;
+      const softSkipped = summary === 'validation failed, skipped' || summary === '0 features, skipped';
       if (summary === 'validation failed, skipped') validationSoftSkips.push(agency.slug);
       else if (summary === '0 features, skipped') zeroFeatureSkips.push(agency.slug);
-      else if (summary === 'expired feed, skipped') expiredFeedSkips.push(agency.slug);
-      else if (summary === 'missing feed metadata, skipped') missingFeedMetadataSkips.push(agency.slug);
-      else if (!summary.startsWith('skipped')) {
+      const stale = agency.lastFeedExpiry == null || (agency.lastFeedExpiry && agency.lastFeedExpiry < todayUtcYmd().replace(/-/g, ''));
+      if (stale && !softSkipped && !summary.startsWith('skipped')) staleFeedPublishes.push(agency.slug);
+      if (!softSkipped && !summary.startsWith('skipped')) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
       }
@@ -648,15 +590,8 @@ async function main() {
       `  [warn] ${zeroFeatureSkips.length} zero-feature soft-skips: ${zeroFeatureSkips.join(', ')}`,
     );
   }
-  if (expiredFeedSkips.length > 0) {
-    console.warn(
-      `  [warn] ${expiredFeedSkips.length} expired-feed skips (archived and removed from public R2): ${expiredFeedSkips.join(', ')}`,
-    );
-  }
-  if (missingFeedMetadataSkips.length > 0) {
-    console.warn(
-      `  [warn] ${missingFeedMetadataSkips.length} missing-metadata skips (archived and removed from public R2): ${missingFeedMetadataSkips.join(', ')}`,
-    );
+  if (staleFeedPublishes.length > 0) {
+    console.warn(`  [warn] ${staleFeedPublishes.length} agencies published their latest available schedule as stale data: ${staleFeedPublishes.join(', ')}`);
   }
   if (uploads > 0) {
     bumpCacheBuild();
@@ -682,7 +617,7 @@ async function main() {
     const hiddenRoutes = mergeHiddenRoutes(
       existing,
       [...refreshedHiddenRoutes.entries()].map(([agencySlug, routes]) => ({ agencySlug, routes })),
-      new Set(index.agencies.filter(a => isCurrentProductionFeed(a)).map(a => a.slug)),
+      new Set(index.agencies.filter(a => isActiveProductionFeed(a)).map(a => a.slug)),
     );
     await r2Put('atlas/hidden-routes.json', JSON.stringify(hiddenRoutes));
     console.log(`  hidden-routes.json → R2 (${hiddenRoutes.routeCount} routes)`);
@@ -712,8 +647,7 @@ async function main() {
         failedSlugs,
         validationSoftSkips,
         zeroFeatureSkips,
-        expiredFeedSkips,
-        missingFeedMetadataSkips,
+        staleFeedPublishes,
         countryLaunchSkips,
       }));
       console.log('  feed-refresh-meta.json → R2');

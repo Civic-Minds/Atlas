@@ -3,8 +3,8 @@
   "name": "PATH (Port Authority Trans-Hudson)",
   "region": "New Jersey",
   "center": [
-    40.73,
-    -74
+    40.7318,
+    -74.0377
   ],
   "bbox": [
     40.7106,
@@ -15,7 +15,7 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip",
   "lastFeedExpiry": "20260601",
   "lastFeedVersion": "UTC: 22-May-2025 18:06",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.panynj.gov/path/",
   "cities": [
     "East Village, New York",
@@ -24,5 +24,7 @@
     "Jersey City, New Jersey",
     "Financial District, New York",
     "New York City, New York"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20260601-572eaf8ff298767c"
 }

@@ -23,7 +23,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import type { CorrectionNotice } from '../shared/correctionNotices';
-import { isCurrentProductionFeed } from '../shared/feedAvailability';
+import { isActiveProductionFeed } from '../shared/feedAvailability';
 import AppUpdateBanner from './components/AppUpdateBanner';
 
 export interface FareOverride {
@@ -291,7 +291,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => isCurrentProductionFeed(a) || (import.meta.env.DEV && !a.staged && a.hiddenInProduction))
+          .filter((a: Agency) => isActiveProductionFeed(a) || (import.meta.env.DEV && !a.staged && a.hiddenInProduction))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug);

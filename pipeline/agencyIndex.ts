@@ -1,4 +1,4 @@
-import { isCurrentProductionFeed } from '../shared/feedAvailability.js';
+import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 
 /**
  * agencyIndex.ts — derive a small public agency directory from index.json,
@@ -44,7 +44,7 @@ export interface AgencyIndexFile {
  */
 export function buildAgencyIndex(source: AgencyIndexSourceEntry[]): AgencyIndexFile {
   const agencies = source
-    .filter(a => isCurrentProductionFeed(a))
+    .filter(a => isActiveProductionFeed(a))
     .map(a => ({
       slug: a.slug,
       name: a.name,

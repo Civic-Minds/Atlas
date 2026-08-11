@@ -2,8 +2,8 @@
   "slug": "cat-savannah",
   "name": "Chatham Area Transit (CAT)",
   "center": [
-    32.095,
-    -81.121
+    32.0542,
+    -81.1326
   ],
   "bbox": [
     31.969,
@@ -15,9 +15,11 @@
   "region": "Georgia",
   "lastFeedExpiry": "20250727",
   "lastFeedVersion": "S1000046",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.catchacat.org",
   "cities": [
     "Savannah, Georgia"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20250727-6723aa5560da6d1c"
 }

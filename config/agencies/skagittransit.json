@@ -2,8 +2,8 @@
   "slug": "skagittransit",
   "name": "Skagit Transit",
   "center": [
-    48.42,
-    -122.33
+    48.4743,
+    -122.3094
   ],
   "region": "Washington",
   "bbox": [
@@ -15,10 +15,12 @@
   "feedUrl": "https://www.skagittransit.org/gtfs/google_transit.zip",
   "lastFeedExpiry": "20251024",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Bellingham, Washington",
     "Everett, Washington",
     "Marysville, Washington"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20251024-da59ce8fbb6ab9c7"
 }

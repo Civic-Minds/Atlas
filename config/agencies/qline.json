@@ -3,15 +3,17 @@
   "name": "QLine (Detroit)",
   "region": "Michigan",
   "center": [
-    42.34,
-    -83.056
+    42.3463,
+    -83.057
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-qline-detroit-gtfs-802.zip?alt=media",
   "lastFeedExpiry": "20251231",
   "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://qlinedetroit.com/",
   "cities": [
     "Detroit, Michigan"
-  ]
+  ],
+  "timezone": "America/Detroit",
+  "lastRawArchiveKey": "20251231-8926b6d5769c203c"
 }
