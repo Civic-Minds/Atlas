@@ -7,6 +7,7 @@ import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
+import { agencyDisplayParts } from '../../utils/format';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -184,6 +185,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       ] as const);
   }, [filteredHiddenRoutes]);
 
+  const agencyCitiesBySlug = useMemo(
+    () => new Map((agencies ?? []).map(agency => [agency.slug, agency.cities] as const)),
+    [agencies],
+  );
+
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
   const hasActiveFilters = hideSpan || livePollingOnly || showCorridors || hasActiveCoreFilter;
 
@@ -294,9 +300,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </p>
                   ) : (
                     <div className="px-5 pb-4">
-                      {hiddenRoutesByAgency.map(([agencySlug, group]) => (
+                      {hiddenRoutesByAgency.map(([agencySlug, group]) => {
+                        const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug));
+                        return (
                         <div key={agencySlug}>
-                          <p className="pt-2 pb-1 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{group.agencyName}</p>
+                          <p className="pt-2 pb-1 text-[8px] font-black text-[var(--text-dim)] tracking-widest">
+                            {primary}
+                            {secondary && <span className="normal-case tracking-normal opacity-60"> · {secondary}</span>}
+                          </p>
                           <div className="divide-y divide-[var(--border-primary)]">
                             {group.routes.map(route => (
                               <div key={route.key} className="py-2.5">
@@ -310,7 +321,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             ))}
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </>
@@ -359,7 +371,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               onClick={() => setView('hidden-routes')}
                               className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
                             >
-                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length})` : ''} →
+                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
                             </button>
                           </>
                         )}

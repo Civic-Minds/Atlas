@@ -13,6 +13,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Combined corridor bands now stay hidden when the setting is off, including after selecting a route variant.
 - Live and History pills now show their respective coverage counts; History counts agencies with 10+ years of recorded history, and the redundant Live tracking only setting is gone.
 - Hidden-route inventory now lists routes fully removed by the filter in searchable, agency-grouped lists with state and province filters.
+- Hidden-route agency headers now use the same standard agency names and comma-formatted counts as the Agencies list.
 - Settings now explain which irregular routes are hidden, and combined corridors now use a distinct map overlay.
 - Live panel stops now follow the route order instead of being sorted by delay.
 - Route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
