@@ -19,6 +19,15 @@ export function shouldStampFeedMeta(featureCount: number): boolean {
   return featureCount > 0;
 }
 
+/** Never replace a dated active snapshot with an older or undated candidate. */
+export function candidateIsOlderThanActive(opts: {
+  candidateExpiry: string | null;
+  existingExpiry?: string | null;
+}): boolean {
+  if (!opts.existingExpiry) return false;
+  return !opts.candidateExpiry || opts.candidateExpiry < opts.existingExpiry;
+}
+
 /** Apply feed metadata after a successful non-empty refresh. */
 export function stampFeedMeta(
   agency: FeedMetaFields,

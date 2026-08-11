@@ -23,9 +23,10 @@ Read by: browser directly via `R2_PUBLIC_URL`
 ### atlas-archive (private)
 
 Historical and reference data not needed at runtime. A raw ZIP is moved here
-when a newer current snapshot replaces it or when its service expires.
+when a newer snapshot replaces the active one; service expiry alone does not
+remove the active fallback from the public bucket.
 
-- `gtfs/archive/{slug}/{feed-end-date}.zip` — replaced/expired raw GTFS snapshots
+- `gtfs/archive/{slug}/{snapshot-key}.zip` — replaced/expired raw GTFS snapshots; legacy date/version keys receive a source-identity suffix
 - `gtfs/historical/{path-slug}/{feed-end-date}.zip` — imported local historical snapshots
 - `history/{slug}/latest.json` — most recent headway snapshot for diff detection
 - `history/{slug}/{feed-end-date}.json` — versioned headway snapshots (pipeline diff-detection; not read by frontend)

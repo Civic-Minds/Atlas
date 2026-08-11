@@ -151,7 +151,7 @@ async function newestArchiveCandidate(slug: string): Promise<Candidate | null> {
 async function archiveExistingActive(agency: Agency): Promise<void> {
   const previousKey = agency.lastRawArchiveKey ?? agency.lastFeedExpiry ?? agency.lastFeedVersion ?? `unknown-${today}`;
   const copied = await r2CopyCurrentFeedToArchive(agency.slug, previousKey);
-  if (copied) console.log(`  archived prior active raw feed as ${previousKey}.zip`);
+  if (copied) console.log(`  archived prior active raw feed as ${copied}.zip`);
 }
 
 async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ agency: Agency; hiddenRoutes: ReturnType<typeof buildHiddenRoutesForAgency> }> {

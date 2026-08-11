@@ -233,16 +233,25 @@ export async function r2PutCurrentFeed(slug: string, body: Buffer): Promise<void
  * Copy the current raw feed into the private archive without downloading it.
  * The source is deliberately left in place so a later public upload can replace
  * it safely; callers handling expiry should use r2MoveCurrentFeedToArchive.
+ * Legacy date/version keys are suffixed with the source object's ETag so two
+ * snapshots sharing the same service end date cannot overwrite each other.
  */
-export async function r2CopyCurrentFeedToArchive(slug: string, archiveKey: string | null): Promise<boolean> {
-  if (!archiveKey) return false;
+export async function r2CopyCurrentFeedToArchive(slug: string, archiveKey: string | null): Promise<string | null> {
+  if (!archiveKey) return null;
   const publicBucket = requireEnv('R2_BUCKET_NAME');
   const archiveBucket = requireEnv('R2_ARCHIVE_BUCKET_NAME');
   const sourceKey = `gtfs/${slug}.zip`;
-  const destinationKey = `gtfs/archive/${slug}/${archiveKey}.zip`;
   const client = getR2Client();
 
   try {
+    const sourceHead = await client.send(new HeadObjectCommand({ Bucket: publicBucket, Key: sourceKey }));
+    const sourceIdentity = (sourceHead.ETag ?? sourceHead.LastModified?.toISOString() ?? 'unknown')
+      .replace(/[^a-zA-Z0-9_-]/g, '')
+      .slice(0, 24) || 'unknown';
+    const destinationStem = /-[0-9a-f]{16}$/i.test(archiveKey)
+      ? archiveKey
+      : `${archiveKey}-${sourceIdentity}`;
+    const destinationKey = `gtfs/archive/${slug}/${destinationStem}.zip`;
     await client.send(new CopyObjectCommand({
       Bucket: archiveBucket,
       Key: destinationKey,
@@ -250,10 +259,10 @@ export async function r2CopyCurrentFeedToArchive(slug: string, archiveKey: strin
     }));
     // Do not delete the source until the destination is confirmed readable.
     await client.send(new HeadObjectCommand({ Bucket: archiveBucket, Key: destinationKey }));
-    return true;
+    return destinationStem;
   } catch (err: any) {
     if (err?.name === 'NoSuchKey' || err?.name === 'NotFound' || err?.$metadata?.httpStatusCode === 404) {
-      return false;
+      return null;
     }
     throw err;
   }

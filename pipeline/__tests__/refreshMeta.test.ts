@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { decideRefreshSkipUnchanged, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+
+describe('candidateIsOlderThanActive', () => {
+  it('rejects an older dated candidate', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20260809', existingExpiry: '20260810' })).toBe(true);
+  });
+
+  it('rejects an undated candidate when the active snapshot is dated', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: null, existingExpiry: '20260810' })).toBe(true);
+  });
+
+  it('allows a newer or same-period candidate', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20260811', existingExpiry: '20260810' })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20260810', existingExpiry: '20260810' })).toBe(false);
+  });
+});
 
 describe('shouldStampFeedMeta', () => {
   it('stamps only when featureCount > 0', () => {

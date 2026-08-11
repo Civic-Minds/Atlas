@@ -35,7 +35,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { decideRefreshSkipUnchanged, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -283,16 +283,21 @@ async function refreshAgency(
       try {
         const fallbackBuf = await downloadFeed(agency.mdbFeedUrl);
         const fallbackMeta = await peekFeedInfo(fallbackBuf);
-        if (fallbackMeta.feedExpiry && fallbackMeta.feedExpiry >= today) {
+        if (fallbackMeta.feedExpiry && (!peekedExpiry || fallbackMeta.feedExpiry > peekedExpiry)) {
           buf = fallbackBuf;
           peekedExpiry = fallbackMeta.feedExpiry;
           peekedVersion = fallbackMeta.feedVersion;
-          writeLog(`\n  [info] primary expired; using current MDB fallback (${fallbackMeta.feedExpiry})\n  `);
+          writeLog(`\n  [info] using newer MDB fallback (${fallbackMeta.feedExpiry})\n  `);
         }
       } catch (fallbackErr) {
         writeLog(`\n  [warn] current-feed fallback failed — ${fallbackErr instanceof Error ? fallbackErr.message : fallbackErr}\n  `);
       }
     }
+  }
+
+  if (candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
+    writeLog(`\n  [warn] downloaded feed is older than the active snapshot (${peekedExpiry ?? 'unknown'} < ${agency.lastFeedExpiry}); keeping the active snapshot\n  `);
+    return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }
 
   if (peekedExpiry == null) {
@@ -405,8 +410,6 @@ async function refreshAgency(
   if (featureCount === 0) {
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
-    await r2PutCurrentFeed(agency.slug, buf);
-    writeLog(`  latest raw feed → atlas/gtfs/${agency.slug}.zip\n`);
     writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
     return { summary: '0 features, skipped' };
   }
@@ -420,6 +423,8 @@ async function refreshAgency(
   } catch { /* first audit run for this agency */ }
   if (previousStops) writeLog(`  ${formatStopAuditLog(agency.slug, compareStopSnapshots(previousStops, currentStops))}\n`);
 
+  const previousKey = previousRawFeedArchiveKey(agency);
+  const copiedPreviousCurrent = await r2CopyCurrentFeedToArchive(agency.slug, previousKey);
   const uploads: Promise<any>[] = [
     r2Put(`atlas/${agency.slug}.json`, geojson),
     r2Put(`atlas/${agency.slug}-stops.json`, stopsJson),
@@ -433,10 +438,8 @@ async function refreshAgency(
   }
   // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
   // The uploads still happen so the files exist on R2.
-  const previousKey = previousRawFeedArchiveKey(agency);
-  const copiedPreviousCurrent = await r2CopyCurrentFeedToArchive(agency.slug, previousKey);
   await Promise.all(uploads);
-  if (copiedPreviousCurrent) writeLog(`  archived previous current raw feed → gtfs/archive/${agency.slug}/${previousKey}.zip\n`);
+  if (copiedPreviousCurrent) writeLog(`  archived previous current raw feed → gtfs/archive/${agency.slug}/${copiedPreviousCurrent}.zip\n`);
 
   const stopsSnapshot = JSON.stringify({ generatedAt: new Date().toISOString(), stops: currentStops });
   const stopSnapshotKey = `stops-meta/${agency.slug}/${feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion ?? today}.json`;
