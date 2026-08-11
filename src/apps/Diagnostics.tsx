@@ -220,13 +220,10 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
   const inputClass = `h-8 px-3 text-xs font-bold rounded-full ${SURFACE} text-[var(--text-primary)] shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]`;
 
   return (
-    <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4 pt-24">
+    <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4 pt-24 pb-4">
       <div className="flex items-start gap-4">
-        {/* top-0, not top-24: the page container's own pt-24 already clears the fixed header, and
-            for a sticky element that offset stacks on top of the container's padding (unlike its
-            non-sticky sibling, which only gets the padding once) -- top-24 here doubled up and
-            pushed the sidebar ~84px lower than the table it's supposed to align with. */}
-        <aside className={`w-64 shrink-0 sticky top-0 ${FLOATING_CARD} p-4 flex flex-col gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto`}>
+        {/* Keep the filters in the visible viewport, below the fixed page title. */}
+        <aside className={`w-64 shrink-0 sticky top-24 h-[calc(100vh-7rem)] ${FLOATING_CARD} p-4 flex flex-col gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto`}>
           <label className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-[var(--text-dim)]">Region</span>
             <select value={regionFilter} onChange={e => { setRegionFilter(e.target.value); resetPage(); }} className={`${inputClass} w-full`}>
@@ -311,11 +308,10 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
           <p className="text-xs font-bold text-[var(--text-dim)]">Loading routes…</p>
         ) : (
           <>
-            {/* No overflow-hidden here: it was only for rounded top corners, but overflow other than
-                visible on an ancestor becomes the sticky containing block -- since this div itself
-                never scrolls, that silently broke the sticky table header below (nothing to stick
-                relative to). The opaque sticky header sits flush over the card's corners instead. */}
-            <div className={`${FLOATING_CARD} overflow-x-auto`}>
+            {/* Let the page own both scroll directions so the header can stick below the fixed title.
+                The table's min-width still gives narrow screens a horizontal page scroll, while
+                keeping the card's rounded bottom edge visible after the final row. */}
+            <div className={`${FLOATING_CARD} overflow-visible`}>
               <table className="w-full min-w-[760px] table-fixed text-xs border-collapse">
                 <colgroup>
                   <col className="w-[22%]" />
@@ -325,13 +321,13 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                   <col className="w-[10%]" />
                   <col className="w-[12%]" />
                 </colgroup>
-                <thead>
+                <thead className="relative z-20">
                   <tr className="text-left border-b border-[var(--border-primary)]">
                     {COLUMNS.map(({ key, label }) => (
                       <th
                         key={key}
                         onClick={() => toggleSort(key)}
-                        className="sticky top-0 z-10 bg-[var(--bg-panel)] backdrop-blur-md cursor-pointer select-none px-4 py-2.5 font-black hover:text-[var(--accent)] whitespace-nowrap"
+                        className="sticky top-24 z-20 bg-[var(--bg-app)] cursor-pointer select-none px-4 py-2.5 font-black hover:text-[var(--accent)] whitespace-nowrap shadow-[0_1px_0_var(--border-primary)]"
                       >
                         {label}{sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
                       </th>

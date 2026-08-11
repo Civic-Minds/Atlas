@@ -24,6 +24,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Beta’s Agencies list can now show only agencies with outdated schedule warnings
 - Beta route cards and diagnostics now use the same route-level frequency metric as the filter, preventing false composite readings.
 - Diagnostics table columns now contain long agency and headsign text instead of letting it overlap adjacent values
+- Diagnostics filters now fill the available viewport and the table stays readable while scrolling
 - History on beta now includes a Recent tier (shorter multi-snapshot series) alongside Explore (10+ years), labeled so deep-archive agencies stay distinct
 - Night Service now finds overnight-only routes, including route numbers shared across daytime and overnight patterns
 - Report forms now match route-card width, spacing, and wording, with single-category reports opening directly to their relevant question
