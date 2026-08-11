@@ -16,7 +16,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Local GTFS snapshots now migrate into the private archive with calendar-aware dates and collision-safe agency paths.
 - Fixed the production map failing to render routes after refresh because its MapLibre worker was being rewritten to the app shell.
 - Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.
-- SkyConnect now appears under Tampa International Airport instead of HART, matching the GTFS operator.
 - Rail headways now use one representative weekday, so subway and other rail lines no longer show fake high frequency when daily schedules are offset by a minute.
 - Disabling combined corridors now clears both the map band and any previously selected corridor overlay.
 - Irregular destination rows now show their typical gap range and exceptional longest wait instead of only saying that service varies.
