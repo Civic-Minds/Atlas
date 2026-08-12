@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Shared route cores now appear under frequency filters when their combined service qualifies, even if each individual branch is slower.
+
 ## [3.2.18] - 2026-08-10
 
 - Hidden-route agency headers now use the same standard agency names and comma-formatted counts as the Agencies list.

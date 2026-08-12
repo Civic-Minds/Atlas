@@ -21,6 +21,7 @@ import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tile
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
+import { computeFrequencySegmentOverlay, excludePartialMatches } from '../../utils/frequencySegments';
 
 // A neutral casing keeps the route tier colours readable underneath it. The
 // corridor should feel like a trunk emphasis, not a second purple network.
@@ -132,6 +133,7 @@ function buildEffectiveHeadwayColorExpression(period: TimePeriod): any {
 interface MapCanvasProps {
   agencies: Agency[];
   layers?: Record<string, GeoJSON.FeatureCollection>;
+  filteredLayers?: Record<string, GeoJSON.FeatureCollection>;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -178,6 +180,7 @@ interface MapCanvasProps {
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencies,
   layers,
+  filteredLayers,
   maxHeadway,
   period,
   q,
@@ -380,6 +383,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const regionalView = useMemo(() => getRegionalView(agencies), [agencies]);
   const hasSavedView = useMemo(() => getSavedView() !== null, []);
 
+  const frequencySegmentOverlay = useMemo(() => {
+    if (!showRouteLayers || fareView || !filteredLayers) return { segments: [], partialMatches: [] };
+    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
+  }, [filteredLayers, fareView, maxHeadway, period, showRouteLayers]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('frequency-qualifying-segments') as maplibregl.GeoJSONSource | undefined;
+    source?.setData({ type: 'FeatureCollection', features: frequencySegmentOverlay.segments });
+  }, [frequencySegmentOverlay, mapLoaded]);
+
   // Initialize MapLibre Map
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -447,6 +462,23 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-width': 18,
           'line-opacity': 0
         }
+      });
+
+      // GeoJSON overlay for stretches that qualify even when the route-level tile metric does not.
+      map.addSource('frequency-qualifying-segments', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'frequency-qualifying-segments-layer',
+        type: 'line',
+        source: 'frequency-qualifying-segments',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.6, 14, 3.2, 17, 4.5],
+          'line-opacity': 1,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
       });
 
       // Debug-only route highlight layer -- see MapCanvasProps.highlightRoutes.
@@ -973,7 +1005,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ['>=', ['index-of', ql, ['downcase', ['coalesce', ['get', prop], '']]], 0];
     const searchAnyField: any = ['any', contains('routeShortName'), contains('routeId'), contains('agencySlug')];
 
-    const effectiveTileFilter: any = tileFilter;
+    const partialMatches = frequencySegmentOverlay.partialMatches;
+    const defaultFrequencyMapState = !fareView
+      && !selectedRoute
+      && !hoveredSearchRoute
+      && !(selectedStop && routesForStop?.siblingIdsByAgency)
+      && !historyOverlay?.routeShortName;
+    // Remove the full route feature when only a subsection qualifies. The GeoJSON overlay below
+    // supplies the clipped subsection; retaining the tile feature would show the slower remainder.
+    const effectiveTileFilter: any = defaultFrequencyMapState
+      ? excludePartialMatches(tileFilter, partialMatches)
+      : tileFilter;
 
     // Base filter from useIntervalStats — covers agency allowlist, day, direction, span, headway.
     // MapCanvas only adds map-state-specific clauses on top.
@@ -1091,6 +1133,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         ]);
         map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
       }
+
+      const isDefaultRouteFocusState = !historyOverlay?.routeShortName
+        && !selectedRoute
+        && !hoveredSearchRoute
+        && !(selectedStop && routesForStop?.siblingIdsByAgency);
+      if (map.getLayer('frequency-qualifying-segments-layer')) {
+        map.setLayoutProperty(
+          'frequency-qualifying-segments-layer',
+          'visibility',
+          isDefaultRouteFocusState ? 'visible' : 'none',
+        );
+      }
     }
 
     // Stops visibility
@@ -1130,7 +1184,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, historyOverlay, layers]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, historyOverlay, layers, frequencySegmentOverlay]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

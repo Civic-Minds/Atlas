@@ -97,6 +97,7 @@ export function passesRouteFilter(
   slug: string,
   filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
+  options?: { skipFrequency?: boolean },
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
@@ -143,6 +144,10 @@ export function passesRouteFilter(
   // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
   // as a whole, not just in that one direction -- hide the whole route, not just that branch.
   if (filters.hideSpan && isHiddenByIrregularFilter(p)) return false;
+  // The map's qualifying-segment overlay needs routes that fail at the route level so it can
+  // inspect their real per-stop and shared-core frequency. This opt-in skips only frequency;
+  // agency, day, mode, irregular-service, and live filters still apply.
+  if (options?.skipFrequency) return true;
   // When a specific period is active, use the route's worst-direction headway for that period
   // (falling back to the branch's own headwayByPeriod) -- both directions must qualify, not just
   // this one branch. Stop-specific metrics are deliberately not used here: they belong to the
@@ -312,6 +317,23 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
+  const filteredLayers = useMemo(() => {
+    const result: AgencyLayers = {};
+    for (const [slug, fc] of Object.entries(layers)) {
+      const features = fc.features.filter(f => passesRouteFilter(
+        f.properties as unknown as ShapeProperties,
+        slug,
+        filters,
+        routesForStop,
+        { skipFrequency: true },
+      ));
+      if (features.length > 0) result[slug] = { ...fc, features };
+    }
+    return result;
+  // Frequency is intentionally excluded: this is the input for the segment overlay.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layers, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
+
   const stats = useMemo(() => {
     if (allFeatures.length === 0) return null;
     // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in.
@@ -416,5 +438,5 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agencies, day, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
-  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, routesForStop, tileFilter };
+  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
 }
