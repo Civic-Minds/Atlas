@@ -24,10 +24,16 @@ function branch(headsign: string): GeoJSON.Feature {
   };
 }
 
-function branchWithStopHeadways(headsign: string, stopHeadways: Record<string, number>): GeoJSON.Feature {
+function branchWithStopHeadways(
+  headsign: string,
+  stopHeadways: Record<string, number>,
+  stopOrder: string[] = ['A', 'B', 'C'],
+): GeoJSON.Feature {
   const feature = branch(headsign);
   feature.properties = {
     ...feature.properties,
+    stopOrder,
+    stopPositions: stopOrder.map((_, index) => index / (stopOrder.length - 1)),
     stopHeadways,
     stopPeriodHeadways: Object.fromEntries(
       Object.entries(stopHeadways).map(([stopId, value]) => [stopId, { evening: value }]),
@@ -72,5 +78,20 @@ describe('frequency segment overlay', () => {
     expect(result.segments).toHaveLength(2);
     expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === -86.8)).toBe(true);
     expect(result.segments.every(segment => segment.geometry.coordinates.at(-1)![0] === -86.6)).toBe(true);
+  });
+
+  it('keeps the earliest shared stop when terminal loops reverse stop order', () => {
+    const result = computeFrequencySegmentOverlay({
+      marta: {
+        type: 'FeatureCollection',
+        features: [
+          branchWithStopHeadways('DORAVILLE STN', { A: 32, B: 32, C: 32 }),
+          branchWithStopHeadways('GOLDSMITH P&R', { A: 33, B: 31, C: 30 }, ['B', 'A', 'C']),
+        ],
+      },
+    }, 'evening', 15);
+
+    expect(result.segments).toHaveLength(2);
+    expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === -86.8)).toBe(true);
   });
 });
