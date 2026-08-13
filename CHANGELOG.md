@@ -9,7 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
 - Route-card sparklines now sit inside their direction sections, so each chart only describes one direction.
 - Map right-click reports now use the same in-app report form as other issue reports.
-- Map attribution now moves clear of open left-side panels instead of being covered by them.
+- Left-side panels now stop above the map attribution instead of covering it.
 - Shared frequency cores now include the terminal shape lead-in, so qualifying sections reach the actual station boundary.
 - Shared route cores now appear under frequency filters when their combined service qualifies, even if each individual branch is slower.
 - Shared route cores now use the displayed branch cadence across their full overlap, so stop-level noise cannot cut the qualifying section short.
