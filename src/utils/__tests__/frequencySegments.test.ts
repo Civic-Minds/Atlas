@@ -24,6 +24,18 @@ function branch(headsign: string): GeoJSON.Feature {
   };
 }
 
+function branchWithStopHeadways(headsign: string, stopHeadways: Record<string, number>): GeoJSON.Feature {
+  const feature = branch(headsign);
+  feature.properties = {
+    ...feature.properties,
+    stopHeadways,
+    stopPeriodHeadways: Object.fromEntries(
+      Object.entries(stopHeadways).map(([stopId, value]) => [stopId, { evening: value }]),
+    ),
+  };
+  return feature;
+}
+
 describe('frequency segment overlay', () => {
   it('shows a shared core when each branch is slower than the filter', () => {
     const result = computeFrequencySegmentOverlay({
@@ -44,5 +56,21 @@ describe('frequency segment overlay', () => {
       headsign: 'HICKORY PLAZA',
       day: 'Weekday',
     });
+  });
+
+  it('uses branch cadence across the full shared core despite noisy stop values', () => {
+    const result = computeFrequencySegmentOverlay({
+      marta: {
+        type: 'FeatureCollection',
+        features: [
+          branchWithStopHeadways('DORAVILLE STN', { A: 32, B: 32, C: 32 }),
+          branchWithStopHeadways('GOLDSMITH P&R', { A: 33, B: 31, C: 30 }),
+        ],
+      },
+    }, 'evening', 15);
+
+    expect(result.segments).toHaveLength(2);
+    expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === -86.8)).toBe(true);
+    expect(result.segments.every(segment => segment.geometry.coordinates.at(-1)![0] === -86.6)).toBe(true);
   });
 });

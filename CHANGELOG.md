@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Shared route cores now appear under frequency filters when their combined service qualifies, even if each individual branch is slower.
+- Shared route cores now use the displayed branch cadence across their full overlap, so stop-level noise cannot cut the qualifying section short.
 - Bare Atlas URLs now start with the current day and time instead of restoring stale saved filters.
 - Search now puts exact and stronger route or stop matches before weaker matches that happen to be in the current map view.
 - Beta now includes a “What’s in view” panel showing the agencies and route counts in the current map area.

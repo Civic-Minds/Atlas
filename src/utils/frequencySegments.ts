@@ -179,12 +179,15 @@ export function computeFrequencySegmentOverlay(
       }
       const commonStops = ref.stopOrder!.filter(stopId => (stopBranches.get(stopId)?.length ?? 0) >= 2);
       if (commonStops.length < 2) continue;
-      const ranges = findQualifyingStopRanges(commonStops, stopId => {
-        const values = (stopBranches.get(stopId) ?? [])
-          .map(({ p }) => stopHeadwayAt(p, period, stopId))
-          .filter((v): v is number => v != null);
-        return combinedHeadway(values);
-      }, maxHeadway);
+      // Shared-core cadence must use the branch cadence shown in the route card and used by
+      // the active route filter. Stop-level values are noisy terminal/stop observations (for
+      // example, MARTA 121 reports 32/33/30 at different shared stops even though both branches
+      // are displayed as every 30); using them here incorrectly chops one continuous core into
+      // fragments.
+      const branchCadence = branches
+        .map(({ p }) => branchHeadway(p, period))
+        .filter((v): v is number => v != null);
+      const ranges = findQualifyingStopRanges(commonStops, () => combinedHeadway(branchCadence), maxHeadway);
       if (ranges.length === 0) continue;
 
       for (const branch of branches) {
