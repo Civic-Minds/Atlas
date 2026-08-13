@@ -8,9 +8,9 @@
   "feedUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
-  "lastFeedExpiry": "20260823",
-  "lastFeedVersion": "20260721",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20270124",
+  "lastFeedVersion": "20260811",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "Allentown, Pennsylvania",
     "Bethlehem, Pennsylvania"

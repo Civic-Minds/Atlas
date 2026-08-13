@@ -8,9 +8,9 @@
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/tarta.etaspot.net/gtfs.zip",
   "region": "Ohio",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1716_1/latest.zip",
-  "lastFeedExpiry": "20270729",
-  "lastFeedVersion": "408",
-  "lastRefreshedAt": "2026-08-03",
+  "lastFeedExpiry": "20270812",
+  "lastFeedVersion": "424",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "Toledo, Ohio"
   ]

@@ -14,9 +14,9 @@
   ],
   "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-mateo-county-transit-district-samtrans-gtfs-49.zip?alt=media",
-  "lastFeedExpiry": "20260801",
+  "lastFeedExpiry": "20261114",
   "lastFeedVersion": "Initial",
-  "lastRefreshedAt": "2026-08-03",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "South San Francisco, California",
     "San Mateo, California",

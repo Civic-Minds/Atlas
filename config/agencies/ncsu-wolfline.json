@@ -6,9 +6,9 @@
     -78.67
   ],
   "feedUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20260902",
+  "lastFeedExpiry": "20260912",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-03",
+  "lastRefreshedAt": "2026-08-13",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2245/latest.zip",
   "bbox": [

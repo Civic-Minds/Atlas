@@ -8,9 +8,9 @@
   "feedUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-394/latest.zip",
   "region": "Wisconsin",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "S070_202605050858",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20261205",
+  "lastFeedVersion": "S072_202608111342",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "Madison, Wisconsin"
   ]

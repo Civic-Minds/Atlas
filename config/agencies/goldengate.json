@@ -16,7 +16,7 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-golden-gate-transit-gtfs-67.zip?alt=media",
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-03",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "Chinatown, California",
     "San Rafael, California",

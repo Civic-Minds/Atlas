@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-clara-valley-transportation-authority-vta-gtfs-57.zip?alt=media",
-  "lastFeedExpiry": "20260809",
-  "lastFeedVersion": "2026-07-14_12:57",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20261025",
+  "lastFeedVersion": "2026-07-27_13:41",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "San Jose, California",
     "Santa Clara, California",

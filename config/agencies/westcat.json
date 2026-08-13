@@ -14,9 +14,9 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-westcat-gtfs-78.zip?alt=media",
-  "lastFeedExpiry": "20260831",
-  "lastFeedVersion": "UTC: 25-Jun-2026 20:50",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20260911",
+  "lastFeedVersion": "UTC: 12-Aug-2026 16:36",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "Richmond, California",
     "Vallejo, California",

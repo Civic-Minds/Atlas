@@ -8,9 +8,9 @@
   "feedUrl": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx",
   "region": "Kentucky",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2067/latest.zip",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "20260708",
-  "lastRefreshedAt": "2026-07-29",
+  "lastFeedExpiry": "20261219",
+  "lastFeedVersion": "20260812",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "Lexington-Fayette, Kentucky",
     "Lexington, Kentucky"

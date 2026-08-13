@@ -7,10 +7,10 @@
     -81.519
   ],
   "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "Updated: Jun 29, 2026, 10:39 AM",
+  "lastFeedExpiry": "20270116",
+  "lastFeedVersion": "Updated: Aug 6, 2026, 12:06 PM",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-akron-metro-regional-transit-authority-metro-gtfs-411.zip?alt=media",
-  "lastRefreshedAt": "2026-07-29",
+  "lastRefreshedAt": "2026-08-13",
   "cities": [
     "Akron, Ohio",
     "Parma, Ohio",
