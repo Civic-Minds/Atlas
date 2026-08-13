@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
-import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
+import { LocateFixed, Plus, Minus, Link2, Flag, List } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
@@ -13,6 +13,7 @@ import { useHistoryLayer } from './map/useHistoryLayer';
 import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
+import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
@@ -22,6 +23,8 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
+import { getMapContextAgencies, type MapContextAgency } from '../../utils/mapContext';
+import { MapContextPanel } from './MapContextPanel';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 
@@ -149,6 +152,8 @@ interface MapCanvasProps {
   onBoundsChange: (b: ViewportBounds) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
+  showMapContext?: boolean;
+  day?: DayType;
   routesForStop?: {
     slug: string;
     routeIds: Set<string>;
@@ -194,6 +199,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   resetViewKey,
   setQuery,
   onLocate,
+  showMapContext = false,
+  day = 'Weekday',
   routesForStop,
   showRouteLayers = true,
   liveRoutesOnly = false,
@@ -218,6 +225,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
+  const [mapContextOpen, setMapContextOpen] = useState(false);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fittedRouteRef = useRef<string | null>(null);
   const showMapHint = (msg: string) => {
@@ -243,8 +251,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     else showMapHint(fallback);
   };
 
-  const { setBoundsAndZoom } = useViewport();
+  const { bounds: viewportBounds, setBoundsAndZoom } = useViewport();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
+
+  const mapContextAgencies = useMemo<MapContextAgency[]>(
+    () => showMapContext && mapContextOpen
+      ? getMapContextAgencies(agencies, layers ?? {}, viewportBounds, day)
+      : [],
+    [agencies, layers, viewportBounds, day, showMapContext, mapContextOpen],
+  );
 
   // Deck.gl overlay for GPU-rendered vehicle markers
   const deckOverlayRef = useRef<MapboxOverlay | null>(null);
@@ -1290,6 +1305,31 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
           </button>
         </div>
+      )}
+
+      {showMapContext && mapContextOpen && (
+        <MapContextPanel
+          agencies={mapContextAgencies}
+          onClose={() => setMapContextOpen(false)}
+          onSelectAgency={setSelectedAgencySlug ? slug => {
+            onClearSelection?.();
+            setSelectedAgencySlug(slug);
+            setMapContextOpen(false);
+          } : undefined}
+        />
+      )}
+
+      {showMapContext && (
+        <button
+          type="button"
+          onClick={() => setMapContextOpen(open => !open)}
+          aria-label="What’s in this view"
+          aria-expanded={mapContextOpen}
+          title="What’s in this view"
+          className={`absolute bottom-6 right-14 ${Z_PANEL} w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border ${mapContextOpen ? 'border-[var(--accent-border)] text-[var(--accent)]' : 'border-[var(--border-primary)] text-[var(--text-dim)]'} shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
+        >
+          <List className="w-3.5 h-3.5" />
+        </button>
       )}
 
       {/* Zoom Control Overlay */}

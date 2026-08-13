@@ -16,6 +16,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Shared route cores now use the displayed branch cadence across their full overlap, so stop-level noise cannot cut the qualifying section short.
 - Shared route cores now include terminal-loop stops when branches list the same stops in opposite order.
 - Regional agencies now show their service area instead of an arbitrary city from their stop list.
+- Beta now includes a “What’s in view” panel showing the agencies and route counts in the current map area.
 
 - Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.
 - Combined corridor bands now stay hidden when the setting is off, including after selecting a route variant.
