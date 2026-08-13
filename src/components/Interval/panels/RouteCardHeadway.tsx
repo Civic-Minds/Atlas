@@ -394,21 +394,24 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
         {hasCoreSummary && coreHeadway != null && (
-          <CardDirectionRow
-            label="Core area"
-            headway={coreHeadway}
-            branchHovered={hoveredBranch?.isCore === true}
-            branchDimmed={!!hoveredBranch && hoveredBranch.isCore !== true}
-            onHoverStart={() => setHoveredBranch({
-              directionId: primaryMultiBranch!.dirId,
-              headsigns: primaryMultiBranch!.realTier
-                .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
-                .map(d => d.headsign)
-                .filter((headsign): headsign is string => !!headsign),
-              isCore: true,
-            })}
-            onHoverEnd={() => setHoveredBranch(null)}
-          />
+          <>
+            <CardSectionLabel className="mb-0">Combined</CardSectionLabel>
+            <CardDirectionRow
+              label="Shared section"
+              headway={coreHeadway}
+              branchHovered={hoveredBranch?.isCore === true}
+              branchDimmed={!!hoveredBranch && hoveredBranch.isCore !== true}
+              onHoverStart={() => setHoveredBranch({
+                directionId: primaryMultiBranch!.dirId,
+                headsigns: primaryMultiBranch!.realTier
+                  .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
+                  .map(d => d.headsign)
+                  .filter((headsign): headsign is string => !!headsign),
+                isCore: true,
+              })}
+              onHoverEnd={() => setHoveredBranch(null)}
+            />
+          </>
         )}
         {(() => {
           const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
