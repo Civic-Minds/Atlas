@@ -47,6 +47,8 @@ export interface Agency {
   corridorsUrl?: string;
   bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
+  /** Optional service-area label for regional agencies; avoids presenting one stop-density city as the agency's home. */
+  displayArea?: string;
   lastFeedExpiry?: string | null;
   lastRefreshedAt?: string | null;
   excludeRouteShortNames?: string[];

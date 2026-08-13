@@ -89,13 +89,13 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
   const allGroups = useMemo(() => {
-    const groups: { name: string; slugs: string[]; region: string; loaded: boolean; cities?: string[] }[] = [];
+    const groups: { name: string; slugs: string[]; region: string; loaded: boolean; cities?: string[]; displayArea?: string }[] = [];
     for (const a of agencies) {
       const region = a.region ?? 'Other';
       const inView = bboxInViewport(a, bounds);
       const g = groups.find(x => x.name === a.name && x.region === region);
       if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
-      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: inView, cities: a.cities });
+      else groups.push({ name: a.name, slugs: [a.slug], region, loaded: inView, cities: a.cities, displayArea: a.displayArea });
     }
     return groups;
   }, [agencies, bounds]);
@@ -164,7 +164,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
             <p className="px-2 pt-2 pb-0.5 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyDisplayParts(g.name, g.cities);
+              const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
               return (
                 <button
                   key={g.name}

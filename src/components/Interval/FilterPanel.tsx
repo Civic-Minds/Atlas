@@ -189,6 +189,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     () => new Map((agencies ?? []).map(agency => [agency.slug, agency.cities] as const)),
     [agencies],
   );
+  const agencyDisplayAreasBySlug = useMemo(
+    () => new Map((agencies ?? []).map(agency => [agency.slug, agency.displayArea] as const)),
+    [agencies],
+  );
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
   const hasActiveFilters = hideSpan || livePollingOnly || showCorridors || hasActiveCoreFilter;
@@ -301,7 +305,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   ) : (
                     <div className="px-5 pb-4">
                       {hiddenRoutesByAgency.map(([agencySlug, group]) => {
-                        const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug));
+                        const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug), agencyDisplayAreasBySlug.get(agencySlug));
                         return (
                         <div key={agencySlug}>
                           <p className="pt-2 pb-1 text-[8px] font-black text-[var(--text-dim)] tracking-widest">

@@ -215,8 +215,10 @@ export function liveVehicleRowLabel(
 export function agencyDisplayParts(
   name: string,
   cities?: string[],
+  displayArea?: string,
 ): { primary: string; secondary?: string } {
   const result = agencyDisplayPartsFromName(name);
+  if (displayArea) return { ...result, secondary: displayArea };
   // `cities` is derived from real GTFS stop coordinates (pipeline/deriveCities.ts),
   // so it's authoritative over whatever the name-parsing heuristics above guessed —
   // prefer it whenever the primary city isn't already spelled out in the name.
