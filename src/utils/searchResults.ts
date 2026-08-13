@@ -300,8 +300,8 @@ export function searchRouteResults(
       };
     })
     .sort((a, b) => {
-      if (a.inView !== b.inView) return a.inView ? -1 : 1;
       if (a.matchRank !== b.matchRank) return a.matchRank - b.matchRank;
+      if (a.inView !== b.inView) return a.inView ? -1 : 1;
       if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
       return (a.routeShortName ?? '').localeCompare(b.routeShortName ?? '', undefined, { numeric: true });
     });
@@ -495,8 +495,8 @@ export function searchStopResults(
   }
 
   return groupedResults.sort((a, b) => {
-    if (a.inView !== b.inView) return a.inView ? -1 : 1;
     if (a.matchRank !== b.matchRank) return a.matchRank - b.matchRank;
+    if (a.inView !== b.inView) return a.inView ? -1 : 1;
     if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
     return a.stopName.localeCompare(b.stopName);
   });

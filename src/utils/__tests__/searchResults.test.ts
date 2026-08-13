@@ -124,6 +124,21 @@ describe('searchResults', () => {
     expect(results[0]?.inView).toBe(true);
   });
 
+  it('sorts an exact route match before a weaker in-viewport match', () => {
+    const feature = (routeId: string, routeShortName: string, coordinates: [number, number][]) => ({
+      type: 'Feature' as const,
+      geometry: { type: 'LineString' as const, coordinates },
+      properties: { routeId, routeShortName, routeLongName: '', agencySlug: 'demo', agencyName: 'Demo' },
+    });
+    const bounds = { s: 42.9, w: -79.6, n: 43.1, e: -79.4 };
+    const results = searchRouteResults([
+      feature('5010', '5010', [[-79.5, 43], [-79.49, 43.01]]),
+      feature('501', '501', [[-80, 43], [-79.99, 43.01]]),
+    ], '501', bounds);
+
+    expect(results.map(r => r.routeShortName)).toEqual(['501', '5010']);
+  });
+
   it('keeps same-shortName routes from different agencies separate, each with its own agency label (#211)', () => {
     const features = [
       {
@@ -214,5 +229,20 @@ describe('searchResults', () => {
     expect(results).toHaveLength(1);
     expect(results[0].stopName).toBe('Rosemont'); // "Rosemont" is shorter and matches "rosemont" query exactly (rank 2 vs rank 4)
     expect(results[0].routes).toEqual(['811', 'Blue']);
+  });
+
+  it('sorts an exact stop match before a weaker in-viewport match', () => {
+    const feature = (stopId: string, stopName: string, coordinates: [number, number]) => ({
+      type: 'Feature' as const,
+      properties: { stopId, stopName, agencySlug: 'demo', routeIds: [] },
+      geometry: { type: 'Point' as const, coordinates },
+    });
+    const bounds = { s: 42.9, w: -79.6, n: 43.1, e: -79.4 };
+    const results = searchStopResults([
+      feature('near', 'Main Street Station', [-79.5, 43]),
+      feature('exact', 'Main', [-80, 43]),
+    ], 'main', bounds, new Map());
+
+    expect(results.map(r => r.stopId)).toEqual(['exact', 'near']);
   });
 });
