@@ -190,10 +190,6 @@ export default function App() {
       const d = sp.get('day') || sp.get('d');
       if (d && (DAY_TYPES as readonly string[]).includes(d)) return d as DayType;
     } catch {}
-    try {
-      const s = localStorage.getItem('atlas_pref_day');
-      if (s && (DAY_TYPES as readonly string[]).includes(s)) return s as DayType;
-    } catch {}
     return getNowDay();
   });
 
@@ -275,8 +271,8 @@ export default function App() {
     }
   }, [inHistory]);
 
-  // Sync day filter to URL (for refresh/share of active view). URL wins on load if present
-  // (see initializer); effects ensure current value (from LS/default/URL) is reflected.
+  // Sync day filter to URL (for refresh/share of active view). URL wins on load if present;
+  // otherwise the initial state uses today's day.
   // 'Weekday' (common default) omitted for short URLs.
   useEffect(() => {
     syncUrlParams({ day: day !== 'Weekday' ? day : null });

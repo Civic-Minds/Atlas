@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Shared route cores now appear under frequency filters when their combined service qualifies, even if each individual branch is slower.
+- Bare Atlas URLs now start with the current day and time instead of restoring stale saved filters.
 
 ## [3.2.18] - 2026-08-10
 

@@ -81,7 +81,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         if (isFinite(n) && n > 0) return n;
       }
     } catch {}
-    try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
@@ -273,8 +272,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     }, routesForStop);
   }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute, showCorridorBand, showCorridors]);
 
-  useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
-  useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
@@ -366,8 +363,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   }, [selectedStop]);
 
   // Sync filter state (maxHeadway, period) to URL for active view persistence (refresh/share).
-  // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
-  // current (like lat/lon/z). Defaults (h=60, p=all) omitted to keep URLs short.
+  // On load: URL wins (see initializers), otherwise use current/default state. Effects then
+  // ensure the URL reflects current filters (like lat/lon/z). Defaults (h=60, p=all) omitted.
   useEffect(() => {
     const h =
       maxHeadway === Infinity ? 'all'
