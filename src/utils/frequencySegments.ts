@@ -16,9 +16,19 @@ export interface FrequencySegmentRouteKey {
 
 export interface FrequencySegmentOverlay {
   /** Bright GeoJSON lines for route stretches that meet the active threshold. */
-  segments: GeoJSON.Feature<GeoJSON.LineString, { color: string }>[];
+  segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[];
   /** Base route features that need to be dimmed because only part qualifies. */
   partialMatches: FrequencySegmentRouteKey[];
+}
+
+interface FrequencySegmentProperties {
+  color: string;
+  agencySlug: string;
+  routeId: string;
+  routeBranch: string | null;
+  directionId: number;
+  headsign: string | null;
+  day: string | null;
 }
 
 function findQualifyingStopRanges(
@@ -75,9 +85,10 @@ function featureKey(k: FrequencySegmentRouteKey): string {
 function addClippedSegments(
   feature: GeoJSON.Feature,
   p: ShapeProperties,
+  slug: string,
   ranges: Array<[number, number]>,
   maxHeadway: number,
-  segments: GeoJSON.Feature<GeoJSON.LineString, { color: string }>[] ,
+  segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[] ,
 ): boolean {
   if (feature.geometry.type !== 'LineString' || !p.stopPositions || !p.stopOrder) return false;
   let added = false;
@@ -87,7 +98,15 @@ function addClippedSegments(
     segments.push({
       type: 'Feature',
       geometry: { type: 'LineString', coordinates: clipped },
-      properties: { color: headwayToTierColor(maxHeadway) },
+      properties: {
+        color: headwayToTierColor(maxHeadway),
+        agencySlug: p.agencySlug ?? slug,
+        routeId: p.routeId,
+        routeBranch: p.routeBranch ?? null,
+        directionId: p.directionId,
+        headsign: p.headsign ?? null,
+        day: p.day ?? null,
+      },
     });
     added = true;
   }
@@ -104,7 +123,7 @@ export function computeFrequencySegmentOverlay(
   period: TimePeriod,
   maxHeadway: number,
 ): FrequencySegmentOverlay {
-  const segments: GeoJSON.Feature<GeoJSON.LineString, { color: string }>[] = [];
+  const segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[] = [];
   const partialMatches: FrequencySegmentRouteKey[] = [];
   if (maxHeadway === Infinity) return { segments, partialMatches };
 
@@ -133,7 +152,7 @@ export function computeFrequencySegmentOverlay(
       if (!p.stopOrder || !p.stopPositions || p.stopOrder.length < 2 || p.stopPositions.length !== p.stopOrder.length) continue;
       const ranges = findQualifyingStopRanges(p.stopOrder, id => stopHeadwayAt(p, period, id), maxHeadway);
       const wholeRoute = ranges.length === 1 && ranges[0][0] === 0 && ranges[0][1] === p.stopOrder.length - 1;
-      if (ranges.length > 0 && !wholeRoute && addClippedSegments(feature, p, ranges, maxHeadway, segments)) {
+      if (ranges.length > 0 && !wholeRoute && addClippedSegments(feature, p, slug, ranges, maxHeadway, segments)) {
         markPartial(p, slug);
       }
     }
@@ -175,7 +194,7 @@ export function computeFrequencySegmentOverlay(
           const toIndex = branch.p.stopOrder!.indexOf(commonStops[to]);
           if (fromIndex >= 0 && toIndex > fromIndex) branchRanges.push([fromIndex, toIndex]);
         }
-        if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, branchRanges, maxHeadway, segments)) {
+        if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, slug, branchRanges, maxHeadway, segments)) {
           markPartial(branch.p, slug);
         }
       }

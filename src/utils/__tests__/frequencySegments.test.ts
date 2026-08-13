@@ -37,5 +37,12 @@ describe('frequency segment overlay', () => {
     expect(result.partialMatches.map(item => item.headsign)).toEqual(['HICKORY PLAZA', 'EZELL']);
     expect(result.segments).toHaveLength(2);
     expect(result.segments.every(segment => segment.geometry.type === 'LineString')).toBe(true);
+    expect(result.segments[0].properties).toMatchObject({
+      agencySlug: 'nashvillemta',
+      routeId: '52',
+      directionId: 0,
+      headsign: 'HICKORY PLAZA',
+      day: 'Weekday',
+    });
   });
 });

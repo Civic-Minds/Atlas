@@ -344,7 +344,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         [e.point.x - 12, e.point.y - 12],
         [e.point.x + 12, e.point.y + 12],
       ];
-      const routeHits = map.queryRenderedFeatures(bbox, { layers: ['routes-hit-layer'] });
+      const routeHitLayers = ['routes-hit-layer'];
+      if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
+        routeHitLayers.push('frequency-qualifying-segments-hit-layer');
+      }
+      const routeHits = map.queryRenderedFeatures(bbox, { layers: routeHitLayers });
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
         const uniqueRouteKeys: string[] = Array.from(new Set(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
@@ -492,6 +496,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-color': ['get', 'color'],
           'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.6, 14, 3.2, 17, 4.5],
           'line-opacity': 1,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      });
+      map.addLayer({
+        id: 'frequency-qualifying-segments-hit-layer',
+        type: 'line',
+        source: 'frequency-qualifying-segments',
+        paint: {
+          'line-color': '#000000',
+          'line-width': 18,
+          'line-opacity': 0,
         },
         layout: { 'line-cap': 'round', 'line-join': 'round' },
       });
@@ -706,10 +721,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const stopHits = map.getLayer('stops-layer')
         ? map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] })
         : [];
+      const routeHitLayers = ['routes-hit-layer'];
+      if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
+        routeHitLayers.push('frequency-qualifying-segments-hit-layer');
+      }
       const routeHits = stopHits.length === 0 && map.getLayer('routes-hit-layer')
         ? map.queryRenderedFeatures(
             [[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]],
-            { layers: ['routes-hit-layer'] },
+            { layers: routeHitLayers },
           )
         : [];
       map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 ? 'pointer' : '';
