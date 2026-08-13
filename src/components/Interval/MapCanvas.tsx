@@ -14,14 +14,15 @@ import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
-import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
+import { findNearestPlace } from '../../../shared/placeLookup';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, excludePartialMatches } from '../../utils/frequencySegments';
+import { CardReportButton, type CardReportButtonHandle } from './cardUi';
 
 // A neutral casing keeps the route tier colours readable underneath it. The
 // corridor should feel like a trunk emphasis, not a second purple network.
@@ -32,19 +33,6 @@ const CORRIDOR_ROUTE_COUNT: any = ['length', ['get', 'routeIds']];
 function corridorWidthExpression(zoomWidths: [number, number, number, number]): any {
   const [twoRoutes, threeRoutes, fourRoutes, fiveRoutes] = zoomWidths;
   return ['step', CORRIDOR_ROUTE_COUNT, twoRoutes, 3, threeRoutes, 4, fourRoutes, 5, fiveRoutes];
-}
-
-/** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
-function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
-  let best: Agency | undefined;
-  let bestArea = Infinity;
-  for (const a of agencies) {
-    const [s, w, n, e] = getAgencyBbox(a);
-    if (lat < s || lat > n || lng < w || lng > e) continue;
-    const area = (n - s) * (e - w);
-    if (area < bestArea) { bestArea = area; best = a; }
-  }
-  return best;
 }
 
 /** Flatten nested ['all', ...] filters into one clause list for MapLibre. */
@@ -220,6 +208,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
+  const [mapReport, setMapReport] = useState<{ title: string; details: string } | null>(null);
+  const mapReportRef = useRef<CardReportButtonHandle>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fittedRouteRef = useRef<string | null>(null);
   const showMapHint = (msg: string) => {
@@ -239,9 +229,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     zoomOrientTimerRef.current = setTimeout(() => setZoomOrientCard(null), 1800);
   };
   const showZoomHint = (lng: number, lat: number, subtitle: string, fallback: string) => {
-    const agency = agencyAtPoint(agencies, lng, lat);
-    const place = agency?.cities?.[0] ?? agency?.name;
-    if (place) showZoomOrientCard(place, subtitle);
+    const place = findNearestPlace(lat, lng);
+    if (place) showZoomOrientCard(`${place.name}, ${place.region}`, subtitle);
     else showMapHint(fallback);
   };
 
@@ -794,11 +783,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!mapContextMenu) return;
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
-    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
-    const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
-    window.open(issueUrl, '_blank', 'noopener,noreferrer');
+    const details = `**Location:** ${url}\n**Coordinates:** ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}\n\n`;
+    setMapReport({ title, details });
     setMapContextMenu(null);
   };
+
+  useEffect(() => {
+    if (mapReport) mapReportRef.current?.open();
+  }, [mapReport]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1262,6 +1254,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
           </button>
         </div>
+      )}
+
+      {mapReport && (
+        <CardReportButton
+          ref={mapReportRef}
+          title={mapReport.title}
+          details={mapReport.details}
+          showButton={false}
+        />
       )}
 
       {/* Zoom Control Overlay */}

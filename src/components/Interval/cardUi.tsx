@@ -36,12 +36,14 @@ const FREQUENCY_REASONS = [
 ] as const;
 
 export interface CardReportButtonHandle {
+  /** Opens the report dialog without pre-selecting a reason. */
+  open: () => void;
   /** Opens the report dialog with the given reason pre-checked (used by FlaggableValue). */
   openWithReason: (reason: string) => void;
 }
 
-export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: string[] }>(
-  function CardReportButton({ title, details, showLiveReason = false, excludeReasons = [] }, ref) {
+export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: string[]; showButton?: boolean }>(
+  function CardReportButton({ title, details, showLiveReason = false, excludeReasons = [], showButton = true }, ref) {
   // Content key (not array identity) so openWithReason does not thrash when parents pass a fresh literal.
   const excludeKey = excludeReasons.join('\0');
   const reportReasons = React.useMemo(() => {
@@ -59,6 +61,13 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   const [validationError, setValidationError] = React.useState('');
 
   React.useImperativeHandle(ref, () => ({
+    open: () => {
+      setValidationError('');
+      setDescription('');
+      setFrequencyReasons([]);
+      setSelectedReasons([]);
+      setIsOpen(true);
+    },
     openWithReason: (reason: string) => {
       // Always open a clean dialog; force the pre-selected reason when it is in the card's list.
       setValidationError('');
@@ -105,15 +114,17 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        aria-label="Report a problem with this card"
-        title="Report a problem with this card"
-        className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
-      >
-        <Flag className="w-3.5 h-3.5" />
-      </button>
+      {showButton && (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          aria-label="Report a problem with this card"
+          title="Report a problem with this card"
+          className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
+        >
+          <Flag className="w-3.5 h-3.5" />
+        </button>
+      )}
 
       {isOpen && createPortal(
         <div

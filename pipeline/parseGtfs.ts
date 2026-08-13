@@ -18,7 +18,13 @@ export const parseCsv = <T>(text: string): T[] => {
         // column header. Without stripping both, all field lookups return undefined silently.
         transformHeader: (header: string) => header.trim().replace(/^\uFEFF/, '').replace(/^"|"$/g, ''),
     });
-    return result.data as T[];
+    // A few feeds contain a whitespace-only/CR-only record between valid rows.
+    // PapaParse can represent that record as an object full of empty strings even
+    // with skipEmptyLines enabled. Ignore only rows whose every field is blank;
+    // partially populated rows still need to reach validation as real defects.
+    return (result.data as Record<string, unknown>[]).filter(row =>
+        Object.values(row).some(value => String(value ?? '').trim() !== '')
+    ) as T[];
 };
 
 /**
@@ -445,7 +451,8 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
  */
 export const parseGtfsZip = async (
     file: File | ArrayBuffer,
-    onStatus?: (message: string) => void
+    onStatus?: (message: string) => void,
+    options?: { skipShapes?: boolean; skipOptionalFiles?: boolean },
 ): Promise<GtfsData> => {
     onStatus?.('Loading ZIP archive...');
     const zip = await JSZip.loadAsync(file);
@@ -483,6 +490,9 @@ export const parseGtfsZip = async (
         const zipFile = zip.file(basePath + filename);
 
         if (zipFile) {
+            if (key === 'shapes' && options?.skipShapes) continue;
+            if (options?.skipOptionalFiles && OPTIONAL_FILES.has(key)
+                && !['feedInfo', 'calendar', 'calendarDates', 'agencies'].includes(key)) continue;
             const text = await zipFile.async('text');
             const parsed = parseCsv(text);
 

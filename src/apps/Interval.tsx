@@ -22,6 +22,7 @@ import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
+import { computeFrequencySegmentOverlay } from '../utils/frequencySegments';
 
 interface Props {
   agencies: Agency[];
@@ -271,6 +272,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       selectedRoute: null,
     }, routesForStop);
   }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute, showCorridorBand, showCorridors]);
+
+  const selectedRouteHasQualifyingSection = useMemo(() => {
+    if (!selectedRoute || !selectedRouteOutOfFilter || maxHeadway === Infinity) return false;
+    const partialMatches = computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway).partialMatches;
+    return partialMatches.some(match => routeKey({ ...match, agencySlug: match.agencySlug } as any) === selectedRoute);
+  }, [filteredLayers, maxHeadway, period, selectedRoute, selectedRouteOutOfFilter]);
 
   useEffect(() => {
     try {
@@ -575,6 +582,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
         selectedRouteOutOfFilter={selectedRouteOutOfFilter}
+        selectedRouteHasQualifyingSection={selectedRouteHasQualifyingSection}
         onDirectFromStop={onDirectFromStop}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}

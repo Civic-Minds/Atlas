@@ -2,7 +2,7 @@
   "name": "atlas",
   "private": true,
   "description": "A hosted frequency map for transit routes.",
-  "version": "3.2.18",
+  "version": "3.2.19",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
@@ -19,6 +19,7 @@
     "refresh:staging": "ATLAS_ENV=staging npx tsx pipeline/refresh.ts",
     "restore-active-feeds": "npx tsx pipeline/restore-active-feeds.ts",
     "audit-active-feeds": "npx tsx pipeline/audit-active-feeds.ts",
+    "audit-current-gtfs": "npx tsx pipeline/audit-current-gtfs.ts",
     "build-pmtiles": "npx tsx pipeline/build-pmtiles.ts",
     "build-pmtiles:staging": "ATLAS_ENV=staging npx tsx pipeline/build-pmtiles.ts",
     "build-pmtiles-incremental": "npx tsx pipeline/build-pmtiles-incremental.ts",

@@ -547,7 +547,7 @@
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
-      "lastRefreshedAt": "2026-08-10",
+      "lastRefreshedAt": "2026-08-13",
       "cities": [
         "Toronto, Ontario",
         "Etobicoke, Ontario",
@@ -558,7 +558,8 @@
         "Markham, Ontario",
         "Vaughan, Ontario"
       ],
-      "timezone": "America/Toronto"
+      "timezone": "America/Toronto",
+      "lastRawArchiveKey": "20260905-6a2597e02c81c1c5"
     },
     {
       "slug": "windsor",
@@ -2877,7 +2878,7 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-caltrain-gtfs-54.zip?alt=media",
       "lastFeedExpiry": "20270131",
       "lastFeedVersion": "UTC: 10-Jun-2026 22:25",
-      "lastRefreshedAt": "2026-07-06",
+      "lastRefreshedAt": "2026-08-13",
       "cities": [
         "San Mateo, California",
         "San Jose, California",
@@ -2889,7 +2890,8 @@
         "Sunnyvale, California",
         "Gilroy, California",
         "Daly City, California"
-      ]
+      ],
+      "lastRawArchiveKey": "20270131-786de3fea43ef033"
     },
     {
       "slug": "actransit",
@@ -7035,27 +7037,27 @@
       "slug": "sun-tran",
       "name": "Sun Tran (Tucson)",
       "center": [
-        35.3348,
-        -120.7143
+        32.22,
+        -110.97
       ],
       "bbox": [
-        31.9,
-        -111.3,
+        31.8,
+        -112.9,
         32.5,
-        -110.6
+        -110.7
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2354/latest.zip",
+      "feedUrl": "https://GTFS-RT.suntran.com/TMGTFSRealTimeWebService/Static/SunTranGTFS.zip",
       "region": "Arizona",
-      "lastRefreshedAt": "20260811",
-      "lastFeedExpiry": "20271231",
-      "lastFeedVersion": "20260611",
       "cities": [
         "Tucson, Arizona",
         "Casas Adobes, Arizona",
         "Catalina Foothills, Arizona"
       ],
-      "timezone": "America/Los_Angeles",
-      "lastRawArchiveKey": "20271231-2ed8a35496817003"
+      "timezone": "America/Phoenix",
+      "lastFeedExpiry": "20260815",
+      "lastFeedVersion": "May1726_20260501",
+      "lastRawArchiveKey": "20260815-5c6eab88e8d5dede",
+      "lastRefreshedAt": "2026-08-13"
     },
     {
       "slug": "ycat",

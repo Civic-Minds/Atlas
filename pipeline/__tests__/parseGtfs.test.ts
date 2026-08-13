@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
+import JSZip from 'jszip';
+import { parseCsv, truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
 import type { GtfsCalendarDate } from '../../types/gtfs.js';
 
 /** YYYYMMDD for a date offset by `days` from 2025-01-05 (a Sunday), for building fixture date lists. */
@@ -11,6 +12,36 @@ function dateStr(days: number): string {
 function addedDates(serviceId: string, days: number[]): GtfsCalendarDate[] {
   return days.map(day => ({ service_id: serviceId, date: dateStr(day), exception_type: '1' }));
 }
+
+describe('parseCsv', () => {
+  it('drops an all-blank record without hiding partially populated records', () => {
+    const rows = parseCsv<{ route_id: string; trip_id: string }>(
+      'route_id,trip_id\r\n,\r\nR1,T1\r\nR2,\r\n'
+    );
+
+    expect(rows).toEqual([
+      { route_id: 'R1', trip_id: 'T1' },
+      { route_id: 'R2', trip_id: '' },
+    ]);
+  });
+});
+
+describe('parseGtfsZip options', () => {
+  it('can skip expensive shape parsing for structural audits', async () => {
+    const zip = new JSZip();
+    zip.file('routes.txt', 'route_id,route_type\nR1,3\n');
+    zip.file('trips.txt', 'route_id,service_id,trip_id\nR1,WK,T1\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\nS1,One,43,-79\n');
+    zip.file('stop_times.txt', 'trip_id,arrival_time,departure_time,stop_id,stop_sequence\nT1,08:00:00,08:00:00,S1,1\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nWK,1,1,1,1,1,0,0,20260101,20261231\n');
+    zip.file('shapes.txt', 'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence\nSH,43,-79,1\n');
+    const buffer = await zip.generateAsync({ type: 'arraybuffer' });
+
+    const { parseGtfsZip } = await import('../parseGtfs.js');
+    const parsed = await parseGtfsZip(buffer, undefined, { skipShapes: true, skipOptionalFiles: true });
+    expect(parsed.shapes).toEqual([]);
+  });
+});
 
 describe('truncateAtImplausibleJump', () => {
   it('leaves a well-formed, evenly-spaced shape untouched', () => {

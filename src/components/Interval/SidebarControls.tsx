@@ -80,6 +80,7 @@ interface SidebarControlsProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   selectedRouteOutOfFilter?: boolean;
+  selectedRouteHasQualifyingSection?: boolean;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
@@ -126,6 +127,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   hoveredBranch,
   setHoveredBranch,
   selectedRouteOutOfFilter = false,
+  selectedRouteHasQualifyingSection = false,
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
@@ -940,7 +942,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   return (
     <div
-      className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+      className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={{
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px` } : {}),
@@ -1057,6 +1059,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
+                  selectedRouteHasQualifyingSection={selectedRouteHasQualifyingSection}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}

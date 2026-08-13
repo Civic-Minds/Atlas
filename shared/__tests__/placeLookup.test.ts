@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findPlaceByName } from '../placeLookup';
+import { findNearestPlace, findPlaceByName } from '../placeLookup';
 
 describe('findPlaceByName', () => {
   it('finds an exact (case-insensitive) city match', () => {
@@ -20,5 +20,22 @@ describe('findPlaceByName', () => {
     expect(findPlaceByName('')).toBeNull();
     expect(findPlaceByName('   ')).toBeNull();
     expect(findPlaceByName('not a real place xyz')).toBeNull();
+  });
+});
+
+describe('findNearestPlace', () => {
+  it('uses the clicked coordinates rather than an agency primary city', () => {
+    expect(findNearestPlace(43.10012, -79.06627)).toMatchObject({
+      name: 'Niagara Falls',
+      region: 'Ontario',
+    });
+    expect(findNearestPlace(43.68341, -79.76633)).toMatchObject({
+      name: 'Brampton',
+      region: 'Ontario',
+    });
+  });
+
+  it('returns null when no gazetteer place is nearby', () => {
+    expect(findNearestPlace(60, -100)).toBeNull();
   });
 });
