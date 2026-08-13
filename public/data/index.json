@@ -547,7 +547,7 @@
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
-      "lastRefreshedAt": "2026-08-10",
+      "lastRefreshedAt": "2026-08-13",
       "cities": [
         "Toronto, Ontario",
         "Etobicoke, Ontario",
@@ -558,7 +558,8 @@
         "Markham, Ontario",
         "Vaughan, Ontario"
       ],
-      "timezone": "America/Toronto"
+      "timezone": "America/Toronto",
+      "lastRawArchiveKey": "20260905-6a2597e02c81c1c5"
     },
     {
       "slug": "windsor",
