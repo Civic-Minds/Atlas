@@ -1,5 +1,5 @@
 import { RefreshCw } from 'lucide-react';
-import { SURFACE, Z_HEADER } from '../styles';
+import { MAP_BADGE, Z_HEADER } from '../styles';
 import { useAppUpdate } from '../utils/appUpdate';
 
 export default function AppUpdateBanner() {
@@ -10,7 +10,7 @@ export default function AppUpdateBanner() {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed top-[4.5rem] left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 ${Z_HEADER} ${SURFACE} flex items-center justify-between gap-3 rounded-full px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] shadow-lg`}
+      className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-[10px] font-bold text-[var(--text-muted)]`}
     >
       <span>This page is out of date. Refresh to update.</span>
       <button
