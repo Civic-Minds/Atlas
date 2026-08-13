@@ -82,19 +82,23 @@ function makeRouteFeature(opts: {
   };
 }
 
-function branchWithStopHeadways(headsign: string, stopHeadways: Record<string, number>): GeoJSON.Feature {
+function branchWithStopHeadways(
+  headsign: string,
+  stopHeadways: Record<string, number>,
+  stopOrder: string[] = ['A', 'B', 'C'],
+): GeoJSON.Feature {
   return {
     ...makeRouteFeature({
       routeId: '121',
       headsign,
-      stopIds: ['A', 'B', 'C'],
+      stopIds: stopOrder,
       stopHeadways,
       stopPeriodHeadways: Object.fromEntries(
         Object.entries(stopHeadways).map(([stopId, value]) => [stopId, { evening: value }]),
       ),
     }),
     properties: {
-      ...makeRouteFeature({ routeId: '121', headsign, stopIds: ['A', 'B', 'C'] }).properties,
+      ...makeRouteFeature({ routeId: '121', headsign, stopIds: stopOrder }).properties,
       agencySlug: 'marta',
       routeId: '121',
       directionId: 1,
@@ -102,8 +106,8 @@ function branchWithStopHeadways(headsign: string, stopHeadways: Record<string, n
       tier: '60',
       headway: 30,
       headwayByPeriod: { evening: 30 },
-      stopOrder: ['A', 'B', 'C'],
-      stopPositions: [0, 0.5, 1],
+      stopOrder,
+      stopPositions: stopOrder.map((_, index) => index / (stopOrder.length - 1)),
       stopHeadways,
       stopPeriodHeadways: Object.fromEntries(
         Object.entries(stopHeadways).map(([stopId, value]) => [stopId, { evening: value }]),
@@ -173,6 +177,21 @@ describe('computeFrequencySegmentOverlay', () => {
     expect(result.segments).toHaveLength(2);
     expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === 0)).toBe(true);
     expect(result.segments.every(segment => segment.geometry.coordinates.at(-1)![0] === 0.02)).toBe(true);
+  });
+
+  it('keeps the earliest shared stop when terminal loops reverse stop order', () => {
+    const result = computeFrequencySegmentOverlay({
+      marta: {
+        type: 'FeatureCollection',
+        features: [
+          branchWithStopHeadways('DORAVILLE STN', { A: 32, B: 32, C: 32 }),
+          branchWithStopHeadways('GOLDSMITH P&R', { A: 33, B: 31, C: 30 }, ['B', 'A', 'C']),
+        ],
+      },
+    }, 'evening', 15);
+
+    expect(result.segments).toHaveLength(2);
+    expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === 0)).toBe(true);
   });
 
   it('clips uneven stop coverage after the route-level both-direction metric passes', () => {

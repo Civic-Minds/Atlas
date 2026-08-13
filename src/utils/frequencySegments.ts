@@ -240,9 +240,16 @@ export function computeFrequencySegmentOverlay(
       for (const branch of branches) {
         const branchRanges: Array<[number, number]> = [];
         for (const [from, to] of ranges) {
-          const fromIndex = branch.p.stopOrder!.indexOf(commonStops[from]);
-          const toIndex = branch.p.stopOrder!.indexOf(commonStops[to]);
-          if (fromIndex >= 0 && toIndex > fromIndex) branchRanges.push([fromIndex, toIndex]);
+          // Terminal loops can list the same first two shared stops in opposite order
+          // (MARTA 121 does this at Kensington). Use the extrema of the shared stops on
+          // each branch instead of assuming every branch has the reference order.
+          const rangeStopIds = new Set(commonStops.slice(from, to + 1));
+          const indices = branch.p.stopOrder!
+            .map((stopId, index) => rangeStopIds.has(stopId) ? index : -1)
+            .filter(index => index >= 0);
+          if (indices.length >= 2) {
+            branchRanges.push([Math.min(...indices), Math.max(...indices)]);
+          }
         }
         if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, slug, branchRanges, maxHeadway, segments)) {
           markPartial(branch.p, slug);
