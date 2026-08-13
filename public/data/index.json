@@ -5961,6 +5961,7 @@
         -73.6597
       ],
       "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
+      "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
       "lastFeedExpiry": "20261019",
       "lastFeedVersion": "20260728_180759",
       "lastRefreshedAt": "2026-07-29",

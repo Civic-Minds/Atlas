@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Bee-Line refreshes now fall back to a current mirror when the primary feed host is unavailable.
 - Beta route cards now offer an expanded full-day schedule view, making hourly changes between time periods easier to inspect.
 - Corridor overlays now use a subtle dotted marker instead of a heavy purple band, keeping route colors readable.
 
