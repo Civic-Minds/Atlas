@@ -52,7 +52,7 @@ export default function NightService({ active, sidebarLeft }: Props) {
   };
 
   useEffect(() => {
-    fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`)
+    fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`, { cache: 'no-store' })
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
