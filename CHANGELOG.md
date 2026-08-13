@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Night Service now shows deduplicated routes from agencies in the current map area and draws their qualifying local geometry instead of showing a global directory.
 - Beta’s stale-page warning now sits at the bottom with the same compact map-pill styling as the route and coverage counts.
 - Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
 - Shared frequency cores now include the terminal shape lead-in, so qualifying sections reach the actual station boundary.

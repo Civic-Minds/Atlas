@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon, Search, X } from 'lucide-react';
 import { NIGHT_SERVICE_COLOR } from '../utils/colors';
+import type { Agency } from '../App';
+import { getAgencyBbox } from '../hooks/useAgencyData';
+import { useViewport } from '../context/ViewportContext';
 import {
   FLOATING_CARD,
   PANEL_ENTER,
@@ -14,7 +17,6 @@ import {
   SIDEBAR_LEFT_FALLBACK,
   SIDEBAR_PANEL_WIDTH,
 } from '../styles';
-import RouteListRow from '../components/RouteListRow';
 import { R2_PUBLIC_URL } from '../../shared/config';
 
 interface NightServiceRoute {
@@ -27,6 +29,12 @@ interface NightServiceRoute {
   headsign: string | null;
 }
 
+interface NightServiceRouteSummary {
+  routeShortName: string | null;
+  routeLongName: string | null;
+  destinations: string[];
+}
+
 interface NightServiceIndexFile {
   criteria: string;
   agencyCount: number;
@@ -37,12 +45,14 @@ interface NightServiceIndexFile {
 interface Props {
   active?: boolean;
   sidebarLeft?: number;
+  agencies: Agency[];
 }
 
-export default function NightService({ active, sidebarLeft }: Props) {
+export default function NightService({ active, sidebarLeft, agencies: mapAgencies }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [filterQuery, setFilterQuery] = useState('');
+  const { bounds } = useViewport();
   const [introDismissed, setIntroDismissed] = useState(() => {
     try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
   });
@@ -66,14 +76,28 @@ export default function NightService({ active, sidebarLeft }: Props) {
 
   const agencies = useMemo(() => {
     if (!data) return [];
-    const byAgency = new Map<string, { agencyName: string; region: string | null; routes: NightServiceRoute[] }>();
+    const visibleAgencySlugs = bounds
+      ? new Set(mapAgencies.filter(agency => {
+        const [s, w, n, e] = getAgencyBbox(agency);
+        return !(n < bounds.s || s > bounds.n || e < bounds.w || w > bounds.e);
+      }).map(agency => agency.slug))
+      : null;
+    const byAgency = new Map<string, { agencyName: string; region: string | null; routes: Map<string, NightServiceRouteSummary> }>();
     for (const route of data.routes) {
-      const entry = byAgency.get(route.agencySlug) ?? { agencyName: route.agencyName, region: route.region, routes: [] };
-      entry.routes.push(route);
+      if (visibleAgencySlugs && !visibleAgencySlugs.has(route.agencySlug)) continue;
+      const entry = byAgency.get(route.agencySlug) ?? { agencyName: route.agencyName, region: route.region, routes: new Map() };
+      const routeKey = `${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`;
+      const summary = entry.routes.get(routeKey) ?? {
+        routeShortName: route.routeShortName,
+        routeLongName: route.routeLongName,
+        destinations: [],
+      };
+      if (route.headsign && !summary.destinations.includes(route.headsign)) summary.destinations.push(route.headsign);
+      entry.routes.set(routeKey, summary);
       byAgency.set(route.agencySlug, entry);
     }
     const q = filterQuery.trim().toLowerCase();
-    const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry }));
+    const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry, routes: [...entry.routes.values()] }));
     if (!q) return list;
     return list
       .map(agency => ({
@@ -81,11 +105,12 @@ export default function NightService({ active, sidebarLeft }: Props) {
         routes: agency.routes.filter(r =>
           agency.agencyName.toLowerCase().includes(q) ||
           (r.routeShortName ?? '').toLowerCase().includes(q) ||
-          (r.routeLongName ?? '').toLowerCase().includes(q)
+          (r.routeLongName ?? '').toLowerCase().includes(q) ||
+          r.destinations.some(destination => destination.toLowerCase().includes(q))
         ),
       }))
       .filter(agency => agency.agencyName.toLowerCase().includes(q) || agency.routes.length > 0);
-  }, [data, filterQuery]);
+  }, [data, filterQuery, bounds, mapAgencies]);
 
   if (!active) return null;
 
@@ -116,7 +141,7 @@ export default function NightService({ active, sidebarLeft }: Props) {
               2am to 6am, with no gap at either end of the core overnight window.
             </p>
             <p className="mt-1.5 text-[10px] font-bold" style={{ color: NIGHT_SERVICE_COLOR }}>
-              {data.routeCount} routes across {data.agencyCount} agencies qualify right now.
+              {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
             </p>
           </div>
         )}
@@ -154,13 +179,20 @@ export default function NightService({ active, sidebarLeft }: Props) {
               <div className="px-4 pt-2.5 pb-1 text-[10px] font-black text-[var(--text-primary)]">
                 {agency.agencyName}
                 {agency.region && <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.region}</span>}
+                <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
               </div>
-              {agency.routes.map((route, i) => (
-                <RouteListRow
-                  key={`${route.routeShortName ?? ''}-${route.directionId ?? ''}-${i}`}
-                  shortName={route.routeShortName ?? '—'}
-                  name={route.headsign ?? undefined}
-                />
+              {agency.routes.map(route => (
+                <div key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`} className="px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0">
+                  <div className="text-xs font-black text-[var(--text-primary)] truncate">
+                    {route.routeShortName || route.routeLongName || 'Unnamed route'}
+                    {route.routeShortName && route.routeLongName && <span className="font-normal text-[var(--text-dim)]"> — {route.routeLongName}</span>}
+                  </div>
+                  {route.destinations.length > 0 && (
+                    <div className="mt-0.5 text-[10px] font-bold text-[var(--text-dim)] truncate" title={route.destinations.join(' · ')}>
+                      To {route.destinations.join(' · ')}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           ))}

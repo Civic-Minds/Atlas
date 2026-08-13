@@ -355,6 +355,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         [e.point.x + 12, e.point.y + 12],
       ];
       const routeHitLayers = ['routes-hit-layer'];
+      if (map.getLayer('night-service-routes-hit-layer')) {
+        routeHitLayers.push('night-service-routes-hit-layer');
+      }
       if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
         routeHitLayers.push('frequency-qualifying-segments-hit-layer');
       }
@@ -428,6 +431,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
   }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView]);
 
+  const nightServiceFeatures = useMemo(() => {
+    if (!layers) return [];
+    return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
+      const properties = feature.properties as { nightService?: boolean } | null;
+      return feature.geometry.type === 'LineString' && properties?.nightService === true;
+    }));
+  }, [layers]);
+
   useLayoutEffect(() => {
     frequencySegmentOverlayRef.current = frequencySegmentOverlay;
   }, [frequencySegmentOverlay]);
@@ -440,6 +451,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!source) return;
     source.setData({ type: 'FeatureCollection', features: frequencySegmentOverlay.segments });
   }, [frequencySegmentOverlay, mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('night-service-routes') as maplibregl.GeoJSONSource | undefined;
+    if (!source) return;
+    source.setData({ type: 'FeatureCollection', features: nightServiceFeatures });
+    if (map.getLayer('night-service-routes-layer')) {
+      map.setLayoutProperty('night-service-routes-layer', 'visibility', nightServiceView ? 'visible' : 'none');
+    }
+    if (map.getLayer('night-service-routes-hit-layer')) {
+      map.setLayoutProperty('night-service-routes-hit-layer', 'visibility', nightServiceView ? 'visible' : 'none');
+    }
+  }, [nightServiceFeatures, nightServiceView, mapLoaded]);
 
   // Initialize MapLibre Map
   useEffect(() => {
@@ -497,6 +522,32 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-width': 18,
           'line-opacity': 0
         }
+      });
+
+      // Night Service uses loaded agency GeoJSON as a local overlay. This keeps the map
+      // scoped to the current area and avoids relying on a tile-property filter when the
+      // deployed PMTiles are from a different refresh generation.
+      map.addSource('night-service-routes', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'night-service-routes-layer',
+        type: 'line',
+        source: 'night-service-routes',
+        paint: {
+          'line-color': NIGHT_SERVICE_COLOR,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5],
+          'line-opacity': 0.9,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+      });
+      map.addLayer({
+        id: 'night-service-routes-hit-layer',
+        type: 'line',
+        source: 'night-service-routes',
+        paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
       });
 
       // Debug-only route highlight layer -- see MapCanvasProps.highlightRoutes.
@@ -1066,13 +1117,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         : null;
       routeFilter = concatFilters(hasFare, searchClause);
     } else if (nightServiceView) {
-      const isNightService = ['==', ['get', 'nightService'], true];
-      const searchClause = ql
-        ? (matchedAgencySlug
-            ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
-            : searchAnyField)
-        : null;
-      routeFilter = concatFilters(isNightService, searchClause);
+      // Night Service is rendered from the loaded local GeoJSON overlay below. Keep the
+      // global PMTiles route layer empty so it cannot duplicate or hide the local result.
+      routeFilter = ['==', ['get', 'agencySlug'], ''];
     } else if (ql) {
       const searchClause = matchedAgencySlug
         ? ['==', ['get', 'agencySlug'], matchedAgencySlug]
