@@ -104,4 +104,11 @@ describe('agencyDisplayParts', () => {
     expect(agencyDisplayParts('Metra', [])).toEqual({ primary: 'Metra' });
     expect(agencyDisplayParts('Metra')).toEqual({ primary: 'Metra' });
   });
+
+  it('uses an explicit service area for regional agencies', () => {
+    expect(agencyDisplayParts('GO Transit', ['Mississauga, Ontario'], 'Greater Toronto & Hamilton Area')).toEqual({
+      primary: 'GO Transit',
+      secondary: 'Greater Toronto & Hamilton Area',
+    });
+  });
 });

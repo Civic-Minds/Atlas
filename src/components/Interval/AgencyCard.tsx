@@ -326,8 +326,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
   const { primary: agencyNamePrimary, secondary: agencyNameSecondary } = useMemo(
-    () => agencyDisplayParts(agency.name, agency.cities),
-    [agency.name, agency.cities],
+    () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
+    [agency.name, agency.cities, agency.displayArea],
   );
 
   return (
