@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Beta route cards now offer an expanded full-day schedule view, making hourly changes between time periods easier to inspect.
 - Corridor overlays now use a subtle dotted marker instead of a heavy purple band, keeping route colors readable.
 - Qualifying route sections can now be clicked like the rest of the map, so partial frequency matches open the correct route.
+- Shared route cores now use the displayed branch cadence across their full overlap, so stop-level noise cannot cut the qualifying section short.
 - Regional agencies now show their service area instead of an arbitrary city from their stop list.
 
 - Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.

@@ -67,6 +67,52 @@ function stopHeadwayAt(p: ShapeProperties, period: TimePeriod, stopId: string): 
   return p.stopHeadways?.[stopId] ?? null;
 }
 
+function branchHeadway(p: ShapeProperties, period: TimePeriod): number | null {
+  if (period !== 'all') return p.headwayByPeriod?.[period as PeriodKey] ?? null;
+  return p.headway ?? null;
+}
+
+function combinedHeadway(values: number[]): number | null {
+  const valid = values.filter(v => Number.isFinite(v) && v > 0);
+  if (valid.length < 2) return null;
+  return Math.max(1, Math.round(1 / valid.reduce((sum, value) => sum + 1 / value, 0)));
+}
+
+function featureKey(key: FrequencySegmentRouteKey): string {
+  return [key.agencySlug, key.routeId, key.directionId, key.headsign ?? '', key.day ?? ''].join('|');
+}
+
+function addClippedSegments(
+  feature: GeoJSON.Feature,
+  p: ShapeProperties,
+  slug: string,
+  ranges: Array<[number, number]>,
+  maxHeadway: number,
+  segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[],
+): boolean {
+  if (feature.geometry.type !== 'LineString' || !p.stopPositions || !p.stopOrder) return false;
+  let added = false;
+  for (const [from, to] of ranges) {
+    const clipped = clipBetweenStopIndices(feature.geometry.coordinates, p.stopPositions, from, to);
+    if (!clipped) continue;
+    segments.push({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: clipped },
+      properties: {
+        color: headwayToTierColor(maxHeadway),
+        agencySlug: p.agencySlug ?? slug,
+        routeId: p.routeId,
+        routeBranch: (p as any).routeBranch ?? null,
+        directionId: p.directionId,
+        headsign: p.headsign ?? null,
+        day: p.day ?? null,
+      },
+    });
+    added = true;
+  }
+  return added;
+}
+
 /**
  * Partial-segment rendering is only allowed after the route itself passes the same
  * route-level frequency metric as the main filter. Otherwise one direction with a
@@ -98,8 +144,29 @@ export function computeFrequencySegmentOverlay(
   const partialMatches: FrequencySegmentRouteKey[] = [];
   if (maxHeadway === Infinity) return { segments, partialMatches };
 
+  const partialKeys = new Map<string, FrequencySegmentRouteKey>();
+  const markPartial = (p: ShapeProperties, slug: string) => {
+    const key: FrequencySegmentRouteKey = {
+      agencySlug: p.agencySlug ?? slug,
+      routeId: p.routeId,
+      directionId: p.directionId,
+      headsign: p.headsign ?? null,
+      day: p.day ?? null,
+    };
+    partialKeys.set(featureKey(key), key);
+  };
+
   for (const [slug, fc] of Object.entries(layers)) {
     if (slug.endsWith('-corridors')) continue;
+    const groups = new Map<string, GeoJSON.Feature[]>();
+    for (const feature of fc.features) {
+      if (feature.geometry.type !== 'LineString') continue;
+      const p = feature.properties as unknown as ShapeProperties;
+      if (!p.stopOrder || !p.stopPositions || p.stopOrder.length < 2 || p.stopPositions.length !== p.stopOrder.length) continue;
+      const key = [slug, p.routeId, (p as any).routeBranch ?? '', p.directionId, p.day ?? ''].join('|');
+      groups.set(key, [...(groups.get(key) ?? []), feature]);
+    }
+
     for (const f of fc.features) {
       if (f.geometry.type !== 'LineString') continue;
       const p = f.properties as unknown as ShapeProperties;
@@ -137,16 +204,54 @@ export function computeFrequencySegmentOverlay(
         });
       }
 
-      partialMatches.push({
-        agencySlug: p.agencySlug ?? slug,
-        routeId: p.routeId,
-        directionId: p.directionId,
-        headsign: p.headsign ?? null,
-        day: p.day ?? null,
-      });
+      markPartial(p, slug);
+    }
+
+    // A shared core uses the branch cadences shown in the route card and used by the map filter.
+    // Stop-level values can be noisy (MARTA 121 reports 32/33/30 at different shared stops even
+    // though both branches are displayed as every 30), which otherwise cuts one core into pieces.
+    for (const group of groups.values()) {
+      const branches = group
+        .map(feature => ({ feature, p: feature.properties as unknown as ShapeProperties }))
+        .filter(({ p }) => p.tier !== 'span' && p.tier !== 'infrequent')
+        .filter(({ p }) => !/drop[- ]?offs?\s+only/i.test(p.headsign ?? ''));
+      const distinctHeadsigns = new Set(branches.map(({ p }) => p.headsign ?? ''));
+      if (branches.length < 2 || distinctHeadsigns.size < 2) continue;
+      if (!branches.some(({ p }) => (branchHeadway(p, period) ?? Infinity) > maxHeadway)) continue;
+
+      const ref = branches[0].p;
+      const stopBranches = new Map<string, Array<{ p: ShapeProperties }>>();
+      for (const branch of branches) {
+        branch.p.stopOrder!.forEach(stopId => {
+          const list = stopBranches.get(stopId) ?? [];
+          list.push({ p: branch.p });
+          stopBranches.set(stopId, list);
+        });
+      }
+      const commonStops = ref.stopOrder!.filter(stopId => (stopBranches.get(stopId)?.length ?? 0) >= 2);
+      if (commonStops.length < 2) continue;
+
+      const branchCadence = branches
+        .map(({ p }) => branchHeadway(p, period))
+        .filter((v): v is number => v != null);
+      const ranges = findQualifyingStopRanges(commonStops, () => combinedHeadway(branchCadence), maxHeadway);
+      if (ranges.length === 0) continue;
+
+      for (const branch of branches) {
+        const branchRanges: Array<[number, number]> = [];
+        for (const [from, to] of ranges) {
+          const fromIndex = branch.p.stopOrder!.indexOf(commonStops[from]);
+          const toIndex = branch.p.stopOrder!.indexOf(commonStops[to]);
+          if (fromIndex >= 0 && toIndex > fromIndex) branchRanges.push([fromIndex, toIndex]);
+        }
+        if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, slug, branchRanges, maxHeadway, segments)) {
+          markPartial(branch.p, slug);
+        }
+      }
     }
   }
 
+  partialMatches.push(...partialKeys.values());
   return { segments, partialMatches };
 }
 
