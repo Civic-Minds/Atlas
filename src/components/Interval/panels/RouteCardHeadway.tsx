@@ -347,24 +347,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         if (!hasAny) return null;
         return (
           <>
-            {hasTrunkSparkline && coreHeadway != null && (
-              <div
-                className={`flex items-center gap-2 mt-6 mb-[-1rem] cursor-pointer rounded-md transition-colors hover:bg-[var(--bg-hover)] ${hoveredSingleBranch ? 'invisible' : ''}`}
-                onMouseEnter={() => setHoveredBranch({
-                  directionId: primaryMultiBranch!.dirId,
-                  headsigns: primaryMultiBranch!.realTier
-                    .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
-                    .map(d => d.headsign)
-                    .filter((headsign): headsign is string => !!headsign),
-                  isCore: true,
-                })}
-                onMouseLeave={() => setHoveredBranch(null)}
-                title="Highlight the shared core area on the map"
-              >
-                <span className="text-[10px] font-black text-[var(--text-muted)]">Core area</span>
-                <span className="text-[9px] font-bold text-[var(--text-dim)]">combined every {coreHeadway} min</span>
-              </div>
-            )}
             <HeadwaySparkline
               byHour={merged}
               stackedByHour={stackedByHour}
@@ -398,12 +380,29 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         </div>
       )}
       <SidebarCardList>
-        {selectedRouteOutOfFilter && (
+        {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               This route is outside the active frequency filter, but remains visible because it is selected.
             </p>
           </div>
+        )}
+        {hasCoreSummary && coreHeadway != null && (
+          <CardDirectionRow
+            label="Core area"
+            headway={coreHeadway}
+            branchHovered={hoveredBranch?.isCore === true}
+            branchDimmed={!!hoveredBranch && hoveredBranch.isCore !== true}
+            onHoverStart={() => setHoveredBranch({
+              directionId: primaryMultiBranch!.dirId,
+              headsigns: primaryMultiBranch!.realTier
+                .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
+                .map(d => d.headsign)
+                .filter((headsign): headsign is string => !!headsign),
+              isCore: true,
+            })}
+            onHoverEnd={() => setHoveredBranch(null)}
+          />
         )}
         {(() => {
           const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
