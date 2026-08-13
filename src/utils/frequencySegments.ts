@@ -1,7 +1,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
 import type { PeriodKey } from '../../shared/config';
-import { clipBetweenStopIndices } from '../apps/corridor-geometry';
+import { clipBetweenStopIndices, clipLinestring } from '../apps/corridor-geometry';
 import { headwayToTierColor } from './colors';
 
 /** Identifies one route feature for MapLibre filter matching. */
@@ -89,11 +89,18 @@ function addClippedSegments(
   ranges: Array<[number, number]>,
   maxHeadway: number,
   segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[] ,
+  includeShapeEndpoints = false,
 ): boolean {
   if (feature.geometry.type !== 'LineString' || !p.stopPositions || !p.stopOrder) return false;
   let added = false;
   for (const [from, to] of ranges) {
-    const clipped = clipBetweenStopIndices(feature.geometry.coordinates, p.stopPositions, from, to);
+    const clipped = includeShapeEndpoints
+      ? clipLinestring(
+        feature.geometry.coordinates,
+        from === 0 ? 0 : (p.stopPositions[from] + p.stopPositions[from - 1]) / 2,
+        to === p.stopPositions.length - 1 ? 1 : (p.stopPositions[to] + p.stopPositions[to + 1]) / 2,
+      )
+      : clipBetweenStopIndices(feature.geometry.coordinates, p.stopPositions, from, to);
     if (!clipped) continue;
     segments.push({
       type: 'Feature',
@@ -204,7 +211,7 @@ export function computeFrequencySegmentOverlay(
             branchRanges.push([Math.min(...indices), Math.max(...indices)]);
           }
         }
-        if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, slug, branchRanges, maxHeadway, segments)) {
+        if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, slug, branchRanges, maxHeadway, segments, true)) {
           markPartial(branch.p, slug);
         }
       }
