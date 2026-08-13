@@ -86,6 +86,7 @@ function branchWithStopHeadways(
   headsign: string,
   stopHeadways: Record<string, number>,
   stopOrder: string[] = ['A', 'B', 'C'],
+  stopPositions = stopOrder.map((_, index) => index / (stopOrder.length - 1)),
 ): GeoJSON.Feature {
   return {
     ...makeRouteFeature({
@@ -107,7 +108,7 @@ function branchWithStopHeadways(
       headway: 30,
       headwayByPeriod: { evening: 30 },
       stopOrder,
-      stopPositions: stopOrder.map((_, index) => index / (stopOrder.length - 1)),
+      stopPositions,
       stopHeadways,
       stopPeriodHeadways: Object.fromEntries(
         Object.entries(stopHeadways).map(([stopId, value]) => [stopId, { evening: value }]),
@@ -186,6 +187,21 @@ describe('computeFrequencySegmentOverlay', () => {
         features: [
           branchWithStopHeadways('DORAVILLE STN', { A: 32, B: 32, C: 32 }),
           branchWithStopHeadways('GOLDSMITH P&R', { A: 33, B: 31, C: 30 }, ['B', 'A', 'C']),
+        ],
+      },
+    }, 'evening', 15);
+
+    expect(result.segments).toHaveLength(2);
+    expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === 0)).toBe(true);
+  });
+
+  it('includes the shape lead-in when a shared core starts at a terminal stop', () => {
+    const result = computeFrequencySegmentOverlay({
+      marta: {
+        type: 'FeatureCollection',
+        features: [
+          branchWithStopHeadways('DORAVILLE STN', { A: 32, B: 32, C: 32 }, ['A', 'B', 'C'], [0.2, 0.5, 1]),
+          branchWithStopHeadways('GOLDSMITH P&R', { A: 33, B: 31, C: 30 }, ['A', 'B', 'C'], [0.2, 0.5, 1]),
         ],
       },
     }, 'evening', 15);
