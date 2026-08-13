@@ -7,10 +7,10 @@ const FULL_ATTRIBUTION =
   'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution() {
+export function MapAttribution({ avoidLeftOverlay = false }: { avoidLeftOverlay?: boolean }) {
   return (
     <div
-      className={`absolute bottom-6 left-6 ${Z_PANEL} pointer-events-auto`}
+      className={`absolute ${avoidLeftOverlay ? 'bottom-20 right-14' : 'bottom-6 left-6'} ${Z_PANEL} pointer-events-auto`}
       title={FULL_ATTRIBUTION}
     >
       <div className={`${MAP_BADGE} h-8`}>
