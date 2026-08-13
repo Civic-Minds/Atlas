@@ -13,9 +13,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Shared route cores now include terminal-loop stops when branches list the same stops in opposite order.
 - Bare Atlas URLs now start with the current day and time instead of restoring stale saved filters.
 - Search now puts exact and stronger route or stop matches before weaker matches that happen to be in the current map view.
-- Beta now includes a “What’s in view” panel showing the agencies and route counts in the current map area.
 - Qualifying route sections can now be clicked like the rest of the map, so partial frequency matches open the correct route.
 - Regional agencies now show their service area instead of an arbitrary city from their stop list.
+- Production builds no longer include the beta-only map context panel.
 
 ## [3.2.18] - 2026-08-10
 

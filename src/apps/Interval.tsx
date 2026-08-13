@@ -16,7 +16,7 @@ import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, 
 import type { Agency, FareOverride } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
-import { BETA_BUILD, R2_PUBLIC_URL } from '../../shared/config';
+import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
@@ -407,8 +407,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onBoundsChange={onBoundsChange}
         resetViewKey={resetViewKey}
         onLocate={onLocate}
-        showMapContext={BETA_BUILD}
-        day={day}
         showRouteLayers={showRouteLayers}
         liveRoutesOnly={liveRoutesOnly}
         showCorridorBand={showCorridorBand}
