@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
+- Combined route-card rows now identify their direction, and the default sparkline identifies the direction it summarizes.
 - Shared frequency cores now include the terminal shape lead-in, so qualifying sections reach the actual station boundary.
 - Shared route cores now appear under frequency filters when their combined service qualifies, even if each individual branch is slower.
 - Shared route cores now use the displayed branch cadence across their full overlap, so stop-level noise cannot cut the qualifying section short.

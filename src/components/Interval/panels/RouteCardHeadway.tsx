@@ -186,14 +186,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       }))
     : 0;
 
-  // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
+  // Combined service is directional: opposite directions can have different shared
+  // sections and branch cadences. Keep every qualifying direction instead of making
+  // the largest direction look like a route-wide "core" summary.
   const primaryMultiBranch = directionGroups
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
-  const hasCoreSummary = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
-  const coreHeadway = hasCoreSummary
-    ? groupTrunkHeadway(primaryMultiBranch!.realTier, period === 'all' ? 'midday' : period)
-    : null;
+  const combinedGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
+  const hasCombinedSummary = combinedGroups.length > 0;
 
   const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
   const groupHeadway = (g: DirectionGroup) => g.realTier[0]
@@ -337,13 +337,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
           )
           : sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
-        const hasTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
+        const sparklineGroup = combinedGroups[0] ?? primaryMultiBranch;
+        const hasTrunkSparkline = !!sparklineGroup && shouldShowTrunkSummary(sparklineGroup.realTier, period);
         const showTrunkSparkline = !hoveredSingleBranch && hasTrunkSparkline;
         const merged = showTrunkSparkline
-          ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS)
+          ? trunkSparklineByHour(sparklineGroup!.realTier, HOURS)
           : sparklineHeadwayByHour(sparklineDirs, HOURS);
         const stackedByHour = showTrunkSparkline
-          ? Object.fromEntries(HOURS.map(h => [h, primaryMultiBranch!.realTier
+          ? Object.fromEntries(HOURS.map(h => [h, sparklineGroup!.realTier
               .map((branch, i) => ({
                 label: branch.headsign ?? `Branch ${i + 1}`,
                 headway: buildRouteServiceSummary(branch).branch.byHour?.[h] ?? null,
@@ -358,6 +359,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <HeadwaySparkline
               byHour={merged}
               stackedByHour={stackedByHour}
+              scopeLabel={!hoveredSingleBranch ? sparklineGroup?.boundLabel : undefined}
               period={period}
               onPeriodChange={p => setPeriod(p as TimePeriod)}
               onHourHover={setHoveredHour}
@@ -386,31 +388,41 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         </div>
       )}
       <SidebarCardList>
-        {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
+        {selectedRouteOutOfFilter && !(hasCombinedSummary && combinedGroups.some(group => {
+          const headway = groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period);
+          return headway != null && headway <= maxHeadway;
+        })) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               This route is outside the active frequency filter, but remains visible because it is selected.
             </p>
           </div>
         )}
-        {hasCoreSummary && coreHeadway != null && (
+        {hasCombinedSummary && (
           <>
             <CardSectionLabel className="mb-0">Combined</CardSectionLabel>
-            <CardDirectionRow
-              label="Shared section"
-              headway={coreHeadway}
-              branchHovered={hoveredBranch?.isCore === true}
-              branchDimmed={!!hoveredBranch && hoveredBranch.isCore !== true}
-              onHoverStart={() => setHoveredBranch({
-                directionId: primaryMultiBranch!.dirId,
-                headsigns: primaryMultiBranch!.realTier
-                  .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
-                  .map(d => d.headsign)
-                  .filter((headsign): headsign is string => !!headsign),
-                isCore: true,
-              })}
-              onHoverEnd={() => setHoveredBranch(null)}
-            />
+            {combinedGroups.map(group => {
+              const headway = groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period);
+              if (headway == null) return null;
+              return (
+                <CardDirectionRow
+                  key={`combined-${group.dirId}`}
+                  label={group.boundLabel ? `${group.boundLabel} · shared section` : 'Shared section'}
+                  headway={headway}
+                  branchHovered={hoveredBranch?.isCore === true && dirIdNum(hoveredBranch.directionId) === dirIdNum(group.dirId)}
+                  branchDimmed={!!hoveredBranch && (hoveredBranch.isCore !== true || dirIdNum(hoveredBranch.directionId) !== dirIdNum(group.dirId))}
+                  onHoverStart={() => setHoveredBranch({
+                    directionId: group.dirId,
+                    headsigns: group.realTier
+                      .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
+                      .map(d => d.headsign)
+                      .filter((headsign): headsign is string => !!headsign),
+                    isCore: true,
+                  })}
+                  onHoverEnd={() => setHoveredBranch(null)}
+                />
+              );
+            })}
           </>
         )}
         {(() => {

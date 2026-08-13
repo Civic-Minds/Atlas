@@ -48,13 +48,14 @@ const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = (() => {
 interface HourlySparklineProps {
   byHour: HeadwayByHour;
   stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
+  scopeLabel?: string;
   period?: string;
   onPeriodChange?: (period: string) => void;
   onPeriodHover?: (period: string | null) => void;
   onHourHover?: (hour: number | null) => void;
 }
 
-export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover, onHourHover }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, stackedByHour, scopeLabel, period, onPeriodChange, onPeriodHover, onHourHover }: HourlySparklineProps) {
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
 
@@ -115,6 +116,11 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
+        {scopeLabel && (
+          <span className="absolute top-0 left-0 text-[9px] font-bold text-[var(--text-dim)] pointer-events-none">
+            {scopeLabel}
+          </span>
+        )}
         {activeLabelKey && (
           <span className="absolute top-0 right-0 text-[9px] font-bold text-[var(--text-dim)] pointer-events-none">
             {PERIOD_LABELS[activeLabelKey]}
