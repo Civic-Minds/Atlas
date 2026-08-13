@@ -27,6 +27,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Keep beta-only context out of production
+        run: |
+          test ! -e src/components/Interval/MapContextPanel.tsx
+          test ! -e src/utils/mapContext.ts
+          ! grep -R -n -E 'MapContextPanel|showMapContext|getMapContextAgencies|mapContextAgencies|mapContextOpen' src/apps/Interval.tsx src/components/Interval/MapCanvas.tsx
+
       - name: Type Check
         run: npm run typecheck
 
