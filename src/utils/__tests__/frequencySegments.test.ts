@@ -167,6 +167,13 @@ describe('computeFrequencySegmentOverlay', () => {
     const coords = seg.geometry.coordinates;
     expect(coords[0][0]).toBeGreaterThan(0);
     expect(coords.at(-1)![0]).toBeLessThan(0.04);
+    expect(seg.properties).toMatchObject({
+      agencySlug: 'octranspo',
+      routeId: '6',
+      directionId: 0,
+      headsign: 'Greenboro',
+      day: 'Saturday',
+    });
   });
 
   it('does not flag a route where every on-shape stop qualifies', () => {

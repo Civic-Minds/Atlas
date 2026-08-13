@@ -16,10 +16,20 @@ export interface FrequencySegmentRouteKey {
 
 export interface FrequencySegmentOverlay {
   /** Bright, full-color GeoJSON line features for the qualifying stretch(es) of partial-match routes. */
-  segments: GeoJSON.Feature<GeoJSON.LineString, { color: string }>[];
+  segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[];
   /** Routes that pass the active frequency filter only because part of their stops qualify --
    *  these get their base line dimmed so the bright overlay reads as "the real qualifying part." */
   partialMatches: FrequencySegmentRouteKey[];
+}
+
+interface FrequencySegmentProperties {
+  color: string;
+  agencySlug: string;
+  routeId: string;
+  routeBranch: string | null;
+  directionId: number;
+  headsign: string | null;
+  day: string | null;
 }
 
 /**
@@ -84,7 +94,7 @@ export function computeFrequencySegmentOverlay(
   period: TimePeriod,
   maxHeadway: number,
 ): FrequencySegmentOverlay {
-  const segments: GeoJSON.Feature<GeoJSON.LineString, { color: string }>[] = [];
+  const segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[] = [];
   const partialMatches: FrequencySegmentRouteKey[] = [];
   if (maxHeadway === Infinity) return { segments, partialMatches };
 
@@ -115,7 +125,15 @@ export function computeFrequencySegmentOverlay(
         segments.push({
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: clipped },
-          properties: { color: headwayToTierColor(repHw) },
+          properties: {
+            color: headwayToTierColor(repHw),
+            agencySlug: p.agencySlug ?? slug,
+            routeId: p.routeId,
+            routeBranch: (p as any).routeBranch ?? null,
+            directionId: p.directionId,
+            headsign: p.headsign ?? null,
+            day: p.day ?? null,
+          },
         });
       }
 
