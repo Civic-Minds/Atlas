@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon, Search, X } from 'lucide-react';
 import { NIGHT_SERVICE_COLOR } from '../utils/colors';
-import type { Agency } from '../App';
-import { getAgencyBbox } from '../hooks/useAgencyData';
 import { useViewport } from '../context/ViewportContext';
 import {
   FLOATING_CARD,
@@ -45,14 +43,45 @@ interface NightServiceIndexFile {
 interface Props {
   active?: boolean;
   sidebarLeft?: number;
-  agencies: Agency[];
+  layers: Record<string, GeoJSON.FeatureCollection>;
 }
 
-export default function NightService({ active, sidebarLeft, agencies: mapAgencies }: Props) {
+function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
+  if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return false;
+  const coordinates = feature.geometry.type === 'LineString'
+    ? feature.geometry.coordinates
+    : feature.geometry.coordinates.flat();
+  if (coordinates.length === 0) return false;
+  let minLon = Infinity;
+  let minLat = Infinity;
+  let maxLon = -Infinity;
+  let maxLat = -Infinity;
+  for (const [lon, lat] of coordinates) {
+    minLon = Math.min(minLon, lon);
+    minLat = Math.min(minLat, lat);
+    maxLon = Math.max(maxLon, lon);
+    maxLat = Math.max(maxLat, lat);
+  }
+  return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
+}
+
+export default function NightService({ active, sidebarLeft, layers }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [filterQuery, setFilterQuery] = useState('');
   const { bounds } = useViewport();
+  const visibleRouteKeys = useMemo(() => {
+    if (!bounds || Object.keys(layers).length === 0) return null;
+    const keys = new Set<string>();
+    for (const [agencySlug, collection] of Object.entries(layers)) {
+      for (const feature of collection.features) {
+        const properties = feature.properties as { nightService?: boolean; routeShortName?: string | null; routeLongName?: string | null } | null;
+        if (properties?.nightService !== true || !featureIntersectsBounds(feature, bounds)) continue;
+        keys.add(`${agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`);
+      }
+    }
+    return keys;
+  }, [bounds, layers]);
   const [introDismissed, setIntroDismissed] = useState(() => {
     try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
   });
@@ -76,24 +105,19 @@ export default function NightService({ active, sidebarLeft, agencies: mapAgencie
 
   const agencies = useMemo(() => {
     if (!data) return [];
-    const visibleAgencySlugs = bounds
-      ? new Set(mapAgencies.filter(agency => {
-        const [s, w, n, e] = getAgencyBbox(agency);
-        return !(n < bounds.s || s > bounds.n || e < bounds.w || w > bounds.e);
-      }).map(agency => agency.slug))
-      : null;
     const byAgency = new Map<string, { agencyName: string; region: string | null; routes: Map<string, NightServiceRouteSummary> }>();
     for (const route of data.routes) {
-      if (visibleAgencySlugs && !visibleAgencySlugs.has(route.agencySlug)) continue;
+      const routeKey = `${route.agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`;
+      if (visibleRouteKeys && !visibleRouteKeys.has(routeKey)) continue;
       const entry = byAgency.get(route.agencySlug) ?? { agencyName: route.agencyName, region: route.region, routes: new Map() };
-      const routeKey = `${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`;
-      const summary = entry.routes.get(routeKey) ?? {
+      const summaryKey = `${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`;
+      const summary = entry.routes.get(summaryKey) ?? {
         routeShortName: route.routeShortName,
         routeLongName: route.routeLongName,
         destinations: [],
       };
       if (route.headsign && !summary.destinations.includes(route.headsign)) summary.destinations.push(route.headsign);
-      entry.routes.set(routeKey, summary);
+      entry.routes.set(summaryKey, summary);
       byAgency.set(route.agencySlug, entry);
     }
     const q = filterQuery.trim().toLowerCase();
@@ -110,7 +134,7 @@ export default function NightService({ active, sidebarLeft, agencies: mapAgencie
         ),
       }))
       .filter(agency => agency.agencyName.toLowerCase().includes(q) || agency.routes.length > 0);
-  }, [data, filterQuery, bounds, mapAgencies]);
+  }, [data, filterQuery, visibleRouteKeys]);
 
   if (!active) return null;
 

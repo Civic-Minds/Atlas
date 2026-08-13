@@ -517,6 +517,7 @@ export default function App() {
               forceShowCorridors={inCorridors}
               fareView={inFares}
               nightServiceView={inNight}
+              showMapContext={BETA_BUILD}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
@@ -553,7 +554,7 @@ export default function App() {
                 <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
-            <NightService active={inNight} sidebarLeft={sidebarLeft} agencies={agencies} />
+            <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} />
             {LIVE_ENABLED && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <React.Suspense fallback={null}>

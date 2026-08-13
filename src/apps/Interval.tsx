@@ -16,7 +16,7 @@ import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, 
 import type { Agency, FareOverride } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
-import { BETA_BUILD, R2_PUBLIC_URL } from '../../shared/config';
+import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
@@ -56,12 +56,13 @@ interface Props {
   headerPortalContainer?: Element | null;
   fareView?: boolean;
   nightServiceView?: boolean;
+  showMapContext?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
   const [searchParams] = useSearchParams();
 
   const initialMapCenter = useMemo(() => {
@@ -415,7 +416,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onBoundsChange={onBoundsChange}
         resetViewKey={resetViewKey}
         onLocate={onLocate}
-        showMapContext={BETA_BUILD}
+        showMapContext={showMapContext}
         day={day}
         showRouteLayers={showRouteLayers}
         liveRoutesOnly={liveRoutesOnly}
