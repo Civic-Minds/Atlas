@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Shared-core frequencies now appear beside branch frequencies, and qualifying cores no longer show a misleading outside-filter warning.
+- Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
 - Shared frequency cores now include the terminal shape lead-in, so qualifying sections reach the actual station boundary.
 - Night Service now refetches its live aggregate instead of showing a browser-cached criterion or route list.
 - Bee-Line refreshes now fall back to a current mirror when the primary feed host is unavailable.
