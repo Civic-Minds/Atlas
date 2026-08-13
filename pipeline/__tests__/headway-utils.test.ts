@@ -330,22 +330,26 @@ describe('computePeriodHeadways — cross-midnight (#297)', () => {
   });
 });
 
-// Window defaults to GTFS minutes 1440-1800 (midnight-6am), maxGap defaults to 60.
+// Window defaults to GTFS minutes 1560-1800 (2am-6am), maxGap defaults to 60.
 describe('hasSustainedNightService', () => {
   it('is true when every gap, including both boundaries, is exactly 60 minutes', () => {
-    expect(hasSustainedNightService([1440, 1500, 1560, 1620, 1680, 1740, 1800])).toBe(true);
+    expect(hasSustainedNightService([1560, 1620, 1680, 1740, 1800])).toBe(true);
   });
 
   it('is false when an internal gap exceeds 60 minutes', () => {
-    expect(hasSustainedNightService([1440, 1500, 1620, 1680, 1740, 1800])).toBe(false);
+    expect(hasSustainedNightService([1560, 1620, 1740, 1800])).toBe(false);
   });
 
   it('is false when the first departure leaves the start boundary uncovered', () => {
-    expect(hasSustainedNightService([1550, 1600, 1650, 1700, 1750, 1800])).toBe(false);
+    expect(hasSustainedNightService([1670, 1720, 1770, 1800])).toBe(false);
   });
 
   it('is false when the last departure leaves the end boundary uncovered', () => {
-    expect(hasSustainedNightService([1440, 1500, 1560, 1620, 1680, 1700])).toBe(false);
+    expect(hasSustainedNightService([1560, 1620, 1680, 1700])).toBe(false);
+  });
+
+  it('does not qualify service that ends before the core overnight window begins', () => {
+    expect(hasSustainedNightService([1440, 1500, 1560])).toBe(false);
   });
 
   it('is false with no departures in the window', () => {
@@ -366,13 +370,13 @@ describe('hasSustainedNightService', () => {
 
 describe('nightServiceDepartureTimes', () => {
   it('shifts plain midnight-to-6am departures into the Night Service window', () => {
-    const times = [0, 60, 120, 180, 240, 300];
-    expect(nightServiceDepartureTimes(times)).toEqual([0, 60, 120, 180, 240, 300, 1440, 1500, 1560, 1620, 1680, 1740]);
+    const times = [120, 180, 240, 300, 360];
+    expect(nightServiceDepartureTimes(times)).toEqual([120, 180, 240, 300, 360, 1560, 1620, 1680, 1740, 1800]);
     expect(hasSustainedNightService(nightServiceDepartureTimes(times))).toBe(true);
   });
 
   it('keeps already-shifted overnight-only departures in the same window', () => {
-    const times = [1440, 1500, 1560, 1620, 1680, 1740];
+    const times = [1560, 1620, 1680, 1740, 1800];
     expect(nightServiceDepartureTimes(undefined, times)).toEqual(times);
     expect(hasSustainedNightService(nightServiceDepartureTimes(undefined, times))).toBe(true);
   });

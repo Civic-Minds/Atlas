@@ -46,7 +46,7 @@ export interface NightServiceIndexFile {
 }
 
 export const NIGHT_SERVICE_CRITERIA =
-  'At least one departure every 60 minutes, midnight-6am local time, with no gap at the start or end of the window either.';
+  'At least one departure every 60 minutes, 2am-6am local time, with no gap at the start or end of the core overnight window.';
 
 /**
  * Pure: pull the qualifying routes out of one agency's already-processed feature

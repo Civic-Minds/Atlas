@@ -28,6 +28,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Diagnostics filters now fill the available viewport and the table stays readable while scrolling
 - History on beta now includes a Recent tier (shorter multi-snapshot series) alongside Explore (10+ years), labeled so deep-archive agencies stay distinct
 - Night Service now finds overnight-only routes, including route numbers shared across daytime and overnight patterns
+- Beta Night Service now measures the core overnight network from 2am to 6am, so cities whose daytime service runs until 2am can show their separate night routes.
 - Report forms now match route-card width, spacing, and wording, with single-category reports opening directly to their relevant question
 - Beta now exposes the diagnostics table from a Tools button beside Info
 - Frequency-filter overlays no longer bring back routes when only one direction qualifies, and refreshes skip feeds when every dated part has expired

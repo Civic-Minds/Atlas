@@ -113,7 +113,7 @@ export default function NightService({ active, sidebarLeft }: Props) {
             </p>
             <p className="mt-1 pr-5 text-[10px] text-[var(--text-dim)] font-bold leading-snug">
               A route counts here only if it has a departure at least every 60 minutes,
-              midnight to 6am, with no gap at either end of the window either.
+              2am to 6am, with no gap at either end of the core overnight window.
             </p>
             <p className="mt-1.5 text-[10px] font-bold" style={{ color: NIGHT_SERVICE_COLOR }}>
               {data.routeCount} routes across {data.agencyCount} agencies qualify right now.

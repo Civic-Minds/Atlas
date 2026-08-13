@@ -217,7 +217,7 @@ export async function processGtfsBuffer(
   // Max raw stop_time minute seen anywhere for each service_id. Needed below: a service_id
   // qualifies as a genuine overnight-only block (#297; e.g. CTA Red Line's 00:10-02:45 under
   // its own dedicated service_id, day-type-pooled at the wrong end of the array, invisible to
-  // hasSustainedNightService's [1440,1800] window) only if its OWN entire trip set sits below
+  // hasSustainedNightService's [1560,1800] window) only if its OWN entire trip set sits below
   // the early-morning cutoff -- NOT merely "has no extended trips". A service_id whose early
   // trip is just that day's own normal start (e.g. CTA's daytime service_id, first trip 03:00,
   // last trip 23:52 -- no extended notation either, but clearly not overnight-only) must NOT
@@ -251,7 +251,7 @@ export async function processGtfsBuffer(
   // Night-service-only mirrors of stopDepsByGroup/stopDepsByHeadsignGroup (#297): an early
   // (pre-6am) departure on a genuinely overnight-only service_id (see serviceIdMaxMinute above)
   // is shifted +1440 and pushed here instead, so it lands inside hasSustainedNightService's
-  // [1440,1800] window without altering the times every other consumer (headway, tier,
+  // [1560,1800] window without altering the times every other consumer (headway, tier,
   // sparkline, ...) reads from stopDepsByGroup/stopDepsByHeadsignGroup. Deliberately no
   // shape-scoped mirror -- the Step 5 terminalRawTimes fallback bottoms out at stopDepsByGroup
   // regardless, so this still covers every route that reaches the night-service check.

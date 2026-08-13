@@ -284,9 +284,10 @@ function hasSustainedServiceInWindow(
   return true;
 }
 
-// Night Service window: GTFS hour 24 (midnight) to hour 30 (6am), matching the same extended-hour
-// convention the 'late'/'overnight' TIME_PERIODS split already uses.
-export const NIGHT_SERVICE_WINDOW_START_MIN = 24 * 60;
+// Night Service window: GTFS hour 26 (2am) to hour 30 (6am). This focuses the beta experiment on
+// the core overnight network after daytime routes wind down, which matches Toronto's 300-series
+// night network and avoids requiring night routes to cover the midnight-to-2am handoff.
+export const NIGHT_SERVICE_WINDOW_START_MIN = 26 * 60;
 export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
 export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
 
