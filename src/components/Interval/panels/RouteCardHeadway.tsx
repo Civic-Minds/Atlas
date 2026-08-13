@@ -117,6 +117,7 @@ export interface RouteCardHeadwayProps {
   hideSpan: boolean;
   routeIsStale: boolean;
   selectedRouteOutOfFilter: boolean;
+  selectedRouteHasQualifyingSection: boolean;
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
@@ -139,6 +140,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   hideSpan,
   routeIsStale,
   selectedRouteOutOfFilter,
+  selectedRouteHasQualifyingSection,
   expDateStr,
   hoveredBranch,
   setHoveredBranch,
@@ -390,7 +392,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         })) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
-              This route is outside the active frequency filter, but remains visible because it is selected.
+              {selectedRouteHasQualifyingSection
+                ? `A section of this route meets the ≤${maxHeadway}-minute filter; the full route can still run less often.`
+                : 'This route is outside the active frequency filter, but remains visible because it is selected.'}
             </p>
           </div>
         )}

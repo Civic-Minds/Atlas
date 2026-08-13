@@ -14,9 +14,9 @@ import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
-import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
+import { findNearestPlace } from '../../../shared/placeLookup';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
@@ -33,19 +33,6 @@ const CORRIDOR_ROUTE_COUNT: any = ['length', ['get', 'routeIds']];
 function corridorWidthExpression(zoomWidths: [number, number, number, number]): any {
   const [twoRoutes, threeRoutes, fourRoutes, fiveRoutes] = zoomWidths;
   return ['step', CORRIDOR_ROUTE_COUNT, twoRoutes, 3, threeRoutes, 4, fourRoutes, 5, fiveRoutes];
-}
-
-/** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
-function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
-  let best: Agency | undefined;
-  let bestArea = Infinity;
-  for (const a of agencies) {
-    const [s, w, n, e] = getAgencyBbox(a);
-    if (lat < s || lat > n || lng < w || lng > e) continue;
-    const area = (n - s) * (e - w);
-    if (area < bestArea) { bestArea = area; best = a; }
-  }
-  return best;
 }
 
 /** Flatten nested ['all', ...] filters into one clause list for MapLibre. */
@@ -242,9 +229,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     zoomOrientTimerRef.current = setTimeout(() => setZoomOrientCard(null), 1800);
   };
   const showZoomHint = (lng: number, lat: number, subtitle: string, fallback: string) => {
-    const agency = agencyAtPoint(agencies, lng, lat);
-    const place = agency?.cities?.[0] ?? agency?.name;
-    if (place) showZoomOrientCard(place, subtitle);
+    const place = findNearestPlace(lat, lng);
+    if (place) showZoomOrientCard(`${place.name}, ${place.region}`, subtitle);
     else showMapHint(fallback);
   };
 

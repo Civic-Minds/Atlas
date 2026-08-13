@@ -80,6 +80,7 @@ interface SidebarControlsProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   selectedRouteOutOfFilter?: boolean;
+  selectedRouteHasQualifyingSection?: boolean;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
@@ -126,6 +127,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   hoveredBranch,
   setHoveredBranch,
   selectedRouteOutOfFilter = false,
+  selectedRouteHasQualifyingSection = false,
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
@@ -1057,6 +1059,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
+                  selectedRouteHasQualifyingSection={selectedRouteHasQualifyingSection}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}

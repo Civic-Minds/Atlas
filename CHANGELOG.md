@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Zoom-in cards now name the place actually clicked instead of an agency's unrelated primary city.
+- Selected routes now explain when a faster section, rather than the full route, matches the active frequency filter.
 - Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
 - Route-card sparklines now sit inside their direction sections, so each chart only describes one direction.
 - Map right-click reports now use the same in-app report form as other issue reports.
