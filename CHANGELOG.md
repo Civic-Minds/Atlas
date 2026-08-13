@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Current GTFS audits now inspect retained current snapshots for structural errors, stale metadata, duplicate content, and geography mismatches before publication.
+- GTFS parsing now ignores fully blank CSV records while still surfacing partially populated records as validation failures.
 - Zoom-in cards now name the place actually clicked instead of an agency's unrelated primary city.
 - Selected routes now explain when a faster section, rather than the full route, matches the active frequency filter.
 - Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
