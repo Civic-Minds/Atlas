@@ -10,6 +10,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Night Service now shows deduplicated routes from agencies in the current map area and draws their qualifying local geometry instead of showing a global directory.
 - Beta’s stale-page warning now sits at the bottom with the same compact map-pill styling as the route and coverage counts.
 - Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
+- Route-card sparklines now sit inside their direction sections, so each chart only describes one direction.
+- Map right-click reports now use the same in-app report form as other issue reports.
+- Left-side panels now stop above the map attribution instead of covering it.
 - Shared frequency cores now include the terminal shape lead-in, so qualifying sections reach the actual station boundary.
 - Night Service now refetches its live aggregate instead of showing a browser-cached criterion or route list.
 - Bee-Line refreshes now fall back to a current mirror when the primary feed host is unavailable.
