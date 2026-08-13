@@ -22,6 +22,7 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, excludePartialMatches } from '../../utils/frequencySegments';
+import { CardReportButton, type CardReportButtonHandle } from './cardUi';
 
 // A neutral casing keeps the route tier colours readable underneath it. The
 // corridor should feel like a trunk emphasis, not a second purple network.
@@ -220,6 +221,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
+  const [mapReport, setMapReport] = useState<{ title: string; details: string } | null>(null);
+  const mapReportRef = useRef<CardReportButtonHandle>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fittedRouteRef = useRef<string | null>(null);
   const showMapHint = (msg: string) => {
@@ -794,11 +797,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!mapContextMenu) return;
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
-    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
-    const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
-    window.open(issueUrl, '_blank', 'noopener,noreferrer');
+    const details = `**Location:** ${url}\n**Coordinates:** ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}\n\n`;
+    setMapReport({ title, details });
     setMapContextMenu(null);
   };
+
+  useEffect(() => {
+    if (mapReport) mapReportRef.current?.open();
+  }, [mapReport]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1262,6 +1268,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
           </button>
         </div>
+      )}
+
+      {mapReport && (
+        <CardReportButton
+          ref={mapReportRef}
+          title={mapReport.title}
+          details={mapReport.details}
+          showButton={false}
+        />
       )}
 
       {/* Zoom Control Overlay */}
