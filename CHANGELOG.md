@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
 - Split rush-hour-only routes such as TTC 986 are now classified as irregular instead of all-day infrequent service.
 - The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.
 - Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
