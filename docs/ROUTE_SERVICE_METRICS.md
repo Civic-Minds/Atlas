@@ -6,6 +6,20 @@ Atlas route surfaces should derive scheduled service values from the named proje
 
 `PIPELINE.md` describes the methodology at a high level ("median gap between departures"). This section documents the specific mechanics in `pipeline/headway-utils.ts` and `pipeline/process-core.ts` — the level of detail someone auditing a specific field's behavior actually needs.
 
+### Service classification and the irregular filter
+
+`tier` and regularity are separate output fields. `tier` describes the frequency while service is operating; `serviceClass` describes the operating pattern:
+
+- `regular`: service covers the normal analysis window. The tier may be finite (`30`, `60`, etc.) or `infrequent`.
+- `time-limited`: the schedule covers only part of the day but has at least three repeated departures and a finite sustained tier. This includes predictable evening routes such as NRT's 2xx and 4xx services.
+- `irregular`: the limited-period candidate has only one or two departures, or its gaps do not produce a finite sustained tier. This includes exceptional, burst, school, and one-sided patterns that do not provide a sustained scheduled cadence.
+
+The classifier still uses the route's active span and the 40% comparison against the normal analysis window as coverage signals. Those signals identify service that may be time-limited; they do not, by themselves, make a route irregular. A route is `time-limited` only when the active departures show a finite sustained tier and at least three repeated trips. A route that covers the normal window but does not fit a finite tier is `regular` with tier `infrequent`.
+
+The default irregular-service filter hides `serviceClass: "irregular"` and any route/day stamped with `routeHasIrregularDirection`. The latter is applied when a direction has no non-irregular pattern, so a genuinely one-sided or uneven route can be hidden as a whole. Predictable time-limited service remains visible and keeps its period-specific `headwayByPeriod` values; periods outside its operation remain `null` rather than being presented as all-day service.
+
+For backward compatibility, the filter treats a missing `serviceClass` plus `tier: "span"` as legacy irregular data. New output reserves `tier: "span"` for the irregular class.
+
 ### `medianHeadwayInWindow` (the shared primitive)
 
 Filters departures to `[start, end]`, sorts them, computes consecutive gaps, sorts the gaps, and returns `gaps[Math.floor(gaps.length / 2)]`. Requires a minimum departure count (`minDeps`, default 2, but every call site in the pipeline passes `3`).

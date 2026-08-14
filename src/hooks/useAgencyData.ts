@@ -15,6 +15,7 @@ export interface ShapeProperties {
   routeId: string;
   directionId: number;
   tier: string | null;
+  serviceClass?: 'regular' | 'time-limited' | 'irregular';
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
   /** Typical scheduled gap range inside each period. */

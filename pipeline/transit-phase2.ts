@@ -231,13 +231,33 @@ export function applyAnalysisCriteria(
         const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
         const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
         const isLimitedService = isSplitPeakService || spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
-        const tierRaw = isLimitedService
+        const determinedTier = determineTier(
+            analysisGaps,
+            analysisWindow.length,
+            spanMins,
+            tiers,
+            criteria.graceMinutes,
+            criteria.maxGraceViolations,
+            criteria.gracePercent,
+            criteria.violationPercent,
+        );
+        // `span` used to combine two different ideas: a genuinely irregular burst (school
+        // service, one or two trips) and a route with a stable schedule that only operates during
+        // one period (NRT's evening routes). Require enough repeated service to distinguish them.
+        // The 07:00–22:00 coverage check remains a coverage signal, not proof of irregularity.
+        // Three repeated departures are the minimum evidence for a schedule; one or two trips
+        // remain irregular even when their single gap happens to match a published tier.
+        const hasSustainedCadence = analysisWindow.length >= 3 && determinedTier !== 'span';
+        const serviceClass = isSplitPeakService
+            ? 'irregular'
+            : isLimitedService
+            ? (hasSustainedCadence ? 'time-limited' : 'irregular')
+            : 'regular';
+        // A regular route that is slower than the published finite tiers is infrequent. Only
+        // genuinely irregular service keeps the span sentinel used by the UI and map filters.
+        const tier = serviceClass === 'irregular'
             ? 'span'
-            : determineTier(analysisGaps, analysisWindow.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations, criteria.gracePercent, criteria.violationPercent);
-        // 'span' from determineTier means all-day but no frequency tier fits (e.g. Barrie line, GO Route 11);
-        // distinguish from isLimitedService 'span' (truly peak-only/short-window) so the frontend can
-        // show infrequent routes at "All" frequency while hiding genuinely limited ones.
-        const tier = !isLimitedService && tierRaw === 'span' ? 'infrequent' : tierRaw;
+            : determinedTier === 'span' ? 'infrequent' : determinedTier;
 
         const stats = computeHeadwayStats(analysisWindow);
         
@@ -255,6 +275,7 @@ export function applyAnalysisCriteria(
             avgHeadway: Math.round(stats.avg),
             medianHeadway: Math.round(stats.median),
             tier,
+            serviceClass,
             tripCount: windowedTimes.length,
             gaps: stats.gaps,
             times: windowedTimes,
@@ -307,6 +328,11 @@ export function applyAnalysisCriteria(
         const worstTier = worstTierValue === Infinity ? 'span'
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
+        const serviceClass = entries.some(e => e.result.serviceClass === 'irregular')
+            ? 'irregular'
+            : entries.some(e => e.result.serviceClass === 'time-limited')
+            ? 'time-limited'
+            : 'regular';
 
         const allTimes = entries.flatMap(e => e.result.times);
         const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
@@ -362,6 +388,7 @@ export function applyAnalysisCriteria(
             peakWindow: stats.peakWindow,
             serviceSpan: span,
             tier: worstTier,
+            serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,
             times: rollupTimes,
