@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
+
 ## [3.2.19] - 2026-08-13
 
 - Current GTFS audits now inspect retained current snapshots for structural errors, stale metadata, duplicate content, and geography mismatches before publication.

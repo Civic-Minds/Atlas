@@ -21,6 +21,7 @@ import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { resolveCurrentHistoryRoute } from './historyIdentity.js';
+import { historyRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
@@ -46,6 +47,17 @@ const BASE_HISTORY: Array<{
         snapshots: [
           { periodKey: '20080101', headway: 5 },
         ],
+      },
+    ],
+  },
+  {
+    slug: 'nfta',
+    routes: [
+      {
+        routeShortName: '45',
+        routeLongName: 'METRO RAIL',
+        currentRouteShortNames: ['145'],
+        snapshots: [],
       },
     ],
   },
@@ -139,8 +151,9 @@ async function loadCurrentHeadways(slug: string): Promise<Record<string, {
     }> = {};
     for (const feature of fc.features ?? []) {
       const p = feature.properties;
-      if (!p?.routeShortName || p.day !== 'Weekday' || p.directionId !== 0 || p.headway == null) continue;
-      const routeShortName = String(p.routeShortName);
+      if (p?.day !== 'Weekday' || p.directionId !== 0 || p.headway == null) continue;
+      const routeShortName = historyRouteKey(p);
+      if (!routeShortName) continue;
       const headway = Number(p.headway);
       if (!Number.isFinite(headway)) continue;
       if (!current[routeShortName] || headway < current[routeShortName].headway) {
