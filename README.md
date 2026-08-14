@@ -8,8 +8,8 @@ Transit frequency data lives in separate GTFS feeds across many agencies, with n
 
 ## Features
 
-- **Headway Tiers**: Two-phase GTFS analysis extracts per-direction departure times for each day type, applies configurable criteria, and assigns a tier — or flags routes as peak-only (span) vs. all-day-but-infrequent.
-- **Filtering**: By agency, mode (bus/rail/etc.), frequency ceiling, and day of week. Optional service span toggle hides peak-only and school-run routes.
+- **Headway Tiers**: Two-phase GTFS analysis extracts per-direction departure times for each day type, assigns frequency tiers, and separates predictable time-limited service from genuinely irregular routes.
+- **Filtering**: By agency, mode (bus/rail/etc.), frequency ceiling, and day of week. Optional irregular-service toggle hides exceptional and school-run routes while keeping predictable time-limited service visible.
 - **Search**: Cross-agency route search by number or name, scoped to the current frequency filter.
 - **Station View**: Click any stop to pin it and see every route serving it along with their current-day headways.
 - **Corridors**: Station-to-station lookup — find direct routes between two stops with headway at the destination.

@@ -285,6 +285,8 @@ export interface AnalysisResult {
     avgHeadway: number;
     medianHeadway: number;
     tier: string;
+    /** Whether service is regular, scheduled only during part of the day, or genuinely irregular. */
+    serviceClass?: 'regular' | 'time-limited' | 'irregular';
     tripCount: number;
     gaps: number[];
     times: number[];

@@ -198,7 +198,8 @@
         43.85,
         -79.99
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+      "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-721/mdb-721-202602170132/mdb-721-202602170132.zip",
       "lastFeedExpiry": "20260426",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
@@ -1540,7 +1541,7 @@
         "Livonia, Michigan",
         "Windsor, Ontario"
       ],
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-464/mdb-464-202606250001/mdb-464-202606250001.zip"
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-department-of-transportation-ddot-gtfs-464.zip?alt=media"
     },
     {
       "slug": "detroit-people-mover",
@@ -6238,7 +6239,8 @@
         44.98,
         -93.27
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/mdb-205-202606280024/mdb-205-202606280024.zip",
+      "feedUrl": "https://svc.metrotransit.org/mtgtfs/gtfs.zip",
+      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-minnesota-metro-transit-metro-transit-met-council-maple-grove-plymouth-southwest-transit-airport-mac-university-of-minnesota-catch-the-link-gtfs-205.zip?alt=media",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": "1782334167",
       "region": "Minnesota",
