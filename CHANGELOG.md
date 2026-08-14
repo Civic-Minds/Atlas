@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
+- Beta schedule charts now keep the active period label clear of the expand control at narrow widths.
 
 ## [3.2.19] - 2026-08-13
 

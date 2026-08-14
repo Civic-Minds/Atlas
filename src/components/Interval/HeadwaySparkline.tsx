@@ -122,7 +122,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, scopeLabel, period, on
           </span>
         )}
         {activeLabelKey && (
-          <span className="absolute top-0 right-0 text-[9px] font-bold text-[var(--text-dim)] pointer-events-none">
+          <span className={`absolute top-0 text-[9px] font-bold text-[var(--text-dim)] pointer-events-none ${allowExpand && !expanded ? 'right-7' : 'right-0'}`}>
             {PERIOD_LABELS[activeLabelKey]}
           </span>
         )}
