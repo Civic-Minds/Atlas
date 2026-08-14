@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Beta schedule charts now keep the active period label clear of the expand control at narrow widths.
 - Beta map controls now show an agencies-in-view pill beside the route count, replacing the intermittent context icon.
 - Beta route-card notices now wrap instead of truncating, and Near You can show all five nearby routes without scrolling on normal-height screens.
 - Beta route cards no longer show branch-only uneven-service warnings when combined branches provide the rider-facing trunk frequency.

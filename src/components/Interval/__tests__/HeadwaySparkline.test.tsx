@@ -3,6 +3,19 @@ import { describe, expect, it } from 'vitest';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 
 describe('HeadwaySparkline', () => {
+  it('keeps the active period label clear of the expand control', () => {
+    render(
+      <HeadwaySparkline
+        byHour={{ 12: 20, 18: 25 }}
+        period="midday"
+        onPeriodChange={() => {}}
+        allowExpand
+      />,
+    );
+
+    expect(screen.getByText('Midday')).toHaveClass('right-7');
+  });
+
   it('opens the beta full-day schedule view with all periods', () => {
     render(
       <HeadwaySparkline
