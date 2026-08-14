@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Niagara’s scheduled evening and night routes now appear as normal service instead of being mislabeled as irregular.
 - RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
 - NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
 
