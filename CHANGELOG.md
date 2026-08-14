@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.
+- Beta route cards no longer show branch-only uneven-service warnings when combined branches provide the rider-facing trunk frequency.
 - Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
 - Beta schedule charts now keep the active period label clear of the expand control at narrow widths.
 

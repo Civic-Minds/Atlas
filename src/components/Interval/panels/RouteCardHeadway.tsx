@@ -166,11 +166,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     group.realTier.some(direction => metricValueForPeriod(buildRouteServiceSummary(direction).branch, period) != null) ||
     group.span.length > 0,
   );
+  const combinedGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
   // Only primary patterns per direction drive the uneven banner. A rare short-turn
   // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when
-  // the direction's real service is even — that gap is not the rider message.
+  // the direction's real service is even — that gap is not the rider message. When
+  // the card already has a qualifying combined trunk summary, do not contradict it
+  // with an individual branch's terminal gap (#381).
   const unevenPeriodMaxGap = UNEVEN_BANNER_ENABLED && period !== 'all'
     ? Math.max(0, ...directionGroups.flatMap(group => {
+        if (combinedGroups.includes(group)) return [];
         const primaryHw = Math.min(
           ...group.realTier
             .map(d => d.headway)
