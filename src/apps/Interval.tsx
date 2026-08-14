@@ -440,7 +440,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       <MapAttribution />
 
       {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading) && (
-        <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute bottom-6 right-28 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading) && (
             <div className={`${MAP_BADGE} h-8`}>
               <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
