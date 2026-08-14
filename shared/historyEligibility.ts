@@ -5,7 +5,7 @@ export const MIN_HISTORY_DISTINCT_YEARS = 10;
  * Minimum snapshots on at least one route for Recent.
  * Covers short refresh series (including multiple snapshots in the same calendar year).
  */
-export const MIN_HISTORY_RECENT_SNAPSHOTS = 2;
+export const MIN_HISTORY_RECENT_SNAPSHOTS = 3;
 
 export type HistorySnapshot = { year?: number; label?: string };
 export type HistoryRoute = { snapshots?: HistorySnapshot[] };

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Recent History now requires three snapshots on one route, filtering out two-point comparisons that are too thin to be useful.
 - Beta's map context button now sits beside the locate-me control instead of being covered by route and coverage badges.
 - Beta now scopes Night Service to route geometry actually on screen, passes the context control through to the map, and shows route names beside live vehicle route numbers.
 - Night Service now shows deduplicated routes from agencies in the current map area and draws their qualifying local geometry instead of showing a global directory.
