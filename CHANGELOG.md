@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
 - NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
 
 ## [3.2.19] - 2026-08-13
