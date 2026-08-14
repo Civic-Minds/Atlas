@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import type { MapContextAgency } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
+import { FLOATING_CARD, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -20,7 +20,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, onCl
     <div className={`absolute bottom-16 right-14 ${Z_PANEL} w-[min(21rem,calc(100vw-2rem))] max-h-[min(30rem,calc(100vh-8rem))] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}>
       <div className={PANEL_TITLE_BAR}>
         <div className="min-w-0 flex-1">
-          <div className={PANEL_TITLE}>WHAT’S IN VIEW</div>
+          <div className={PANEL_TITLE}>What’s in view</div>
           <div className="text-[11px] font-bold text-[var(--text-primary)]">
             {agencies.length} {agencies.length === 1 ? 'agency' : 'agencies'} on the map
           </div>
@@ -49,7 +49,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, onCl
             key={agency.slug}
             type="button"
             onClick={() => onSelectAgency?.(agency.slug)}
-            className={`${LIST_ROW_SPACED} w-full ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
+            className={`${LIST_ROW} ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
           >
             <span className={`${LIST_ROW_PRIMARY} min-w-0 truncate text-left`}>{agency.name}</span>
             <span className={`${LIST_ROW_DIM} ml-3 shrink-0`}>{agency.routeCount} {agency.routeCount === 1 ? 'route' : 'routes'}</span>

@@ -64,6 +64,8 @@ interface Props {
 
 export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
   const [searchParams] = useSearchParams();
+  const [mapContextOpen, setMapContextOpen] = useState(false);
+  const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
 
   const initialMapCenter = useMemo(() => {
     const lat = parseFloat(searchParams.get('lat') ?? '');
@@ -417,6 +419,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         resetViewKey={resetViewKey}
         onLocate={onLocate}
         showMapContext={showMapContext}
+        mapContextOpen={mapContextOpen}
+        onMapContextOpenChange={setMapContextOpen}
+        onMapContextAgencyCountChange={setMapContextAgencyCount}
         day={day}
         showRouteLayers={showRouteLayers}
         liveRoutesOnly={liveRoutesOnly}
@@ -450,12 +455,25 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             </div>
           )}
           {stats && (stats.total > 0 || !isLoading) && (
-            <div className="hidden sm:flex gap-2">
-              <div className={`${MAP_BADGE} h-8`}>
-                <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
-                <span className={MAP_BADGE_LABEL}>routes</span>
-              </div>
-              <div className={`${MAP_BADGE} h-8`}>
+              <div className="hidden sm:flex gap-2">
+                <div className={`${MAP_BADGE} h-8`}>
+                  <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
+                  <span className={MAP_BADGE_LABEL}>routes</span>
+                </div>
+                {showMapContext && (
+                  <button
+                    type="button"
+                    onClick={() => setMapContextOpen(open => !open)}
+                    aria-label={`${mapContextAgencyCount} agencies in view`}
+                    aria-expanded={mapContextOpen}
+                    title="Agencies in view"
+                    className={`${MAP_BADGE} h-8 cursor-pointer hover:text-[var(--accent)] transition-colors`}
+                  >
+                    <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>
+                    <span className={MAP_BADGE_LABEL}>agencies</span>
+                  </button>
+                )}
+                <div className={`${MAP_BADGE} h-8`}>
                 <span className={MAP_BADGE_COUNT}>
                   {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
                 </span>

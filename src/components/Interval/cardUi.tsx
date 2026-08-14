@@ -558,9 +558,9 @@ export function CardHelpNotice({
   actionLabel?: string;
 }) {
   return (
-    <div className={`${CARD_NOTICE} flex min-w-0 items-center gap-1`}>
-      <span className="min-w-0 truncate">{message}</span>
-      <button type="button" onClick={onLearnMore} className={`${CARD_NOTICE_ACTION} shrink-0`}>
+    <div className={`${CARD_NOTICE} flex min-w-0 flex-wrap items-start gap-x-1 gap-y-0.5`}>
+      <span className="min-w-0 flex-1 whitespace-normal break-words leading-relaxed">{message}</span>
+      <button type="button" onClick={onLearnMore} className={`${CARD_NOTICE_ACTION} shrink-0 whitespace-nowrap`}>
         {actionLabel}
       </button>
     </div>

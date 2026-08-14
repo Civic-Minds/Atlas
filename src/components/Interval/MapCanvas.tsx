@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
-import { LocateFixed, Plus, Minus, Link2, Flag, List } from 'lucide-react';
+import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
@@ -153,6 +153,9 @@ interface MapCanvasProps {
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
   showMapContext?: boolean;
+  mapContextOpen?: boolean;
+  onMapContextOpenChange?: (open: boolean) => void;
+  onMapContextAgencyCountChange?: (count: number) => void;
   day?: DayType;
   routesForStop?: {
     slug: string;
@@ -200,6 +203,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   setQuery,
   onLocate,
   showMapContext = false,
+  mapContextOpen = false,
+  onMapContextOpenChange,
+  onMapContextAgencyCountChange,
   day = 'Weekday',
   routesForStop,
   showRouteLayers = true,
@@ -225,7 +231,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
-  const [mapContextOpen, setMapContextOpen] = useState(false);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fittedRouteRef = useRef<string | null>(null);
   const showMapHint = (msg: string) => {
@@ -255,11 +260,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const { overlay: historyOverlay } = useHistoryMapOverlay();
 
   const mapContextAgencies = useMemo<MapContextAgency[]>(
-    () => showMapContext && mapContextOpen
+    () => showMapContext
       ? getMapContextAgencies(agencies, layers ?? {}, viewportBounds, day)
       : [],
-    [agencies, layers, viewportBounds, day, showMapContext, mapContextOpen],
+    [agencies, layers, viewportBounds, day, showMapContext],
   );
+
+  useEffect(() => {
+    onMapContextAgencyCountChange?.(mapContextAgencies.length);
+  }, [mapContextAgencies.length, onMapContextAgencyCountChange]);
 
   // Deck.gl overlay for GPU-rendered vehicle markers
   const deckOverlayRef = useRef<MapboxOverlay | null>(null);
@@ -1357,26 +1366,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       {showMapContext && mapContextOpen && (
         <MapContextPanel
           agencies={mapContextAgencies}
-          onClose={() => setMapContextOpen(false)}
+          onClose={() => onMapContextOpenChange?.(false)}
           onSelectAgency={setSelectedAgencySlug ? slug => {
             onClearSelection?.();
             setSelectedAgencySlug(slug);
-            setMapContextOpen(false);
+            onMapContextOpenChange?.(false);
           } : undefined}
         />
-      )}
-
-      {showMapContext && (
-        <button
-          type="button"
-          onClick={() => setMapContextOpen(open => !open)}
-          aria-label="What’s in this view"
-          aria-expanded={mapContextOpen}
-          title="What’s in this view"
-          className={`absolute bottom-6 right-14 ${Z_PANEL} w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border ${mapContextOpen ? 'border-[var(--accent-border)] text-[var(--accent)]' : 'border-[var(--border-primary)] text-[var(--text-dim)]'} shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
-        >
-          <List className="w-3.5 h-3.5" />
-        </button>
       )}
 
       {/* Zoom Control Overlay */}
