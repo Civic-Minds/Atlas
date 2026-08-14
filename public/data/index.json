@@ -7175,6 +7175,40 @@
       ]
     },
     {
+      "slug": "gptc",
+      "name": "Gary Public Transportation Corporation (Gary, IN)",
+      "region": "Indiana",
+      "center": [
+        41.5934,
+        -87.3464
+      ],
+      "feedUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
+      "lastFeedExpiry": "20300129",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-14",
+      "cities": [
+        "Gary, Indiana",
+        "Merrillville, Indiana",
+        "Crown Point, Indiana"
+      ]
+    },
+    {
+      "slug": "bata",
+      "name": "Bay Area Transportation Authority (Traverse City, MI)",
+      "region": "Michigan",
+      "center": [
+        44.7631,
+        -85.6206
+      ],
+      "feedUrl": "https://batabustracker.com/gtfs",
+      "lastFeedExpiry": "20991231",
+      "lastFeedVersion": "8/10/2026",
+      "lastRefreshedAt": "2026-08-14",
+      "cities": [
+        "Traverse City, Michigan"
+      ]
+    },
+    {
       "slug": "citylink-peoria",
       "name": "CityLink (Peoria, IL)",
       "center": [
@@ -7859,6 +7893,23 @@
       "lastFeedExpiry": "20301231",
       "lastFeedVersion": "1.0-2.7.19",
       "lastRefreshedAt": "2026-08-07"
+    },
+    {
+      "slug": "wvu-prt",
+      "name": "West Virginia University PRT (Morgantown, WV)",
+      "region": "West Virginia",
+      "center": [
+        39.6345,
+        -79.9553
+      ],
+      "feedUrl": "https://prt.wvu.edu/files/d/fcc4abeb-9e23-477b-b648-30623cb8ad80/gtfs.zip",
+      "preprocess": "wvu-prt-shapes",
+      "lastFeedExpiry": "20261218",
+      "lastFeedVersion": "2",
+      "lastRefreshedAt": "2026-08-14",
+      "cities": [
+        "Morgantown, West Virginia"
+      ]
     },
     {
       "slug": "visalia",
