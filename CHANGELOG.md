@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
 - Added GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
 - Split rush-hour-only routes such as TTC 986 are now classified as irregular instead of all-day infrequent service.
 - The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.

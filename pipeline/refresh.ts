@@ -45,6 +45,7 @@ import {
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
+import { historyRouteKey } from './historyRouteKey.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -78,8 +79,9 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   const current: Record<string, RouteSummary> = {};
   for (const f of fc.features) {
     const p = f.properties;
-    if (!p.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
-    const sn = String(p.routeShortName);
+    if (p.day !== 'Weekday' || p.directionId !== 0) continue;
+    const sn = historyRouteKey(p);
+    if (!sn) continue;
     const h = p.headway != null ? Number(p.headway) : null;
     if (h == null) continue;
     const t = p.tier != null ? String(p.tier) : null;
@@ -118,7 +120,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     let geometry: number[][] | null = null;
     for (const f of fc.features) {
       const p = f.properties;
-      if (p.routeShortName === routeShortName && p.day === 'Weekday' && (p.directionId === 0 || p.directionId === '0')) {
+      if (historyRouteKey(p) === routeShortName && p.day === 'Weekday' && (p.directionId === 0 || p.directionId === '0')) {
         geometry = (f.geometry as any)?.coordinates || null;
         break;
       }
