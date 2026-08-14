@@ -34,6 +34,20 @@ describe('applyAnalysisCriteria', () => {
     expect(r!.warnings ?? []).not.toContain('Overnight-only service (outside daytime analysis window)');
   });
 
+  it('classifies separate AM and PM peak blocks as irregular despite spanning the clock', () => {
+    const results = applyAnalysisCriteria([
+      raw({
+        route: '986',
+        departureTimes: [
+          ...Array.from({ length: 20 }, (_, i) => 362 + i * 6),
+          ...Array.from({ length: 20 }, (_, i) => 906 + i * 6),
+        ],
+      }),
+    ]);
+    const r = results.find(x => x.route === '986');
+    expect(r).toMatchObject({ tier: 'span' });
+  });
+
   it('#313: keeps an entirely overnight route instead of dropping it (TTC Blue Night pattern)', () => {
     // All departures ~1:12–2:12am next-day-encoded (25:12–26:12) -- zero in the 07:00–22:00 window.
     const results = applyAnalysisCriteria([
