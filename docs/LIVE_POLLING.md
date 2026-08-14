@@ -53,7 +53,12 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ## History Archiving
 
-Cloudflare Worker (`workers/gtfs-rt-archiver/`) writes to private R2 bucket `atlas-live`. Cron is **every minute** (`* * * * *`); trip-update delay archives **self-gate to every 5th minute**, while vehicle-position samples write **every minute**. Daily cleanup at 04:00 UTC enforces **30-day** retention.
+The Cloudflare Workers in `workers/gtfs-rt-archiver/` write to private R2 bucket `atlas-live`. Five small Workers use the five free Cron slots: TTC positions, TTC trips, Hamilton, STM, and Burlington plus Halifax. Each shard runs every minute; trip-update archives run every 5 minutes, while vehicle-position samples run every minute. R2 lifecycle rules enforce **30-day** retention.
+
+Deploy the five configs separately: `wrangler.toml`, `wrangler.ttc-trips.toml`,
+`wrangler.hamilton.toml`, `wrangler.stm.toml`, and
+`wrangler.burlington-halifax.toml`. The STM shard also needs its own
+`STM_API_KEY` secret after deployment.
 
 This is **not** the same set as client Live Vehicles (`LIVE_POLLING_ROUTES`). The Worker hardcodes its own feed lists in `workers/gtfs-rt-archiver/src/index.ts`.
 
