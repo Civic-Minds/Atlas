@@ -338,13 +338,16 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   }, [layers, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
 
   const stats = useMemo(() => {
-    if (allFeatures.length === 0) return null;
+    // Do not publish a catalog-wide count while the map has not reported its first viewport.
+    // Agency layers can arrive before MapLibre emits moveend, which used to make the badge
+    // briefly count every loaded route instead of only routes in view (#382).
+    if (allFeatures.length === 0 || !deferredBounds) return null;
     // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in.
     // Use bbox-only intersection (cached) — full vertex scans on every pan were a main-thread
     // hitch. Badge may slightly over-count L-shaped routes whose box overlaps the view.
     // Restrict to the active service day — the map only draws the selected day's features,
     // so counting other days' variants inflates the badge (e.g. weekday-only routes on a Sunday).
-    const onScreen = (f: GeoJSON.Feature) => !deferredBounds || inViewport(f, deferredBounds);
+    const onScreen = (f: GeoJSON.Feature) => inViewport(f, deferredBounds);
     const activeDay = (f: GeoJSON.Feature) => {
       const d = (f.properties as any).day;
       return d === undefined || d === day;

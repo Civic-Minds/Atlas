@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.
 - Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
 - Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
 - Beta schedule charts now keep the active period label clear of the expand control at narrow widths.

@@ -42,7 +42,8 @@ describe('useIntervalStats', () => {
     maxHeadway: 60,
     agencies: new Set(),
     modes: new Set(),
-    day: 'Weekday'
+    day: 'Weekday',
+    bounds: { s: -90, w: -180, n: 90, e: 180 },
   };
 
   it('keeps selected-route visibility separate from the active filter explanation', () => {
@@ -273,9 +274,12 @@ describe('useIntervalStats', () => {
     }));
     expect(result.current.stats).toEqual({ total: 1, matching: 1 });
 
-    // No bounds → whole region
-    const { result: unscoped } = renderHook(() => useIntervalStats(layersSpread, defaultFilters));
-    expect(unscoped.current.stats).toEqual({ total: 2, matching: 2 });
+    // No bounds → wait for the map rather than counting every loaded route.
+    const { result: unscoped } = renderHook(() => useIntervalStats(layersSpread, {
+      ...defaultFilters,
+      bounds: null,
+    }));
+    expect(unscoped.current.stats).toBeNull();
   });
 
   it('should handle combined-frequency corridors', () => {
