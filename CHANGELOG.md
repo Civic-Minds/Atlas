@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
 - NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
 - Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
+- Peak-only routes with separate morning and afternoon service blocks are now hidden as irregular instead of appearing as all-day infrequent routes.
 
 ## [3.2.19] - 2026-08-13
 
