@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Split rush-hour-only routes such as TTC 986 are now classified as irregular instead of all-day infrequent service.
+- Beta route cards can now expand schedule charts to inspect the full-day service pattern.
 - The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.
 - Beta route cards no longer show branch-only uneven-service warnings when combined branches provide the rider-facing trunk frequency.
 - Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
