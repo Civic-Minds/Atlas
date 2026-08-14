@@ -9,6 +9,7 @@ import { agencyHistoryTier, agencyQualifiesForHistory, historyTierLabel } from '
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
+import { qualityStatusLabel } from '../../shared/feedQuality';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -434,6 +435,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const hasHistory = historyBySlug.has(a.slug);
                           const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
                           const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
+                          const showQualityBadge = a.feedQuality && a.feedQuality.status !== 'healthy';
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
@@ -449,8 +451,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   <span className="text-[var(--text-dim)]"> · {secondary}</span>
                                 )}
                               </span>
-                              {(showLiveBadge || showHistoryBadge) && (
+                              {(showLiveBadge || showHistoryBadge || showQualityBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                  {showQualityBadge && (
+                                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border ${a.feedQuality?.status === 'unusable' ? 'text-red-700 bg-red-50 border-red-200' : a.feedQuality?.status === 'degraded' ? 'text-amber-800 bg-amber-50 border-amber-200' : 'text-[var(--text-muted)] bg-[var(--bg-btn)] border-[var(--border-primary)]'}`}>
+                                      {qualityStatusLabel(a.feedQuality!.status)}
+                                    </span>
+                                  )}
                                   {showLiveBadge && (
                                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live</span>
                                   )}

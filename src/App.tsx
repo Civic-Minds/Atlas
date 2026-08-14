@@ -25,6 +25,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
+import type { FeedQuality } from '../shared/feedQuality';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -60,6 +61,7 @@ export interface Agency {
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
+  feedQuality?: FeedQuality;
   fare?: number;
   gtfsFares?: boolean;
   fareUrl?: string;
@@ -170,6 +172,21 @@ export default function App() {
     }
     return true;
   });
+  const [hideLowQuality, setHideLowQuality] = useState(() => {
+    if (!BETA_BUILD || typeof window === 'undefined') return false;
+    return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
+  });
+
+  useEffect(() => {
+    if (BETA_BUILD) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
+  }, [hideLowQuality]);
+
+  const visibleAgencies = useMemo(
+    () => hideLowQuality
+      ? agencies.filter(a => a.feedQuality?.status !== 'degraded' && a.feedQuality?.status !== 'unusable')
+      : agencies,
+    [agencies, hideLowQuality],
+  );
 
   const [searchFocused, setSearchFocused] = useState(false);
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -499,10 +516,10 @@ export default function App() {
             <Interval
               agencies={
                 inHistory && historyAgencySlugs 
-                  ? agencies.filter(a => historyAgencySlugs.has(a.slug)) 
-                  : inFares 
-                    ? agencies.filter(a => a.gtfsFares) 
-                    : agencies
+                  ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug))
+                : inFares
+                    ? visibleAgencies.filter(a => a.gtfsFares)
+                    : visibleAgencies
               }
               lightMode={lightMode}
               setLightMode={setLightMode}
@@ -538,11 +555,14 @@ export default function App() {
               sidebarLeft={sidebarLeft}
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}
+              hideLowQuality={hideLowQuality}
+              setHideLowQuality={setHideLowQuality}
+              feedQualityEnabled={BETA_BUILD}
             />
             {CORRIDORS_ENABLED && (
               <React.Suspense fallback={null}>
                 <Corridors
-                  agencies={agencies}
+                  agencies={visibleAgencies}
                   day={day}
                   active={inCorridors}
                   sidebarLeft={sidebarLeft}
@@ -559,7 +579,7 @@ export default function App() {
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <React.Suspense fallback={null}>
                   <LiveVehicles
-                    agencies={agencies}
+                  agencies={visibleAgencies}
                     lightMode={lightMode}
                     setLightMode={setLightMode}
                     active={inLive}
@@ -576,7 +596,7 @@ export default function App() {
           </ErrorBoundary>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={agencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
+      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
     </div>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

@@ -25,6 +25,7 @@ import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-poll
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
+import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -97,6 +98,7 @@ export interface ProcessResult {
   feedVersion: string | null;  // feed_version from feed_info.txt, or null if absent
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
+  feedQuality: FeedQuality;
 }
 
 export async function processGtfsBuffer(
@@ -938,6 +940,22 @@ export async function processGtfsBuffer(
   const feedInfo = gtfs.feedInfo?.[0];
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   const mainFeatures = [...features, ...stopFeatures];
+  const routeFeatures = features.filter(feature =>
+    feature.geometry.type === 'LineString' && feature.properties.routeShortName != null,
+  );
+  const routeHeadwayMismatches = routeFeatures.filter(feature => {
+    const headway = Number(feature.properties.headway);
+    const minStopHeadway = Number(feature.properties.minStopHeadway);
+    return Number.isFinite(headway) && Number.isFinite(minStopHeadway) && minStopHeadway > 0 && headway >= minStopHeadway * 1.8;
+  }).length;
+  const feedQuality = assessFeedQuality({
+    validationErrors: validation.errors,
+    validationWarnings: validation.warnings,
+    shapeAnomalies: gtfs.shapeAnomalies?.length ?? 0,
+    routeHeadwayMismatches,
+    featureCount: routeFeatures.length,
+    feedExpiry: feedInfo?.feed_end_date ?? null,
+  });
 
   let livePollingSidecar: Record<string, any> | undefined;
   if (options?.slug) {
@@ -993,5 +1011,6 @@ export async function processGtfsBuffer(
     feedVersion: feedInfo?.feed_version ?? null,
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,
+    feedQuality,
   };
 }

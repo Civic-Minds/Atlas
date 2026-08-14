@@ -194,7 +194,7 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { agencyId, preprocess, excludeRouteShortNames, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
@@ -226,6 +226,7 @@ async function main() {
     if (shapeAnomalies?.length) {
       console.log(`  ${shapeAnomalies.length} shape(s) needed correction during parsing (truncated jump, de-interleaved duplicate sequences, and/or a repaired/flagged interleaved sub-path) — see ${slug}-shape-anomalies.json.`);
     }
+    console.log(`  Feed quality: ${feedQuality.status} (${feedQuality.score}/100)${feedQuality.reasons.length ? ` — ${feedQuality.reasons.join(' ')}` : ''}`);
     console.log(`  Run "npm run route-report -- ${slug}" to check for anomaly patterns (mismatched headways, near-duplicate headsigns, shape corrections) before publishing.`);
     console.log(`  Re-run without --dry-run once you're satisfied to actually publish.\n`);
     return;
@@ -267,6 +268,7 @@ async function main() {
       lastFeedExpiry: feedExpiry,
       lastFeedVersion: feedVersion,
       lastRefreshedAt: todayUtcYmd(),
+      feedQuality,
     };
     if (upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
       updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
@@ -276,7 +278,7 @@ async function main() {
     }
     index.agencies[existing] = updated;
   } else {
-    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd() });
+    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd(), feedQuality });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   const savedAgency = index.agencies.find(a => a.slug === slug);

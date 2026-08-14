@@ -44,6 +44,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
+import type { FeedQuality } from '../shared/feedQuality.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -189,6 +190,7 @@ interface AgencyEntry {
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
+  feedQuality?: FeedQuality;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -343,6 +345,7 @@ async function refreshAgency(
 
   let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
+  agency.feedQuality = primary.feedQuality;
 
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
   // Skip-if-unchanged only checks the primary feed; supplemental feeds always reprocess.
