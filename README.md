@@ -30,4 +30,4 @@ Transit frequency data lives in separate GTFS feeds across many agencies, with n
 - [Data](./docs/DATA.md)
 - [Changelog](./CHANGELOG.md)
 
-Created by Civic Minds
+Created by [Civic Minds](https://github.com/Civic-Minds)

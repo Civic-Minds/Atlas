@@ -19,9 +19,10 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { BETA_BUILD, SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
+import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
   dirIdNum,
   groupTrunkHeadway,
@@ -168,24 +169,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   );
   // Only primary patterns per direction drive the uneven banner. A rare short-turn
   // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when
-  // the direction's real service is even — that gap is not the rider message.
-  const unevenPeriodMaxGap = UNEVEN_BANNER_ENABLED && period !== 'all'
-    ? Math.max(0, ...directionGroups.flatMap(group => {
-        const primaryHw = Math.min(
-          ...group.realTier
-            .map(d => d.headway)
-            .filter((h): h is number => h != null),
-        );
-        return group.realTier
-          .filter(direction => {
-            if (direction.headwayByPeriodSustained?.[period] !== false) return false;
-            if (primaryHw === Infinity) return true;
-            // Keep primary / near-primary; drop branches clearly sparser short-turns.
-            return direction.headway == null || direction.headway <= primaryHw * 1.5;
-          })
-          .map(direction => direction.maxGapByPeriod?.[period] ?? 0);
-      }))
-    : 0;
+  // the direction's real service is even — that gap is not the rider message. When
+  // the card already has a qualifying combined trunk summary, do not contradict it
+  // with an individual branch's terminal gap (#381).
+  const unevenGap = UNEVEN_BANNER_ENABLED ? unevenPeriodMaxGap(directionGroups, period) : 0;
 
   // Combined service is directional: opposite directions can have different shared
   // sections and branch cadences. Keep every qualifying direction instead of making
@@ -326,6 +313,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         period={period}
         onPeriodChange={p => setPeriod(p as TimePeriod)}
         onHourHover={setHoveredHour}
+        allowExpand={BETA_BUILD}
+        title={`${currentRoute.routeShortName ?? 'Route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
       />
     );
   };
@@ -375,13 +364,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </p>
         </div>
       )}
-      {selectedPeriod && unevenPeriodMaxGap > 0 && (
+      {selectedPeriod && unevenGap > 0 && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
           <p className="text-[10px] font-black text-[var(--text-primary)]">
             Service is uneven during {selectedPeriod.label}.
           </p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            Longest gap: {unevenPeriodMaxGap} minutes.
+            Longest gap: {unevenGap} minutes.
           </p>
         </div>
       )}

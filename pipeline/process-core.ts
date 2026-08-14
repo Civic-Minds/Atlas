@@ -21,7 +21,7 @@ import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHead
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
-import { projectStopsOntoShape, simplifyLine } from './geometry.js';
+import { clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
@@ -139,14 +139,11 @@ export async function processGtfsBuffer(
 
   const routeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, r]));
 
-  // Stop coords for corridor link geometry (stop-pair chords; dense stops approximate paths)
-  const stopCoords = new Map<string, [number, number]>();
   const stopsById = new Map<string, { lat: number; lon: number }>();
   for (const stop of gtfs.stops ?? []) {
     const lat = parseFloat(stop.stop_lat);
     const lon = parseFloat(stop.stop_lon);
     if (Number.isFinite(lat) && Number.isFinite(lon)) {
-      stopCoords.set(stop.stop_id, [lon, lat]);
       stopsById.set(stop.stop_id, { lat, lon });
     }
   }
@@ -820,9 +817,9 @@ export async function processGtfsBuffer(
   stampRouteIrregularDirection(features);
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)
-  // get aggregate headway from the *union* of their departures. Emitted as small LineStrings
-  // between stop pairs so they chain into corridor paths. Drawn on top of per-route lines to
-  // visually surface the combined frequency on shared segments.
+  // get aggregate headway from the *union* of their departures. Reuse a matching route shape
+  // between each shared stop pair so the overlay follows the street instead of drawing a
+  // misleading straight stop-to-stop chord.
   //
   // Corridors are skipped for all-rail feeds (route_type=2): rail lines run on dedicated
   // single-operator corridors where combined frequency is not meaningful, and the stop-pair
@@ -839,13 +836,22 @@ export async function processGtfsBuffer(
     if (!dayCfg) continue;
     const corrs = calculateCorridors(gtfs, d, dayCfg.timeWindow.start, dayCfg.timeWindow.end);
     for (const c of corrs) {
-      const a = stopCoords.get(c.stopA);
-      const b = stopCoords.get(c.stopB);
-      if (!a || !b) continue;
-      // Skip long straight-line chords (cross water, look wrong for long-distance)
-      const dx = a[0] - b[0];
-      const dy = a[1] - b[1];
-      if (Math.sqrt(dx * dx + dy * dy) > 0.05) continue; // ~5km+ at this lat
+      const from = stopsById.get(c.stopA);
+      const to = stopsById.get(c.stopB);
+      if (!from || !to) continue;
+
+      const corridorGeometry = features
+        .filter(feature =>
+          feature.geometry.type === 'LineString' &&
+          feature.properties.day === d &&
+          c.routeIds.includes(String(feature.properties.routeId)),
+        )
+        .map(feature => clipLineBetweenStops(feature.geometry.coordinates, from, to))
+        .find((geometry): geometry is number[][] => geometry != null);
+      // A corridor without a matching shaped route is safer to omit than to render as a
+      // straight line through places where no vehicle travels.
+      if (!corridorGeometry) continue;
+
       const h = Math.round(c.avgHeadway);
       const shortNames = c.routeIds
         .map((rid: string) => routeById.get(rid)?.route_short_name ?? rid)
@@ -854,7 +860,7 @@ export async function processGtfsBuffer(
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [a, b],
+          coordinates: corridorGeometry,
         },
         properties: {
           isCorridor: true,
