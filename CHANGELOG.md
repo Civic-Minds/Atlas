@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
+
 ## [3.2.19] - 2026-08-13
 
 - Current GTFS audits now inspect retained current snapshots for structural errors, stale metadata, duplicate content, and geography mismatches before publication.
