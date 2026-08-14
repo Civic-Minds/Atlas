@@ -1,16 +1,14 @@
-name = "atlas-gtfs-rt-archiver"
+name = "atlas-gtfs-rt-archiver-burlington-halifax"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-ARCHIVE_SHARD = "ttc-positions"
+ARCHIVE_SHARD = "burlington-halifax"
 
 [[r2_buckets]]
 binding = "BUCKET"
 bucket_name = "atlas-live"
 
 [triggers]
-# One free Cron Trigger per shard. The other four shard configs use the same
-# every-minute schedule and the same source file.
 crons = ["* * * * *"]
