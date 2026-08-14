@@ -297,7 +297,10 @@ export async function processGtfsBuffer(
       : `${shortName}::${result.dir}::${result.day}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
-    const newHeadway = result.tier === 'span' ? null : Math.round(result.medianHeadway);
+    const initialPeriodHeadways = computePeriodHeadways(result.times);
+    const newHeadway = result.serviceClass === 'irregular' || result.tier === 'span'
+      ? null
+      : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
     // Skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
@@ -320,6 +323,7 @@ export async function processGtfsBuffer(
         routeId: result.route,
         directionId: parseInt(result.dir),
         tier: result.tier,
+        serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
@@ -670,8 +674,11 @@ export async function processGtfsBuffer(
     // Step 4: override feature headway + tier using the terminal stop's headway.
     // "to Niagara Falls GO every 15 min" is wrong — that's trunk frequency, not branch frequency.
     // Only trips that reach the terminal stop contribute to its headway, so it correctly reflects
-    // how often a train actually goes there. Falls back to all-stop median if terminal has no data.
-    if (feature.properties.tier !== 'span') {
+    // how often service actually goes there. Falls back to all-stop median if terminal has no data.
+    //
+    // Headline period uses trip-dispatch midday when that's denser than times-at-terminus-in-window:
+    // long trip runtimes drop late-midday departures from the terminal clock window (GO 94).
+    if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
       const terminalId = onShape[onShape.length - 1]?.stopId;
       const terminalHw = terminalId ? allStopHw[terminalId] : undefined;
       // Use midday as the headline headway — consistent with the "Midday" filter period and

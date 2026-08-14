@@ -1,5 +1,6 @@
 import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 import type { GeoJsonFeature } from './geojson-types.js';
+import { isIrregularService } from '../shared/irregularRoutes.js';
 
 function routeDayKey(routeShortName: string, day: unknown): string {
   return `${routeShortName}::${day ?? ''}`;
@@ -63,7 +64,7 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
     if (!allDirs) { allDirs = new Set(); allDirectionsByKey.set(key, allDirs); }
     allDirs.add(dirId);
 
-    if (f.properties.tier !== 'span') {
+    if (!isIrregularService(f.properties)) {
       let realDirs = realDirectionsByKey.get(key);
       if (!realDirs) { realDirs = new Set(); realDirectionsByKey.set(key, realDirs); }
       realDirs.add(dirId);

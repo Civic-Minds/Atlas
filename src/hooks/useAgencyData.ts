@@ -14,6 +14,7 @@ export interface ShapeProperties {
   routeId: string;
   directionId: number;
   tier: string | null;
+  serviceClass?: 'regular' | 'time-limited' | 'irregular';
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
   /** #281: longest departure gap touching each period, clipped to the period window. */

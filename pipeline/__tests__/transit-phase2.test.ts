@@ -32,6 +32,19 @@ describe('applyAnalysisCriteria', () => {
     expect(r).toBeDefined();
     expect(r!.tier).toBe('15');
     expect(r!.warnings ?? []).not.toContain('Overnight-only service (outside daytime analysis window)');
+    expect(r!.serviceClass).toBe('regular');
+  });
+
+  it('keeps predictable evening service visible as time-limited instead of irregular', () => {
+    // NRT-style service: every 60 minutes for five repeated trips, but only during the evening.
+    const results = applyAnalysisCriteria([
+      raw({ route: '401', dir: '0', departureTimes: [1020, 1080, 1140, 1200, 1260] }),
+      raw({ route: '401', dir: '1', departureTimes: [1020, 1080, 1140, 1200, 1260] }),
+    ]);
+    const routes = results.filter(x => x.route === '401');
+    expect(routes).toHaveLength(2);
+    expect(routes.every(x => x.tier === '60')).toBe(true);
+    expect(routes.every(x => x.serviceClass === 'time-limited')).toBe(true);
   });
 
   it('classifies separate AM and PM peak blocks as irregular despite spanning the clock', () => {
@@ -84,6 +97,15 @@ describe('applyAnalysisCriteria', () => {
     ]);
     const r = results.find(x => x.route === '777');
     expect(r!.tier).toBe('span');
+    expect(r!.serviceClass).toBe('irregular');
+  });
+
+  it('accepts three repeated departures as the minimum sustained schedule evidence', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: '776', departureTimes: [1020, 1080, 1140] }),
+    ]);
+    const r = results.find(x => x.route === '776');
+    expect(r).toMatchObject({ tier: '60', serviceClass: 'time-limited' });
   });
 
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {

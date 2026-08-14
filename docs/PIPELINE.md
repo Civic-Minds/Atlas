@@ -51,7 +51,20 @@ Atlas uses sustained service thresholds to assign frequency tiers. It tests the 
 
 These thresholds determine the colors and line weights shown on the map. Median headways remain useful as route and stop-level display metrics, but a median alone does not determine the tier.
 
-### 7. Generating Output & Distribution
+### 7. Separating coverage from irregularity
+
+Frequency tier and service regularity are separate facts in the processed output. The detailed field-level contract is in [`ROUTE_SERVICE_METRICS.md`](./ROUTE_SERVICE_METRICS.md#service-classification-and-the-irregular-filter):
+
+- `tier` describes the frequency while the service is operating: a finite tier such as `30` or `60`, or `infrequent` when no finite tier qualifies.
+- `serviceClass: "regular"` describes service that covers the normal analysis window. Its tier may be a finite frequency tier or `infrequent`.
+- `serviceClass: "time-limited"` describes a predictable schedule that operates during only part of the day, such as NRT evening routes. It keeps its numeric frequency tier and remains visible when irregular routes are hidden.
+- `serviceClass: "irregular"` describes exceptional service: one or two trips, a short unsustained burst, or a time-limited pattern that does not produce a finite sustained tier. A slow route that covers the normal window is `regular` with tier `infrequent`, not irregular. These routes are hidden by the default irregular-service filter.
+
+The default 07:00–22:00 weekday/Saturday and 09:00–21:00 Sunday windows are measurement frames, not a requirement that every route operate all day. Atlas uses coverage signals such as the active span and the 40% window comparison to identify time-limited candidates, then requires at least three repeated departures and a finite sustained tier before calling them scheduled time-limited service. A single coverage percentage must not by itself turn predictable service into `irregular`.
+
+`routeHasIrregularDirection` is applied when a route/day has a direction with no non-irregular service pattern. This preserves the whole-route hiding behavior for genuinely one-sided or uneven routes while allowing predictable evening-only service to remain visible.
+
+### 8. Generating Output & Distribution
 To maintain a serverless architecture, the pipeline converts the processed data into static files:
 
 - **Route GeoJSON:** Contains route geometries populated with headways and frequency tiers.
@@ -59,7 +72,7 @@ To maintain a serverless architecture, the pipeline converts the processed data 
 - **Vector Tiles:** Route shapes and stops are compiled into a single `atlas.pmtiles` archive for fast rendering.
 - **Storage:** All generated files are uploaded to Cloudflare R2, which serves them directly to the client.
 
-### 8. Loading Data on the Map
+### 9. Loading Data on the Map
 The frontend client uses lazy loading to keep the application fast and responsive:
 
 - **Viewport Loading:** The map only requests GeoJSON files for transit agencies currently visible in the user's viewport.
