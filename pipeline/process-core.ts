@@ -294,7 +294,7 @@ export async function processGtfsBuffer(
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
-    const newHeadway = result.tier === 'span'
+    const newHeadway = result.serviceClass === 'irregular' || result.tier === 'span'
       ? null
       : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
     // Skip if: new result is span (null headway) — span never beats a real tier.
@@ -320,6 +320,7 @@ export async function processGtfsBuffer(
         directionId: parseInt(result.dir),
         routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         tier: result.tier,
+        serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,
         headwayByPeriod: initialPeriodHeadways,
         headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
@@ -643,7 +644,7 @@ export async function processGtfsBuffer(
     //
     // Headline period uses trip-dispatch midday when that's denser than times-at-terminus-in-window:
     // long trip runtimes drop late-midday departures from the terminal clock window (GO 94).
-    if (feature.properties.tier !== 'span') {
+    if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
       const terminalId = onShape[onShape.length - 1]?.stopId;
       const terminalHw = terminalId ? allStopHw[terminalId] : undefined;
       // Use midday as the headline headway — consistent with the "Midday" filter period and

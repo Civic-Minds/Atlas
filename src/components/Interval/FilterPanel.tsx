@@ -66,7 +66,7 @@ const SETTINGS = [
     id: 'span',
     icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
     label: 'Hide irregular routes',
-    description: 'Hides peak-only routes, school buses, and demand-responsive shuttles — anything that doesn\'t run a consistent all-day schedule. Useful for focusing on everyday service.',
+    description: 'Hides genuinely exceptional service such as school buses, one- or two-trip routes, and demand-responsive shuttles. Scheduled evening service remains visible.',
   },
 ] as const;
 

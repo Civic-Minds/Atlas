@@ -414,6 +414,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     // all (#318), not just features that are themselves span-tier.
     if (hideSpan) {
       clauses.push(['all',
+        ['!=', ['coalesce', ['get', 'serviceClass'], ['get', 'tier'], ''], 'irregular'],
         ['!=', ['coalesce', ['get', 'tier'], ''], 'span'],
         ['!=', ['coalesce', ['get', 'routeHasIrregularDirection'], false], true],
       ]);
