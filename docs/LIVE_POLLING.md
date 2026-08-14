@@ -21,7 +21,7 @@ Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while 
 | Hamilton Street Railway | `hamilton` | 01, 10 | none | opendata.hamilton.ca |
 | Edmonton Transit System | `edmonton` | 004 | none | gtfs.edmonton.ca |
 | York Region Transit | `yrt` | VIVA Blue | none | rtu.york.ca |
-| Halifax Transit | `halifax` | 1 | none | gtfs.halifax.ca |
+| Halifax Transit | `halifax` | 1, 2, 4, 5, 7A, 7B, FerD | none | gtfs.halifax.ca |
 | SF Muni | `sfmta` | J, K, L, M, N, T | `MUNI_511_API_KEY` | api.511.org |
 
 ### Configured but parked
@@ -83,6 +83,7 @@ Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Used for live hi
 | Burlington Transit | `burlington` | All vehicle positions |
 | Hamilton Street Railway | `hamilton` | All vehicle positions |
 | STM (Montreal) | `stm` | All vehicle positions; requires Worker secret `STM_API_KEY` |
+| Halifax Transit | `halifax` | All vehicle positions |
 
 All other agencies: **static** history snapshots only (headway diffs via `atlas-archive`, written on each pipeline refresh) — not GTFS-RT archives.
 

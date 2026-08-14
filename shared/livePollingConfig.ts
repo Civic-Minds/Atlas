@@ -340,6 +340,28 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
       '1': { '7605': 0, '8330': 14, '7410': 20, '8640': 30 },
     },
   },
+  // Halifax frequent midday network — vehicles-map-only (weekday midday sustained ≤15).
+  // Derived from published atlas/halifax.json (2026-08-08). Route 1 keeps full adherence above.
+  // One agency poll; routeIds filter the shared VehiclePositions feed.
+  ...([
+    ['2', 15],   // Fairview
+    ['4', 15],   // Universities
+    ['5', 15],   // Portland
+    ['7A', 15],  // Peninsula (loop A — not a 7B branch pair)
+    ['7B', 15],  // Peninsula (loop B)
+    ['FerD', 15, 'Alderney Ferry'],
+  ] as [string, number, string?][]).map(([route, headway, displayName]): LiveRouteConfig => ({
+    slug: 'halifax',
+    displayRouteShortName: route,
+    ...(displayName ? { displayName } : {}),
+    routeIds: [route],
+    scheduledHeadwayMin: headway,
+    targetStops: {},
+    tripUpdatesUrl: 'https://gtfs.halifax.ca/realtime/TripUpdate/TripUpdates.pb',
+    vehiclePositionsUrl: 'https://gtfs.halifax.ca/realtime/Vehicle/VehiclePositions.pb',
+    scheduleOffsetMin: {},
+    vehiclesOnly: true,
+  })),
   {
     slug: 'hamilton',
     displayRouteShortName: '10',
@@ -437,5 +459,13 @@ export const LIVE_TRIP_UPDATES_FEEDS: Record<string, string> = Object.fromEntrie
   [...new Set(LIVE_POLLING_ROUTES.map(c => c.slug))].map(slug => [
     slug,
     LIVE_POLLING_ROUTES.find(c => c.slug === slug)!.tripUpdatesUrl,
+  ]),
+);
+
+/** Per-agency VehiclePositions PB URL (same slug set as LIVE_TRIP_UPDATES_FEEDS). */
+export const LIVE_VEHICLE_POSITIONS_FEEDS: Record<string, string> = Object.fromEntries(
+  [...new Set(LIVE_POLLING_ROUTES.map(c => c.slug))].map(slug => [
+    slug,
+    LIVE_POLLING_ROUTES.find(c => c.slug === slug)!.vehiclePositionsUrl,
   ]),
 );
