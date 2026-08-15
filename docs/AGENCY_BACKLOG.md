@@ -214,6 +214,8 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ~142 French cities dry-run validated and added as `hiddenInProduction` / `pmtilesPending` across two batches — major metros (Lyon, Marseille, Toulouse, Nice, Cannes, Limoges, …) plus mid-size networks in every métropole région. Wrong-geo matches and stops-only feeds rejected (not added). No live R2 publish — country launch still required.
 
+**2026-08-15 audit:** do not unhide the batch yet. The candidate feed registry has drifted: 20 URLs return 404, only 5 candidate artifacts are in `atlas-staging`, and fresh Metz/Rennes dry-runs still produce review flags. Metz is the current pilot candidate; Rennes and the broad France launch remain on hold pending feed refresh and QA.
+
 ## France expansion — blocked (no shapes)
 
 Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md) § Missing Agencies and [`INTERNATIONAL.md`](./INTERNATIONAL.md) § France.

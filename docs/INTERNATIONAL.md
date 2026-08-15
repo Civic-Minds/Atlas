@@ -65,6 +65,8 @@ Checked as an alternative after the UK's bundling problem surfaced.
 
 **Status:** ~142 French agencies are now in the registry as candidates (`hiddenInProduction` + `pmtilesPending`), all dry-run validated with route geometry near the claimed city — covering every métropole région including Corsica gaps and a second mid-size sweep (2026-07-19). Still **zero** production-visible French agencies; nothing launched to live R2 without an explicit country-launch decision. Blocked / rejected this cycle: Montpellier, Lille, Strasbourg, Thionville, Arras, Bastia (stops-only), plus several wrong-geo feed mismatches (e.g. Astuce feed attached to Saint-Quentin). The plan remains: launch France once coverage is broad enough, not city-by-city.
 
+**Fresh launch audit — 2026-08-15:** the candidate registry is stale enough that France is not ready for a broad production launch. Of 142 current feed URLs, 115 responded to a reachability check, 20 returned 404, 6 rejected `HEAD` and need a normal download check, and 1 failed outright. Only 5 candidate GeoJSON artifacts were present in `atlas-staging`. Fresh dry-runs found Metz had no shape anomalies or near-duplicate headsigns but still had 5 frequency metrics to review; Rennes had 181 headway-mismatch flags and 7 near-duplicate headsign flags. Recommendation: review Metz as a possible one-agency pilot, hold Rennes and the broader country launch until feeds are refreshed and revalidated.
+
 ---
 
 ## Australia — mixed, but Queensland/Tasmania look easy
