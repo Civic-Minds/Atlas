@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
-import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
+import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED, BETA_BUILD } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
-import { agencyHistoryTier, agencyQualifiesForHistory, historyTierLabel } from '../../shared/historyEligibility';
+import { agencyHistoryTier, agencyQualifiesForHistory, agencyQualifiesForHistoryExplore, historyTierAgencyLabel } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
@@ -57,6 +57,7 @@ interface Props {
   feedRefreshMeta?: FeedRefreshMeta | null;
   onAgencySelect?: (slug: string) => void;
   onLiveRouteClick?: (slug: string, routeShortName: string) => void;
+  layers?: Record<string, GeoJSON.FeatureCollection>;
 }
 
 function tabToView(tab: Tab): View {
@@ -64,7 +65,7 @@ function tabToView(tab: Tab): View {
   return 'agencies';
 }
 
-export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick }: Props) {
+export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers }: Props) {
   const [view, setView] = useState<View>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -149,6 +150,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     return map;
   }, []);
 
+  const liveCoverageBySlug = useMemo(() => {
+    const map = new Map<string, LiveCoverage>();
+    for (const [slug, layer] of Object.entries(layers ?? {})) {
+      const routeNames = new Set<string>();
+      for (const feature of layer.features) {
+        const properties = feature.properties as { routeId?: string; routeShortName?: string | null } | null;
+        if (properties?.routeId && properties.routeShortName) routeNames.add(properties.routeShortName);
+      }
+      const coverage = liveCoverageForRouteNames(slug, routeNames);
+      if (coverage) map.set(slug, coverage);
+    }
+    return map;
+  }, [layers]);
+
   const historyBySlug = useMemo(() => {
     const map = new Map<string, HistoryAgencySummary>();
     for (const a of historyAgencies ?? []) {
@@ -156,6 +171,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     }
     return map;
   }, [historyAgencies]);
+
+  const totalHistoryExploreAgencies = useMemo(
+    () => (historyAgencies ?? []).filter(a => agencyQualifiesForHistoryExplore(a as any)).length,
+    [historyAgencies],
+  );
 
   const historyTierBySlug = useMemo(() => {
     const map = new Map<string, 'explore' | 'recent'>();
@@ -218,7 +238,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [filtered]);
 
   const totalLiveAgencies = liveBySlug.size;
-  const totalHistoryAgencies = historyBySlug.size;
   const agencyFilterOptions: Array<[AgencyListFilter, string]> = [
     ['all', 'All'],
     ['live', 'Live'],
@@ -319,9 +338,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies.
-                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryAgencies} (Explore + Recent).`}
+                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
                   {LIVE_ENABLED && !HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}.`}
-                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Check History on ${totalHistoryAgencies} agencies (Explore + Recent).`}
+                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
                 </p>
                 <div className="space-y-2">
                   <button
@@ -433,8 +452,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
-                          const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
-                          const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
+                          const showLiveBadge = hasLive;
+                          const showHistoryBadge = hasHistory;
                           const showQualityBadge = a.feedQuality && a.feedQuality.status !== 'healthy';
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
@@ -459,11 +478,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                     </span>
                                   )}
                                   {showLiveBadge && (
-                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live</span>
+                                    <span
+                                      title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}
+                                      className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]"
+                                    >
+                                      {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
+                                    </span>
                                   )}
                                   {showHistoryBadge && (
                                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
-                                      {historyTierLabel(historyTierBySlug.get(a.slug) ?? 'recent')}
+                                      {historyTierAgencyLabel(historyTierBySlug.get(a.slug) ?? 'recent')}
                                     </span>
                                   )}
                                 </div>
@@ -659,7 +683,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                       <div className="mb-2">
                         <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
                           {selectedSlug && historyTierBySlug.get(selectedSlug)
-                            ? historyTierLabel(historyTierBySlug.get(selectedSlug)!)
+                            ? historyTierAgencyLabel(historyTierBySlug.get(selectedSlug)!)
                             : 'History'}
                         </span>
                       </div>

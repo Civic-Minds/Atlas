@@ -440,7 +440,7 @@ export default function App() {
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
-            {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}</span>}
+            {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
           </a>
         )}
 
@@ -596,7 +596,7 @@ export default function App() {
           </ErrorBoundary>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
+      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} />
     </div>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

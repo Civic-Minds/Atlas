@@ -5,6 +5,7 @@ import {
   agencyQualifiesForHistoryExplore,
   agencyQualifiesForHistoryRecent,
   distinctSnapshotYears,
+  historyTierAgencyLabel,
   historyTierLabel,
   maxRouteSnapshotCount,
   MIN_HISTORY_DISTINCT_YEARS,
@@ -97,5 +98,7 @@ describe('historyEligibility', () => {
   it('labels tiers for UI', () => {
     expect(historyTierLabel('explore')).toBe('Explore');
     expect(historyTierLabel('recent')).toBe('Recent');
+    expect(historyTierAgencyLabel('explore')).toBe('Full history');
+    expect(historyTierAgencyLabel('recent')).toBe('Partial history');
   });
 });
