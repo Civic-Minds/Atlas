@@ -1,33 +1,30 @@
 import React, { useMemo, useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { MapContextAgency } from '../../utils/mapContext';
 import { FLOATING_CARD, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
-  onClose: () => void;
   onSelectAgency?: (slug: string) => void;
 }
 
-export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, onClose, onSelectAgency }) => {
+export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, onSelectAgency }) => {
   const [query, setQuery] = useState('');
+  const routeCount = useMemo(() => agencies.reduce((total, agency) => total + agency.routeCount, 0), [agencies]);
   const filteredAgencies = useMemo(() => {
     const q = query.trim().toLowerCase();
     return q ? agencies.filter(agency => agency.name.toLowerCase().includes(q)) : agencies;
   }, [agencies, query]);
 
   return (
-    <div className={`absolute bottom-16 right-14 ${Z_PANEL} w-[min(21rem,calc(100vw-2rem))] max-h-[min(30rem,calc(100vh-8rem))] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}>
+    <div className={`absolute bottom-16 right-3 ${Z_PANEL} w-[min(21rem,calc(100vw-2rem))] max-h-[min(30rem,calc(100vh-8rem))] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}>
       <div className={PANEL_TITLE_BAR}>
         <div className="min-w-0 flex-1">
-          <div className={PANEL_TITLE}>What’s in view</div>
+          <div className={PANEL_TITLE}>In view</div>
           <div className="text-[11px] font-bold text-[var(--text-primary)]">
-            {agencies.length} {agencies.length === 1 ? 'agency' : 'agencies'} on the map
+            {agencies.length} {agencies.length === 1 ? 'agency' : 'agencies'} · {routeCount} {routeCount === 1 ? 'route' : 'routes'}
           </div>
         </div>
-        <button type="button" onClick={onClose} aria-label="Close map context" className="shrink-0 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors">
-          <X className="w-4 h-4" />
-        </button>
       </div>
 
       {agencies.length > 5 && (

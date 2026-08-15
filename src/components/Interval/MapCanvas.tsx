@@ -1366,7 +1366,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       {showMapContext && mapContextOpen && (
         <MapContextPanel
           agencies={mapContextAgencies}
-          onClose={() => onMapContextOpenChange?.(false)}
           onSelectAgency={setSelectedAgencySlug ? slug => {
             onClearSelection?.();
             setSelectedAgencySlug(slug);

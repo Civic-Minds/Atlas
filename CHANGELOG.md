@@ -19,6 +19,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
 - Beta schedule charts now keep the active period label clear of the expand control at narrow widths.
 - Beta map controls now show an agencies-in-view pill beside the route count, replacing the intermittent context icon.
+- The map context panel now summarizes both agencies and routes in view without an extra close button.
 - Beta route-card notices now wrap instead of truncating, and Near You can show all five nearby routes without scrolling on normal-height screens.
 - Beta route cards no longer show branch-only uneven-service warnings when combined branches provide the rider-facing trunk frequency.
 - Recent History now requires three snapshots on one route, filtering out two-point comparisons that are too thin to be useful.
