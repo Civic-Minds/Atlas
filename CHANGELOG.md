@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Combined route summaries now stay within their direction and highlight only the shared section on hover.
 - Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
 - Halifax Live now includes frequent vehicle-only routes alongside route 1 adherence.
 - Halifax GTFS-RT trip and vehicle feeds are now archived for live-history analysis.

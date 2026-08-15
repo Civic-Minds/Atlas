@@ -28,6 +28,7 @@ import {
   groupTrunkHeadway,
   headsignTrunkHeadway,
   sparklineSourceDirections,
+  sharedStopIdsForBranches,
   shouldShowTrunkSummary,
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
@@ -171,10 +172,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const primaryMultiBranch = directionGroups
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
-  const hasCoreSummary = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
-  const coreHeadway = hasCoreSummary
-    ? groupTrunkHeadway(primaryMultiBranch!.realTier, period === 'all' ? 'midday' : period)
+  const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
+  const hasCoreSummary = coreGroups.length > 0;
+  const primaryCoreHeadway = primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period)
+    ? groupTrunkHeadway(primaryMultiBranch.realTier, period === 'all' ? 'midday' : period)
     : null;
+  const coreHeadway = primaryCoreHeadway ?? (coreGroups[0]
+    ? groupTrunkHeadway(coreGroups[0].realTier, period === 'all' ? 'midday' : period)
+    : null);
 
   const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
   const groupHeadway = (g: DirectionGroup) => g.realTier[0]
@@ -374,26 +379,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             </p>
           </div>
         )}
-        {hasCoreSummary && coreHeadway != null && (
-          <>
-            <CardSectionLabel className="mb-0">Combined</CardSectionLabel>
-            <CardDirectionRow
-              label="Shared section"
-              headway={coreHeadway}
-              branchHovered={hoveredBranch?.isCore === true}
-              branchDimmed={!!hoveredBranch && hoveredBranch.isCore !== true}
-              onHoverStart={() => setHoveredBranch({
-                directionId: primaryMultiBranch!.dirId,
-                headsigns: primaryMultiBranch!.realTier
-                  .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
-                  .map(d => d.headsign)
-                  .filter((headsign): headsign is string => !!headsign),
-                isCore: true,
-              })}
-              onHoverEnd={() => setHoveredBranch(null)}
-            />
-          </>
-        )}
         {(() => {
           const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
             resolveBranchLabel({
@@ -417,6 +402,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           };
           const multiBranchGroup = (g: DirectionGroup) => g.realTier.length >= 2;
           return displayGroups.map((group, gi) => {
+            const groupHasCoreSummary = shouldShowTrunkSummary(group.realTier, period);
+            const groupCoreHeadway = groupHasCoreSummary
+              ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
+              : null;
+            const groupSharedStopIds = groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : [];
+            const coreHeadsigns = group.realTier
+              .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
+              .map(d => d.headsign)
+              .filter((headsign): headsign is string => !!headsign);
+            const coreHovered = hoveredBranch?.isCore === true
+              && dirIdNum(hoveredBranch.directionId) === dirIdNum(group.dirId);
             const realHeadsignKeys = new Set(
               group.realTier.map(d => (d.headsign ?? '').trim().toLowerCase()).filter(Boolean),
             );
@@ -437,6 +433,25 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {gi > 0 && showDirectionSections && <CardDivider />}
                 {showDirectionSections && group.boundLabel && (
                   <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
+                )}
+                {groupHasCoreSummary && groupCoreHeadway != null && (
+                  <>
+                    <CardSectionLabel className="mb-0">Combined</CardSectionLabel>
+                    <CardDirectionRow
+                      label="Shared section"
+                      headway={groupCoreHeadway}
+                      branchHovered={coreHovered}
+                      branchDimmed={!!hoveredBranch && !coreHovered}
+                      onHoverStart={() => setHoveredBranch({
+                        directionId: group.dirId,
+                        headsigns: coreHeadsigns,
+                        sharedStopIds: groupSharedStopIds,
+                        sharedHeadway: groupCoreHeadway,
+                        isCore: true,
+                      })}
+                      onHoverEnd={() => setHoveredBranch(null)}
+                    />
+                  </>
                 )}
                 <div className="space-y-1">
                   {group.realTier.map((d, i) => {

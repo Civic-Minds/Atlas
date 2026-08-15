@@ -33,12 +33,15 @@ export interface ShapeProperties extends BaseShapeProperties {
 
 export const routeKey = (p: ShapeProperties) => `${(p as any).agencySlug ?? p.agencyName ?? ''}::${p.routeId}`;
 
-/** Sidebar hover target for branch highlight on the map (routeId + headsign). */
+/** Sidebar hover target for branch/core highlight on the map. */
 export interface HoveredBranch {
   directionId: number;
   headsign?: string;
   headsigns?: string[];
   isCore?: boolean;
+  /** On-shape stops shared by the hovered direction's branches. */
+  sharedStopIds?: string[];
+  sharedHeadway?: number;
 }
 
 export type { PeriodKey };

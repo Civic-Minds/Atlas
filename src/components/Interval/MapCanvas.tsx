@@ -23,6 +23,7 @@ import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
+import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgencies, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 
@@ -440,6 +441,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
   }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView]);
 
+  const sharedHoverSegments = useMemo(
+    () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day),
+    [layers, selectedRoute, hoveredBranch, day],
+  );
+
   const nightServiceFeatures = useMemo(() => {
     if (!layers) return [];
     return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
@@ -460,6 +466,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!source) return;
     source.setData({ type: 'FeatureCollection', features: frequencySegmentOverlay.segments });
   }, [frequencySegmentOverlay, mapLoaded]);
+
+  // A combined-row hover is a clipped local overlay, not a full-route branch match.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('shared-hover-segments') as maplibregl.GeoJSONSource | undefined;
+    if (!source) return;
+    source.setData({ type: 'FeatureCollection', features: sharedHoverSegments });
+  }, [sharedHoverSegments, mapLoaded]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -650,6 +665,24 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-color': '#000000',
           'line-width': 18,
           'line-opacity': 0,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      });
+
+      // Combined route-row hover geometry. This is deliberately separate from the PMTiles
+      // route layer so only the stops shared by the hovered direction's branches are brightened.
+      map.addSource('shared-hover-segments', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'shared-hover-segments-layer',
+        type: 'line',
+        source: 'shared-hover-segments',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2.8, 11, 3.5, 14, 4.2, 17, 5.5],
+          'line-opacity': 1,
         },
         layout: { 'line-cap': 'round', 'line-join': 'round' },
       });
@@ -1188,7 +1221,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey];
-        if (hoveredBranch) {
+        if (hoveredBranch?.isCore) {
+          // The clipped shared-hover-segments overlay is the only bright geometry for a
+          // combined-row hover. Never brighten the full route as a proxy for the shared section.
+          map.setPaintProperty('routes-layer', 'line-opacity', [
+            'case', routeMatch, 0.4, DIM_OPACITY,
+          ]);
+          map.setPaintProperty('routes-layer', 'line-width', [
+            'case', routeMatch, 1.5, DIM_WIDTH,
+          ]);
+        } else if (hoveredBranch) {
           const branchHeadSignMatch: any = hoveredBranch.headsigns?.length
             ? ['in', ['get', 'headsign'], ['literal', hoveredBranch.headsigns]]
             : ['==', ['get', 'headsign'], hoveredBranch.headsign];
