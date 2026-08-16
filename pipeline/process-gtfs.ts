@@ -24,7 +24,8 @@ import { resolve, dirname } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { processGtfsBuffer } from './process-core.js';
-import { r2Put, r2Get, r2PutArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   formatOverrideResolvedLog,
@@ -35,6 +36,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
+import { candidateIsOlderThanActive } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   assertCountryMayWriteToR2,
@@ -162,16 +164,22 @@ async function main() {
   let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
   let agencyId: string | undefined;
   let excludeRouteShortNames: string[] | undefined;
+  let excludeTripHeadsigns: string[] | undefined;
+  let mergeEquivalentShapeVariants: boolean | undefined;
+  let previousFeedExpiry: string | null = null;
   let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; issueUrl?: string; fare?: number }>;
+      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
     preprocess = entry?.preprocess;
     agencyId = entry?.agencyId;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
+    excludeTripHeadsigns = entry?.excludeTripHeadsigns;
+    mergeEquivalentShapeVariants = entry?.mergeEquivalentShapeVariants;
+    previousFeedExpiry = entry?.lastFeedExpiry ?? null;
     issueUrl = entry?.issueUrl;
     if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
   }
@@ -196,8 +204,19 @@ async function main() {
 
   const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { agencyId, preprocess, excludeRouteShortNames, slug, manualBaseFare, force });
+  }, { agencyId, preprocess, excludeRouteShortNames, excludeTripHeadsigns, mergeEquivalentShapeVariants, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
+
+  const todayYmd = todayUtcYmd().replace(/-/g, '');
+  if (!dryRun && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {
+    throw new Error(`Refusing to replace ${slug}: downloaded feed ends ${feedExpiry ?? 'unknown'}, older than active snapshot ${previousFeedExpiry}`);
+  }
+  if (!dryRun && featureCount === 0) {
+    throw new Error(`Refusing to replace ${slug}: processed feed produced 0 route features; active snapshot unchanged`);
+  }
+  if (!dryRun && (!feedExpiry || feedExpiry < todayYmd)) {
+    console.log(`  [warn] publishing ${slug} as the latest available schedule; feed service ends ${feedExpiry ?? 'unknown'}`);
+  }
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
 
@@ -244,12 +263,11 @@ async function main() {
   }
   const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
+  await bumpPublicDataVersion(`process ${slug}`);
 
-  const archiveKey = feedExpiry ?? feedVersion;
-  if (archiveKey) {
-    await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
-    console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
-  }
+  const archiveKey = rawFeedArchiveKey(feedExpiry, feedVersion, buf);
+  await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
+  console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
 
   let index: { agencies: any[] } = { agencies: [] };
   if (existsSync(indexPath)) {

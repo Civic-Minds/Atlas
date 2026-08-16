@@ -6,6 +6,7 @@
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
+  lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
 }
 
@@ -49,4 +50,43 @@ export function stampFeedMeta(
   agency.lastFeedExpiry = opts.feedExpiry ?? opts.peekedExpiry ?? null;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
+}
+
+/** Never replace a dated active snapshot with an older or undated candidate. */
+export function candidateIsOlderThanActive(opts: {
+  candidateExpiry: string | null;
+  existingExpiry?: string | null;
+}): boolean {
+  if (!opts.existingExpiry) return false;
+  return !opts.candidateExpiry || opts.candidateExpiry < opts.existingExpiry;
+}
+
+export type RefreshSkipReason =
+  | { skip: true; reason: string }
+  | { skip: false };
+
+/**
+ * Skip only when the feed identity is unchanged. An expiry-date match alone is
+ * insufficient because agencies can publish a new feed_version mid-period.
+ */
+export function decideRefreshSkipUnchanged(opts: {
+  forceRefresh: boolean;
+  hasSupplementals: boolean;
+  feedExpired: boolean;
+  peekedExpiry: string | null;
+  peekedVersion: string | null;
+  lastFeedExpiry?: string | null;
+  lastFeedVersion?: string | null;
+}): RefreshSkipReason {
+  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired) return { skip: false };
+  const { peekedExpiry, peekedVersion, lastFeedExpiry, lastFeedVersion } = opts;
+  const versionKnown = !!peekedVersion && !!lastFeedVersion;
+  if (versionKnown && peekedVersion !== lastFeedVersion) return { skip: false };
+  if (peekedExpiry && lastFeedExpiry && peekedExpiry === lastFeedExpiry) {
+    return { skip: true, reason: `skipped (same schedule period: ${peekedExpiry})` };
+  }
+  if (!peekedExpiry && versionKnown && peekedVersion === lastFeedVersion) {
+    return { skip: true, reason: `skipped (same feed version: ${peekedVersion})` };
+  }
+  return { skip: false };
 }

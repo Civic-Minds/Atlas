@@ -2,11 +2,11 @@ import * as maplibregl from 'maplibre-gl';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { agencyGeoWeekVersion } from './agencyGeo';
+import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
 
 function atlasPmtilesUrl(): string {
-  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${agencyGeoWeekVersion()}`;
+  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
 }
 
 const protocol = new Protocol();
@@ -16,7 +16,8 @@ let protocolRegistered = false;
 // worker is emitted as a real asset instead of falling through the SPA rewrite.
 maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
-export function registerProtocol() {
+export async function registerProtocol() {
+  await resolveAgencyDataVersion();
   if (!protocolRegistered) {
     maplibregl.addProtocol('pmtiles', protocol.tile);
     protocolRegistered = true;

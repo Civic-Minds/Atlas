@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -26,6 +26,8 @@ import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-s
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
+import { routeDataQualityWarningForShape } from './routeDataQuality.js';
+import { deriveRouteBranch } from '../shared/routeBranch.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -143,14 +145,23 @@ export async function processGtfsBuffer(
   // one of its route::dir keys silently excluded from shape selection, dropping
   // otherwise-valid phase1/phase2 results with `if (!shapeId) continue` further
   // down (Fredericksburg Regional Transit pattern).
+  const activeServiceIdsByDay = new Map<DayType, Set<string>>();
+  for (const dayType of DAY_TYPES) {
+    const calDay = dayType === 'Weekday' ? 'Monday' : dayType;
+    activeServiceIdsByDay.set(
+      dayType,
+      new Set(getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], calDay, refDate)),
+    );
+  }
   const activeForShapes = new Set<string>(
     ALL_DAYS.flatMap(day => [...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
   );
-  const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes);
+  const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes, activeServiceIdsByDay, options?.slug);
   const {
     shapeById,
     shapeCounts,
     headsignDisplayShape,
+    headsignDisplayShapeByDay,
     routeDirToHeadsign,
     routeDirToDisplayShape,
     routeDirToAnalysisShapes,
@@ -160,7 +171,7 @@ export async function processGtfsBuffer(
   } = shapes;
 
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1);
+  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
   onStatus?.('Running phase 2...');
   const results = applyAnalysisCriteria(raw);
 
@@ -277,7 +288,12 @@ export async function processGtfsBuffer(
     // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
     // bidirectional bus routes with a shared direction_id) maps to its own correctly-lengthed geometry.
     const hKey = (result.headsign) ? `${key}::${result.headsign}` : null;
-    const shapeId = (hKey && headsignDisplayShape.has(hKey))
+    const dayHKey = hKey && result.day ? `${hKey}::${result.day}` : null;
+    const shapeId = (result.shapeId && shapeById.has(result.shapeId))
+      ? result.shapeId
+      : (dayHKey && headsignDisplayShapeByDay.has(dayHKey))
+      ? headsignDisplayShapeByDay.get(dayHKey)
+      : (hKey && headsignDisplayShape.has(hKey))
       ? headsignDisplayShape.get(hKey)
       : routeDirToDisplayShape.get(key);
     if (!shapeId) continue;
@@ -326,6 +342,7 @@ export async function processGtfsBuffer(
         serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
+        headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
         headwayByHour: (() => {
@@ -340,6 +357,8 @@ export async function processGtfsBuffer(
         })(),
         routeShortName: shortName,
         routeLongName: route?.route_long_name ?? null,
+        routeBranch: deriveRouteBranch(options?.slug, shortName, resolveDisplayHeadsign(result.headsign, shortName, routeLongName)),
+        routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         busSubType: detectBusSubType(result.routeType, shortName, route?.route_long_name ?? null, options?.slug),

@@ -17,7 +17,7 @@ import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
 import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
@@ -36,7 +36,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -46,6 +46,8 @@ import {
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { effectiveFeedExpiry } from './feedFreshness.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -148,16 +150,24 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
 async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
   try {
     const zip = await JSZip.loadAsync(buf);
-    const entry = zip.file('feed_info.txt') ?? zip.file(
-      Object.keys(zip.files).find(f => f.endsWith('/feed_info.txt') && !zip.files[f].dir) ?? ''
+    const findEntry = (name: string) => zip.file(name) ?? zip.file(
+      Object.keys(zip.files).find(f => f.endsWith(`/${name}`) && !zip.files[f].dir) ?? '',
     );
-    if (!entry) return { feedExpiry: null, feedVersion: null };
-    const text = await entry.async('text');
-    const rows = parseCsv<Record<string, string>>(text);
-    if (rows.length === 0) return { feedExpiry: null, feedVersion: null };
-    const row = rows[0];
+    const readRows = async (name: string) => {
+      const entry = findEntry(name);
+      if (!entry) return [] as Array<Record<string, string>>;
+      return parseCsv<Record<string, string>>(await entry.async('text'));
+    };
+    const feedInfoRows = await readRows('feed_info.txt');
+    const row = feedInfoRows[0] ?? {};
+    const calendarRows = await readRows('calendar.txt');
+    const calendarDateRows = await readRows('calendar_dates.txt');
     return {
-      feedExpiry: row.feed_end_date || null,
+      feedExpiry: effectiveFeedExpiry({
+        feedInfoEnd: row.feed_end_date,
+        calendarEnds: calendarRows.map(calendar => calendar.end_date),
+        calendarDates: calendarDateRows,
+      }),
       feedVersion: row.feed_version || null,
     };
   } catch {
@@ -184,7 +194,9 @@ interface AgencyEntry {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
+  mergeEquivalentShapeVariants?: boolean;
   staged?: boolean;
   fare?: number;
   issueUrl?: string;
@@ -295,13 +307,22 @@ async function refreshAgency(
     return { summary: 'all feeds expired, skipped' };
   }
 
-  if (!forceRefresh && !hasSupplementals && !isFeedExpired(peekedExpiry, today)) {
-    if (peekedExpiry && peekedExpiry === agency.lastFeedExpiry) {
-      return { summary: `skipped (same schedule period: ${peekedExpiry})` };
-    }
-    if (!peekedExpiry && peekedVersion && peekedVersion === agency.lastFeedVersion) {
-      return { summary: `skipped (same feed version: ${peekedVersion})` };
-    }
+  if (!forceRefresh && candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
+    writeLog(`\n  [warn] downloaded feed is older than the active snapshot (${peekedExpiry ?? 'unknown'} < ${agency.lastFeedExpiry}); keeping the active snapshot\n  `);
+    return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
+  }
+
+  const skipDecision = decideRefreshSkipUnchanged({
+    forceRefresh,
+    hasSupplementals,
+    feedExpired: isFeedExpired(peekedExpiry, today),
+    peekedExpiry,
+    peekedVersion,
+    lastFeedExpiry: agency.lastFeedExpiry,
+    lastFeedVersion: agency.lastFeedVersion,
+  });
+  if (skipDecision.skip) {
+    return { summary: skipDecision.reason };
   }
 
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
@@ -329,7 +350,9 @@ async function refreshAgency(
       agencyId: agency.agencyId,
       preprocess: agency.preprocess,
       excludeRouteShortNames: agency.excludeRouteShortNames,
+      excludeTripHeadsigns: agency.excludeTripHeadsigns,
       skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
+      mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
       slug: agency.slug,
       manualBaseFare: manualBaseFareOverride,
       // Soft: skip this agency rather than aborting the whole weekly refresh.
@@ -366,6 +389,8 @@ async function refreshAgency(
         agencyId: agency.agencyId,
         preprocess: agency.preprocess,
         excludeRouteShortNames: agency.excludeRouteShortNames,
+        excludeTripHeadsigns: agency.excludeTripHeadsigns,
+        mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
         slug: agency.slug,
         manualBaseFare: manualBaseFareOverride,
       });
@@ -416,6 +441,8 @@ async function refreshAgency(
   // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
   // The uploads still happen so the files exist on R2.
   await Promise.all(uploads);
+  // Bust browser IndexedDB and CDN cache keys immediately; do not wait for a frontend deploy.
+  await bumpPublicDataVersion(`refresh ${agency.slug}`);
 
   const stopsSnapshot = JSON.stringify({ generatedAt: new Date().toISOString(), stops: currentStops });
   const stopSnapshotKey = `stops-meta/${agency.slug}/${feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion ?? today}.json`;
@@ -425,11 +452,10 @@ async function refreshAgency(
   ]);
 
   // Archive the raw zip to the private atlas-archive bucket, keyed by service end date.
-  const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;
+  const archiveStem = rawFeedArchiveKey(feedExpiry ?? peekedExpiry, feedVersion ?? peekedVersion, buf);
+  const archiveKey = archiveStem;
   if (archiveKey) {
     await r2PutArchive(`gtfs/archive/${agency.slug}/${archiveKey}.zip`, buf, 'application/zip');
-  } else {
-    writeLog(`  [warn] no feed_end_date or feed_version — zip not archived\n`);
   }
   if (shouldStampFeedMeta(featureCount)) {
     stampFeedMeta(agency, {

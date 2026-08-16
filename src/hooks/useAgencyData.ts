@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
-import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../../shared/config';
+import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type HeadwayByPeriodSustained } from '../../shared/config';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
 
-export type { HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodSustained };
+export type { HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodRange, HeadwayByPeriodSustained };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
 export interface ShapeProperties {
@@ -18,10 +18,13 @@ export interface ShapeProperties {
   serviceClass?: 'regular' | 'time-limited' | 'irregular';
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
+  /** Typical scheduled gap range inside each period. */
+  headwayRangeByPeriod?: HeadwayByPeriodRange;
   /** #281: longest departure gap touching each period, clipped to the period window. */
   maxGapByPeriod?: HeadwayByPeriodMaxGap;
   /** #281: whether each period's own median fairly describes its gaps. */
   headwayByPeriodSustained?: HeadwayByPeriodSustained;
+  routeDataQualityWarning?: import('../../shared/routeDataQuality').RouteDataQualityWarning;
   headwayByHour?: HeadwayByHour;
   routeShortName: string | null;
   routeLongName: string | null;

@@ -1,25 +1,25 @@
 import type { GtfsData } from '../../types/gtfs.js';
-import { filterGtfsByAgencyId, filterGtfsByExcludedShortNames, filterGtfsByRouteTypes } from '../filterGtfs.js';
+import { filterGtfsByAgencyId, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns, filterGtfsByRouteTypes } from '../filterGtfs.js';
 import { synthesizeMissingDirections, synthesizeTripHeadsigns } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
 import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
 import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
+import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 
-export type GtfsPreprocess =
-  | 'nrt-day-night'
-  | 'nrt-cleanup'
-  | 'london-route-names'
-  | 'metrolink-shapes'
-  | 'wvu-prt-shapes';
+// WVU PRT publishes route geometry separately from the schedule feed.
+// Keep this agency-specific transform opt-in rather than changing shared shape handling.
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
+  mergeEquivalentShapeVariants?: boolean;
 }
 
 /** Parse → filter → merge branches → agency preprocess → synthesize trip metadata. */
@@ -37,6 +37,12 @@ export function normalizeGtfs(
   }
   if (options?.excludeRouteShortNames?.length) {
     gtfs = filterGtfsByExcludedShortNames(gtfs, options.excludeRouteShortNames);
+  }
+  if (options?.excludeTripHeadsigns?.length) {
+    const before = gtfs.trips?.length ?? 0;
+    gtfs = filterGtfsByExcludedTripHeadsigns(gtfs, options.excludeTripHeadsigns);
+    const removed = before - (gtfs.trips?.length ?? 0);
+    if (removed > 0) onStatus?.(`Headsign filter: removed ${removed} non-passenger trip(s)`);
   }
   if (!options?.skipLetterSuffixMerge) {
     const { gtfs: merged, result } = mergeLetterSuffixBranches(gtfs);
@@ -83,5 +89,15 @@ export function normalizeGtfs(
     const after = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
     onStatus?.(`WVU PRT shape linkage: ${after - before} trips linked`);
   }
-  return synthesizeMissingDirections(synthesizeTripHeadsigns(gtfs));
+  gtfs = synthesizeTripHeadsigns(gtfs);
+  if (options?.mergeEquivalentShapeVariants) {
+    const merged = mergeEquivalentShapeVariants(gtfs);
+    gtfs = merged.gtfs;
+    if (merged.mergedTrips > 0) {
+      onStatus?.(
+        `Equivalent shape variants: merged ${merged.mergedTrips} platform trips across ${merged.mergedGroups} shape groups`,
+      );
+    }
+  }
+  return synthesizeMissingDirections(gtfs);
 }

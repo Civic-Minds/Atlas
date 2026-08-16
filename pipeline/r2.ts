@@ -12,6 +12,7 @@
  */
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 
 function requireEnv(key: string): string {
@@ -179,6 +180,16 @@ export async function r2PutFile(key: string, filePath: string, contentType: stri
 /** Upload binary to the private archive bucket — no public URL returned. */
 export async function r2PutArchive(key: string, body: Buffer, contentType: string): Promise<void> {
   await r2PutRaw(key, body, contentType, requireEnv('R2_ARCHIVE_BUCKET_NAME'));
+}
+
+/** Stable, collision-safe archive stem for a raw GTFS snapshot. */
+export function rawFeedArchiveKey(feedExpiry: string | null, feedVersion: string | null, body: Buffer): string {
+  const label = (feedExpiry ?? feedVersion ?? 'unknown')
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'unknown';
+  const digest = createHash('sha256').update(body).digest('hex').slice(0, 16);
+  return `${label}-${digest}`;
 }
 
 /** Upload JSON text to the private archive bucket. */

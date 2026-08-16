@@ -51,6 +51,18 @@ Keep two Vercel deployments pointed at the same repository and `main` branch:
 
 The beta deployment may be a separate Vercel project so both sites can automatically rebuild from `main` with different environment values. Do not restore a long-lived beta Git branch just to hold these settings. If beta access ever needs to be limited to named testers, add access control at the deployment boundary; do not make the production client guess whether a user is allowed to see an internal tool.
 
+### Vercel cutover procedure
+
+The production project and beta project must be separate because Vercel environment variables are project-scoped; there is no supported way to inject beta flags into one deployment while leaving another deployment of that project unchanged.
+
+1. Create or use the beta Vercel project and set its production branch to `main`.
+2. Add the beta-only `VITE_*` variables to that project's Production environment. Keep the production project's Production environment unset or `false`.
+3. Deploy the beta project and verify its generated deployment URL while it is still private/protected.
+4. Attach `beta.transitatlas.fyi` to the beta project, verify the public hostname, then remove that hostname from the old branch-based project.
+5. Keep the old beta project/branch available until the new hostname and production site have both been checked; retire it only after the cutover is confirmed.
+
+The beta project currently uses the Vite framework/output configuration (`dist`). A Vercel deployment can show a successful `npm run build` and still fail afterward if its Output Directory is incorrectly set to `build`.
+
 ## `VITE_BETA_BUILD`
 
 Not an app gate — same env-driven pattern, but purely cosmetic. Prefixes the browser tab title with `[Beta]` (`src/main.tsx`) so the beta deployment doesn't look identical to production. Set to `"true"` only on the beta deployment; it stays there indefinitely.

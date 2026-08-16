@@ -1,4 +1,4 @@
-import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type PeriodKey } from '../shared/config.js';
+import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
@@ -377,6 +377,26 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
       }
     }
     result[key] = maxGap;
+  }
+  return result;
+}
+
+/** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
+export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
+  const result: HeadwayByPeriodRange = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
+      .filter(t => t >= start && t <= end)
+      .sort((a, b) => a - b);
+    if (times.length < 3) {
+      result[key] = null;
+      continue;
+    }
+    const gaps = times.slice(1).map((time, i) => time - times[i]).sort((a, b) => a - b);
+    const last = gaps[gaps.length - 1];
+    const next = gaps[gaps.length - 2];
+    if (gaps.length >= 3 && last - next >= 10 && last / next >= 1.6) gaps.pop();
+    result[key] = { min: Math.round(gaps[0]), max: Math.round(gaps[gaps.length - 1]) };
   }
   return result;
 }

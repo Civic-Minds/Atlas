@@ -18,6 +18,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
+import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
@@ -267,13 +268,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || maxHeadway === Infinity) return false;
-    const separator = selectedRoute.indexOf('::');
-    if (separator < 0) return false;
-    const slug = selectedRoute.slice(0, separator);
-    const routeId = selectedRoute.slice(separator + 2);
+    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;
-      return p?.routeId === routeId && (p.day === undefined || p.day === day);
+      return p?.routeId === routeId
+        && (!routeBranch || p.routeBranch === routeBranch)
+        && (p.day === undefined || p.day === day);
     });
     if (!features?.length) return false;
     return !anyFeaturePassesRouteFilter(features, slug, {
@@ -316,7 +316,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     }) ?? fc.features.find(f => (f.properties as any).routeShortName === pendingLiveRoute.routeShortName);
     if (found) {
       const p = found.properties as any;
-      setSelectedRoute(`${p.agencySlug ?? p.agencyName ?? pendingLiveRoute.slug}::${p.routeId}`);
+      setSelectedRoute(routeKey({ ...p, agencySlug: p.agencySlug ?? p.agencyName ?? pendingLiveRoute.slug } as ShapeProperties));
     }
     onPendingLiveRouteHandled?.();
   }, [pendingLiveRoute, layers, day]);

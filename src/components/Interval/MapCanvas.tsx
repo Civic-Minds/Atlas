@@ -54,6 +54,12 @@ function concatFilters(...parts: any[]): any {
   return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
 }
 
+function routeKeyMatchExpression(key: string): any {
+  const { agencySlug, routeId, routeBranch } = splitRouteKey(key);
+  if (routeBranch) return ['==', tileRouteKeyExpr(), key];
+  return ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], `${agencySlug}::${routeId}`];
+}
+
 /**
  * True when a route feature serves any sibling stop of the selected hub.
  *
@@ -526,7 +532,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Initialize MapLibre Map
   useEffect(() => {
     if (!mapContainerRef.current) return;
-    registerProtocol();
+    let cancelled = false;
+    let cleanupMap: maplibregl.Map | null = null;
+
+    void (async () => {
+      await registerProtocol();
+      if (cancelled || !mapContainerRef.current) return;
 
     const accent = lightMode ? '#3f3f46' : '#e4e4e7';
     const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
@@ -546,6 +557,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       canvasContextAttributes: { antialias: true },
     });
 
+    cleanupMap = map;
     mapRef.current = map;
 
     map.on('load', () => {
@@ -844,9 +856,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       setBoundsAndZoom(bounds, map.getZoom());
     });
 
+    })();
+
     return () => {
-      map.remove();
-      mapRef.current = null;
+      cancelled = true;
+      cleanupMap?.remove();
+      if (mapRef.current === cleanupMap) mapRef.current = null;
     };
   }, []);
 
@@ -1101,14 +1116,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // Compute full-route bounds from GeoJSON layer data.
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
     // so match by slug (from selectedRoute key) + routeId separately.
-    const { agencySlug: routeSlug, routeId } = splitRouteKey(selectedRoute);
+    const { agencySlug: routeSlug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
     let found = false;
 
     const fc = layers?.[routeSlug];
     if (fc) {
       for (const f of fc.features) {
-        if ((f.properties as any)?.routeId !== routeId) continue;
+        const properties = f.properties as any;
+        if (properties?.routeId !== routeId) continue;
+        if (routeBranch && properties?.routeBranch !== routeBranch) continue;
         const geom = f.geometry as any;
         if (!geom?.coordinates) continue;
         const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
@@ -1292,7 +1309,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
       } else if (selectedRoute) {
         const selKey = selectedRoute;
-        const routeMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], selKey];
+        const routeMatch: any = routeKeyMatchExpression(selKey);
         if (hoveredBranch?.isCore) {
           // The clipped shared-hover-segments overlay is the only bright geometry for a
           // combined-row hover. Never brighten the full route as a proxy for the shared section.
@@ -1324,7 +1341,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         }
       } else if (hoveredSearchRoute) {
         // Hovering a search result: spotlight that route, fade the rest
-        const hoverMatch: any = ['==', ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']], hoveredSearchRoute];
+        const hoverMatch: any = routeKeyMatchExpression(hoveredSearchRoute);
         const focusedPaint = buildFocusedRoutePaint(hoverMatch, DIM_OPACITY, DIM_WIDTH);
         map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
         map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);

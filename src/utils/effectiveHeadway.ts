@@ -17,6 +17,18 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     ?? metricValueForPeriod(summary.display, period);
 }
 
+/** Rider-facing range for an irregular period, scoped to this destination/branch. */
+export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePeriod): string | null {
+  if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;
+  const range = p.headwayRangeByPeriod?.[period];
+  if (!range) return null;
+  const rangeText = range.min === range.max ? `every ${range.min} min` : `every ${range.min}–${range.max} min`;
+  const longestGap = p.maxGapByPeriod?.[period];
+  return longestGap != null && longestGap > range.max + 5
+    ? `typically ${rangeText} · longest gap ${longestGap} min`
+    : `typically ${rangeText}`;
+}
+
 /** Display the best active-period cadence across a route's direction/branch rows. */
 export function routeListDisplayHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
   const values = features
