@@ -598,6 +598,24 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const debugMap = new URLSearchParams(window.location.search).has('debugMap');
       if (debugMap) {
         (window as any).__map = map;
+        const logRouteState = (label: string) => {
+          const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+          const renderedFeatures = map.getLayer('routes-layer')
+            ? map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+            : [];
+          console.info('[atlas-map-route-state]', JSON.stringify({
+            label,
+            sourceLoaded: map.isSourceLoaded('atlas-pmtiles'),
+            sourceFeatures: sourceFeatures.length,
+            renderedFeatures: renderedFeatures.length,
+            filter: map.getFilter('routes-layer'),
+            visibility: map.getLayoutProperty('routes-layer', 'visibility'),
+          }));
+        };
+        map.on('idle', () => logRouteState('idle'));
+        map.on('render', () => {
+          if (map.isSourceLoaded('atlas-pmtiles')) logRouteState('render');
+        });
         map.on('error', (event) => {
           console.error('[atlas-map-error]', event.error);
         });
