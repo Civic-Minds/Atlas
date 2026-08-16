@@ -34,7 +34,7 @@
     },
     {
       "source": "/atlas-data/:path*",
-      "destination": "https://data.transitatlas.fyi/:path*"
+      "destination": "https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/:path*"
     },
     {
       "source": "/((?!api/|@vite|@react-refresh|node_modules/|src/).*)",
