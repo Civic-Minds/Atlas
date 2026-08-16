@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Deployed maps now load route tiles through the same-origin data proxy so the network renders reliably on both production and beta.
+
 - Beta map badges now report only rendered routes, reclaim the removed Context-button space, and stop showing an endless map-loading state when transit tiles fail.
 
 - Niagara Transit’s refreshed schedule data now keeps predictable daytime and evening routes visible when irregular routes are hidden.

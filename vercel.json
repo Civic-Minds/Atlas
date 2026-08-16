@@ -33,6 +33,10 @@
       "destination": "https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev/:path*"
     },
     {
+      "source": "/atlas-data/:path*",
+      "destination": "https://data.transitatlas.fyi/:path*"
+    },
+    {
       "source": "/((?!api/|@vite|@react-refresh|node_modules/|src/).*)",
       "destination": "/index.html"
     }

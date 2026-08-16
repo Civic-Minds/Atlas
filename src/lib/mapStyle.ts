@@ -6,7 +6,13 @@ import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo'
 import { RetryingFetchSource } from './pmtilesRetrySource';
 
 function atlasPmtilesUrl(): string {
-  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
+  // Keep the browser's large range requests same-origin in deployed Vercel builds.
+  // The proxy preserves HTTP byte ranges and avoids browser-side R2 CORS failures;
+  // local Vite already uses this path for the same reason.
+  const browserBase = typeof window !== 'undefined' && import.meta.env.PROD
+    ? `${window.location.origin}/atlas-data`
+    : R2_PUBLIC_URL;
+  return `${browserBase}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
 }
 
 const protocol = new Protocol();
