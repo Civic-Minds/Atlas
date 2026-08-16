@@ -593,9 +593,27 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     });
 
     cleanupMap = map;
-    mapRef.current = map;
+      mapRef.current = map;
 
-    map.on('load', () => {
+      const debugMap = new URLSearchParams(window.location.search).has('debugMap');
+      if (debugMap) {
+        (window as any).__map = map;
+        map.on('error', (event) => {
+          console.error('[atlas-map-error]', event.error);
+        });
+        map.on('sourcedataloading', (event) => {
+          if (event.sourceId === 'atlas-pmtiles') {
+            console.info('[atlas-pmtiles-loading]', event.sourceDataType, event.tile?.tileID);
+          }
+        });
+        map.on('sourcedata', (event) => {
+          if (event.sourceId === 'atlas-pmtiles') {
+            console.info('[atlas-pmtiles-data]', event.sourceDataType, event.isSourceLoaded, event.tile?.tileID);
+          }
+        });
+      }
+
+      map.on('load', () => {
       setZoom(map.getZoom());
 
       // Add route shapes (line) layers
@@ -876,6 +894,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // (see useLiveVehiclesLayer) so Frequency Map doesn't pay the deck bundle cost.
       if (import.meta.env.DEV) {
         (window as any).__map = map;
+      }
+
+      if (debugMap) {
+        console.info('[atlas-map-ready]', {
+          source: map.getSource('atlas-pmtiles')?.type,
+          layers: ['routes-layer', 'routes-hit-layer'].map((id) => map.getLayer(id)?.id),
+        });
       }
 
       setMapLoaded(true);
