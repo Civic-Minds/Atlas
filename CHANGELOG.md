@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
+- Nearby agencies now begin loading as soon as the map is ready, even when a route-tile request is stalled.
 - Deployed maps now load route tiles through a same-origin range proxy so PMTiles receives the correct range response in production and beta.
 
 - Beta map badges now report only rendered routes, reclaim the removed Context-button space, and stop showing an endless map-loading state when transit tiles fail.

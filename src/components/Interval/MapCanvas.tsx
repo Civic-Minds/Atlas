@@ -915,17 +915,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         (window as any).__map = map;
       }
 
-      setMapLoaded(true);
-    });
-
-    // Emit initial bounds so LiveVehicles can poll and agencies load on first
-    // paint — without the onBoundsChange call, a URL for a new area sits empty
-    // until the user pans (agency loading only listened to moveend).
-    map.once('idle', () => {
+      // Start loading nearby agency data as soon as the map is ready. Waiting for
+      // `idle` can deadlock agency loading when a route-tile request is stalled.
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
       onBoundsChangeRef.current(bounds);
       setBoundsAndZoom(bounds, map.getZoom());
+      setMapLoaded(true);
     });
 
     })();
