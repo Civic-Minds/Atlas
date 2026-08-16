@@ -1,9 +1,18 @@
-/** Minimum distinct snapshot years for an agency to appear in History and info counts. */
+/** Minimum distinct snapshot years for Explore (deep archive / long-form history). */
 export const MIN_HISTORY_DISTINCT_YEARS = 10;
 
-export type HistorySnapshot = { year?: number };
+/**
+ * Minimum snapshots on at least one route for Recent.
+ * Covers short refresh series (including multiple snapshots in the same calendar year).
+ */
+export const MIN_HISTORY_RECENT_SNAPSHOTS = 3;
+
+export type HistorySnapshot = { year?: number; label?: string };
 export type HistoryRoute = { snapshots?: HistorySnapshot[] };
 export type HistoryAgencyLike = { routes?: HistoryRoute[]; coverageYears?: number[] };
+
+/** 'explore' = deep multi-year archive; 'recent' = shorter refresh series. */
+export type HistoryTier = 'explore' | 'recent';
 
 /** Distinct calendar years covered by route snapshots or lightweight coverage metadata. */
 export function distinctSnapshotYears(agency: HistoryAgencyLike): number[] {
@@ -16,7 +25,46 @@ export function distinctSnapshotYears(agency: HistoryAgencyLike): number[] {
   return [...years].sort((a, b) => a - b);
 }
 
-/** History app + info badges: deep backfill bar (≥10 distinct snapshot years). */
+/** Longest snapshot chain on any route (refresh cadence, not just calendar years). */
+export function maxRouteSnapshotCount(agency: HistoryAgencyLike): number {
+  let max = 0;
+  for (const route of agency.routes ?? []) {
+    const n = route.snapshots?.length ?? 0;
+    if (n > max) max = n;
+  }
+  return max;
+}
+
+/**
+ * History eligibility tier, or null if the agency should not appear in History.
+ * Explore keeps the intentional ≥10-year bar; Recent unlocks shorter usable series.
+ */
+export function agencyHistoryTier(agency: HistoryAgencyLike): HistoryTier | null {
+  if (distinctSnapshotYears(agency).length >= MIN_HISTORY_DISTINCT_YEARS) return 'explore';
+  if (maxRouteSnapshotCount(agency) >= MIN_HISTORY_RECENT_SNAPSHOTS) return 'recent';
+  return null;
+}
+
+/** Deep backfill bar (≥10 distinct snapshot years). */
 export function agencyQualifiesForHistoryExplore(agency: HistoryAgencyLike): boolean {
-  return distinctSnapshotYears(agency).length >= MIN_HISTORY_DISTINCT_YEARS;
+  return agencyHistoryTier(agency) === 'explore';
+}
+
+/** Shorter series (≥2 snapshots on a route) that is not Explore. */
+export function agencyQualifiesForHistoryRecent(agency: HistoryAgencyLike): boolean {
+  return agencyHistoryTier(agency) === 'recent';
+}
+
+/** Any History-eligible agency (Explore or Recent). */
+export function agencyQualifiesForHistory(agency: HistoryAgencyLike): boolean {
+  return agencyHistoryTier(agency) != null;
+}
+
+export function historyTierLabel(tier: HistoryTier): string {
+  return tier === 'explore' ? 'Explore' : 'Recent';
+}
+
+/** Rider-facing label for agency capability badges. */
+export function historyTierAgencyLabel(tier: HistoryTier): string {
+  return tier === 'explore' ? 'Full history' : 'Partial history';
 }

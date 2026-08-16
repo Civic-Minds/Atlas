@@ -59,7 +59,6 @@ const PERIOD_OVERVIEW_BANDS = TIME_PERIODS.map(period => {
 interface HourlySparklineProps {
   byHour: HeadwayByHour;
   stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
-  scopeLabel?: string;
   period?: string;
   onPeriodChange?: (period: string) => void;
   onPeriodHover?: (period: string | null) => void;
@@ -71,7 +70,7 @@ interface HourlySparklineProps {
   expanded?: boolean;
 }
 
-export function HeadwaySparkline({ byHour, stackedByHour, scopeLabel, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -159,11 +158,6 @@ export function HeadwaySparkline({ byHour, stackedByHour, scopeLabel, period, on
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         >
-        {scopeLabel && (
-          <span className="absolute top-0 left-0 text-[9px] font-bold text-[var(--text-dim)] pointer-events-none">
-            {scopeLabel}
-          </span>
-        )}
         {expanded && PERIOD_OVERVIEW_BANDS.map(band => (
           <div
             key={band.key}

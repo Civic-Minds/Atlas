@@ -1,0 +1,16 @@
+{
+  "slug": "bata",
+  "name": "Bay Area Transportation Authority (Traverse City, MI)",
+  "region": "Michigan",
+  "center": [
+    44.7631,
+    -85.6206
+  ],
+  "feedUrl": "https://batabustracker.com/gtfs",
+  "lastFeedExpiry": "20991231",
+  "lastFeedVersion": "8/10/2026",
+  "lastRefreshedAt": "2026-08-14",
+  "cities": [
+    "Traverse City, Michigan"
+  ]
+}

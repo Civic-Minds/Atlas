@@ -16,13 +16,8 @@ export interface HiddenRoutesFile {
   routes: HiddenRouteRecord[];
 }
 
-interface AgencySummary {
-  slug: string;
-  name: string;
-  region?: string | null;
-}
+interface AgencySummary { slug: string; name: string; region?: string | null }
 
-/** Build the complete route list affected by the Hide irregular routes filter. */
 export function buildHiddenRoutesForAgency(
   agency: AgencySummary,
   geojson: string | { features?: GeoJsonFeature[] },
@@ -33,7 +28,6 @@ export function buildHiddenRoutesForAgency(
     routeLongName: string | null;
     hasVisibleFeature: boolean;
   }>();
-
   for (const feature of featureCollection.features ?? []) {
     const p = feature.properties ?? {};
     const shortName = typeof p.routeShortName === 'string' ? p.routeShortName.trim() : '';
@@ -48,7 +42,6 @@ export function buildHiddenRoutesForAgency(
     if (!isHiddenByIrregularFilter(p)) current.hasVisibleFeature = true;
     byRoute.set(key, current);
   }
-
   return [...byRoute.entries()]
     .map(([key, route]) => {
       if (route.hasVisibleFeature) return null;
@@ -64,7 +57,6 @@ export function buildHiddenRoutesForAgency(
     .filter((route): route is HiddenRouteRecord => route !== null);
 }
 
-/** Replace refreshed agencies while retaining the inventory for untouched agencies. */
 export function mergeHiddenRoutes(
   existing: HiddenRoutesFile | null,
   updates: Array<{ agencySlug: string; routes: HiddenRouteRecord[] }>,
@@ -75,16 +67,11 @@ export function mergeHiddenRoutes(
     if (!liveAgencySlugs || liveAgencySlugs.has(route.agencySlug)) byKey.set(route.key, route);
   }
   for (const update of updates) {
-    for (const key of [...byKey.keys()]) {
-      if (key.startsWith(`${update.agencySlug}::`)) byKey.delete(key);
-    }
+    for (const key of [...byKey.keys()]) if (key.startsWith(`${update.agencySlug}::`)) byKey.delete(key);
     for (const route of update.routes) byKey.set(route.key, route);
   }
   const routes = [...byKey.values()].sort((a, b) =>
-    (a.region ?? 'Other').localeCompare(b.region ?? 'Other')
-    || a.agencyName.localeCompare(b.agencyName)
-    || a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true })
-    || a.key.localeCompare(b.key),
-  );
+    (a.region ?? 'Other').localeCompare(b.region ?? 'Other') || a.agencyName.localeCompare(b.agencyName)
+    || a.routeShortName.localeCompare(b.routeShortName, undefined, { numeric: true }) || a.key.localeCompare(b.key));
   return { generatedAt: new Date().toISOString(), routeCount: routes.length, routes };
 }

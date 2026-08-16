@@ -1,5 +1,4 @@
 import { idbGet, idbSet } from './idbCache.js';
-import { stampWorstDirectionHeadways } from '../../shared/worstDirection.js';
 
 self.addEventListener('message', async (e: MessageEvent) => {
   const { type, slug, url, name, weekVer } = e.data;
@@ -9,11 +8,6 @@ self.addEventListener('message', async (e: MessageEvent) => {
     const cached = await idbGet<GeoJSON.FeatureCollection>(idbKey);
 
     if (cached) {
-      if (type !== 'corridors') {
-        stampWorstDirectionHeadways(
-          cached.features as Array<{ properties: Record<string, unknown> }>,
-        );
-      }
       self.postMessage({ slug, type, success: true, data: cached });
       return;
     }
@@ -34,12 +28,6 @@ self.addEventListener('message', async (e: MessageEvent) => {
           p.agencyName = name;
         }
       }
-    }
-
-    if (type !== 'corridors') {
-      stampWorstDirectionHeadways(
-        data.features as Array<{ properties: Record<string, unknown> }>,
-      );
     }
 
     await idbSet(idbKey, data);

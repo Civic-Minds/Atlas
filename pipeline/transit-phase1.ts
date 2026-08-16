@@ -159,11 +159,10 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         for (const [, data] of tripData) {
             if (!activeServiceIds.has(data.serviceId)) continue;
             // Split by headsign and physical shape so two branches with the same displayed
-            // destination cannot be interleaved into a falsely short frequency. Oakville 14
-            // and COTA 5 both use this pattern: each branch is hourly, but their pooled trips
-            // look like a 23–28 minute route. Equivalent schedule-period shapes are collapsed
-            // later when the displayed feature is deduplicated.
-            const key = [data.routeId, data.dirId, data.headsign ?? '', data.shapeId ?? ''].join('::');
+            // destination cannot be interleaved into a falsely short frequency.
+            const key = (data.headsign)
+                ? `${data.routeId}::${data.dirId}::${data.headsign}::${data.shapeId ?? ''}`
+                : `${data.routeId}::${data.dirId}::${data.shapeId ?? ''}`;
             const baseKey = `${data.routeId}::${data.dirId}`;
             if (shapeFilter) {
                 // Prefer headsign-specific filter when available (handles genuine headsign
@@ -212,7 +211,6 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 route: routeId,
                 dir: dirId,
                 headsign,
-                shapeId,
                 day,
                 routeType,
                 modeName: getModeName(routeType),
@@ -222,6 +220,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                     routeShortName: route?.route_short_name,
                     agencySlug,
                 }),
+                shapeId,
                 departureTimes,
                 gaps,
                 serviceSpan: {

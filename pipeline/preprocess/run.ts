@@ -5,9 +5,12 @@ import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
 import { synthesizeLondonRouteNames } from '../transforms/london-route-names.js';
 import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
+import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes';
+// WVU PRT publishes route geometry separately from the schedule feed.
+// Keep this agency-specific transform opt-in rather than changing shared shape handling.
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -79,6 +82,12 @@ export function normalizeGtfs(
     gtfs = linkMetrolinkShapes(gtfs);
     const after = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
     onStatus?.(`Metrolink shape linkage: ${after - before} trips linked`);
+  }
+  if (options?.preprocess === 'wvu-prt-shapes') {
+    const before = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
+    gtfs = linkWvuPrtShapes(gtfs);
+    const after = gtfs.trips?.filter(trip => trip.shape_id).length ?? 0;
+    onStatus?.(`WVU PRT shape linkage: ${after - before} trips linked`);
   }
   gtfs = synthesizeTripHeadsigns(gtfs);
   if (options?.mergeEquivalentShapeVariants) {

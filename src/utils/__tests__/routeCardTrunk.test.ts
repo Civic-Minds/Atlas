@@ -6,6 +6,7 @@ import {
   headsignTrunkHeadway,
   shouldShowBranchHeadwayRange,
   sparklineSourceDirections,
+  sharedStopIdsForBranches,
 } from '../routeCardTrunk';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
@@ -60,6 +61,22 @@ describe('routeCardTrunk', () => {
     ] as ShapeProperties[];
     expect(groupTrunkHeadway(branches, 'pmPeak')).toBe(15);
     expect(shouldShowTrunkSummary(branches, 'pmPeak')).toBe(false);
+  });
+
+  it('returns shared stops in the first branch order', () => {
+    const branches = [
+      { ...hsrWestBranches[0], stopOrder: ['a', 'b', 'c', 'd'] },
+      { ...hsrWestBranches[1], stopOrder: ['x', 'b', 'c', 'y'] },
+    ] as ShapeProperties[];
+    expect(sharedStopIdsForBranches(branches)).toEqual(['b', 'c']);
+  });
+
+  it('ignores limited branches when finding a shared section', () => {
+    const branches = [
+      { ...hsrWestBranches[0], stopOrder: ['a', 'b', 'c'] },
+      { ...hsrWestBranches[1], stopOrder: ['a', 'b', 'c'], tier: 'span' },
+    ] as ShapeProperties[];
+    expect(sharedStopIdsForBranches(branches)).toEqual([]);
   });
 
   it('sparkline at 3 PM uses pmPeak trunk not 30-min terminal', () => {

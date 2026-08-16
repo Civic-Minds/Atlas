@@ -27,25 +27,22 @@ export function agencyGeoWeekVersion(): string {
 let resolvedDataVer: string | null = null;
 let dataVerPromise: Promise<string> | null = null;
 
-/**
- * Live data stamp from R2. Changes every process/refresh/pmtiles publish without a
- * frontend deploy, so IndexedDB doesn't keep serving last week's GeoJSON after a soft reload.
- */
+/** Live data stamp from R2, with a bundle-local fallback when unavailable. */
 export async function resolveAgencyDataVersion(): Promise<string> {
   if (resolvedDataVer) return resolvedDataVer;
   if (!dataVerPromise) {
     dataVerPromise = (async () => {
       try {
-        const r = await fetch(`${R2_PUBLIC_URL}/atlas/data-version.json`, { cache: 'no-store' });
-        if (r.ok) {
-          const j = (await r.json()) as { v?: string };
-          if (j?.v != null && String(j.v).length > 0) {
-            resolvedDataVer = String(j.v);
+        const response = await fetch(`${R2_PUBLIC_URL}/atlas/data-version.json`, { cache: 'no-store' });
+        if (response.ok) {
+          const payload = await response.json() as { v?: string };
+          if (payload?.v != null && String(payload.v).length > 0) {
+            resolvedDataVer = String(payload.v);
             return resolvedDataVer;
           }
         }
       } catch {
-        // fall through to bundle-local week version
+        // Fall back to the bundle-local version below.
       }
       resolvedDataVer = agencyGeoWeekVersion();
       return resolvedDataVer;
@@ -54,7 +51,6 @@ export async function resolveAgencyDataVersion(): Promise<string> {
   return dataVerPromise;
 }
 
-/** Sync accessor — prefers the already-resolved R2 stamp, else bundle-local week+CACHE_BUILD. */
 export function currentAgencyDataVersion(): string {
   return resolvedDataVer ?? agencyGeoWeekVersion();
 }
@@ -117,8 +113,7 @@ function pruneOnce(dataVer: string) {
   idbPruneStale(dataVer);
 }
 
-/** Fix route-level filter fields on the client so already-published GeoJSON picks up
- *  rare-short-turn safeguards without waiting for a full agency reprocess. */
+/** Apply route-level safeguards to already-published GeoJSON on the client. */
 function normalizeAgencyFeatures(data: GeoJSON.FeatureCollection): void {
   stampWorstDirectionHeadways(
     data.features as Array<{ properties: Record<string, unknown> }>,

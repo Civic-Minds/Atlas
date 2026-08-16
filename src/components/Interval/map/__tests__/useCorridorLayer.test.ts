@@ -10,8 +10,7 @@ describe('buildCorridorFilter', () => {
 
   it('shows only the selected family when the corridor band is active', () => {
     expect(buildCorridorFilter(true, family)).toEqual([
-      'all',
-      ['==', ['get', 'agencySlug'], 'ttc'],
+      'all', ['==', ['get', 'agencySlug'], 'ttc'],
       ['any', ['in', '501', ['get', 'routeIds']], ['in', '504', ['get', 'routeIds']]],
     ]);
   });

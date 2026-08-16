@@ -46,7 +46,7 @@ export function useCorridorLayer(
     const source = map.getSource('corridor-dynamic') as maplibregl.GeoJSONSource;
     if (!source) return;
 
-    if (showCorridorBand && corridorOverlay && corridorOverlay.lines.length > 0) {
+    if (corridorOverlay && corridorOverlay.lines.length > 0) {
       source.setData({
         type: 'FeatureCollection',
         features: corridorOverlay.lines.map(line => ({
@@ -70,5 +70,5 @@ export function useCorridorLayer(
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
     }
-  }, [corridorOverlay, mapLoaded, showCorridorBand]);
+  }, [corridorOverlay, mapLoaded]);
 }

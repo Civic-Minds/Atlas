@@ -1,24 +1,18 @@
 import { RefreshCw } from 'lucide-react';
-import { PILL_SURFACE, Z_HEADER } from '../styles';
+import { MAP_BADGE, Z_HEADER } from '../styles';
 import { useAppUpdate } from '../utils/appUpdate';
 
 export default function AppUpdateBanner() {
-  const update = useAppUpdate(true);
-  if (!update.deployment && !update.data) return null;
-
-  const message = update.deployment && update.data
-    ? 'A new app version and schedule data are available.'
-    : update.deployment
-      ? 'A new app version is available.'
-      : 'New schedule data is available.';
+  const updateAvailable = useAppUpdate(true);
+  if (!updateAvailable) return null;
 
   return (
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-[4.5rem] left-1/2 max-w-[calc(100vw-2rem)] -translate-x-1/2 sm:bottom-6 ${Z_HEADER} ${PILL_SURFACE} gap-3 px-3 text-[10px] font-bold text-[var(--text-muted)]`}
+      className={`fixed bottom-6 left-1/2 h-8 max-w-[calc(100vw-2rem)] -translate-x-1/2 ${Z_HEADER} ${MAP_BADGE} gap-3 text-[10px] font-bold text-[var(--text-muted)]`}
     >
-      <span className="truncate">{message} Refresh to update.</span>
+      <span>This page is out of date. Refresh to update.</span>
       <button
         type="button"
         onClick={() => window.location.reload()}

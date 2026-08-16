@@ -418,8 +418,19 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           </>
           )}
-          {(agency.feedReviewStatus === 'review' || agency.overrideNote) && onInfoOpen && (
+          {(agency.feedReviewStatus === 'review' || agency.overrideNote || agency.rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+              {agency.rolloutNotice && (
+                <CardHelpNotice
+                  message={agency.rolloutNotice}
+                  onLearnMore={() => onInfoOpen('about', {
+                    helpTopic: 'beta-rollout',
+                    agencyName: agency.name,
+                    rolloutNotice: agency.rolloutNotice,
+                    rolloutIssueUrl: agency.rolloutIssueUrl,
+                  })}
+                />
+              )}
               {agency.feedReviewStatus === 'review' && !agency.overrideNote && (
                 <CardHelpNotice
                   message="New schedule data is being verified."

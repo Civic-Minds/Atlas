@@ -16,7 +16,6 @@ let protocolRegistered = false;
 // worker is emitted as a real asset instead of falling through the SPA rewrite.
 maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
-/** Resolve live data-version then register the PMTiles protocol (await before creating the map). */
 export async function registerProtocol() {
   await resolveAgencyDataVersion();
   if (!protocolRegistered) {

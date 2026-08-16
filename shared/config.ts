@@ -25,10 +25,8 @@ const getR2PublicUrl = (): string => {
 export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
-// off by default until that's resolved. Env-driven rather than a hardcoded constant so main and
-// beta share identical source; only the Vercel env var differs per branch (VITE_LIVE_ENABLED /
-// VITE_HISTORY_ENABLED set to "true" on beta's preview env). Flip the env var to ship, no merge
-// conflicts either way.
+// off by default until that's resolved. Env-driven rather than a hardcoded constant so production
+// and beta can build the same main commit with different feature exposure.
 function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_DIAGNOSTICS_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED'): boolean {
   // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
@@ -48,9 +46,8 @@ export const DIAGNOSTICS_ENABLED = envFlag('VITE_DIAGNOSTICS_ENABLED');
 // is worth surfacing to a rider needed more real-feed tuning than a single main push should
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
 export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
-// Same env-driven pattern as the flags above: identical source on main and beta, only the
-// Vercel preview env var differs (VITE_BETA_BUILD="true" set on beta only). Distinguishes the
-// two in the browser tab title so beta doesn't look identical to production.
+// Same env-driven pattern as the flags above. Distinguishes the beta deployment in the browser
+// tab title so it doesn't look identical to production.
 export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
 
 /**

@@ -1,0 +1,18 @@
+{
+  "slug": "gptc",
+  "name": "Gary Public Transportation Corporation (Gary, IN)",
+  "region": "Indiana",
+  "center": [
+    41.5934,
+    -87.3464
+  ],
+  "feedUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
+  "lastFeedExpiry": "20300129",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-14",
+  "cities": [
+    "Gary, Indiana",
+    "Merrillville, Indiana",
+    "Crown Point, Indiana"
+  ]
+}

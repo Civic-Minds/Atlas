@@ -47,24 +47,6 @@ describe('tileEffectiveHeadwayExpr', () => {
     }) as any)).toBe(true);
   });
 
-  it('does not use an intermediate-stop headway for the route-level filter', () => {
-    const compiled = compileFilter(productionLikeFilter(15));
-    const ctx = { zoom: 10 };
-    expect(compiled.filter(ctx, feat({
-      day: 'Weekday',
-      directionId: 0,
-      worstDirectionHeadway: 18,
-      headway: 18,
-      minStopHeadway: 10,
-    }) as any)).toBe(false);
-    expect(compiled.filter(ctx, feat({
-      day: 'Weekday',
-      directionId: 0,
-      headway: 18,
-      minStopHeadway: 10,
-    }) as any)).toBe(false);
-  });
-
   it('does not fall back to all-day service when the active period is explicit null', () => {
     const compiled = compileFilter(periodFilter('late', 15));
     const ctx = { zoom: 10 };

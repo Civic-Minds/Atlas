@@ -6,11 +6,11 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
-  // A period median marked as unsustained is not a reliable rider-facing cadence. Do not
-  // replace it with another number: that would turn an irregular 25/44/27-minute pattern
-  // into a different-looking but equally false frequency. The card renders "varies" instead.
+  // A period median marked as unsustained is a bunching/edge-cluster signal, not a
+  // reliable rider-facing cadence. Use the branch's stable headline headway instead
+  // of displaying a value like TTC 63's false 2-minute midday median (#319).
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
-    return null;
+    return p.headway ?? null;
   }
   const summary = buildRouteServiceSummary(p);
   return metricValueForPeriod(summary.filter, period)
@@ -19,14 +19,10 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
 
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */
 export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePeriod): string | null {
-  if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) {
-    return null;
-  }
+  if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;
   const range = p.headwayRangeByPeriod?.[period];
   if (!range) return null;
-  const rangeText = range.min === range.max
-    ? `every ${range.min} min`
-    : `every ${range.min}–${range.max} min`;
+  const rangeText = range.min === range.max ? `every ${range.min} min` : `every ${range.min}–${range.max} min`;
   const longestGap = p.maxGapByPeriod?.[period];
   return longestGap != null && longestGap > range.max + 5
     ? `typically ${rangeText} · longest gap ${longestGap} min`

@@ -46,9 +46,9 @@ export interface GtfsStopTime {
     stop_headsign?: string;
     pickup_type?: string;
     drop_off_type?: string;
-    shape_dist_traveled?: string;
     /** GTFS-Flex: zone / area id when stop_id is omitted. */
     location_id?: string;
+    shape_dist_traveled?: string;
 }
 
 export interface GtfsCalendar {
@@ -220,7 +220,6 @@ export interface RawRouteDepartures {
     railLike?: boolean;
     /** For rail routes split by terminus — e.g. "Kitchener GO" vs "Bramalea GO" */
     headsign?: string;
-
     /** Physical GTFS shape for this branch. Same headsigns can still use different branches. */
     shapeId?: string;
 

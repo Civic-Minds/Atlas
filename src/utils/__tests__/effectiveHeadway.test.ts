@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -46,7 +46,7 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
   });
 
-  it('does not display a number when a period median is not sustained (#319)', () => {
+  it('uses the stable branch headway when a period median is not sustained (#319)', () => {
     const p = {
       ...base,
       headway: 10,
@@ -54,21 +54,10 @@ describe('effectiveRouteHeadway', () => {
       headwayByPeriodSustained: { midday: false },
     } as ShapeProperties;
 
-    expect(routeCardDisplayHeadway(p, 'midday')).toBeNull();
-    expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
+    expect(routeListDisplayHeadway([p], 'midday')).toBe(10);
     // The filter still uses the raw period metric; this change is display-only.
     expect(effectiveRouteHeadway(p, 'midday')).toBe(2);
-  });
-
-  it('shows the typical range and exceptional longest gap for an irregular period', () => {
-    const p = {
-      ...base,
-      headwayByPeriodSustained: { midday: false },
-      headwayRangeByPeriod: { midday: { min: 20, max: 25 } },
-      maxGapByPeriod: { midday: 45 },
-    } as ShapeProperties;
-    expect(routeCardDisplayHeadwayRange(p, 'midday')).toBe('typically every 20–25 min · longest gap 45 min');
-    expect(routeCardDisplayHeadwayRange(p, 'all')).toBeNull();
   });
 
   it('does not show a false composite 2-minute branch when route-level service is 12 minutes', () => {
@@ -92,18 +81,6 @@ describe('effectiveRouteHeadway', () => {
       headwayByPeriod: { pmPeak: 6 },
     } as ShapeProperties;
     expect(effectiveRouteHeadway(p, 'all')).toBe(12);
-  });
-
-  it('does not use an intermediate-stop headway for the route-level filter', () => {
-    const p = {
-      ...base,
-      headway: 18,
-      minStopHeadway: 10,
-      minStopHeadwayByPeriod: { midday: 10 },
-      headwayByPeriod: { midday: 18 },
-    } as ShapeProperties;
-    expect(effectiveRouteHeadway(p, 'all')).toBe(18);
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(18);
   });
 
   it('keeps the TTC 900 display metric consistent across route cards and lists', () => {

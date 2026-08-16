@@ -6,6 +6,17 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The agency index now derives Metz artifact locations instead of storing stale generated URLs.
+- Reconciliation now preserves day-aware branch metrics, feed validation, collision-safe archives, and live data cache invalidation across clean pipeline runs.
+- The shared beta/production build now preserves MapLibre 6, route-branch selection, and live GeoJSON cache updates after a clean deployment install.
+- Production and beta now build from the same `main` source with deployment-scoped feature flags, preventing the two sites from drifting into conflicting Git branches.
+- Selected routes now agree with the active frequency filter across directions, and stale route panels no longer overlap agency or disambiguation cards.
+- Metz is now available only in beta with staged France schedule data and a linked validation notice while the first country rollout is reviewed.
+- Agency lists now distinguish full versus partial live coverage and use plain-language History labels, while the header and Info panel show the same approximate History count.
+- Combined route summaries now stay within their direction and highlight only the shared section on hover.
+- Halifax Live now includes frequent vehicle-only routes alongside route 1 adherence, and Halifax GTFS-RT feeds are now archived for live-history analysis.
+- Added beta GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
+- Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
 - Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
 - Scheduled time-limited routes now keep their real frequency instead of being mislabeled as irregular.
 - RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
