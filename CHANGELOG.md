@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Debug map views now expose PMTiles tile-loading errors so deployed route-rendering failures can be diagnosed directly.
+- Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
 - Deployed maps now load route tiles through a same-origin range proxy so PMTiles receives the correct range response in production and beta.
 
 - Beta map badges now report only rendered routes, reclaim the removed Context-button space, and stop showing an endless map-loading state when transit tiles fail.

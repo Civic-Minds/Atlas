@@ -145,6 +145,8 @@ interface MapCanvasProps {
    *  Deliberately NOT frequency-filtered: computeFrequencySegmentOverlay needs partial-match
    *  routes the frequency check would otherwise exclude, and does its own per-stop-range check. */
   filteredLayers?: Record<string, GeoJSON.FeatureCollection>;
+  /** Fully filtered route layers for the tile-failure fallback, including frequency. */
+  mapFilteredLayers?: Record<string, GeoJSON.FeatureCollection>;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -200,6 +202,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencies,
   layers,
   filteredLayers,
+  mapFilteredLayers,
   maxHeadway,
   period,
   q,
@@ -243,6 +246,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const [pmtilesRoutesAvailable, setPmtilesRoutesAvailable] = useState<boolean | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
@@ -302,11 +306,44 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     };
   }, [mapLoaded, showMapContext, updateMapContext]);
 
+  // A deployed PMTiles source can finish loading its metadata while its route tiles
+  // remain unavailable. If that happens, use the already-loaded GeoJSON for the current
+  // viewport instead of leaving the map blank. Healthy PMTiles rendering is unchanged.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    const checkRouteTiles = () => {
+      const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+      if (sourceFeatures.length > 0) setPmtilesRoutesAvailable(true);
+    };
+
+    map.on('sourcedata', checkRouteTiles);
+    map.on('idle', checkRouteTiles);
+    const fallbackTimer = window.setTimeout(() => {
+      const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+      if (sourceFeatures.length === 0) {
+        setPmtilesRoutesAvailable(false);
+        onTileLoadingChangeRef.current?.(false);
+      }
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+      map.off('sourcedata', checkRouteTiles);
+      map.off('idle', checkRouteTiles);
+    };
+  }, [mapLoaded]);
+
   // Beta-only agencies do not exist in the shared PMTiles archive yet. Keep their
   // processed local GeoJSON visible on the map until the next combined tile build.
   const localRouteData = useMemo<GeoJSON.FeatureCollection>(() => {
-    const localSlugs = new Set(agencies.filter(a => a.betaOnly && a.pmtilesPending).map(a => a.slug));
-    const sourceLayers = filteredLayers ?? layers ?? {};
+    const localSlugs = new Set(agencies
+      .filter(a => pmtilesRoutesAvailable === false || (a.betaOnly && a.pmtilesPending))
+      .map(a => a.slug));
+    const sourceLayers = pmtilesRoutesAvailable === false
+      ? mapFilteredLayers ?? filteredLayers ?? layers ?? {}
+      : filteredLayers ?? layers ?? {};
     const features = Object.entries(sourceLayers).flatMap(([slug, collection]) => {
       if (!localSlugs.has(slug)) return [];
       return collection.features.flatMap(feature => {
@@ -325,7 +362,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     });
     return { type: 'FeatureCollection', features };
-  }, [agencies, filteredLayers, layers, period]);
+  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRoutesAvailable]);
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
@@ -594,24 +631,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     cleanupMap = map;
       mapRef.current = map;
-
-      const debugMap = new URLSearchParams(window.location.search).has('debugMap');
-      if (debugMap) {
-        (window as any).__map = map;
-        map.on('error', (event) => {
-          console.error('[atlas-map-error]', event.error);
-        });
-        map.on('sourcedataloading', (event) => {
-          if (event.sourceId === 'atlas-pmtiles') {
-            console.info('[atlas-pmtiles-loading]', event.sourceDataType, event.tile?.tileID);
-          }
-        });
-        map.on('sourcedata', (event) => {
-          if (event.sourceId === 'atlas-pmtiles') {
-            console.info('[atlas-pmtiles-data]', event.sourceDataType, event.isSourceLoaded, event.tile?.tileID);
-          }
-        });
-      }
 
       map.on('load', () => {
       setZoom(map.getZoom());
@@ -896,13 +915,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         (window as any).__map = map;
       }
 
-      if (debugMap) {
-        console.info('[atlas-map-ready]', {
-          source: map.getSource('atlas-pmtiles')?.type,
-          layers: ['routes-layer', 'routes-hit-layer'].map((id) => map.getLayer(id)?.id),
-        });
-      }
-
       setMapLoaded(true);
     });
 
@@ -950,6 +962,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (map.getLayer('local-routes-layer')) map.setLayoutProperty('local-routes-layer', 'visibility', visibility);
     if (map.getLayer('local-routes-hit-layer')) map.setLayoutProperty('local-routes-hit-layer', 'visibility', visibility);
   }, [localRouteData, mapLoaded, nightServiceView, showRouteLayers]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const visibility = showRouteLayers && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
+    if (map.getLayer('routes-layer')) map.setLayoutProperty('routes-layer', 'visibility', visibility);
+    if (map.getLayer('routes-hit-layer')) map.setLayoutProperty('routes-hit-layer', 'visibility', visibility);
+  }, [mapLoaded, pmtilesRoutesAvailable, showRouteLayers]);
 
   // Single map click handler — avoids layer preventDefault blocking background deselect.
   useEffect(() => {
