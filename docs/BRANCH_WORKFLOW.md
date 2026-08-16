@@ -8,7 +8,7 @@ Atlas has one source branch and two deployments. The `main` branch is the source
 - Start short-lived feature, fix, or data branches from the latest `origin/main`.
 - Open pull requests into `main`. Keep unrelated work in separate branches and worktrees.
 - Do not use a long-lived `beta` branch for feature flags, UI experiments, or agency visibility. The historical `beta` branch is legacy and must not receive new work.
-- `main` is protected and requires a pull request. Direct pushes and force-pushes stay disabled.
+- `main` is protected and requires a pull request plus the `Type Check · Test · Build` CI check. Direct pushes and force-pushes stay disabled.
 
 Typical start:
 
@@ -54,4 +54,3 @@ When the beta deployment is changing projects or domains:
 5. Remove the hostname from the legacy project and retire the old beta branch only after both sites are confirmed.
 
 Keep the legacy project and branch available during the cutover so the old hostname can be restored without rewriting source history.
-
