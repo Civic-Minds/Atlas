@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
@@ -18,7 +18,7 @@ import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
-import { tileEffectiveHeadwayExpr } from '../../../shared/tileFilterExprs';
+import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
@@ -90,7 +90,7 @@ function buildServingStopMatchExpression(
     }
   }
   if (keys.size === 0) return false;
-  const routeKeyExpr: any = ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']];
+  const routeKeyExpr: any = tileRouteKeyExpr();
   return ['in', routeKeyExpr, ['literal', [...keys]]];
 }
 
@@ -98,7 +98,7 @@ function buildServingStopMatchExpression(
 // High-contrast palette deliberately distinct from HEADWAY_TIERS colors so it reads as an
 // overlay, not another frequency tier.
 const HIGHLIGHT_COLORS = ['#ff2d6f', '#00c2ff', '#ffd400', '#39ff6a', '#b967ff', '#ff8a1f'];
-const HIGHLIGHT_KEY_EXPR: any = ['concat', ['get', 'agencySlug'], '::', ['get', 'routeId']];
+const HIGHLIGHT_KEY_EXPR: any = tileRouteKeyExpr();
 
 function buildHighlightFilter(keys: string[]): any {
   if (keys.length === 0) return ['==', ['literal', 0], ['literal', 1]];
@@ -407,7 +407,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const routeHits = map.queryRenderedFeatures(bbox, { layers: routeHitLayers });
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
-        const uniqueRouteKeys = Array.from(new Set(routeHits.map(f => {
+      const uniqueRouteKeys: string[] = Array.from(new Set(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
           const p = f.properties;
           return routeKey({ ...p, agencySlug: p.agencySlug } as any);
         })));
@@ -1124,7 +1124,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     if (!found && map.getLayer('routes-layer')) {
       const rendered = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-        .filter(f => routeKey(f.properties as any) === selectedRoute);
+        .filter((f: maplibregl.MapGeoJSONFeature) => routeKey(f.properties as any) === selectedRoute);
       for (const f of rendered) {
         const geom = f.geometry as any;
         const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();

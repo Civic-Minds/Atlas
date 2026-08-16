@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The shared beta/production build now preserves MapLibre 6, route-branch selection, and live GeoJSON cache updates after a clean deployment install.
 - Production and beta now build from the same `main` source with deployment-scoped feature flags, preventing the two sites from drifting into conflicting Git branches.
 - Selected routes now agree with the active frequency filter across directions, and stale route panels no longer overlap agency or disambiguation cards.
 - Metz is now available only in beta with staged France schedule data and a linked validation notice while the first country rollout is reviewed.

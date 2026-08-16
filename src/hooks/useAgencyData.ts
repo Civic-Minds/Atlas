@@ -12,6 +12,7 @@ export type HeadwayByHour = Partial<Record<number, number | null>>;
 
 export interface ShapeProperties {
   routeId: string;
+  routeBranch?: string | null;
   directionId: number;
   tier: string | null;
   serviceClass?: 'regular' | 'time-limited' | 'irregular';

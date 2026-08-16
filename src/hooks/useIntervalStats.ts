@@ -4,11 +4,12 @@ import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSear
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
-import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../../shared/tileFilterExprs';
+import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
 import { effectiveMode } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter } from '../../shared/irregularRoutes';
+import { buildRouteKey } from '../utils/routeKey';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -31,7 +32,11 @@ export interface ShapeProperties extends BaseShapeProperties {
   reliabilityScore?: number;
 }
 
-export const routeKey = (p: ShapeProperties) => `${(p as any).agencySlug ?? p.agencyName ?? ''}::${p.routeId}`;
+export const routeKey = (p: ShapeProperties) => buildRouteKey(
+  (p as any).agencySlug ?? p.agencyName ?? '',
+  p.routeId,
+  p.routeBranch,
+);
 
 /** Sidebar hover target for branch/core highlight on the map. */
 export interface HoveredBranch {
@@ -426,7 +431,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     // Direction 0 by default. When hovering an inbound branch on the selected route,
     // show that direction for the selected route only; all others stay dir 0.
     if (hoveredBranch && selectedRoute) {
-      const routeKeyExpr: any = ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']];
+      const routeKeyExpr: any = tileRouteKeyExpr();
       clauses.push(['case',
         ['==', routeKeyExpr, selectedRoute],
         ['==', ['get', 'directionId'], hoveredBranch.directionId],
@@ -456,7 +461,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     if (maxHeadway !== Infinity) {
       const hwExpr = tileEffectiveHeadwayExpr(period);
       if (selectedRoute) {
-        const routeKeyExpr: any = ['concat', ['coalesce', ['get', 'agencySlug'], ''], '::', ['coalesce', ['get', 'routeId'], '']];
+        const routeKeyExpr: any = tileRouteKeyExpr();
         clauses.push(['any', ['==', routeKeyExpr, selectedRoute], ['<=', hwExpr, maxHeadway]]);
       } else {
         clauses.push(['<=', hwExpr, maxHeadway]);

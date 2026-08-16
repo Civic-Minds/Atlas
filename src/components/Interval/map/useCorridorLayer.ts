@@ -1,13 +1,31 @@
 import { useEffect } from 'react';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import { useCorridorMapOverlay } from '../../../context/CorridorMapOverlay';
+
+export interface CorridorFamilySelection {
+  agencySlug: string;
+  routeIds: string[];
+}
+
+export function buildCorridorFilter(
+  showCorridorBand: boolean,
+  selectedFamily?: CorridorFamilySelection | null,
+): any[] | null {
+  if (showCorridorBand && selectedFamily && selectedFamily.routeIds.length > 1) {
+    return ['all',
+      ['==', ['get', 'agencySlug'], selectedFamily.agencySlug],
+      ['any', ...selectedFamily.routeIds.map(id => ['in', id, ['get', 'routeIds']])],
+    ];
+  }
+  return showCorridorBand ? null : ['==', ['get', 'agencySlug'], ''];
+}
 
 /** Corridor map layers: static corridor band visibility + dynamic corridor overlay lines. */
 export function useCorridorLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
   showCorridorBand: boolean,
-  selectedFamily?: { agencySlug: string; routeIds: string[] } | null,
+  selectedFamily?: CorridorFamilySelection | null,
 ) {
   const { overlay: corridorOverlay } = useCorridorMapOverlay();
 
@@ -16,14 +34,7 @@ export function useCorridorLayer(
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     if (map.getLayer('corridor-shapes-layer')) {
-      const familyFilter = showCorridorBand && selectedFamily && selectedFamily.routeIds.length > 1
-        ? ['all',
-            ['==', ['get', 'agencySlug'], selectedFamily.agencySlug],
-            ['any', ...selectedFamily.routeIds.map(id => ['in', id, ['get', 'routeIds']])],
-          ]
-        : null;
-      const corrFilter = familyFilter ?? (showCorridorBand ? null : ['==', ['get', 'agencySlug'], '']);
-      map.setFilter('corridor-shapes-layer', corrFilter as any);
+      map.setFilter('corridor-shapes-layer', buildCorridorFilter(showCorridorBand, selectedFamily) as any);
     }
   }, [showCorridorBand, mapLoaded, selectedFamily]);
 

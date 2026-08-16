@@ -4,6 +4,22 @@ import { buildEffectiveModeExpression, VIRTUAL_LRT_MODE } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
 
+/** MapLibre expression matching the canonical agency::route[:branch] key. */
+export function tileRouteKeyExpr(): unknown[] {
+  const base: unknown[] = [
+    'concat',
+    ['coalesce', ['get', 'agencySlug'], ''],
+    '::',
+    ['coalesce', ['get', 'routeId'], ''],
+  ];
+  return [
+    'case',
+    ['all', ['has', 'routeBranch'], ['!=', ['get', 'routeBranch'], '']],
+    [...base, '::branch:', ['get', 'routeBranch']],
+    base,
+  ];
+}
+
 /**
  * Headway expression for MapLibre layer filters (PMTiles).
  * Filter-safe: no to-number or numeric coalesce fallbacks — those break the
