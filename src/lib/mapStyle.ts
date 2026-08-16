@@ -5,14 +5,10 @@ import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
 
-const PRODUCTION_PMTILES_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
-
 function atlasPmtilesUrl(): string {
-  // Use the bucket endpoint directly in deployed builds so browser range requests
-  // avoid the custom data hostname's Cloudflare challenge. Local Vite keeps using
-  // the configured host so its local PMTiles preview remains available.
+  // Keep deployed requests same-origin and expose the range headers PMTiles needs.
   const browserBase = typeof window !== 'undefined' && import.meta.env.PROD
-    ? PRODUCTION_PMTILES_URL
+    ? `${window.location.origin}/api/atlas-pmtiles`
     : R2_PUBLIC_URL;
   return `${browserBase}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
 }
