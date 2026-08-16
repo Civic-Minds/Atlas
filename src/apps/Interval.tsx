@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { passesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
+import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
@@ -104,6 +104,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
+
+  // An agency selection replaces route disambiguation. Keeping both active
+  // leaves two sidebar cards competing for the same space.
+  useEffect(() => {
+    if (selectedAgencySlug && disambiguationRoutes?.length) setDisambiguationRoutes(null);
+  }, [selectedAgencySlug, disambiguationRoutes]);
 
   const setHoveredBranch = useCallback((branch: HoveredBranch | null) => {
     if (hoverTimeoutRef.current !== null) {
@@ -265,12 +271,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     if (separator < 0) return false;
     const slug = selectedRoute.slice(0, separator);
     const routeId = selectedRoute.slice(separator + 2);
-    const feature = layers[slug]?.features.find(f => {
+    const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;
       return p?.routeId === routeId && (p.day === undefined || p.day === day);
     });
-    if (!feature) return false;
-    return !passesRouteFilter(feature.properties as ShapeProperties, slug, {
+    if (!features?.length) return false;
+    return !anyFeaturePassesRouteFilter(features, slug, {
       maxHeadway,
       agencies: selectedAgencies,
       modes: selectedModes,
@@ -487,7 +493,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Selected routes now agree with the active frequency filter across directions, and stale route panels no longer overlap agency or disambiguation cards.
 - Metz is now available only in beta with staged France schedule data and a linked validation notice while the first country rollout is reviewed.
 - Agency lists now distinguish full versus partial live coverage and use plain-language History labels, while the header and Info panel show the same approximate History count.
 - Combined route summaries now stay within their direction and highlight only the shared section on hover.

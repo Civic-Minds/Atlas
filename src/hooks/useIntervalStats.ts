@@ -191,6 +191,25 @@ export function passesRouteFilter(
   return true;
 }
 
+/**
+ * A route is represented by one or more direction/branch features. Keep route
+ * selection aligned with the agency list: one qualifying feature is enough for
+ * the route to be considered inside the active filter.
+ */
+export function anyFeaturePassesRouteFilter(
+  features: GeoJSON.Feature[],
+  slug: string,
+  filters: Parameters<typeof passesRouteFilter>[2],
+  routesForStop: { slug: string; routeIds: Set<string> } | null,
+): boolean {
+  return features.some(feature => passesRouteFilter(
+    feature.properties as ShapeProperties,
+    slug,
+    filters,
+    routesForStop,
+  ));
+}
+
 // bbox per feature: [minLon, minLat, maxLon, maxLat]; cached per feature object
 const bboxCache = new WeakMap<GeoJSON.Feature, [number, number, number, number]>();
 

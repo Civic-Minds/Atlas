@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { passesRouteFilter, useIntervalStats, featureBbox, inViewport } from '../useIntervalStats';
+import { anyFeaturePassesRouteFilter, passesRouteFilter, useIntervalStats, featureBbox, inViewport } from '../useIntervalStats';
 import type { AgencyLayers } from '../useAgencyData';
 import type { ViewportBounds } from '../useIntervalStats';
 import { describe, it, expect } from 'vitest';
@@ -51,6 +51,73 @@ describe('useIntervalStats', () => {
     const filters = { ...defaultFilters, maxHeadway: 20, agencies: new Set(['kalamazoo']) };
     expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: 'kalamazoo::12' }, null)).toBe(true);
     expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: null }, null)).toBe(false);
+  });
+
+  it('matches a selected route when any direction qualifies for the active period', () => {
+    const features = [
+      {
+        type: 'Feature',
+        geometry: null,
+        properties: {
+          routeId: '111',
+          agencySlug: 'metz',
+          day: 'Weekday',
+          headway: 68,
+          headwayByPeriod: { evening: null },
+        },
+      },
+      {
+        type: 'Feature',
+        geometry: null,
+        properties: {
+          routeId: '111',
+          agencySlug: 'metz',
+          day: 'Weekday',
+          headway: 67,
+          headwayByPeriod: { evening: 60 },
+        },
+      },
+    ] as unknown as GeoJSON.Feature[];
+
+    expect(anyFeaturePassesRouteFilter(features, 'metz', {
+      maxHeadway: 60,
+      agencies: new Set(['metz']),
+      modes: new Set(),
+      day: 'Weekday',
+      period: 'evening',
+      hideSpan: true,
+      livePollingOnly: false,
+      showCorridors: false,
+      showCorridorBand: false,
+      selectedRoute: null,
+    }, null)).toBe(true);
+  });
+
+  it('does not treat a route with explicit no-service period rows as a match', () => {
+    const features = [0, 1].map(() => ({
+      type: 'Feature' as const,
+      geometry: null,
+      properties: {
+        routeId: '16',
+        agencySlug: 'metz',
+        day: 'Weekday',
+        headway: 40,
+        headwayByPeriod: { evening: null },
+      },
+    })) as unknown as GeoJSON.Feature[];
+
+    expect(anyFeaturePassesRouteFilter(features, 'metz', {
+      maxHeadway: 60,
+      agencies: new Set(['metz']),
+      modes: new Set(),
+      day: 'Weekday',
+      period: 'evening',
+      hideSpan: true,
+      livePollingOnly: false,
+      showCorridors: false,
+      showCorridorBand: false,
+      selectedRoute: null,
+    }, null)).toBe(false);
   });
 
   it('hideSpan also hides a route whose other direction has no sustained pattern at all (Halifax 330, #318)', () => {
