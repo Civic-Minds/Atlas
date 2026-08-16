@@ -28,6 +28,7 @@ Transit frequency data lives in separate GTFS feeds across many agencies, with n
 
 - [Roadmap](./docs/roadmap/ROADMAP.md)
 - [Data](./docs/DATA.md)
+- [Fixing Issues](./FIXING_ISSUES.md)
 - [Changelog](./CHANGELOG.md)
 
 Created by Civic Minds
