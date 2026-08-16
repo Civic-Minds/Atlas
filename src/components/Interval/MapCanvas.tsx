@@ -1043,12 +1043,39 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const onTileStart = () => onTileLoadingChangeRef.current?.(true);
-    const onIdle = () => onTileLoadingChangeRef.current?.(false);
+    let loadingTimeout: ReturnType<typeof setTimeout> | undefined;
+    const clearLoadingTimeout = () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = undefined;
+      }
+    };
+    const onTileStart = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== 'atlas-pmtiles') return;
+      onTileLoadingChangeRef.current?.(true);
+      clearLoadingTimeout();
+      // A failed or rate-limited tile must not leave the HUD spinning forever.
+      loadingTimeout = setTimeout(() => {
+        loadingTimeout = undefined;
+        onTileLoadingChangeRef.current?.(false);
+      }, 15000);
+    };
+    const onSourceData = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== 'atlas-pmtiles' || !event.isSourceLoaded) return;
+      clearLoadingTimeout();
+      onTileLoadingChangeRef.current?.(false);
+    };
+    const onIdle = () => {
+      clearLoadingTimeout();
+      onTileLoadingChangeRef.current?.(false);
+    };
     map.on('sourcedataloading', onTileStart);
+    map.on('sourcedata', onSourceData);
     map.on('idle', onIdle);
     return () => {
+      clearLoadingTimeout();
       map.off('sourcedataloading', onTileStart);
+      map.off('sourcedata', onSourceData);
       map.off('idle', onIdle);
     };
   }, [mapLoaded]);
