@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Beta-only agency artifacts now load through the beta data path, while In view counts and lists follow the rendered map filters; Agencies and Routes now open as separate panels that close on outside click.
+- Shared-service route cards now use one Combined label, and agency cards keep routes outside the active filter collapsed until requested.
 - The agency index now derives Metz artifact locations instead of storing stale generated URLs.
 - Reconciliation now preserves day-aware branch metrics, feed validation, collision-safe archives, and live data cache invalidation across clean pipeline runs.
 - The shared beta/production build now preserves MapLibre 6, route-branch selection, and live GeoJSON cache updates after a clean deployment install.

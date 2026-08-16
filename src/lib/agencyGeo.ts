@@ -9,6 +9,7 @@ export interface AgencyGeoSource {
   name: string;
   url: string;
   corridorsUrl?: string;
+  betaOnly?: boolean;
 }
 
 /**
@@ -130,7 +131,7 @@ export function getCachedAgencyCorridors(slug: string): GeoJSON.FeatureCollectio
 
 /** Fetch agency GeoJSON, reusing memory cache and in-flight requests. */
 export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.FeatureCollection> {
-  const arts = getAgencyArtifactUrls(agency.slug);
+  const arts = getAgencyArtifactUrls(agency.slug, { betaOnly: agency.betaOnly });
   const fetchUrl = agency.url || arts.url;
   const dataVer = await resolveAgencyDataVersion();
   pruneOnce(dataVer);
