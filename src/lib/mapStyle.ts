@@ -5,12 +5,14 @@ import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
 
+const PRODUCTION_PMTILES_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev';
+
 function atlasPmtilesUrl(): string {
-  // Keep the browser's large range requests same-origin in deployed Vercel builds.
-  // The proxy preserves HTTP byte ranges and avoids browser-side R2 CORS failures;
-  // local Vite already uses this path for the same reason.
+  // Use the bucket endpoint directly in deployed builds so browser range requests
+  // avoid the custom data hostname's Cloudflare challenge. Local Vite keeps using
+  // the configured host so its local PMTiles preview remains available.
   const browserBase = typeof window !== 'undefined' && import.meta.env.PROD
-    ? `${window.location.origin}/atlas-data`
+    ? PRODUCTION_PMTILES_URL
     : R2_PUBLIC_URL;
   return `${browserBase}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
 }
