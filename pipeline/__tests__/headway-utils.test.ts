@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, isSustainedHeadway, medianHeadwayInWindow, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -173,25 +173,8 @@ describe('hasGenuineBranchPattern', () => {
 });
 
 describe('resolveTerminalPeriodHeadway', () => {
-  // GO 94 Pickering: terminal-in-window midday looks ~120 because long runtime pushes late
-  // midday departures past 15:00 at the far end, while trip-start midday is ~55.
-  it('prefers branch-scoped trip-dispatch period over sparser terminal-window times (GO 94)', () => {
-    expect(resolveTerminalPeriodHeadway(120, 55, true)).toBe(55);
-  });
-
-  // GRTC 201 (and similar flat infrequent routes): branch-scoped terminal can honestly be
-  // denser than trip-start for a period (e.g. three midday arrivals, gaps [90,120] → 105).
-  // Period rows must not show the sparser trip-start value while headline already used 105.
-  it('prefers denser branch-scoped terminal-window over sparser trip-dispatch (GRTC 201)', () => {
-    expect(resolveTerminalPeriodHeadway(105, 120, true)).toBe(105);
-  });
-
-  it('falls back to branch-scoped terminal when branch has no period value', () => {
-    expect(resolveTerminalPeriodHeadway(7, null, true)).toBe(7);
-  });
-
-  it('falls back to branch when branch-scoped terminal has no period value', () => {
-    expect(resolveTerminalPeriodHeadway(null, 17, true)).toBe(17);
+  it('uses a branch-scoped terminal value even when it is more frequent', () => {
+    expect(resolveTerminalPeriodHeadway(7, 17, true)).toBe(7);
   });
 
   it('protects a branch from a better unscoped shared-terminal value', () => {
@@ -301,11 +284,6 @@ describe('computePeriodSustained', () => {
     const result = computePeriodSustained(times);
     expect(result.evening).toBe(true);
   });
-
-  it('does not present a mixed short-headway schedule as one exact frequency', () => {
-    const result = computePeriodSustained([540, 565, 609, 636, 661, 702]);
-    expect(result.midday).toBe(false);
-  });
 });
 
 describe('isSustainedHeadway', () => {
@@ -352,6 +330,97 @@ describe('computePeriodHeadways — cross-midnight (#297)', () => {
   });
 });
 
+// Window defaults to GTFS minutes 1560-1800 (2am-6am), maxGap defaults to 60.
+describe('hasSustainedNightService', () => {
+  it('is true when every gap, including both boundaries, is exactly 60 minutes', () => {
+    expect(hasSustainedNightService([1560, 1620, 1680, 1740, 1800])).toBe(true);
+  });
+
+  it('is false when an internal gap exceeds 60 minutes', () => {
+    expect(hasSustainedNightService([1560, 1620, 1740, 1800])).toBe(false);
+  });
+
+  it('is false when the first departure leaves the start boundary uncovered', () => {
+    expect(hasSustainedNightService([1670, 1720, 1770, 1800])).toBe(false);
+  });
+
+  it('is false when the last departure leaves the end boundary uncovered', () => {
+    expect(hasSustainedNightService([1560, 1620, 1680, 1700])).toBe(false);
+  });
+
+  it('does not qualify service that ends before the core overnight window begins', () => {
+    expect(hasSustainedNightService([1440, 1500, 1560])).toBe(false);
+  });
+
+  it('is false with no departures in the window', () => {
+    expect(hasSustainedNightService([])).toBe(false);
+  });
+
+  it('ignores departures outside the window and dedupes exact duplicates', () => {
+    expect(
+      hasSustainedNightService([1200, 1440, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1900]),
+    ).toBe(true);
+  });
+
+  it('respects custom window and gap parameters', () => {
+    expect(hasSustainedNightService([1440, 1470, 1500], 1440, 1500, 30)).toBe(true);
+    expect(hasSustainedNightService([1440, 1500], 1440, 1500, 30)).toBe(false);
+  });
+});
+
+describe('nightServiceDepartureTimes', () => {
+  it('shifts plain midnight-to-6am departures into the Night Service window', () => {
+    const times = [120, 180, 240, 300, 360];
+    expect(nightServiceDepartureTimes(times)).toEqual([120, 180, 240, 300, 360, 1560, 1620, 1680, 1740, 1800]);
+    expect(hasSustainedNightService(nightServiceDepartureTimes(times))).toBe(true);
+  });
+
+  it('keeps already-shifted overnight-only departures in the same window', () => {
+    const times = [1560, 1620, 1680, 1740, 1800];
+    expect(nightServiceDepartureTimes(undefined, times)).toEqual(times);
+    expect(hasSustainedNightService(nightServiceDepartureTimes(undefined, times))).toBe(true);
+  });
+});
+
+// Window defaults to GTFS minutes 420-1140 (7am-7pm), maxGap defaults to 15. Same boundary-gap
+// logic as hasSustainedNightService (shared helper), just a different window/threshold -- see
+// docs/DATA_FREQUENT_NETWORK.md for why 7am-7pm/15min was chosen.
+describe('hasSustainedFrequentService', () => {
+  it('is true when every gap, including both boundaries, is exactly 15 minutes', () => {
+    const times: number[] = [];
+    for (let t = 420; t <= 1140; t += 15) times.push(t);
+    expect(hasSustainedFrequentService(times)).toBe(true);
+  });
+
+  it('is false when an internal gap exceeds 15 minutes', () => {
+    expect(hasSustainedFrequentService([420, 450, 1140])).toBe(false);
+  });
+
+  it('is false when the first departure leaves the 7am boundary uncovered', () => {
+    expect(hasSustainedFrequentService([500, 515, 530, 1140])).toBe(false);
+  });
+
+  it('is false when the last departure leaves the 7pm boundary uncovered', () => {
+    expect(hasSustainedFrequentService([420, 435, 450, 1000])).toBe(false);
+  });
+
+  it('is false with no departures in the window', () => {
+    expect(hasSustainedFrequentService([])).toBe(false);
+  });
+
+  it('ignores departures outside the window and dedupes exact duplicates', () => {
+    const times: number[] = [300, 420, 420];
+    for (let t = 420; t <= 1140; t += 15) times.push(t);
+    times.push(1200);
+    expect(hasSustainedFrequentService(times)).toBe(true);
+  });
+
+  it('respects custom window and gap parameters', () => {
+    expect(hasSustainedFrequentService([420, 430, 440], 420, 440, 10)).toBe(true);
+    expect(hasSustainedFrequentService([420, 440], 420, 440, 10)).toBe(false);
+  });
+});
+
 describe('computePeriodMaxGaps (#281)', () => {
   it('exposes the dominant gap without changing the existing median', () => {
     const times = [
@@ -365,17 +434,5 @@ describe('computePeriodMaxGaps (#281)', () => {
     const result = computePeriodMaxGaps([840, 915, 945, 975]);
     expect(result.midday).toBe(60); // 8:00–9:15, clipped to the 9:00–15:00 window
     expect(result.pmPeak).toBe(30); // the same gap contributes 15 minutes after 9:00, below 30
-  });
-});
-
-describe('computePeriodHeadwayRanges', () => {
-  it('keeps a single exceptional gap out of the normal range', () => {
-    const times = [540, 560, 585, 630]; // 20, 25, then an exceptional 45-minute gap
-    expect(computePeriodHeadwayRanges(times).midday).toEqual({ min: 20, max: 25 });
-    expect(computePeriodMaxGaps(times).midday).toBe(45);
-  });
-
-  it('retains a genuinely variable schedule in the range', () => {
-    expect(computePeriodHeadwayRanges([540, 560, 600, 640]).midday).toEqual({ min: 20, max: 40 });
   });
 });

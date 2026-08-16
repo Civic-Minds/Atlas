@@ -1,8 +1,7 @@
 /** Shared in-memory cache for agency route GeoJSON (Frequency + Corridors). */
 import { idbGet, idbSet, idbPruneStale } from './idbCache';
-import { getAgencyArtifactUrls, R2_PUBLIC_URL } from '../../shared/config';
+import { getAgencyArtifactUrls } from '../../shared/config';
 import { CACHE_BUILD } from '../../shared/cacheBuild';
-import { stampWorstDirectionHeadways } from '../../shared/worstDirection';
 
 export interface AgencyGeoSource {
   slug: string;
@@ -11,10 +10,7 @@ export interface AgencyGeoSource {
   corridorsUrl?: string;
 }
 
-/**
- * Bundle-local weekly fallback — used only when R2 data-version.json is unreachable.
- * Prefer resolveAgencyDataVersion() for actual cache keys after a publish.
- */
+/** Rotates weekly (+ CACHE_BUILD for mid-week fixes) so browsers re-fetch after data updates. */
 export function agencyGeoWeekVersion(): string {
   const d = new Date();
   const thu = new Date(d);
@@ -22,41 +18,6 @@ export function agencyGeoWeekVersion(): string {
   const yearStart = new Date(thu.getFullYear(), 0, 1);
   const week = Math.ceil(((thu.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   return `${thu.getFullYear()}${String(week).padStart(2, '0')}-${CACHE_BUILD}`;
-}
-
-let resolvedDataVer: string | null = null;
-let dataVerPromise: Promise<string> | null = null;
-
-/**
- * Live data stamp from R2. Changes every process/refresh/pmtiles publish without a
- * frontend deploy, so IndexedDB doesn't keep serving last week's GeoJSON after a soft reload.
- */
-export async function resolveAgencyDataVersion(): Promise<string> {
-  if (resolvedDataVer) return resolvedDataVer;
-  if (!dataVerPromise) {
-    dataVerPromise = (async () => {
-      try {
-        const r = await fetch(`${R2_PUBLIC_URL}/atlas/data-version.json`, { cache: 'no-store' });
-        if (r.ok) {
-          const j = (await r.json()) as { v?: string };
-          if (j?.v != null && String(j.v).length > 0) {
-            resolvedDataVer = String(j.v);
-            return resolvedDataVer;
-          }
-        }
-      } catch {
-        // fall through to bundle-local week version
-      }
-      resolvedDataVer = agencyGeoWeekVersion();
-      return resolvedDataVer;
-    })();
-  }
-  return dataVerPromise;
-}
-
-/** Sync accessor — prefers the already-resolved R2 stamp, else bundle-local week+CACHE_BUILD. */
-export function currentAgencyDataVersion(): string {
-  return resolvedDataVer ?? agencyGeoWeekVersion();
 }
 
 // LRU cache: Map preserves insertion order; delete+re-insert on access moves to front.
@@ -111,18 +72,10 @@ function getWorker(): Worker | null {
 }
 
 let _pruned = false;
-function pruneOnce(dataVer: string) {
+function pruneOnce() {
   if (_pruned) return;
   _pruned = true;
-  idbPruneStale(dataVer);
-}
-
-/** Fix route-level filter fields on the client so already-published GeoJSON picks up
- *  rare-short-turn safeguards without waiting for a full agency reprocess. */
-function normalizeAgencyFeatures(data: GeoJSON.FeatureCollection): void {
-  stampWorstDirectionHeadways(
-    data.features as Array<{ properties: Record<string, unknown> }>,
-  );
+  idbPruneStale(agencyGeoWeekVersion());
 }
 
 export function getCachedAgencyGeo(slug: string): GeoJSON.FeatureCollection | undefined {
@@ -137,14 +90,14 @@ export function getCachedAgencyCorridors(slug: string): GeoJSON.FeatureCollectio
 export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.FeatureCollection> {
   const arts = getAgencyArtifactUrls(agency.slug);
   const fetchUrl = agency.url || arts.url;
-  const dataVer = await resolveAgencyDataVersion();
-  pruneOnce(dataVer);
+  pruneOnce();
 
   const hit = lruGet(cache, agency.slug);
   if (hit) return hit;
 
   let pending = inflight.get(agency.slug);
   if (!pending) {
+    const weekVer = agencyGeoWeekVersion();
     const w = getWorker();
 
     if (w) {
@@ -152,7 +105,6 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
         const key = agency.slug;
         pendingRequests.set(key, {
           resolve: (data) => {
-            normalizeAgencyFeatures(data);
             lruSet(cache, agency.slug, data);
             resolve(data);
           },
@@ -166,27 +118,25 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
           slug: agency.slug,
           url: fetchUrl,
           name: agency.name,
-          weekVer: dataVer,
+          weekVer,
         });
       }).finally(() => {
         inflight.delete(agency.slug);
       });
     } else {
-      const idbKey = `${agency.slug}-${dataVer}`;
+      const idbKey = `${agency.slug}-${weekVer}`;
       pending = idbGet<GeoJSON.FeatureCollection>(idbKey).then(async cached => {
         if (cached) {
-          normalizeAgencyFeatures(cached);
           lruSet(cache, agency.slug, cached);
           return cached;
         }
-        const r = await fetch(`${fetchUrl}?v=${dataVer}`, { cache: 'default' });
+        const r = await fetch(`${fetchUrl}?v=${weekVer}`, { cache: 'default' });
         if (!r.ok) throw new Error(`${agency.slug} geo ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {
           const p = f.properties as Record<string, unknown> | null;
           if (p) p.agencyName = agency.name;
         }
-        normalizeAgencyFeatures(data);
         lruSet(cache, agency.slug, data);
         idbSet(idbKey, data);
         return data;
@@ -211,7 +161,7 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
 
   let pending = corridorsInflight.get(slug);
   if (!pending) {
-    const dataVer = await resolveAgencyDataVersion();
+    const weekVer = agencyGeoWeekVersion();
     const w = getWorker();
 
     if (w) {
@@ -231,19 +181,19 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
           type: 'corridors',
           slug,
           url: corridorsUrl,
-          weekVer: dataVer,
+          weekVer,
         });
       }).finally(() => {
         corridorsInflight.delete(slug);
       });
     } else {
-      const idbKey = `${slug}-corridors-${dataVer}`;
+      const idbKey = `${slug}-corridors-${weekVer}`;
       pending = idbGet<GeoJSON.FeatureCollection>(idbKey).then(async cached => {
         if (cached) {
           lruSet(corridorsCache, slug, cached);
           return cached;
         }
-        const r = await fetch(`${corridorsUrl}?v=${dataVer}`, { cache: 'default' });
+        const r = await fetch(`${corridorsUrl}?v=${weekVer}`, { cache: 'default' });
         if (!r.ok) throw new Error(`${slug} corridors ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {
@@ -274,9 +224,6 @@ export function clearAgencyGeoCache(): void {
   corridorsCache.clear();
   corridorsInflight.clear();
   pendingRequests.clear();
-  resolvedDataVer = null;
-  dataVerPromise = null;
-  _pruned = false;
   if (worker) {
     worker.terminate();
     worker = null;

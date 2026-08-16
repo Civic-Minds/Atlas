@@ -6,15 +6,11 @@ Three Cloudflare R2 buckets. Public access means the browser fetches directly; p
 
 ### atlas (public)
 
-Current GTFS data served to the frontend. An agency has exactly one active
-snapshot here: normally a feed with service through today, or the newest
-available snapshot when no current feed can be obtained. The latter is marked
-stale in the agency metadata and shown with an outdated-schedule warning.
+Current static GTFS data served to the frontend.
 
 - `atlas/{slug}.json` — route GeoJSON for each agency
 - `atlas/{slug}-stops.json` — stops index
 - `atlas/{slug}-corridors.json` — corridor overlap data
-- `gtfs/{slug}.zip` — the one active raw GTFS snapshot for each agency
 - `atlas/go-stops.json` — GO rail stops (separate extract)
 
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`
@@ -22,12 +18,9 @@ Read by: browser directly via `R2_PUBLIC_URL`
 
 ### atlas-archive (private)
 
-Historical and reference data not needed at runtime. A raw ZIP is moved here
-when a newer snapshot replaces the active one; service expiry alone does not
-remove the active fallback from the public bucket.
+Historical and reference data not needed at runtime.
 
-- `gtfs/archive/{slug}/{snapshot-key}.zip` — replaced/expired raw GTFS snapshots; legacy date/version keys receive a source-identity suffix
-- `gtfs/historical/{path-slug}/{feed-end-date}.zip` — imported local historical snapshots
+- `gtfs/archive/{slug}/{feed-end-date}.zip` — raw GTFS zip snapshots, one per feed version
 - `history/{slug}/latest.json` — most recent headway snapshot for diff detection
 - `history/{slug}/{feed-end-date}.json` — versioned headway snapshots (pipeline diff-detection; not read by frontend)
 
@@ -74,29 +67,18 @@ meaning of “history” than RT delay archives.
 ## Data Flow: Weekly Refresh
 
 ```
-  feedUrl (agency's GTFS zip)
+feedUrl (agency's GTFS zip)
   -> pipeline/refresh.ts
     -> parse GTFS
-    -> if a newer snapshot is available: archive previous raw ZIP, write gtfs/{slug}.zip,
-       and write atlas/{slug}.json (public, replaces previous)
-    -> if the downloaded snapshot is stale or has unknown dates: keep/publish it
-       as the active fallback and mark the agency stale
-    -> if download/validation fails: keep the existing active snapshot unchanged
+    -> write atlas/{slug}.json          (public, replaces previous)
     -> write atlas/{slug}-stops.json    (public)
     -> write atlas/{slug}-corridors.json (public)
+    -> write gtfs/archive/{slug}/*.zip  (atlas-archive, append)
     -> compare vs history/{slug}/latest.json (atlas-archive)
     -> if changed: write history/{slug}/{period}.json + latest.json (atlas-archive)
 ```
 
 Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
-
-The active raw ZIP is the bucket-level marker for the one snapshot Atlas is
-using: exactly one active snapshot lives at `atlas/gtfs/{slug}.zip`. When a
-newer snapshot replaces it, the previous object is copied server-side into
-`atlas-archive` before the public object is replaced. If no newer source is
-available, the existing active snapshot stays public and its agency is marked
-stale; the frontend, public agency directory, hidden-route inventory, and
-PMTiles build all use the same active-feed filter.
 
 
 ## Vercel API Routes

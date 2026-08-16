@@ -6,7 +6,6 @@ import {
 } from '../types/gtfs';
 import { t2m, getModeName } from './transit-utils';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
-import { isRailLikeRoute } from '../shared/modes';
 
 /**
  * Expand frequency-based trips into individual departure times.
@@ -138,7 +137,7 @@ function deduplicateDepartures(times: number[]): number[] {
  * Produces one RawRouteDepartures per route/direction/day (Mon–Sun).
  * No time window filtering, no tier classification — all gaps preserved.
  */
-export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, Set<string>>, agencySlug?: string): RawRouteDepartures[] {
+export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, shapeFilter?: Map<string, Set<string>>): RawRouteDepartures[] {
     const { routes, calendar, calendarDates } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
 
@@ -152,18 +151,17 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         if (activeServiceIds.size === 0) continue;
 
         const grouped = new Map<string, {
-            routeId: string; dirId: string; headsign?: string; shapeId?: string;
+            routeId: string; dirId: string; headsign?: string;
             times: number[]; serviceIds: Set<string>; missingDir: boolean;
         }>();
 
         for (const [, data] of tripData) {
             if (!activeServiceIds.has(data.serviceId)) continue;
-            // Split by headsign and physical shape so two branches with the same displayed
-            // destination cannot be interleaved into a falsely short frequency. Oakville 14
-            // and COTA 5 both use this pattern: each branch is hourly, but their pooled trips
-            // look like a 23–28 minute route. Equivalent schedule-period shapes are collapsed
-            // later when the displayed feature is deduplicated.
-            const key = [data.routeId, data.dirId, data.headsign ?? '', data.shapeId ?? ''].join('::');
+            // Split by headsign so each direction/terminus pattern gets its own
+            // frequency analysis and its own correctly-shaped GeoJSON feature.
+            const key = (data.headsign)
+                ? `${data.routeId}::${data.dirId}::${data.headsign}`
+                : `${data.routeId}::${data.dirId}`;
             const baseKey = `${data.routeId}::${data.dirId}`;
             if (shapeFilter) {
                 // Prefer headsign-specific filter when available (handles genuine headsign
@@ -179,7 +177,6 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 routeId: data.routeId,
                 dirId: data.dirId,
                 headsign: data.headsign || undefined,
-                shapeId: data.shapeId || undefined,
                 times: [],
                 serviceIds: new Set(),
                 missingDir: false,
@@ -191,7 +188,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         }
 
         for (const [, group] of grouped) {
-            const { routeId, dirId, headsign, shapeId } = group;
+            const { routeId, dirId, headsign } = group;
             const departureTimes = deduplicateDepartures(group.times);
             if (departureTimes.length < 2) continue;
 
@@ -212,16 +209,9 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 route: routeId,
                 dir: dirId,
                 headsign,
-                shapeId,
                 day,
                 routeType,
                 modeName: getModeName(routeType),
-                railLike: isRailLikeRoute({
-                    routeType,
-                    routeLongName: route?.route_long_name,
-                    routeShortName: route?.route_short_name,
-                    agencySlug,
-                }),
                 departureTimes,
                 gaps,
                 serviceSpan: {

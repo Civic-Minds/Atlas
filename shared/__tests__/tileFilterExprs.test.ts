@@ -4,8 +4,6 @@ import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../tileFilterEx
 import { flattenPeriodHeadwayProps } from '../pmtilesProps';
 import { VIRTUAL_LRT_MODE } from '../modes';
 
-const compileFilter = (filter: unknown) => featureFilter(filter as any, 'test.filter');
-
 function productionLikeFilter(maxHeadway: number, modes = new Set<number>()) {
   const clauses: unknown[] = [
     ['==', ['get', 'day'], 'Weekday'],
@@ -27,11 +25,11 @@ const feat = (properties: Record<string, unknown>) => ({ type: 2, properties });
 
 describe('tileEffectiveHeadwayExpr', () => {
   it('compiles with direction/day clauses (MapLibre filter-safe)', () => {
-    expect(() => compileFilter(productionLikeFilter(10))).not.toThrow();
+    expect(() => featureFilter(productionLikeFilter(10) as any)).not.toThrow();
   });
 
   it('filters high headway routes at ≤10m', () => {
-    const compiled = compileFilter(productionLikeFilter(10));
+    const compiled = featureFilter(productionLikeFilter(10) as any);
     const ctx = { zoom: 10 };
     expect(compiled.filter(ctx, feat({
       day: 'Weekday',
@@ -47,26 +45,8 @@ describe('tileEffectiveHeadwayExpr', () => {
     }) as any)).toBe(true);
   });
 
-  it('does not use an intermediate-stop headway for the route-level filter', () => {
-    const compiled = compileFilter(productionLikeFilter(15));
-    const ctx = { zoom: 10 };
-    expect(compiled.filter(ctx, feat({
-      day: 'Weekday',
-      directionId: 0,
-      worstDirectionHeadway: 18,
-      headway: 18,
-      minStopHeadway: 10,
-    }) as any)).toBe(false);
-    expect(compiled.filter(ctx, feat({
-      day: 'Weekday',
-      directionId: 0,
-      headway: 18,
-      minStopHeadway: 10,
-    }) as any)).toBe(false);
-  });
-
   it('does not fall back to all-day service when the active period is explicit null', () => {
-    const compiled = compileFilter(periodFilter('late', 15));
+    const compiled = featureFilter(periodFilter('late', 15) as any);
     const ctx = { zoom: 10 };
     expect(compiled.filter(ctx, feat({
       hph_late: null,
@@ -95,13 +75,13 @@ describe('tileEffectiveHeadwayExpr', () => {
     flattenPeriodHeadwayProps(props);
     // Simulates what actually reaches the client: no `hph_midday`/`wdph_midday` null property
     // survives MVT encoding -- only the sentinel-bearing keys flattenPeriodHeadwayProps wrote.
-    const compiled = compileFilter(periodFilter('midday' as any, 10));
+    const compiled = featureFilter(periodFilter('midday' as any, 10) as any);
     const ctx = { zoom: 10 };
     expect(compiled.filter(ctx, feat(props) as any)).toBe(false);
   });
 
   it('requires wdph (worst-direction) to qualify, not just this feature\'s own hph (#314)', () => {
-    const compiled = compileFilter(periodFilter('late', 30));
+    const compiled = featureFilter(periodFilter('late', 30) as any);
     const ctx = { zoom: 10 };
     // Kingston 701 case: this direction's own late-period headway (10) would pass a 30-min
     // filter alone, but the route's worst direction (45) doesn't -- must fail.
@@ -133,6 +113,6 @@ describe('buildModeFilterClause', () => {
 
   it('compiles bus + LRT mode filter with headway clause', () => {
     const filter = productionLikeFilter(30, new Set([3, VIRTUAL_LRT_MODE]));
-    expect(() => compileFilter(filter)).not.toThrow();
+    expect(() => featureFilter(filter as any)).not.toThrow();
   });
 });

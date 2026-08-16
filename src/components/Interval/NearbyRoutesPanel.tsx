@@ -1,5 +1,4 @@
 import React, { forwardRef } from 'react';
-import { LocateFixed } from 'lucide-react';
 import { headwayToTierColor } from '../../utils/colors';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
@@ -27,10 +26,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       // plus the geolocate button below them — this used to sit at bottom:72, overlapping
       // the zoom-in button by ~50px.
       style={{ position: 'absolute', bottom: 136, right: 12, zIndex: PANEL_Z_INDEX }}
-      className={`w-64 max-h-72 flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
+      className={`w-64 max-h-[calc(100vh-152px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
     >
       <div className={PANEL_TITLE_BAR}>
-        <LocateFixed className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
         <span className={PANEL_TITLE}>Near You</span>
       </div>
 

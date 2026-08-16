@@ -1,24 +1,16 @@
-import * as maplibregl from 'maplibre-gl';
-import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
+import maplibregl from 'maplibre-gl';
 import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
-import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
+import { agencyGeoWeekVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
 
 function atlasPmtilesUrl(): string {
-  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
+  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${agencyGeoWeekVersion()}`;
 }
 
 const protocol = new Protocol();
 let protocolRegistered = false;
-
-// MapLibre 6 uses a module worker URL by default. Import it through Vite so the
-// worker is emitted as a real asset instead of falling through the SPA rewrite.
-maplibregl.setWorkerUrl(maplibreWorkerUrl);
-
-/** Resolve live data-version then register the PMTiles protocol (await before creating the map). */
-export async function registerProtocol() {
-  await resolveAgencyDataVersion();
+export function registerProtocol() {
   if (!protocolRegistered) {
     maplibregl.addProtocol('pmtiles', protocol.tile);
     protocolRegistered = true;

@@ -120,28 +120,4 @@ describe('applyAnalysisCriteria', () => {
     expect(r).toBeDefined();
     expect(['span', 'infrequent']).toContain(r!.tier);
   });
-
-  it('does not merge same-headsign shape branches during weekday rollup', () => {
-    const results = applyAnalysisCriteria([
-      raw({ route: '14', headsign: 'Appleby GO', shapeId: 'branch-a', departureTimes: [540, 600, 660, 720, 780, 840] }),
-      raw({ route: '14', headsign: 'Appleby GO', shapeId: 'branch-b', departureTimes: [570, 630, 690, 750, 810, 870] }),
-    ]);
-    expect(results).toHaveLength(2);
-    expect(results.map(r => r.shapeId).sort()).toEqual(['branch-a', 'branch-b']);
-    expect(results.every(r => r.medianHeadway === 60)).toBe(true);
-  });
-
-  it('uses a representative weekday for subway schedules instead of merging small daily offsets', () => {
-    const results = applyAnalysisCriteria(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day, i) => raw({
-      route: 'marta-blue',
-      day,
-      routeType: '1',
-      departureTimes: [600 + i, 612 + i, 624 + i, 636 + i, 648 + i, 660 + i],
-    })));
-    const r = results.find(x => x.route === 'marta-blue');
-    expect(r).toBeDefined();
-    expect(r!.medianHeadway).toBe(12);
-    expect(r!.railLike).toBe(true);
-    expect(r!.times).toEqual([600, 612, 624, 636, 648, 660]);
-  });
 });

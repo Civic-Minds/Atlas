@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type * as maplibregl from 'maplibre-gl';
+import type maplibregl from 'maplibre-gl';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useLiveVehiclesMapOverlay } from '../../../context/LiveVehiclesMapOverlay';
@@ -107,7 +107,7 @@ export function useLiveVehiclesLayer(
       const deck = await ensureDeckOverlay();
       if (cancelled || !deck) return;
 
-      const { ScatterplotLayer, TextLayer } = await import('@deck.gl/layers');
+      const { ScatterplotLayer, TextLayer } = await import('deck.gl');
       if (cancelled) return;
 
       lastDeckFpRef.current = fp;

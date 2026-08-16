@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeftRight, Clock, DollarSign } from 'lucide-react';
+import { ArrowLeftRight, Clock, DollarSign, Moon } from 'lucide-react';
 import { FLOATING_CARD, Z_DROPDOWN } from '../styles';
 
-export type AppId = 'frequency' | 'corridors' | 'history' | 'live' | 'fares';
+export type AppId = 'frequency' | 'corridors' | 'history' | 'live' | 'fares' | 'night';
 
 interface AppEntry {
   id: AppId;
@@ -32,6 +32,13 @@ const APPS: AppEntry[] = [
     label: 'History',
     description: 'Actual vs scheduled trip delays',
     icon: <Clock className="w-5 h-5" />,
+    available: true,
+  },
+  {
+    id: 'night',
+    label: 'Night Service',
+    description: 'Agencies with sustained overnight service',
+    icon: <Moon className="w-5 h-5" />,
     available: true,
   },
 ];

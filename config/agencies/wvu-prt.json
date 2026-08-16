@@ -1,0 +1,17 @@
+{
+  "slug": "wvu-prt",
+  "name": "West Virginia University PRT (Morgantown, WV)",
+  "region": "West Virginia",
+  "center": [
+    39.6345,
+    -79.9553
+  ],
+  "feedUrl": "https://prt.wvu.edu/files/d/fcc4abeb-9e23-477b-b648-30623cb8ad80/gtfs.zip",
+  "preprocess": "wvu-prt-shapes",
+  "lastFeedExpiry": "20261218",
+  "lastFeedVersion": "2",
+  "lastRefreshedAt": "2026-08-14",
+  "cities": [
+    "Morgantown, West Virginia"
+  ]
+}

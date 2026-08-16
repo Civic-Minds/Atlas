@@ -29,7 +29,7 @@
       "destination": "/api/history-adherence.ts"
     },
     {
-      "source": "/((?!api/|@vite|@react-refresh|node_modules/|src/|assets/).*)",
+      "source": "/((?!api/|@vite|@react-refresh|node_modules/|src/).*)",
       "destination": "/index.html"
     }
   ]

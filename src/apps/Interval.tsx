@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { passesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
+import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
@@ -18,11 +18,9 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
-import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
-import { computeFrequencySegmentOverlay } from '../utils/frequencySegments';
 
 interface Props {
   agencies: Agency[];
@@ -57,13 +55,20 @@ interface Props {
   onSelectionActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
   fareView?: boolean;
+  nightServiceView?: boolean;
+  showMapContext?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
+  hideLowQuality: boolean;
+  setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
+  feedQualityEnabled?: boolean;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
   const [searchParams] = useSearchParams();
+  const [mapContextOpen, setMapContextOpen] = useState(false);
+  const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
 
   const initialMapCenter = useMemo(() => {
     const lat = parseFloat(searchParams.get('lat') ?? '');
@@ -82,6 +87,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         if (isFinite(n) && n > 0) return n;
       }
     } catch {}
+    try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return 60;
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
@@ -98,6 +104,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
+
+  // An agency selection replaces route disambiguation. Keeping both active
+  // leaves two sidebar cards competing for the same space.
+  useEffect(() => {
+    if (selectedAgencySlug && disambiguationRoutes?.length) setDisambiguationRoutes(null);
+  }, [selectedAgencySlug, disambiguationRoutes]);
 
   const setHoveredBranch = useCallback((branch: HoveredBranch | null) => {
     if (hoverTimeoutRef.current !== null) {
@@ -201,7 +213,10 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const selectedCorridorFamily = useMemo(() => {
     if (!selectedRoute) return null;
-    const { agencySlug, routeId } = splitRouteKey(selectedRoute);
+    const separator = selectedRoute.indexOf('::');
+    if (separator < 0) return null;
+    const agencySlug = selectedRoute.slice(0, separator);
+    const routeId = selectedRoute.slice(separator + 2);
     const features = layers[agencySlug]?.features ?? [];
     const props = features
       .map(f => f.properties as ShapeProperties)
@@ -252,14 +267,16 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || maxHeadway === Infinity) return false;
-    const { agencySlug: selectedSlug, routeId } = splitRouteKey(selectedRoute);
-    const selectedRouteSlug = selectedSlug;
-    const feature = layers[selectedRouteSlug]?.features.find(f => {
+    const separator = selectedRoute.indexOf('::');
+    if (separator < 0) return false;
+    const slug = selectedRoute.slice(0, separator);
+    const routeId = selectedRoute.slice(separator + 2);
+    const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;
-      return p?.routeId === routeId && routeKey({ ...p, agencySlug: selectedRouteSlug }) === selectedRoute && (p.day === undefined || p.day === day);
+      return p?.routeId === routeId && (p.day === undefined || p.day === day);
     });
-    if (!feature) return false;
-    return !passesRouteFilter(feature.properties as ShapeProperties, selectedRouteSlug, {
+    if (!features?.length) return false;
+    return !anyFeaturePassesRouteFilter(features, slug, {
       maxHeadway,
       agencies: selectedAgencies,
       modes: selectedModes,
@@ -273,12 +290,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     }, routesForStop);
   }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute, showCorridorBand, showCorridors]);
 
-  const selectedRouteHasQualifyingSection = useMemo(() => {
-    if (!selectedRoute || !selectedRouteOutOfFilter || maxHeadway === Infinity) return false;
-    const partialMatches = computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway).partialMatches;
-    return partialMatches.some(match => routeKey({ ...match, agencySlug: match.agencySlug } as any) === selectedRoute);
-  }, [filteredLayers, maxHeadway, period, selectedRoute, selectedRouteOutOfFilter]);
-
+  useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
+  useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
@@ -333,7 +346,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   // Drop stale selection when the route card has no data (day change, agency unload, etc.)
   useEffect(() => {
     if (!selectedRoute) return;
-    const { agencySlug: slug } = splitRouteKey(selectedRoute);
+    const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
     const resolvedRoute = resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day);
@@ -370,8 +383,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   }, [selectedStop]);
 
   // Sync filter state (maxHeadway, period) to URL for active view persistence (refresh/share).
-  // On load: URL wins (see initializers), otherwise use current/default state. Effects then
-  // ensure the URL reflects current filters (like lat/lon/z). Defaults (h=60, p=all) omitted.
+  // On load: URL wins (see initializers), else LS/default; effects then ensure URL reflects
+  // current (like lat/lon/z). Defaults (h=60, p=all) omitted to keep URLs short.
   useEffect(() => {
     const h =
       maxHeadway === Infinity ? 'all'
@@ -414,6 +427,11 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onBoundsChange={onBoundsChange}
         resetViewKey={resetViewKey}
         onLocate={onLocate}
+        showMapContext={showMapContext}
+        mapContextOpen={mapContextOpen}
+        onMapContextOpenChange={setMapContextOpen}
+        onMapContextAgencyCountChange={setMapContextAgencyCount}
+        day={day}
         showRouteLayers={showRouteLayers}
         liveRoutesOnly={liveRoutesOnly}
         showCorridorBand={showCorridorBand}
@@ -426,6 +444,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedAgencySlug={selectedAgencySlug}
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
+        nightServiceView={nightServiceView}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
@@ -435,7 +454,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       <MapAttribution />
 
       {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading) && (
-        <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute bottom-6 right-28 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading) && (
             <div className={`${MAP_BADGE} h-8`}>
               <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
@@ -445,12 +464,25 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             </div>
           )}
           {stats && (stats.total > 0 || !isLoading) && (
-            <div className="hidden sm:flex gap-2">
-              <div className={`${MAP_BADGE} h-8`}>
-                <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
-                <span className={MAP_BADGE_LABEL}>routes</span>
-              </div>
-              <div className={`${MAP_BADGE} h-8`}>
+              <div className="hidden sm:flex gap-2">
+                <div className={`${MAP_BADGE} h-8`}>
+                  <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
+                  <span className={MAP_BADGE_LABEL}>routes</span>
+                </div>
+                {showMapContext && (
+                  <button
+                    type="button"
+                    onClick={() => setMapContextOpen(open => !open)}
+                    aria-label={`${mapContextAgencyCount} agencies in view`}
+                    aria-expanded={mapContextOpen}
+                    title="Agencies in view"
+                    className={`${MAP_BADGE} h-8 cursor-pointer hover:text-[var(--accent)] transition-colors`}
+                  >
+                    <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>
+                    <span className={MAP_BADGE_LABEL}>agencies</span>
+                  </button>
+                )}
+                <div className={`${MAP_BADGE} h-8`}>
                 <span className={MAP_BADGE_COUNT}>
                   {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
                 </span>
@@ -461,7 +493,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard
@@ -534,6 +566,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
               bounds={bounds}
+              hideLowQuality={hideLowQuality}
+              setHideLowQuality={setHideLowQuality}
+              feedQualityEnabled={feedQualityEnabled}
             />
           )}
         </div>,
@@ -582,7 +617,6 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
         selectedRouteOutOfFilter={selectedRouteOutOfFilter}
-        selectedRouteHasQualifyingSection={selectedRouteHasQualifyingSection}
         onDirectFromStop={onDirectFromStop}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}

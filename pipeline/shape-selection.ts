@@ -1,9 +1,7 @@
 import type { GtfsData, GtfsRoute } from '../types/gtfs.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
-import { isRailLikeRoute } from '../shared/modes.js';
 import { haversineDistance } from './utils.js';
 import type { GeoJsonFeature } from './geojson-types.js';
-import type { DayType } from '../shared/dayTypes.js';
 
 /**
  * Real geographic length (meters), not raw point count — a shape's point count
@@ -28,8 +26,6 @@ export interface ShapeSelectionContext {
   shapeCounts: Map<string, Map<string, number>>;
   headsignShapeCounts: Map<string, Map<string, number>>;
   headsignDisplayShape: Map<string, string>;
-  /** Representative headsign shape selected from trips active on that day type. */
-  headsignDisplayShapeByDay: Map<string, string>;
   routeDirToHeadsign: Map<string, string>;
   routeDirToDisplayShape: Map<string, string>;
   routeDirToAnalysisShapes: Map<string, Set<string>>;
@@ -80,8 +76,6 @@ export function buildShapeSelectionContext(
   gtfs: GtfsData,
   routeById: Map<string, GtfsRoute>,
   activeServiceIds: Set<string>,
-  activeServiceIdsByDay: ReadonlyMap<DayType, ReadonlySet<string>> = new Map(),
-  agencySlug?: string,
 ): ShapeSelectionContext {
   const lastStopByTrip = new Map<string, string>();
   const maxSeqByTrip = new Map<string, number>();
@@ -99,16 +93,6 @@ export function buildShapeSelectionContext(
   const shapeCounts = new Map<string, Map<string, number>>();
   const headsignCounts = new Map<string, Map<string, number>>();
   const headsignShapeCounts = new Map<string, Map<string, number>>();
-  const headsignShapeCountsByDay = new Map<string, Map<string, number>>();
-
-  const dayTypesForServiceId = new Map<string, DayType[]>();
-  for (const [dayType, serviceIds] of activeServiceIdsByDay) {
-    for (const serviceId of serviceIds) {
-      const dayTypes = dayTypesForServiceId.get(serviceId);
-      if (dayTypes) dayTypes.push(dayType);
-      else dayTypesForServiceId.set(serviceId, [dayType]);
-    }
-  }
 
   for (const trip of gtfs.trips ?? []) {
     if (!activeServiceIds.has(trip.service_id)) continue;
@@ -130,13 +114,6 @@ export function buildShapeSelectionContext(
         if (!headsignShapeCounts.has(hKey)) headsignShapeCounts.set(hKey, new Map());
         const hm = headsignShapeCounts.get(hKey)!;
         hm.set(trip.shape_id, (hm.get(trip.shape_id) ?? 0) + 1);
-
-        for (const dayType of dayTypesForServiceId.get(trip.service_id) ?? []) {
-          const dayHKey = `${hKey}::${dayType}`;
-          if (!headsignShapeCountsByDay.has(dayHKey)) headsignShapeCountsByDay.set(dayHKey, new Map());
-          const dayHm = headsignShapeCountsByDay.get(dayHKey)!;
-          dayHm.set(trip.shape_id, (dayHm.get(trip.shape_id) ?? 0) + 1);
-        }
       }
     }
     if (headsign) {
@@ -150,11 +127,6 @@ export function buildShapeSelectionContext(
   for (const [hKey, counts] of headsignShapeCounts) {
     const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
     if (best) headsignDisplayShape.set(hKey, best);
-  }
-  const headsignDisplayShapeByDay = new Map<string, string>();
-  for (const [hKey, counts] of headsignShapeCountsByDay) {
-    const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
-    if (best) headsignDisplayShapeByDay.set(hKey, best);
   }
 
   const routeDirToHeadsign = new Map<string, string>();
@@ -186,13 +158,7 @@ export function buildShapeSelectionContext(
   for (const [key, counts] of shapeCounts) {
     const routeId = key.split('::')[0];
     const routeType = routeById.get(routeId)?.route_type;
-    const route = routeById.get(routeId);
-    const isRail = isRailLikeRoute({
-      routeType,
-      routeLongName: route?.route_long_name,
-      routeShortName: route?.route_short_name,
-      agencySlug,
-    });
+    const isRail = routeType === '2' || routeType === 2;
 
     if (isRail) {
       const best = [...counts.keys()]
@@ -220,24 +186,14 @@ export function buildShapeSelectionContext(
   for (const [key, shapeIds] of routeDirToAnalysisShapes) {
     const routeId = key.split('::')[0];
     const route = routeById.get(routeId);
-    const isRail = isRailLikeRoute({
-      routeType: route?.route_type,
-      routeLongName: route?.route_long_name,
-      routeShortName: route?.route_short_name,
-      agencySlug,
-    });
+    const isRail = route?.route_type === '2' || route?.route_type === 2;
     if (!isRail) shapeFilterForPhase1.set(key, shapeIds);
   }
 
   for (const [hKey, hShapeCounts] of headsignShapeCounts) {
     const routeId = hKey.split('::')[0];
     const route = routeById.get(routeId);
-    if (isRailLikeRoute({
-      routeType: route?.route_type,
-      routeLongName: route?.route_long_name,
-      routeShortName: route?.route_short_name,
-      agencySlug,
-    })) continue;
+    if (route?.route_type === '2' || route?.route_type === 2) continue;
     const shapeEntries = [...hShapeCounts.entries()]
       .map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) }))
       .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
@@ -251,7 +207,6 @@ export function buildShapeSelectionContext(
     shapeCounts,
     headsignShapeCounts,
     headsignDisplayShape,
-    headsignDisplayShapeByDay,
     routeDirToHeadsign,
     routeDirToDisplayShape,
     routeDirToAnalysisShapes,

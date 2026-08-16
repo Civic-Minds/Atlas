@@ -47,8 +47,6 @@ export interface GtfsStopTime {
     pickup_type?: string;
     drop_off_type?: string;
     shape_dist_traveled?: string;
-    /** GTFS-Flex: zone / area id when stop_id is omitted. */
-    location_id?: string;
 }
 
 export interface GtfsCalendar {
@@ -216,13 +214,8 @@ export interface RawRouteDepartures {
     day: DayName;
     routeType: string;
     modeName: string;
-    /** Subway, commuter rail, monorail, or explicitly identified LRT. */
-    railLike?: boolean;
     /** For rail routes split by terminus — e.g. "Kitchener GO" vs "Bramalea GO" */
     headsign?: string;
-
-    /** Physical GTFS shape for this branch. Same headsigns can still use different branches. */
-    shapeId?: string;
 
     /** Every departure time in minutes from midnight, sorted ascending, deduplicated */
     departureTimes: number[];
@@ -303,8 +296,6 @@ export interface AnalysisResult {
     serviceSpan?: { start: number; end: number };
     routeType?: string;
     modeName?: string;
-    /** Subway, commuter rail, monorail, or explicitly identified LRT. */
-    railLike?: boolean;
     
     // Resource & Financial Modeling
     pvr?: number;             // Peak Vehicle Requirement
@@ -319,8 +310,6 @@ export interface AnalysisResult {
     daysIncluded?: DayName[];
     /** For rail routes: the terminus headsign this result represents (e.g. "Kitchener GO") */
     headsign?: string;
-    /** Physical GTFS shape for this branch. */
-    shapeId?: string;
 }
 
 export interface CorridorResult {

@@ -26,7 +26,6 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Nfta: 'NFTA',
   Ltc: 'LTC',
   Ktc: 'KTC',
-  Kc: 'KC',
   // GO Transit's 2-char line codes (LW, LE, KI, MI, BR) are deliberately NOT listed
   // here: as a standalone routeShortName ("LW — Lakeshore West") they're already
   // uppercased by the ≤3-char whole-string rule above, and no real GO long name

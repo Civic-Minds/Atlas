@@ -4,22 +4,6 @@ import { buildEffectiveModeExpression, VIRTUAL_LRT_MODE } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
 
-/** MapLibre expression matching the canonical agency::route[:branch] key. */
-export function tileRouteKeyExpr(): unknown[] {
-  const base: unknown[] = [
-    'concat',
-    ['coalesce', ['get', 'agencySlug'], ''],
-    '::',
-    ['coalesce', ['get', 'routeId'], ''],
-  ];
-  return [
-    'case',
-    ['all', ['has', 'routeBranch'], ['!=', ['get', 'routeBranch'], '']],
-    [...base, '::branch:', ['get', 'routeBranch']],
-    base,
-  ];
-}
-
 /**
  * Headway expression for MapLibre layer filters (PMTiles).
  * Filter-safe: no to-number or numeric coalesce fallbacks — those break the
@@ -29,12 +13,15 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
   const allDay: unknown[] = [
     'coalesce',
     ['get', 'worstDirectionHeadway'],
+    ['get', 'minStopHeadway'],
     ['get', 'headway'],
   ];
   if (period && period !== 'all') {
     // wdph (worst-direction) must win: every direction has to meet the threshold, not just
-    // this one feature's own branch. Stop-specific metrics are deliberately excluded here —
-    // they belong to the stop card, not the route-level map filter or route card.
+    // this one feature's own branch. msph (min-stop / shared-core) is deliberately excluded
+    // here — it can reflect a combined frequency that only applies to part of the line, and
+    // without geometry clipping to match, using it here would let a partial match pass the
+    // whole (unclipped) route through the filter (#314/#315).
     const [, wdph, hph] = periodHeadwayFlatKeys(period);
     const periodKeys = [wdph, hph];
     return [

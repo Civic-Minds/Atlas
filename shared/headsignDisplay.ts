@@ -1,10 +1,5 @@
 import { cleanHeadsign, isMiwayExpressHeadsign } from './cleanHeadsign.js';
 
-/** Feed placeholder, not a rider-facing destination. */
-export function isPlaceholderHeadsign(headsign: string): boolean {
-  return /\bnot\s+a\s+stop\b/i.test(headsign.trim());
-}
-
 /** Cleaned destination equals the route title — hide on branch rows, not in stored data. */
 export function isRedundantWithRouteName(
   cleaned: string,
@@ -31,7 +26,6 @@ export function resolveDisplayHeadsign(
 ): string | null {
   if (!raw?.trim()) return null;
   const trimmed = raw.trim();
-  if (isPlaceholderHeadsign(trimmed)) return null;
   const cleaned = cleanHeadsign(trimmed, shortName, longName);
   if (cleaned) return cleaned;
   if (isMiwayExpressHeadsign(trimmed)) return null;

@@ -11,7 +11,6 @@ import {
 import { computeMedian } from './transit-utils';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
 import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
-import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 
 /**
@@ -190,7 +189,7 @@ export function applyAnalysisCriteria(
         // Falls back to full window when midday has <2 trips (e.g. GO Milton, Kitchener GO).
         const MIDDAY_START = 570; // 09:30
         const MIDDAY_END = 870;   // 14:30
-        const isRail = raw.railLike ?? isRailLikeRoute({ routeType: raw.routeType });
+        const isRail = raw.routeType === '2';
         let analysisWindow = windowedTimes;
         let analysisWindowMins = end - start;
         if (isRail) {
@@ -291,23 +290,21 @@ export function applyAnalysisCriteria(
             serviceSpan: { start: windowedTimes[0], end: windowedTimes[windowedTimes.length - 1] },
             routeType: raw.routeType,
             modeName: raw.modeName,
-            railLike: isRail,
             serviceIds: raw.serviceIds,
             warnings: isOvernightFallback
                 ? [...(raw.warnings ?? []), 'Overnight-only service (outside daytime analysis window)']
                 : raw.warnings,
             daysIncluded: [raw.day],
             headsign: raw.headsign,
-            shapeId: raw.shapeId,
             ...resourceStats
         };
-        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
+        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
     }
 
     // Roll up per-day results into day-type summaries
     const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult }[] }>();
     for (const [, entry] of perDayResults) {
-        const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.result.shapeId ?? ''}::${entry.dayType}`;
+        const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.dayType}`;
         if (!rollupGroups.has(key)) rollupGroups.set(key, { dayType: entry.dayType, entries: [] });
         rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result });
     }
@@ -341,7 +338,7 @@ export function applyAnalysisCriteria(
         // For dir=0 (outbound): avoids Friday extra-train distortion.
         // For dir=1 (inbound): all trains share "Union Station" headsign so the pool is the
         // same across weekdays; representative-day pick is still valid.
-        const isRailRollup = rep.railLike ?? isRailLikeRoute({ routeType: rep.routeType });
+        const isRailRollup = rep.routeType === '2';
         const rollupStatsBase = (() => {
           if (isRailRollup) {
             // Union of all weekdays creates spurious short gaps when some days (e.g. Fridays)
@@ -361,7 +358,6 @@ export function applyAnalysisCriteria(
           return mergedTimes;
         })();
         const stats = computeHeadwayStats(rollupStatsBase);
-        const rollupTimes = isRailRollup ? rollupStatsBase : mergedTimes;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
@@ -391,7 +387,7 @@ export function applyAnalysisCriteria(
             serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,
-            times: rollupTimes,
+            times: mergedTimes,
             reliabilityScore: stats.reliabilityScore,
             consistencyScore: stats.consistencyScore || 0,
             bunchingPenalty: stats.bunchingPenalty || 0,
@@ -400,12 +396,10 @@ export function applyAnalysisCriteria(
             bunchingFactor: stats.bunchingFactor,
             routeType: rep.routeType,
             modeName: rep.modeName,
-            railLike: isRailRollup,
             serviceIds: allServiceIds,
             warnings: allWarnings.length > 0 ? allWarnings : undefined,
             daysIncluded,
             headsign: rep.headsign,
-            shapeId: rep.shapeId,
             ...resourceStats
         });
     }
