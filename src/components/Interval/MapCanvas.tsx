@@ -603,13 +603,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           const renderedFeatures = map.getLayer('routes-layer')
             ? map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
             : [];
+          const routeLayer = map.getStyle().layers?.find((layer) => layer.id === 'routes-layer') as any;
           console.info('[atlas-map-route-state]', JSON.stringify({
             label,
             sourceLoaded: map.isSourceLoaded('atlas-pmtiles'),
             sourceFeatures: sourceFeatures.length,
             renderedFeatures: renderedFeatures.length,
-            filter: map.getFilter('routes-layer'),
-            visibility: map.getLayoutProperty('routes-layer', 'visibility'),
+            filter: routeLayer?.filter ?? null,
+            visibility: routeLayer?.layout?.visibility ?? null,
           }));
         };
         map.on('idle', () => logRouteState('idle'));
