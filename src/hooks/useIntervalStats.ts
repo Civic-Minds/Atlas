@@ -215,6 +215,26 @@ export function anyFeaturePassesRouteFilter(
   ));
 }
 
+function filterAgencyLayers(
+  layers: AgencyLayers,
+  filters: Parameters<typeof passesRouteFilter>[2],
+  routesForStop: { slug: string; routeIds: Set<string> } | null,
+  options?: { skipFrequency?: boolean },
+): AgencyLayers {
+  const result: AgencyLayers = {};
+  for (const [slug, fc] of Object.entries(layers)) {
+    const filteredFeatures = fc.features.filter(feature => passesRouteFilter(
+      feature.properties as ShapeProperties,
+      slug,
+      filters,
+      routesForStop,
+      options,
+    ));
+    if (filteredFeatures.length > 0) result[slug] = { ...fc, features: filteredFeatures };
+  }
+  return result;
+}
+
 // bbox per feature: [minLon, minLat, maxLon, maxLat]; cached per feature object
 const bboxCache = new WeakMap<GeoJSON.Feature, [number, number, number, number]>();
 
@@ -350,19 +370,16 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // skipFrequency's doc comment on passesRouteFilter. maxHeadway/period are intentionally not
   // deps here since skipFrequency means they no longer affect this computation.
   const filteredLayers = useMemo(() => {
-    const result: AgencyLayers = {};
-    for (const [slug, fc] of Object.entries(layers)) {
-      const filteredFeatures = fc.features.filter(f => {
-        const p = f.properties as unknown as ShapeProperties;
-        return passesRouteFilter(p, slug, filters, routesForStop, { skipFrequency: true });
-      });
-      if (filteredFeatures.length > 0) {
-        result[slug] = { ...fc, features: filteredFeatures };
-      }
-    }
-    return result;
+    return filterAgencyLayers(layers, filters, routesForStop, { skipFrequency: true });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layers, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
+
+  // Full map filter for the local route fallback. Unlike filteredLayers above, this includes
+  // the active frequency threshold; filteredLayers intentionally skips it for partial segments.
+  const mapFilteredLayers = useMemo(() => {
+    return filterAgencyLayers(layers, filters, routesForStop);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
   const stats = useMemo(() => {
     // Do not publish a catalog-wide count while the map has not reported its first viewport.
@@ -472,5 +489,5 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agencies, day, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
-  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
+  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter };
 }

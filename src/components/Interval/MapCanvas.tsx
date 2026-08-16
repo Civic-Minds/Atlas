@@ -145,6 +145,8 @@ interface MapCanvasProps {
    *  Deliberately NOT frequency-filtered: computeFrequencySegmentOverlay needs partial-match
    *  routes the frequency check would otherwise exclude, and does its own per-stop-range check. */
   filteredLayers?: Record<string, GeoJSON.FeatureCollection>;
+  /** Fully filtered route layers for the tile-failure fallback, including frequency. */
+  mapFilteredLayers?: Record<string, GeoJSON.FeatureCollection>;
   maxHeadway: number;
   period: TimePeriod;
   q: string;
@@ -200,6 +202,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   agencies,
   layers,
   filteredLayers,
+  mapFilteredLayers,
   maxHeadway,
   period,
   q,
@@ -338,7 +341,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const localSlugs = new Set(agencies
       .filter(a => pmtilesRoutesAvailable === false || (a.betaOnly && a.pmtilesPending))
       .map(a => a.slug));
-    const sourceLayers = filteredLayers ?? layers ?? {};
+    const sourceLayers = pmtilesRoutesAvailable === false
+      ? mapFilteredLayers ?? filteredLayers ?? layers ?? {}
+      : filteredLayers ?? layers ?? {};
     const features = Object.entries(sourceLayers).flatMap(([slug, collection]) => {
       if (!localSlugs.has(slug)) return [];
       return collection.features.flatMap(feature => {
@@ -357,7 +362,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     });
     return { type: 'FeatureCollection', features };
-  }, [agencies, filteredLayers, layers, period, pmtilesRoutesAvailable]);
+  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRoutesAvailable]);
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
