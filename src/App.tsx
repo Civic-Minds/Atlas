@@ -54,8 +54,16 @@ export interface Agency {
   lastRefreshedAt?: string | null;
   excludeRouteShortNames?: string[];
   staged?: boolean;
-  /** Excluded from the production build (real, processed data — unlike `staged`) until country coverage is validated. Visible in local dev for QA (#222). */
+  /** Excluded from production until country coverage is validated. Visible in local dev, and in beta when betaOnly is set. */
   hiddenInProduction?: boolean;
+  /** Visible on the deployed beta build while the agency is being validated for production. */
+  betaOnly?: boolean;
+  /** Rider-facing notice shown on the agency card while betaOnly is active. */
+  rolloutNotice?: string;
+  /** GitHub issue documenting the rollout validation. */
+  rolloutIssueUrl?: string;
+  /** Base route tiles are not published yet; beta renders this agency from its local GeoJSON. */
+  pmtilesPending?: boolean;
   issueUrl?: string;
   issueUrls?: string[];
   overrideNote?: string;
@@ -143,6 +151,8 @@ export default function App() {
       overrideNote: opts.overrideNote,
       issueUrl: opts.issueUrl,
       issueUrls: opts.issueUrls,
+      rolloutNotice: opts.rolloutNotice,
+      rolloutIssueUrl: opts.rolloutIssueUrl,
     } : null);
     setInfoOpen(true);
   }, []);
@@ -308,7 +318,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV))
+          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug);
@@ -493,7 +503,7 @@ export default function App() {
                   })
                   .then((data: { agencies: Agency[] }) => {
                     const enriched = data.agencies
-                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV))
+                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
                       .map((a: Agency) => {
                         if (!a.url) {
                           const arts = getAgencyArtifactUrls(a.slug);

@@ -125,6 +125,11 @@ function buildEffectiveHeadwayColorExpression(period: TimePeriod): any {
   return expression;
 }
 
+function localRouteHeadwayColor(headway: unknown): string {
+  const value = typeof headway === 'number' && Number.isFinite(headway) ? headway : Infinity;
+  return HEADWAY_TIERS.find(tier => value <= tier.max)?.color ?? HEADWAY_TIERS[HEADWAY_TIERS.length - 1].color;
+}
+
 interface MapCanvasProps {
   agencies: Agency[];
   layers?: Record<string, GeoJSON.FeatureCollection>;
@@ -267,6 +272,31 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     [agencies, layers, viewportBounds, day, showMapContext],
   );
 
+  // Beta-only agencies do not exist in the shared PMTiles archive yet. Keep their
+  // processed local GeoJSON visible on the map until the next combined tile build.
+  const localRouteData = useMemo<GeoJSON.FeatureCollection>(() => {
+    const localSlugs = new Set(agencies.filter(a => a.betaOnly && a.pmtilesPending).map(a => a.slug));
+    const sourceLayers = filteredLayers ?? layers ?? {};
+    const features = Object.entries(sourceLayers).flatMap(([slug, collection]) => {
+      if (!localSlugs.has(slug)) return [];
+      return collection.features.flatMap(feature => {
+        const properties = feature.properties as Record<string, any> | null;
+        if (!properties?.routeId || !properties.routeShortName) return [];
+        if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return [];
+        const periodHeadway = properties.headwayByPeriod?.[period];
+        return [{
+          ...feature,
+          properties: {
+            ...properties,
+            agencySlug: properties.agencySlug ?? slug,
+            localHeadwayColor: localRouteHeadwayColor(periodHeadway ?? properties.headway),
+          },
+        }];
+      });
+    });
+    return { type: 'FeatureCollection', features };
+  }, [agencies, filteredLayers, layers, period]);
+
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
   }, [mapContextAgencies.length, onMapContextAgencyCountChange]);
@@ -365,6 +395,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         [e.point.x + 12, e.point.y + 12],
       ];
       const routeHitLayers = ['routes-hit-layer'];
+      if (map.getLayer('local-routes-hit-layer')) {
+        routeHitLayers.push('local-routes-hit-layer');
+      }
       if (map.getLayer('night-service-routes-hit-layer')) {
         routeHitLayers.push('night-service-routes-hit-layer');
       }
@@ -546,6 +579,31 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-width': 18,
           'line-opacity': 0
         }
+      });
+
+      // Beta-only agencies are loaded from their staged GeoJSON until their routes
+      // are included in the shared PMTiles archive.
+      map.addSource('local-routes', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'local-routes-layer',
+        type: 'line',
+        source: 'local-routes',
+        paint: {
+          'line-color': ['get', 'localHeadwayColor'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2, 14, 2.5, 17, 3.5],
+          'line-opacity': 0.9,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'visible' },
+      });
+      map.addLayer({
+        id: 'local-routes-hit-layer',
+        type: 'line',
+        source: 'local-routes',
+        paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'visible' },
       });
 
       // Night Service uses loaded agency GeoJSON as a local overlay. This keeps the map
@@ -807,6 +865,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return () => observer.disconnect();
   }, [mapLoaded]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('local-routes') as maplibregl.GeoJSONSource | undefined;
+    if (!source) return;
+    source.setData(localRouteData);
+    const visibility = showRouteLayers && !nightServiceView ? 'visible' : 'none';
+    if (map.getLayer('local-routes-layer')) map.setLayoutProperty('local-routes-layer', 'visibility', visibility);
+    if (map.getLayer('local-routes-hit-layer')) map.setLayoutProperty('local-routes-hit-layer', 'visibility', visibility);
+  }, [localRouteData, mapLoaded, nightServiceView, showRouteLayers]);
+
   // Single map click handler — avoids layer preventDefault blocking background deselect.
   useEffect(() => {
     const map = mapRef.current;
@@ -825,10 +894,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         ? map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] })
         : [];
       const routeHitLayers = ['routes-hit-layer'];
+      if (map.getLayer('local-routes-hit-layer')) {
+        routeHitLayers.push('local-routes-hit-layer');
+      }
       if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
         routeHitLayers.push('frequency-qualifying-segments-hit-layer');
       }
-      const routeHits = stopHits.length === 0 && map.getLayer('routes-hit-layer')
+      const routeHits = stopHits.length === 0 && (map.getLayer('routes-hit-layer') || map.getLayer('local-routes-hit-layer'))
         ? map.queryRenderedFeatures(
             [[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]],
             { layers: routeHitLayers },

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Agency } from '../App';
-import { getAgencyArtifactUrls } from '../../shared/config';
+import { BETA_BUILD, getAgencyArtifactUrls } from '../../shared/config';
 
 export type AgenciesLoadState = 'loading' | 'ready' | 'error';
 
@@ -20,7 +20,7 @@ export function useAgencies() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV))
+          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug);

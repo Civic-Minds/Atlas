@@ -13,11 +13,11 @@ import { qualityStatusLabel } from '../../shared/feedQuality';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
-export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data';
+export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout';
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
@@ -27,6 +27,8 @@ export type HelpContext = {
   overrideNote?: string;
   issueUrl?: string;
   issueUrls?: string[];
+  rolloutNotice?: string;
+  rolloutIssueUrl?: string;
 };
 export type OpenInfoOptions = {
   featureFilter?: 'live' | 'history';
@@ -38,6 +40,8 @@ export type OpenInfoOptions = {
   overrideNote?: string;
   issueUrl?: string;
   issueUrls?: string[];
+  rolloutNotice?: string;
+  rolloutIssueUrl?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
@@ -124,6 +128,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         helpContext?.topic === 'outdated-schedule' ? 'outdated-schedule'
         : helpContext?.topic === 'new-schedule-data' ? 'new-schedule-data'
         : helpContext?.topic === 'corrected-data' ? 'corrected-data'
+        : helpContext?.topic === 'beta-rollout' ? 'beta-rollout'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilter(featureFilter);
@@ -272,6 +277,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'outdated-schedule' ? 'Outdated schedule'
     : view === 'new-schedule-data' ? 'New schedule data'
     : view === 'corrected-data' ? 'Corrected data'
+    : view === 'beta-rollout' ? 'Beta testing'
     : view === 'sources' ? 'Sources'
     : null;
 
@@ -643,6 +649,34 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
                 <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
+            </div>
+          )}
+
+          {view === 'beta-rollout' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              {helpContext?.agencyName && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                  {helpContext.agencyName} is currently available in Atlas beta while its schedule data is being validated.
+                </p>
+              )}
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                This coverage is still being checked before it is added to the main Atlas map. Some routes or schedule details may change during testing.
+              </p>
+              {helpContext?.rolloutIssueUrl && (
+                <a
+                  href={helpContext.rolloutIssueUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                    {helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]
+                      ? `Follow rollout (#${helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]})`
+                      : 'Follow rollout'}
+                  </span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
+              )}
             </div>
           )}
 
