@@ -10697,9 +10697,6 @@
       "rolloutNotice": "France beta — schedule data is still being validated.",
       "rolloutIssueUrl": "https://github.com/Civic-Minds/Atlas/issues/389",
       "pmtilesPending": true,
-      "url": "https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev/atlas/metz.json",
-      "stopsUrl": "https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev/atlas/metz-stops.json",
-      "corridorsUrl": "https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev/atlas/metz-corridors.json",
       "websiteUrl": "https://www.lemet.fr/",
       "cities": [
         "Metz, France"

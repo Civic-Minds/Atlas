@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The agency index now derives Metz artifact locations instead of storing stale generated URLs.
 - Reconciliation now preserves day-aware branch metrics, feed validation, collision-safe archives, and live data cache invalidation across clean pipeline runs.
 - The shared beta/production build now preserves MapLibre 6, route-branch selection, and live GeoJSON cache updates after a clean deployment install.
 - Production and beta now build from the same `main` source with deployment-scoped feature flags, preventing the two sites from drifting into conflicting Git branches.
