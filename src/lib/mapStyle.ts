@@ -7,10 +7,10 @@ import { RetryingFetchSource } from './pmtilesRetrySource';
 
 function atlasPmtilesUrl(): string {
   // Keep deployed requests same-origin and expose the range headers PMTiles needs.
-  const browserBase = typeof window !== 'undefined' && import.meta.env.PROD
+  const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
     ? `${window.location.origin}/api/atlas-pmtiles`
-    : R2_PUBLIC_URL;
-  return `${browserBase}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
+    : `${R2_PUBLIC_URL}/atlas.pmtiles`;
+  return `${browserUrl}?v=${currentAgencyDataVersion()}`;
 }
 
 const protocol = new Protocol();

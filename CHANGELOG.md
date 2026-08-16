@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Deployed maps now load route tiles through a same-origin range proxy so PMTiles can read the response headers it needs in production and beta.
+- Deployed maps now load route tiles through a same-origin range proxy so PMTiles receives the correct range response in production and beta.
 
 - Beta map badges now report only rendered routes, reclaim the removed Context-button space, and stop showing an endless map-loading state when transit tiles fail.
 
