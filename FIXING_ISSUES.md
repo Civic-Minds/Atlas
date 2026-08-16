@@ -21,3 +21,5 @@ When the scope is uncertain, start with the narrower classification and look for
 6. Push only after explicit approval.
 
 See [`docs/PIPELINE.md`](docs/PIPELINE.md) for the underlying processing methodology and [`docs/ADDING_AGENCIES.md`](docs/ADDING_AGENCIES.md) for feed onboarding and publication procedures.
+
+See [`docs/BRANCH_WORKFLOW.md`](docs/BRANCH_WORKFLOW.md) for the single-`main` branch model and the separate beta/production deployment workflow.
