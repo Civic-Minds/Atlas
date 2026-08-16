@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
@@ -24,7 +24,7 @@ import { buildFocusedRoutePaint } from '../../utils/routeFocus';
 import { splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
-import { getMapContextAgencies, type MapContextAgency } from '../../utils/mapContext';
+import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
@@ -166,8 +166,10 @@ interface MapCanvasProps {
   onLocate?: (lat: number, lon: number) => void;
   showMapContext?: boolean;
   mapContextOpen?: boolean;
+  mapContextView?: 'agencies' | 'routes';
   onMapContextOpenChange?: (open: boolean) => void;
   onMapContextAgencyCountChange?: (count: number) => void;
+  onMapContextRouteCountChange?: (count: number) => void;
   day?: DayType;
   routesForStop?: {
     slug: string;
@@ -216,8 +218,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onLocate,
   showMapContext = false,
   mapContextOpen = false,
+  mapContextView = 'routes',
   onMapContextOpenChange,
   onMapContextAgencyCountChange,
+  onMapContextRouteCountChange,
   day = 'Weekday',
   routesForStop,
   showRouteLayers = true,
@@ -243,6 +247,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
+  const mapContextPanelRef = useRef<HTMLDivElement>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fittedRouteRef = useRef<string | null>(null);
   const showMapHint = (msg: string) => {
@@ -268,15 +273,34 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     else showMapHint(fallback);
   };
 
-  const { bounds: viewportBounds, setBoundsAndZoom } = useViewport();
+  const { setBoundsAndZoom } = useViewport();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
 
-  const mapContextAgencies = useMemo<MapContextAgency[]>(
-    () => showMapContext
-      ? getMapContextAgencies(agencies, layers ?? {}, viewportBounds, day)
-      : [],
-    [agencies, layers, viewportBounds, day, showMapContext],
-  );
+  const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
+
+  const updateMapContext = useCallback(() => {
+    const map = mapRef.current;
+    if (!showMapContext || !map || !mapLoaded) {
+      setMapContextAgencies([]);
+      return;
+    }
+    const layers = ['routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
+    const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
+    setMapContextAgencies(getMapContextAgenciesFromFeatures(agencies, features));
+  }, [agencies, mapLoaded, showMapContext]);
+
+  useEffect(() => {
+    if (!mapLoaded || !showMapContext) return;
+    const map = mapRef.current;
+    if (!map) return;
+    updateMapContext();
+    map.on('idle', updateMapContext);
+    map.on('moveend', updateMapContext);
+    return () => {
+      map.off('idle', updateMapContext);
+      map.off('moveend', updateMapContext);
+    };
+  }, [mapLoaded, showMapContext, updateMapContext]);
 
   // Beta-only agencies do not exist in the shared PMTiles archive yet. Keep their
   // processed local GeoJSON visible on the map until the next combined tile build.
@@ -305,7 +329,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
-  }, [mapContextAgencies.length, onMapContextAgencyCountChange]);
+    onMapContextRouteCountChange?.(mapContextAgencies.reduce((total, agency) => total + agency.routeCount, 0));
+  }, [mapContextAgencies, onMapContextAgencyCountChange, onMapContextRouteCountChange]);
+
+  useEffect(() => {
+    if (!showMapContext || !mapContextOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!isMapContextOutsideClick(mapContextPanelRef.current, event.target)) return;
+      onMapContextOpenChange?.(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => document.removeEventListener('pointerdown', onPointerDown, true);
+  }, [mapContextOpen, onMapContextOpenChange, showMapContext]);
 
   // Deck.gl overlay for GPU-rendered vehicle markers
   const deckOverlayRef = useRef<MapboxOverlay | null>(null);
@@ -1008,12 +1043,39 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const onTileStart = () => onTileLoadingChangeRef.current?.(true);
-    const onIdle = () => onTileLoadingChangeRef.current?.(false);
+    let loadingTimeout: ReturnType<typeof setTimeout> | undefined;
+    const clearLoadingTimeout = () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = undefined;
+      }
+    };
+    const onTileStart = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== 'atlas-pmtiles') return;
+      onTileLoadingChangeRef.current?.(true);
+      clearLoadingTimeout();
+      // A failed or rate-limited tile must not leave the HUD spinning forever.
+      loadingTimeout = setTimeout(() => {
+        loadingTimeout = undefined;
+        onTileLoadingChangeRef.current?.(false);
+      }, 15000);
+    };
+    const onSourceData = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== 'atlas-pmtiles' || !event.isSourceLoaded) return;
+      clearLoadingTimeout();
+      onTileLoadingChangeRef.current?.(false);
+    };
+    const onIdle = () => {
+      clearLoadingTimeout();
+      onTileLoadingChangeRef.current?.(false);
+    };
     map.on('sourcedataloading', onTileStart);
+    map.on('sourcedata', onSourceData);
     map.on('idle', onIdle);
     return () => {
+      clearLoadingTimeout();
       map.off('sourcedataloading', onTileStart);
+      map.off('sourcedata', onSourceData);
       map.off('idle', onIdle);
     };
   }, [mapLoaded]);
@@ -1495,14 +1557,22 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {showMapContext && mapContextOpen && (
-        <MapContextPanel
-          agencies={mapContextAgencies}
-          onSelectAgency={setSelectedAgencySlug ? slug => {
-            onClearSelection?.();
-            setSelectedAgencySlug(slug);
-            onMapContextOpenChange?.(false);
-          } : undefined}
-        />
+        <div ref={mapContextPanelRef}>
+          <MapContextPanel
+            agencies={mapContextAgencies}
+            mode={mapContextView}
+            onSelectAgency={setSelectedAgencySlug ? slug => {
+              onClearSelection?.();
+              setSelectedAgencySlug(slug);
+              onMapContextOpenChange?.(false);
+            } : undefined}
+            onSelectRoute={key => {
+              onClearSelection?.();
+              setSelectedRoute(key);
+              onMapContextOpenChange?.(false);
+            }}
+          />
+        </div>
       )}
 
       {/* Zoom Control Overlay */}

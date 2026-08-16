@@ -31,7 +31,7 @@
   "overrideNote": "We removed a few incomplete schedule records from Routes 209 and 216 and separated overlapping patterns on Routes 301 and 401. Those routes now show the published service more accurately.",
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": "S1000282",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-16",
   "websiteUrl": "https://nrtransit.ca/",
   "cities": [
     "St. Catharines, Ontario",
@@ -39,5 +39,18 @@
     "Welland, Ontario",
     "Buffalo, New York"
   ],
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 407
+    },
+    "checkedAt": "2026-08-16"
+  }
 }

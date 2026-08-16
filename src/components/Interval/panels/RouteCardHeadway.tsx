@@ -438,9 +438,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 )}
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>
-                    <CardSectionLabel className="mb-0">Combined</CardSectionLabel>
                     <CardDirectionRow
-                      label="Shared section"
+                      label="Combined"
                       headway={groupCoreHeadway}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}

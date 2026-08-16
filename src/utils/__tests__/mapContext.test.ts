@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getMapContextAgencies } from '../mapContext';
+import { getMapContextAgencies, isMapContextOutsideClick } from '../mapContext';
 
 const agencies = [
   { slug: 'near', name: 'Near Transit', center: [43, -79] as [number, number], url: '' },
@@ -7,6 +7,15 @@ const agencies = [
 ];
 
 describe('mapContext', () => {
+  it('keeps the panel open for clicks inside it and closes for outside clicks', () => {
+    const panel = document.createElement('div');
+    const child = document.createElement('button');
+    panel.appendChild(child);
+
+    expect(isMapContextOutsideClick(panel, child)).toBe(false);
+    expect(isMapContextOutsideClick(panel, document.body)).toBe(true);
+  });
+
   it('counts unique routes whose shapes intersect the viewport', () => {
     const result = getMapContextAgencies(agencies, {
       near: {
@@ -26,6 +35,14 @@ describe('mapContext', () => {
       },
     } as any, { s: 42.9, w: -79.6, n: 43.2, e: -79.3 }, 'Weekday');
 
-    expect(result).toEqual([{ slug: 'near', name: 'Near Transit', routeCount: 2 }]);
+    expect(result).toEqual([{
+      slug: 'near',
+      name: 'Near Transit',
+      routeCount: 2,
+      routes: [
+        { key: 'near::1', agencySlug: 'near', agencyName: 'Near Transit', shortName: '1', longName: null },
+        { key: 'near::2', agencySlug: 'near', agencyName: 'Near Transit', shortName: '2', longName: null },
+      ],
+    }]);
   });
 });

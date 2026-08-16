@@ -23,7 +23,7 @@ export function useAgencies() {
           .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
           .map((a: Agency) => {
             if (!a.url) {
-              const arts = getAgencyArtifactUrls(a.slug);
+              const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
               return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
             }
             return a;

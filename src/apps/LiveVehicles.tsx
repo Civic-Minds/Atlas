@@ -242,7 +242,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       if (layers[slug] || localLayers[slug]) continue;
       const agency = agencies.find(a => a.slug === slug);
       if (!agency) continue;
-      fetchAgencyGeo({ slug: agency.slug, name: agency.name, url: agency.url ?? '' })
+      fetchAgencyGeo({ slug: agency.slug, name: agency.name, url: agency.url ?? '', betaOnly: agency.betaOnly })
         .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
         .catch(() => {});
     }

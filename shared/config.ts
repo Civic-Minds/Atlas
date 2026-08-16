@@ -3,6 +3,8 @@
  */
 
 export const DEFAULT_R2_PUBLIC_URL = 'https://data.transitatlas.fyi';
+/** Staged artifacts used by beta-only agencies while a country rollout is being validated. */
+export const DEFAULT_BETA_R2_PUBLIC_URL = 'https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev';
 
 const getR2PublicUrl = (): string => {
   if (typeof process !== 'undefined' && process.env?.R2_PUBLIC_URL) {
@@ -23,6 +25,21 @@ const getR2PublicUrl = (): string => {
 };
 
 export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
+
+const getBetaR2PublicUrl = (): string => {
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_BETA_R2_PUBLIC_URL) {
+    // @ts-ignore
+    return import.meta.env.VITE_BETA_R2_PUBLIC_URL;
+  }
+  // Staging R2's public development host is intentionally not browser-CORS enabled.
+  // Keep beta-only artifacts same-origin in both local dev and the hosted beta site;
+  // Vite/Vercel proxy that path to the staging bucket.
+  if (typeof window !== 'undefined') return `${window.location.origin}/beta-data`;
+  return '/beta-data';
+};
+
+export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
@@ -54,8 +71,8 @@ export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
  * Derive the public URLs for an agency's processed artifacts.
  * This removes the need to store repetitive full R2 URLs in index.json.
  */
-export function getAgencyArtifactUrls(slug: string) {
-  const base = R2_PUBLIC_URL;
+export function getAgencyArtifactUrls(slug: string, options?: { betaOnly?: boolean }) {
+  const base = BETA_BUILD && options?.betaOnly ? BETA_R2_PUBLIC_URL : R2_PUBLIC_URL;
   return {
     url: `${base}/atlas/${slug}.json`,
     stopsUrl: `${base}/atlas/${slug}-stops.json`,

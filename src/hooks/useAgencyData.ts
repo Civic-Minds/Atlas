@@ -214,7 +214,7 @@ export function useAgencyData(
           return;
         }
 
-        const arts = getAgencyArtifactUrls(agency.slug);
+        const arts = getAgencyArtifactUrls(agency.slug, { betaOnly: agency.betaOnly });
         const cUrl = agency.corridorsUrl || arts.corridorsUrl;
         fetchAgencyCorridors(agency.slug, cUrl)
           .then(data => {
