@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - The "zooming in to..." orienting card now names the actual nearest city instead of sometimes naming a neighboring one whose fallback bounding box happened to overlap the click ([#430](https://github.com/Civic-Minds/Atlas/issues/430)).
+- Fixed a rare load-timing bug where the Agencies filter could silently save "almost everything off" with no clicking involved, permanently undercounting routes on every later visit until noticed ([#428](https://github.com/Civic-Minds/Atlas/issues/428)).
 - The map now actually draws routes again on deployed builds — a MapLibre GL 6 bug silently stopped it from requesting any map tiles once built for production, even though everything looked fine locally ([#425](https://github.com/Civic-Minds/Atlas/issues/425)).
 - Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
 - Deep-linked maps now load nearby agencies immediately and show filtered local route shapes while route tiles are still loading, preventing blank maps during tile stalls.
