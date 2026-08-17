@@ -51,7 +51,7 @@
     "@aws-sdk/lib-storage": "^3.1105.0",
     "@deck.gl/core": "^9.3.7",
     "@deck.gl/layers": "^9.3.7",
-    "@deck.gl/mapbox": "^9.3.7",
+    "@deck.gl/mapbox": "^9.3.10",
     "@mapbox/vector-tile": "^3.0.0",
     "dotenv": "^17.4.2",
     "gtfs-realtime-bindings": "^2.2.0",
