@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The map now actually draws routes again on deployed builds — a MapLibre GL 6 bug silently stopped it from requesting any map tiles once built for production, even though everything looked fine locally ([#425](https://github.com/Civic-Minds/Atlas/issues/425)).
 - Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
 - Deep-linked maps now load nearby agencies immediately and show filtered local route shapes while route tiles are still loading, preventing blank maps during tile stalls.
 - Map fallback now chooses local route shapes per agency, so one broken agency tile set cannot hide routes from otherwise healthy agencies.
