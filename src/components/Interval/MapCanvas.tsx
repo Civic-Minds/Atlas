@@ -247,6 +247,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [pmtilesRoutesAvailable, setPmtilesRoutesAvailable] = useState<boolean | null>(null);
+  const [pmtilesRouteAgencies, setPmtilesRouteAgencies] = useState<Set<string> | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
@@ -315,7 +316,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     const checkRouteTiles = () => {
       const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
-      if (sourceFeatures.length > 0) setPmtilesRoutesAvailable(true);
+      const agencySlugs = new Set(
+        sourceFeatures
+          .map(feature => String(feature.properties?.agencySlug ?? ''))
+          .filter(Boolean),
+      );
+      setPmtilesRoutesAvailable(sourceFeatures.length > 0);
+      setPmtilesRouteAgencies(previous => {
+        const previousKey = previous ? [...previous].sort().join('|') : '';
+        const nextKey = [...agencySlugs].sort().join('|');
+        return previousKey === nextKey ? previous : agencySlugs;
+      });
     };
 
     map.on('sourcedata', checkRouteTiles);
@@ -324,7 +335,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
       if (sourceFeatures.length === 0) {
         setPmtilesRoutesAvailable(false);
+        setPmtilesRouteAgencies(new Set());
         onTileLoadingChangeRef.current?.(false);
+      } else {
+        checkRouteTiles();
       }
     }, 5000);
 
@@ -339,13 +353,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // This avoids a blank map during a stalled tile request; healthy PMTiles takes
   // over once it reports route features.
   const localRouteData = useMemo<GeoJSON.FeatureCollection>(() => {
-    const useLocalFallback = pmtilesRoutesAvailable !== true;
     const localSlugs = new Set(agencies
-      .filter(a => useLocalFallback || (a.betaOnly && a.pmtilesPending))
+      .filter(a => pmtilesRouteAgencies === null
+        || !pmtilesRouteAgencies.has(a.slug)
+        || (a.betaOnly && a.pmtilesPending))
       .map(a => a.slug));
-    const sourceLayers = useLocalFallback
-      ? mapFilteredLayers ?? filteredLayers ?? layers ?? {}
-      : filteredLayers ?? layers ?? {};
+    const sourceLayers = mapFilteredLayers ?? filteredLayers ?? layers ?? {};
     const features = Object.entries(sourceLayers).flatMap(([slug, collection]) => {
       if (!localSlugs.has(slug)) return [];
       return collection.features.flatMap(feature => {
@@ -364,7 +377,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     });
     return { type: 'FeatureCollection', features };
-  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRoutesAvailable]);
+  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies]);
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
