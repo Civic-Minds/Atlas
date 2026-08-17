@@ -4,7 +4,7 @@ import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../tileFilterEx
 import { flattenPeriodHeadwayProps } from '../pmtilesProps';
 import { VIRTUAL_LRT_MODE } from '../modes';
 
-const compileFilter = (filter: unknown) => featureFilter(filter as any, 'test.filter');
+const compileFilter = (filter: unknown) => featureFilter(filter as any, {} as any);
 
 function productionLikeFilter(maxHeadway: number, modes = new Set<number>()) {
   const clauses: unknown[] = [
