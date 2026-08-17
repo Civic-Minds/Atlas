@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Deep-linked maps now load nearby agencies immediately and show filtered local route shapes while route tiles are still loading, preventing blank maps during tile stalls.
 - Map fallback now chooses local route shapes per agency, so one broken agency tile set cannot hide routes from otherwise healthy agencies.
 - Map startup no longer waits for route tiles before loading the map, so stalled PMTiles requests cannot block local route rendering.
+- Map fallback now checks routes that actually render under the active filters, not just route data present in the tile source.
 - Nearby agencies now begin loading as soon as the map is ready, even when a route-tile request is stalled.
 - Deployed maps now load route tiles through a same-origin range proxy so PMTiles receives the correct range response in production and beta.
 

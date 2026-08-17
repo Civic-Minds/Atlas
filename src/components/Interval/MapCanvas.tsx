@@ -316,8 +316,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     const checkRouteTiles = () => {
       const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+      const renderedFeatures = map.getLayer('routes-layer')
+        ? map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+        : [];
       const agencySlugs = new Set(
-        sourceFeatures
+        renderedFeatures
           .map(feature => String(feature.properties?.agencySlug ?? ''))
           .filter(Boolean),
       );
@@ -331,6 +334,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
     map.on('sourcedata', checkRouteTiles);
     map.on('idle', checkRouteTiles);
+    map.on('moveend', checkRouteTiles);
     const fallbackTimer = window.setTimeout(() => {
       const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
       if (sourceFeatures.length === 0) {
@@ -346,6 +350,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       window.clearTimeout(fallbackTimer);
       map.off('sourcedata', checkRouteTiles);
       map.off('idle', checkRouteTiles);
+      map.off('moveend', checkRouteTiles);
     };
   }, [mapLoaded]);
 
