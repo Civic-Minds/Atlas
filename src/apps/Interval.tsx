@@ -23,6 +23,10 @@ import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
 
+// Versioned because the original preference could accidentally persist only
+// agencies in the current viewport when the bulk "All" action was used.
+const AGENCY_PREF_STORAGE_KEY = 'atlas_pref_agencies_off_v2';
+
 interface Props {
   agencies: Agency[];
   lightMode: boolean;
@@ -68,7 +72,7 @@ interface Props {
 
 function readSavedAgenciesOff(): Set<string> {
   try {
-    const saved = localStorage.getItem('atlas_pref_agencies_off');
+    const saved = localStorage.getItem(AGENCY_PREF_STORAGE_KEY);
     return saved ? new Set(JSON.parse(saved) as string[]) : new Set();
   } catch {
     return new Set();
@@ -328,7 +332,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
-      localStorage.setItem('atlas_pref_agencies_off', JSON.stringify(off));
+      localStorage.setItem(AGENCY_PREF_STORAGE_KEY, JSON.stringify(off));
     } catch {}
   }, [selectedAgencies, agencies]);
 
