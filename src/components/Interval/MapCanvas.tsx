@@ -335,13 +335,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     };
   }, [mapLoaded]);
 
-  // Beta-only agencies do not exist in the shared PMTiles archive yet. Keep their
-  // processed local GeoJSON visible on the map until the next combined tile build.
+  // Keep processed local GeoJSON visible while PMTiles is still being checked.
+  // This avoids a blank map during a stalled tile request; healthy PMTiles takes
+  // over once it reports route features.
   const localRouteData = useMemo<GeoJSON.FeatureCollection>(() => {
+    const useLocalFallback = pmtilesRoutesAvailable !== true;
     const localSlugs = new Set(agencies
-      .filter(a => pmtilesRoutesAvailable === false || (a.betaOnly && a.pmtilesPending))
+      .filter(a => useLocalFallback || (a.betaOnly && a.pmtilesPending))
       .map(a => a.slug));
-    const sourceLayers = pmtilesRoutesAvailable === false
+    const sourceLayers = useLocalFallback
       ? mapFilteredLayers ?? filteredLayers ?? layers ?? {}
       : filteredLayers ?? layers ?? {};
     const features = Object.entries(sourceLayers).flatMap(([slug, collection]) => {
