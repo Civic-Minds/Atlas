@@ -8,7 +8,7 @@ For display naming rules, see [`DISPLAY_NAMING.md`](DISPLAY_NAMING.md). For live
 
 ## Static Coverage
 
-468 agencies as of July 16, 2026.
+The current count is generated from `public/data/index.json`; do not maintain a separate hand-count here.
 
 Source of truth: [`public/data/index.json`](../public/data/index.json)
 
