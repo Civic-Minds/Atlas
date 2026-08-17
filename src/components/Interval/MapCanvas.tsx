@@ -14,7 +14,7 @@ import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
-import { registerProtocol, getMapStyle } from '../../lib/mapStyle';
+import { registerProtocol, getAtlasPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
@@ -649,6 +649,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
       map.on('load', () => {
       setZoom(map.getZoom());
+
+      // Keep PMTiles out of the initial style. A stalled route-tile request must
+      // not prevent MapLibre from reaching this point or block local GeoJSON.
+      map.addSource('atlas-pmtiles', {
+        type: 'vector',
+        url: `pmtiles://${getAtlasPmtilesUrl()}`,
+      });
 
       // Add route shapes (line) layers
       map.addLayer({
