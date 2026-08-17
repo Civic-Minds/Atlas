@@ -30,14 +30,20 @@ import { MapContextPanel } from './MapContextPanel';
 const CORRIDOR_BAND_COLOR = '#64748b';
 
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
+// Many agencies fall back to a fixed-size padding box around their center rather than a real
+// bbox computed from route geometry (see getAgencyBbox), so neighboring agencies in dense
+// regions (e.g. Brampton/Burlington/Guelph) end up with near-identical-sized overlapping boxes.
+// Picking "smallest overlapping box" among those is effectively arbitrary -- pick whichever
+// agency's *center* is actually closest to the point instead (#430).
 function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
   let best: Agency | undefined;
-  let bestArea = Infinity;
+  let bestDistSq = Infinity;
   for (const a of agencies) {
     const [s, w, n, e] = getAgencyBbox(a);
     if (lat < s || lat > n || lng < w || lng > e) continue;
-    const area = (n - s) * (e - w);
-    if (area < bestArea) { bestArea = area; best = a; }
+    const [centerLat, centerLon] = a.center;
+    const distSq = (lat - centerLat) ** 2 + (lng - centerLon) ** 2;
+    if (distSq < bestDistSq) { bestDistSq = distSq; best = a; }
   }
   return best;
 }
