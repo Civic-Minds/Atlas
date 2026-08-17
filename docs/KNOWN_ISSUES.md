@@ -15,6 +15,7 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 | RTC Québec City | Dead feed | Follow-up from CHANGELOG_ARCHIVE |
 | Peterborough Transit | No public GTFS | Metrolinx tmix slug 404; not in MDB; retry periodically |
 | Brantford Transit | No public GTFS | Metrolinx tmix slug 404; not in MDB; retry periodically |
+| Brockville Transit | No public GTFS | Official site publishes schedules and maps, but no public static GTFS URL found; retry periodically |
 | Transit Cape Breton | No public GTFS | Not in MDB / Canadian INF sources; retry periodically |
 | STS Saguenay | No usable public zip | Données Québec “STS” host serves Sherbrooke (sts.qc.ca), not Saguenay |
 | Manchester Transit Authority (NH) | Inactive MDB only | No active public fixed-route GTFS; retry periodically |

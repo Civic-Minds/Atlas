@@ -142,6 +142,7 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 |--------|------|--------|--------|-------|
 | blocked | `peterborough` | Peterborough Transit | Ontario | No public URL; tmix 404; not in MDB |
 | blocked | `brantford` | Brantford Transit | Ontario | No public URL; tmix 404; not in MDB |
+| blocked | `brockville` | Brockville Transit | Ontario | Official site publishes schedules and maps, but no public static GTFS URL found; not in MDB |
 | blocked | `cape-breton` | Transit Cape Breton | Nova Scotia | No public GTFS found |
 | blocked | `sts-saguenay` | STS Saguenay | Quebec | Données Québec points at STS Sherbrooke host; no Saguenay zip |
 | blocked | `sttr` | STTR Trois-Rivières | Quebec | Feed dead — see KNOWN_ISSUES |

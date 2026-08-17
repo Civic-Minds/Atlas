@@ -1,0 +1,14 @@
+{
+  "slug": "butler-pa",
+  "name": "Butler Transit Authority",
+  "region": "Pennsylvania",
+  "center": [
+    40.8612,
+    -79.8953
+  ],
+  "feedUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://www.butlertransitauthority.com/",
+  "cities": [
+    "Butler, Pennsylvania"
+  ]
+}

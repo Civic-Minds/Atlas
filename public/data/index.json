@@ -98,6 +98,20 @@
       ]
     },
     {
+      "slug": "chatham-kent",
+      "name": "Ride CK",
+      "region": "Ontario",
+      "center": [
+        42.4048,
+        -82.191
+      ],
+      "feedUrl": "https://ck.usetransit.com/api/1/public/gtfs/5/gtfs.zip?token=eddbcb1b954b64461!!9687922751$-$@9cc77671a2df2f^",
+      "websiteUrl": "https://www.chatham-kent.ca/transit/Pages/default.aspx",
+      "cities": [
+        "Chatham-Kent, Ontario"
+      ]
+    },
+    {
       "slug": "cornwall",
       "name": "Cornwall Transit",
       "region": "Ontario",
@@ -198,8 +212,7 @@
         43.85,
         -79.99
       ],
-      "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-721/mdb-721-202602170132/mdb-721-202602170132.zip",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
       "lastFeedExpiry": "20260426",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
@@ -441,7 +454,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Nepean, Ontario",
-        "Orléans, Ontario",
+        "Orl\u00e9ans, Ontario",
         "Kanata, Ontario",
         "Ottawa, Ontario",
         "Ottawa South, Ontario",
@@ -474,6 +487,62 @@
         "Oakville, Ontario",
         "Burlington, Ontario",
         "Mississauga, Ontario"
+      ]
+    },
+    {
+      "slug": "orangeville",
+      "name": "Orangeville Transit",
+      "region": "Ontario",
+      "center": [
+        43.9195,
+        -80.0972
+      ],
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orangeville.zip",
+      "websiteUrl": "https://www.orangeville.ca/en/living-here/schedules-and-map.aspx",
+      "cities": [
+        "Orangeville, Ontario"
+      ]
+    },
+    {
+      "slug": "orillia",
+      "name": "Orillia Transit",
+      "region": "Ontario",
+      "center": [
+        44.6087,
+        -79.4207
+      ],
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip",
+      "websiteUrl": "https://www.orillia.ca/roads-and-environment/getting-around/transit/",
+      "cities": [
+        "Orillia, Ontario"
+      ]
+    },
+    {
+      "slug": "owen-sound",
+      "name": "Owen Sound Transit",
+      "region": "Ontario",
+      "center": [
+        44.5672,
+        -80.9435
+      ],
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-owensound.zip",
+      "websiteUrl": "https://www.owensound.ca/roads-transportation/public-transit/city-bus-service/",
+      "cities": [
+        "Owen Sound, Ontario"
+      ]
+    },
+    {
+      "slug": "north-bay",
+      "name": "North Bay Transit",
+      "region": "Ontario",
+      "center": [
+        46.3091,
+        -79.46
+      ],
+      "feedUrl": "https://northbay.tmix.se/gtfs/gtfs.zip",
+      "websiteUrl": "https://northbay.ca/services-payments/north-bay-transit/",
+      "cities": [
+        "North Bay, Ontario"
       ]
     },
     {
@@ -512,6 +581,20 @@
         "Barrie, Ontario",
         "Newmarket, Ontario",
         "Caledon, Ontario"
+      ]
+    },
+    {
+      "slug": "st-thomas",
+      "name": "St. Thomas Transit",
+      "region": "Ontario",
+      "center": [
+        42.7777,
+        -81.1828
+      ],
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-stthomas.zip",
+      "websiteUrl": "https://www.stthomas.ca/en/live-here/transit.aspx",
+      "cities": [
+        "St. Thomas, Ontario"
       ]
     },
     {
@@ -674,7 +757,7 @@
       "lastFeedVersion": "1785921774107",
       "lastRefreshedAt": "2026-08-07",
       "cities": [
-        "Saint-Jérôme, Quebec"
+        "Saint-J\u00e9r\u00f4me, Quebec"
       ]
     },
     {
@@ -699,7 +782,7 @@
     },
     {
       "slug": "rem",
-      "name": "REM (Montréal)",
+      "name": "REM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -727,12 +810,12 @@
         "Ville-Marie, Quebec",
         "Chomedey, Quebec",
         "Verdun, Quebec",
-        "Montréal, Quebec"
+        "Montr\u00e9al, Quebec"
       ]
     },
     {
       "slug": "rtc",
-      "name": "RTC (Québec)",
+      "name": "RTC (Qu\u00e9bec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -750,12 +833,12 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Sainte-Foy, Quebec",
-        "Les Rivières, Quebec",
+        "Les Rivi\u00e8res, Quebec",
         "La Haute-Saint-Charles, Quebec",
         "Beauport, Quebec",
         "Charlesbourg, Quebec",
-        "La Cité-Limoilou, Quebec",
-        "Québec, Quebec"
+        "La Cit\u00e9-Limoilou, Quebec",
+        "Qu\u00e9bec, Quebec"
       ]
     },
     {
@@ -783,10 +866,10 @@
         "Saint-Hubert, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Brossard, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
         "Ville-Marie, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
-        "Saint-Léonard, Quebec",
+        "Saint-L\u00e9onard, Quebec",
         "Verdun, Quebec"
       ]
     },
@@ -813,18 +896,18 @@
         "Laval, Quebec",
         "Chomedey, Quebec",
         "Pierrefonds-Roxboro, Quebec",
-        "Montréal-Nord, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+        "Montr\u00e9al-Nord, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
         "Terrebonne, Quebec",
         "Saint-Louis-de-Terrebonne, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Saint-Léonard, Quebec",
+        "Saint-L\u00e9onard, Quebec",
         "Saint-Laurent, Quebec"
       ]
     },
     {
       "slug": "stlevis",
-      "name": "STLévis",
+      "name": "STL\u00e9vis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -843,13 +926,13 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Sainte-Foy, Quebec",
-        "Lévis, Quebec",
-        "Québec, Quebec"
+        "L\u00e9vis, Quebec",
+        "Qu\u00e9bec, Quebec"
       ]
     },
     {
       "slug": "stm",
-      "name": "STM (Montréal)",
+      "name": "STM (Montr\u00e9al)",
       "searchAliases": [
         "Montreal"
       ],
@@ -873,14 +956,14 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Saint-Laurent, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Verdun, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
         "Pierrefonds, Quebec",
-        "Rosemont–La Petite-Patrie, Quebec",
+        "Rosemont\u2013La Petite-Patrie, Quebec",
         "Ville-Marie, Quebec"
       ]
     },
@@ -907,7 +990,7 @@
         "Gatineau, Quebec",
         "Aylmer, Quebec",
         "Hull, Quebec",
-        "Orléans, Ontario",
+        "Orl\u00e9ans, Ontario",
         "Ottawa, Ontario"
       ]
     },
@@ -980,7 +1063,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Saint-Hubert, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Saint-Laurent, Quebec",
@@ -988,12 +1071,12 @@
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
         "Verdun, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec"
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec"
       ]
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'île)",
+      "name": "exo (La Presqu'\u00eele)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -1037,7 +1120,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Le Sud-Ouest, Quebec",
         "Saint-Laurent, Quebec",
         "Verdun, Quebec",
@@ -1046,7 +1129,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain–Roussillon)",
+      "name": "exo (Le Richelain\u2013Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -1067,7 +1150,7 @@
       "cities": [
         "Brossard, Quebec",
         "Verdun, Quebec",
-        "Notre-Dame-de-Grâce, Quebec",
+        "Notre-Dame-de-Gr\u00e2ce, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Le Sud-Ouest, Quebec"
       ]
@@ -1094,7 +1177,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Saint-Louis-de-Terrebonne, Quebec",
-        "Saint-Jérôme, Quebec",
+        "Saint-J\u00e9r\u00f4me, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Pierrefonds, Quebec",
         "Chomedey, Quebec",
@@ -1128,10 +1211,10 @@
         "Repentigny, Quebec",
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Montréal-Nord, Quebec",
-        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
-        "Saint-Léonard, Quebec",
-        "Mercier–Hochelaga-Maisonneuve, Quebec"
+        "Montr\u00e9al-Nord, Quebec",
+        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
+        "Saint-L\u00e9onard, Quebec",
+        "Mercier\u2013Hochelaga-Maisonneuve, Quebec"
       ]
     },
     {
@@ -1554,7 +1637,7 @@
         "Livonia, Michigan",
         "Windsor, Ontario"
       ],
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-department-of-transportation-ddot-gtfs-464.zip?alt=media"
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-464/mdb-464-202606250001/mdb-464-202606250001.zip"
     },
     {
       "slug": "detroit-people-mover",
@@ -1654,6 +1737,50 @@
         "Elyria, Ohio"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-406/mdb-406-202607290022/mdb-406-202607290022.zip"
+    },
+    {
+      "slug": "butler-county-rta",
+      "name": "Butler County Regional Transit Authority",
+      "region": "Ohio",
+      "center": [
+        39.425,
+        -84.56
+      ],
+      "feedUrl": "https://www.buztrakr.com/gtfs",
+      "websiteUrl": "https://www.butlercountyrta.com/",
+      "cities": [
+        "Butler County, Ohio"
+      ]
+    },
+    {
+      "slug": "seat",
+      "name": "South East Area Transit",
+      "region": "Ohio",
+      "center": [
+        39.9403,
+        -82.0132
+      ],
+      "feedUrl": "https://www.seatbus.org/media/SEAT-GTFS-Feed.zip",
+      "websiteUrl": "https://www.seatbus.org/",
+      "cities": [
+        "Zanesville, Ohio",
+        "Cambridge, Ohio"
+      ]
+    },
+    {
+      "slug": "richland-county-oh",
+      "name": "Richland County Transit",
+      "region": "Ohio",
+      "center": [
+        40.7584,
+        -82.5154
+      ],
+      "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/rctpublic.etaspot.net/gtfs.zip",
+      "websiteUrl": "https://rctbuses.com/",
+      "cities": [
+        "Mansfield, Ohio",
+        "Ontario, Ohio"
+      ]
     },
     {
       "slug": "tarta",
@@ -2551,7 +2678,7 @@
       "lastFeedExpiry": "20211231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true,
       "timezone": "America/New_York",
       "lastRawArchiveKey": "20211231-9dc8f1ca4ed5df71"
@@ -2643,7 +2770,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Société de transport de Sherbrooke",
+      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -3265,7 +3392,7 @@
       "lastFeedExpiry": "20271127",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -6252,8 +6379,7 @@
         44.98,
         -93.27
       ],
-      "feedUrl": "https://svc.metrotransit.org/mtgtfs/gtfs.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-minnesota-metro-transit-metro-transit-met-council-maple-grove-plymouth-southwest-transit-airport-mac-university-of-minnesota-catch-the-link-gtfs-205.zip?alt=media",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/mdb-205-202606280024/mdb-205-202606280024.zip",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": "1782334167",
       "region": "Minnesota",
@@ -6285,6 +6411,133 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Pittsburgh, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "beaver-county",
+      "name": "Beaver County Transit Authority",
+      "region": "Pennsylvania",
+      "center": [
+        40.683,
+        -80.3
+      ],
+      "feedUrl": "https://bcta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://bcta.com/",
+      "cities": [
+        "Beaver County, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "butler-pa",
+      "name": "Butler Transit Authority",
+      "region": "Pennsylvania",
+      "center": [
+        40.8612,
+        -79.8953
+      ],
+      "feedUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://www.butlertransitauthority.com/",
+      "cities": [
+        "Butler, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "camtran",
+      "name": "CamTran",
+      "region": "Pennsylvania",
+      "center": [
+        40.3267,
+        -78.922
+      ],
+      "feedUrl": "https://live.camtranbus.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://www.camtranbus.com/",
+      "cities": [
+        "Johnstown, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "fact",
+      "name": "Fayette Area Coordinated Transportation",
+      "region": "Pennsylvania",
+      "center": [
+        39.9006,
+        -79.7245
+      ],
+      "feedUrl": "https://fact.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://factbus.com/",
+      "cities": [
+        "Uniontown, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "freedom-transit",
+      "name": "Freedom Transit",
+      "region": "Pennsylvania",
+      "center": [
+        40.1739,
+        -80.2464
+      ],
+      "feedUrl": "https://freedom.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://www.freedom-transit.org/",
+      "cities": [
+        "Washington, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "indigo",
+      "name": "IndiGO",
+      "region": "Pennsylvania",
+      "center": [
+        40.6215,
+        -79.1525
+      ],
+      "feedUrl": "https://indigobus.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://www.indigobus.com/",
+      "cities": [
+        "Indiana, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "mmvta",
+      "name": "Mid Mon Valley Transit",
+      "region": "Pennsylvania",
+      "center": [
+        40.137,
+        -79.898
+      ],
+      "feedUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://www.mmvta.com/",
+      "cities": [
+        "Monessen, Pennsylvania",
+        "Charleroi, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "new-castle",
+      "name": "New Castle Area Transit Authority",
+      "region": "Pennsylvania",
+      "center": [
+        41.0037,
+        -80.347
+      ],
+      "feedUrl": "https://ncata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://newcastletransit.org/",
+      "cities": [
+        "New Castle, Pennsylvania"
+      ]
+    },
+    {
+      "slug": "westmoreland",
+      "name": "Westmoreland Transit",
+      "region": "Pennsylvania",
+      "center": [
+        40.3015,
+        -79.5389
+      ],
+      "feedUrl": "https://wcta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "websiteUrl": "https://www.westmorelandtransit.com/",
+      "cities": [
+        "Greensburg, Pennsylvania"
       ]
     },
     {
@@ -8250,7 +8503,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20261219",
-      "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 09/08/2026 12:30:29)",
+      "lastFeedVersion": "GTFS Feed 09/08/2026 \u2013 19/12/2026 (Generated: 09/08/2026 12:30:29)",
       "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Champaign, Illinois"
@@ -8637,7 +8890,7 @@
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt — nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt \u2014 nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -8782,7 +9035,7 @@
       "lastFeedExpiry": "20270201",
       "lastFeedVersion": "20251212",
       "lastRefreshedAt": "2026-08-07",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only — every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only \u2014 every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -10707,7 +10960,7 @@
       "lastRefreshedAt": "2026-08-15",
       "hiddenInProduction": true,
       "betaOnly": true,
-      "rolloutNotice": "France beta — schedule data is still being validated.",
+      "rolloutNotice": "France beta \u2014 schedule data is still being validated.",
       "rolloutIssueUrl": "https://github.com/Civic-Minds/Atlas/issues/389",
       "pmtilesPending": true,
       "websiteUrl": "https://www.lemet.fr/",
@@ -10733,7 +10986,7 @@
     },
     {
       "slug": "nancy",
-      "name": "Réseau Stan (Nancy)",
+      "name": "R\u00e9seau Stan (Nancy)",
       "region": "Grand Est",
       "center": [
         48.6921,
@@ -10802,7 +11055,7 @@
     {
       "slug": "grenoble",
       "name": "TAG (Grenoble)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.1885,
         5.7245
@@ -10819,7 +11072,7 @@
     {
       "slug": "dijon",
       "name": "Divia (Dijon)",
-      "region": "Bourgogne-Franche-Comté",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.322,
         5.0415
@@ -10852,8 +11105,8 @@
     },
     {
       "slug": "chambery",
-      "name": "Synchro (Chambéry)",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "Synchro (Chamb\u00e9ry)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.5646,
         5.9178
@@ -10864,7 +11117,7 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.synchro.grandchambery.fr/",
       "cities": [
-        "Chambéry, France"
+        "Chamb\u00e9ry, France"
       ]
     },
     {
@@ -10903,8 +11156,8 @@
     },
     {
       "slug": "besancon",
-      "name": "Ginko (Besançon)",
-      "region": "Bourgogne-Franche-Comté",
+      "name": "Ginko (Besan\u00e7on)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.2378,
         6.0241
@@ -10915,13 +11168,13 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.ginko.voyage/",
       "cities": [
-        "Besançon, France"
+        "Besan\u00e7on, France"
       ]
     },
     {
       "slug": "annecy",
       "name": "Sibra (Annecy)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.8992,
         6.1294
@@ -10955,7 +11208,7 @@
     {
       "slug": "annemasse",
       "name": "TAC (Annemasse)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         46.1934,
         6.2342
@@ -10972,7 +11225,7 @@
     {
       "slug": "avignon",
       "name": "Orizo (Avignon)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.9493,
         4.8055
@@ -11007,7 +11260,7 @@
     },
     {
       "slug": "beziers",
-      "name": "beeMob (Béziers)",
+      "name": "beeMob (B\u00e9ziers)",
       "region": "Occitanie",
       "center": [
         43.3442,
@@ -11019,7 +11272,7 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.beemob.fr/",
       "cities": [
-        "Béziers, France"
+        "B\u00e9ziers, France"
       ]
     },
     {
@@ -11110,7 +11363,7 @@
     {
       "slug": "clermont",
       "name": "T2C (Clermont-Ferrand)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.7772,
         3.087
@@ -11143,7 +11396,7 @@
     },
     {
       "slug": "la-rochelle",
-      "name": "Yélo (La Rochelle)",
+      "name": "Y\u00e9lo (La Rochelle)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         46.1603,
@@ -11212,7 +11465,7 @@
     {
       "slug": "lyon",
       "name": "TCL (Lyon)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.764,
         4.8357
@@ -11229,7 +11482,7 @@
     {
       "slug": "marseille",
       "name": "RTM (Marseille)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.2965,
         5.3698
@@ -11245,7 +11498,7 @@
     },
     {
       "slug": "mulhouse",
-      "name": "Soléa (Mulhouse)",
+      "name": "Sol\u00e9a (Mulhouse)",
       "region": "Grand Est",
       "center": [
         47.7508,
@@ -11263,7 +11516,7 @@
     {
       "slug": "nice-fr",
       "name": "Lignes d'Azur (Nice)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.7102,
         7.262
@@ -11283,7 +11536,7 @@
     },
     {
       "slug": "nimes",
-      "name": "Tango (Nîmes)",
+      "name": "Tango (N\u00eemes)",
       "region": "Occitanie",
       "center": [
         43.8367,
@@ -11295,12 +11548,12 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.tangonimes.fr/",
       "cities": [
-        "Nîmes, France"
+        "N\u00eemes, France"
       ]
     },
     {
       "slug": "orleans",
-      "name": "TAO (Orléans)",
+      "name": "TAO (Orl\u00e9ans)",
       "region": "Centre-Val de Loire",
       "center": [
         47.9029,
@@ -11312,7 +11565,7 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.reseau-tao.fr/",
       "cities": [
-        "Orléans, France"
+        "Orl\u00e9ans, France"
       ]
     },
     {
@@ -11334,7 +11587,7 @@
     },
     {
       "slug": "perpignan",
-      "name": "Sankéo (Perpignan)",
+      "name": "Sank\u00e9o (Perpignan)",
       "region": "Occitanie",
       "center": [
         42.6887,
@@ -11385,7 +11638,7 @@
     },
     {
       "slug": "reims",
-      "name": "Grand Reims Mobilités",
+      "name": "Grand Reims Mobilit\u00e9s",
       "region": "Grand Est",
       "center": [
         49.2583,
@@ -11419,8 +11672,8 @@
     },
     {
       "slug": "saint-etienne",
-      "name": "STAS (Saint-Étienne)",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "STAS (Saint-\u00c9tienne)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.4397,
         4.3872
@@ -11431,12 +11684,12 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.reseau-stas.fr/",
       "cities": [
-        "Saint-Étienne, France"
+        "Saint-\u00c9tienne, France"
       ]
     },
     {
       "slug": "saint-nazaire",
-      "name": "Ycéo (Saint-Nazaire)",
+      "name": "Yc\u00e9o (Saint-Nazaire)",
       "region": "Pays de la Loire",
       "center": [
         47.2735,
@@ -11454,7 +11707,7 @@
     {
       "slug": "toulon",
       "name": "Mistral (Toulon)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.1242,
         5.928
@@ -11470,7 +11723,7 @@
     },
     {
       "slug": "toulouse",
-      "name": "Tisséo (Toulouse)",
+      "name": "Tiss\u00e9o (Toulouse)",
       "region": "Occitanie",
       "center": [
         43.6047,
@@ -11504,8 +11757,8 @@
     },
     {
       "slug": "valence",
-      "name": "Citéa (Valence Romans)",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "Cit\u00e9a (Valence Romans)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         44.9334,
         4.8924
@@ -11521,7 +11774,7 @@
     },
     {
       "slug": "vannes",
-      "name": "Kicéo (Vannes)",
+      "name": "Kic\u00e9o (Vannes)",
       "region": "Bretagne",
       "center": [
         47.6582,
@@ -11539,7 +11792,7 @@
     {
       "slug": "aix-en-provence",
       "name": "Aixenbus",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.5297,
         5.4474
@@ -11556,7 +11809,7 @@
     {
       "slug": "arles",
       "name": "Envia (Arles)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.6766,
         4.6278
@@ -11588,7 +11841,7 @@
     {
       "slug": "belfort",
       "name": "Optymo (Belfort)",
-      "region": "Bourgogne-Franche-Comté",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.638,
         6.8628
@@ -11637,7 +11890,7 @@
     },
     {
       "slug": "boulogne-sur-mer",
-      "name": "Marinéo (Boulogne)",
+      "name": "Marin\u00e9o (Boulogne)",
       "region": "Hauts-de-France",
       "center": [
         50.7252,
@@ -11654,7 +11907,7 @@
     {
       "slug": "bourgoin",
       "name": "Ruban (Bourgoin-Jallieu)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.5861,
         5.273
@@ -11669,7 +11922,7 @@
     },
     {
       "slug": "brive",
-      "name": "Libéo (Brive)",
+      "name": "Lib\u00e9o (Brive)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.1596,
@@ -11702,7 +11955,7 @@
     {
       "slug": "cannes",
       "name": "Palm Bus (Cannes)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.5528,
         7.0174
@@ -11761,12 +12014,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Charleville-Mézières, France"
+        "Charleville-M\u00e9zi\u00e8res, France"
       ]
     },
     {
       "slug": "chateauroux",
-      "name": "Horizon (Châteauroux)",
+      "name": "Horizon (Ch\u00e2teauroux)",
       "region": "Centre-Val de Loire",
       "center": [
         46.8096,
@@ -11777,7 +12030,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Châteauroux, France"
+        "Ch\u00e2teauroux, France"
       ]
     },
     {
@@ -11798,7 +12051,7 @@
     },
     {
       "slug": "compiegne",
-      "name": "TIC (Compiègne)",
+      "name": "TIC (Compi\u00e8gne)",
       "region": "Hauts-de-France",
       "center": [
         49.4178,
@@ -11809,7 +12062,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Compiègne, France"
+        "Compi\u00e8gne, France"
       ]
     },
     {
@@ -11862,7 +12115,7 @@
     },
     {
       "slug": "douai",
-      "name": "Évasion (Douai)",
+      "name": "\u00c9vasion (Douai)",
       "region": "Hauts-de-France",
       "center": [
         50.3678,
@@ -11878,7 +12131,7 @@
     },
     {
       "slug": "epinal",
-      "name": "Imagine (Épinal)",
+      "name": "Imagine (\u00c9pinal)",
       "region": "Grand Est",
       "center": [
         48.1734,
@@ -11889,12 +12142,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Épinal, France"
+        "\u00c9pinal, France"
       ]
     },
     {
       "slug": "evreux",
-      "name": "Transurbain (Évreux)",
+      "name": "Transurbain (\u00c9vreux)",
       "region": "Normandie",
       "center": [
         49.027,
@@ -11905,12 +12158,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Évreux, France"
+        "\u00c9vreux, France"
       ]
     },
     {
       "slug": "fougeres",
-      "name": "Surfline (Fougères)",
+      "name": "Surfline (Foug\u00e8res)",
       "region": "Bretagne",
       "center": [
         48.3519,
@@ -11921,13 +12174,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Fougères, France"
+        "Foug\u00e8res, France"
       ]
     },
     {
       "slug": "grasse",
       "name": "Sillages (Grasse)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.6585,
         6.925
@@ -11958,7 +12211,7 @@
     },
     {
       "slug": "lens",
-      "name": "Tadao (Lens-Liévin)",
+      "name": "Tadao (Lens-Li\u00e9vin)",
       "region": "Hauts-de-France",
       "center": [
         50.4289,
@@ -11970,7 +12223,7 @@
       "pmtilesPending": true,
       "cities": [
         "Lens, France",
-        "Liévin, France"
+        "Li\u00e9vin, France"
       ],
       "websiteUrl": "https://www.tadao.fr/"
     },
@@ -11994,7 +12247,7 @@
     {
       "slug": "menton",
       "name": "Zest (Menton)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.7745,
         7.4975
@@ -12025,8 +12278,8 @@
     },
     {
       "slug": "montbeliard",
-      "name": "Evolity (Montbéliard)",
-      "region": "Bourgogne-Franche-Comté",
+      "name": "Evolity (Montb\u00e9liard)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.5096,
         6.7985
@@ -12036,13 +12289,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Montbéliard, France"
+        "Montb\u00e9liard, France"
       ],
       "websiteUrl": "https://www.evolity.fr/"
     },
     {
       "slug": "morlaix",
-      "name": "Linéotim (Morlaix)",
+      "name": "Lin\u00e9otim (Morlaix)",
       "region": "Bretagne",
       "center": [
         48.5778,
@@ -12059,7 +12312,7 @@
     {
       "slug": "nevers",
       "name": "Taneo (Nevers)",
-      "region": "Bourgogne-Franche-Comté",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         46.9909,
         3.1628
@@ -12091,7 +12344,7 @@
     },
     {
       "slug": "quimperle",
-      "name": "TBK (Quimperlé)",
+      "name": "TBK (Quimperl\u00e9)",
       "region": "Bretagne",
       "center": [
         47.8725,
@@ -12102,13 +12355,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Quimperlé, France"
+        "Quimperl\u00e9, France"
       ]
     },
     {
       "slug": "romans",
-      "name": "Citéa Romans",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "Cit\u00e9a Romans",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.046,
         5.051
@@ -12118,7 +12371,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Romans-sur-Isère, France"
+        "Romans-sur-Is\u00e8re, France"
       ]
     },
     {
@@ -12171,7 +12424,7 @@
     },
     {
       "slug": "saintes",
-      "name": "Buséau (Saintes)",
+      "name": "Bus\u00e9au (Saintes)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.7463,
@@ -12187,7 +12440,7 @@
     },
     {
       "slug": "tarbes",
-      "name": "TLP Mobilités (Tarbes)",
+      "name": "TLP Mobilit\u00e9s (Tarbes)",
       "region": "Occitanie",
       "center": [
         43.2329,
@@ -12236,7 +12489,7 @@
     },
     {
       "slug": "albi",
-      "name": "LibéA (Albi)",
+      "name": "Lib\u00e9A (Albi)",
       "region": "Occitanie",
       "center": [
         43.9298,
@@ -12252,7 +12505,7 @@
     },
     {
       "slug": "ales",
-      "name": "Ales'y (Alès)",
+      "name": "Ales'y (Al\u00e8s)",
       "region": "Occitanie",
       "center": [
         44.1272,
@@ -12263,12 +12516,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Alès, France"
+        "Al\u00e8s, France"
       ]
     },
     {
       "slug": "angouleme",
-      "name": "Möbius (Angoulême)",
+      "name": "M\u00f6bius (Angoul\u00eame)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.6484,
@@ -12279,12 +12532,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Angoulême, France"
+        "Angoul\u00eame, France"
       ]
     },
     {
       "slug": "arcachon",
-      "name": "Baïa (Bassin d'Arcachon)",
+      "name": "Ba\u00efa (Bassin d'Arcachon)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         44.6586,
@@ -12333,8 +12586,8 @@
     },
     {
       "slug": "beaune",
-      "name": "Côte&Bus (Beaune)",
-      "region": "Bourgogne-Franche-Comté",
+      "name": "C\u00f4te&Bus (Beaune)",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.026,
         4.84
@@ -12350,7 +12603,7 @@
     {
       "slug": "cavaillon",
       "name": "Cmonbus (Cavaillon)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.8372,
         5.0381
@@ -12365,8 +12618,8 @@
     },
     {
       "slug": "chamonix",
-      "name": "Chamonix Mobilités",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "Chamonix Mobilit\u00e9s",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.9237,
         6.8694
@@ -12430,7 +12683,7 @@
     {
       "slug": "gap",
       "name": "Trotibus (Gap)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         44.5594,
         6.0797
@@ -12445,7 +12698,7 @@
     },
     {
       "slug": "guingamp",
-      "name": "Guingamp-Paimpol Mobilité",
+      "name": "Guingamp-Paimpol Mobilit\u00e9",
       "region": "Bretagne",
       "center": [
         48.5633,
@@ -12509,8 +12762,8 @@
     },
     {
       "slug": "moulins",
-      "name": "Aléo (Moulins)",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "Al\u00e9o (Moulins)",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         46.5646,
         3.3324
@@ -12527,7 +12780,7 @@
     {
       "slug": "oyonnax",
       "name": "Duobus (Oyonnax)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         46.2592,
         5.6556
@@ -12559,7 +12812,7 @@
     {
       "slug": "privas",
       "name": "T'CAP (Privas)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         44.7356,
         4.5986
@@ -12590,7 +12843,7 @@
     },
     {
       "slug": "selestat",
-      "name": "ELSA (Sélestat)",
+      "name": "ELSA (S\u00e9lestat)",
       "region": "Grand Est",
       "center": [
         48.2594,
@@ -12601,13 +12854,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Sélestat, France"
+        "S\u00e9lestat, France"
       ]
     },
     {
       "slug": "vichy",
       "name": "MobiVie (Vichy)",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         46.127,
         3.4258
@@ -12639,7 +12892,7 @@
     {
       "slug": "aix-les-bains",
       "name": "Aix-les-Bains",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.6886,
         5.915
@@ -12654,8 +12907,8 @@
     },
     {
       "slug": "amberieu",
-      "name": "Ambérieu",
-      "region": "Auvergne-Rhône-Alpes",
+      "name": "Amb\u00e9rieu",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.9586,
         5.3569
@@ -12665,12 +12918,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Ambérieu-en-Bugey, France"
+        "Amb\u00e9rieu-en-Bugey, France"
       ]
     },
     {
       "slug": "chalons",
-      "name": "SITAC (Châlons)",
+      "name": "SITAC (Ch\u00e2lons)",
       "region": "Grand Est",
       "center": [
         48.9566,
@@ -12681,13 +12934,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Châlons-en-Champagne, France"
+        "Ch\u00e2lons-en-Champagne, France"
       ]
     },
     {
       "slug": "cosne",
       "name": "Cosne-Cours-sur-Loire",
-      "region": "Bourgogne-Franche-Comté",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.41,
         2.925
@@ -12703,7 +12956,7 @@
     {
       "slug": "dole",
       "name": "Dole",
-      "region": "Bourgogne-Franche-Comté",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.0922,
         5.4897
@@ -12719,7 +12972,7 @@
     {
       "slug": "draguignan",
       "name": "TedBus (Draguignan)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.5378,
         6.4647
@@ -12750,7 +13003,7 @@
     },
     {
       "slug": "fecamp",
-      "name": "Fécamp",
+      "name": "F\u00e9camp",
       "region": "Normandie",
       "center": [
         49.7556,
@@ -12761,7 +13014,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Fécamp, France"
+        "F\u00e9camp, France"
       ]
     },
     {
@@ -12847,7 +13100,7 @@
     {
       "slug": "manosque",
       "name": "TransAgglo (Manosque)",
-      "region": "Provence-Alpes-Côte d'Azur",
+      "region": "Provence-Alpes-C\u00f4te d'Azur",
       "center": [
         43.828,
         5.7869
@@ -12943,7 +13196,7 @@
     {
       "slug": "rumilly",
       "name": "Rumilly",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.8667,
         5.9442
@@ -12969,7 +13222,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Sarlat-la-Canéda, France"
+        "Sarlat-la-Can\u00e9da, France"
       ]
     },
     {
@@ -12990,7 +13243,7 @@
     },
     {
       "slug": "sete",
-      "name": "Sète",
+      "name": "S\u00e8te",
       "region": "Occitanie",
       "center": [
         43.4036,
@@ -13001,13 +13254,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Sète, France"
+        "S\u00e8te, France"
       ]
     },
     {
       "slug": "thiers",
       "name": "Thiers",
-      "region": "Auvergne-Rhône-Alpes",
+      "region": "Auvergne-Rh\u00f4ne-Alpes",
       "center": [
         45.8567,
         3.5475
@@ -13022,7 +13275,7 @@
     },
     {
       "slug": "vendome",
-      "name": "Vendôme",
+      "name": "Vend\u00f4me",
       "region": "Centre-Val de Loire",
       "center": [
         47.7931,
@@ -13033,13 +13286,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Vendôme, France"
+        "Vend\u00f4me, France"
       ]
     },
     {
       "slug": "vesoul",
       "name": "Vesoul",
-      "region": "Bourgogne-Franche-Comté",
+      "region": "Bourgogne-Franche-Comt\u00e9",
       "center": [
         47.6231,
         6.1556
