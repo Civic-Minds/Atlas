@@ -16,7 +16,7 @@ import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, 
 import type { Agency, FareOverride } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
-import { R2_PUBLIC_URL } from '../../shared/config';
+import { R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
@@ -201,7 +201,19 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       .catch(() => {});
   }, [fareView]);
 
-  const [bounds, setBounds] = useState<ViewportBounds | null>(null);
+  // Start agency loading from a deep-linked map location instead of waiting for
+  // MapLibre to report its first move. A stalled route tile must not leave the
+  // data loader using the Toronto default while the map is elsewhere.
+  const initialAgencyBounds = useMemo<ViewportBounds | null>(() => {
+    if (!initialMapCenter) return null;
+    return {
+      s: initialMapCenter.lat - VIEWPORT_BBOX_PAD.lat,
+      w: initialMapCenter.lon - VIEWPORT_BBOX_PAD.lon,
+      n: initialMapCenter.lat + VIEWPORT_BBOX_PAD.lat,
+      e: initialMapCenter.lon + VIEWPORT_BBOX_PAD.lon,
+    };
+  }, [initialMapCenter]);
+  const [bounds, setBounds] = useState<ViewportBounds | null>(initialAgencyBounds);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const nearbyPanelRef = useRef<HTMLDivElement>(null);
