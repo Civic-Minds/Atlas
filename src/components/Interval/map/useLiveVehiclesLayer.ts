@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useLiveVehiclesMapOverlay } from '../../../context/LiveVehiclesMapOverlay';

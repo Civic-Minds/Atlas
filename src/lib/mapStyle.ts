@@ -1,8 +1,13 @@
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { agencyGeoWeekVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
+// v6's worker imports a sibling maplibre-gl-shared.mjs chunk that a plain
+// `?url` re-emits without — the worker then fails silently on its first
+// import and no vector tiles ever render. `?worker&url` routes it through
+// Vite's worker pipeline instead, producing a self-contained chunk.
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
 function atlasPmtilesUrl(): string {
   return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${agencyGeoWeekVersion()}`;
@@ -12,6 +17,7 @@ const protocol = new Protocol();
 let protocolRegistered = false;
 export function registerProtocol() {
   if (!protocolRegistered) {
+    maplibregl.setWorkerUrl(maplibreWorkerUrl);
     maplibregl.addProtocol('pmtiles', protocol.tile);
     protocolRegistered = true;
   }

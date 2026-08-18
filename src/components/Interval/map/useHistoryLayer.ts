@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { StopCardHtml } from '../../../lib/mapHtml';

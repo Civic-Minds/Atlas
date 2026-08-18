@@ -109,5 +109,13 @@ export default defineConfig(({ mode }) => {
       },
       historyApiFallback: true,
     },
+    // maplibre-gl v6 loads its worker bundle (maplibre-gl-worker.mjs) via a
+    // runtime-computed URL that esbuild's dep scanner can't trace, so Vite's
+    // pre-bundler leaves a dangling reference to a file it never emits and the
+    // worker request hangs forever with no thrown error. Excluding it serves
+    // maplibre-gl's own pre-built ESM directly instead of pre-bundling it.
+    optimizeDeps: {
+      exclude: ['maplibre-gl'],
+    },
   };
 });

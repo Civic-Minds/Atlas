@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
@@ -314,8 +314,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // Initialize MapLibre Map
   useEffect(() => {
+    (window as any).__mapDiag = (window as any).__mapDiag ?? [];
+    (window as any).__mapDiag.push(['effect start', !!mapContainerRef.current]);
     if (!mapContainerRef.current) return;
     registerProtocol();
+    (window as any).__mapDiag.push(['protocol registered']);
 
     const accent = lightMode ? '#3f3f46' : '#e4e4e7';
     const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
@@ -326,18 +329,41 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ?? (hasSavedView && saved ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom } : null)
       ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
 
-    const map = new maplibregl.Map({
-      container: mapContainerRef.current,
-      style: getMapStyle(lightMode),
-      center: [initialCenter.lon, initialCenter.lat],
-      zoom: initialCenter.zoom,
-      attributionControl: false,
-      canvasContextAttributes: { antialias: true },
-    });
+    (window as any).__mapDiag.push(['before construct']);
+    let map: maplibregl.Map;
+    try {
+      map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: getMapStyle(lightMode),
+        center: [initialCenter.lon, initialCenter.lat],
+        zoom: initialCenter.zoom,
+        attributionControl: false,
+        canvasContextAttributes: { antialias: true },
+      });
+    } catch (err) {
+      (window as any).__mapDiag.push(['CONSTRUCT THREW', String(err)]);
+      throw err;
+    }
+    (window as any).__mapDiag.push(['after construct']);
 
     mapRef.current = map;
+    map.on('error', (e) => (window as any).__mapDiag.push(['error event', String((e as any)?.error ?? e)]));
+    map.on('styledata', () => (window as any).__mapDiag.push(['styledata', map.isStyleLoaded()]));
+    map.on('idle', () => (window as any).__mapDiag.push(['idle']));
+    map.on('data', (e: any) => (window as any).__mapDiag.push(['data', e.dataType, e.sourceId]));
+    map.on('sourcedata', (e: any) => (window as any).__mapDiag.push(['sourcedata', e.sourceId, e.isSourceLoaded]));
+    map.on('render', () => {
+      if (!(window as any).__renderLogged) {
+        (window as any).__renderLogged = true;
+        (window as any).__mapDiag.push(['first render']);
+      }
+    });
+    setInterval(() => {
+      (window as any).__mapDiag.push(['poll isStyleLoaded', map.isStyleLoaded?.(), (map as any)._loaded]);
+    }, 1500);
 
     map.on('load', () => {
+      (window as any).__mapDiag.push(['load fired']);
       setZoom(map.getZoom());
 
       // Add route shapes (line) layers

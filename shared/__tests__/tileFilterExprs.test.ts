@@ -24,11 +24,11 @@ const feat = (properties: Record<string, unknown>) => ({ type: 2, properties });
 
 describe('tileEffectiveHeadwayExpr', () => {
   it('compiles with direction/day clauses (MapLibre filter-safe)', () => {
-    expect(() => featureFilter(productionLikeFilter(10) as any)).not.toThrow();
+    expect(() => featureFilter(productionLikeFilter(10) as any, 'test-filter')).not.toThrow();
   });
 
   it('filters high headway routes at ≤10m', () => {
-    const compiled = featureFilter(productionLikeFilter(10) as any);
+    const compiled = featureFilter(productionLikeFilter(10) as any, 'test-filter');
     const ctx = { zoom: 10 };
     expect(compiled.filter(ctx, feat({
       day: 'Weekday',
@@ -45,7 +45,7 @@ describe('tileEffectiveHeadwayExpr', () => {
   });
 
   it('does not fall back to all-day service when the active period is explicit null', () => {
-    const compiled = featureFilter(periodFilter('late', 15) as any);
+    const compiled = featureFilter(periodFilter('late', 15) as any, 'test-filter');
     const ctx = { zoom: 10 };
     expect(compiled.filter(ctx, feat({
       hph_late: null,
@@ -65,6 +65,6 @@ describe('buildModeFilterClause', () => {
 
   it('compiles bus + LRT mode filter with headway clause', () => {
     const filter = productionLikeFilter(30, new Set([3, VIRTUAL_LRT_MODE]));
-    expect(() => featureFilter(filter as any)).not.toThrow();
+    expect(() => featureFilter(filter as any, 'test-filter')).not.toThrow();
   });
 });
