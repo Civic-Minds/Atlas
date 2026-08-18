@@ -45,6 +45,9 @@ Some agencies publish feeds at unstable or rate-limited URLs. We use the Mobilit
 
 If a weekly refresh fails for an agency, check whether the official `feedUrl` in `index.json` is still valid before blaming the pipeline.
 
+### Avon Transit static GTFS
+The current public conventional feed is still the April 2025 Trillium snapshot, while Avon’s newer 2026 Flex feed contains no fixed-route geometry. Atlas can stage the older fixed-route feed with a degraded quality rating, but it should not be published as current until Avon provides a refreshed conventional GTFS.
+
 ### GO Transit dual route IDs
 GO Transit publishes two overlapping route ID sets per schedule period (e.g. `04260626-41` and `06260926-41` for route 41). The pipeline deduplicates these by `routeShortName::direction::day::headsign`, keeping the lower-headway feature. The losing feature's stop headways are discarded. This is expected behaviour.
 

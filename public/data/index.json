@@ -8048,12 +8048,13 @@
     },
     {
       "slug": "eco-transit",
-      "name": "ECO Transit (Eagle County)",
+      "name": "Core Transit",
       "center": [
         39.64,
         -106.93
       ],
       "feedUrl": "https://evta.org/gtfs.zip",
+      "websiteUrl": "https://www.coretransit.org",
       "region": "Colorado",
       "lastFeedExpiry": "20261121",
       "lastFeedVersion": "S1000093",
@@ -13872,6 +13873,281 @@
       "cities": [
         "Snowmass Village, Colorado"
       ]
+    },
+    {
+      "slug": "winter-park",
+      "name": "The Lift",
+      "websiteUrl": "https://www.theliftwp.com/",
+      "region": "Colorado",
+      "center": [
+        39.8917,
+        -105.7631
+      ],
+      "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Winter Park, Colorado",
+        "Fraser, Colorado",
+        "Granby, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 107
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "roundabout",
+      "name": "Clear Creek County Transit (RoundAbout)",
+      "websiteUrl": "https://www.clearcreekcounty.us/857/RoundAbout-Bus-Service",
+      "region": "Colorado",
+      "center": [
+        39.7425,
+        -105.5136
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
+      "lastFeedExpiry": "20261130",
+      "lastFeedVersion": "UTC: 20-May-2026 16:35",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Idaho Springs, Colorado",
+        "Georgetown, Colorado",
+        "Silver Plume, Colorado",
+        "Empire, Colorado",
+        "Dumont, Colorado",
+        "Lawson, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "breck-free-ride",
+      "name": "Breckenridge Free Ride",
+      "agencyId": "103",
+      "websiteUrl": "https://www.breckfreeride.com/",
+      "region": "Colorado",
+      "center": [
+        39.4817,
+        -106.0384
+      ],
+      "feedUrl": "https://mybreckfreeride.com/gtfs",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.6,124-UWM Summer 26",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Breckenridge, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 155
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "summit-stage",
+      "name": "Summit Stage",
+      "websiteUrl": "https://www.summitcountyco.gov/586/Transit-Summit-Stage",
+      "region": "Colorado",
+      "center": [
+        39.5744,
+        -106.0975
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip",
+      "lastFeedExpiry": "20261114",
+      "lastFeedVersion": "UTC: 29-Jul-2026 17:51",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Breckenridge, Colorado",
+        "Frisco, Colorado",
+        "Silverthorne, Colorado",
+        "Dillon, Colorado",
+        "Keystone, Colorado",
+        "Copper Mountain, Colorado",
+        "Leadville, Colorado",
+        "Fairplay, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 188
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "vail-transit",
+      "name": "Vail Transit",
+      "websiteUrl": "https://www.vail.gov/government/departments/transportation-services/bus-information",
+      "region": "Colorado",
+      "center": [
+        39.6403,
+        -106.3742
+      ],
+      "feedUrl": "https://ride.vail.gov/gtfs",
+      "lastFeedExpiry": "20261206",
+      "lastFeedVersion": "5/22/2026 Summer (6/8/2026-12/6/2026)",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Vail, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 127
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "avon-transit",
+      "name": "Avon Transit",
+      "websiteUrl": "https://www.avon.org/2038/Mobility",
+      "region": "Colorado",
+      "center": [
+        39.6314,
+        -106.5222
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip",
+      "lastFeedExpiry": "20250413",
+      "lastFeedVersion": "UTC: 20-Nov-2024 17:07",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Avon, Colorado",
+        "Beaver Creek, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "degraded",
+        "score": 55,
+        "reasons": [
+          "1 validation warning.",
+          "The feed schedule has expired."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 52
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "timmins",
+      "name": "Timmins Transit",
+      "websiteUrl": "https://www.timmins.ca/our_services/timmins_transit",
+      "region": "Ontario",
+      "center": [
+        48.4758,
+        -81.3304
+      ],
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Timmins, Ontario"
+      ],
+      "timezone": "America/Toronto",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 324
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "casper",
+      "name": "Casper Area Transit",
+      "websiteUrl": "https://www.cityofcasperwy.com/residents/roads_and_parking/metropolitan_planning_organization/casper_area_transit_/",
+      "region": "Wyoming",
+      "center": [
+        42.8501,
+        -106.3252
+      ],
+      "feedUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20260917",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Casper, Wyoming",
+        "Evansville, Wyoming",
+        "Mills, Wyoming"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 141
+        },
+        "checkedAt": "2026-08-18"
+      }
     }
   ]
 }

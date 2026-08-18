@@ -1,11 +1,12 @@
 {
   "slug": "eco-transit",
-  "name": "ECO Transit (Eagle County)",
+  "name": "Core Transit",
   "center": [
     39.64,
     -106.93
   ],
   "feedUrl": "https://evta.org/gtfs.zip",
+  "websiteUrl": "https://www.coretransit.org",
   "region": "Colorado",
   "lastFeedExpiry": "20261121",
   "lastFeedVersion": "S1000093",

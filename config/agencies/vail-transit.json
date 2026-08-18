@@ -1,0 +1,31 @@
+{
+  "slug": "vail-transit",
+  "name": "Vail Transit",
+  "websiteUrl": "https://www.vail.gov/government/departments/transportation-services/bus-information",
+  "region": "Colorado",
+  "center": [
+    39.6403,
+    -106.3742
+  ],
+  "feedUrl": "https://ride.vail.gov/gtfs",
+  "lastFeedExpiry": "20261206",
+  "lastFeedVersion": "5/22/2026 Summer (6/8/2026-12/6/2026)",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Vail, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 127
+    },
+    "checkedAt": "2026-08-18"
+  }
+}
