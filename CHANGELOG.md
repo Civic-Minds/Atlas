@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.
 - Added GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
 - Scheduled time-limited routes now keep their real frequency instead of being mislabeled as irregular.
 - RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
