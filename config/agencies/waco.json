@@ -1,0 +1,9 @@
+{
+  "slug": "waco",
+  "name": "Waco Transit System",
+  "region": "Texas",
+  "center": [31.5493, -97.1467],
+  "bbox": [31.3, -97.5, 31.8, -96.8],
+  "feedUrl": "https://wacotransit.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+  "cities": ["Waco, Texas", "McGregor, Texas"]
+}

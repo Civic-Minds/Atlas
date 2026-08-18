@@ -4,8 +4,17 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import App from './App';
 import './styles/index.css';
 import { BETA_BUILD, DIAGNOSTICS_ENABLED } from '../shared/config';
+import { inject } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 const DiagnosticsPage = React.lazy(() => import('./DiagnosticsPage'));
+
+// Collect page views only from deployed builds; local development should not
+// pollute the production and beta analytics data.
+if (import.meta.env.PROD) {
+  inject();
+  injectSpeedInsights();
+}
 
 if (BETA_BUILD) {
   document.title = `[Beta] ${document.title}`;

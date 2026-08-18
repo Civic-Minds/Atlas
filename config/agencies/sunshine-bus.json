@@ -1,0 +1,9 @@
+{
+  "slug": "sunshine-bus",
+  "name": "Sunshine Bus Company",
+  "region": "Florida",
+  "center": [29.8947, -81.3145],
+  "bbox": [29.4, -81.8, 30.2, -81],
+  "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
+  "cities": ["St. Augustine, Florida"]
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "fact",
+  "name": "Fayette Area Coordinated Transportation",
+  "region": "Pennsylvania",
+  "center": [
+    39.9006,
+    -79.7245
+  ],
+  "feedUrl": "https://fact.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://factbus.com/",
+  "cities": [
+    "Uniontown, Pennsylvania"
+  ]
+}

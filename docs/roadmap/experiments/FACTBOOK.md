@@ -11,13 +11,13 @@ Atlas doesn't just show the map. It also tells the stories the data contains:
 - How service has actually changed over years
 - Where frequency is surprisingly good (or bad)
 - Hidden high-frequency corridors
-- Peer comparisons and outliers across 160+ agencies
+- Peer comparisons and outliers across the growing Atlas network
 - Time-of-day realities
 
 These can live inside the app (for planners and users), as exports, and as source material for public content.
 
 ## Why Atlas Data Is Strong for This
-- 164 agencies with consistent, processed headway/tier analysis (not raw GTFS)
+- A growing set of agencies with consistent, processed headway/tier analysis (not raw GTFS)
 - Multi-year history snapshots (headway + geometry per period)
 - Corridors showing combined frequency from overlapping routes
 - Per-period (AM / midday / PM / evening) breakdowns

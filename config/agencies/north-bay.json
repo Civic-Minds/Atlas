@@ -1,0 +1,14 @@
+{
+  "slug": "north-bay",
+  "name": "North Bay Transit",
+  "region": "Ontario",
+  "center": [
+    46.3091,
+    -79.46
+  ],
+  "feedUrl": "https://northbay.tmix.se/gtfs/gtfs.zip",
+  "websiteUrl": "https://northbay.ca/services-payments/north-bay-transit/",
+  "cities": [
+    "North Bay, Ontario"
+  ]
+}

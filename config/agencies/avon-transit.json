@@ -1,0 +1,35 @@
+{
+  "slug": "avon-transit",
+  "name": "Avon Transit",
+  "websiteUrl": "https://www.avon.org/2038/Mobility",
+  "region": "Colorado",
+  "center": [
+    39.6314,
+    -106.5222
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip",
+  "lastFeedExpiry": "20250413",
+  "lastFeedVersion": "UTC: 20-Nov-2024 17:07",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Avon, Colorado",
+    "Beaver Creek, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 55,
+    "reasons": [
+      "1 validation warning.",
+      "The feed schedule has expired."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 52
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

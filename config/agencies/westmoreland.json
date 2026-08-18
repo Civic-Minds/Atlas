@@ -1,0 +1,14 @@
+{
+  "slug": "westmoreland",
+  "name": "Westmoreland Transit",
+  "region": "Pennsylvania",
+  "center": [
+    40.3015,
+    -79.5389
+  ],
+  "feedUrl": "https://wcta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://www.westmorelandtransit.com/",
+  "cities": [
+    "Greensburg, Pennsylvania"
+  ]
+}

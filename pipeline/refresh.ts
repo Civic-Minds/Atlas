@@ -47,6 +47,7 @@ import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, t
 import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
+import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);

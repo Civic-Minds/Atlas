@@ -1,0 +1,35 @@
+{
+  "slug": "winter-park",
+  "name": "The Lift",
+  "websiteUrl": "https://www.theliftwp.com/",
+  "region": "Colorado",
+  "center": [
+    39.8917,
+    -105.7631
+  ],
+  "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Winter Park, Colorado",
+    "Fraser, Colorado",
+    "Granby, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 107
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

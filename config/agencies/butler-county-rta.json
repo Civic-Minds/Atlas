@@ -1,0 +1,14 @@
+{
+  "slug": "butler-county-rta",
+  "name": "Butler County Regional Transit Authority",
+  "region": "Ohio",
+  "center": [
+    39.425,
+    -84.56
+  ],
+  "feedUrl": "https://www.buztrakr.com/gtfs",
+  "websiteUrl": "https://www.butlercountyrta.com/",
+  "cities": [
+    "Butler County, Ohio"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "slug": "dcta",
+  "name": "Denton County Transportation Authority (DCTA)",
+  "region": "Texas",
+  "center": [33.2148, -97.1331],
+  "bbox": [32.7, -97.5, 33.5, -96.5],
+  "feedUrl": "https://gtfs.remix.com/dcta_denton_tx_us.zip",
+  "cities": ["Denton, Texas", "Lewisville, Texas", "Highland Village, Texas"]
+}

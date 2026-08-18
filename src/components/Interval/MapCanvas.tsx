@@ -428,15 +428,23 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // an undimmed default -- see the frequencySegmentOverlay useMemo + its sync effect below.
   const frequencySegmentOverlayRef = useRef<{ partialMatches: ReturnType<typeof computeFrequencySegmentOverlay>['partialMatches'] }>({ partialMatches: [] });
 
+  // Beta-only agencies are rendered from the local GeoJSON layer until their routes are in the
+  // shared PMTiles archive. Keep focus styling in sync across both route sources.
+  const setRouteLayerPaint = (map: maplibregl.Map, property: 'line-opacity' | 'line-width', value: any) => {
+    for (const layerId of ['routes-layer', 'local-routes-layer']) {
+      if (map.getLayer(layerId)) map.setPaintProperty(layerId, property, value);
+    }
+  };
+
   const resetRoutesLayerDefaultPaint = (map: maplibregl.Map) => {
-    if (!map.getLayer('routes-layer')) return;
+    if (!map.getLayer('routes-layer') && !map.getLayer('local-routes-layer')) return;
     // Must match the main filter effect's headwayExpr (tileEffectiveHeadwayExpr(period)) exactly --
     // this used to be a separately hand-maintained all-day-only expression that ignored the active
     // period filter, so a route whose all-day headway differs from its period-specific headway could
     // get a different zoom-gate opacity/visibility here than the main effect would compute for the
     // same route, until something else triggered the main effect to re-run and overwrite it.
     const headwayExpr: any = tileEffectiveHeadwayExpr(period);
-    map.setPaintProperty('routes-layer', 'line-width', [
+    setRouteLayerPaint(map, 'line-width', [
       'interpolate', ['linear'], ['zoom'],
       8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5,
     ]);
@@ -444,9 +452,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const partialMatches = frequencySegmentOverlayRef.current.partialMatches;
     if (partialMatches.length > 0) {
       const partialMatch = buildPartialMatchFilterExpression(partialMatches);
-      map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
+      if (map.getLayer('routes-layer')) {
+        map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
+      }
+      if (map.getLayer('local-routes-layer')) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
     } else {
-      map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
+      if (map.getLayer('routes-layer')) map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
+      if (map.getLayer('local-routes-layer')) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
     }
   };
 
@@ -1335,6 +1347,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // In some cases (StrictMode double-invoke, very early effect runs, or future
     // changes) they may temporarily not exist. Guard to avoid console spam.
     const hasRoutes = !!map.getLayer('routes-layer');
+    const hasLocalRoutes = !!map.getLayer('local-routes-layer');
     const hasRoutesHit = !!map.getLayer('routes-hit-layer');
     const hasStops = !!map.getLayer('stops-layer');
 
@@ -1414,7 +1427,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
     if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
 
-    if (hasRoutes) {
+    if (hasRoutes || hasLocalRoutes) {
       // Apply color paint styling — fare view if requested and baseFare present, else tier
       let lineColorExpr: any;
       if (fareView) {
@@ -1425,7 +1438,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         lineColorExpr = buildEffectiveHeadwayColorExpression(period);
       }
 
-      map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
+      if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
 
       // Opacity based on route state (focused vs dimmed).
       // When a route is selected we keep other lines visible and clickable
@@ -1441,18 +1454,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           ['==', ['get', 'routeShortName'], historyOverlay.routeShortName],
         ];
         const focusedPaint = buildFocusedRoutePaint(historyRouteMatch, DIM_OPACITY, DIM_WIDTH);
-        map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
-        map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
+        setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
+        setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = routeKeyMatchExpression(selKey);
         if (hoveredBranch?.isCore) {
           // The clipped shared-hover-segments overlay is the only bright geometry for a
           // combined-row hover. Never brighten the full route as a proxy for the shared section.
-          map.setPaintProperty('routes-layer', 'line-opacity', [
+          setRouteLayerPaint(map, 'line-opacity', [
             'case', routeMatch, 0.4, DIM_OPACITY,
           ]);
-          map.setPaintProperty('routes-layer', 'line-width', [
+          setRouteLayerPaint(map, 'line-width', [
             'case', routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else if (hoveredBranch) {
@@ -1464,35 +1477,35 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             ['==', ['get', 'directionId'], hoveredBranch.directionId],
             branchHeadSignMatch,
           ];
-          map.setPaintProperty('routes-layer', 'line-opacity', [
+          setRouteLayerPaint(map, 'line-opacity', [
             'case', branchMatch, 1.0, routeMatch, 0.4, DIM_OPACITY,
           ]);
-          map.setPaintProperty('routes-layer', 'line-width', [
+          setRouteLayerPaint(map, 'line-width', [
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else {
           const focusedPaint = buildFocusedRoutePaint(routeMatch, DIM_OPACITY, DIM_WIDTH);
-          map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
-          map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
+          setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
+          setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
         }
       } else if (hoveredSearchRoute) {
         // Hovering a search result: spotlight that route, fade the rest
         const hoverMatch: any = routeKeyMatchExpression(hoveredSearchRoute);
         const focusedPaint = buildFocusedRoutePaint(hoverMatch, DIM_OPACITY, DIM_WIDTH);
-        map.setPaintProperty('routes-layer', 'line-opacity', focusedPaint.opacity as any);
-        map.setPaintProperty('routes-layer', 'line-width', focusedPaint.width as any);
+        setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
+        setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(layers, routesForStop.siblingIdsByAgency);
-        map.setPaintProperty('routes-layer', 'line-opacity', [
+        setRouteLayerPaint(map, 'line-opacity', [
           'case', servingMatch, 1.0, DIM_OPACITY,
         ]);
-        map.setPaintProperty('routes-layer', 'line-width', [
+        setRouteLayerPaint(map, 'line-width', [
           'interpolate', ['linear'], ['zoom'],
           8, ['case', servingMatch, 2.0, DIM_WIDTH],
           14, ['case', servingMatch, 3.0, DIM_WIDTH],
         ]);
       } else {
-        map.setPaintProperty('routes-layer', 'line-width', [
+        setRouteLayerPaint(map, 'line-width', [
           'interpolate', ['linear'], ['zoom'],
           8, 1.5,
           11, 2.0,
@@ -1508,9 +1521,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         // the frequency filter entirely), so this doesn't need to layer on top of those too.
         if (frequencySegmentOverlay.partialMatches.length > 0) {
           const partialMatch = buildPartialMatchFilterExpression(frequencySegmentOverlay.partialMatches);
-          map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
+          if (hasRoutes) {
+            map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
+          }
+          if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
         } else {
-          map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
+          if (hasRoutes) map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
+          if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
         }
       }
 

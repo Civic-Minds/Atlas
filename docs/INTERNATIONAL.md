@@ -6,7 +6,7 @@ Research and planning for taking Atlas coverage beyond Canada/US. Half roadmap, 
 
 ## Why expand internationally
 
-Atlas's coverage has been exclusively Canada/US to date. Mexico (Mi Transporte / Guadalajara) was added as the first test of coverage outside that footprint. The open question this doc tracks: how much of what we learned from Mexico's messy feed is a *Mexico* problem versus a *first-country-of-any-kind* problem — and which country should come next.
+Atlas's public coverage is still primarily Canada/US. Mexico (Mi Transporte / Guadalajara) was added as the first test of coverage outside that footprint, with international candidates kept hidden until their country-wide rollout is ready. The open question this doc tracks: how much of what we learned from Mexico's messy feed is a *Mexico* problem versus a *first-country-of-any-kind* problem — and which country should come next.
 
 ---
 

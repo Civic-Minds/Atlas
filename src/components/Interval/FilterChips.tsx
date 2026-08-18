@@ -84,6 +84,13 @@ interface AgenciesPanelProps {
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
 }
 
+export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[], enabled: boolean): Set<string> {
+  if (enabled) return new Set(allSlugs);
+  const next = new Set(current);
+  allSlugs.forEach(s => next.delete(s));
+  return next;
+}
+
 function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
   const [showAll, setShowAll] = useState(false);
 
@@ -117,11 +124,11 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
     return map;
   }, [allGroups, agencyQuery, showAll]);
 
-  const loadedSlugs = useMemo(() => allGroups.filter(g => g.loaded).flatMap(g => g.slugs), [allGroups]);
   const allSlugs = useMemo(() => agencies.map(a => a.slug), [agencies]);
-  const scopedSlugs = (showAll || agencyQuery) ? allSlugs : loadedSlugs;
-  const allOn = scopedSlugs.every(s => selectedAgencies.has(s));
-  const allOff = scopedSlugs.every(s => !selectedAgencies.has(s));
+  // Bulk actions are global. The list is viewport-scoped for readability, but
+  // "All" must never turn agencies outside the current map view off.
+  const allOn = allSlugs.length > 0 && allSlugs.every(s => selectedAgencies.has(s));
+  const allOff = allSlugs.length > 0 && allSlugs.every(s => !selectedAgencies.has(s));
 
   return (
     <div className={`${PANEL} w-56`}>
@@ -137,7 +144,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
       </div>
       <div className="flex gap-1 px-1 pt-1">
         <button
-          onClick={() => setSelectedAgencies(new Set(scopedSlugs))}
+          onClick={() => setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, true))}
           disabled={allOn}
           className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
         >
@@ -145,9 +152,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         </button>
         <button
           onClick={() => {
-            const next = new Set(selectedAgencies);
-            scopedSlugs.forEach(s => next.delete(s));
-            setSelectedAgencies(next);
+            setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, false));
           }}
           disabled={allOff}
           className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
