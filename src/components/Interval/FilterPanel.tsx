@@ -7,7 +7,8 @@ import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
-import { agencyDisplayParts } from '../../utils/format';
+import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
+import { qualityStatusLabel } from '../../../shared/feedQuality';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -31,6 +32,7 @@ interface FilterPanelProps {
   period?: string;
   setPeriod?: (p: any) => void;
   agencies?: Agency[];
+  allAgencies?: Agency[];
   selectedAgencies?: Set<string>;
   setSelectedAgencies?: (agencies: Set<string>) => void;
   bounds?: any;
@@ -46,6 +48,12 @@ export interface HiddenRoute {
   region?: string | null;
   routeShortName: string;
   routeLongName?: string | null;
+}
+
+export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
+  return agencies
+    .filter(agency => agency.feedQuality?.status === 'degraded' || agency.feedQuality?.status === 'unusable')
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function Toggle({ on }: { on: boolean }) {
@@ -99,6 +107,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   period,
   setPeriod,
   agencies,
+  allAgencies,
   selectedAgencies,
   setSelectedAgencies,
   bounds,
@@ -108,7 +117,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [view, setView] = useState<'settings' | 'hidden-routes'>('settings');
+  const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
   const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
   const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
@@ -191,13 +200,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       ] as const);
   }, [filteredHiddenRoutes]);
 
+  const agencyCatalog = allAgencies ?? agencies ?? [];
+  const hiddenFeedAgencies = useMemo(() => getHiddenFeedAgencies(agencyCatalog), [agencyCatalog]);
+
   const agencyCitiesBySlug = useMemo(
-    () => new Map((agencies ?? []).map(agency => [agency.slug, agency.cities] as const)),
-    [agencies],
+    () => new Map(agencyCatalog.map(agency => [agency.slug, agency.cities] as const)),
+    [agencyCatalog],
   );
   const agencyDisplayAreasBySlug = useMemo(
-    () => new Map((agencies ?? []).map(agency => [agency.slug, agency.displayArea] as const)),
-    [agencies],
+    () => new Map(agencyCatalog.map(agency => [agency.slug, agency.displayArea] as const)),
+    [agencyCatalog],
   );
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
@@ -250,7 +262,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           >
             <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--border-primary)] shrink-0">
               <div className="flex items-center gap-1.5">
-                {view === 'hidden-routes' && (
+                {view !== 'settings' && (
                   <button
                     onClick={() => { setView('settings'); setHiddenRoutesQuery(''); }}
                     className="w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
@@ -260,7 +272,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </button>
                 )}
                 <h2 className="text-xs font-black text-[var(--text-primary)]">
-                  {view === 'hidden-routes' ? 'Hidden routes' : 'Settings'}
+                  {view === 'hidden-routes'
+                    ? 'Hidden routes'
+                    : view === 'degraded-feeds'
+                      ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
+                      : 'Settings'}
                 </h2>
               </div>
               <button
@@ -347,6 +363,49 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   )}
                 </>
+              ) : view === 'degraded-feeds' ? (
+                <div className="px-5 py-3">
+                  <p className="text-[10px] text-[var(--text-muted)] leading-relaxed pb-2">
+                    {hideLowQuality
+                      ? 'These feeds are hidden because processing marked them degraded or unusable.'
+                      : 'These feeds would be hidden when Hide degraded feeds is enabled.'}
+                  </p>
+                  {hiddenFeedAgencies.length === 0 ? (
+                    <p className="py-4 text-[10px] text-[var(--text-muted)]">
+                      No degraded or unusable feeds are currently recorded.
+                    </p>
+                  ) : (
+                    <div className="divide-y divide-[var(--border-primary)]">
+                      {hiddenFeedAgencies.map(agency => {
+                        const quality = agency.feedQuality!;
+                        const { primary, secondary } = agencyDisplayParts(agency.name, agency.cities, agency.displayArea);
+                        const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
+                        const statusClasses = quality.status === 'unusable'
+                          ? 'text-[var(--status-danger-text)] bg-[var(--status-danger-bg)] border-[var(--status-danger-border)]'
+                          : 'text-[var(--status-warn-text)] bg-[var(--status-warn-bg)] border-[var(--status-warn-border)]';
+                        return (
+                          <div key={agency.slug} className="py-3 first:pt-2">
+                            <div className="flex items-start justify-between gap-3">
+                              <p className="text-[11px] font-bold text-[var(--text-primary)] min-w-0">
+                                {primary}
+                                {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                              </p>
+                              <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border shrink-0 ${statusClasses}`}>
+                                {qualityStatusLabel(quality.status)}
+                              </span>
+                            </div>
+                            {quality.reasons.length > 0 && (
+                              <ul className="mt-1.5 space-y-0.5 text-[10px] text-[var(--text-muted)] leading-relaxed">
+                                {quality.reasons.map(reason => <li key={reason}>{reason}</li>)}
+                              </ul>
+                            )}
+                            <p className="mt-1 text-[9px] text-[var(--text-dim)]">Checked {checkedDate}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <>
               {/* Appearance */}
@@ -395,6 +454,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
                             </button>
                           </>
+                        )}
+                        {id === 'quality' && (
+                          <button
+                            onClick={() => setView('degraded-feeds')}
+                            className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
+                          >
+                            {hideLowQuality ? 'See hidden feeds' : 'Review degraded feeds'}
+                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''} →
+                          </button>
                         )}
                       </div>
                     </div>
