@@ -19,7 +19,6 @@ import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
-import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 
 interface Agency {
   slug: string;
@@ -31,9 +30,6 @@ interface Agency {
   // checker doesn't fail loudly on agencies with a known cause; still sampled
   // so we notice (and print) if the underlying issue actually gets resolved.
   pmtilesPending?: boolean;
-  lastFeedExpiry?: string | null;
-  staged?: boolean;
-  hiddenInProduction?: boolean;
 }
 
 // Matches the app's own fallback bbox padding (shared/config.ts AGENCY_BBOX_PAD)
@@ -52,10 +48,7 @@ const PREFERRED_ZOOM = 12;
 // (see #215). Instead cover every tile in the bbox up to this cap; beyond it
 // (large/statewide agencies) fall back to an evenly-strided grid so total
 // fetch cost stays bounded.
-// Keep smaller service areas fully covered. A 100-tile cap can sample away
-// from a compact agency's actual routes even when its fallback bbox is only a
-// degree wide (for example, an airport shuttle).
-const MAX_TILES_PER_AGENCY = 256;
+const MAX_TILES_PER_AGENCY = 100;
 
 function lonLatToTile(lon: number, lat: number, zoom: number): { x: number; y: number } {
   const n = 2 ** zoom;
@@ -139,7 +132,7 @@ async function getZxyWithRetry(
 async function main() {
   console.log('Loading agency index from public/data/index.json...');
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: Agency[] };
-  const agencies = (index.agencies || []).filter(agency => isActiveProductionFeed(agency));
+  const agencies = index.agencies || [];
   console.log(`Found ${agencies.length} agencies.`);
 
   const pmtilesUrl = `${R2_PUBLIC_URL}/atlas.pmtiles`;

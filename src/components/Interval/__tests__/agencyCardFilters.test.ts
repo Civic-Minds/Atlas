@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildAgencyRouteFilters, buildHeaderSummary, routeMatchesAgencyFilter } from '../AgencyCard';
+import { buildAgencyRouteBuckets, buildAgencyRouteFilters, buildHeaderSummary, routeMatchesAgencyFilter } from '../AgencyCard';
 
 const routes = [
   { routeId: '1', agencySlug: 'ttc', shortName: '1', longName: 'Line 1', headway: 4, tier: '5', routeType: 1, busSubType: undefined, matchesFilter: true },
@@ -36,5 +36,11 @@ describe('agency card filters', () => {
   it('summarizes matching routes for active frequency filter', () => {
     expect(buildHeaderSummary(routes, 60)).toBe('4 routes · 3 match ≤60m');
     expect(buildHeaderSummary(routes, Infinity)).toBe('4 routes');
+  });
+
+  it('keeps routes outside the frequency filter collapsed when nothing matches', () => {
+    const buckets = buildAgencyRouteBuckets(routes.map(route => ({ ...route, matchesFilter: false })));
+    expect(buckets.matching).toHaveLength(0);
+    expect(buckets.other.map(route => route.shortName)).toEqual(['1', '2', '900', '36']);
   });
 });

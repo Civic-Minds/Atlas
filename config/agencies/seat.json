@@ -1,0 +1,15 @@
+{
+  "slug": "seat",
+  "name": "South East Area Transit",
+  "region": "Ohio",
+  "center": [
+    39.9403,
+    -82.0132
+  ],
+  "feedUrl": "https://www.seatbus.org/media/SEAT-GTFS-Feed.zip",
+  "websiteUrl": "https://www.seatbus.org/",
+  "cities": [
+    "Zanesville, Ohio",
+    "Cambridge, Ohio"
+  ]
+}

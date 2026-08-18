@@ -24,7 +24,8 @@ import { resolve, dirname } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { processGtfsBuffer } from './process-core.js';
-import { r2Put, r2Get, r2PutCurrentFeed, r2CopyCurrentFeedToArchive, rawFeedArchiveKey } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   formatOverrideResolvedLog,
@@ -35,16 +36,14 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
+import { candidateIsOlderThanActive } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   assertCountryMayWriteToR2,
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
-import { bumpPublicDataVersion } from './dataVersion.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
-import { isActiveProductionFeed } from '../shared/feedAvailability.js';
-import { candidateIsOlderThanActive } from './refreshMeta.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -167,22 +166,20 @@ async function main() {
   let excludeRouteShortNames: string[] | undefined;
   let excludeTripHeadsigns: string[] | undefined;
   let mergeEquivalentShapeVariants: boolean | undefined;
+  let previousFeedExpiry: string | null = null;
   let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
-  let previousRawFeedArchiveKey: string | null = null;
-  let previousFeedExpiry: string | null = null;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null; lastFeedVersion?: string | null; lastRawArchiveKey?: string | null }>;
+      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
-    previousRawFeedArchiveKey = entry?.lastRawArchiveKey ?? entry?.lastFeedExpiry ?? entry?.lastFeedVersion ?? null;
-    previousFeedExpiry = entry?.lastFeedExpiry ?? null;
     preprocess = entry?.preprocess;
     agencyId = entry?.agencyId;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
     excludeTripHeadsigns = entry?.excludeTripHeadsigns;
     mergeEquivalentShapeVariants = entry?.mergeEquivalentShapeVariants;
+    previousFeedExpiry = entry?.lastFeedExpiry ?? null;
     issueUrl = entry?.issueUrl;
     if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
   }
@@ -205,7 +202,7 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
   }, { agencyId, preprocess, excludeRouteShortNames, excludeTripHeadsigns, mergeEquivalentShapeVariants, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
@@ -248,31 +245,29 @@ async function main() {
     if (shapeAnomalies?.length) {
       console.log(`  ${shapeAnomalies.length} shape(s) needed correction during parsing (truncated jump, de-interleaved duplicate sequences, and/or a repaired/flagged interleaved sub-path) — see ${slug}-shape-anomalies.json.`);
     }
+    console.log(`  Feed quality: ${feedQuality.status} (${feedQuality.score}/100)${feedQuality.reasons.length ? ` — ${feedQuality.reasons.join(' ')}` : ''}`);
     console.log(`  Run "npm run route-report -- ${slug}" to check for anomaly patterns (mismatched headways, near-duplicate headsigns, shape corrections) before publishing.`);
     console.log(`  Re-run without --dry-run once you're satisfied to actually publish.\n`);
     return;
   }
 
-  const previousKey = previousRawFeedArchiveKey ?? `unknown-${todayYmd}`;
-  const copiedPreviousCurrent = await r2CopyCurrentFeedToArchive(slug, previousKey);
   const uploads: Promise<any>[] = [
     r2Put(`atlas/${slug}.json`, geojson),
     r2Put(`atlas/${slug}-stops.json`, stopsJson),
     r2Put(`atlas/${slug}-corridors.json`, corridorsGeojson),
     r2Put(`atlas/${slug}-trips.json`, tripsJson),
     r2Put(`atlas/${slug}-stops-meta.json`, stopsMetaJson),
-    r2PutCurrentFeed(slug, buf),
   ];
   if (livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${slug}.json`, JSON.stringify(livePollingSidecar, null, 2)));
   }
-  const activeRawArchiveKey = rawFeedArchiveKey(feedExpiry, feedVersion, buf);
   const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
-  if (copiedPreviousCurrent) console.log(`  Archived previous current feed → gtfs/archive/${slug}/${copiedPreviousCurrent}.zip`);
-  console.log(`  Active raw feed → atlas/gtfs/${slug}.zip`);
-  // Bust browser IDB/CDN query keys immediately — do not wait for a SPA deploy.
   await bumpPublicDataVersion(`process ${slug}`);
+
+  const archiveKey = rawFeedArchiveKey(feedExpiry, feedVersion, buf);
+  await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
+  console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
 
   let index: { agencies: any[] } = { agencies: [] };
   if (existsSync(indexPath)) {
@@ -290,8 +285,8 @@ async function main() {
       timezone: timezone ?? prev.timezone,
       lastFeedExpiry: feedExpiry,
       lastFeedVersion: feedVersion,
-      lastRawArchiveKey: activeRawArchiveKey,
       lastRefreshedAt: todayUtcYmd(),
+      feedQuality,
     };
     if (upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
       updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
@@ -301,28 +296,21 @@ async function main() {
     }
     index.agencies[existing] = updated;
   } else {
-    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRawArchiveKey: activeRawArchiveKey, lastRefreshedAt: todayUtcYmd() });
+    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd(), feedQuality });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   const savedAgency = index.agencies.find(a => a.slug === slug);
   if (savedAgency) writeAgencySource(savedAgency);
   console.log(`  index.json updated\n`);
 
-  // Keep the complete Hide irregular routes inventory in sync with one-off agency processing.
   try {
     let existing: HiddenRoutesFile | null = null;
     const raw = await r2Get('atlas/hidden-routes.json');
     if (raw) existing = JSON.parse(raw) as HiddenRoutesFile;
     const hiddenRoutes = mergeHiddenRoutes(
       existing,
-      [{
-        agencySlug: slug,
-        routes: buildHiddenRoutesForAgency(
-          { slug, name: agencyName, region: savedAgency?.region ?? null },
-          geojson,
-        ),
-      }],
-      new Set(index.agencies.filter(a => isActiveProductionFeed(a)).map(a => a.slug)),
+      [{ agencySlug: slug, routes: buildHiddenRoutesForAgency({ slug, name: agencyName, region: savedAgency?.region ?? null }, geojson) }],
+      new Set(index.agencies.filter(a => !a.staged && !a.hiddenInProduction).map(a => a.slug)),
     );
     await r2Put('atlas/hidden-routes.json', JSON.stringify(hiddenRoutes));
     console.log(`  hidden-routes.json → R2 (${hiddenRoutes.routeCount} routes)`);

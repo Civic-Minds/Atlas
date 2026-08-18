@@ -75,6 +75,25 @@ export function groupTrunkHeadway(branches: ShapeProperties[], period: string): 
   return Math.max(1, Math.round(combined));
 }
 
+/** Shared on-shape stops in the order used by the first branch. */
+export function sharedStopIdsForBranches(branches: ShapeProperties[]): string[] {
+  const withStops = branches.filter(d => !isLimitedBranch(d) && (d.stopOrder?.length ?? 0) >= 2);
+  if (withStops.length < 2) return [];
+
+  const stopBranches = new Map<string, Set<number>>();
+  withStops.forEach((branch, branchIndex) => {
+    for (const stopId of new Set(branch.stopOrder)) {
+      const branchSet = stopBranches.get(stopId) ?? new Set<number>();
+      branchSet.add(branchIndex);
+      stopBranches.set(stopId, branchSet);
+    }
+  });
+
+  return withStops[0].stopOrder!.filter((stopId, index, order) =>
+    order.indexOf(stopId) === index && (stopBranches.get(stopId)?.size ?? 0) >= 2,
+  );
+}
+
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);

@@ -23,6 +23,8 @@ for (const agency of agencies) {
   slugs.add(agency.slug);
 }
 
-const json = JSON.stringify({ agencies }, null, 2);
+const json = JSON.stringify({ agencies }, null, 2).replace(/[\u007f-\uffff]/g, char =>
+  `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`,
+);
 writeFileSync(outputPath, `${json}\n`);
 console.log(`Generated ${outputPath} from ${agencies.length} agency files`);

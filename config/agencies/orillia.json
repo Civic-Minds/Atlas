@@ -1,0 +1,14 @@
+{
+  "slug": "orillia",
+  "name": "Orillia Transit",
+  "region": "Ontario",
+  "center": [
+    44.6087,
+    -79.4207
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip",
+  "websiteUrl": "https://www.orillia.ca/roads-and-environment/getting-around/transit/",
+  "cities": [
+    "Orillia, Ontario"
+  ]
+}

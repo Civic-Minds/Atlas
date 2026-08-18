@@ -9,6 +9,40 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Niagara’s scheduled evening and night routes now appear as normal service instead of being mislabeled as irregular.
 - RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
 - NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
+- Added validated GTFS sources for 18 previously missing Ontario, Pennsylvania, and Ohio agencies, expanding coverage around Pittsburgh and across smaller Ontario cities.
+- The "zooming in to..." orienting card now names the actual nearest city instead of sometimes naming a neighboring one whose fallback bounding box happened to overlap the click ([#430](https://github.com/Civic-Minds/Atlas/issues/430)).
+- Fixed a rare load-timing bug where the Agencies filter could silently save "almost everything off" with no clicking involved, permanently undercounting routes on every later visit until noticed ([#428](https://github.com/Civic-Minds/Atlas/issues/428)).
+- The map now actually draws routes again on deployed builds — a MapLibre GL 6 bug silently stopped it from requesting any map tiles once built for production, even though everything looked fine locally ([#425](https://github.com/Civic-Minds/Atlas/issues/425)).
+- Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
+- Deep-linked maps now load nearby agencies immediately and show filtered local route shapes while route tiles are still loading, preventing blank maps during tile stalls.
+- Map fallback now chooses local route shapes per agency, so one broken agency tile set cannot hide routes from otherwise healthy agencies.
+- Map startup no longer waits for route tiles before loading the map, so stalled PMTiles requests cannot block local route rendering.
+- Map fallback now checks routes that actually render under the active filters, not just route data present in the tile source.
+- Nearby agencies now begin loading as soon as the map is ready, even when a route-tile request is stalled.
+- Deployed maps now load route tiles through a same-origin range proxy so PMTiles receives the correct range response in production and beta.
+- Beta map badges now report only rendered routes, reclaim the removed Context-button space, and stop showing an endless map-loading state when transit tiles fail.
+- Niagara Transit’s refreshed schedule data now keeps predictable daytime and evening routes visible when irregular routes are hidden.
+- Beta-only agency artifacts now load through the beta data path, while In view counts and lists follow the rendered map filters; Agencies and Routes now open as separate panels that close on outside click.
+- Shared-service route cards now use one Combined label, and agency cards keep routes outside the active filter collapsed until requested.
+- The agency index now derives Metz artifact locations instead of storing stale generated URLs.
+- Reconciliation now preserves day-aware branch metrics, feed validation, collision-safe archives, and live data cache invalidation across clean pipeline runs.
+- The shared beta/production build now preserves MapLibre 6, route-branch selection, and live GeoJSON cache updates after a clean deployment install.
+- Production and beta now build from the same `main` source with deployment-scoped feature flags, preventing the two sites from drifting into conflicting Git branches.
+- Selected routes now agree with the active frequency filter across directions, and stale route panels no longer overlap agency or disambiguation cards.
+- Metz is now available only in beta with staged France schedule data and a linked validation notice while the first country rollout is reviewed.
+- Agency lists now distinguish full versus partial live coverage and use plain-language History labels, while the header and Info panel show the same approximate History count.
+- Combined route summaries now stay within their direction and highlight only the shared section on hover.
+- Halifax Live now includes frequent vehicle-only routes alongside route 1 adherence, and Halifax GTFS-RT feeds are now archived for live-history analysis.
+- Added beta GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
+- Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
+- Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
+- Scheduled time-limited routes now keep their real frequency instead of being mislabeled as irregular.
+- Split rush-hour-only routes such as TTC 986 are now classified as irregular instead of all-day infrequent service.
+- Beta route cards can now expand schedule charts to inspect the full-day service pattern.
+- The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.
+- Beta route cards no longer show branch-only uneven-service warnings when combined branches provide the rider-facing trunk frequency.
+- Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
+- Beta schedule charts now keep the active period label clear of the expand control at narrow widths.
 
 ## [3.2.19] - 2026-08-13
 

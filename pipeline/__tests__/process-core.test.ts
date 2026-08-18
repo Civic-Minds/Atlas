@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   normalizeNrtAnalysisResult,
-  selectMetricStopMap,
+  hasNightServiceAtShapeEndpoints,
   selectTerminalDepartureTimes,
-  shapeMetricGroupKey,
 } from '../process-core';
 
 describe('normalizeNrtAnalysisResult', () => {
@@ -50,22 +49,20 @@ describe('selectTerminalDepartureTimes', () => {
   });
 });
 
-describe('shape-scoped metric groups', () => {
-  it('keeps route, direction, day, shape, and headsign patterns distinct', () => {
-    expect(shapeMetricGroupKey('87', '1', 'Saturday', 'shared', 'Broadview'))
-      .not.toBe(shapeMetricGroupKey('87', '1', 'Saturday', 'shared', 'Broadview via East York Acres'));
-    expect(shapeMetricGroupKey('G', '0', 'Sunday', 'shared', 'Court Sq'))
-      .not.toBe(shapeMetricGroupKey('F', '0', 'Sunday', 'shared', 'Court Sq'));
+describe('hasNightServiceAtShapeEndpoints', () => {
+  it('qualifies an overnight-only route before daytime stop metrics exist', () => {
+    const routeDepartures = new Map([
+      ['origin', [47, 107, 167, 227, 287, 347]],
+      ['terminal', [120, 180]],
+    ]);
+
+    expect(hasNightServiceAtShapeEndpoints(['origin', 'terminal'], routeDepartures)).toBe(true);
   });
 
-  it('does not fall back to an unscoped shape map for a headsign feature', () => {
-    const specific = new Map([['terminal', 1]]);
-    const headsign = new Map([['terminal', 2]]);
-    const broadShape = new Map([['terminal', 3]]);
-    const route = new Map([['terminal', 4]]);
+  it('combines plain and shifted overnight-only departures at an endpoint', () => {
+    const routeDepartures = new Map([['origin', [47, 107, 167]]]);
+    const overnightOnly = new Map([['origin', [1620, 1680, 1740]]]);
 
-    expect(selectMetricStopMap('Broadview', specific, headsign, broadShape, route)).toBe(specific);
-    expect(selectMetricStopMap('Broadview', undefined, headsign, broadShape, route)).toBe(headsign);
-    expect(selectMetricStopMap(null, undefined, undefined, broadShape, route)).toBe(broadShape);
+    expect(hasNightServiceAtShapeEndpoints(['origin'], routeDepartures, overnightOnly)).toBe(true);
   });
 });

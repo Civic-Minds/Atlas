@@ -8,8 +8,8 @@ import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileRouteKeyExpr } fro
 import { effectiveMode } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
-import { buildRouteKey } from '../utils/routeKey';
 import { isHiddenByIrregularFilter } from '../../shared/irregularRoutes';
+import { buildRouteKey } from '../utils/routeKey';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -38,12 +38,15 @@ export const routeKey = (p: ShapeProperties) => buildRouteKey(
   p.routeBranch,
 );
 
-/** Sidebar hover target for branch highlight on the map (routeId + headsign). */
+/** Sidebar hover target for branch/core highlight on the map. */
 export interface HoveredBranch {
   directionId: number;
   headsign?: string;
   headsigns?: string[];
   isCore?: boolean;
+  /** On-shape stops shared by the hovered direction's branches. */
+  sharedStopIds?: string[];
+  sharedHeadway?: number;
 }
 
 export type { PeriodKey };
@@ -89,7 +92,7 @@ function resolveTierVal(p: ShapeProperties): number | null {
   return null;
 }
 
-// Shared filter predicate for route features shown in the map and sidebar.
+// Shared filter predicate for both visibleFeatures and filteredLayers.
 // slug is passed explicitly so the caller can use p.agencySlug (flat array path)
 // or the layer key (per-layer iteration path).
 export function passesRouteFilter(
@@ -97,6 +100,12 @@ export function passesRouteFilter(
   slug: string,
   filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
+  // skipFrequency: day/agency/mode/hideSpan/live-polling still apply, but the worst-direction
+  // frequency check (#314/#315) does not. Used only for the #317 qualifying-segment overlay,
+  // which needs partial-match routes (frequent on part of their length, not the whole thing) --
+  // exactly what the frequency check exists to exclude everywhere else. The overlay does its own
+  // per-stop-range check via computeFrequencySegmentOverlay, so this doesn't let an unqualified
+  // route appear as if it fully passed; it only lets it *in* so that function can look.
   options?: { skipFrequency?: boolean },
 ): boolean {
   const isCorridor = !!(p as any).isCorridor;
@@ -144,14 +153,14 @@ export function passesRouteFilter(
   // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
   // as a whole, not just in that one direction -- hide the whole route, not just that branch.
   if (filters.hideSpan && isHiddenByIrregularFilter(p)) return false;
-  // The map's qualifying-segment overlay needs routes that fail at the route level so it can
-  // inspect their real per-stop and shared-core frequency. This opt-in skips only frequency;
-  // agency, day, mode, irregular-service, and live filters still apply.
   if (options?.skipFrequency) return true;
   // When a specific period is active, use the route's worst-direction headway for that period
   // (falling back to the branch's own headwayByPeriod) -- both directions must qualify, not just
-  // this one branch. Stop-specific metrics are deliberately not used here: they belong to the
-  // stop card, not the route-level filter or route card.
+  // this one branch. minStopHeadwayByPeriod is deliberately NOT used as a fallback here: it can
+  // reflect a shared-core combined frequency, or one good stop, that only applies to part of the
+  // route -- letting it drive pass/fail without clipping geometry to match would show a partial
+  // route as if the whole thing qualified (#314/#315). The #317 overlay is the one place that
+  // wants exactly those partial routes, and it opts in via skipFrequency above.
   if (filters.period && filters.period !== 'all') {
     const periodHw = effectiveRouteHeadway(p, filters.period);
     if (periodHw != null) {
@@ -170,7 +179,7 @@ export function passesRouteFilter(
     // No period data — fall through to all-day check below.
   }
   // All-day check: use worst-direction headway (AI-182) so both directions must qualify.
-  // Falls back to the route's own headway when no direction summary exists.
+  // Falls back to minStopHeadway for routes without bidirectional data.
   const filterHw = effectiveRouteHeadway(p, 'all');
   if (filterHw != null) {
     if (filterHw > filters.maxHeadway) return false;
@@ -185,6 +194,45 @@ export function passesRouteFilter(
     }
   }
   return true;
+}
+
+/**
+ * A route is represented by one or more direction/branch features. Keep route
+ * selection aligned with the agency list: one qualifying feature is enough for
+ * the route to be considered inside the active filter.
+ */
+export function anyFeaturePassesRouteFilter(
+  features: GeoJSON.Feature[],
+  slug: string,
+  filters: Parameters<typeof passesRouteFilter>[2],
+  routesForStop: { slug: string; routeIds: Set<string> } | null,
+): boolean {
+  return features.some(feature => passesRouteFilter(
+    feature.properties as ShapeProperties,
+    slug,
+    filters,
+    routesForStop,
+  ));
+}
+
+function filterAgencyLayers(
+  layers: AgencyLayers,
+  filters: Parameters<typeof passesRouteFilter>[2],
+  routesForStop: { slug: string; routeIds: Set<string> } | null,
+  options?: { skipFrequency?: boolean },
+): AgencyLayers {
+  const result: AgencyLayers = {};
+  for (const [slug, fc] of Object.entries(layers)) {
+    const filteredFeatures = fc.features.filter(feature => passesRouteFilter(
+      feature.properties as ShapeProperties,
+      slug,
+      filters,
+      routesForStop,
+      options,
+    ));
+    if (filteredFeatures.length > 0) result[slug] = { ...fc, features: filteredFeatures };
+  }
+  return result;
 }
 
 // bbox per feature: [minLon, minLat, maxLon, maxLat]; cached per feature object
@@ -317,31 +365,33 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
+  // Feeds the #317 qualifying-segment overlay (computeFrequencySegmentOverlay), which needs
+  // partial-match routes the frequency check would otherwise exclude entirely -- see
+  // skipFrequency's doc comment on passesRouteFilter. maxHeadway/period are intentionally not
+  // deps here since skipFrequency means they no longer affect this computation.
   const filteredLayers = useMemo(() => {
-    const result: AgencyLayers = {};
-    for (const [slug, fc] of Object.entries(layers)) {
-      const features = fc.features.filter(f => passesRouteFilter(
-        f.properties as unknown as ShapeProperties,
-        slug,
-        filters,
-        routesForStop,
-        { skipFrequency: true },
-      ));
-      if (features.length > 0) result[slug] = { ...fc, features };
-    }
-    return result;
-  // Frequency is intentionally excluded: this is the input for the segment overlay.
+    return filterAgencyLayers(layers, filters, routesForStop, { skipFrequency: true });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layers, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
 
+  // Full map filter for the local route fallback. Unlike filteredLayers above, this includes
+  // the active frequency threshold; filteredLayers intentionally skips it for partial segments.
+  const mapFilteredLayers = useMemo(() => {
+    return filterAgencyLayers(layers, filters, routesForStop);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
+
   const stats = useMemo(() => {
-    if (allFeatures.length === 0) return null;
+    // Do not publish a catalog-wide count while the map has not reported its first viewport.
+    // Agency layers can arrive before MapLibre emits moveend, which used to make the badge
+    // briefly count every loaded route instead of only routes in view (#382).
+    if (allFeatures.length === 0 || !deferredBounds) return null;
     // Scope both counts to the viewport so "on screen" and coverage stay meaningful when zoomed in.
     // Use bbox-only intersection (cached) — full vertex scans on every pan were a main-thread
     // hitch. Badge may slightly over-count L-shaped routes whose box overlaps the view.
     // Restrict to the active service day — the map only draws the selected day's features,
     // so counting other days' variants inflates the badge (e.g. weekday-only routes on a Sunday).
-    const onScreen = (f: GeoJSON.Feature) => !deferredBounds || inViewport(f, deferredBounds);
+    const onScreen = (f: GeoJSON.Feature) => inViewport(f, deferredBounds);
     const activeDay = (f: GeoJSON.Feature) => {
       const d = (f.properties as any).day;
       return d === undefined || d === day;
@@ -414,6 +464,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     // all (#318), not just features that are themselves span-tier.
     if (hideSpan) {
       clauses.push(['all',
+        ['!=', ['coalesce', ['get', 'serviceClass'], ['get', 'tier'], ''], 'irregular'],
         ['!=', ['coalesce', ['get', 'tier'], ''], 'span'],
         ['!=', ['coalesce', ['get', 'routeHasIrregularDirection'], false], true],
       ]);
@@ -438,5 +489,5 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agencies, day, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
-  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, routesForStop, tileFilter };
+  return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter };
 }

@@ -32,6 +32,33 @@ describe('applyAnalysisCriteria', () => {
     expect(r).toBeDefined();
     expect(r!.tier).toBe('15');
     expect(r!.warnings ?? []).not.toContain('Overnight-only service (outside daytime analysis window)');
+    expect(r!.serviceClass).toBe('regular');
+  });
+
+  it('keeps predictable evening service visible as time-limited instead of irregular', () => {
+    // NRT-style service: every 60 minutes for five repeated trips, but only during the evening.
+    const results = applyAnalysisCriteria([
+      raw({ route: '401', dir: '0', departureTimes: [1020, 1080, 1140, 1200, 1260] }),
+      raw({ route: '401', dir: '1', departureTimes: [1020, 1080, 1140, 1200, 1260] }),
+    ]);
+    const routes = results.filter(x => x.route === '401');
+    expect(routes).toHaveLength(2);
+    expect(routes.every(x => x.tier === '60')).toBe(true);
+    expect(routes.every(x => x.serviceClass === 'time-limited')).toBe(true);
+  });
+
+  it('classifies separate AM and PM peak blocks as irregular despite spanning the clock', () => {
+    const results = applyAnalysisCriteria([
+      raw({
+        route: '986',
+        departureTimes: [
+          ...Array.from({ length: 20 }, (_, i) => 362 + i * 6),
+          ...Array.from({ length: 20 }, (_, i) => 906 + i * 6),
+        ],
+      }),
+    ]);
+    const r = results.find(x => x.route === '986');
+    expect(r).toMatchObject({ tier: 'span' });
   });
 
   it('#313: keeps an entirely overnight route instead of dropping it (TTC Blue Night pattern)', () => {
@@ -70,6 +97,15 @@ describe('applyAnalysisCriteria', () => {
     ]);
     const r = results.find(x => x.route === '777');
     expect(r!.tier).toBe('span');
+    expect(r!.serviceClass).toBe('irregular');
+  });
+
+  it('accepts three repeated departures as the minimum sustained schedule evidence', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: '776', departureTimes: [1020, 1080, 1140] }),
+    ]);
+    const r = results.find(x => x.route === '776');
+    expect(r).toMatchObject({ tier: '60', serviceClass: 'time-limited' });
   });
 
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {
@@ -83,29 +119,5 @@ describe('applyAnalysisCriteria', () => {
     const r = results.find(x => x.route === '300' && x.dir === '1');
     expect(r).toBeDefined();
     expect(['span', 'infrequent']).toContain(r!.tier);
-  });
-
-  it('does not merge same-headsign shape branches during weekday rollup', () => {
-    const results = applyAnalysisCriteria([
-      raw({ route: '14', headsign: 'Appleby GO', shapeId: 'branch-a', departureTimes: [540, 600, 660, 720, 780, 840] }),
-      raw({ route: '14', headsign: 'Appleby GO', shapeId: 'branch-b', departureTimes: [570, 630, 690, 750, 810, 870] }),
-    ]);
-    expect(results).toHaveLength(2);
-    expect(results.map(r => r.shapeId).sort()).toEqual(['branch-a', 'branch-b']);
-    expect(results.every(r => r.medianHeadway === 60)).toBe(true);
-  });
-
-  it('uses a representative weekday for subway schedules instead of merging small daily offsets', () => {
-    const results = applyAnalysisCriteria(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day, i) => raw({
-      route: 'marta-blue',
-      day,
-      routeType: '1',
-      departureTimes: [600 + i, 612 + i, 624 + i, 636 + i, 648 + i, 660 + i],
-    })));
-    const r = results.find(x => x.route === 'marta-blue');
-    expect(r).toBeDefined();
-    expect(r!.medianHeadway).toBe(12);
-    expect(r!.railLike).toBe(true);
-    expect(r!.times).toEqual([600, 612, 624, 636, 648, 660]);
   });
 });

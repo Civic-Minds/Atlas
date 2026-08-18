@@ -206,6 +206,13 @@ export function routeMatchesAgencyFilter(r: RouteRow, filter: AgencyRouteFilterK
   return true;
 }
 
+export function buildAgencyRouteBuckets(routes: RouteRow[]): { matching: RouteRow[]; other: RouteRow[] } {
+  return {
+    matching: routes.filter(route => route.matchesFilter),
+    other: routes.filter(route => !route.matchesFilter),
+  };
+}
+
 interface Props {
   agency: Agency;
   layers: AgencyLayers;
@@ -289,16 +296,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     return routes.filter(r => routeMatchesAgencyFilter(r, activeFilter));
   }, [routes, activeFilter]);
 
-  const matchingRoutes = useMemo(
-    () => filteredRoutes.filter(r => r.matchesFilter),
-    [filteredRoutes],
-  );
-  const otherRoutes = useMemo(
-    () => filteredRoutes.filter(r => !r.matchesFilter),
+  const { matching: matchingRoutes, other: otherRoutes } = useMemo(
+    () => buildAgencyRouteBuckets(filteredRoutes),
     [filteredRoutes],
   );
   const hasFilterSplit = otherRoutes.length > 0 && maxHeadway !== Infinity;
-  const showOthersExpanded = showOtherRoutes || matchingRoutes.length === 0;
+  const showOthersExpanded = showOtherRoutes;
 
   useEffect(() => {
     setShowOtherRoutes(false);
@@ -418,8 +421,19 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           </>
           )}
-          {(agency.feedReviewStatus === 'review' || agency.overrideNote) && onInfoOpen && (
+          {(agency.feedReviewStatus === 'review' || agency.overrideNote || agency.rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+              {agency.rolloutNotice && (
+                <CardHelpNotice
+                  message={agency.rolloutNotice}
+                  onLearnMore={() => onInfoOpen('about', {
+                    helpTopic: 'beta-rollout',
+                    agencyName: agency.name,
+                    rolloutNotice: agency.rolloutNotice,
+                    rolloutIssueUrl: agency.rolloutIssueUrl,
+                  })}
+                />
+              )}
               {agency.feedReviewStatus === 'review' && !agency.overrideNote && (
                 <CardHelpNotice
                   message="New schedule data is being verified."

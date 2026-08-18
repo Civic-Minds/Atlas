@@ -142,6 +142,7 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 |--------|------|--------|--------|-------|
 | blocked | `peterborough` | Peterborough Transit | Ontario | No public URL; tmix 404; not in MDB |
 | blocked | `brantford` | Brantford Transit | Ontario | No public URL; tmix 404; not in MDB |
+| blocked | `brockville` | Brockville Transit | Ontario | Official site publishes schedules and maps, but no public static GTFS URL found; not in MDB |
 | blocked | `cape-breton` | Transit Cape Breton | Nova Scotia | No public GTFS found |
 | blocked | `sts-saguenay` | STS Saguenay | Quebec | Données Québec points at STS Sherbrooke host; no Saguenay zip |
 | blocked | `sttr` | STTR Trois-Rivières | Quebec | Feed dead — see KNOWN_ISSUES |
@@ -213,6 +214,8 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 ## France expansion — 2026-07-19 speedrun (dry-run candidates, still hidden)
 
 ~142 French cities dry-run validated and added as `hiddenInProduction` / `pmtilesPending` across two batches — major metros (Lyon, Marseille, Toulouse, Nice, Cannes, Limoges, …) plus mid-size networks in every métropole région. Wrong-geo matches and stops-only feeds rejected (not added). No live R2 publish — country launch still required.
+
+**2026-08-15 audit:** do not unhide the batch yet. The candidate feed registry has drifted: 20 URLs return 404, only 5 candidate artifacts are in `atlas-staging`, and fresh Metz/Rennes dry-runs still produce review flags. Metz is the current pilot candidate; Rennes and the broad France launch remain on hold pending feed refresh and QA.
 
 ## France expansion — blocked (no shapes)
 

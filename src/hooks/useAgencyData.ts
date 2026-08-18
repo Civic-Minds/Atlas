@@ -6,15 +6,16 @@ import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
-import type { RouteDataQualityWarning } from '../../shared/routeDataQuality';
 
 export type { HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodRange, HeadwayByPeriodSustained };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
 export interface ShapeProperties {
   routeId: string;
+  routeBranch?: string | null;
   directionId: number;
   tier: string | null;
+  serviceClass?: 'regular' | 'time-limited' | 'irregular';
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
   /** Typical scheduled gap range inside each period. */
@@ -23,11 +24,10 @@ export interface ShapeProperties {
   maxGapByPeriod?: HeadwayByPeriodMaxGap;
   /** #281: whether each period's own median fairly describes its gaps. */
   headwayByPeriodSustained?: HeadwayByPeriodSustained;
+  routeDataQualityWarning?: import('../../shared/routeDataQuality').RouteDataQualityWarning;
   headwayByHour?: HeadwayByHour;
   routeShortName: string | null;
   routeLongName: string | null;
-  routeDataQualityWarning?: RouteDataQualityWarning;
-  routeBranch?: string | null;
   agencyName?: string;
   headsign?: string | null;
   busSubType?: 'brt' | 'express' | 'coach' | 'local';
@@ -214,7 +214,7 @@ export function useAgencyData(
           return;
         }
 
-        const arts = getAgencyArtifactUrls(agency.slug);
+        const arts = getAgencyArtifactUrls(agency.slug, { betaOnly: agency.betaOnly });
         const cUrl = agency.corridorsUrl || arts.corridorsUrl;
         fetchAgencyCorridors(agency.slug, cUrl)
           .then(data => {

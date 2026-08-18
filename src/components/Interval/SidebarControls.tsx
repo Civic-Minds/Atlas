@@ -38,7 +38,7 @@ import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
-import { isStaleProductionFeed } from '../../../shared/feedAvailability';
+import { isFeedExpired } from '../../utils/feedFreshness';
 
 interface SidebarControlsProps {
   query: string;
@@ -80,7 +80,6 @@ interface SidebarControlsProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   selectedRouteOutOfFilter?: boolean;
-  selectedRouteHasQualifyingSection?: boolean;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
@@ -127,7 +126,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   hoveredBranch,
   setHoveredBranch,
   selectedRouteOutOfFilter = false,
-  selectedRouteHasQualifyingSection = false,
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
@@ -242,16 +240,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // Save recently viewed route
   useEffect(() => {
     if (!selectedRoute) return;
-    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
+    const [slug, routeId] = selectedRoute.split('::');
     const fc = nonCorridorLayers[slug];
     if (!fc) return;
     const feat = fc.features.find(f => {
       const p = f.properties as any;
-      return p.routeId === routeId && (p.routeBranch ?? undefined) === routeBranch && (p.day === undefined || p.day === currentDay);
+      return p.routeId === routeId && (p.day === undefined || p.day === currentDay);
     });
     if (feat) {
       const facts = buildRouteFacts(feat.properties as ShapeProperties, slug);
-      const shortName = facts.routeBranch ? `${facts.shortName} ${facts.routeBranch}` : facts.shortName;
+      const shortName = facts.shortName;
       const longName = facts.longName || '';
       const agencyName = shortenAgencyName(facts.agencyName);
 
@@ -295,7 +293,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           })
           .map(candidate => candidate.properties as ShapeProperties);
         const headway = routeListDisplayHeadway(routeFeatures, period) ?? 999;
-        const shortName = facts.routeBranch ? `${facts.shortName} ${facts.routeBranch}` : facts.shortName;
+        const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
         routes.push({ key, shortName, longName, agencyName, headway });
@@ -310,17 +308,17 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [notableRoutes, recentlyViewed]);
 
   const headwayForRouteKey = useCallback((key: string): number | null => {
-    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(key);
+    const [slug, routeId] = key.split('::');
     const fc = nonCorridorLayers[slug];
     const feat = fc?.features.find(f => {
       const p = f.properties as ShapeProperties;
-      return p.routeId === routeId && (p.routeBranch ?? undefined) === routeBranch && !(p as { stopId?: string }).stopId;
+      return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return null;
     const routeFeatures = fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
-        return !p.stopId && p.routeId === routeId && (p.routeBranch ?? undefined) === routeBranch && (p.day === undefined || p.day === currentDay);
+        return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === currentDay);
       })
       .map(candidate => candidate.properties as ShapeProperties) ?? [];
     return routeListDisplayHeadway(routeFeatures, period);
@@ -409,7 +407,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return {
       ...first,
       agencySlug: slug,
-      routeShortName: firstFacts.routeBranch ? `${firstFacts.shortName} ${firstFacts.routeBranch}` : firstFacts.shortName,
+      routeShortName: firstFacts.shortName,
       routeLongName: firstFacts.longName,
       directions,
       features,
@@ -927,7 +925,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const routeBaseFare = fareView && routeSlug
     ? (((currentRoute as any).baseFare as number | undefined) ?? fareOverrides[routeSlug]?.adult ?? routeAgency?.fare ?? null)
     : null;
-  const routeIsStale = routeAgency ? isStaleProductionFeed(routeAgency) : false;
+  const routeIsStale = (() => {
+    return isFeedExpired(routeAgency?.lastFeedExpiry);
+  })();
   const expDateStr = (() => {
     const exp = routeAgency?.lastFeedExpiry;
     if (!exp || exp.length !== 8) return '';
@@ -972,6 +972,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       {(panelStop || panelRoute || hasSearchResults) && <div
         ref={scrollRef}
         onScroll={checkScroll}
+        data-report-anchor="true"
         className={`relative flex-1 min-h-0 ${FLOATING_CARD} px-4 pt-4 pb-2 transition-colors ${TRANSITION_BASE} overflow-y-auto overflow-x-hidden custom-scrollbar`}
       >
         {panelStop && (
@@ -1059,7 +1060,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
-                  selectedRouteHasQualifyingSection={selectedRouteHasQualifyingSection}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}

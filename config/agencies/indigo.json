@@ -1,0 +1,14 @@
+{
+  "slug": "indigo",
+  "name": "IndiGO",
+  "region": "Pennsylvania",
+  "center": [
+    40.6215,
+    -79.1525
+  ],
+  "feedUrl": "https://indigobus.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://www.indigobus.com/",
+  "cities": [
+    "Indiana, Pennsylvania"
+  ]
+}

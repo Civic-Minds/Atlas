@@ -216,10 +216,7 @@ export default function Corridors({
   }, [agencies, active, stopsReady]);
 
   useEffect(() => {
-    if (!fromStop || !toStop) {
-      setGeoLoading(false);
-      return;
-    }
+    if (!fromStop || !toStop) return;
 
     const fromNorm = fromStop.displayName.toLowerCase();
     const toNorm = toStop.displayName.toLowerCase();
@@ -251,37 +248,31 @@ export default function Corridors({
     const toFetch = agencies.filter(
       a => slugsNeeded.has(a.slug) && a.url && !loadedGeoSlugs.current.has(a.slug),
     );
-    if (toFetch.length === 0) {
-      setGeoLoading(false);
-      return;
-    }
+    if (toFetch.length === 0) return;
 
     let cancelled = false;
     setGeoLoading(true);
 
     (async () => {
-      try {
-        const geoResults = await Promise.allSettled(
-          toFetch.map(async a => {
-            const geo = await fetchAgencyGeo(a);
-            return { slug: a.slug, features: (geo.features ?? []) as GeoJsonAgency['features'] };
-          }),
-        );
+      const geoResults = await Promise.allSettled(
+        toFetch.map(async a => {
+          const geo = await fetchAgencyGeo(a);
+          return { slug: a.slug, features: (geo.features ?? []) as GeoJsonAgency['features'] };
+        }),
+      );
 
-        if (cancelled) return;
+      if (cancelled) return;
 
-        setAgencyFeatures(prev => {
-          const bySlug = new Map(prev.map(entry => [entry.slug, entry]));
-          for (const r of geoResults) {
-            if (r.status === 'fulfilled') bySlug.set(r.value.slug, r.value);
-            else console.warn('Corridors: geo load failed', r.reason);
-          }
-          return [...bySlug.values()];
-        });
-        for (const a of toFetch) loadedGeoSlugs.current.add(a.slug);
-      } finally {
-        if (!cancelled) setGeoLoading(false);
-      }
+      setAgencyFeatures(prev => {
+        const bySlug = new Map(prev.map(entry => [entry.slug, entry]));
+        for (const r of geoResults) {
+          if (r.status === 'fulfilled') bySlug.set(r.value.slug, r.value);
+          else console.warn('Corridors: geo load failed', r.reason);
+        }
+        return [...bySlug.values()];
+      });
+      for (const a of toFetch) loadedGeoSlugs.current.add(a.slug);
+      setGeoLoading(false);
     })();
 
     return () => { cancelled = true; };
@@ -312,10 +303,6 @@ export default function Corridors({
       const fromIds = new Set<string>();
       const toIds = new Set<string>();
       for (const [id, s] of Object.entries(agencyStops)) {
-        // Prefer the exact stop id the user picked (catalog dedupes by name; id is authoritative
-        // for that agency). Fall back to normalized-name match for multi-agency stops.
-        if (slug === fromStop.agencySlug && id === fromStop.stopId) fromIds.add(id);
-        if (slug === toStop.agencySlug && id === toStop.stopId) toIds.add(id);
         const norm = normalizeStopName(s.name).toLowerCase();
         if (norm.includes(fromNorm)) fromIds.add(id);
         if (norm.includes(toNorm)) toIds.add(id);
@@ -400,11 +387,7 @@ export default function Corridors({
       }
       const g = groups.get(key)!;
       g.branches.push(r);
-      // Sort by FROM-stop headway (where the rider waits); TO-stop is inflated at multi-route hubs.
-      const fromVals = Object.values(r.fromStopHeadwayByPeriod).filter((v): v is number => v != null);
-      const hw = fromVals.length > 0
-        ? Math.min(...fromVals)
-        : (r.toStopHeadway ?? r.headway);
+      const hw = r.toStopHeadway ?? r.headway;
       if (hw != null && (g.bestHeadway == null || hw < g.bestHeadway)) g.bestHeadway = hw;
     }
 
@@ -519,38 +502,27 @@ export default function Corridors({
     toRef.current?.focus();
   }
 
-  function swapStops() {
-    setFromStop(toStop);
-    setToStop(fromStop);
-    setFromQuery(toQuery);
-    setToQuery(fromQuery);
-    setFromFocused(false);
-    setToFocused(false);
-  }
-
   if (!active) return null;
 
-  // absolute inset-0 overlays Interval (sibling in main). relative h-full used to stack *below*
-  // Interval in normal flow, so the panel rendered off-screen below the fold.
+  const panelLeft = sidebarLeft ?? SIDEBAR_LEFT_FALLBACK;
+
+  // Intentionally invisible, not a bug: this wrapper is `relative` rather than `absolute`,
+  // so in normal document flow it renders below Interval's full-height map instead of
+  // overlaying it — the panel below never appears on screen. Left this way on purpose
+  // because Corridors isn't good enough as a feature yet (Ryan, 2026-07-28); don't "fix" the
+  // positioning without checking whether Corridors is actually ready to ship first. The
+  // working overlay pattern (root element itself `absolute`, no `relative` wrapper) is in
+  // History.tsx and NightService.tsx.
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" inert={!active}>
+    <div className="relative h-full w-full overflow-hidden pointer-events-none" inert={!active}>
       <div
         ref={panelRef}
         className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col pointer-events-auto ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
         <div className={PANEL_TITLE_BAR}>
+          <ArrowLeftRight className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Corridors</span>
-          <button
-            type="button"
-            onClick={swapStops}
-            disabled={!fromStop && !toStop && !fromQuery && !toQuery}
-            aria-label="Swap from and to"
-            title="Swap from and to"
-            className="ml-auto p-1 rounded-md text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          >
-            <ArrowLeftRight className="w-3 h-3" />
-          </button>
         </div>
 
         <div className="p-3 flex flex-col gap-2 border-b border-[var(--border-primary)] shrink-0">

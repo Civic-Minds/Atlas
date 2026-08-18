@@ -1,30 +1,31 @@
 import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, DIAGNOSTICS_ENABLED, BETA_BUILD } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
+const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Corridors = React.lazy(() => import('./apps/Corridors'));
 import type { AppId } from './components/AppDrawer';
+import ToolsMenu from './components/ToolsMenu';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
 import InfoPanel, { type Tab, type InfoFeatureFilter, type OpenInfoOptions, type HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
-import { agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
+import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
-import type { CorrectionNotice } from '../shared/correctionNotices';
-import { isActiveProductionFeed } from '../shared/feedAvailability';
 import AppUpdateBanner from './components/AppUpdateBanner';
+import type { FeedQuality } from '../shared/feedQuality';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -53,15 +54,22 @@ export interface Agency {
   lastRefreshedAt?: string | null;
   excludeRouteShortNames?: string[];
   staged?: boolean;
-  /** Excluded from the production build (real, processed data — unlike `staged`) until country coverage is validated. Visible in local dev for QA (#222). */
+  /** Excluded from production until country coverage is validated. Visible in local dev, and in beta when betaOnly is set. */
   hiddenInProduction?: boolean;
+  /** Visible on the deployed beta build while the agency is being validated for production. */
+  betaOnly?: boolean;
+  /** Rider-facing notice shown on the agency card while betaOnly is active. */
+  rolloutNotice?: string;
+  /** GitHub issue documenting the rollout validation. */
+  rolloutIssueUrl?: string;
+  /** Base route tiles are not published yet; beta renders this agency from its local GeoJSON. */
+  pmtilesPending?: boolean;
   issueUrl?: string;
   issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
-  overrideNoteRouteIds?: string[];
-  correctionNotices?: CorrectionNotice[];
   feedReviewStatus?: 'review' | 'verified';
+  feedQuality?: FeedQuality;
   fare?: number;
   gtfsFares?: boolean;
   fareUrl?: string;
@@ -84,6 +92,7 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/fares': 'fares',
   '/apps/history': 'history',
   '/apps/live': 'live',
+  '/apps/night': 'night',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -92,6 +101,7 @@ const APP_TO_PATH: Record<AppId, string> = {
   fares: '/apps/fares',
   history: '/apps/history',
   live: '/apps/live',
+  night: '/apps/night',
 };
 
 export default function App() {
@@ -102,7 +112,8 @@ export default function App() {
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
   const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED)
-    || (routedApp === 'corridors' && !CORRIDORS_ENABLED);
+    || (routedApp === 'corridors' && !CORRIDORS_ENABLED)
+    || (routedApp === 'night' && !BETA_BUILD);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
   useEffect(() => {
@@ -116,6 +127,7 @@ export default function App() {
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
+  const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
   const [query, setQuery] = useState('');
   // Search scans / map filters / prefetch run from this so keystrokes can paint first.
   const deferredQuery = useDeferredValue(query);
@@ -140,6 +152,8 @@ export default function App() {
       overrideNote: opts.overrideNote,
       issueUrl: opts.issueUrl,
       issueUrls: opts.issueUrls,
+      rolloutNotice: opts.rolloutNotice,
+      rolloutIssueUrl: opts.rolloutIssueUrl,
     } : null);
     setInfoOpen(true);
   }, []);
@@ -169,6 +183,21 @@ export default function App() {
     }
     return true;
   });
+  const [hideLowQuality, setHideLowQuality] = useState(() => {
+    if (!BETA_BUILD || typeof window === 'undefined') return false;
+    return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
+  });
+
+  useEffect(() => {
+    if (BETA_BUILD) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
+  }, [hideLowQuality]);
+
+  const visibleAgencies = useMemo(
+    () => hideLowQuality
+      ? agencies.filter(a => a.feedQuality?.status !== 'degraded' && a.feedQuality?.status !== 'unusable')
+      : agencies,
+    [agencies, hideLowQuality],
+  );
 
   const [searchFocused, setSearchFocused] = useState(false);
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -192,6 +221,10 @@ export default function App() {
       const d = sp.get('day') || sp.get('d');
       if (d && (DAY_TYPES as readonly string[]).includes(d)) return d as DayType;
     } catch {}
+    try {
+      const s = localStorage.getItem('atlas_pref_day');
+      if (s && (DAY_TYPES as readonly string[]).includes(s)) return s as DayType;
+    } catch {}
     return getNowDay();
   });
 
@@ -202,6 +235,7 @@ export default function App() {
   const inCorridors = activeApp === 'corridors';
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
+  const inNight = activeApp === 'night';
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -228,21 +262,17 @@ export default function App() {
     : inFares ? 'Search agencies'
     : inHistory ? 'Find an agency…'
     : inCorridors ? 'Search corridors…'
+    : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
   function handleSearchClear() {
     setQuery('');
   }
 
-  // Stop-card "Corridors from here…" — seed the From field once Corridors mounts.
-  const [pendingCorridorsFrom, setPendingCorridorsFrom] = useState<StopEntry | null>(null);
   const handleDirectFromStop = useCallback((stop: StopEntry) => {
-    setPendingCorridorsFrom(stop);
+    setQuery(stop.displayName);
     setActiveApp('corridors');
-  }, []);
-  const handleCorridorsFromHandled = useCallback(() => {
-    setPendingCorridorsFrom(null);
-  }, []);
+  }, [setQuery]);
 
   useEffect(() => {
     const measure = () => {
@@ -273,8 +303,8 @@ export default function App() {
     }
   }, [inHistory]);
 
-  // Sync day filter to URL (for refresh/share of active view). URL wins on load if present;
-  // otherwise the initial state uses today's day.
+  // Sync day filter to URL (for refresh/share of active view). URL wins on load if present
+  // (see initializer); effects ensure current value (from LS/default/URL) is reflected.
   // 'Weekday' (common default) omitted for short URLs.
   useEffect(() => {
     syncUrlParams({ day: day !== 'Weekday' ? day : null });
@@ -289,10 +319,10 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => isActiveProductionFeed(a) || (import.meta.env.DEV && !a.staged && a.hiddenInProduction))
+          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
           .map((a: Agency) => {
             if (!a.url) {
-              const arts = getAgencyArtifactUrls(a.slug);
+              const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
               return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
             }
             return a;
@@ -316,10 +346,14 @@ export default function App() {
       .catch(() => {});
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
-      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) =>
-        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistoryExplore).map(a => a.slug))),
-      )
-      .catch(() => setHistoryAgencySlugs(new Set()));
+      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) => {
+        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug)));
+        setHistoryExploreAgencyCount(data.filter(agencyQualifiesForHistoryExplore).length);
+      })
+      .catch(() => {
+        setHistoryAgencySlugs(new Set());
+        setHistoryExploreAgencyCount(0);
+      });
   }, []);
 
   useEffect(() => {
@@ -417,7 +451,21 @@ export default function App() {
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
-            {historyAgencySlugs && <span className="font-normal text-[var(--text-dim)]">{historyAgencySlugs.size}</span>}
+            {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
+          </a>
+        )}
+
+        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
+
+        {BETA_BUILD && (
+          <a
+            href={inNight ? '/' : '/apps/night'}
+            aria-label={inNight ? 'Back to frequency map' : 'Night service'}
+            aria-pressed={inNight}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+          >
+            <Moon className="w-3.5 h-3.5" />
+            <span>Night Service</span>
           </a>
         )}
 
@@ -426,6 +474,7 @@ export default function App() {
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <div ref={headerPortalRef} className="flex items-center gap-2" />
+        {DIAGNOSTICS_ENABLED && <ToolsMenu />}
         <button
           onClick={() => openInfo('about')}
           aria-label="About Atlas"
@@ -435,8 +484,7 @@ export default function App() {
         </button>
       </div>
       </div>
-
-      <AppUpdateBanner />
+      {BETA_BUILD && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
         {agenciesLoadState === 'loading' ? (
@@ -458,10 +506,10 @@ export default function App() {
                   })
                   .then((data: { agencies: Agency[] }) => {
                     const enriched = data.agencies
-                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV))
+                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
                       .map((a: Agency) => {
                         if (!a.url) {
-                          const arts = getAgencyArtifactUrls(a.slug);
+                          const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
                           return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
                         }
                         return a;
@@ -481,10 +529,10 @@ export default function App() {
             <Interval
               agencies={
                 inHistory && historyAgencySlugs 
-                  ? agencies.filter(a => historyAgencySlugs.has(a.slug)) 
-                  : inFares 
-                    ? agencies.filter(a => a.gtfsFares) 
-                    : agencies
+                  ? visibleAgencies.filter(a => historyAgencySlugs.has(a.slug))
+                : inFares
+                    ? visibleAgencies.filter(a => a.gtfsFares)
+                    : visibleAgencies
               }
               lightMode={lightMode}
               setLightMode={setLightMode}
@@ -494,14 +542,16 @@ export default function App() {
               resetViewKey={resetViewKey}
               showUi={inFrequency}
               showSelectionUi={inLive}
-              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors}
+              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight}
               liveRoutesOnly={inLive}
               forceShowCorridors={inCorridors}
               fareView={inFares}
+              nightServiceView={inNight}
+              showMapContext={BETA_BUILD}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
-              hideFilterPanel={inCorridors || inLive || inHistory || inFares}
+              hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -518,16 +568,17 @@ export default function App() {
               sidebarLeft={sidebarLeft}
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}
+              hideLowQuality={hideLowQuality}
+              setHideLowQuality={setHideLowQuality}
+              feedQualityEnabled={BETA_BUILD}
             />
             {CORRIDORS_ENABLED && (
               <React.Suspense fallback={null}>
                 <Corridors
-                  agencies={agencies}
+                  agencies={visibleAgencies}
                   day={day}
                   active={inCorridors}
                   sidebarLeft={sidebarLeft}
-                  initialFrom={pendingCorridorsFrom}
-                  onInitialFromHandled={handleCorridorsFromHandled}
                 />
               </React.Suspense>
             )}
@@ -536,11 +587,16 @@ export default function App() {
                 <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
+            {BETA_BUILD && (
+              <React.Suspense fallback={null}>
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} />
+              </React.Suspense>
+            )}
             {LIVE_ENABLED && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <React.Suspense fallback={null}>
                   <LiveVehicles
-                    agencies={agencies}
+                  agencies={visibleAgencies}
                     lightMode={lightMode}
                     setLightMode={setLightMode}
                     active={inLive}
@@ -557,7 +613,7 @@ export default function App() {
           </ErrorBoundary>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={agencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} />
+      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} />
     </div>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

@@ -242,7 +242,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       if (layers[slug] || localLayers[slug]) continue;
       const agency = agencies.find(a => a.slug === slug);
       if (!agency) continue;
-      fetchAgencyGeo({ slug: agency.slug, name: agency.name, url: agency.url ?? '' })
+      fetchAgencyGeo({ slug: agency.slug, name: agency.name, url: agency.url ?? '', betaOnly: agency.betaOnly })
         .then((data: GeoJSON.FeatureCollection) => setLocalLayers(prev => ({ ...prev, [slug]: data })))
         .catch(() => {});
     }
@@ -326,6 +326,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       map.get(key)!.push(v);
     }
 
+    const routeNamesByKey = new Map<string, string>();
+    for (const [slug, collection] of Object.entries({ ...localLayers, ...layers })) {
+      for (const feature of collection.features) {
+        const properties = feature.properties as { routeShortName?: string | null; routeLongName?: string | null } | null;
+        if (!properties?.routeShortName || !properties.routeLongName) continue;
+        routeNamesByKey.set(`${slug}::${properties.routeShortName}`, properties.routeLongName);
+      }
+    }
+
     return [...map.entries()]
       .sort(([keyA], [keyB]) => {
         const [slugA, rsnA] = keyA.split('::');
@@ -341,10 +350,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const earlyCount = vs.filter(v => v.status === 'early').length;
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
-        const displayName = cleanRouteDisplayName(vs[0].displayName || `Route ${routeShortName}`, routeShortName);
+        const displayName = cleanRouteDisplayName(
+          routeNamesByKey.get(`${agencySlug}::${routeShortName}`) || vs[0].displayName || `Route ${routeShortName}`,
+          routeShortName,
+        );
         return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
       });
-  }, [allVehicles, query]);
+  }, [allVehicles, query, layers, localLayers]);
 
   // Viewport-filter the sidebar list: only show routes with at least one vehicle on screen
   const displayedRouteGroups = useMemo(() => {

@@ -1,0 +1,14 @@
+{
+  "slug": "freedom-transit",
+  "name": "Freedom Transit",
+  "region": "Pennsylvania",
+  "center": [
+    40.1739,
+    -80.2464
+  ],
+  "feedUrl": "https://freedom.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://www.freedom-transit.org/",
+  "cities": [
+    "Washington, Pennsylvania"
+  ]
+}

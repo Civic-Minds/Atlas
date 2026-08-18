@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortenAgencyName, titleCase } from '../format';
+import { shortenAgencyName } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -88,12 +88,5 @@ describe('shortenAgencyName', () => {
     const collisions = [...byResult.entries()]
       .filter(([result, slugs]) => slugs.length > 1 && !KNOWN_SHARED_ACRONYMS.has(result));
     expect(collisions, `Multiple distinct agencies collapsed to the same shortened name: ${JSON.stringify(collisions)}`).toEqual([]);
-  });
-});
-
-describe('titleCase', () => {
-  it('preserves KC capitalization in route names', () => {
-    expect(titleCase('KC Streetcar')).toBe('KC Streetcar');
-    expect(titleCase('Kc Streetcar')).toBe('KC Streetcar');
   });
 });

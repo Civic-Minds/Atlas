@@ -6,6 +6,7 @@ Atlas is built from publicly available transit data and publishes the processing
 
 - **[Agencies](./AGENCIES.md)**: Current coverage and regions.
 - **[Live Polling](./LIVE_POLLING.md)**: Live GTFS-RT integration status — active/parked agencies, keys in hand, history archiving.
+- **[History Coverage](./DATA_HISTORY.md)**: Historical headway snapshots backfill log, candidate systems, and deferred agencies.
 - **[Known Issues](./KNOWN_ISSUES.md)**: Current data and coverage limitations.
 
 ## Expansion Planning
@@ -33,4 +34,4 @@ Atlas is built from publicly available transit data and publishes the processing
 - **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency (or a small batch).
 - **[Updating the Map](./MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
 - **[Coverage Gap Discovery](./COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
-- **[Fixing Issues](./FIXING_ISSUES.md)**: Scoping a fix to its blast radius (single agency, a group, or all agencies) and validating accordingly.
+- **[Fixing Issues](../FIXING_ISSUES.md)**: Scoping a fix to its blast radius and choosing the pipeline/data or UI validation runbook.

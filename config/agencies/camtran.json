@@ -1,0 +1,14 @@
+{
+  "slug": "camtran",
+  "name": "CamTran",
+  "region": "Pennsylvania",
+  "center": [
+    40.3267,
+    -78.922
+  ],
+  "feedUrl": "https://live.camtranbus.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://www.camtranbus.com/",
+  "cities": [
+    "Johnstown, Pennsylvania"
+  ]
+}

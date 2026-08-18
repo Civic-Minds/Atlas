@@ -1,20 +1,23 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
-import { LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED } from '../../shared/config';
+import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
+import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED, BETA_BUILD } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
-import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
+import { agencyHistoryTier, agencyQualifiesForHistory, agencyQualifiesForHistoryExplore, historyTierAgencyLabel } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
+import { isFeedExpired } from '../utils/feedFreshness';
+import { qualityStatusLabel } from '../../shared/feedQuality';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'route-data-quality' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
-export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'route-data-quality';
+type AgencyListFilter = InfoFeatureFilter | 'outdated';
+export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout';
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
@@ -24,6 +27,8 @@ export type HelpContext = {
   overrideNote?: string;
   issueUrl?: string;
   issueUrls?: string[];
+  rolloutNotice?: string;
+  rolloutIssueUrl?: string;
 };
 export type OpenInfoOptions = {
   featureFilter?: 'live' | 'history';
@@ -35,6 +40,8 @@ export type OpenInfoOptions = {
   overrideNote?: string;
   issueUrl?: string;
   issueUrls?: string[];
+  rolloutNotice?: string;
+  rolloutIssueUrl?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
@@ -54,6 +61,7 @@ interface Props {
   feedRefreshMeta?: FeedRefreshMeta | null;
   onAgencySelect?: (slug: string) => void;
   onLiveRouteClick?: (slug: string, routeShortName: string) => void;
+  layers?: Record<string, GeoJSON.FeatureCollection>;
 }
 
 function tabToView(tab: Tab): View {
@@ -61,12 +69,12 @@ function tabToView(tab: Tab): View {
   return 'agencies';
 }
 
-export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick }: Props) {
+export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers }: Props) {
   const [view, setView] = useState<View>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
-  const [agencyFeatureFilter, setAgencyFeatureFilter] = useState<InfoFeatureFilter>('all');
+  const [agencyFeatureFilter, setAgencyFeatureFilter] = useState<AgencyListFilter>('all');
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -120,7 +128,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         helpContext?.topic === 'outdated-schedule' ? 'outdated-schedule'
         : helpContext?.topic === 'new-schedule-data' ? 'new-schedule-data'
         : helpContext?.topic === 'corrected-data' ? 'corrected-data'
-        : helpContext?.topic === 'route-data-quality' ? 'route-data-quality'
+        : helpContext?.topic === 'beta-rollout' ? 'beta-rollout'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilter(featureFilter);
@@ -147,10 +155,38 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     return map;
   }, []);
 
+  const liveCoverageBySlug = useMemo(() => {
+    const map = new Map<string, LiveCoverage>();
+    for (const [slug, layer] of Object.entries(layers ?? {})) {
+      const routeNames = new Set<string>();
+      for (const feature of layer.features) {
+        const properties = feature.properties as { routeId?: string; routeShortName?: string | null } | null;
+        if (properties?.routeId && properties.routeShortName) routeNames.add(properties.routeShortName);
+      }
+      const coverage = liveCoverageForRouteNames(slug, routeNames);
+      if (coverage) map.set(slug, coverage);
+    }
+    return map;
+  }, [layers]);
+
   const historyBySlug = useMemo(() => {
     const map = new Map<string, HistoryAgencySummary>();
     for (const a of historyAgencies ?? []) {
-      if (agencyQualifiesForHistoryExplore(a as any)) map.set(a.slug, a);
+      if (agencyQualifiesForHistory(a as any)) map.set(a.slug, a);
+    }
+    return map;
+  }, [historyAgencies]);
+
+  const totalHistoryExploreAgencies = useMemo(
+    () => (historyAgencies ?? []).filter(a => agencyQualifiesForHistoryExplore(a as any)).length,
+    [historyAgencies],
+  );
+
+  const historyTierBySlug = useMemo(() => {
+    const map = new Map<string, 'explore' | 'recent'>();
+    for (const a of historyAgencies ?? []) {
+      const tier = agencyHistoryTier(a as any);
+      if (tier) map.set(a.slug, tier);
     }
     return map;
   }, [historyAgencies]);
@@ -160,6 +196,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     for (const a of agencies) {
       if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) continue;
       if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) continue;
+      if (agencyFeatureFilter === 'outdated' && !isFeedExpired(a.lastFeedExpiry)) continue;
       seen.add(a.region ?? 'Other');
     }
     return [...seen].sort();
@@ -176,6 +213,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     return agencies.filter(a => {
       if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) return false;
       if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) return false;
+      if (agencyFeatureFilter === 'outdated' && !isFeedExpired(a.lastFeedExpiry)) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;
       return a.name.toLowerCase().includes(q)
@@ -205,7 +243,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [filtered]);
 
   const totalLiveAgencies = liveBySlug.size;
-  const totalHistoryAgencies = historyBySlug.size;
+  const agencyFilterOptions: Array<[AgencyListFilter, string]> = [
+    ['all', 'All'],
+    ['live', 'Live'],
+    ['history', 'History'],
+    ...(BETA_BUILD ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
+  ];
 
   const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;
   const selectedLiveRoutes = selectedSlug ? (liveBySlug.get(selectedSlug) ?? []) : [];
@@ -234,7 +277,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'outdated-schedule' ? 'Outdated schedule'
     : view === 'new-schedule-data' ? 'New schedule data'
     : view === 'corrected-data' ? 'Corrected data'
-    : view === 'route-data-quality' ? 'Route data quality'
+    : view === 'beta-rollout' ? 'Beta testing'
     : view === 'sources' ? 'Sources'
     : null;
 
@@ -301,9 +344,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies.
-                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or explore how service changed at ${totalHistoryAgencies}.`}
+                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
                   {LIVE_ENABLED && !HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}.`}
-                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Explore how service changed at ${totalHistoryAgencies}.`}
+                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
                 </p>
                 <div className="space-y-2">
                   <button
@@ -360,11 +403,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   )}
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
-                  {([
-                    ['all', 'All'],
-                    ['live', 'Live'],
-                    ['history', 'History'],
-                  ] as const).map(([id, label]) => {
+                  {agencyFilterOptions.map(([id, label]) => {
                     const on = agencyFeatureFilter === id;
                     return (
                       <button
@@ -419,8 +458,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
-                          const showLiveBadge = hasLive && agencyFeatureFilter !== 'live';
-                          const showHistoryBadge = hasHistory && agencyFeatureFilter !== 'history';
+                          const showLiveBadge = hasLive;
+                          const showHistoryBadge = hasHistory;
+                          const showQualityBadge = a.feedQuality && a.feedQuality.status !== 'healthy';
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
@@ -436,13 +476,25 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   <span className="text-[var(--text-dim)]"> · {secondary}</span>
                                 )}
                               </span>
-                              {(showLiveBadge || showHistoryBadge) && (
+                              {(showLiveBadge || showHistoryBadge || showQualityBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                  {showQualityBadge && (
+                                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border ${a.feedQuality?.status === 'unusable' ? 'text-red-700 bg-red-50 border-red-200' : a.feedQuality?.status === 'degraded' ? 'text-amber-800 bg-amber-50 border-amber-200' : 'text-[var(--text-muted)] bg-[var(--bg-btn)] border-[var(--border-primary)]'}`}>
+                                      {qualityStatusLabel(a.feedQuality!.status)}
+                                    </span>
+                                  )}
                                   {showLiveBadge && (
-                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">Live</span>
+                                    <span
+                                      title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}
+                                      className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]"
+                                    >
+                                      {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
+                                    </span>
                                   )}
                                   {showHistoryBadge && (
-                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">History</span>
+                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                                      {historyTierAgencyLabel(historyTierBySlug.get(a.slug) ?? 'recent')}
+                                    </span>
                                   )}
                                 </div>
                               )}
@@ -600,19 +652,31 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             </div>
           )}
 
-          {view === 'route-data-quality' && (
+          {view === 'beta-rollout' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.agencyName} has a problem in the source map line for this route.
+                  {helpContext.agencyName} is currently available in Atlas beta while its schedule data is being validated.
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Transit agencies publish the map lines Atlas uses to draw routes. Atlas identified a specific problem in this route&apos;s source geometry, so the route stays visible with a warning instead of hiding the entire agency.
+                This coverage is still being checked before it is added to the main Atlas map. Some routes or schedule details may change during testing.
               </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                The line may be incomplete or adjusted. The schedule information is separate from the map geometry.
-              </p>
+              {helpContext?.rolloutIssueUrl && (
+                <a
+                  href={helpContext.rolloutIssueUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                    {helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]
+                      ? `Follow rollout (#${helpContext.rolloutIssueUrl.match(/\/issues\/(\d+)/)?.[1]})`
+                      : 'Follow rollout'}
+                  </span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
+              )}
             </div>
           )}
 
@@ -651,10 +715,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedHistory && (
                     <div>
                       <div className="mb-2">
-                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">History</span>
+                        <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                          {selectedSlug && historyTierBySlug.get(selectedSlug)
+                            ? historyTierAgencyLabel(historyTierBySlug.get(selectedSlug)!)
+                            : 'History'}
+                        </span>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
-                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
+                        {selectedSlug && historyTierBySlug.get(selectedSlug) === 'recent'
+                          ? `Recent frequency snapshots for ${selectedHistory.routes.length} routes${historyYearsText ? ` ${historyYearsText}` : ''}.`
+                          : `Historical frequency data available for ${selectedHistory.routes.length} routes ${historyYearsText}.`}
                       </p>
                     </div>
                   )}

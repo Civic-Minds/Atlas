@@ -10,11 +10,30 @@
   "mdbFeedUrl": null,
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-07-18",
+  "lastRefreshedAt": "2026-08-15",
   "hiddenInProduction": true,
+  "betaOnly": true,
+  "rolloutNotice": "France beta — schedule data is still being validated.",
+  "rolloutIssueUrl": "https://github.com/Civic-Minds/Atlas/issues/389",
   "pmtilesPending": true,
   "websiteUrl": "https://www.lemet.fr/",
   "cities": [
     "Metz, France"
-  ]
+  ],
+  "timezone": "Europe/Paris",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "5 route frequency metrics need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 5,
+      "featureCount": 224
+    },
+    "checkedAt": "2026-08-15"
+  }
 }

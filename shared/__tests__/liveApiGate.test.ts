@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import {
   getLiveRouteConfig,
+  liveCoverageForRouteNames,
   isLiveApiServable,
   isLiveEligibleSlug,
   LIVE_POLLING_ROUTES,
@@ -31,6 +32,21 @@ describe('getLiveRouteConfig / vehiclesOnly', () => {
     expect(halifax.filter(r => r.vehiclesOnly).map(r => r.displayRouteShortName).sort()).toEqual(
       ['2', '4', '5', '7A', '7B', 'FerD'].sort(),
     );
+  });
+});
+
+describe('liveCoverageForRouteNames', () => {
+  it('marks an agency full when every scheduled route is monitored', () => {
+    expect(liveCoverageForRouteNames('halifax', ['1', '2', '4', '5', '7A', '7B', 'FerD'])).toBe('full');
+  });
+
+  it('marks an agency partial when a scheduled route is not monitored', () => {
+    expect(liveCoverageForRouteNames('halifax', ['1', '2', '10'])).toBe('partial');
+  });
+
+  it('returns null until an agency route set is available', () => {
+    expect(liveCoverageForRouteNames('halifax', [])).toBeNull();
+    expect(liveCoverageForRouteNames('not-a-real-agency', ['1'])).toBeNull();
   });
 });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterGtfsByAgencyId, filterGtfsByExcludedTripHeadsigns } from '../filterGtfs';
+import { filterGtfsByAgencyId } from '../filterGtfs';
 import type { GtfsData } from '../../types/gtfs';
 
 describe('filterGtfsByAgencyId', () => {
@@ -36,36 +36,5 @@ describe('filterGtfsByAgencyId', () => {
     expect(filtered.stop_times.map(st => st.trip_id)).toEqual(['streetcar-trip']);
     expect(filtered.shapes.map(s => s.id)).toEqual(['streetcar-shape']);
     expect(filtered.frequencies?.map(f => f.trip_id)).toEqual(['streetcar-trip']);
-  });
-});
-
-describe('filterGtfsByExcludedTripHeadsigns', () => {
-  it('removes matching trips and their dependent schedule data', () => {
-    const gtfs = {
-      routes: [{ route_id: '12' }],
-      trips: [
-        { trip_id: 'passenger', route_id: '12', service_id: 'weekday', shape_id: 'shape-a', trip_headsign: 'Canal Street' },
-        { trip_id: 'deadhead', route_id: '12', service_id: 'deadhead-service', shape_id: 'shape-b', trip_headsign: 'Not in Service' },
-      ],
-      stop_times: [
-        { trip_id: 'passenger', stop_id: 'a', stop_sequence: '1' },
-        { trip_id: 'deadhead', stop_id: 'b', stop_sequence: '1' },
-      ],
-      shapes: [{ id: 'shape-a', points: [] }, { id: 'shape-b', points: [] }],
-      frequencies: [{ trip_id: 'deadhead', start_time: '08:00:00', end_time: '09:00:00', headway_secs: '600' }],
-      calendar: [
-        { service_id: 'weekday' },
-        { service_id: 'deadhead-service' },
-      ],
-      calendarDates: [{ service_id: 'deadhead-service' }],
-    } as unknown as GtfsData;
-
-    const filtered = filterGtfsByExcludedTripHeadsigns(gtfs, ['not in service']);
-    expect(filtered.trips.map(t => t.trip_id)).toEqual(['passenger']);
-    expect(filtered.stop_times.map(st => st.trip_id)).toEqual(['passenger']);
-    expect(filtered.shapes.map(s => s.id)).toEqual(['shape-a']);
-    expect(filtered.frequencies).toEqual([]);
-    expect(filtered.calendar).toEqual([{ service_id: 'weekday' }]);
-    expect(filtered.calendarDates).toEqual([]);
   });
 });

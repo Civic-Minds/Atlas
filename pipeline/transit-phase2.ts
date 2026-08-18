@@ -10,7 +10,7 @@ import {
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
-import { SURFACE_TIER_MAXES } from '../shared/config.js';
+import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 
@@ -216,14 +216,48 @@ export function applyAnalysisCriteria(
         // 2-5am owl route would otherwise get misclassified as span the same way it was
         // missing entirely before this fix). Rely on the ≤90min burst check alone there.
         const coverage = analysisWindowMins > 0 ? spanMins / analysisWindowMins : 0;
-        const isLimitedService = spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
-        const tierRaw = isLimitedService
+        const periodTripCounts = Object.fromEntries(
+            TIME_PERIODS.map(({ key, startHour, endHour }) => [
+                key,
+                windowedTimes.filter(time => time >= startHour * 60 && time < endHour * 60).length,
+            ]),
+        ) as Record<string, number>;
+        // Two separate rush-hour blocks can span most of the clock even though the route has no
+        // useful midday service (e.g. TTC 986). The first-to-last-departure coverage check misses
+        // that interior gap, so treat repeated peak service without repeated midday/evening service
+        // as genuinely irregular. A single stray trip outside the peaks does not make the route
+        // regular; evening-only routes with repeated departures remain time-limited.
+        const hasRepeatedPeakService = periodTripCounts.amPeak >= 3 || periodTripCounts.pmPeak >= 3;
+        const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
+        const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
+        const isLimitedService = isSplitPeakService || spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
+        const determinedTier = determineTier(
+            analysisGaps,
+            analysisWindow.length,
+            spanMins,
+            tiers,
+            criteria.graceMinutes,
+            criteria.maxGraceViolations,
+            criteria.gracePercent,
+            criteria.violationPercent,
+        );
+        // `span` used to combine two different ideas: a genuinely irregular burst (school
+        // service, one or two trips) and a route with a stable schedule that only operates during
+        // one period (NRT's evening routes). Require enough repeated service to distinguish them.
+        // The 07:00–22:00 coverage check remains a coverage signal, not proof of irregularity.
+        // Three repeated departures are the minimum evidence for a schedule; one or two trips
+        // remain irregular even when their single gap happens to match a published tier.
+        const hasSustainedCadence = analysisWindow.length >= 3 && determinedTier !== 'span';
+        const serviceClass = isSplitPeakService
+            ? 'irregular'
+            : isLimitedService
+            ? (hasSustainedCadence ? 'time-limited' : 'irregular')
+            : 'regular';
+        // A regular route that is slower than the published finite tiers is infrequent. Only
+        // genuinely irregular service keeps the span sentinel used by the UI and map filters.
+        const tier = serviceClass === 'irregular'
             ? 'span'
-            : determineTier(analysisGaps, analysisWindow.length, spanMins, tiers, criteria.graceMinutes, criteria.maxGraceViolations, criteria.gracePercent, criteria.violationPercent);
-        // 'span' from determineTier means all-day but no frequency tier fits (e.g. Barrie line, GO Route 11);
-        // distinguish from isLimitedService 'span' (truly peak-only/short-window) so the frontend can
-        // show infrequent routes at "All" frequency while hiding genuinely limited ones.
-        const tier = !isLimitedService && tierRaw === 'span' ? 'infrequent' : tierRaw;
+            : determinedTier === 'span' ? 'infrequent' : determinedTier;
 
         const stats = computeHeadwayStats(analysisWindow);
         
@@ -241,6 +275,7 @@ export function applyAnalysisCriteria(
             avgHeadway: Math.round(stats.avg),
             medianHeadway: Math.round(stats.median),
             tier,
+            serviceClass,
             tripCount: windowedTimes.length,
             gaps: stats.gaps,
             times: windowedTimes,
@@ -293,6 +328,11 @@ export function applyAnalysisCriteria(
         const worstTier = worstTierValue === Infinity ? 'span'
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
+        const serviceClass = entries.some(e => e.result.serviceClass === 'irregular')
+            ? 'irregular'
+            : entries.some(e => e.result.serviceClass === 'time-limited')
+            ? 'time-limited'
+            : 'regular';
 
         const allTimes = entries.flatMap(e => e.result.times);
         const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
@@ -348,6 +388,7 @@ export function applyAnalysisCriteria(
             peakWindow: stats.peakWindow,
             serviceSpan: span,
             tier: worstTier,
+            serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,
             times: rollupTimes,

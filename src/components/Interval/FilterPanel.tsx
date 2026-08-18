@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Sun, Moon, ArrowLeft, Search } from 'lucide-react';
+import { Settings, X, Sun, Moon, Zap, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
@@ -34,6 +34,9 @@ interface FilterPanelProps {
   selectedAgencies?: Set<string>;
   setSelectedAgencies?: (agencies: Set<string>) => void;
   bounds?: any;
+  hideLowQuality: boolean;
+  setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
+  feedQualityEnabled?: boolean;
 }
 
 export interface HiddenRoute {
@@ -63,10 +66,16 @@ function Toggle({ on }: { on: boolean }) {
 
 const SETTINGS = [
   {
+    id: 'corridors',
+    icon: Zap,
+    label: 'Combined corridors',
+    description: 'Highlights segments where multiple routes overlap and shows their combined service in one band.',
+  },
+  {
     id: 'span',
     icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
     label: 'Hide irregular routes',
-    description: 'Hides peak-only routes, school buses, and demand-responsive shuttles — anything that doesn\'t run a consistent all-day schedule. Useful for focusing on everyday service.',
+    description: 'Hides genuinely exceptional service such as school buses, one- or two-trip routes, and demand-responsive shuttles. Scheduled evening service remains visible.',
   },
 ] as const;
 
@@ -93,6 +102,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   selectedAgencies,
   setSelectedAgencies,
   bounds,
+  hideLowQuality,
+  setHideLowQuality,
+  feedQualityEnabled = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -189,19 +201,30 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   );
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
-  const hasActiveFilters = hideSpan || livePollingOnly || showCorridors || hasActiveCoreFilter;
+  const hasActiveFilters = hideSpan || livePollingOnly || showCorridors || hasActiveCoreFilter || hideLowQuality;
 
   const values: Record<string, boolean> = {
     corridors: showCorridors,
     live: livePollingOnly,
     span: hideSpan,
+    quality: hideLowQuality,
   };
 
   const toggles: Record<string, () => void> = {
     corridors: () => setShowCorridors(v => !v),
     live: () => setLivePollingOnly(v => !v),
     span: () => setHideSpan(v => !v),
+    quality: () => setHideLowQuality(v => !v),
   };
+
+  const settings = feedQualityEnabled
+    ? [...SETTINGS, {
+      id: 'quality',
+      icon: ShieldCheck,
+      label: 'Hide degraded feeds',
+      description: 'Hides feeds that processing marked degraded or unusable. Feeds needing review stay visible.',
+    }]
+    : SETTINGS;
 
   return (
     <>
@@ -356,7 +379,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 )}
               </div>
               <div className="px-5 pb-3 flex flex-col divide-y divide-[var(--border-primary)]">
-                {SETTINGS.map(({ id, icon: Icon, label, description }) => (
+                {settings.map(({ id, icon: Icon, label, description }) => (
                   <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start gap-3 min-w-0">
                       <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />

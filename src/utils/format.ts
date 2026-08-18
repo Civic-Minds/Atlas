@@ -26,7 +26,6 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Nfta: 'NFTA',
   Ltc: 'LTC',
   Ktc: 'KTC',
-  Kc: 'KC',
   // GO Transit's 2-char line codes (LW, LE, KI, MI, BR) are deliberately NOT listed
   // here: as a standalone routeShortName ("LW — Lakeshore West") they're already
   // uppercased by the ≤3-char whole-string rule above, and no real GO long name
@@ -440,6 +439,7 @@ export function shortenAgencyName(name: string): string {
   // would otherwise collapse both of these Seattle-area agencies to the
   // same bare "Seattle" shortened form.
   if (lower.includes('king county metro')) return 'King County Metro';
+  if (lower.includes('owen sound transit')) return 'Owen Sound Transit';
   if (lower.includes('sound transit')) return 'Sound Transit';
 
   // Long " * Transit/Transportation Authority" names — map to common short/acronym forms used in UI
