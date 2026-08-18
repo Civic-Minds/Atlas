@@ -15,11 +15,16 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | `done` | Added to `index.json` and processed to R2 |
 | `stub` | In index but was missing feed (fixed) |
 | `todo` | Researched, ready to `npm run process` |
+| `logged` | Historical batch entry; still listed in the current queue above |
 | `blocked` | No usable GTFS — moved to KNOWN_ISSUES |
 
 ---
 
-## Recently completed (2026-07-16 — continent specialty batch)
+This file has two layers: the current actionable queue below, followed by historical discovery batches. The historical sections preserve where candidates came from; they are not completion reports.
+
+## Current actionable queue
+
+These candidates were researched but still need processing or a final feed decision.
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -32,7 +37,19 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | todo | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs — config only |
 | todo | `sioux-city` | Sioux City Transit System | Iowa | mdb-191 — config only |
 | blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
-| todo | `casper` | Casper Area Transit | Wyoming | ntd-80013 inactive but has zip — not added yet |
+| todo | `casper` | Casper Area Transit | Wyoming | Current Passio feed — config staged and dry-run validated |
+
+## Recently researched (2026-08-18 — smaller mountain and northern-city sweep)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| todo | `winter-park` | The Lift | Colorado | Agency-hosted GTFS — dry-run reviewed |
+| todo | `roundabout` | Clear Creek County Transit (RoundAbout) | Colorado | Trillium feed — dry-run validated |
+| todo | `breck-free-ride` | Breckenridge Free Ride | Colorado | Current Syncromatics feed, filtered to agency 103 — dry-run reviewed |
+| todo | `summit-stage` | Summit Stage | Colorado | Trillium feed — dry-run reviewed |
+| todo | `vail-transit` | Vail Transit | Colorado | Agency-hosted GTFS — dry-run validated |
+| todo | `avon-transit` | Avon Transit | Colorado | Current public static feed is expired; staged with degraded quality and documented for refresh |
+| todo | `timmins` | Timmins Transit | Ontario | Current Metrolinx/Tmix feed — dry-run validated |
 
 ## Recently completed (2026-07-16 — Seattle specialty)
 
@@ -42,7 +59,32 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | todo | `seattle-monorail` | Seattle Center Monorail | Washington | Trillium seattlemonorail-wa-us — config only |
 | todo | `snoqualmie-valley` | Snoqualmie Valley Transportation | Washington | Trillium snoqualmie-wa-us — config only |
 
-## Recently completed (2026-07-16 — SoCal secondary batch)
+---
+
+## Batch history (2026-07-16 — continent specialty batch)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| logged | `jfk-airtrain` | JFK AirTrain | New York | mdb-522 — config only |
+| logged | `staten-island-ferry` | Staten Island Ferry | New York | mdb-518 — config only |
+| logged | `nyc-ferry` | NYC Ferry | New York | mdb-515 — config only |
+| logged | `rioc-tram` | Roosevelt Island Tramway | New York | mdb-1109 — config only |
+| logged | `guadalajara` | Mi Transporte (Guadalajara) | Jalisco | mdb-2366 first MX — config only |
+| logged | `cheyenne` | Cheyenne Transit Program | Wyoming | National RTAP CTP_gtfs — first WY — config only |
+| logged | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs — config only |
+| logged | `sioux-city` | Sioux City Transit System | Iowa | mdb-191 — config only |
+| blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
+| logged | `casper` | Casper Area Transit | Wyoming | ntd-80013 inactive but has zip — not added yet |
+
+## Batch history (2026-07-16 — Seattle specialty)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| logged | `seattle-streetcar` | Seattle Streetcar | Washington | KCM multi-agency zip (`agency_id` 23); must filter on process |
+| logged | `seattle-monorail` | Seattle Center Monorail | Washington | Trillium seattlemonorail-wa-us — config only |
+| logged | `snoqualmie-valley` | Snoqualmie Valley Transportation | Washington | Trillium snoqualmie-wa-us — config only |
+
+## Batch history (2026-07-16 — SoCal secondary batch)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -63,7 +105,7 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | done | `taft` | Taft Area Transit | California | Trillium taft-ca-us — config only (Ojai/Palo Verde lacked public zip) |
 | blocked | `anaheim-art` | Anaheim Resort Transportation | California | MDB feed has empty calendar — unusable until upstream fixed |
 
-## Recently completed (2026-07-14 — secondary cities batch)
+## Batch history (2026-07-14 — secondary cities batch)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -81,7 +123,7 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | done | `pocatello` | Pocatello Regional Transit | Idaho | mdb-171 |
 | done | `albany-ga` | Albany Transit System | Georgia | mdb-2146 |
 
-## Recently completed (2026-07-14 — university / campus batch)
+## Batch history (2026-07-14 — university / campus batch)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -96,7 +138,7 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | done | `dekalb` | DeKalb Public Transit | Illinois | mdb-308 NIU area |
 | done | `radford` | Radford Transit | Virginia | mdb-2415 |
 
-## Recently completed (2026-07-09)
+## Batch history (2026-07-09)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -127,7 +169,7 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | done | `juneau` | Capital Transit (Juneau) | Alaska | mdb-294 |
 | done | `annapolis` | Annapolis Transit | Maryland | mdb-2285 |
 
-## Previously completed (2026-07-08)
+## Batch history (2026-07-08)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -142,13 +184,14 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 |--------|------|--------|--------|-------|
 | blocked | `peterborough` | Peterborough Transit | Ontario | No public URL; tmix 404; not in MDB |
 | blocked | `brantford` | Brantford Transit | Ontario | No public URL; tmix 404; not in MDB |
+| blocked | `brockville` | Brockville Transit | Ontario | Official site publishes schedules and maps, but no public static GTFS URL found; not in MDB |
 | blocked | `cape-breton` | Transit Cape Breton | Nova Scotia | No public GTFS found |
 | blocked | `sts-saguenay` | STS Saguenay | Quebec | Données Québec points at STS Sherbrooke host; no Saguenay zip |
 | blocked | `sttr` | STTR Trois-Rivières | Quebec | Feed dead — see KNOWN_ISSUES |
 
 ---
 
-## Previously completed (2026-07-06)
+## Batch history (2026-07-06)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|

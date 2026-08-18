@@ -1,0 +1,14 @@
+{
+  "slug": "chatham-kent",
+  "name": "Ride CK",
+  "region": "Ontario",
+  "center": [
+    42.4048,
+    -82.191
+  ],
+  "feedUrl": "https://ck.usetransit.com/api/1/public/gtfs/5/gtfs.zip?token=eddbcb1b954b64461!!9687922751$-$@9cc77671a2df2f^",
+  "websiteUrl": "https://www.chatham-kent.ca/transit/Pages/default.aspx",
+  "cities": [
+    "Chatham-Kent, Ontario"
+  ]
+}

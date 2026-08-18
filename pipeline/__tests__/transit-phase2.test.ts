@@ -58,7 +58,7 @@ describe('applyAnalysisCriteria', () => {
       }),
     ]);
     const r = results.find(x => x.route === '986');
-    expect(r).toMatchObject({ tier: 'span' });
+    expect(r).toMatchObject({ tier: 'span', serviceClass: 'irregular' });
   });
 
   it('#313: keeps an entirely overnight route instead of dropping it (TTC Blue Night pattern)', () => {

@@ -1,0 +1,24 @@
+{
+  "slug": "muskegon",
+  "name": "Muskegon Area Transit System",
+  "center": [
+    43.2342,
+    -86.2484
+  ],
+  "bbox": [
+    42.9,
+    -86.6,
+    43.5,
+    -85.8
+  ],
+  "feedUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
+  "region": "Michigan",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-17",
+  "cities": [
+    "Muskegon, Michigan",
+    "Muskegon Heights, Michigan",
+    "Norton Shores, Michigan"
+  ]
+}

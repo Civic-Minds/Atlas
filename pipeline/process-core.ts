@@ -25,6 +25,7 @@ import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-poll
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
+import type { AnalysisResult } from '../types/gtfs.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
@@ -33,6 +34,19 @@ export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 export type { GeoJsonFeature, StopEntry };
+
+/**
+ * NRT publishes scheduled evening/night route variants separately from its daytime routes.
+ * Those variants are valid scheduled service, but their shorter operating window previously
+ * made phase 2 classify them as span/limited service. Keep their period-specific headways while
+ * giving them the normal frequency tier used by the map and route cards.
+ */
+export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResult {
+  if (result.tier !== 'span' || !Number.isFinite(result.medianHeadway) || result.medianHeadway <= 0) {
+    return result;
+  }
+  return { ...result, tier: headwayToTier(result.medianHeadway) };
+}
 
 /**
  * Prefer departures from the feature's physical shape over a headsign-wide pool.
@@ -173,7 +187,9 @@ export async function processGtfsBuffer(
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
   onStatus?.('Running phase 2...');
-  const results = applyAnalysisCriteria(raw);
+  const results = applyAnalysisCriteria(raw).map(result =>
+    options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
+  );
 
   // Build lookup from (route::dir::DayType) → departure times for period headway computation.
   // When multiple raw entries cover the same route/dir/dayType (Mon–Fri), keep the one with

@@ -6,6 +6,21 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Selected routes from the In view panel now dim other visible routes for staged beta agencies too.
+- Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.
+- Niagara’s scheduled evening and night routes now appear as normal service instead of being mislabeled as irregular.
+- RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
+- NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
+- Added validated GTFS sources for 18 previously missing Ontario, Pennsylvania, and Ohio agencies, expanding coverage around Pittsburgh and across smaller Ontario cities.
+- Added current GTFS sources for additional regional agencies across Michigan, Iowa, Missouri, North Carolina, Texas, Louisiana, Mississippi, and Florida, ready for the next data publication.
+- Documented Dodge City as blocked until its fixed-route feed includes route shapes.
+- Added staged GTFS coverage for Telluride, Mountain Village, and SMART regional transit, with agency-level filtering for their shared feed.
+- Added Snowmass Village’s local shuttle without duplicating its RFTA regional routes.
+- Added validated Colorado mountain transit coverage for The Lift, RoundAbout, Breck Free Ride, Summit Stage, Vail Transit, and Avon Transit, plus Timmins and Casper; Avon remains marked degraded because its published static schedule is expired.
+- Core Transit now uses its official agency name instead of the older ECO Transit label.
+- The "zooming in to..." orienting card now names the actual nearest city instead of sometimes naming a neighboring one whose fallback bounding box happened to overlap the click ([#430](https://github.com/Civic-Minds/Atlas/issues/430)).
+- Fixed a rare load-timing bug where the Agencies filter could silently save "almost everything off" with no clicking involved, permanently undercounting routes on every later visit until noticed ([#428](https://github.com/Civic-Minds/Atlas/issues/428)).
+- Agencies now start with every active agency selected, and the Agencies panel's All/None actions apply globally instead of only to agencies currently in view.
 - The map now actually draws routes again on deployed builds — a MapLibre GL 6 bug silently stopped it from requesting any map tiles once built for production, even though everything looked fine locally ([#425](https://github.com/Civic-Minds/Atlas/issues/425)).
 - Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
 - Deep-linked maps now load nearby agencies immediately and show filtered local route shapes while route tiles are still loading, preventing blank maps during tile stalls.
@@ -27,12 +42,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Agency lists now distinguish full versus partial live coverage and use plain-language History labels, while the header and Info panel show the same approximate History count.
 - Combined route summaries now stay within their direction and highlight only the shared section on hover.
 - Halifax Live now includes frequent vehicle-only routes alongside route 1 adherence, and Halifax GTFS-RT feeds are now archived for live-history analysis.
-- Added beta GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
+- Added GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
 - Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
 - Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
 - Scheduled time-limited routes now keep their real frequency instead of being mislabeled as irregular.
-- RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
-- NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
 - Split rush-hour-only routes such as TTC 986 are now classified as irregular instead of all-day infrequent service.
 - Beta route cards can now expand schedule charts to inspect the full-day service pattern.
 - The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.

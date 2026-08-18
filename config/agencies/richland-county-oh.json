@@ -1,0 +1,15 @@
+{
+  "slug": "richland-county-oh",
+  "name": "Richland County Transit",
+  "region": "Ohio",
+  "center": [
+    40.7584,
+    -82.5154
+  ],
+  "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/rctpublic.etaspot.net/gtfs.zip",
+  "websiteUrl": "https://rctbuses.com/",
+  "cities": [
+    "Mansfield, Ohio",
+    "Ontario, Ohio"
+  ]
+}

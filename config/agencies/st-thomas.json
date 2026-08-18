@@ -1,0 +1,14 @@
+{
+  "slug": "st-thomas",
+  "name": "St. Thomas Transit",
+  "region": "Ontario",
+  "center": [
+    42.7777,
+    -81.1828
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-stthomas.zip",
+  "websiteUrl": "https://www.stthomas.ca/en/live-here/transit.aspx",
+  "cities": [
+    "St. Thomas, Ontario"
+  ]
+}

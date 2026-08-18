@@ -1,0 +1,23 @@
+{
+  "slug": "jefftran",
+  "name": "Jefferson City Transit (JeffTran)",
+  "center": [
+    38.5792,
+    -92.1729
+  ],
+  "bbox": [
+    38.51,
+    -92.28,
+    38.66,
+    -92.06
+  ],
+  "feedUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs",
+  "websiteUrl": "https://www.jeffersoncitymo.gov/government/transit",
+  "region": "Missouri",
+  "lastFeedExpiry": "20351004",
+  "lastFeedVersion": "1.0",
+  "lastRefreshedAt": "2026-08-17",
+  "cities": [
+    "Jefferson City, Missouri"
+  ]
+}

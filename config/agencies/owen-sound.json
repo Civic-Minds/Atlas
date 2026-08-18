@@ -1,0 +1,14 @@
+{
+  "slug": "owen-sound",
+  "name": "Owen Sound Transit",
+  "region": "Ontario",
+  "center": [
+    44.5672,
+    -80.9435
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-owensound.zip",
+  "websiteUrl": "https://www.owensound.ca/roads-transportation/public-transit/city-bus-service/",
+  "cities": [
+    "Owen Sound, Ontario"
+  ]
+}

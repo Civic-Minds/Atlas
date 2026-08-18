@@ -1,0 +1,36 @@
+{
+  "slug": "roundabout",
+  "name": "Clear Creek County Transit (RoundAbout)",
+  "websiteUrl": "https://www.clearcreekcounty.us/857/RoundAbout-Bus-Service",
+  "region": "Colorado",
+  "center": [
+    39.7425,
+    -105.5136
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
+  "lastFeedExpiry": "20261130",
+  "lastFeedVersion": "UTC: 20-May-2026 16:35",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Idaho Springs, Colorado",
+    "Georgetown, Colorado",
+    "Silver Plume, Colorado",
+    "Empire, Colorado",
+    "Dumont, Colorado",
+    "Lawson, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 34
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

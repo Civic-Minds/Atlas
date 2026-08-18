@@ -1,0 +1,26 @@
+{
+  "slug": "bay-metro",
+  "name": "Bay Metro (Bay City)",
+  "center": [
+    43.5945,
+    -83.8889
+  ],
+  "bbox": [
+    43.48,
+    -84.15,
+    43.95,
+    -83.62
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip",
+  "region": "Michigan",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50029/latest.zip",
+  "lastFeedExpiry": "20270227",
+  "lastFeedVersion": "20240313",
+  "lastRefreshedAt": "2026-08-17",
+  "cities": [
+    "Bay City, Michigan",
+    "Essexville, Michigan",
+    "Auburn, Michigan",
+    "Pinconning, Michigan"
+  ]
+}

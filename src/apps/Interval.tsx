@@ -23,6 +23,10 @@ import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
 
+// Versioned because the original preference could accidentally persist only
+// agencies in the current viewport when the bulk "All" action was used.
+const AGENCY_PREF_STORAGE_KEY = 'atlas_pref_agencies_off_v2';
+
 interface Props {
   agencies: Agency[];
   lightMode: boolean;
@@ -64,6 +68,15 @@ interface Props {
   hideLowQuality: boolean;
   setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
   feedQualityEnabled?: boolean;
+}
+
+function readSavedAgenciesOff(): Set<string> {
+  try {
+    const saved = localStorage.getItem(AGENCY_PREF_STORAGE_KEY);
+    return saved ? new Set(JSON.parse(saved) as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
 }
 
 export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
@@ -155,18 +168,28 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   }, [searchFocused]);
 
   // Advanced Filter State
-  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
-    const allSlugs = new Set(agencies.map(a => a.slug));
-    try {
-      const saved = localStorage.getItem('atlas_pref_agencies_off');
-      if (saved) {
-        const off = new Set(JSON.parse(saved) as string[]);
-        // New agencies (not in the saved exclusion list) are included by default
-        return new Set([...allSlugs].filter(s => !off.has(s)));
-      }
-    } catch {}
-    return allSlugs;
-  });
+  //
+  // `agencies` can still be loading (or growing incrementally as nearby agencies resolve) at
+  // mount time. Reading the saved off-list against whatever's loaded *right now* used to lock
+  // in a tiny selectedAgencies set on a slow load, then the write-back effect below would
+  // persist "everything else" as off -- silently, with no user interaction (#428). Read the
+  // saved off-list once into a ref instead of baking it into a lazy initializer, and use the
+  // same ref to fold in any agencies that arrive after mount.
+  const savedAgenciesOffRef = useRef<Set<string>>(readSavedAgenciesOff());
+  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(
+    () => new Set(agencies.filter(a => !savedAgenciesOffRef.current.has(a.slug)).map(a => a.slug)),
+  );
+  const knownAgencySlugsRef = useRef<Set<string>>(new Set(agencies.map(a => a.slug)));
+  useEffect(() => {
+    const newlyLoaded = agencies.filter(a => !knownAgencySlugsRef.current.has(a.slug));
+    if (newlyLoaded.length === 0) return;
+    for (const a of newlyLoaded) knownAgencySlugsRef.current.add(a.slug);
+    setSelectedAgencies(prev => {
+      const next = new Set(prev);
+      for (const a of newlyLoaded) if (!savedAgenciesOffRef.current.has(a.slug)) next.add(a.slug);
+      return next;
+    });
+  }, [agencies]);
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
   const [period, setPeriod] = useState<TimePeriod>(() => {
     try {
@@ -309,7 +332,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
-      localStorage.setItem('atlas_pref_agencies_off', JSON.stringify(off));
+      localStorage.setItem(AGENCY_PREF_STORAGE_KEY, JSON.stringify(off));
     } catch {}
   }, [selectedAgencies, agencies]);
 
