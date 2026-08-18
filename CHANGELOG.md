@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - The experimental route-match percentage is now beta-only and labeled “match” instead of “coverage.”
 - In view agencies and routes counters now appear in production as well as beta.
+- The degraded/unusable feed-quality badge in the Agencies list now matches dark mode instead of staying a light amber patch.
 - Selected routes from the In view panel now dim other visible routes for staged beta agencies too.
 - Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.
 - Niagara’s scheduled evening and night routes now appear as normal service instead of being mislabeled as irregular.
@@ -44,7 +45,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Agency lists now distinguish full versus partial live coverage and use plain-language History labels, while the header and Info panel show the same approximate History count.
 - Combined route summaries now stay within their direction and highlight only the shared section on hover.
 - Halifax Live now includes frequent vehicle-only routes alongside route 1 adherence, and Halifax GTFS-RT feeds are now archived for live-history analysis.
-- Added beta GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
+- Added GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
 - Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
 - Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
 - Scheduled time-limited routes now keep their real frequency instead of being mislabeled as irregular.
