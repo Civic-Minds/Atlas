@@ -547,7 +547,7 @@ export default function App() {
               forceShowCorridors={inCorridors}
               fareView={inFares}
               nightServiceView={inNight}
-              showMapContext={BETA_BUILD}
+              showMapContext
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
