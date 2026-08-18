@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The PMTiles build and verification pipelines now skip draft configs lacking processed R2 data, preventing 404 errors during map compilation.
+- Added Oregon and Washington regional services for GroveLink, RiverCities Transit, Tillamook, Sunset Empire, Columbia Area Transit, and MATS.
 - The degraded/unusable feed-quality badge in the Agencies list now matches dark mode instead of staying a light amber patch.
 - Selected routes from the In view panel now dim other visible routes for staged beta agencies too.
 - Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.

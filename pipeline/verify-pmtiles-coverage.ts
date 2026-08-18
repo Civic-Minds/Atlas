@@ -196,8 +196,8 @@ async function main() {
   console.log(`Fetched ${fetched} tiles (${emptyTiles} empty, ${errors} errors). Found ${foundSlugs.size} distinct agency slugs across all sampled tiles.`);
 
   const allMissing = agencies.filter(a => !foundSlugs.has(a.slug));
-  const missing = allMissing.filter(a => !a.pmtilesPending);
-  const stillPending = allMissing.filter(a => a.pmtilesPending);
+  const missing = allMissing.filter(a => !a.pmtilesPending && a.lastFeedExpiry);
+  const stillPending = allMissing.filter(a => a.pmtilesPending && a.lastFeedExpiry);
   const resolvedPending = agencies.filter(a => a.pmtilesPending && foundSlugs.has(a.slug));
 
   if (resolvedPending.length > 0) {

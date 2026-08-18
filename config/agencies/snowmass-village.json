@@ -25,5 +25,20 @@
   "lastRefreshedAt": "2026-08-18",
   "cities": [
     "Snowmass Village, Colorado"
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-08-18"
+  }
 }

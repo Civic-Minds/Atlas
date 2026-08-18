@@ -16,9 +16,24 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-199/latest.zip",
   "lastFeedExpiry": "20260930",
   "lastFeedVersion": "UTC: 28-Jan-2026 13:41",
-  "lastRefreshedAt": "2026-08-17",
+  "lastRefreshedAt": "2026-08-18",
   "cities": [
     "Burlington, Iowa",
     "West Burlington, Iowa"
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "12 shape corrections needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 12,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 1
+    },
+    "checkedAt": "2026-08-18"
+  }
 }

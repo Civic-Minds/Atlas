@@ -212,8 +212,7 @@
         43.85,
         -79.99
       ],
-      "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-721/mdb-721-202602170132/mdb-721-202602170132.zip",
+      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
       "lastFeedExpiry": "20260426",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
@@ -455,7 +454,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Nepean, Ontario",
-        "Orl\u00e9ans, Ontario",
+        "Orléans, Ontario",
         "Kanata, Ontario",
         "Ottawa, Ontario",
         "Ottawa South, Ontario",
@@ -758,7 +757,7 @@
       "lastFeedVersion": "1785921774107",
       "lastRefreshedAt": "2026-08-07",
       "cities": [
-        "Saint-J\u00e9r\u00f4me, Quebec"
+        "Saint-Jérôme, Quebec"
       ]
     },
     {
@@ -783,7 +782,7 @@
     },
     {
       "slug": "rem",
-      "name": "REM (Montr\u00e9al)",
+      "name": "REM (Montréal)",
       "searchAliases": [
         "Montreal"
       ],
@@ -811,12 +810,12 @@
         "Ville-Marie, Quebec",
         "Chomedey, Quebec",
         "Verdun, Quebec",
-        "Montr\u00e9al, Quebec"
+        "Montréal, Quebec"
       ]
     },
     {
       "slug": "rtc",
-      "name": "RTC (Qu\u00e9bec)",
+      "name": "RTC (Québec)",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -834,12 +833,12 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Sainte-Foy, Quebec",
-        "Les Rivi\u00e8res, Quebec",
+        "Les Rivières, Quebec",
         "La Haute-Saint-Charles, Quebec",
         "Beauport, Quebec",
         "Charlesbourg, Quebec",
-        "La Cit\u00e9-Limoilou, Quebec",
-        "Qu\u00e9bec, Quebec"
+        "La Cité-Limoilou, Quebec",
+        "Québec, Quebec"
       ]
     },
     {
@@ -867,10 +866,10 @@
         "Saint-Hubert, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Brossard, Quebec",
-        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
+        "Mercier–Hochelaga-Maisonneuve, Quebec",
         "Ville-Marie, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
-        "Saint-L\u00e9onard, Quebec",
+        "Saint-Léonard, Quebec",
         "Verdun, Quebec"
       ]
     },
@@ -897,18 +896,18 @@
         "Laval, Quebec",
         "Chomedey, Quebec",
         "Pierrefonds-Roxboro, Quebec",
-        "Montr\u00e9al-Nord, Quebec",
-        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
+        "Montréal-Nord, Quebec",
+        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
         "Terrebonne, Quebec",
         "Saint-Louis-de-Terrebonne, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Saint-L\u00e9onard, Quebec",
+        "Saint-Léonard, Quebec",
         "Saint-Laurent, Quebec"
       ]
     },
     {
       "slug": "stlevis",
-      "name": "STL\u00e9vis",
+      "name": "STLévis",
       "region": "Quebec",
       "center": [
         46.8,
@@ -927,13 +926,13 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Sainte-Foy, Quebec",
-        "L\u00e9vis, Quebec",
-        "Qu\u00e9bec, Quebec"
+        "Lévis, Quebec",
+        "Québec, Quebec"
       ]
     },
     {
       "slug": "stm",
-      "name": "STM (Montr\u00e9al)",
+      "name": "STM (Montréal)",
       "searchAliases": [
         "Montreal"
       ],
@@ -957,14 +956,14 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Saint-Laurent, Quebec",
-        "Notre-Dame-de-Gr\u00e2ce, Quebec",
-        "Mercier\u2013Hochelaga-Maisonneuve, Quebec",
-        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
+        "Notre-Dame-de-Grâce, Quebec",
+        "Mercier–Hochelaga-Maisonneuve, Quebec",
+        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Verdun, Quebec",
         "Le Plateau-Mont-Royal, Quebec",
         "Pierrefonds, Quebec",
-        "Rosemont\u2013La Petite-Patrie, Quebec",
+        "Rosemont–La Petite-Patrie, Quebec",
         "Ville-Marie, Quebec"
       ]
     },
@@ -991,7 +990,7 @@
         "Gatineau, Quebec",
         "Aylmer, Quebec",
         "Hull, Quebec",
-        "Orl\u00e9ans, Ontario",
+        "Orléans, Ontario",
         "Ottawa, Ontario"
       ]
     },
@@ -1064,7 +1063,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Gr\u00e2ce, Quebec",
+        "Notre-Dame-de-Grâce, Quebec",
         "Saint-Hubert, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Saint-Laurent, Quebec",
@@ -1072,12 +1071,12 @@
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
         "Verdun, Quebec",
-        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec"
+        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec"
       ]
     },
     {
       "slug": "exo-presquile",
-      "name": "exo (La Presqu'\u00eele)",
+      "name": "exo (La Presqu'île)",
       "region": "Quebec",
       "center": [
         45.406,
@@ -1121,7 +1120,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Pierrefonds, Quebec",
-        "Notre-Dame-de-Gr\u00e2ce, Quebec",
+        "Notre-Dame-de-Grâce, Quebec",
         "Le Sud-Ouest, Quebec",
         "Saint-Laurent, Quebec",
         "Verdun, Quebec",
@@ -1130,7 +1129,7 @@
     },
     {
       "slug": "exo-lrrs",
-      "name": "exo (Le Richelain\u2013Roussillon)",
+      "name": "exo (Le Richelain–Roussillon)",
       "region": "Quebec",
       "center": [
         45.4086,
@@ -1151,7 +1150,7 @@
       "cities": [
         "Brossard, Quebec",
         "Verdun, Quebec",
-        "Notre-Dame-de-Gr\u00e2ce, Quebec",
+        "Notre-Dame-de-Grâce, Quebec",
         "Le Vieux-Longueuil, Quebec",
         "Le Sud-Ouest, Quebec"
       ]
@@ -1178,7 +1177,7 @@
       "lastRefreshedAt": "2026-08-07",
       "cities": [
         "Saint-Louis-de-Terrebonne, Quebec",
-        "Saint-J\u00e9r\u00f4me, Quebec",
+        "Saint-Jérôme, Quebec",
         "Pierrefonds-Roxboro, Quebec",
         "Pierrefonds, Quebec",
         "Chomedey, Quebec",
@@ -1212,10 +1211,10 @@
         "Repentigny, Quebec",
         "Laval, Quebec",
         "Ahuntsic-Cartierville, Quebec",
-        "Montr\u00e9al-Nord, Quebec",
-        "Rivi\u00e8re-des-Prairies\u2013Pointe-aux-Trembles, Quebec",
-        "Saint-L\u00e9onard, Quebec",
-        "Mercier\u2013Hochelaga-Maisonneuve, Quebec"
+        "Montréal-Nord, Quebec",
+        "Rivière-des-Prairies–Pointe-aux-Trembles, Quebec",
+        "Saint-Léonard, Quebec",
+        "Mercier–Hochelaga-Maisonneuve, Quebec"
       ]
     },
     {
@@ -1638,7 +1637,7 @@
         "Livonia, Michigan",
         "Windsor, Ontario"
       ],
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-department-of-transportation-ddot-gtfs-464.zip?alt=media"
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-464/mdb-464-202606250001/mdb-464-202606250001.zip"
     },
     {
       "slug": "detroit-people-mover",
@@ -2679,7 +2678,7 @@
       "lastFeedExpiry": "20211231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true,
       "timezone": "America/New_York",
       "lastRawArchiveKey": "20211231-9dc8f1ca4ed5df71"
@@ -2771,7 +2770,7 @@
     },
     {
       "slug": "sherbrooke",
-      "name": "Soci\u00e9t\u00e9 de transport de Sherbrooke",
+      "name": "Société de transport de Sherbrooke",
       "center": [
         45.398,
         -71.9181
@@ -2944,6 +2943,251 @@
       "cities": [
         "Corvallis, Oregon"
       ]
+    },
+    {
+      "slug": "grovelink",
+      "name": "Ride Connection (GroveLink)",
+      "center": [
+        45.4948,
+        -122.9463
+      ],
+      "region": "Oregon",
+      "bbox": [
+        45.35,
+        -123.17,
+        45.64,
+        -122.72
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-253/mdb-253-202607310135/mdb-253-202607310135.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-253/mdb-253-202607310135/mdb-253-202607310135.zip",
+      "timezone": "America/Los_Angeles",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "UTC: 30-Jul-2026 16:18",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Forest Grove, Oregon",
+        "Cornelius, Oregon",
+        "Hillsboro, Oregon",
+        "Tualatin, Oregon",
+        "King City, Oregon"
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 24
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "rivercities",
+      "name": "RiverCities Transit",
+      "center": [
+        45.9434,
+        -122.8418
+      ],
+      "region": "Washington",
+      "bbox": [
+        45.66,
+        -123.06,
+        46.22,
+        -122.63
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-259/mdb-259-202605140126/mdb-259-202605140126.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-259/mdb-259-202605140126/mdb-259-202605140126.zip",
+      "timezone": "America/Los_Angeles",
+      "lastFeedExpiry": "20261130",
+      "lastFeedVersion": "UTC: 13-May-2026 14:03",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Longview, Washington",
+        "Kelso, Washington",
+        "Woodland, Washington"
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 shape correction needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 1,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 18
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "tillamook",
+      "name": "Tillamook County Transportation District",
+      "center": [
+        45.4496,
+        -123.3437
+      ],
+      "region": "Oregon",
+      "bbox": [
+        44.97,
+        -124.04,
+        45.93,
+        -122.65
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-246/mdb-246-202602130110/mdb-246-202602130110.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-246/mdb-246-202602130110/mdb-246-202602130110.zip",
+      "timezone": "America/Los_Angeles",
+      "lastFeedExpiry": "20260901",
+      "lastFeedVersion": "UTC: 11-Feb-2026 21:07",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Tillamook, Oregon",
+        "Lincoln City, Oregon",
+        "Manzanita, Oregon",
+        "Cannon Beach, Oregon"
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "4 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 36
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "columbia-area-transit",
+      "name": "Columbia Area Transit",
+      "center": [
+        45.6176,
+        -122.0389
+      ],
+      "region": "Oregon",
+      "bbox": [
+        45.49,
+        -122.59,
+        45.74,
+        -121.49
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-260/mdb-260-202605070116/mdb-260-202605070116.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-260/mdb-260-202605070116/mdb-260-202605070116.zip",
+      "timezone": "America/Los_Angeles",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 06-May-2026 19:51",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Hood River, Oregon",
+        "Cascade Locks, Oregon",
+        "Portland, Oregon"
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "mats",
+      "name": "Mount Adams Transportation Service",
+      "center": [
+        45.7099,
+        -121.1751
+      ],
+      "region": "Washington",
+      "bbox": [
+        45.57,
+        -121.57,
+        45.85,
+        -120.78
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-580/mdb-580-202607010136/mdb-580-202607010136.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-580/mdb-580-202607010136/mdb-580-202607010136.zip",
+      "timezone": "America/Los_Angeles",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 30-Jun-2026 05:12",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "White Salmon, Washington",
+        "Goldendale, Washington",
+        "Hood River, Oregon",
+        "The Dalles, Oregon"
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "4 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 7
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "setd",
+      "name": "Sunset Empire Transportation District",
+      "center": [
+        46.0328,
+        -123.8569
+      ],
+      "region": "Oregon",
+      "bbox": [
+        45.84,
+        -123.99,
+        46.23,
+        -123.73
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
+      "timezone": "America/Los_Angeles",
+      "lastFeedExpiry": "20260930",
+      "lastFeedVersion": "UTC: 27-Jul-2026 17:09",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Astoria, Oregon",
+        "Warrenton, Oregon",
+        "Cannon Beach, Oregon",
+        "Seaside, Oregon"
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "sfmta",
@@ -3393,7 +3637,7 @@
       "lastFeedExpiry": "20271127",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
-      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) \u2014 every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
+      "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -6380,8 +6624,7 @@
         44.98,
         -93.27
       ],
-      "feedUrl": "https://svc.metrotransit.org/mtgtfs/gtfs.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-minnesota-metro-transit-metro-transit-met-council-maple-grove-plymouth-southwest-transit-airport-mac-university-of-minnesota-catch-the-link-gtfs-205.zip?alt=media",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/mdb-205-202606280024/mdb-205-202606280024.zip",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": "1782334167",
       "region": "Minnesota",
@@ -7452,13 +7695,29 @@
       ],
       "feedUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
       "lastFeedExpiry": "20300129",
-      "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-14",
+      "lastFeedVersion": "",
+      "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Gary, Indiana",
         "Merrillville, Indiana",
         "Crown Point, Indiana"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "1 validation warning.",
+          "1 shape correction needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 1,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 14
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "bata",
@@ -8171,14 +8430,28 @@
         39.6345,
         -79.9553
       ],
-      "feedUrl": "https://prt.wvu.edu/files/d/fcc4abeb-9e23-477b-b648-30623cb8ad80/gtfs.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/tld-7068_1/tld-7068_1-202601060114/tld-7068_1-202601060114.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7068_1/tld-7068_1-202601060114/tld-7068_1-202601060114.zip",
       "preprocess": "wvu-prt-shapes",
       "lastFeedExpiry": "20261218",
       "lastFeedVersion": "2",
-      "lastRefreshedAt": "2026-08-14",
+      "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Morgantown, West Virginia"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 40
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "visalia",
@@ -8506,7 +8779,7 @@
       "region": "Illinois",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
       "lastFeedExpiry": "20261219",
-      "lastFeedVersion": "GTFS Feed 09/08/2026 \u2013 19/12/2026 (Generated: 09/08/2026 12:30:29)",
+      "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 09/08/2026 12:30:29)",
       "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Champaign, Illinois"
@@ -8893,7 +9166,7 @@
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt \u2014 nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt — nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -9038,7 +9311,7 @@
       "lastFeedExpiry": "20270201",
       "lastFeedVersion": "20251212",
       "lastRefreshedAt": "2026-08-07",
-      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only \u2014 every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
+      "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only — every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
       "pmtilesPending": true
     },
     {
@@ -10963,7 +11236,7 @@
       "lastRefreshedAt": "2026-08-15",
       "hiddenInProduction": true,
       "betaOnly": true,
-      "rolloutNotice": "France beta \u2014 schedule data is still being validated.",
+      "rolloutNotice": "France beta — schedule data is still being validated.",
       "rolloutIssueUrl": "https://github.com/Civic-Minds/Atlas/issues/389",
       "pmtilesPending": true,
       "websiteUrl": "https://www.lemet.fr/",
@@ -10989,7 +11262,7 @@
     },
     {
       "slug": "nancy",
-      "name": "R\u00e9seau Stan (Nancy)",
+      "name": "Réseau Stan (Nancy)",
       "region": "Grand Est",
       "center": [
         48.6921,
@@ -11058,7 +11331,7 @@
     {
       "slug": "grenoble",
       "name": "TAG (Grenoble)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.1885,
         5.7245
@@ -11075,7 +11348,7 @@
     {
       "slug": "dijon",
       "name": "Divia (Dijon)",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.322,
         5.0415
@@ -11108,8 +11381,8 @@
     },
     {
       "slug": "chambery",
-      "name": "Synchro (Chamb\u00e9ry)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "name": "Synchro (Chambéry)",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.5646,
         5.9178
@@ -11120,7 +11393,7 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.synchro.grandchambery.fr/",
       "cities": [
-        "Chamb\u00e9ry, France"
+        "Chambéry, France"
       ]
     },
     {
@@ -11159,8 +11432,8 @@
     },
     {
       "slug": "besancon",
-      "name": "Ginko (Besan\u00e7on)",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "name": "Ginko (Besançon)",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.2378,
         6.0241
@@ -11171,13 +11444,13 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.ginko.voyage/",
       "cities": [
-        "Besan\u00e7on, France"
+        "Besançon, France"
       ]
     },
     {
       "slug": "annecy",
       "name": "Sibra (Annecy)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.8992,
         6.1294
@@ -11211,7 +11484,7 @@
     {
       "slug": "annemasse",
       "name": "TAC (Annemasse)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         46.1934,
         6.2342
@@ -11228,7 +11501,7 @@
     {
       "slug": "avignon",
       "name": "Orizo (Avignon)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.9493,
         4.8055
@@ -11263,7 +11536,7 @@
     },
     {
       "slug": "beziers",
-      "name": "beeMob (B\u00e9ziers)",
+      "name": "beeMob (Béziers)",
       "region": "Occitanie",
       "center": [
         43.3442,
@@ -11275,7 +11548,7 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.beemob.fr/",
       "cities": [
-        "B\u00e9ziers, France"
+        "Béziers, France"
       ]
     },
     {
@@ -11366,7 +11639,7 @@
     {
       "slug": "clermont",
       "name": "T2C (Clermont-Ferrand)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.7772,
         3.087
@@ -11399,7 +11672,7 @@
     },
     {
       "slug": "la-rochelle",
-      "name": "Y\u00e9lo (La Rochelle)",
+      "name": "Yélo (La Rochelle)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         46.1603,
@@ -11468,7 +11741,7 @@
     {
       "slug": "lyon",
       "name": "TCL (Lyon)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.764,
         4.8357
@@ -11485,7 +11758,7 @@
     {
       "slug": "marseille",
       "name": "RTM (Marseille)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.2965,
         5.3698
@@ -11501,7 +11774,7 @@
     },
     {
       "slug": "mulhouse",
-      "name": "Sol\u00e9a (Mulhouse)",
+      "name": "Soléa (Mulhouse)",
       "region": "Grand Est",
       "center": [
         47.7508,
@@ -11519,7 +11792,7 @@
     {
       "slug": "nice-fr",
       "name": "Lignes d'Azur (Nice)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.7102,
         7.262
@@ -11539,7 +11812,7 @@
     },
     {
       "slug": "nimes",
-      "name": "Tango (N\u00eemes)",
+      "name": "Tango (Nîmes)",
       "region": "Occitanie",
       "center": [
         43.8367,
@@ -11551,12 +11824,12 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.tangonimes.fr/",
       "cities": [
-        "N\u00eemes, France"
+        "Nîmes, France"
       ]
     },
     {
       "slug": "orleans",
-      "name": "TAO (Orl\u00e9ans)",
+      "name": "TAO (Orléans)",
       "region": "Centre-Val de Loire",
       "center": [
         47.9029,
@@ -11568,7 +11841,7 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.reseau-tao.fr/",
       "cities": [
-        "Orl\u00e9ans, France"
+        "Orléans, France"
       ]
     },
     {
@@ -11590,7 +11863,7 @@
     },
     {
       "slug": "perpignan",
-      "name": "Sank\u00e9o (Perpignan)",
+      "name": "Sankéo (Perpignan)",
       "region": "Occitanie",
       "center": [
         42.6887,
@@ -11641,7 +11914,7 @@
     },
     {
       "slug": "reims",
-      "name": "Grand Reims Mobilit\u00e9s",
+      "name": "Grand Reims Mobilités",
       "region": "Grand Est",
       "center": [
         49.2583,
@@ -11675,8 +11948,8 @@
     },
     {
       "slug": "saint-etienne",
-      "name": "STAS (Saint-\u00c9tienne)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "name": "STAS (Saint-Étienne)",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.4397,
         4.3872
@@ -11687,12 +11960,12 @@
       "pmtilesPending": true,
       "websiteUrl": "https://www.reseau-stas.fr/",
       "cities": [
-        "Saint-\u00c9tienne, France"
+        "Saint-Étienne, France"
       ]
     },
     {
       "slug": "saint-nazaire",
-      "name": "Yc\u00e9o (Saint-Nazaire)",
+      "name": "Ycéo (Saint-Nazaire)",
       "region": "Pays de la Loire",
       "center": [
         47.2735,
@@ -11710,7 +11983,7 @@
     {
       "slug": "toulon",
       "name": "Mistral (Toulon)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.1242,
         5.928
@@ -11726,7 +11999,7 @@
     },
     {
       "slug": "toulouse",
-      "name": "Tiss\u00e9o (Toulouse)",
+      "name": "Tisséo (Toulouse)",
       "region": "Occitanie",
       "center": [
         43.6047,
@@ -11760,8 +12033,8 @@
     },
     {
       "slug": "valence",
-      "name": "Cit\u00e9a (Valence Romans)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "name": "Citéa (Valence Romans)",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         44.9334,
         4.8924
@@ -11777,7 +12050,7 @@
     },
     {
       "slug": "vannes",
-      "name": "Kic\u00e9o (Vannes)",
+      "name": "Kicéo (Vannes)",
       "region": "Bretagne",
       "center": [
         47.6582,
@@ -11795,7 +12068,7 @@
     {
       "slug": "aix-en-provence",
       "name": "Aixenbus",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.5297,
         5.4474
@@ -11812,7 +12085,7 @@
     {
       "slug": "arles",
       "name": "Envia (Arles)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.6766,
         4.6278
@@ -11844,7 +12117,7 @@
     {
       "slug": "belfort",
       "name": "Optymo (Belfort)",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.638,
         6.8628
@@ -11893,7 +12166,7 @@
     },
     {
       "slug": "boulogne-sur-mer",
-      "name": "Marin\u00e9o (Boulogne)",
+      "name": "Marinéo (Boulogne)",
       "region": "Hauts-de-France",
       "center": [
         50.7252,
@@ -11910,7 +12183,7 @@
     {
       "slug": "bourgoin",
       "name": "Ruban (Bourgoin-Jallieu)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.5861,
         5.273
@@ -11925,7 +12198,7 @@
     },
     {
       "slug": "brive",
-      "name": "Lib\u00e9o (Brive)",
+      "name": "Libéo (Brive)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.1596,
@@ -11958,7 +12231,7 @@
     {
       "slug": "cannes",
       "name": "Palm Bus (Cannes)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.5528,
         7.0174
@@ -12017,12 +12290,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Charleville-M\u00e9zi\u00e8res, France"
+        "Charleville-Mézières, France"
       ]
     },
     {
       "slug": "chateauroux",
-      "name": "Horizon (Ch\u00e2teauroux)",
+      "name": "Horizon (Châteauroux)",
       "region": "Centre-Val de Loire",
       "center": [
         46.8096,
@@ -12033,7 +12306,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Ch\u00e2teauroux, France"
+        "Châteauroux, France"
       ]
     },
     {
@@ -12054,7 +12327,7 @@
     },
     {
       "slug": "compiegne",
-      "name": "TIC (Compi\u00e8gne)",
+      "name": "TIC (Compiègne)",
       "region": "Hauts-de-France",
       "center": [
         49.4178,
@@ -12065,7 +12338,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Compi\u00e8gne, France"
+        "Compiègne, France"
       ]
     },
     {
@@ -12118,7 +12391,7 @@
     },
     {
       "slug": "douai",
-      "name": "\u00c9vasion (Douai)",
+      "name": "Évasion (Douai)",
       "region": "Hauts-de-France",
       "center": [
         50.3678,
@@ -12134,7 +12407,7 @@
     },
     {
       "slug": "epinal",
-      "name": "Imagine (\u00c9pinal)",
+      "name": "Imagine (Épinal)",
       "region": "Grand Est",
       "center": [
         48.1734,
@@ -12145,12 +12418,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "\u00c9pinal, France"
+        "Épinal, France"
       ]
     },
     {
       "slug": "evreux",
-      "name": "Transurbain (\u00c9vreux)",
+      "name": "Transurbain (Évreux)",
       "region": "Normandie",
       "center": [
         49.027,
@@ -12161,12 +12434,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "\u00c9vreux, France"
+        "Évreux, France"
       ]
     },
     {
       "slug": "fougeres",
-      "name": "Surfline (Foug\u00e8res)",
+      "name": "Surfline (Fougères)",
       "region": "Bretagne",
       "center": [
         48.3519,
@@ -12177,13 +12450,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Foug\u00e8res, France"
+        "Fougères, France"
       ]
     },
     {
       "slug": "grasse",
       "name": "Sillages (Grasse)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.6585,
         6.925
@@ -12214,7 +12487,7 @@
     },
     {
       "slug": "lens",
-      "name": "Tadao (Lens-Li\u00e9vin)",
+      "name": "Tadao (Lens-Liévin)",
       "region": "Hauts-de-France",
       "center": [
         50.4289,
@@ -12226,7 +12499,7 @@
       "pmtilesPending": true,
       "cities": [
         "Lens, France",
-        "Li\u00e9vin, France"
+        "Liévin, France"
       ],
       "websiteUrl": "https://www.tadao.fr/"
     },
@@ -12250,7 +12523,7 @@
     {
       "slug": "menton",
       "name": "Zest (Menton)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.7745,
         7.4975
@@ -12281,8 +12554,8 @@
     },
     {
       "slug": "montbeliard",
-      "name": "Evolity (Montb\u00e9liard)",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "name": "Evolity (Montbéliard)",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.5096,
         6.7985
@@ -12292,13 +12565,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Montb\u00e9liard, France"
+        "Montbéliard, France"
       ],
       "websiteUrl": "https://www.evolity.fr/"
     },
     {
       "slug": "morlaix",
-      "name": "Lin\u00e9otim (Morlaix)",
+      "name": "Linéotim (Morlaix)",
       "region": "Bretagne",
       "center": [
         48.5778,
@@ -12315,7 +12588,7 @@
     {
       "slug": "nevers",
       "name": "Taneo (Nevers)",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         46.9909,
         3.1628
@@ -12347,7 +12620,7 @@
     },
     {
       "slug": "quimperle",
-      "name": "TBK (Quimperl\u00e9)",
+      "name": "TBK (Quimperlé)",
       "region": "Bretagne",
       "center": [
         47.8725,
@@ -12358,13 +12631,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Quimperl\u00e9, France"
+        "Quimperlé, France"
       ]
     },
     {
       "slug": "romans",
-      "name": "Cit\u00e9a Romans",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "name": "Citéa Romans",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.046,
         5.051
@@ -12374,7 +12647,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Romans-sur-Is\u00e8re, France"
+        "Romans-sur-Isère, France"
       ]
     },
     {
@@ -12427,7 +12700,7 @@
     },
     {
       "slug": "saintes",
-      "name": "Bus\u00e9au (Saintes)",
+      "name": "Buséau (Saintes)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.7463,
@@ -12443,7 +12716,7 @@
     },
     {
       "slug": "tarbes",
-      "name": "TLP Mobilit\u00e9s (Tarbes)",
+      "name": "TLP Mobilités (Tarbes)",
       "region": "Occitanie",
       "center": [
         43.2329,
@@ -12492,7 +12765,7 @@
     },
     {
       "slug": "albi",
-      "name": "Lib\u00e9A (Albi)",
+      "name": "LibéA (Albi)",
       "region": "Occitanie",
       "center": [
         43.9298,
@@ -12508,7 +12781,7 @@
     },
     {
       "slug": "ales",
-      "name": "Ales'y (Al\u00e8s)",
+      "name": "Ales'y (Alès)",
       "region": "Occitanie",
       "center": [
         44.1272,
@@ -12519,12 +12792,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Al\u00e8s, France"
+        "Alès, France"
       ]
     },
     {
       "slug": "angouleme",
-      "name": "M\u00f6bius (Angoul\u00eame)",
+      "name": "Möbius (Angoulême)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         45.6484,
@@ -12535,12 +12808,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Angoul\u00eame, France"
+        "Angoulême, France"
       ]
     },
     {
       "slug": "arcachon",
-      "name": "Ba\u00efa (Bassin d'Arcachon)",
+      "name": "Baïa (Bassin d'Arcachon)",
       "region": "Nouvelle-Aquitaine",
       "center": [
         44.6586,
@@ -12589,8 +12862,8 @@
     },
     {
       "slug": "beaune",
-      "name": "C\u00f4te&Bus (Beaune)",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "name": "Côte&Bus (Beaune)",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.026,
         4.84
@@ -12606,7 +12879,7 @@
     {
       "slug": "cavaillon",
       "name": "Cmonbus (Cavaillon)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.8372,
         5.0381
@@ -12621,8 +12894,8 @@
     },
     {
       "slug": "chamonix",
-      "name": "Chamonix Mobilit\u00e9s",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "name": "Chamonix Mobilités",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.9237,
         6.8694
@@ -12686,7 +12959,7 @@
     {
       "slug": "gap",
       "name": "Trotibus (Gap)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         44.5594,
         6.0797
@@ -12701,7 +12974,7 @@
     },
     {
       "slug": "guingamp",
-      "name": "Guingamp-Paimpol Mobilit\u00e9",
+      "name": "Guingamp-Paimpol Mobilité",
       "region": "Bretagne",
       "center": [
         48.5633,
@@ -12765,8 +13038,8 @@
     },
     {
       "slug": "moulins",
-      "name": "Al\u00e9o (Moulins)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "name": "Aléo (Moulins)",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         46.5646,
         3.3324
@@ -12783,7 +13056,7 @@
     {
       "slug": "oyonnax",
       "name": "Duobus (Oyonnax)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         46.2592,
         5.6556
@@ -12815,7 +13088,7 @@
     {
       "slug": "privas",
       "name": "T'CAP (Privas)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         44.7356,
         4.5986
@@ -12846,7 +13119,7 @@
     },
     {
       "slug": "selestat",
-      "name": "ELSA (S\u00e9lestat)",
+      "name": "ELSA (Sélestat)",
       "region": "Grand Est",
       "center": [
         48.2594,
@@ -12857,13 +13130,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "S\u00e9lestat, France"
+        "Sélestat, France"
       ]
     },
     {
       "slug": "vichy",
       "name": "MobiVie (Vichy)",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         46.127,
         3.4258
@@ -12895,7 +13168,7 @@
     {
       "slug": "aix-les-bains",
       "name": "Aix-les-Bains",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.6886,
         5.915
@@ -12910,8 +13183,8 @@
     },
     {
       "slug": "amberieu",
-      "name": "Amb\u00e9rieu",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "name": "Ambérieu",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.9586,
         5.3569
@@ -12921,12 +13194,12 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Amb\u00e9rieu-en-Bugey, France"
+        "Ambérieu-en-Bugey, France"
       ]
     },
     {
       "slug": "chalons",
-      "name": "SITAC (Ch\u00e2lons)",
+      "name": "SITAC (Châlons)",
       "region": "Grand Est",
       "center": [
         48.9566,
@@ -12937,13 +13210,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Ch\u00e2lons-en-Champagne, France"
+        "Châlons-en-Champagne, France"
       ]
     },
     {
       "slug": "cosne",
       "name": "Cosne-Cours-sur-Loire",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.41,
         2.925
@@ -12959,7 +13232,7 @@
     {
       "slug": "dole",
       "name": "Dole",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.0922,
         5.4897
@@ -12975,7 +13248,7 @@
     {
       "slug": "draguignan",
       "name": "TedBus (Draguignan)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.5378,
         6.4647
@@ -13006,7 +13279,7 @@
     },
     {
       "slug": "fecamp",
-      "name": "F\u00e9camp",
+      "name": "Fécamp",
       "region": "Normandie",
       "center": [
         49.7556,
@@ -13017,7 +13290,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "F\u00e9camp, France"
+        "Fécamp, France"
       ]
     },
     {
@@ -13103,7 +13376,7 @@
     {
       "slug": "manosque",
       "name": "TransAgglo (Manosque)",
-      "region": "Provence-Alpes-C\u00f4te d'Azur",
+      "region": "Provence-Alpes-Côte d'Azur",
       "center": [
         43.828,
         5.7869
@@ -13199,7 +13472,7 @@
     {
       "slug": "rumilly",
       "name": "Rumilly",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.8667,
         5.9442
@@ -13225,7 +13498,7 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Sarlat-la-Can\u00e9da, France"
+        "Sarlat-la-Canéda, France"
       ]
     },
     {
@@ -13246,7 +13519,7 @@
     },
     {
       "slug": "sete",
-      "name": "S\u00e8te",
+      "name": "Sète",
       "region": "Occitanie",
       "center": [
         43.4036,
@@ -13257,13 +13530,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "S\u00e8te, France"
+        "Sète, France"
       ]
     },
     {
       "slug": "thiers",
       "name": "Thiers",
-      "region": "Auvergne-Rh\u00f4ne-Alpes",
+      "region": "Auvergne-Rhône-Alpes",
       "center": [
         45.8567,
         3.5475
@@ -13278,7 +13551,7 @@
     },
     {
       "slug": "vendome",
-      "name": "Vend\u00f4me",
+      "name": "Vendôme",
       "region": "Centre-Val de Loire",
       "center": [
         47.7931,
@@ -13289,13 +13562,13 @@
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
-        "Vend\u00f4me, France"
+        "Vendôme, France"
       ]
     },
     {
       "slug": "vesoul",
       "name": "Vesoul",
-      "region": "Bourgogne-Franche-Comt\u00e9",
+      "region": "Bourgogne-Franche-Comté",
       "center": [
         47.6231,
         6.1556
@@ -13499,7 +13772,7 @@
       ],
       "feedUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
       "cities": [
-        "Coeur d\u2019Alene, Idaho",
+        "Coeur d’Alene, Idaho",
         "Post Falls, Idaho"
       ]
     },
@@ -13687,13 +13960,28 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50029/latest.zip",
       "lastFeedExpiry": "20270227",
       "lastFeedVersion": "20240313",
-      "lastRefreshedAt": "2026-08-17",
+      "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Bay City, Michigan",
         "Essexville, Michigan",
         "Auburn, Michigan",
         "Pinconning, Michigan"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 23
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "burlington-ia",
@@ -13713,11 +14001,26 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-199/latest.zip",
       "lastFeedExpiry": "20260930",
       "lastFeedVersion": "UTC: 28-Jan-2026 13:41",
-      "lastRefreshedAt": "2026-08-17",
+      "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Burlington, Iowa",
         "West Burlington, Iowa"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "12 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 12,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 1
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "jefftran",
@@ -13737,10 +14040,23 @@
       "region": "Missouri",
       "lastFeedExpiry": "20351004",
       "lastFeedVersion": "1.0",
-      "lastRefreshedAt": "2026-08-17",
+      "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Jefferson City, Missouri"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 18
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "muskegon",
@@ -13789,7 +14105,23 @@
       "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Telluride, Colorado"
-      ]
+      ],
+      "feedQuality": {
+        "status": "degraded",
+        "score": 40,
+        "reasons": [
+          "4 validation warnings.",
+          "4 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 4,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 3
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "mountain-village",
@@ -13815,7 +14147,23 @@
       "cities": [
         "Mountain Village, Colorado",
         "Telluride, Colorado"
-      ]
+      ],
+      "feedQuality": {
+        "status": "degraded",
+        "score": 40,
+        "reasons": [
+          "4 validation warnings.",
+          "4 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 4,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 9
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "smart-telluride",
@@ -13845,7 +14193,23 @@
         "Norwood, Colorado",
         "Rico, Colorado",
         "Naturita, Colorado"
-      ]
+      ],
+      "feedQuality": {
+        "status": "degraded",
+        "score": 40,
+        "reasons": [
+          "4 validation warnings.",
+          "4 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 4,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 10
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "snowmass-village",
@@ -13874,7 +14238,22 @@
       "lastRefreshedAt": "2026-08-18",
       "cities": [
         "Snowmass Village, Colorado"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-08-18"
+      }
     },
     {
       "slug": "winter-park",
@@ -13942,7 +14321,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 34
+          "featureCount": 8
         },
         "checkedAt": "2026-08-18"
       }
@@ -14016,7 +14395,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 188
+          "featureCount": 45
         },
         "checkedAt": "2026-08-18"
       }
@@ -14047,7 +14426,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 127
+          "featureCount": 27
         },
         "checkedAt": "2026-08-18"
       }
@@ -14082,7 +14461,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 52
+          "featureCount": 16
         },
         "checkedAt": "2026-08-18"
       }
@@ -14095,6 +14474,12 @@
       "center": [
         48.4758,
         -81.3304
+      ],
+      "bbox": [
+        48.45057,
+        -81.40569,
+        48.5024,
+        -81.15702
       ],
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
       "lastFeedExpiry": "20261231",
@@ -14113,7 +14498,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 324
+          "featureCount": 33
         },
         "checkedAt": "2026-08-18"
       }
@@ -14146,7 +14531,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 141
+          "featureCount": 21
         },
         "checkedAt": "2026-08-18"
       }

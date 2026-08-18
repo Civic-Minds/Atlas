@@ -4,7 +4,7 @@ A unified regional transit atlas — multiple analytical map views on processed 
 
 ## Problem
 
-Transit frequency data lives in separate GTFS feeds across many agencies, with no easy way to see the combined picture. Atlas pulls any number of feeds, runs a two-phase headway analysis, and renders all networks together on one continuous map. Routes are colored by how often service actually runs — frequent service stands out; infrequent service recedes.
+GTFS feeds are scattered — one per agency, with no way to see a whole region's service at a glance. Atlas pulls any number of feeds onto one continuous map, colored by how often each route actually runs. Frequent service stands out. Everything else fades.
 
 ## Features
 

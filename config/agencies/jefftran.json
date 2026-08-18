@@ -16,8 +16,21 @@
   "region": "Missouri",
   "lastFeedExpiry": "20351004",
   "lastFeedVersion": "1.0",
-  "lastRefreshedAt": "2026-08-17",
+  "lastRefreshedAt": "2026-08-18",
   "cities": [
     "Jefferson City, Missouri"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 18
+    },
+    "checkedAt": "2026-08-18"
+  }
 }

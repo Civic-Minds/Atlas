@@ -6,12 +6,26 @@
     39.6345,
     -79.9553
   ],
-  "feedUrl": "https://prt.wvu.edu/files/d/fcc4abeb-9e23-477b-b648-30623cb8ad80/gtfs.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/tld-7068_1/tld-7068_1-202601060114/tld-7068_1-202601060114.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7068_1/tld-7068_1-202601060114/tld-7068_1-202601060114.zip",
   "preprocess": "wvu-prt-shapes",
   "lastFeedExpiry": "20261218",
   "lastFeedVersion": "2",
-  "lastRefreshedAt": "2026-08-14",
+  "lastRefreshedAt": "2026-08-18",
   "cities": [
     "Morgantown, West Virginia"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 40
+    },
+    "checkedAt": "2026-08-18"
+  }
 }

@@ -8,11 +8,27 @@
   ],
   "feedUrl": "https://gptc-gtfs.s3.us-east-2.amazonaws.com/gptc_gtfs.zip",
   "lastFeedExpiry": "20300129",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-14",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-08-18",
   "cities": [
     "Gary, Indiana",
     "Merrillville, Indiana",
     "Crown Point, Indiana"
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "1 validation warning.",
+      "1 shape correction needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 14
+    },
+    "checkedAt": "2026-08-18"
+  }
 }

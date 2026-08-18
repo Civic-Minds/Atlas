@@ -64,8 +64,8 @@ async function main() {
 
   const downloadTasks = agencies.map(agency => async () => {
     const slug = agency.slug;
-    if (agency.pmtilesPending) {
-      console.log(`Skipping ${slug}: marked "pmtilesPending" (no published artifacts to include).`);
+    if (agency.pmtilesPending || !agency.lastFeedExpiry) {
+      console.log(`Skipping ${slug}: marked "pmtilesPending" or has no lastFeedExpiry (no published artifacts to include).`);
       return;
     }
     const arts = getAgencyArtifactUrls(slug);
