@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Selected routes from the In view panel now dim other visible routes for staged beta agencies too.
 - Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.
 - Niagara’s scheduled evening and night routes now appear as normal service instead of being mislabeled as irregular.
 - RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
