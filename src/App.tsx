@@ -548,6 +548,7 @@ export default function App() {
               fareView={inFares}
               nightServiceView={inNight}
               showMapContext
+              showMatchPercentage={BETA_BUILD}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}

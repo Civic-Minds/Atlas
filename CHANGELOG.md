@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The experimental route-match percentage is now beta-only and labeled “match” instead of “coverage.”
 - In view agencies and routes counters now appear in production as well as beta.
 - Selected routes from the In view panel now dim other visible routes for staged beta agencies too.
 - Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.
