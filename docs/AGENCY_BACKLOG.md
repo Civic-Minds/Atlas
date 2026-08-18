@@ -32,7 +32,19 @@ Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUE
 | todo | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs — config only |
 | todo | `sioux-city` | Sioux City Transit System | Iowa | mdb-191 — config only |
 | blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
-| todo | `casper` | Casper Area Transit | Wyoming | ntd-80013 inactive but has zip — not added yet |
+| todo | `casper` | Casper Area Transit | Wyoming | Current Passio feed — config staged and dry-run validated |
+
+## Recently researched (2026-08-18 — smaller mountain and northern-city sweep)
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| todo | `winter-park` | The Lift | Colorado | Agency-hosted GTFS — dry-run reviewed |
+| todo | `roundabout` | Clear Creek County Transit (RoundAbout) | Colorado | Trillium feed — dry-run validated |
+| todo | `breck-free-ride` | Breckenridge Free Ride | Colorado | Current Syncromatics feed, filtered to agency 103 — dry-run reviewed |
+| todo | `summit-stage` | Summit Stage | Colorado | Trillium feed — dry-run reviewed |
+| todo | `vail-transit` | Vail Transit | Colorado | Agency-hosted GTFS — dry-run validated |
+| todo | `avon-transit` | Avon Transit | Colorado | Current public static feed is expired; staged with degraded quality and documented for refresh |
+| todo | `timmins` | Timmins Transit | Ontario | Current Metrolinx/Tmix feed — dry-run validated |
 
 ## Recently completed (2026-07-16 — Seattle specialty)
 

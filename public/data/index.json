@@ -8050,12 +8050,13 @@
     },
     {
       "slug": "eco-transit",
-      "name": "ECO Transit (Eagle County)",
+      "name": "Core Transit",
       "center": [
         39.64,
         -106.93
       ],
       "feedUrl": "https://evta.org/gtfs.zip",
+      "websiteUrl": "https://www.coretransit.org",
       "region": "Colorado",
       "lastFeedExpiry": "20261121",
       "lastFeedVersion": "S1000093",
@@ -13306,6 +13307,849 @@
       "cities": [
         "Vesoul, France"
       ]
+    },
+    {
+      "slug": "godurham",
+      "name": "GoDurham",
+      "region": "North Carolina",
+      "center": [
+        36.0014,
+        -78.9382
+      ],
+      "bbox": [
+        35.85,
+        -79.1,
+        36.2,
+        -78.7
+      ],
+      "feedUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+      "cities": [
+        "Durham, North Carolina"
+      ]
+    },
+    {
+      "slug": "jacksonville-nc",
+      "name": "Jacksonville Transit",
+      "region": "North Carolina",
+      "center": [
+        34.7541,
+        -77.4302
+      ],
+      "bbox": [
+        34.5,
+        -77.7,
+        35.1,
+        -77.1
+      ],
+      "feedUrl": "https://passio3.com/jacksonville/passioTransit/gtfs/google_transit.zip",
+      "cities": [
+        "Jacksonville, North Carolina"
+      ]
+    },
+    {
+      "slug": "fast-nc",
+      "name": "Fayetteville Area System of Transit",
+      "region": "North Carolina",
+      "center": [
+        35.0527,
+        -78.8784
+      ],
+      "bbox": [
+        34.8,
+        -79.1,
+        35.2,
+        -78.6
+      ],
+      "feedUrl": "https://fast.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+      "cities": [
+        "Fayetteville, North Carolina"
+      ]
+    },
+    {
+      "slug": "greenway",
+      "name": "Greenway Public Transportation",
+      "region": "North Carolina",
+      "center": [
+        35.7345,
+        -81.3445
+      ],
+      "bbox": [
+        35.55,
+        -81.65,
+        35.95,
+        -80.95
+      ],
+      "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Western%20Piedmont%20Regional%20Transportation%20Association_3/WPRTA.zip",
+      "cities": [
+        "Hickory, North Carolina",
+        "Newton, North Carolina",
+        "Conover, North Carolina"
+      ]
+    },
+    {
+      "slug": "concord-kannapolis",
+      "name": "Rider Transit",
+      "region": "North Carolina",
+      "center": [
+        35.4088,
+        -80.5795
+      ],
+      "bbox": [
+        35.2,
+        -80.9,
+        35.7,
+        -80.3
+      ],
+      "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Concord%20Kannapolis_209/CKRider.zip",
+      "cities": [
+        "Concord, North Carolina",
+        "Kannapolis, North Carolina"
+      ]
+    },
+    {
+      "slug": "gaston-county",
+      "name": "Gaston County Transit",
+      "region": "North Carolina",
+      "center": [
+        35.2621,
+        -81.1873
+      ],
+      "bbox": [
+        35,
+        -81.5,
+        35.5,
+        -80.9
+      ],
+      "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
+      "cities": [
+        "Gastonia, North Carolina"
+      ]
+    },
+    {
+      "slug": "coast-rta",
+      "name": "Coast RTA",
+      "region": "South Carolina",
+      "center": [
+        33.6891,
+        -78.8867
+      ],
+      "bbox": [
+        33.1,
+        -79.5,
+        34.7,
+        -78.3
+      ],
+      "feedUrl": "https://coastrta.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+      "cities": [
+        "Myrtle Beach, South Carolina",
+        "Conway, South Carolina"
+      ]
+    },
+    {
+      "slug": "sunshine-bus",
+      "name": "Sunshine Bus Company",
+      "region": "Florida",
+      "center": [
+        29.8947,
+        -81.3145
+      ],
+      "bbox": [
+        29.4,
+        -81.8,
+        30.2,
+        -81
+      ],
+      "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
+      "cities": [
+        "St. Augustine, Florida"
+      ]
+    },
+    {
+      "slug": "key-west-transit",
+      "name": "Key West Transit",
+      "region": "Florida",
+      "center": [
+        24.5551,
+        -81.78
+      ],
+      "bbox": [
+        24.4,
+        -81.9,
+        24.7,
+        -81.5
+      ],
+      "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0",
+      "cities": [
+        "Key West, Florida"
+      ]
+    },
+    {
+      "slug": "citylink-north",
+      "name": "Kootenai County Citylink North",
+      "region": "Idaho",
+      "center": [
+        47.6777,
+        -116.7805
+      ],
+      "bbox": [
+        47.5,
+        -117,
+        47.9,
+        -116.5
+      ],
+      "feedUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
+      "cities": [
+        "Coeur d\u2019Alene, Idaho",
+        "Post Falls, Idaho"
+      ]
+    },
+    {
+      "slug": "dcta",
+      "name": "Denton County Transportation Authority (DCTA)",
+      "region": "Texas",
+      "center": [
+        33.2148,
+        -97.1331
+      ],
+      "bbox": [
+        32.7,
+        -97.5,
+        33.5,
+        -96.5
+      ],
+      "feedUrl": "https://gtfs.remix.com/dcta_denton_tx_us.zip",
+      "cities": [
+        "Denton, Texas",
+        "Lewisville, Texas",
+        "Highland Village, Texas"
+      ]
+    },
+    {
+      "slug": "waco",
+      "name": "Waco Transit System",
+      "region": "Texas",
+      "center": [
+        31.5493,
+        -97.1467
+      ],
+      "bbox": [
+        31.3,
+        -97.5,
+        31.8,
+        -96.8
+      ],
+      "feedUrl": "https://wacotransit.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "cities": [
+        "Waco, Texas",
+        "McGregor, Texas"
+      ]
+    },
+    {
+      "slug": "brazos",
+      "name": "Brazos Transit District",
+      "region": "Texas",
+      "center": [
+        30.628,
+        -96.3344
+      ],
+      "bbox": [
+        29.8,
+        -96.5,
+        32,
+        -93.8
+      ],
+      "feedUrl": "https://www.btd.org/2025btdgtfs/",
+      "cities": [
+        "College Station, Texas",
+        "Bryan, Texas",
+        "Cleveland, Texas",
+        "Lufkin, Texas",
+        "Nacogdoches, Texas",
+        "Liberty, Texas",
+        "Dayton, Texas"
+      ]
+    },
+    {
+      "slug": "lafayette-la",
+      "name": "Lafayette Transit System",
+      "region": "Louisiana",
+      "center": [
+        30.2241,
+        -92.0198
+      ],
+      "bbox": [
+        29.9,
+        -92.4,
+        30.5,
+        -91.6
+      ],
+      "feedUrl": "https://lts.syncromatics.com/gtfs",
+      "cities": [
+        "Lafayette, Louisiana"
+      ]
+    },
+    {
+      "slug": "coast-transit-ms",
+      "name": "Coast Transit Authority",
+      "region": "Mississippi",
+      "center": [
+        30.3674,
+        -89.0928
+      ],
+      "bbox": [
+        30.1,
+        -89.6,
+        30.6,
+        -88.5
+      ],
+      "feedUrl": "https://coasttransit.com/wp-content/uploads/2026/03/CTA_MS_GTFS-1.zip",
+      "cities": [
+        "Gulfport, Mississippi",
+        "Biloxi, Mississippi",
+        "Ocean Springs, Mississippi"
+      ]
+    },
+    {
+      "slug": "hub-city-transit",
+      "name": "Hub City Transit",
+      "region": "Mississippi",
+      "center": [
+        31.3271,
+        -89.2903
+      ],
+      "bbox": [
+        31.1,
+        -89.5,
+        31.6,
+        -88.9
+      ],
+      "feedUrl": "https://api.transloc.com/gtfs/hct.zip",
+      "cities": [
+        "Hattiesburg, Mississippi"
+      ]
+    },
+    {
+      "slug": "tank",
+      "name": "Transit Authority of Northern Kentucky (TANK)",
+      "region": "Kentucky",
+      "center": [
+        39.0531,
+        -84.5508
+      ],
+      "bbox": [
+        38.7,
+        -84.9,
+        39.3,
+        -84.2
+      ],
+      "feedUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+      "cities": [
+        "Covington, Kentucky",
+        "Newport, Kentucky",
+        "Florence, Kentucky"
+      ]
+    },
+    {
+      "slug": "sandusky",
+      "name": "Sandusky Transit System",
+      "region": "Ohio",
+      "center": [
+        41.4489,
+        -82.7079
+      ],
+      "bbox": [
+        41.25,
+        -83.05,
+        41.65,
+        -82.45
+      ],
+      "feedUrl": "https://mjcaction.com/MJC_GTFS_Public/sandusky_google_transit.zip",
+      "cities": [
+        "Sandusky, Ohio",
+        "Huron, Ohio"
+      ]
+    },
+    {
+      "slug": "bay-metro",
+      "name": "Bay Metro (Bay City)",
+      "center": [
+        43.5945,
+        -83.8889
+      ],
+      "bbox": [
+        43.48,
+        -84.15,
+        43.95,
+        -83.62
+      ],
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip",
+      "region": "Michigan",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50029/latest.zip",
+      "lastFeedExpiry": "20270227",
+      "lastFeedVersion": "20240313",
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Bay City, Michigan",
+        "Essexville, Michigan",
+        "Auburn, Michigan",
+        "Pinconning, Michigan"
+      ]
+    },
+    {
+      "slug": "burlington-ia",
+      "name": "Burlington Urban Service (BUS)",
+      "center": [
+        40.8075,
+        -91.1129
+      ],
+      "bbox": [
+        40.74,
+        -91.24,
+        40.9,
+        -90.98
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-199/latest.zip",
+      "lastFeedExpiry": "20260930",
+      "lastFeedVersion": "UTC: 28-Jan-2026 13:41",
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Burlington, Iowa",
+        "West Burlington, Iowa"
+      ]
+    },
+    {
+      "slug": "jefftran",
+      "name": "Jefferson City Transit (JeffTran)",
+      "center": [
+        38.5792,
+        -92.1729
+      ],
+      "bbox": [
+        38.51,
+        -92.28,
+        38.66,
+        -92.06
+      ],
+      "feedUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs",
+      "websiteUrl": "https://www.jeffersoncitymo.gov/government/transit",
+      "region": "Missouri",
+      "lastFeedExpiry": "20351004",
+      "lastFeedVersion": "1.0",
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Jefferson City, Missouri"
+      ]
+    },
+    {
+      "slug": "muskegon",
+      "name": "Muskegon Area Transit System",
+      "center": [
+        43.2342,
+        -86.2484
+      ],
+      "bbox": [
+        42.9,
+        -86.6,
+        43.5,
+        -85.8
+      ],
+      "feedUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
+      "region": "Michigan",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Muskegon, Michigan",
+        "Muskegon Heights, Michigan",
+        "Norton Shores, Michigan"
+      ]
+    },
+    {
+      "slug": "telluride",
+      "name": "Town of Telluride (Galloping Goose)",
+      "center": [
+        37.9375,
+        -107.8123
+      ],
+      "bbox": [
+        37.89,
+        -107.9,
+        38.02,
+        -107.73
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "agencyId": "1701",
+      "websiteUrl": "https://www.telluride.gov/254/Transit-Division",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Telluride, Colorado"
+      ]
+    },
+    {
+      "slug": "mountain-village",
+      "name": "Town of Mountain Village Transit",
+      "center": [
+        37.932,
+        -107.856
+      ],
+      "bbox": [
+        37.89,
+        -107.91,
+        38.01,
+        -107.78
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "agencyId": "1702",
+      "websiteUrl": "https://townofmountainvillage.com/getting-around/",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Mountain Village, Colorado",
+        "Telluride, Colorado"
+      ]
+    },
+    {
+      "slug": "smart-telluride",
+      "name": "San Miguel Authority for Regional Transportation (SMART)",
+      "center": [
+        37.9375,
+        -107.8123
+      ],
+      "bbox": [
+        37.15,
+        -109.3,
+        38.75,
+        -107.25
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "agencyId": "1651",
+      "websiteUrl": "https://smarttelluride.colorado.gov/",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Telluride, Colorado",
+        "Mountain Village, Colorado",
+        "Montrose, Colorado",
+        "Norwood, Colorado",
+        "Rico, Colorado",
+        "Naturita, Colorado"
+      ]
+    },
+    {
+      "slug": "snowmass-village",
+      "name": "Snowmass Village Shuttle",
+      "center": [
+        39.213,
+        -106.937
+      ],
+      "bbox": [
+        39.16,
+        -107.02,
+        39.28,
+        -106.82
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip",
+      "websiteUrl": "https://www.snowmasstransit.com/133/Routes-Schedules",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-164/latest.zip",
+      "excludeRouteShortNames": [
+        "BC-SMI",
+        "SMI-BC"
+      ],
+      "overrideNote": "The source feed also contains regional BC-SMI/SMI-BC trips already supplied by RFTA; exclude those duplicates and keep the local Village Shuttle routes here.",
+      "lastFeedExpiry": "20260920",
+      "lastFeedVersion": "UTC: 27-May-2026 19:57",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Snowmass Village, Colorado"
+      ]
+    },
+    {
+      "slug": "winter-park",
+      "name": "The Lift",
+      "websiteUrl": "https://www.theliftwp.com/",
+      "region": "Colorado",
+      "center": [
+        39.8917,
+        -105.7631
+      ],
+      "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Winter Park, Colorado",
+        "Fraser, Colorado",
+        "Granby, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 107
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "roundabout",
+      "name": "Clear Creek County Transit (RoundAbout)",
+      "websiteUrl": "https://www.clearcreekcounty.us/857/RoundAbout-Bus-Service",
+      "region": "Colorado",
+      "center": [
+        39.7425,
+        -105.5136
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/clearcreek-co-us/clearcreek-co-us.zip",
+      "lastFeedExpiry": "20261130",
+      "lastFeedVersion": "UTC: 20-May-2026 16:35",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Idaho Springs, Colorado",
+        "Georgetown, Colorado",
+        "Silver Plume, Colorado",
+        "Empire, Colorado",
+        "Dumont, Colorado",
+        "Lawson, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "breck-free-ride",
+      "name": "Breckenridge Free Ride",
+      "agencyId": "103",
+      "websiteUrl": "https://www.breckfreeride.com/",
+      "region": "Colorado",
+      "center": [
+        39.4817,
+        -106.0384
+      ],
+      "feedUrl": "https://mybreckfreeride.com/gtfs",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.6,124-UWM Summer 26",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Breckenridge, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 155
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "summit-stage",
+      "name": "Summit Stage",
+      "websiteUrl": "https://www.summitcountyco.gov/586/Transit-Summit-Stage",
+      "region": "Colorado",
+      "center": [
+        39.5744,
+        -106.0975
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip",
+      "lastFeedExpiry": "20261114",
+      "lastFeedVersion": "UTC: 29-Jul-2026 17:51",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Breckenridge, Colorado",
+        "Frisco, Colorado",
+        "Silverthorne, Colorado",
+        "Dillon, Colorado",
+        "Keystone, Colorado",
+        "Copper Mountain, Colorado",
+        "Leadville, Colorado",
+        "Fairplay, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 188
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "vail-transit",
+      "name": "Vail Transit",
+      "websiteUrl": "https://www.vail.gov/government/departments/transportation-services/bus-information",
+      "region": "Colorado",
+      "center": [
+        39.6403,
+        -106.3742
+      ],
+      "feedUrl": "https://ride.vail.gov/gtfs",
+      "lastFeedExpiry": "20261206",
+      "lastFeedVersion": "5/22/2026 Summer (6/8/2026-12/6/2026)",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Vail, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 127
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "avon-transit",
+      "name": "Avon Transit",
+      "websiteUrl": "https://www.avon.org/2038/Mobility",
+      "region": "Colorado",
+      "center": [
+        39.6314,
+        -106.5222
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip",
+      "lastFeedExpiry": "20250413",
+      "lastFeedVersion": "UTC: 20-Nov-2024 17:07",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Avon, Colorado",
+        "Beaver Creek, Colorado"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "degraded",
+        "score": 55,
+        "reasons": [
+          "1 validation warning.",
+          "The feed schedule has expired."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 52
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "timmins",
+      "name": "Timmins Transit",
+      "websiteUrl": "https://www.timmins.ca/our_services/timmins_transit",
+      "region": "Ontario",
+      "center": [
+        48.4758,
+        -81.3304
+      ],
+      "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Timmins, Ontario"
+      ],
+      "timezone": "America/Toronto",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 324
+        },
+        "checkedAt": "2026-08-18"
+      }
+    },
+    {
+      "slug": "casper",
+      "name": "Casper Area Transit",
+      "websiteUrl": "https://www.cityofcasperwy.com/residents/roads_and_parking/metropolitan_planning_organization/casper_area_transit_/",
+      "region": "Wyoming",
+      "center": [
+        42.8501,
+        -106.3252
+      ],
+      "feedUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20260917",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Casper, Wyoming",
+        "Evansville, Wyoming",
+        "Mills, Wyoming"
+      ],
+      "timezone": "America/Denver",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 141
+        },
+        "checkedAt": "2026-08-18"
+      }
     }
   ]
 }

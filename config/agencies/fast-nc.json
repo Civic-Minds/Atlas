@@ -1,0 +1,9 @@
+{
+  "slug": "fast-nc",
+  "name": "Fayetteville Area System of Transit",
+  "region": "North Carolina",
+  "center": [35.0527, -78.8784],
+  "bbox": [34.8, -79.1, 35.2, -78.6],
+  "feedUrl": "https://fast.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+  "cities": ["Fayetteville, North Carolina"]
+}
