@@ -13762,6 +13762,87 @@
         "Muskegon Heights, Michigan",
         "Norton Shores, Michigan"
       ]
+    },
+    {
+      "slug": "telluride",
+      "name": "Town of Telluride (Galloping Goose)",
+      "center": [
+        37.9375,
+        -107.8123
+      ],
+      "bbox": [
+        37.89,
+        -107.9,
+        38.02,
+        -107.73
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "agencyId": "1701",
+      "websiteUrl": "https://www.telluride.gov/254/Transit-Division",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Telluride, Colorado"
+      ]
+    },
+    {
+      "slug": "mountain-village",
+      "name": "Town of Mountain Village Transit",
+      "center": [
+        37.932,
+        -107.856
+      ],
+      "bbox": [
+        37.89,
+        -107.91,
+        38.01,
+        -107.78
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "agencyId": "1702",
+      "websiteUrl": "https://townofmountainvillage.com/getting-around/",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Mountain Village, Colorado",
+        "Telluride, Colorado"
+      ]
+    },
+    {
+      "slug": "smart-telluride",
+      "name": "San Miguel Authority for Regional Transportation (SMART)",
+      "center": [
+        37.9375,
+        -107.8123
+      ],
+      "bbox": [
+        37.15,
+        -109.3,
+        38.75,
+        -107.25
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+      "agencyId": "1651",
+      "websiteUrl": "https://smarttelluride.colorado.gov/",
+      "region": "Colorado",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
+      "lastRefreshedAt": "2026-08-18",
+      "cities": [
+        "Telluride, Colorado",
+        "Mountain Village, Colorado",
+        "Montrose, Colorado",
+        "Norwood, Colorado",
+        "Rico, Colorado",
+        "Naturita, Colorado"
+      ]
     }
   ]
 }
