@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
 - NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
 - Added validated GTFS sources for 18 previously missing Ontario, Pennsylvania, and Ohio agencies, expanding coverage around Pittsburgh and across smaller Ontario cities.
+- Added current GTFS sources for additional regional agencies across Michigan, Iowa, Missouri, North Carolina, Texas, Louisiana, Mississippi, and Florida, ready for the next data publication.
 - The "zooming in to..." orienting card now names the actual nearest city instead of sometimes naming a neighboring one whose fallback bounding box happened to overlap the click ([#430](https://github.com/Civic-Minds/Atlas/issues/430)).
 - Fixed a rare load-timing bug where the Agencies filter could silently save "almost everything off" with no clicking involved, permanently undercounting routes on every later visit until noticed ([#428](https://github.com/Civic-Minds/Atlas/issues/428)).
 - The map now actually draws routes again on deployed builds — a MapLibre GL 6 bug silently stopped it from requesting any map tiles once built for production, even though everything looked fine locally ([#425](https://github.com/Civic-Minds/Atlas/issues/425)).

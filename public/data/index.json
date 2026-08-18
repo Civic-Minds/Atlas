@@ -13304,6 +13304,464 @@
       "cities": [
         "Vesoul, France"
       ]
+    },
+    {
+      "slug": "godurham",
+      "name": "GoDurham",
+      "region": "North Carolina",
+      "center": [
+        36.0014,
+        -78.9382
+      ],
+      "bbox": [
+        35.85,
+        -79.1,
+        36.2,
+        -78.7
+      ],
+      "feedUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+      "cities": [
+        "Durham, North Carolina"
+      ]
+    },
+    {
+      "slug": "jacksonville-nc",
+      "name": "Jacksonville Transit",
+      "region": "North Carolina",
+      "center": [
+        34.7541,
+        -77.4302
+      ],
+      "bbox": [
+        34.5,
+        -77.7,
+        35.1,
+        -77.1
+      ],
+      "feedUrl": "https://passio3.com/jacksonville/passioTransit/gtfs/google_transit.zip",
+      "cities": [
+        "Jacksonville, North Carolina"
+      ]
+    },
+    {
+      "slug": "fast-nc",
+      "name": "Fayetteville Area System of Transit",
+      "region": "North Carolina",
+      "center": [
+        35.0527,
+        -78.8784
+      ],
+      "bbox": [
+        34.8,
+        -79.1,
+        35.2,
+        -78.6
+      ],
+      "feedUrl": "https://fast.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+      "cities": [
+        "Fayetteville, North Carolina"
+      ]
+    },
+    {
+      "slug": "greenway",
+      "name": "Greenway Public Transportation",
+      "region": "North Carolina",
+      "center": [
+        35.7345,
+        -81.3445
+      ],
+      "bbox": [
+        35.55,
+        -81.65,
+        35.95,
+        -80.95
+      ],
+      "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Western%20Piedmont%20Regional%20Transportation%20Association_3/WPRTA.zip",
+      "cities": [
+        "Hickory, North Carolina",
+        "Newton, North Carolina",
+        "Conover, North Carolina"
+      ]
+    },
+    {
+      "slug": "concord-kannapolis",
+      "name": "Rider Transit",
+      "region": "North Carolina",
+      "center": [
+        35.4088,
+        -80.5795
+      ],
+      "bbox": [
+        35.2,
+        -80.9,
+        35.7,
+        -80.3
+      ],
+      "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Concord%20Kannapolis_209/CKRider.zip",
+      "cities": [
+        "Concord, North Carolina",
+        "Kannapolis, North Carolina"
+      ]
+    },
+    {
+      "slug": "gaston-county",
+      "name": "Gaston County Transit",
+      "region": "North Carolina",
+      "center": [
+        35.2621,
+        -81.1873
+      ],
+      "bbox": [
+        35,
+        -81.5,
+        35.5,
+        -80.9
+      ],
+      "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
+      "cities": [
+        "Gastonia, North Carolina"
+      ]
+    },
+    {
+      "slug": "coast-rta",
+      "name": "Coast RTA",
+      "region": "South Carolina",
+      "center": [
+        33.6891,
+        -78.8867
+      ],
+      "bbox": [
+        33.1,
+        -79.5,
+        34.7,
+        -78.3
+      ],
+      "feedUrl": "https://coastrta.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+      "cities": [
+        "Myrtle Beach, South Carolina",
+        "Conway, South Carolina"
+      ]
+    },
+    {
+      "slug": "sunshine-bus",
+      "name": "Sunshine Bus Company",
+      "region": "Florida",
+      "center": [
+        29.8947,
+        -81.3145
+      ],
+      "bbox": [
+        29.4,
+        -81.8,
+        30.2,
+        -81
+      ],
+      "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
+      "cities": [
+        "St. Augustine, Florida"
+      ]
+    },
+    {
+      "slug": "key-west-transit",
+      "name": "Key West Transit",
+      "region": "Florida",
+      "center": [
+        24.5551,
+        -81.78
+      ],
+      "bbox": [
+        24.4,
+        -81.9,
+        24.7,
+        -81.5
+      ],
+      "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0",
+      "cities": [
+        "Key West, Florida"
+      ]
+    },
+    {
+      "slug": "citylink-north",
+      "name": "Kootenai County Citylink North",
+      "region": "Idaho",
+      "center": [
+        47.6777,
+        -116.7805
+      ],
+      "bbox": [
+        47.5,
+        -117,
+        47.9,
+        -116.5
+      ],
+      "feedUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
+      "cities": [
+        "Coeur d\u2019Alene, Idaho",
+        "Post Falls, Idaho"
+      ]
+    },
+    {
+      "slug": "dcta",
+      "name": "Denton County Transportation Authority (DCTA)",
+      "region": "Texas",
+      "center": [
+        33.2148,
+        -97.1331
+      ],
+      "bbox": [
+        32.7,
+        -97.5,
+        33.5,
+        -96.5
+      ],
+      "feedUrl": "https://gtfs.remix.com/dcta_denton_tx_us.zip",
+      "cities": [
+        "Denton, Texas",
+        "Lewisville, Texas",
+        "Highland Village, Texas"
+      ]
+    },
+    {
+      "slug": "waco",
+      "name": "Waco Transit System",
+      "region": "Texas",
+      "center": [
+        31.5493,
+        -97.1467
+      ],
+      "bbox": [
+        31.3,
+        -97.5,
+        31.8,
+        -96.8
+      ],
+      "feedUrl": "https://wacotransit.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "cities": [
+        "Waco, Texas",
+        "McGregor, Texas"
+      ]
+    },
+    {
+      "slug": "brazos",
+      "name": "Brazos Transit District",
+      "region": "Texas",
+      "center": [
+        30.628,
+        -96.3344
+      ],
+      "bbox": [
+        29.8,
+        -96.5,
+        32,
+        -93.8
+      ],
+      "feedUrl": "https://www.btd.org/2025btdgtfs/",
+      "cities": [
+        "College Station, Texas",
+        "Bryan, Texas",
+        "Cleveland, Texas",
+        "Lufkin, Texas",
+        "Nacogdoches, Texas",
+        "Liberty, Texas",
+        "Dayton, Texas"
+      ]
+    },
+    {
+      "slug": "lafayette-la",
+      "name": "Lafayette Transit System",
+      "region": "Louisiana",
+      "center": [
+        30.2241,
+        -92.0198
+      ],
+      "bbox": [
+        29.9,
+        -92.4,
+        30.5,
+        -91.6
+      ],
+      "feedUrl": "https://lts.syncromatics.com/gtfs",
+      "cities": [
+        "Lafayette, Louisiana"
+      ]
+    },
+    {
+      "slug": "coast-transit-ms",
+      "name": "Coast Transit Authority",
+      "region": "Mississippi",
+      "center": [
+        30.3674,
+        -89.0928
+      ],
+      "bbox": [
+        30.1,
+        -89.6,
+        30.6,
+        -88.5
+      ],
+      "feedUrl": "https://coasttransit.com/wp-content/uploads/2026/03/CTA_MS_GTFS-1.zip",
+      "cities": [
+        "Gulfport, Mississippi",
+        "Biloxi, Mississippi",
+        "Ocean Springs, Mississippi"
+      ]
+    },
+    {
+      "slug": "hub-city-transit",
+      "name": "Hub City Transit",
+      "region": "Mississippi",
+      "center": [
+        31.3271,
+        -89.2903
+      ],
+      "bbox": [
+        31.1,
+        -89.5,
+        31.6,
+        -88.9
+      ],
+      "feedUrl": "https://api.transloc.com/gtfs/hct.zip",
+      "cities": [
+        "Hattiesburg, Mississippi"
+      ]
+    },
+    {
+      "slug": "tank",
+      "name": "Transit Authority of Northern Kentucky (TANK)",
+      "region": "Kentucky",
+      "center": [
+        39.0531,
+        -84.5508
+      ],
+      "bbox": [
+        38.7,
+        -84.9,
+        39.3,
+        -84.2
+      ],
+      "feedUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+      "cities": [
+        "Covington, Kentucky",
+        "Newport, Kentucky",
+        "Florence, Kentucky"
+      ]
+    },
+    {
+      "slug": "sandusky",
+      "name": "Sandusky Transit System",
+      "region": "Ohio",
+      "center": [
+        41.4489,
+        -82.7079
+      ],
+      "bbox": [
+        41.25,
+        -83.05,
+        41.65,
+        -82.45
+      ],
+      "feedUrl": "https://mjcaction.com/MJC_GTFS_Public/sandusky_google_transit.zip",
+      "cities": [
+        "Sandusky, Ohio",
+        "Huron, Ohio"
+      ]
+    },
+    {
+      "slug": "bay-metro",
+      "name": "Bay Metro (Bay City)",
+      "center": [
+        43.5945,
+        -83.8889
+      ],
+      "bbox": [
+        43.48,
+        -84.15,
+        43.95,
+        -83.62
+      ],
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11684/BMTA_GTFS.zip",
+      "region": "Michigan",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50029/latest.zip",
+      "lastFeedExpiry": "20270227",
+      "lastFeedVersion": "20240313",
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Bay City, Michigan",
+        "Essexville, Michigan",
+        "Auburn, Michigan",
+        "Pinconning, Michigan"
+      ]
+    },
+    {
+      "slug": "burlington-ia",
+      "name": "Burlington Urban Service (BUS)",
+      "center": [
+        40.8075,
+        -91.1129
+      ],
+      "bbox": [
+        40.74,
+        -91.24,
+        40.9,
+        -90.98
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
+      "region": "Iowa",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-199/latest.zip",
+      "lastFeedExpiry": "20260930",
+      "lastFeedVersion": "UTC: 28-Jan-2026 13:41",
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Burlington, Iowa",
+        "West Burlington, Iowa"
+      ]
+    },
+    {
+      "slug": "jefftran",
+      "name": "Jefferson City Transit (JeffTran)",
+      "center": [
+        38.5792,
+        -92.1729
+      ],
+      "bbox": [
+        38.51,
+        -92.28,
+        38.66,
+        -92.06
+      ],
+      "feedUrl": "https://jctgtfsdownload.itcurves.us/DownloadGtfs",
+      "websiteUrl": "https://www.jeffersoncitymo.gov/government/transit",
+      "region": "Missouri",
+      "lastFeedExpiry": "20351004",
+      "lastFeedVersion": "1.0",
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Jefferson City, Missouri"
+      ]
+    },
+    {
+      "slug": "muskegon",
+      "name": "Muskegon Area Transit System",
+      "center": [
+        43.2342,
+        -86.2484
+      ],
+      "bbox": [
+        42.9,
+        -86.6,
+        43.5,
+        -85.8
+      ],
+      "feedUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
+      "region": "Michigan",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-17",
+      "cities": [
+        "Muskegon, Michigan",
+        "Muskegon Heights, Michigan",
+        "Norton Shores, Michigan"
+      ]
     }
   ]
 }

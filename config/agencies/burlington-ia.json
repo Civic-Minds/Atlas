@@ -1,0 +1,24 @@
+{
+  "slug": "burlington-ia",
+  "name": "Burlington Urban Service (BUS)",
+  "center": [
+    40.8075,
+    -91.1129
+  ],
+  "bbox": [
+    40.74,
+    -91.24,
+    40.9,
+    -90.98
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
+  "region": "Iowa",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-199/latest.zip",
+  "lastFeedExpiry": "20260930",
+  "lastFeedVersion": "UTC: 28-Jan-2026 13:41",
+  "lastRefreshedAt": "2026-08-17",
+  "cities": [
+    "Burlington, Iowa",
+    "West Burlington, Iowa"
+  ]
+}

@@ -11,6 +11,16 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 | Agency | Reason | Notes |
 |--------|--------|-------|
 | Bradford BWG Transit | On-demand only | No fixed-route GTFS; evaluated 2026 |
+| Cadillac/Wexford Transit Authority | Demand-response only | Door-to-door service; no conventional fixed-route GTFS found; evaluated 2026 |
+| Big Rapids Dial-A-Ride / Mecosta-Osceola Transit Authority | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Roseview Transit (Richmond, Indiana) | Request-based service | No current public fixed-route GTFS found; evaluated 2026 |
+| St. Mary Parish Public Transit (Morgan City, Louisiana) | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Wiggins, Mississippi transit service | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Collin County Transit (McKinney, Texas) | On-demand only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Twin Falls public transit | On-demand only | No conventional fixed-route GTFS found; evaluated 2026 |
+| Saginaw Transit Authority Regional Services (STARS) | No usable public feed | Fixed-route service exists, but the current agency download requires an authenticated SharePoint link; the public Transitland archive is stale; retry periodically |
+| Quincy Transit Lines | No usable public feed | Fixed-route service exists, but no current public static GTFS URL was found; Transitland has a catalogued feed but no accessible current download; retry periodically |
+| Lyon County Area Transportation (LCAT) | Expired feed | Emporia has fixed/deviated-fixed service plus demand-response service, but the current public GTFS expires 2025-06-30; retry after the feed is refreshed |
 | STTR Trois-Rivières | Dead feed | MDB/official URL unreturnable; retry periodically |
 | RTC Québec City | Dead feed | Follow-up from CHANGELOG_ARCHIVE |
 | Peterborough Transit | No public GTFS | Metrolinx tmix slug 404; not in MDB; retry periodically |
