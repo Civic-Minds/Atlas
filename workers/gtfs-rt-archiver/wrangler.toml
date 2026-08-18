@@ -1,4 +1,4 @@
-name = "atlas-gtfs-rt-archiver"
+name = "atlas-gtfs-rt-archiver-ttc-positions"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
@@ -9,6 +9,9 @@ ARCHIVE_SHARD = "ttc-positions"
 [[r2_buckets]]
 binding = "BUCKET"
 bucket_name = "atlas-live"
+
+[observability]
+enabled = true
 
 [triggers]
 # One free Cron Trigger per shard. The other four shard configs use the same

@@ -1,0 +1,9 @@
+{
+  "slug": "hub-city-transit",
+  "name": "Hub City Transit",
+  "region": "Mississippi",
+  "center": [31.3271, -89.2903],
+  "bbox": [31.1, -89.5, 31.6, -88.9],
+  "feedUrl": "https://api.transloc.com/gtfs/hct.zip",
+  "cities": ["Hattiesburg, Mississippi"]
+}

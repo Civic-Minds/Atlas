@@ -1,0 +1,15 @@
+{
+  "slug": "mmvta",
+  "name": "Mid Mon Valley Transit",
+  "region": "Pennsylvania",
+  "center": [
+    40.137,
+    -79.898
+  ],
+  "feedUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://www.mmvta.com/",
+  "cities": [
+    "Monessen, Pennsylvania",
+    "Charleroi, Pennsylvania"
+  ]
+}

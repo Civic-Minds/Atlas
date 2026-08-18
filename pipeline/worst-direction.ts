@@ -1,45 +1,9 @@
-import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 import type { GeoJsonFeature } from './geojson-types.js';
 import { isIrregularService } from '../shared/irregularRoutes.js';
+export { stampWorstDirectionHeadways } from '../shared/worstDirection.js';
 
-function routeDayKey(routeShortName: string, day: unknown): string {
-  return `${routeShortName}::${day ?? ''}`;
-}
-
-/** Stamp worst-direction headway on every feature for client-side filter gating (AI-182). */
-export function stampWorstDirectionHeadways(features: GeoJsonFeature[]): void {
-  const routeWorstHw = new Map<string, number>();
-  const routeWorstHwByPeriod = new Map<string, HeadwayByPeriod>();
-
-  for (const f of features) {
-    const sn = f.properties.routeShortName as string;
-    const key = routeDayKey(sn, f.properties.day);
-    const hw = f.properties.headway as number | null;
-    if (hw != null) {
-      const cur = routeWorstHw.get(key) ?? 0;
-      if (hw > cur) routeWorstHw.set(key, hw);
-    }
-    const byPeriod = f.properties.headwayByPeriod as HeadwayByPeriod | undefined;
-    if (byPeriod) {
-      let existing = routeWorstHwByPeriod.get(key);
-      if (!existing) {
-        existing = {};
-        routeWorstHwByPeriod.set(key, existing);
-      }
-      for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null][]) {
-        if (v != null && (existing[pk] == null || v > existing[pk]!)) existing[pk] = v;
-      }
-    }
-  }
-
-  for (const f of features) {
-    const sn = f.properties.routeShortName as string;
-    const key = routeDayKey(sn, f.properties.day);
-    const worst = routeWorstHw.get(key);
-    if (worst != null) f.properties.worstDirectionHeadway = worst;
-    const worstByPeriod = routeWorstHwByPeriod.get(key);
-    if (worstByPeriod) f.properties.worstDirectionHeadwayByPeriod = worstByPeriod;
-  }
+function routeDayKey(routeShortName: string, routeBranch: string | null | undefined, day: unknown): string {
+  return `${routeShortName}::${routeBranch ?? ''}::${day ?? ''}`;
 }
 
 /**
@@ -56,9 +20,10 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
 
   for (const f of features) {
     const sn = f.properties.routeShortName as string;
+    const branch = f.properties.routeBranch as string | null | undefined;
     const dirId = f.properties.directionId as number | null;
     if (dirId == null) continue;
-    const key = routeDayKey(sn, f.properties.day);
+    const key = routeDayKey(sn, branch, f.properties.day);
 
     let allDirs = allDirectionsByKey.get(key);
     if (!allDirs) { allDirs = new Set(); allDirectionsByKey.set(key, allDirs); }
@@ -81,7 +46,7 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
 
   for (const f of features) {
     const sn = f.properties.routeShortName as string;
-    const key = routeDayKey(sn, f.properties.day);
+    const key = routeDayKey(sn, f.properties.routeBranch as string | null | undefined, f.properties.day);
     if (irregularKeys.has(key)) f.properties.routeHasIrregularDirection = true;
   }
 }

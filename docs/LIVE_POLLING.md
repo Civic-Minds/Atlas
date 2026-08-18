@@ -54,7 +54,6 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 ## History Archiving
 
 The Cloudflare Workers in `workers/gtfs-rt-archiver/` write to private R2 bucket `atlas-live`. Five small Workers use the five free Cron slots: TTC positions, TTC trips, Hamilton, STM, and Burlington plus Halifax. Each shard runs every minute; trip-update archives run every 5 minutes, while vehicle-position samples run every minute. R2 lifecycle rules enforce **30-day** retention.
-
 Deploy the five configs separately: `wrangler.toml`, `wrangler.ttc-trips.toml`,
 `wrangler.hamilton.toml`, `wrangler.stm.toml`, and
 `wrangler.burlington-halifax.toml`. The STM shard also needs its own
