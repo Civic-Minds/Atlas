@@ -1,0 +1,40 @@
+{
+  "slug": "setd",
+  "name": "Sunset Empire Transportation District",
+  "center": [
+    46.0328,
+    -123.8569
+  ],
+  "region": "Oregon",
+  "bbox": [
+    45.84,
+    -123.99,
+    46.23,
+    -123.73
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
+  "timezone": "America/Los_Angeles",
+  "lastFeedExpiry": "20260930",
+  "lastFeedVersion": "UTC: 27-Jul-2026 17:09",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Astoria, Oregon",
+    "Warrenton, Oregon",
+    "Cannon Beach, Oregon",
+    "Seaside, Oregon"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 12
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

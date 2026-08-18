@@ -16,11 +16,26 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50029/latest.zip",
   "lastFeedExpiry": "20270227",
   "lastFeedVersion": "20240313",
-  "lastRefreshedAt": "2026-08-17",
+  "lastRefreshedAt": "2026-08-18",
   "cities": [
     "Bay City, Michigan",
     "Essexville, Michigan",
     "Auburn, Michigan",
     "Pinconning, Michigan"
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 23
+    },
+    "checkedAt": "2026-08-18"
+  }
 }

@@ -1,0 +1,41 @@
+{
+  "slug": "grovelink",
+  "name": "Ride Connection (GroveLink)",
+  "center": [
+    45.4948,
+    -122.9463
+  ],
+  "region": "Oregon",
+  "bbox": [
+    45.35,
+    -123.17,
+    45.64,
+    -122.72
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-253/mdb-253-202607310135/mdb-253-202607310135.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-253/mdb-253-202607310135/mdb-253-202607310135.zip",
+  "timezone": "America/Los_Angeles",
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 30-Jul-2026 16:18",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Forest Grove, Oregon",
+    "Cornelius, Oregon",
+    "Hillsboro, Oregon",
+    "Tualatin, Oregon",
+    "King City, Oregon"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 24
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

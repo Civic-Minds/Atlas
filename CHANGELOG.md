@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The PMTiles build and verification pipelines now skip draft configs lacking processed R2 data, preventing 404 errors during map compilation.
+- Added Oregon and Washington regional services for GroveLink, RiverCities Transit, Tillamook, Sunset Empire, Columbia Area Transit, and MATS.
 - Beta Settings now lists degraded and unusable feeds hidden by the feed-quality filter, including the recorded reasons and check dates.
 - The experimental route-match percentage is now beta-only and labeled “match” instead of “coverage.”
 - In view agencies and routes counters now appear in production as well as beta.

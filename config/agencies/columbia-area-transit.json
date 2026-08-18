@@ -1,0 +1,39 @@
+{
+  "slug": "columbia-area-transit",
+  "name": "Columbia Area Transit",
+  "center": [
+    45.6176,
+    -122.0389
+  ],
+  "region": "Oregon",
+  "bbox": [
+    45.49,
+    -122.59,
+    45.74,
+    -121.49
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-260/mdb-260-202605070116/mdb-260-202605070116.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-260/mdb-260-202605070116/mdb-260-202605070116.zip",
+  "timezone": "America/Los_Angeles",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 06-May-2026 19:51",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Hood River, Oregon",
+    "Cascade Locks, Oregon",
+    "Portland, Oregon"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-08-18"
+  }
+}
