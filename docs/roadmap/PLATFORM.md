@@ -7,6 +7,7 @@ Long-term direction for Atlas as a tool for transit planning and public accounta
 ## History & Change Analysis
 
 - [ ] **Before/after service change**: compare frequency maps across two schedule periods to show what changed and where — made possible once the History app has enough accumulated snapshots
+- [ ] **Route history comparison**: let someone compare one route's frequency and service span over time; first build on dated route snapshots, then evaluate R2 Data Catalog for larger structured history rather than querying it directly from the app
 
 ---
 
