@@ -26,6 +26,13 @@ html {
   --accent: #3f3f46;
   --accent-bg: rgba(63, 63, 70, 0.08);
   --accent-border: rgba(63, 63, 70, 0.2);
+  /* Status badges (feed quality, etc.) */
+  --status-warn-bg: #fffbeb;
+  --status-warn-text: #92400e;
+  --status-warn-border: #fde68a;
+  --status-danger-bg: #fef2f2;
+  --status-danger-text: #b91c1c;
+  --status-danger-border: #fecaca;
 }
 
 [data-theme='dark'] {
@@ -45,6 +52,13 @@ html {
   --accent: #e4e4e7;
   --accent-bg: rgba(228, 228, 231, 0.08);
   --accent-border: rgba(228, 228, 231, 0.18);
+  /* Status badges (feed quality, etc.) */
+  --status-warn-bg: rgba(245, 158, 11, 0.12);
+  --status-warn-text: #fbbf24;
+  --status-warn-border: rgba(245, 158, 11, 0.35);
+  --status-danger-bg: rgba(239, 68, 68, 0.12);
+  --status-danger-text: #f87171;
+  --status-danger-border: rgba(239, 68, 68, 0.35);
 }
 
 button {

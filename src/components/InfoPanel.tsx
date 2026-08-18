@@ -479,7 +479,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               {(showLiveBadge || showHistoryBadge || showQualityBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
                                   {showQualityBadge && (
-                                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border ${a.feedQuality?.status === 'unusable' ? 'text-red-700 bg-red-50 border-red-200' : a.feedQuality?.status === 'degraded' ? 'text-amber-800 bg-amber-50 border-amber-200' : 'text-[var(--text-muted)] bg-[var(--bg-btn)] border-[var(--border-primary)]'}`}>
+                                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border ${a.feedQuality?.status === 'unusable' ? 'text-[var(--status-danger-text)] bg-[var(--status-danger-bg)] border-[var(--status-danger-border)]' : a.feedQuality?.status === 'degraded' ? 'text-[var(--status-warn-text)] bg-[var(--status-warn-bg)] border-[var(--status-warn-border)]' : 'text-[var(--text-muted)] bg-[var(--bg-btn)] border-[var(--border-primary)]'}`}>
                                       {qualityStatusLabel(a.feedQuality!.status)}
                                     </span>
                                   )}
