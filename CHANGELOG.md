@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Beta Settings now lists degraded and unusable feeds hidden by the feed-quality filter, including the recorded reasons and check dates.
 - The experimental route-match percentage is now beta-only and labeled “match” instead of “coverage.”
 - In view agencies and routes counters now appear in production as well as beta.
 - The degraded/unusable feed-quality badge in the Agencies list now matches dark mode instead of staying a light amber patch.

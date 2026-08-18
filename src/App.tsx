@@ -534,6 +534,7 @@ export default function App() {
                     ? visibleAgencies.filter(a => a.gtfsFares)
                     : visibleAgencies
               }
+              allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
               query={deferredQuery}
