@@ -22,16 +22,16 @@ Atlas is built from publicly available transit data and publishes the processing
 - **[Population Context](./DATA_POPULATION.md)**: Proposed population-density data layer and its relationship to transit frequency.
 - **[Frequent Network Criteria](./DATA_FREQUENT_NETWORK.md)**: Proposed "Frequent" tool (Night Service's daytime counterpart) and the cross-agency research needed before picking a threshold.
 
-## Data Freshness & Review
+## Freshness, quality, and operations
 
 - **[Data Principles](./DATA_PRINCIPLES.md)**: How Atlas approaches freshness, review, corrections, and static versus live data.
 - **[Known Issues](./KNOWN_ISSUES.md)**: Feed limitations, data quirks, and known coverage gaps.
-- **[Adding Agencies](./ADDING_AGENCIES.md)**: Refresh, review, correction, and publication procedures.
 - **[Live Polling](./LIVE_POLLING.md)**: Freshness and coverage details for real-time vehicle and adherence data.
-
-## Procedures & Maintenance
-
-- **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency (or a small batch).
+- **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency or a small batch.
 - **[Updating the Map](./MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
 - **[Coverage Gap Discovery](./COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
-- **[Fixing Issues](../FIXING_ISSUES.md)**: Scoping a fix to its blast radius and choosing the pipeline/data or UI validation runbook.
+- **[Fixing Issues](./FIXING_ISSUES.md)**: Scoping a fix to its blast radius and choosing the pipeline/data or UI validation runbook.
+
+## Procedures and maintenance
+
+The operational pages above are the source of truth. Historical refresh reports and research notes should be read with their dates in mind.
