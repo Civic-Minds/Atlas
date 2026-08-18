@@ -29,7 +29,6 @@ export interface ShapeProperties {
   headwayByHour?: HeadwayByHour;
   routeShortName: string | null;
   routeLongName: string | null;
-  routeBranch?: string | null;
   agencyName?: string;
   headsign?: string | null;
   busSubType?: 'brt' | 'express' | 'coach' | 'local';
