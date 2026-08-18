@@ -32,14 +32,14 @@ Read by: `pipeline/refresh.ts` only (reads `history/{slug}/latest.json` to detec
 Real-time GTFS-RT snapshots from the Cloudflare Worker archiver. Canary cohort is
 **smaller** than the browser Live Vehicles set — see `docs/LIVE_POLLING.md` § History Archiving.
 
-- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples (currently TTC streetcars, every minute)
-- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries (ttc, burlington, hamilton, stm; self-gated every 5th minute)
+- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples for the five archive agencies, every minute
+- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries for the five archive agencies, every 5 minutes
 - Both formats use the `atlas.live.v1` normalized envelope; legacy fields remain during migration.
 
-Written by: Cloudflare Worker (`workers/gtfs-rt-archiver/`) — cron every minute + daily 04:00 UTC cleanup
+Written by: five small Cloudflare Workers sharing `workers/gtfs-rt-archiver/src/index.ts`, one shard per free Cron Trigger
 Read by: `/api/live-snapshot`, `/api/live-replay`, `/api/history-adherence` (not direct browser R2)
 
-30-day retention enforced by the Worker's daily cleanup cron.
+30-day retention enforced by the bucket's R2 lifecycle rules.
 
 
 ## Live Polling: three surfaces (often conflated)
@@ -53,8 +53,8 @@ LA Metro parked).
 
 ### 2. Background Worker archiver
 
-Hardcoded feed lists in `workers/gtfs-rt-archiver/src/index.ts` (not `LIVE_POLLING_ROUTES`):
-trip-updates for **ttc, burlington, hamilton, stm**; vehicle positions for **ttc streetcars, burlington, hamilton, and stm**.
+Hardcoded feed lists in `shared/liveArchiveFeeds.ts` (not `LIVE_POLLING_ROUTES`):
+trip-updates and vehicle positions for **ttc, burlington, hamilton, halifax, and stm**. Five small Workers divide the feeds so each invocation stays under the Workers Free CPU limit.
 Writes private `atlas-live`. Expand only after canary health + contract checks.
 
 ### 3. Provider consumers (snapshot / replay)
@@ -67,7 +67,7 @@ meaning of “history” than RT delay archives.
 ## Data Flow: Weekly Refresh
 
 ```
-feedUrl (agency's GTFS zip) 
+feedUrl (agency's GTFS zip)
   -> pipeline/refresh.ts
     -> parse GTFS
     -> write atlas/{slug}.json          (public, replaces previous)

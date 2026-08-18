@@ -5,11 +5,12 @@
     44.6,
     -93.3
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202606230010/mdb-206-202606230010.zip",
-  "lastFeedExpiry": "20260809",
-  "lastFeedVersion": "20260622",
+  "feedUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202607280034/mdb-206-202607280034.zip",
+  "lastFeedExpiry": "20260826",
+  "lastFeedVersion": "20260727",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Eagan, Minnesota",
     "Burnsville, Minnesota",

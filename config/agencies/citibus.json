@@ -11,12 +11,13 @@
     33.66,
     -101.8
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-569/latest.zip",
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip",
   "region": "Texas",
-  "lastFeedExpiry": "20260808",
+  "lastFeedExpiry": "20270207",
   "lastFeedVersion": "UTC: 14-Jul-2026 21:13",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Lubbock, Texas"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-569/mdb-569-202607150103/mdb-569-202607150103.zip"
 }

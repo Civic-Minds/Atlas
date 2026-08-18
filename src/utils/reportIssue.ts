@@ -23,8 +23,13 @@ export function openAtlasIssueReport(title: string, details: string, context: Is
     context.description.trim(),
   ].join('\n');
   const body = `${plainDetails}\n\nDIAGNOSTICS ABOVE — PLEASE DO NOT EDIT\n\n${reportSection}\n`;
-  const diagnosticsMarker = '\nGenerated route metrics (loaded artifact):';
-  const diagnosticsStart = body.indexOf(diagnosticsMarker);
+  const diagnosticsMarkers = [
+    '\nGenerated route metrics from the loaded artifact:',
+    '\nGenerated route metrics (loaded artifact):',
+  ];
+  const diagnosticsStart = diagnosticsMarkers
+    .map(marker => body.indexOf(marker))
+    .find(index => index !== -1) ?? -1;
   const issueBody = diagnosticsStart === -1
     ? body
     : `${reportSection}\n\nFull route diagnostics copied to your clipboard. Paste them below this report.`;

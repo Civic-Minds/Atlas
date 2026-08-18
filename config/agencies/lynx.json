@@ -5,11 +5,12 @@
     28.54,
     -81.38
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-347/mdb-347-202606060124/mdb-347-202606060124.zip",
-  "lastFeedExpiry": "20260808",
+  "feedUrl": "http://gtfsrt.golynx.com/gtfsrt/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-347/mdb-347-202607300104/mdb-347-202607300104.zip",
+  "lastFeedExpiry": "20261212",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Orlando, Florida",
     "Pine Hills, Florida",

@@ -49,6 +49,32 @@ export function filterGtfsByExcludedShortNames(gtfs: GtfsData, excludeShortNames
   };
 }
 
+/** Remove trips whose headsign explicitly says they are not passenger service. */
+export function filterGtfsByExcludedTripHeadsigns(gtfs: GtfsData, excludedHeadsigns: string[]): GtfsData {
+  const excluded = new Set(excludedHeadsigns.map(headsign => headsign.trim().toLowerCase()));
+  const excludedTripIds = new Set(
+    (gtfs.trips ?? [])
+      .filter(trip => excluded.has((trip.trip_headsign ?? '').trim().toLowerCase()))
+      .map(trip => trip.trip_id),
+  );
+  if (excludedTripIds.size === 0) return gtfs;
+
+  const trips = (gtfs.trips ?? []).filter(trip => !excludedTripIds.has(trip.trip_id));
+  const keptTripIds = new Set(trips.map(trip => trip.trip_id));
+  const keptShapeIds = new Set(trips.map(trip => trip.shape_id).filter((id): id is string => !!id));
+  const keptServiceIds = new Set(trips.map(trip => trip.service_id));
+
+  return {
+    ...gtfs,
+    trips,
+    stop_times: (gtfs.stop_times ?? []).filter(st => keptTripIds.has(st.trip_id)),
+    shapes: (gtfs.shapes ?? []).filter(shape => keptShapeIds.has(shape.id)),
+    frequencies: (gtfs.frequencies ?? []).filter(freq => keptTripIds.has(freq.trip_id)),
+    calendarDates: (gtfs.calendarDates ?? []).filter(date => keptServiceIds.has(date.service_id)),
+    calendar: (gtfs.calendar ?? []).filter(service => keptServiceIds.has(service.service_id)),
+  };
+}
+
 /** Keep only routes (and their trips/shapes/stop_times) matching the given GTFS route_type values. */
 export function filterGtfsByRouteTypes(gtfs: GtfsData, routeTypes: number[]): GtfsData {
   const allowed = new Set(routeTypes.map(String));

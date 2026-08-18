@@ -2,13 +2,13 @@
   "slug": "blacksburg",
   "name": "Blacksburg Transit",
   "center": [
-    37.23,
-    -80.41
+    37.1452,
+    -80.4053
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260731",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "region": "Virginia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
   "bbox": [
@@ -19,5 +19,7 @@
   ],
   "cities": [
     "Roanoke, Virginia"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20260731-0bc49aabb978919b"
 }

@@ -13,9 +13,9 @@
   ],
   "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
   "region": "Virginia",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260831",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Newport News, Virginia",
     "Hampton, Virginia"

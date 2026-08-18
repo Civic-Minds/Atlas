@@ -3,8 +3,8 @@
   "name": "Taft Area Transit",
   "region": "California",
   "center": [
-    35.1119,
-    -119.4369
+    35.1036,
+    -119.4255
   ],
   "bbox": [
     35.0059,
@@ -13,7 +13,9 @@
     -119.3487
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip",
-  "lastFeedExpiry": "20211231",
+  "lastFeedExpiry": "20220101",
   "lastFeedVersion": "UTC: 17-Feb-2021 22:17",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "20260811",
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20220101-b96535fe37ea9e54"
 }

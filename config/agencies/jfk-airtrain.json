@@ -3,8 +3,8 @@
   "name": "JFK AirTrain",
   "region": "New York",
   "center": [
-    40.6553,
-    -73.7977
+    40.6552,
+    -73.7974
   ],
   "bbox": [
     40.612,
@@ -14,7 +14,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-522/latest.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20211231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "20260811",
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20211231-d3fb77447fdc2f06"
 }

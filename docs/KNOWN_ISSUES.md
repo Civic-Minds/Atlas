@@ -11,10 +11,22 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 | Agency | Reason | Notes |
 |--------|--------|-------|
 | Bradford BWG Transit | On-demand only | No fixed-route GTFS; evaluated 2026 |
+| Cadillac/Wexford Transit Authority | Demand-response only | Door-to-door service; no conventional fixed-route GTFS found; evaluated 2026 |
+| Big Rapids Dial-A-Ride / Mecosta-Osceola Transit Authority | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Roseview Transit (Richmond, Indiana) | Request-based service | No current public fixed-route GTFS found; evaluated 2026 |
+| St. Mary Parish Public Transit (Morgan City, Louisiana) | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Wiggins, Mississippi transit service | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Collin County Transit (McKinney, Texas) | On-demand only | No conventional local fixed-route GTFS found; evaluated 2026 |
+| Twin Falls public transit | On-demand only | No conventional fixed-route GTFS found; evaluated 2026 |
+| Saginaw Transit Authority Regional Services (STARS) | No usable public feed | Fixed-route service exists, but the current agency download requires an authenticated SharePoint link; the public Transitland archive is stale; retry periodically |
+| Quincy Transit Lines | No usable public feed | Fixed-route service exists, but no current public static GTFS URL was found; Transitland has a catalogued feed but no accessible current download; retry periodically |
+| Lyon County Area Transportation (LCAT) | Expired feed | Emporia has fixed/deviated-fixed service plus demand-response service, but the current public GTFS expires 2025-06-30; retry after the feed is refreshed |
+| Dodge City Public Transportation (D-TRAN) | No route shapes | The current GTFS lists three fixed routes but ships an empty `shapes.txt`, so Atlas cannot produce route geometry; retry after the feed is corrected |
 | STTR Trois-Rivières | Dead feed | MDB/official URL unreturnable; retry periodically |
 | RTC Québec City | Dead feed | Follow-up from CHANGELOG_ARCHIVE |
 | Peterborough Transit | No public GTFS | Metrolinx tmix slug 404; not in MDB; retry periodically |
 | Brantford Transit | No public GTFS | Metrolinx tmix slug 404; not in MDB; retry periodically |
+| Brockville Transit | No public GTFS | Official site publishes schedules and maps, but no public static GTFS URL found; retry periodically |
 | Transit Cape Breton | No public GTFS | Not in MDB / Canadian INF sources; retry periodically |
 | STS Saguenay | No usable public zip | Données Québec “STS” host serves Sherbrooke (sts.qc.ca), not Saguenay |
 | Manchester Transit Authority (NH) | Inactive MDB only | No active public fixed-route GTFS; retry periodically |
@@ -32,6 +44,9 @@ Some agencies publish feeds at unstable or rate-limited URLs. We use the Mobilit
 - **Niagara Transit** (Niagara Region Transit) — official URL unreliable
 
 If a weekly refresh fails for an agency, check whether the official `feedUrl` in `index.json` is still valid before blaming the pipeline.
+
+### Avon Transit static GTFS
+The current public conventional feed is still the April 2025 Trillium snapshot, while Avon’s newer 2026 Flex feed contains no fixed-route geometry. Atlas can stage the older fixed-route feed with a degraded quality rating, but it should not be published as current until Avon provides a refreshed conventional GTFS.
 
 ### GO Transit dual route IDs
 GO Transit publishes two overlapping route ID sets per schedule period (e.g. `04260626-41` and `06260926-41` for route 41). The pipeline deduplicates these by `routeShortName::direction::day::headsign`, keeping the lower-headway feature. The losing feature's stop headways are discarded. This is expected behaviour.

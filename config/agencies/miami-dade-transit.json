@@ -6,10 +6,10 @@
     -80.1918
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "North Miami, Florida",
     "Allapattah, Florida",

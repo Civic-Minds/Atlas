@@ -7,46 +7,24 @@ const fc = {
   features: [{
     type: 'Feature' as const,
     properties: {
-      routeShortName: '63',
-      day: 'Weekday',
-      directionId: 0,
-      headway: 10,
-      tier: '10',
-      headwayByPeriod: { midday: 10 },
-      headwayByPeriodSustained: { midday: true },
-      // Poisoned route-level stamp from an old publish — client must rewrite.
-      worstDirectionHeadway: 175,
-      worstDirectionHeadwayByPeriod: { midday: 175 },
-    },
-    geometry: null,
+      routeShortName: '63', day: 'Weekday', directionId: 0, headway: 10, tier: '10',
+      headwayByPeriod: { midday: 10 }, headwayByPeriodSustained: { midday: true },
+      worstDirectionHeadway: 175, worstDirectionHeadwayByPeriod: { midday: 175 },
+    }, geometry: null,
   }, {
     type: 'Feature' as const,
     properties: {
-      routeShortName: '63',
-      day: 'Weekday',
-      directionId: 1,
-      headway: 10,
-      tier: '10',
-      headwayByPeriod: { midday: 10 },
-      headwayByPeriodSustained: { midday: true },
-      worstDirectionHeadway: 175,
-      worstDirectionHeadwayByPeriod: { midday: 175 },
-    },
-    geometry: null,
+      routeShortName: '63', day: 'Weekday', directionId: 1, headway: 10, tier: '10',
+      headwayByPeriod: { midday: 10 }, headwayByPeriodSustained: { midday: true },
+      worstDirectionHeadway: 175, worstDirectionHeadwayByPeriod: { midday: 175 },
+    }, geometry: null,
   }, {
     type: 'Feature' as const,
     properties: {
-      routeShortName: '63',
-      day: 'Weekday',
-      directionId: 1,
-      headway: 175,
-      tier: 'infrequent',
-      headwayByPeriod: { midday: 175 },
-      headwayByPeriodSustained: { midday: false },
-      worstDirectionHeadway: 175,
-      worstDirectionHeadwayByPeriod: { midday: 175 },
-    },
-    geometry: null,
+      routeShortName: '63', day: 'Weekday', directionId: 1, headway: 175, tier: 'infrequent',
+      headwayByPeriod: { midday: 175 }, headwayByPeriodSustained: { midday: false },
+      worstDirectionHeadway: 175, worstDirectionHeadwayByPeriod: { midday: 175 },
+    }, geometry: null,
   }],
 };
 
@@ -69,13 +47,10 @@ describe('fetchAgencyGeo', () => {
   it('caches successful fetches by slug', async () => {
     const fetchMock = mockFetch();
     vi.stubGlobal('fetch', fetchMock);
-
     const first = await fetchAgencyGeo(agency);
     const second = await fetchAgencyGeo(agency);
-
     expect(first).toBe(second);
     expect(getCachedAgencyGeo('ttc')).toBe(first);
-    // data-version + geo (not two geos)
     expect(fetchMock.mock.calls.filter((c: unknown[]) => String(c[0]).includes('ttc.json')).length).toBe(1);
   });
 
@@ -84,18 +59,14 @@ describe('fetchAgencyGeo', () => {
     const jsonPromise = new Promise<typeof fc>(r => { resolveJson = r; });
     const fetchMock = vi.fn().mockImplementation(async (input: RequestInfo | URL) => {
       const url = String(input);
-      if (url.includes('data-version.json')) {
-        return { ok: true, json: async () => ({ v: 'test-v1' }) };
-      }
+      if (url.includes('data-version.json')) return { ok: true, json: async () => ({ v: 'test-v1' }) };
       return { ok: true, json: () => jsonPromise };
     });
     vi.stubGlobal('fetch', fetchMock);
-
     const a = fetchAgencyGeo(agency);
     const b = fetchAgencyGeo(agency);
     resolveJson(fc);
     const [ra, rb] = await Promise.all([a, b]);
-
     expect(ra).toBe(rb);
     expect(fetchMock.mock.calls.filter((c: unknown[]) => String(c[0]).includes('ttc.json')).length).toBe(1);
   });

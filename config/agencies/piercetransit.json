@@ -12,10 +12,10 @@
     47.5,
     -122
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-pierce-transit-gtfs-265.zip?alt=media",
-  "lastFeedExpiry": "20260606",
-  "lastFeedVersion": "S1000129",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip",
+  "lastFeedExpiry": "20260829",
+  "lastFeedVersion": "S1000132",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "https://www.piercetransit.org",
   "cities": [
     "Tacoma, Washington",
@@ -28,5 +28,6 @@
     "Renton, Washington",
     "Bellevue, Washington",
     "Kent, Washington"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-265/mdb-265-202608080054/mdb-265-202608080054.zip"
 }

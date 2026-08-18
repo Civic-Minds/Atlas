@@ -2,13 +2,15 @@
   "slug": "augusta",
   "name": "Augusta Transit",
   "center": [
-    33.45,
-    -82.02
+    33.4594,
+    -82.0294
   ],
   "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20240224",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "20260811",
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20240224-4a743b70003a6451"
 }

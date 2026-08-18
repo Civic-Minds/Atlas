@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-60167/ntd-60167-202412090027/ntd-60167-202412090027.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60167/latest.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt — nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
   "pmtilesPending": true
 }

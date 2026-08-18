@@ -2,14 +2,14 @@
   "slug": "avta",
   "name": "Antelope Valley Transit Authority (AVTA)",
   "center": [
-    34.58,
-    -118.12
+    34.6012,
+    -118.1182
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-214/mdb-214-202406071534/mdb-214-202406071534.zip",
   "lastFeedExpiry": "20210801",
   "lastFeedVersion": "20210503",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.avta.com",
   "cities": [
     "Lancaster, California",
@@ -21,5 +21,7 @@
     "Northridge, California",
     "Santa Monica, California",
     "Reseda, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20210801-aee75355a03ea49e"
 }

@@ -3,8 +3,8 @@
   "name": "Cheyenne Transit Program",
   "region": "Wyoming",
   "center": [
-    41.1387,
-    -104.7953
+    41.1364,
+    -104.7971
   ],
   "bbox": [
     41.0798,
@@ -13,10 +13,12 @@
     -104.7193
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20250914",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Cheyenne, Wyoming"
-  ]
+  ],
+  "timezone": "America/Denver",
+  "lastRawArchiveKey": "20250914-5430c00ec2bfc130"
 }

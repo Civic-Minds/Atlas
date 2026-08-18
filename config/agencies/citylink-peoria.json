@@ -14,8 +14,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2208/latest.zip",
   "region": "Illinois",
   "lastFeedExpiry": "20261205",
-  "lastFeedVersion": "20260805",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260806",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "North Peoria, Illinois",
     "Peoria, Illinois"

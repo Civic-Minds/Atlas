@@ -3,22 +3,24 @@
   "name": "Sun Tran (Tucson)",
   "center": [
     32.22,
-    -110.93
+    -110.97
   ],
   "bbox": [
-    31.9,
-    -111.3,
+    31.8,
+    -112.9,
     32.5,
-    -110.6
+    -110.7
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2354/latest.zip",
+  "feedUrl": "https://GTFS-RT.suntran.com/TMGTFSRealTimeWebService/Static/SunTranGTFS.zip",
   "region": "Arizona",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedExpiry": "20260516",
-  "lastFeedVersion": "Feb1526_20260121",
   "cities": [
     "Tucson, Arizona",
     "Casas Adobes, Arizona",
     "Catalina Foothills, Arizona"
-  ]
+  ],
+  "timezone": "America/Phoenix",
+  "lastFeedExpiry": "20260815",
+  "lastFeedVersion": "May1726_20260501",
+  "lastRawArchiveKey": "20260815-5c6eab88e8d5dede",
+  "lastRefreshedAt": "2026-08-13"
 }

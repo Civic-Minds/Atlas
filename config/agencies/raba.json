@@ -15,8 +15,8 @@
   "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redding-redding-area-bu-gtfs-3031.zip?alt=media",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Aug 2, 2026, 5:36 PM",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "Updated: Aug 9, 2026, 4:31 PM",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Redding, California",
     "Chico, California"

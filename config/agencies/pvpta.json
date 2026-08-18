@@ -5,9 +5,10 @@
     33.74,
     -118.39
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-35/mdb-35-202607030136/mdb-35-202607030136.zip",
-  "lastFeedExpiry": "20260723",
-  "lastFeedVersion": "UTC: 02-Jul-2026 21:43",
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-35/mdb-35-202607250037/mdb-35-202607250037.zip",
+  "lastFeedExpiry": "20261201",
+  "lastFeedVersion": "UTC: 24-Jul-2026 15:05",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "2026-08-10"
 }

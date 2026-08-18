@@ -24,7 +24,8 @@ import { resolve, dirname } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { processGtfsBuffer } from './process-core.js';
-import { r2Put, r2Get, r2PutArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   formatOverrideResolvedLog,
@@ -35,13 +36,13 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
+import { candidateIsOlderThanActive } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   assertCountryMayWriteToR2,
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
-import { bumpPublicDataVersion } from './dataVersion.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
@@ -163,16 +164,22 @@ async function main() {
   let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
   let agencyId: string | undefined;
   let excludeRouteShortNames: string[] | undefined;
+  let excludeTripHeadsigns: string[] | undefined;
+  let mergeEquivalentShapeVariants: boolean | undefined;
+  let previousFeedExpiry: string | null = null;
   let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; issueUrl?: string; fare?: number }>;
+      agencies: Array<{ slug: string; agencyId?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
     preprocess = entry?.preprocess;
     agencyId = entry?.agencyId;
     excludeRouteShortNames = entry?.excludeRouteShortNames;
+    excludeTripHeadsigns = entry?.excludeTripHeadsigns;
+    mergeEquivalentShapeVariants = entry?.mergeEquivalentShapeVariants;
+    previousFeedExpiry = entry?.lastFeedExpiry ?? null;
     issueUrl = entry?.issueUrl;
     if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
   }
@@ -195,10 +202,21 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies } = await processGtfsBuffer(buf, msg => {
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality } = await processGtfsBuffer(buf, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { agencyId, preprocess, excludeRouteShortNames, slug, manualBaseFare, force });
+  }, { agencyId, preprocess, excludeRouteShortNames, excludeTripHeadsigns, mergeEquivalentShapeVariants, slug, manualBaseFare, force });
   const center = argCenter ?? computedCenter ?? [0, 0];
+
+  const todayYmd = todayUtcYmd().replace(/-/g, '');
+  if (!dryRun && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {
+    throw new Error(`Refusing to replace ${slug}: downloaded feed ends ${feedExpiry ?? 'unknown'}, older than active snapshot ${previousFeedExpiry}`);
+  }
+  if (!dryRun && featureCount === 0) {
+    throw new Error(`Refusing to replace ${slug}: processed feed produced 0 route features; active snapshot unchanged`);
+  }
+  if (!dryRun && (!feedExpiry || feedExpiry < todayYmd)) {
+    console.log(`  [warn] publishing ${slug} as the latest available schedule; feed service ends ${feedExpiry ?? 'unknown'}`);
+  }
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
 
@@ -227,6 +245,7 @@ async function main() {
     if (shapeAnomalies?.length) {
       console.log(`  ${shapeAnomalies.length} shape(s) needed correction during parsing (truncated jump, de-interleaved duplicate sequences, and/or a repaired/flagged interleaved sub-path) — see ${slug}-shape-anomalies.json.`);
     }
+    console.log(`  Feed quality: ${feedQuality.status} (${feedQuality.score}/100)${feedQuality.reasons.length ? ` — ${feedQuality.reasons.join(' ')}` : ''}`);
     console.log(`  Run "npm run route-report -- ${slug}" to check for anomaly patterns (mismatched headways, near-duplicate headsigns, shape corrections) before publishing.`);
     console.log(`  Re-run without --dry-run once you're satisfied to actually publish.\n`);
     return;
@@ -244,14 +263,11 @@ async function main() {
   }
   const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
-  // Bust browser IDB/CDN query keys immediately — do not wait for a SPA deploy.
   await bumpPublicDataVersion(`process ${slug}`);
 
-  const archiveKey = feedExpiry ?? feedVersion;
-  if (archiveKey) {
-    await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
-    console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
-  }
+  const archiveKey = rawFeedArchiveKey(feedExpiry, feedVersion, buf);
+  await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
+  console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
 
   let index: { agencies: any[] } = { agencies: [] };
   if (existsSync(indexPath)) {
@@ -270,6 +286,7 @@ async function main() {
       lastFeedExpiry: feedExpiry,
       lastFeedVersion: feedVersion,
       lastRefreshedAt: todayUtcYmd(),
+      feedQuality,
     };
     if (upstreamFeedChanged(prev, feedExpiry, feedVersion)) {
       updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
@@ -279,27 +296,20 @@ async function main() {
     }
     index.agencies[existing] = updated;
   } else {
-    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd() });
+    index.agencies.push({ slug, name: agencyName, center, timezone, feedUrl: null, lastFeedExpiry: feedExpiry, lastFeedVersion: feedVersion, lastRefreshedAt: todayUtcYmd(), feedQuality });
   }
   writeFileSync(indexPath, JSON.stringify(index, null, 2));
   const savedAgency = index.agencies.find(a => a.slug === slug);
   if (savedAgency) writeAgencySource(savedAgency);
   console.log(`  index.json updated\n`);
 
-  // Keep the complete Hide irregular routes inventory in sync with one-off agency processing.
   try {
     let existing: HiddenRoutesFile | null = null;
     const raw = await r2Get('atlas/hidden-routes.json');
     if (raw) existing = JSON.parse(raw) as HiddenRoutesFile;
     const hiddenRoutes = mergeHiddenRoutes(
       existing,
-      [{
-        agencySlug: slug,
-        routes: buildHiddenRoutesForAgency(
-          { slug, name: agencyName, region: savedAgency?.region ?? null },
-          geojson,
-        ),
-      }],
+      [{ agencySlug: slug, routes: buildHiddenRoutesForAgency({ slug, name: agencyName, region: savedAgency?.region ?? null }, geojson) }],
       new Set(index.agencies.filter(a => !a.staged && !a.hiddenInProduction).map(a => a.slug)),
     );
     await r2Put('atlas/hidden-routes.json', JSON.stringify(hiddenRoutes));

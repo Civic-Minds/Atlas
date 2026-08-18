@@ -9,5 +9,7 @@
   "region": "West Virginia",
   "lastFeedExpiry": "20301231",
   "lastFeedVersion": "1.0-2.7.19",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "2026-08-14",
+  "timezone": "US/Eastern",
+  "lastRawArchiveKey": "20301231-2151a3c4f07e3841"
 }

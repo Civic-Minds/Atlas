@@ -12,9 +12,10 @@
     44.1,
     -75.7
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-watertown-citibus-gtfs-2881.zip?alt=media",
-  "lastFeedExpiry": "20260703",
+  "feedUrl": "https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-07",
-  "websiteUrl": "http://passiotech.com/"
+  "lastRefreshedAt": "2026-08-10",
+  "websiteUrl": "http://passiotech.com/",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2881/mdb-2881-202608100019/mdb-2881-202608100019.zip"
 }

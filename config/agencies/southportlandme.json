@@ -12,12 +12,13 @@
     43.7,
     -70.2
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-maine-south-portland-gtfs-2641.zip?alt=media",
-  "lastFeedExpiry": "20251005",
-  "lastFeedVersion": "Updated: Aug 25, 2025, 10:00 AM",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
+  "lastFeedExpiry": "20260909",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://www.southportland.org/departments/bus-transportation/",
   "cities": [
     "Portland, Maine"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/mdb-2642-202608100103/mdb-2642-202608100103.zip"
 }

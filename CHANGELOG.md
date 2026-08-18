@@ -7,24 +7,104 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Routes with confirmed source geometry problems now stay visible with a clear warning instead of hiding the whole agency.
-- Hidden-route inventory now lists routes fully removed by the filter in searchable, agency-grouped lists with state and province filters.
-- Settings now explain which irregular routes are hidden; experimental combined corridors remain beta-only.
-- Live panel stops now follow the route order instead of being sorted by delay.
-- Niagara route notices now stay on affected routes, and generic line-name headsigns now show actual destinations.
-- Live API routes now return normally on Vercel instead of timing out before the handler responds.
-- Selected-route notices now show the correct agency and stay on one line.
-- Live adherence cards now leave “fetching…” when the live endpoint does not respond.
-- **Fixed several frequency accuracy problems**: weekday/weekend shape mix-ups, long-trip terminal timing, unsustained medians, and peak-only short turns could make routes look falsely sparse or frequent, or remain visible under the wrong filter.
-- **Fixed route-level frequency filtering**: intermediate-stop gaps no longer make a whole route look frequent when its endpoint service is slower ([#317](https://github.com/Civic-Minds/Atlas/issues/317)).
-- **Fixed Ride On Flash being treated as one route**: Orange and Blue now keep separate schedules, while shared stops can still show combined service.
-- **Fixed stale map and schedule state**: deselecting a partially filtered route now restores normal visibility, and a normal reload now picks up refreshed schedule data.
-- **Improved weekly feed refresh reliability**: valid feeds with duplicate trip IDs, GTFS-Flex records, changed versions, or empty pathway-node coordinates can refresh, and skipped or failed agencies are now reported.
-- **Improved Corridors and reporting workflows**: Corridors is visible and seeds the starting stop correctly, its bars explain wait times, and route/stop reports open from the full row with the relevant reason preselected.
-- **Added Halifax to Live history**: trip delays and vehicle positions are now archived alongside existing agencies.
-- **Moved the uneven-service warning to beta**: it was flagging normal routes while its thresholds are tuned against more real feeds.
-- **Refreshed Brampton schedule data**: Route 502 no longer shows a false uneven-service warning in the evening.
-- **Fixed truncated rail geometry**: UP Express now renders the full route to Pearson Airport.
-- **Aligned route-card frequencies with route filters**: combined branch patterns can no longer make a route look faster than its actual route-level service.
+- The degraded/unusable feed-quality badge in the Agencies list now matches dark mode instead of staying a light amber patch.
+- Selected routes from the In view panel now dim other visible routes for staged beta agencies too.
+- Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.
+- Niagara’s scheduled evening and night routes now appear as normal service instead of being mislabeled as irregular.
+- RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
+- NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
+- Added validated GTFS sources for 18 previously missing Ontario, Pennsylvania, and Ohio agencies, expanding coverage around Pittsburgh and across smaller Ontario cities.
+- Added current GTFS sources for additional regional agencies across Michigan, Iowa, Missouri, North Carolina, Texas, Louisiana, Mississippi, and Florida, ready for the next data publication.
+- Documented Dodge City as blocked until its fixed-route feed includes route shapes.
+- Added staged GTFS coverage for Telluride, Mountain Village, and SMART regional transit, with agency-level filtering for their shared feed.
+- Added Snowmass Village’s local shuttle without duplicating its RFTA regional routes.
+- Added validated Colorado mountain transit coverage for The Lift, RoundAbout, Breck Free Ride, Summit Stage, Vail Transit, and Avon Transit, plus Timmins and Casper; Avon remains marked degraded because its published static schedule is expired.
+- Core Transit now uses its official agency name instead of the older ECO Transit label.
+- The "zooming in to..." orienting card now names the actual nearest city instead of sometimes naming a neighboring one whose fallback bounding box happened to overlap the click ([#430](https://github.com/Civic-Minds/Atlas/issues/430)).
+- Fixed a rare load-timing bug where the Agencies filter could silently save "almost everything off" with no clicking involved, permanently undercounting routes on every later visit until noticed ([#428](https://github.com/Civic-Minds/Atlas/issues/428)).
+- Agencies now start with every active agency selected, and the Agencies panel's All/None actions apply globally instead of only to agencies currently in view.
+- The map now actually draws routes again on deployed builds — a MapLibre GL 6 bug silently stopped it from requesting any map tiles once built for production, even though everything looked fine locally ([#425](https://github.com/Civic-Minds/Atlas/issues/425)).
+- Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
+- Deep-linked maps now load nearby agencies immediately and show filtered local route shapes while route tiles are still loading, preventing blank maps during tile stalls.
+- Map fallback now chooses local route shapes per agency, so one broken agency tile set cannot hide routes from otherwise healthy agencies.
+- Map startup no longer waits for route tiles before loading the map, so stalled PMTiles requests cannot block local route rendering.
+- Map fallback now checks routes that actually render under the active filters, not just route data present in the tile source.
+- Nearby agencies now begin loading as soon as the map is ready, even when a route-tile request is stalled.
+- Deployed maps now load route tiles through a same-origin range proxy so PMTiles receives the correct range response in production and beta.
+- Beta map badges now report only rendered routes, reclaim the removed Context-button space, and stop showing an endless map-loading state when transit tiles fail.
+- Niagara Transit’s refreshed schedule data now keeps predictable daytime and evening routes visible when irregular routes are hidden.
+- Beta-only agency artifacts now load through the beta data path, while In view counts and lists follow the rendered map filters; Agencies and Routes now open as separate panels that close on outside click.
+- Shared-service route cards now use one Combined label, and agency cards keep routes outside the active filter collapsed until requested.
+- The agency index now derives Metz artifact locations instead of storing stale generated URLs.
+- Reconciliation now preserves day-aware branch metrics, feed validation, collision-safe archives, and live data cache invalidation across clean pipeline runs.
+- The shared beta/production build now preserves MapLibre 6, route-branch selection, and live GeoJSON cache updates after a clean deployment install.
+- Production and beta now build from the same `main` source with deployment-scoped feature flags, preventing the two sites from drifting into conflicting Git branches.
+- Selected routes now agree with the active frequency filter across directions, and stale route panels no longer overlap agency or disambiguation cards.
+- Metz is now available only in beta with staged France schedule data and a linked validation notice while the first country rollout is reviewed.
+- Agency lists now distinguish full versus partial live coverage and use plain-language History labels, while the header and Info panel show the same approximate History count.
+- Combined route summaries now stay within their direction and highlight only the shared section on hover.
+- Halifax Live now includes frequent vehicle-only routes alongside route 1 adherence, and Halifax GTFS-RT feeds are now archived for live-history analysis.
+- Added GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
+- Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
+- Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
+- Scheduled time-limited routes now keep their real frequency instead of being mislabeled as irregular.
+- Split rush-hour-only routes such as TTC 986 are now classified as irregular instead of all-day infrequent service.
+- Beta route cards can now expand schedule charts to inspect the full-day service pattern.
+- The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.
+- Beta route cards no longer show branch-only uneven-service warnings when combined branches provide the rider-facing trunk frequency.
+- Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
+- Beta schedule charts now keep the active period label clear of the expand control at narrow widths.
+
+## [3.2.19] - 2026-08-13
+
+- Current GTFS audits now inspect retained current snapshots for structural errors, stale metadata, duplicate content, and geography mismatches before publication.
+- GTFS parsing now ignores fully blank CSV records while still surfacing partially populated records as validation failures.
+- Zoom-in cards now name the place actually clicked instead of an agency's unrelated primary city.
+- Selected routes now explain when a faster section, rather than the full route, matches the active frequency filter.
+- Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
+- Route-card sparklines now sit inside their direction sections, so each chart only describes one direction.
+- Map right-click reports now use the same in-app report form as other issue reports.
+- Left-side panels now stop above the map attribution instead of covering it.
+- Shared frequency cores now include the terminal shape lead-in, so qualifying sections reach the actual station boundary.
+- Shared route cores now appear under frequency filters when their combined service qualifies, even if each individual branch is slower.
+- Shared route cores now use the displayed branch cadence across their full overlap, so stop-level noise cannot cut the qualifying section short.
+- Shared route cores now include terminal-loop stops when branches list the same stops in opposite order.
+- Bare Atlas URLs now start with the current day and time instead of restoring stale saved filters.
+- Search now puts exact and stronger route or stop matches before weaker matches that happen to be in the current map view.
+- Qualifying route sections can now be clicked like the rest of the map, so partial frequency matches open the correct route.
+- Regional agencies now show their service area instead of an arbitrary city from their stop list.
+- Production builds no longer include the beta-only map context panel.
+
+## [3.2.18] - 2026-08-10
+
+- Hidden-route agency headers now use the same standard agency names and comma-formatted counts as the Agencies list.
+- Route names now preserve KC capitalization, including KC Streetcar.
+- Open pages now warn when refreshed schedule data or a newer app version is available.
+- Current raw GTFS snapshots now live in public Atlas while replaced or expired snapshots move to the private archive, making bucket membership reflect currentness.
+- Current raw GTFS files now sit at the Atlas bucket root, so the bucket itself identifies current data.
+- Expired feeds now remain available as clearly marked fallback schedules until a newer snapshot replaces them.
+- Failed or older feed downloads no longer replace a usable active schedule.
+- Local GTFS snapshots now migrate into the private archive with calendar-aware dates and collision-safe agency paths.
+- Fixed the production map failing to render routes after refresh because its MapLibre worker was being rewritten to the app shell.
+- Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.
+- Rail headways now use one representative weekday, so subway and other rail lines no longer show fake high frequency when daily schedules are offset by a minute.
+- Disabling combined corridors now clears both the map band and any previously selected corridor overlay.
+- Irregular destination rows now show their typical gap range and exceptional longest wait instead of only saying that service varies.
+
+## [3.2.17] - 2026-08-10
+
+- Route cards and frequency filters now use consistent whole-route service, with destination departures and terminal patterns handled without false sparse or frequent readings.
+- Weekday and weekend schedules no longer mix when selecting representative route shapes, and refreshed feeds no longer leave stale map data behind.
+- Non-passenger trips and placeholder destinations stay out of rider-facing service, while standard data corrections are explained on affected route cards.
+- Routes with confirmed geometry problems remain visible with a clear warning.
+- Duplicate direction labels now fall back to Westbound/Eastbound, and schedule notices remain readable on narrow route cards.
+- Combined corridor overlays stay off the public Frequency map, and selecting a route no longer bypasses the disabled corridor setting.
+- Weekly feed refreshes now handle duplicate trip IDs, GTFS-Flex records, changed versions, and empty pathway-node coordinates without silently replacing or dropping valid schedules.
+- Live and History coverage counts are shown, and live cards no longer hang on failed responses.
+- Hidden-route inventory is searchable and grouped by agency, with readable counts and clearer irregular-route settings.
+- Corridors and reporting workflows now open from the relevant route or stop context with clearer wait-time and reason labels.
+- The uneven-service warning is beta-only while its thresholds are tuned against more real feeds.
+- Removed an unused dependency path that pulled vulnerable `image-size` code.
 
 ## [3.2.16] - 2026-08-06
 

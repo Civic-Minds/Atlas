@@ -5,16 +5,17 @@
     37.96,
     -121.29
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-886/mdb-886-202606020047/mdb-886-202606020047.zip",
-  "lastFeedExpiry": "20260725",
-  "lastFeedVersion": "20260531-20260725",
+  "feedUrl": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip",
+  "lastFeedExpiry": "20270123",
+  "lastFeedVersion": "20260726-20270123",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Stockton, California",
     "Lodi, California",
     "Manteca, California",
     "Tracy, California",
     "Modesto, California"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-886/mdb-886-202607270026/mdb-886-202607270026.zip"
 }

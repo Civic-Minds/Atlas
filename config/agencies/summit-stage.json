@@ -1,0 +1,40 @@
+{
+  "slug": "summit-stage",
+  "name": "Summit Stage",
+  "websiteUrl": "https://www.summitcountyco.gov/586/Transit-Summit-Stage",
+  "region": "Colorado",
+  "center": [
+    39.5744,
+    -106.0975
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip",
+  "lastFeedExpiry": "20261114",
+  "lastFeedVersion": "UTC: 29-Jul-2026 17:51",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Breckenridge, Colorado",
+    "Frisco, Colorado",
+    "Silverthorne, Colorado",
+    "Dillon, Colorado",
+    "Keystone, Colorado",
+    "Copper Mountain, Colorado",
+    "Leadville, Colorado",
+    "Fairplay, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 188
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

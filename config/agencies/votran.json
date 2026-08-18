@@ -2,18 +2,20 @@
   "slug": "votran",
   "name": "Votran (Volusia County)",
   "center": [
-    29,
-    -81
+    29.1432,
+    -81.0746
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-349/mdb-349-202605300114/mdb-349-202605300114.zip",
-  "lastFeedExpiry": "20220115",
+  "lastFeedExpiry": "20220223",
   "lastFeedVersion": "20210223",
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.votran.org",
   "cities": [
     "Daytona Beach, Florida",
     "Port Orange, Florida",
     "Deltona, Florida"
-  ]
+  ],
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20220223-e5fca0a56e84cfdb"
 }

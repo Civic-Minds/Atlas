@@ -80,6 +80,10 @@ export function getFareColor(fare: number | null | undefined): string {
   return FARE_TIERS[4].color;
 }
 
+/** Flat line color for Night Service view — every visible route already passed the
+ * nightService filter, so (unlike fare/headway) there's no tier to express, just one color. */
+export const NIGHT_SERVICE_COLOR = '#818cf8';
+
 /** MapLibre case expression for fare-based line color. */
 export function buildFareColorExpression(): unknown[] {
   const expr: unknown[] = ['case'];
@@ -113,12 +117,15 @@ function headwayThresholdForZoom(zoom: number): number {
 /**
  * Default routes-layer line-opacity. MapLibre allows only one zoom-based subexpression
  * per paint property, so gate headway per interpolate stop instead of nesting step+interpolate.
+ * When partialMatch is provided, dim those features inside each zoom stop rather than wrapping
+ * the whole interpolate expression in a case (which MapLibre rejects because zoom is no longer
+ * top-level).
  */
-export function buildDefaultRouteLineOpacityExpression(headwayExpr: unknown): unknown[] {
+export function buildDefaultRouteLineOpacityExpression(headwayExpr: unknown, partialMatch?: unknown): unknown[] {
   const expr: unknown[] = ['interpolate', ['linear'], ['zoom']];
   for (const [z, opacity] of [[8, 0.7], [11, 0.8], [14, 0.9]] as const) {
     const headwayOpacity = ['case', ['>', headwayExpr, headwayThresholdForZoom(z)], 0, opacity];
-    expr.push(z, headwayOpacity);
+    expr.push(z, partialMatch === undefined ? headwayOpacity : ['case', partialMatch, 0.35, headwayOpacity]);
   }
   return expr;
 }

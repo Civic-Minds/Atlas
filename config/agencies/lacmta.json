@@ -6,10 +6,10 @@
     -118.24
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202606070210/mdb-29-202606070210.zip",
-  "lastFeedExpiry": "20261212",
+  "lastFeedExpiry": "20270401",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "supplementalFeedUrls": [
     "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
   ],

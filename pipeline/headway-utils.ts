@@ -1,4 +1,4 @@
-import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type PeriodKey } from '../shared/config.js';
+import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
@@ -154,34 +154,16 @@ export function resolveTerminalHeadway(
 }
 
 /**
- * Merge a branch summary with a terminal period/hour summary.
- *
- * When terminal data is already scoped to this branch's headsign/shape (trips that
- * reach the destination), pick the **denser** (lower) of branch trip-start vs
- * terminal-in-window medians:
- * - Branch wins when travel time makes terminus clock-in lag the period window (GO
- *   94 Pickering: Square One leave ~13:35 is real midday service; it only clocks in
- *   at Pickering after 15:00, so terminal-window looked ~120 while dispatch was
- *   ~55–60).
- * - Terminal wins when stop-level gaps are denser than trip-start but still on this
- *   same branch (GRTC 201: three midday arrivals with [90,120] medians to 105, vs
- *   trip-start 120). Always preferring branch here made period rows *sparser* than
- *   the headline headway, which already uses denser of the two.
- * Fall back to whichever side has a value when the other is null.
- *
- * Unscoped / shared terminal data still needs slower-value protection so a dense
- * hub stop cannot outrank this branch's own cadence.
+ * Merge a branch summary with a terminal period/hour summary. Headway data
+ * scoped to the branch's own headsign is authoritative; only unscoped/shared
+ * terminal data needs the slower-value protection used for trunk branches.
  */
 export function resolveTerminalPeriodHeadway(
   terminalHeadway: number | null,
   branchHeadway: number | null,
   terminalIsBranchScoped: boolean,
 ): number | null {
-  if (terminalIsBranchScoped) {
-    if (branchHeadway == null) return terminalHeadway;
-    if (terminalHeadway == null) return branchHeadway;
-    return Math.min(branchHeadway, terminalHeadway);
-  }
+  if (terminalIsBranchScoped) return terminalHeadway ?? branchHeadway;
   if (branchHeadway == null) return terminalHeadway;
   if (terminalHeadway == null) return branchHeadway;
   return Math.max(branchHeadway, terminalHeadway);
@@ -277,6 +259,90 @@ export function isSustainedHeadway(
   return !isRealGap;
 }
 
+/**
+ * Shared by hasSustainedNightService and hasSustainedFrequentService below -- only the window
+ * and threshold differ between them. At least one departure every maxGapMinutes across the whole
+ * [start, end] window, with no gap -- including the boundary gaps from window start to the first
+ * departure and from the last departure to window end -- exceeding that. A route whose first
+ * trip in the window doesn't leave until well after it opens isn't really covering that window
+ * even if every trip after that is tightly spaced, so boundary gaps are checked the same as
+ * internal ones.
+ */
+function hasSustainedServiceInWindow(
+  departureTimes: number[],
+  start: number,
+  end: number,
+  maxGapMinutes: number,
+): boolean {
+  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+  if (times.length === 0) return false;
+  if (times[0] - start > maxGapMinutes) return false;
+  if (end - times[times.length - 1] > maxGapMinutes) return false;
+  for (let i = 1; i < times.length; i++) {
+    if (times[i] - times[i - 1] > maxGapMinutes) return false;
+  }
+  return true;
+}
+
+// Night Service window: GTFS hour 26 (2am) to hour 30 (6am). This focuses the beta experiment on
+// the core overnight network after daytime routes wind down, which matches Toronto's 300-series
+// night network and avoids requiring night routes to cover the midnight-to-2am handoff.
+export const NIGHT_SERVICE_WINDOW_START_MIN = 26 * 60;
+export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
+export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
+
+/**
+ * Normalize both GTFS overnight notations before the Night Service gap check:
+ * plain 00:00-05:59 times need a +24-hour copy, while overnight-only service
+ * IDs already arrive in `overnightOnlyTimes` shifted into the same window.
+ */
+export function nightServiceDepartureTimes(
+  routeTimes: number[] | undefined,
+  overnightOnlyTimes: number[] = [],
+): number[] {
+  return forCrossMidnightWindow(
+    [...(routeTimes ?? []), ...overnightOnlyTimes],
+    NIGHT_SERVICE_WINDOW_END_MIN,
+  );
+}
+
+/**
+ * Does this route have sustained overnight service: at least one departure every
+ * maxGapMinutes across the whole [start, end] window, with no gap at either edge. See
+ * hasSustainedServiceInWindow above for the shared boundary-gap logic.
+ */
+export function hasSustainedNightService(
+  departureTimes: number[],
+  start: number = NIGHT_SERVICE_WINDOW_START_MIN,
+  end: number = NIGHT_SERVICE_WINDOW_END_MIN,
+  maxGapMinutes: number = NIGHT_SERVICE_MAX_GAP_MINUTES,
+): boolean {
+  return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes);
+}
+
+// Frequent Network window: 7am-7pm, matching Victoria (BC Transit)'s own "Frequent" product
+// definition exactly (see docs/DATA_FREQUENT_NETWORK.md for the full cross-agency survey this
+// was decided from). Weekday only -- process-core.ts only computes this for the Weekday day-type,
+// same as how Night Service's window sits outside TIME_PERIODS rather than reusing amPeak/midday/
+// pmPeak (7am cuts into amPeak's 6am start; 7pm lands exactly on pmPeak's own end).
+export const FREQUENT_SERVICE_WINDOW_START_MIN = 7 * 60;
+export const FREQUENT_SERVICE_WINDOW_END_MIN = 19 * 60;
+export const FREQUENT_SERVICE_MAX_GAP_MINUTES = 15;
+
+/**
+ * Does this route have sustained frequent service: at least one departure every
+ * maxGapMinutes across the whole 7am-7pm window, with no gap at either edge -- same boundary
+ * rule as hasSustainedNightService. Weekday only (see docs/DATA_FREQUENT_NETWORK.md).
+ */
+export function hasSustainedFrequentService(
+  departureTimes: number[],
+  start: number = FREQUENT_SERVICE_WINDOW_START_MIN,
+  end: number = FREQUENT_SERVICE_WINDOW_END_MIN,
+  maxGapMinutes: number = FREQUENT_SERVICE_MAX_GAP_MINUTES,
+): boolean {
+  return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes);
+}
+
 // The median deliberately stays based on departures inside the period. A separate max-gap value
 // below captures the part of every departure gap that overlaps the period, including boundary-
 // crossing gaps, without letting one large gap change the existing median.
@@ -311,6 +377,26 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
       }
     }
     result[key] = maxGap;
+  }
+  return result;
+}
+
+/** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
+export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
+  const result: HeadwayByPeriodRange = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
+      .filter(t => t >= start && t <= end)
+      .sort((a, b) => a - b);
+    if (times.length < 3) {
+      result[key] = null;
+      continue;
+    }
+    const gaps = times.slice(1).map((time, i) => time - times[i]).sort((a, b) => a - b);
+    const last = gaps[gaps.length - 1];
+    const next = gaps[gaps.length - 2];
+    if (gaps.length >= 3 && last - next >= 10 && last / next >= 1.6) gaps.pop();
+    result[key] = { min: Math.round(gaps[0]), max: Math.round(gaps[gaps.length - 1]) };
   }
   return result;
 }

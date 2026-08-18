@@ -37,6 +37,12 @@ export function isVirtualLrt(p: EffectiveModeInput): boolean {
   return false;
 }
 
+/** True for subway, commuter rail, monorail, and explicitly identified LRT routes. */
+export function isRailLikeRoute(p: EffectiveModeInput): boolean {
+  const rt = normalizeRouteType(p.routeType);
+  return rt === 1 || rt === 2 || rt === 12 || isVirtualLrt(p);
+}
+
 export function effectiveMode(p: EffectiveModeInput): number {
   const rt = normalizeRouteType(p.routeType);
   return isVirtualLrt(p) ? VIRTUAL_LRT_MODE : rt;

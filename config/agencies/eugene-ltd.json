@@ -2,8 +2,8 @@
   "slug": "eugene-ltd",
   "name": "Lane Transit District",
   "center": [
-    44.0588,
-    -123.0456
+    44.0489,
+    -123.0488
   ],
   "region": "Oregon",
   "bbox": [
@@ -16,10 +16,12 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
   "lastFeedExpiry": "20260131",
   "lastFeedVersion": "",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.ltd.org",
   "cities": [
     "Eugene, Oregon",
     "Springfield, Oregon"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2"
 }

@@ -6,8 +6,7 @@ import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
-import { bumpPublicDataVersion } from './dataVersion.js';
-import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
+import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -23,10 +22,9 @@ interface FeatureCollection {
 }
 
 async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | null> {
-  const urlWithBuster = url.includes('?') ? `${url}&v=${Date.now()}` : `${url}?v=${Date.now()}`;
   for (let i = 0; i < retries; i++) {
     try {
-      const res = await fetch(urlWithBuster);
+      const res = await fetch(url);
       if (!res.ok) {
         console.warn(`fetch ${url} not ok ${res.status}, retry ${i+1}`);
         const retryAfter = Number(res.headers.get('retry-after'));
@@ -80,11 +78,13 @@ async function main() {
     if (url) {
       const data = await fetchJson(url, 5);
       if (data && data.features) {
-        // Re-stamp worst-direction (e.g. drop TTC 63 St Clair midday from whole-route
-        // score) before baking flat wdph_* props into tiles — published JSON may lag.
-        for (const f of prepareAgencyRouteFeaturesForTiles(data.features, slug)) {
+        data.features.forEach(f => {
+          if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
+          f.properties = f.properties || {};
+          f.properties.agencySlug = slug;
+          flattenPeriodHeadwayProps(f.properties);
           allRoutes.push(f);
-        }
+        });
       } else if (!data) {
         if (agency.pmtilesPending) {
           console.warn(`  Skipping ${slug}: marked "pmtilesPending" (no route data published yet — excluded from fail-closed check, not from the map once it is).`);
@@ -205,11 +205,6 @@ async function main() {
   console.log("Uploading atlas.pmtiles to Cloudflare R2 (streaming)...");
   await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
   console.log("PMTiles uploaded: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles");
-  try {
-    await bumpPublicDataVersion('build-pmtiles');
-  } catch (e) {
-    console.warn(`  [warn] data-version R2 write failed — ${e instanceof Error ? e.message : e}`);
-  }
 
   // Cleanup
   console.log(`Cleaning up temporary files...`);

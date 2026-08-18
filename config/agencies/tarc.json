@@ -5,12 +5,13 @@
     38.25,
     -85.76
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202604170127/mdb-2662-202604170127.zip",
-  "lastFeedExpiry": "20260801",
-  "lastFeedVersion": "20260416",
+  "feedUrl": "https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "20260803",
   "region": "Kentucky",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Louisville, Kentucky"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202608040049/mdb-2662-202608040049.zip"
 }

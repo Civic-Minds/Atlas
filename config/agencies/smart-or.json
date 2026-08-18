@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://mysmartbus.com/gtfs",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-south-metro-area-regional-transit-smart-gtfs-2706.zip?alt=media",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20991231",
   "lastFeedVersion": "FY26 Q4 Effective 5/28/2026",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Tigard, Oregon",
     "Salem, Oregon",

@@ -83,18 +83,6 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'all')).toBe(12);
   });
 
-  it('does not use an intermediate-stop headway for the route-level filter', () => {
-    const p = {
-      ...base,
-      headway: 18,
-      minStopHeadway: 10,
-      minStopHeadwayByPeriod: { midday: 10 },
-      headwayByPeriod: { midday: 18 },
-    } as ShapeProperties;
-    expect(effectiveRouteHeadway(p, 'all')).toBe(18);
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(18);
-  });
-
   it('keeps the TTC 900 display metric consistent across route cards and lists', () => {
     const p = {
       ...base,

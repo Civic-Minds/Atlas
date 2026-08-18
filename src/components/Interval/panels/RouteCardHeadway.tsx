@@ -19,14 +19,16 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
+import { BETA_BUILD, SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
+import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
   dirIdNum,
   groupTrunkHeadway,
   headsignTrunkHeadway,
   sparklineSourceDirections,
+  sharedStopIdsForBranches,
   shouldShowTrunkSummary,
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
@@ -41,11 +43,16 @@ function medianHeadway(values: number[]): number {
   return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 }
 
-function formatMetricMap(values: Record<string, number | null | undefined> | null | undefined): string {
+function formatMetricMap(
+  values: Record<string, number | null | undefined> | null | undefined,
+  keyLabel = 'key',
+  valueLabel = 'value',
+  separator = '; ',
+): string {
   if (!values) return 'none';
   const entries = Object.entries(values);
   return entries.length > 0
-    ? entries.map(([key, value]) => `${key}=${value ?? 'none'}`).join(', ')
+    ? entries.map(([key, value]) => `${keyLabel}=${key}, ${valueLabel}=${value ?? 'none'}`).join(separator)
     : 'none';
 }
 
@@ -160,33 +167,23 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   );
   // Only primary patterns per direction drive the uneven banner. A rare short-turn
   // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when
-  // the direction's real service is even — that gap is not the rider message.
-  const unevenPeriodMaxGap = UNEVEN_BANNER_ENABLED && period !== 'all'
-    ? Math.max(0, ...directionGroups.flatMap(group => {
-        const primaryHw = Math.min(
-          ...group.realTier
-            .map(d => d.headway)
-            .filter((h): h is number => h != null),
-        );
-        return group.realTier
-          .filter(direction => {
-            if (direction.headwayByPeriodSustained?.[period] !== false) return false;
-            if (primaryHw === Infinity) return true;
-            // Keep primary / near-primary; drop branches clearly sparser short-turns.
-            return direction.headway == null || direction.headway <= primaryHw * 1.5;
-          })
-          .map(direction => direction.maxGapByPeriod?.[period] ?? 0);
-      }))
-    : 0;
+  // the direction's real service is even — that gap is not the rider message. When
+  // the card already has a qualifying combined trunk summary, do not contradict it
+  // with an individual branch's terminal gap (#381).
+  const unevenGap = UNEVEN_BANNER_ENABLED ? unevenPeriodMaxGap(directionGroups, period) : 0;
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
   const primaryMultiBranch = directionGroups
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
-  const hasCoreSummary = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
-  const coreHeadway = hasCoreSummary
-    ? groupTrunkHeadway(primaryMultiBranch!.realTier, period === 'all' ? 'midday' : period)
+  const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
+  const hasCoreSummary = coreGroups.length > 0;
+  const primaryCoreHeadway = primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period)
+    ? groupTrunkHeadway(primaryMultiBranch.realTier, period === 'all' ? 'midday' : period)
     : null;
+  const coreHeadway = primaryCoreHeadway ?? (coreGroups[0]
+    ? groupTrunkHeadway(coreGroups[0].realTier, period === 'all' ? 'midday' : period)
+    : null);
 
   const allLackHeadsigns = directionGroups.every(g => g.realTier.every(d => !d.headsign));
   const groupHeadway = (g: DirectionGroup) => g.realTier[0]
@@ -217,7 +214,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const headway = routeCardDisplayHeadway(direction, period);
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
-        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : 'no data for this period'}`;
+        const range = routeCardDisplayHeadwayRange(direction, period);
+        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : range ?? 'no data for this period'}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -253,31 +251,35 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         );
     return [
       `Branch ${index + 1}:`,
-      `  Route ID: ${direction.routeId}`,
-      `  Direction ID: ${direction.directionId}`,
-      `  Headsign: ${direction.headsign ?? 'none'}`,
-      `  Tier: ${direction.tier ?? 'none'}`,
-      `  Raw headway: ${direction.headway ?? 'none'} min`,
-      `  Displayed headway: ${routeCardDisplayHeadway(direction, period) ?? 'none'} min`,
-      `  Headway by period: ${formatMetricMap(direction.headwayByPeriod)}`,
-      `  Longest gap by period: ${formatMetricMap(direction.maxGapByPeriod)}`,
-      `  Sustained by period: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
-      `  Hourly headways for ${period}: ${formatMetricMap(selectedPeriodHourlyHeadways)}`,
-      `  Minimum stop headway by period: ${formatMetricMap(direction.minStopHeadwayByPeriod)}`,
-      `  Headsign minimum stop headway by period: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod)}`,
-      `  Stop headways for ${period}: ${formatMetricMap(selectedPeriodStopHeadways)}`,
+      `  routeId=${direction.routeId}`,
+      `  directionId=${direction.directionId}`,
+      `  headsign=${direction.headsign ?? 'none'}`,
+      `  tier=${direction.tier ?? 'none'}`,
+      `  rawHeadwayMinutes=${direction.headway ?? 'none'}`,
+      `  displayedHeadwayMinutes=${routeCardDisplayHeadway(direction, period) ?? 'none'}`,
+      `  headwayByPeriod: ${formatMetricMap(direction.headwayByPeriod, 'period', 'typicalGapMinutes')}`,
+      `  typicalGapRangeByPeriod: ${JSON.stringify(direction.headwayRangeByPeriod ?? {})}`,
+      `  longestGapByPeriod: ${formatMetricMap(direction.maxGapByPeriod, 'period', 'longestGapMinutes')}`,
+      `  sustainedByPeriod: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
+      `  hourlyHeadways (${period}): ${formatMetricMap(selectedPeriodHourlyHeadways, 'hour', 'typicalGapMinutes')}`,
+      `  minimumStopHeadwayByPeriod: ${formatMetricMap(direction.minStopHeadwayByPeriod, 'period', 'minimumGapMinutes')}`,
+      `  headsignMinimumStopHeadwayByPeriod: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod, 'period', 'minimumGapMinutes')}`,
+      `  stopHeadways (${period}): ${formatMetricMap(selectedPeriodStopHeadways, 'stopId', 'typicalGapMinutes', '\n    ')}`,
     ].join('\n');
   }).join('\n\n');
+  const reportPeriod = selectedPeriod
+    ? `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`
+    : 'All day';
   const reportDetails = [
     `**Agency:** ${routeAgency?.name ?? routeSlug ?? 'Unknown'}`,
     `**Route:** ${currentRoute.routeShortName ?? 'Unknown'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`,
-    `**Period:** ${period}`,
+    `**Period:** ${reportPeriod}`,
     `**Agency data refreshed:** ${routeAgency?.lastRefreshedAt ?? 'unknown'}`,
     `**Feed expiry:** ${routeAgency?.lastFeedExpiry ?? 'unknown'}`,
     '**Displayed service:**',
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',
-    '**Generated route metrics (loaded artifact):**',
+    '**Generated route metrics from the loaded artifact:**',
     reportRawMetrics,
     `**Atlas URL:** ${currentAtlasUrl()}`,
   ].join('\n');
@@ -343,30 +345,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         if (!hasAny) return null;
         return (
           <>
-            {hasTrunkSparkline && coreHeadway != null && (
-              <div
-                className={`flex items-center gap-2 mt-6 mb-[-1rem] cursor-pointer rounded-md transition-colors hover:bg-[var(--bg-hover)] ${hoveredSingleBranch ? 'invisible' : ''}`}
-                onMouseEnter={() => setHoveredBranch({
-                  directionId: primaryMultiBranch!.dirId,
-                  headsigns: primaryMultiBranch!.realTier
-                    .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
-                    .map(d => d.headsign)
-                    .filter((headsign): headsign is string => !!headsign),
-                  isCore: true,
-                })}
-                onMouseLeave={() => setHoveredBranch(null)}
-                title="Highlight the shared core area on the map"
-              >
-                <span className="text-[10px] font-black text-[var(--text-muted)]">Core area</span>
-                <span className="text-[9px] font-bold text-[var(--text-dim)]">combined every {coreHeadway} min</span>
-              </div>
-            )}
             <HeadwaySparkline
               byHour={merged}
               stackedByHour={stackedByHour}
               period={period}
               onPeriodChange={p => setPeriod(p as TimePeriod)}
               onHourHover={setHoveredHour}
+              allowExpand={BETA_BUILD}
+              title={`${currentRoute.routeShortName ?? 'Route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             />
           </>
         );
@@ -381,18 +367,18 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </p>
         </div>
       )}
-      {selectedPeriod && unevenPeriodMaxGap > 0 && (
+      {selectedPeriod && unevenGap > 0 && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
           <p className="text-[10px] font-black text-[var(--text-primary)]">
             Service is uneven during {selectedPeriod.label}.
           </p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            Longest gap: {unevenPeriodMaxGap} minutes.
+            Longest gap: {unevenGap} minutes.
           </p>
         </div>
       )}
       <SidebarCardList>
-        {selectedRouteOutOfFilter && (
+        {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               This route is outside the active frequency filter, but remains visible because it is selected.
@@ -422,6 +408,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           };
           const multiBranchGroup = (g: DirectionGroup) => g.realTier.length >= 2;
           return displayGroups.map((group, gi) => {
+            const groupHasCoreSummary = shouldShowTrunkSummary(group.realTier, period);
+            const groupCoreHeadway = groupHasCoreSummary
+              ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
+              : null;
+            const groupSharedStopIds = groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : [];
+            const coreHeadsigns = group.realTier
+              .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
+              .map(d => d.headsign)
+              .filter((headsign): headsign is string => !!headsign);
+            const coreHovered = hoveredBranch?.isCore === true
+              && dirIdNum(hoveredBranch.directionId) === dirIdNum(group.dirId);
             const realHeadsignKeys = new Set(
               group.realTier.map(d => (d.headsign ?? '').trim().toLowerCase()).filter(Boolean),
             );
@@ -443,7 +440,25 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {showDirectionSections && group.boundLabel && (
                   <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
                 )}
-                <div className="space-y-2">
+                {groupHasCoreSummary && groupCoreHeadway != null && (
+                  <>
+                    <CardDirectionRow
+                      label="Combined"
+                      headway={groupCoreHeadway}
+                      branchHovered={coreHovered}
+                      branchDimmed={!!hoveredBranch && !coreHovered}
+                      onHoverStart={() => setHoveredBranch({
+                        directionId: group.dirId,
+                        headsigns: coreHeadsigns,
+                        sharedStopIds: groupSharedStopIds,
+                        sharedHeadway: groupCoreHeadway,
+                        isCore: true,
+                      })}
+                      onHoverEnd={() => setHoveredBranch(null)}
+                    />
+                  </>
+                )}
+                <div className="space-y-1">
                   {group.realTier.map((d, i) => {
                     const filterHw = buildRouteServiceSummary(d).filter;
                     const dimmed = maxHeadway !== Infinity && (metricValueForPeriod(filterHw, period) ?? Infinity) > maxHeadway;
@@ -457,7 +472,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
                       return (
-                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef}>
+                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}

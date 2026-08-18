@@ -2,8 +2,8 @@
   "slug": "saskatoon",
   "name": "Saskatoon Transit",
   "center": [
-    52.1332,
-    -106.67
+    52.1286,
+    -106.648
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-saskatoon-transit-gtfs-716.zip?alt=media",
   "region": "Saskatchewan",
@@ -13,14 +13,16 @@
     52.24,
     -106.5
   ],
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20250830",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Saskatoon, Saskatchewan",
     "Confederation, Saskatchewan",
     "University Heights, Saskatchewan",
     "Nutana Sector, Saskatchewan",
     "Lakewood, Saskatchewan"
-  ]
+  ],
+  "timezone": "America/Regina",
+  "lastRawArchiveKey": "20250830-3e8e316896a70dd6"
 }

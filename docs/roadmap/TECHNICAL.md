@@ -33,22 +33,19 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 
 ## Rendering & Visualization
 
-- [ ] **maplibre-gl v6 migration**: v5→v6 is a major bump (ESM-only, dropped default export, new required `setWorkerUrl`/Vite `optimizeDeps` wiring). Import-level fixes are straightforward, but the map fails to fully render in a plain Vite dev setup — style never reaches loaded state, no `load`/`error` event, inconsistent even across reloads — pointing to a worker-handshake bug specific to this fresh major release rather than a config gap. Parked rather than forced through; revisit once v6 has had a few patch releases. Working branch + diagnostic trail: `Atlas-worktrees/maplibre-v6` (`dependabot/npm_and_yarn/maplibre-gl-6.0.0`, uncommitted).
+- [ ] **maplibre-gl v6 migration**: v5→v6 is a major bump (ESM-only, dropped default export, new required `setWorkerUrl`/Vite `optimizeDeps` wiring). Import-level fixes are straightforward, but the map fails to fully render in a plain Vite dev setup — style never reaches loaded state, no `load`/`error` event, inconsistent even across reloads — pointing to a worker-handshake bug specific to this fresh major release rather than a config gap. Parked rather than forced through; revisit once v6 has had a few patch releases.
 - [x] **Deck.gl vehicle rendering**: current vehicle positions use GPU-rendered Deck.gl layers over MapLibre.
 - [ ] **Archived vehicle path animation**: use `TripsLayer` to animate vehicle paths over time from the `atlas-live` archive.
 - [ ] **Line offsets for overlapping routes**: when multiple routes share the same road segment, offset each line laterally so they render as parallel bands rather than stacked on top of each other. Requires pre-computing overlap groups in the pipeline and storing an `offsetIndex` property in PMTiles features, then using MapLibre's `line-offset` paint expression.
-- [ ] **Geometry-safe route smoothing at dense hubs**: revisit curved rendering only if it can preserve the actual street path and avoid implying turns or alignments that GTFS does not publish.
 
 ---
 
 ## Pipeline & CI
 
 - [ ] **Split weekly feed refresh per country/region**: currently one combined `refresh-feeds.yml` job refreshes all 466 agencies together, so one bad feed can't easily be isolated or re-run independently. Splitting refresh by country wouldn't fully decouple things on its own, though — `build-pmtiles` still merges every agency into one combined tileset regardless of how refresh is split, so this needs a real design (does PMTiles building become incremental/per-region too, or stay combined?) before it's an actionable task. Prompted by considering UK/Europe as a new region to validate.
-- [ ] **Targeted PMTiles refreshes for existing agencies**: keep the safe full-atlas rebuild for updates to agencies already in the published archive. Revisit a replacement-aware incremental workflow later; the current incremental tool is intentionally limited to new, geographically isolated agencies because tile-joining refreshed data would leave stale features behind.
 
 ## Data Quality
 
-- [ ] **Route-level data quality warnings**: once the pipeline can identify affected shapes reliably, keep those routes visible with a clear warning instead of hiding an entire agency; uncertain corruption should remain hidden until it can be scoped safely.
 - [ ] **Explicit `country` field per agency**: agency configs currently only have `region` (free text: "Ontario", "Jalisco", "Grand Est") with no `country` field at all. `shared/regionCountry.ts` works around this with a region→country lookup table (fine for now — low cost, one new entry per country added), but the more correct long-term fix is backfilling an explicit `country` field across all agency configs, removing the string-matching fragility entirely. Bigger one-time migration (467+ files) than the lookup-table workaround, which is why it's deferred rather than done alongside `regionCountry.ts`.
 - [ ] **Per-agency name normalizer**: `titleCase(str, agencyAcronyms?)` accepts an optional agency-specific acronym map merged with the global `TRANSIT_ACRONYMS` table at call time. Rules live in a `nameAcronyms` field per agency in `index.json` (only agencies that need overrides add an entry). Fixes cases where the global table is wrong for a specific agency — e.g. "St" means Street in most stop names, but GO Transit uses "ST" as the Stouffville line code. Currently handled by excluding the entry globally; per-agency injection would let GO use the override without affecting every other agency.
 

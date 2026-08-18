@@ -83,3 +83,64 @@ export function projectStopsOntoShape(
 
   return projected.sort((a, b) => a.t - b.t);
 }
+
+/** Clip a GeoJSON LineString to the shaped path between two stops. */
+export function clipLineBetweenStops(
+  coords: number[][],
+  from: { lat: number; lon: number },
+  to: { lat: number; lon: number },
+  maxDeviation = 0.0045,
+): number[][] | null {
+  if (coords.length < 2) return null;
+
+  const stops = new Map([
+    ['from', from],
+    ['to', to],
+  ]);
+  const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
+  const projected = projectStopsOntoShape(['from', 'to'], stops, shapePts);
+  const fromProjection = projected.find(p => p.stopId === 'from');
+  const toProjection = projected.find(p => p.stopId === 'to');
+  const maxDeviation2 = maxDeviation * maxDeviation;
+  if (
+    !fromProjection ||
+    !toProjection ||
+    fromProjection.dev2 > maxDeviation2 ||
+    toProjection.dev2 > maxDeviation2 ||
+    toProjection.t <= fromProjection.t
+  ) return null;
+
+  const lengths: number[] = [0];
+  for (let i = 0; i < coords.length - 1; i++) {
+    const dx = coords[i + 1][0] - coords[i][0];
+    const dy = coords[i + 1][1] - coords[i][1];
+    lengths.push(lengths[i] + Math.sqrt(dx * dx + dy * dy));
+  }
+  const totalLength = lengths[lengths.length - 1];
+  if (totalLength === 0) return null;
+
+  const start = fromProjection.t * totalLength;
+  const end = toProjection.t * totalLength;
+  const clipped: number[][] = [];
+  for (let i = 0; i < coords.length - 1; i++) {
+    const segmentLength = lengths[i + 1] - lengths[i];
+    if (lengths[i + 1] >= start && clipped.length === 0) {
+      const fraction = segmentLength > 0 ? (start - lengths[i]) / segmentLength : 0;
+      clipped.push([
+        coords[i][0] + fraction * (coords[i + 1][0] - coords[i][0]),
+        coords[i][1] + fraction * (coords[i + 1][1] - coords[i][1]),
+      ]);
+    }
+    if (lengths[i + 1] > start && lengths[i + 1] < end) clipped.push(coords[i + 1]);
+    if (lengths[i] < end && lengths[i + 1] >= end) {
+      const fraction = segmentLength > 0 ? (end - lengths[i]) / segmentLength : 1;
+      clipped.push([
+        coords[i][0] + fraction * (coords[i + 1][0] - coords[i][0]),
+        coords[i][1] + fraction * (coords[i + 1][1] - coords[i][1]),
+      ]);
+      break;
+    }
+  }
+
+  return clipped.length >= 2 ? clipped : null;
+}

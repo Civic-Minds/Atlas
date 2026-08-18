@@ -7,9 +7,9 @@
     -83.743
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-ann-arbor-area-transportation-authority-theride-gtfs-415.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260822",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Ann Arbor, Michigan",
     "Canton, Michigan"

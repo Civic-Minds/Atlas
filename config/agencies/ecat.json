@@ -2,8 +2,8 @@
   "slug": "ecat",
   "name": "ECAT (Escambia County)",
   "center": [
-    30.42,
-    -87.27
+    30.4594,
+    -87.2423
   ],
   "bbox": [
     30.2,
@@ -15,10 +15,12 @@
   "region": "Florida",
   "lastFeedExpiry": "20221101",
   "lastFeedVersion": "UTC: 24-Feb-2022 22:06",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://goecat.com/",
   "cities": [
     "Pensacola, Florida",
     "East Pensacola Heights, Florida"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20221101-cc58fb6d6d6ac384"
 }

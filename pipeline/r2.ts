@@ -12,6 +12,7 @@
  */
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 
 function requireEnv(key: string): string {
@@ -88,14 +89,7 @@ async function rclonePutFile(key: string, filePath: string, bucket: string): Pro
   console.log(`  rclone upload complete: ${key}`);
 }
 
-async function r2PutRaw(
-  key: string,
-  body: string | Buffer | import('fs').ReadStream,
-  contentType: string,
-  bucket: string,
-  contentLength?: number,
-  cacheControl?: string,
-): Promise<void> {
+async function r2PutRaw(key: string, body: string | Buffer | import('fs').ReadStream, contentType: string, bucket: string, contentLength?: number): Promise<void> {
   const client = getR2Client();
   const maxAttempts = 4;
   let lastErr: unknown;
@@ -104,7 +98,6 @@ async function r2PutRaw(
     try {
       const params: any = { Bucket: bucket, Key: key, Body: body, ContentType: contentType };
       if (contentLength != null) params.ContentLength = contentLength;
-      if (cacheControl) params.CacheControl = cacheControl;
       await client.send(new PutObjectCommand(params));
       return;
     } catch (err) {
@@ -119,18 +112,8 @@ async function r2PutRaw(
   throw lastErr;
 }
 
-export async function r2Put(
-  key: string,
-  body: string,
-  contentType = 'application/json',
-  cacheControl?: string,
-): Promise<string> {
-  // data-version is the client cache-busting signal — must not stick in CDN/browser HTTP cache.
-  const cc = cacheControl
-    ?? (key === 'atlas/data-version.json'
-      ? 'public, max-age=0, must-revalidate'
-      : undefined);
-  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'), undefined, cc);
+export async function r2Put(key: string, body: string, contentType = 'application/json'): Promise<string> {
+  await r2PutRaw(key, body, contentType, requireEnv('R2_BUCKET_NAME'));
   return r2PublicUrl(key);
 }
 
@@ -197,6 +180,16 @@ export async function r2PutFile(key: string, filePath: string, contentType: stri
 /** Upload binary to the private archive bucket — no public URL returned. */
 export async function r2PutArchive(key: string, body: Buffer, contentType: string): Promise<void> {
   await r2PutRaw(key, body, contentType, requireEnv('R2_ARCHIVE_BUCKET_NAME'));
+}
+
+/** Stable, collision-safe archive stem for a raw GTFS snapshot. */
+export function rawFeedArchiveKey(feedExpiry: string | null, feedVersion: string | null, body: Buffer): string {
+  const label = (feedExpiry ?? feedVersion ?? 'unknown')
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'unknown';
+  const digest = createHash('sha256').update(body).digest('hex').slice(0, 16);
+  return `${label}-${digest}`;
 }
 
 /** Upload JSON text to the private archive bucket. */

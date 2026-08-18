@@ -13,10 +13,10 @@
     -113.72
   ],
   "feedUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20260830",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-calgary-transit-gtfs-712.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Calgary, Alberta",
     "Airdrie, Alberta"

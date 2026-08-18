@@ -6,10 +6,10 @@
     -120.44
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2272/mdb-2272-202607030002/mdb-2272-202607030002.zip",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20270702",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Santa Maria, California"
   ]

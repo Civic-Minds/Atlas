@@ -2,8 +2,8 @@
   "slug": "amarillo",
   "name": "Amarillo City Transit",
   "center": [
-    35.2,
-    -101.85
+    35.1991,
+    -101.8485
   ],
   "bbox": [
     35.15,
@@ -15,9 +15,11 @@
   "region": "Texas",
   "lastFeedExpiry": "20211231",
   "lastFeedVersion": "1.0",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "https://amarillo.gov/departments/community-services/transit",
   "cities": [
     "Amarillo, Texas"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20211231-c26aa6cd3c0c0489"
 }

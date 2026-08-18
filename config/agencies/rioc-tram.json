@@ -12,11 +12,11 @@
     40.7989,
     -73.9129
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-1109/latest.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-roosevelt-island-operating-corporation-tramway-rioc-tramway-gtfs-1109.zip?alt=media",
-  "lastFeedExpiry": "20240101",
-  "lastFeedVersion": "20221128",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/rooseveltisland-ny-us/rooseveltisland-ny-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-3364/tld-3364-202607230108/tld-3364-202607230108.zip",
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 22-Jul-2026 20:17",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Astoria, New York",
     "Manhattan, New York"

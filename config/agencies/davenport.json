@@ -2,13 +2,13 @@
   "slug": "davenport",
   "name": "Davenport CitiBus",
   "center": [
-    41.52,
-    -90.58
+    41.5468,
+    -90.5769
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/davenport-ia-us/davenport-ia-us.zip",
   "lastFeedExpiry": "20241231",
   "lastFeedVersion": "UTC: 29-May-2024 19:01",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
   "bbox": [
@@ -19,5 +19,7 @@
   ],
   "cities": [
     "Davenport, Iowa"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20241231-19de367bf787d09c"
 }

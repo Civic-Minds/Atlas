@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://countyconnection.com/GTFS/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-county-connection-gtfs-2421.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Concord, California",
     "Walnut Creek, California",

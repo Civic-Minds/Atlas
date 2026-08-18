@@ -17,10 +17,11 @@ import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
 import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
+import { buildNightServiceIndex, extractNightServiceRoutes, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
@@ -35,15 +36,19 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { decideRefreshSkipUnchanged, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
-import { bumpPublicDataVersion } from './dataVersion.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
+import type { FeedQuality } from '../shared/feedQuality.js';
+import { historyRouteKey } from './historyRouteKey.js';
+import { effectiveFeedExpiry } from './feedFreshness.js';
+import { isActiveProductionFeed } from '../shared/feedAvailability.js';
+import { bumpPublicDataVersion } from './dataVersion.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -77,8 +82,9 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
   const current: Record<string, RouteSummary> = {};
   for (const f of fc.features) {
     const p = f.properties;
-    if (!p.routeShortName || p.day !== 'Weekday' || p.directionId !== 0) continue;
-    const sn = String(p.routeShortName);
+    if (p.day !== 'Weekday' || p.directionId !== 0) continue;
+    const sn = historyRouteKey(p);
+    if (!sn) continue;
     const h = p.headway != null ? Number(p.headway) : null;
     if (h == null) continue;
     const t = p.tier != null ? String(p.tier) : null;
@@ -117,7 +123,7 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     let geometry: number[][] | null = null;
     for (const f of fc.features) {
       const p = f.properties;
-      if (p.routeShortName === routeShortName && p.day === 'Weekday' && (p.directionId === 0 || p.directionId === '0')) {
+      if (historyRouteKey(p) === routeShortName && p.day === 'Weekday' && (p.directionId === 0 || p.directionId === '0')) {
         geometry = (f.geometry as any)?.coordinates || null;
         break;
       }
@@ -145,16 +151,24 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
 async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
   try {
     const zip = await JSZip.loadAsync(buf);
-    const entry = zip.file('feed_info.txt') ?? zip.file(
-      Object.keys(zip.files).find(f => f.endsWith('/feed_info.txt') && !zip.files[f].dir) ?? ''
+    const findEntry = (name: string) => zip.file(name) ?? zip.file(
+      Object.keys(zip.files).find(f => f.endsWith(`/${name}`) && !zip.files[f].dir) ?? '',
     );
-    if (!entry) return { feedExpiry: null, feedVersion: null };
-    const text = await entry.async('text');
-    const rows = parseCsv<Record<string, string>>(text);
-    if (rows.length === 0) return { feedExpiry: null, feedVersion: null };
-    const row = rows[0];
+    const readRows = async (name: string) => {
+      const entry = findEntry(name);
+      if (!entry) return [] as Array<Record<string, string>>;
+      return parseCsv<Record<string, string>>(await entry.async('text'));
+    };
+    const feedInfoRows = await readRows('feed_info.txt');
+    const row = feedInfoRows[0] ?? {};
+    const calendarRows = await readRows('calendar.txt');
+    const calendarDateRows = await readRows('calendar_dates.txt');
     return {
-      feedExpiry: row.feed_end_date || null,
+      feedExpiry: effectiveFeedExpiry({
+        feedInfoEnd: row.feed_end_date,
+        calendarEnds: calendarRows.map(calendar => calendar.end_date),
+        calendarDates: calendarDateRows,
+      }),
       feedVersion: row.feed_version || null,
     };
   } catch {
@@ -165,6 +179,7 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
 interface AgencyEntry {
   slug: string;
   name: string;
+  region?: string | null;
   center: [number, number];
   timezone?: string | null;
   url: string;
@@ -180,7 +195,9 @@ interface AgencyEntry {
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
+  mergeEquivalentShapeVariants?: boolean;
   staged?: boolean;
   fare?: number;
   issueUrl?: string;
@@ -188,6 +205,7 @@ interface AgencyEntry {
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
+  feedQuality?: FeedQuality;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
@@ -217,7 +235,8 @@ async function downloadFeed(url: string): Promise<Buffer> {
 async function refreshAgency(
   agency: AgencyEntry,
   manualBaseFareOverride?: number,
-  logger?: { log: (msg: string) => void }
+  logger?: { log: (msg: string) => void },
+  nightServiceCollector?: NightServiceRouteEntry[],
 ): Promise<RefreshAgencyResult> {
   if (!agency.feedUrl) {
     return { summary: 'skipped (no feedUrl)' };
@@ -248,25 +267,56 @@ async function refreshAgency(
     throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
   }
 
-  // Skip processing only when feed identity is unchanged (expiry *and* version).
-  // Matching end-date alone is not enough — MBTA keeps end-date fixed while
-  // shipping mid-period patches under a new feed_version (see decideRefreshSkipUnchanged).
+  // Skip processing if the feed hasn't changed since last refresh.
+  // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
-  if (peekedExpiry && peekedExpiry < today) {
+  if (isFeedExpired(peekedExpiry, today)) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;
     const daysAgo = Math.round((Date.now() - new Date(expDate).getTime()) / 86_400_000);
     writeLog(`\n  [warn] feed expired ${daysAgo}d ago (${expDate}) — update the feedUrl\n  `);
   }
 
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
-  const feedExpired = !!(peekedExpiry && peekedExpiry < today);
+  const supplementalFeeds: Array<{
+    url: string;
+    buf: Buffer;
+    feedExpiry: string | null;
+    feedVersion: string | null;
+  }> = [];
+
+  // Download and inspect every part before rebuilding anything. A primary feed
+  // can be expired while a supplemental feed is still current, so only skip
+  // when all dated parts have ended.
+  if (agency.supplementalFeedUrls?.length) {
+    for (const suppUrl of agency.supplementalFeedUrls) {
+      const suppBuf = await downloadFeed(suppUrl);
+      if (suppBuf.length < 4 || suppBuf[0] !== 0x50 || suppBuf[1] !== 0x4b) {
+        throw new Error(`not a zip file (got ${suppBuf.length} bytes starting ${suppBuf.subarray(0, 4).toString('hex')})`);
+      }
+      const { feedExpiry, feedVersion } = await peekFeedInfo(suppBuf);
+      supplementalFeeds.push({ url: suppUrl, buf: suppBuf, feedExpiry, feedVersion });
+    }
+  }
+
+  if (!forceRefresh && shouldSkipAllExpiredFeeds(
+    [peekedExpiry, ...supplementalFeeds.map(feed => feed.feedExpiry)],
+    today,
+  )) {
+    writeLog(`\n  [warn] all feeds ended before refresh date — skipping update\n  `);
+    return { summary: 'all feeds expired, skipped' };
+  }
+
+  if (!forceRefresh && candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
+    writeLog(`\n  [warn] downloaded feed is older than the active snapshot (${peekedExpiry ?? 'unknown'} < ${agency.lastFeedExpiry}); keeping the active snapshot\n  `);
+    return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
+  }
 
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
-    feedExpired,
+    feedExpired: isFeedExpired(peekedExpiry, today),
     peekedExpiry,
     peekedVersion,
     lastFeedExpiry: agency.lastFeedExpiry,
@@ -301,7 +351,9 @@ async function refreshAgency(
       agencyId: agency.agencyId,
       preprocess: agency.preprocess,
       excludeRouteShortNames: agency.excludeRouteShortNames,
+      excludeTripHeadsigns: agency.excludeTripHeadsigns,
       skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
+      mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
       slug: agency.slug,
       manualBaseFare: manualBaseFareOverride,
       // Soft: skip this agency rather than aborting the whole weekly refresh.
@@ -319,6 +371,7 @@ async function refreshAgency(
 
   let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion } = primary;
+  agency.feedQuality = primary.feedQuality;
 
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
   // Skip-if-unchanged only checks the primary feed; supplemental feeds always reprocess.
@@ -329,15 +382,16 @@ async function refreshAgency(
     const tripsIndex = JSON.parse(tripsJson) as Record<string, unknown>;
     const stopsMeta = JSON.parse(stopsMetaJson) as { generatedAt: string; stopCount: number; stops: unknown[] };
 
-    for (const suppUrl of agency.supplementalFeedUrls) {
+    for (const { url: suppUrl, buf: suppBuf } of supplementalFeeds) {
       const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
       writeLog(`\n    ↳ ${label} ... `);
-      const suppBuf = await downloadFeed(suppUrl);
       const supp = await processGtfsBuffer(suppBuf, undefined, {
         routeTypes: agency.routeTypes,
         agencyId: agency.agencyId,
         preprocess: agency.preprocess,
         excludeRouteShortNames: agency.excludeRouteShortNames,
+        excludeTripHeadsigns: agency.excludeTripHeadsigns,
+        mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
         slug: agency.slug,
         manualBaseFare: manualBaseFareOverride,
       });
@@ -388,6 +442,8 @@ async function refreshAgency(
   // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
   // The uploads still happen so the files exist on R2.
   await Promise.all(uploads);
+  // Bust browser IndexedDB and CDN cache keys immediately; do not wait for a frontend deploy.
+  await bumpPublicDataVersion(`refresh ${agency.slug}`);
 
   const stopsSnapshot = JSON.stringify({ generatedAt: new Date().toISOString(), stops: currentStops });
   const stopSnapshotKey = `stops-meta/${agency.slug}/${feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion ?? today}.json`;
@@ -397,11 +453,10 @@ async function refreshAgency(
   ]);
 
   // Archive the raw zip to the private atlas-archive bucket, keyed by service end date.
-  const archiveKey = feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion;
+  const archiveStem = rawFeedArchiveKey(feedExpiry ?? peekedExpiry, feedVersion ?? peekedVersion, buf);
+  const archiveKey = archiveStem;
   if (archiveKey) {
     await r2PutArchive(`gtfs/archive/${agency.slug}/${archiveKey}.zip`, buf, 'application/zip');
-  } else {
-    writeLog(`  [warn] no feed_end_date or feed_version — zip not archived\n`);
   }
   if (shouldStampFeedMeta(featureCount)) {
     stampFeedMeta(agency, {
@@ -417,6 +472,14 @@ async function refreshAgency(
   const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion);
   writeLog(`  history: ${histResult}\n`);
 
+  if (nightServiceCollector) {
+    const parsedFeatures = (JSON.parse(geojson) as GeoJsonFc).features as
+      Parameters<typeof extractNightServiceRoutes>[3];
+    nightServiceCollector.push(
+      ...extractNightServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
+    );
+  }
+
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return {
     summary: `${featureCount} features, ${kb} KB`,
@@ -425,9 +488,6 @@ async function refreshAgency(
 }
 
 function bumpCacheBuild(): void {
-  // Bundle-local fallback only — primary bust is atlas/data-version.json on R2
-  // (see bumpPublicDataVersion). Still bump so deploys that ship this file stay
-  // aligned with weekly refresh, and offline clients without data-version still rotate.
   const cachePath = resolve('shared/cacheBuild.ts');
   const content = readFileSync(cachePath, 'utf8');
   const match = content.match(/export const CACHE_BUILD = (\d+)/);
@@ -435,7 +495,7 @@ function bumpCacheBuild(): void {
   const next = parseInt(match[1], 10) + 1;
   writeFileSync(
     cachePath,
-    `/** Bumped by pipeline refresh when R2 artifacts change (bundle-local fallback; R2 data-version is primary). */\nexport const CACHE_BUILD = ${next};\n`,
+    `/** Bumped by pipeline refresh when R2 artifacts change (busts browser IDB cache). */\nexport const CACHE_BUILD = ${next};\n`,
   );
 }
 
@@ -474,9 +534,7 @@ async function main() {
   let failures = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
-  const validationSoftSkips: string[] = [];
-  const zeroFeatureSkips: string[] = [];
-  const failedSlugs: string[] = [];
+  const allNightServiceRoutes: NightServiceRouteEntry[] = [];
   const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
@@ -497,11 +555,9 @@ async function main() {
           return;
         }
       }
-      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger);
+      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes);
       const summary = result.summary;
-      if (summary === 'validation failed, skipped') validationSoftSkips.push(agency.slug);
-      else if (summary === '0 features, skipped') zeroFeatureSkips.push(agency.slug);
-      else if (!summary.startsWith('skipped')) {
+      if (!summary.startsWith('skipped') && !summary.includes('expired, skipped')) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
       }
@@ -513,7 +569,6 @@ async function main() {
       writeAgencySource(agency);
     } catch (e) {
       failures++;
-      failedSlugs.push(agency.slug);
       console.log(`  ${agency.slug.padEnd(12)} ... FAILED — ${e instanceof Error ? e.message : e}${logBuffer}`);
     }
   });
@@ -532,33 +587,15 @@ async function main() {
       `  ${countryLaunchSkips} skipped — unlaunched country (no production-visible agencies yet)`,
     );
   }
-  if (validationSoftSkips.length > 0) {
-    console.warn(
-      `  [warn] ${validationSoftSkips.length} validation soft-skips (left previous R2 data): ${validationSoftSkips.join(', ')}`,
-    );
-  }
-  if (zeroFeatureSkips.length > 0) {
-    console.warn(
-      `  [warn] ${zeroFeatureSkips.length} zero-feature soft-skips: ${zeroFeatureSkips.join(', ')}`,
-    );
-  }
   if (uploads > 0) {
     bumpCacheBuild();
     console.log(`  cache build bumped (${uploads} agencies uploaded)`);
-    try {
-      await bumpPublicDataVersion(`refresh ${uploads} agencies`);
-    } catch (e) {
-      console.warn(`  [warn] data-version R2 write failed — ${e instanceof Error ? e.message : e}`);
-    }
   }
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
     // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)
   }
 
-  // Keep the complete Hide irregular routes inventory current without downloading every
-  // agency on every refresh. Each successful agency replaces its own records; unchanged
-  // agencies remain in the previous aggregate.
   try {
     let existing: HiddenRoutesFile | null = null;
     const raw = await r2Get('atlas/hidden-routes.json');
@@ -586,21 +623,26 @@ async function main() {
     console.warn(`  [warn] agencies.json R2 write failed — ${e instanceof Error ? e.message : e}`);
   }
 
-  // Last-run summary on R2 — includes soft-skips so stuck agencies aren't silent in CI logs only.
+  // Last-run timestamp on R2 only — avoids a git commit when feeds are unchanged.
   if (onlySlugs.length === 0) {
     try {
       await r2Put('atlas/feed-refresh-meta.json', JSON.stringify({
         lastCompletedAt: new Date().toISOString(),
-        uploads,
-        failures,
-        failedSlugs,
-        validationSoftSkips,
-        zeroFeatureSkips,
-        countryLaunchSkips,
       }));
       console.log('  feed-refresh-meta.json → R2');
     } catch (e) {
       console.warn(`  [warn] feed-refresh-meta R2 write failed — ${e instanceof Error ? e.message : e}`);
+    }
+
+    // Only built from a full run (onlySlugs empty) — a --only-slug run only has fresh
+    // night-service data for the agencies it actually touched, and uploading that partial
+    // set here would clobber every other agency's entries with nothing.
+    try {
+      const nightServiceIndex = buildNightServiceIndex(allNightServiceRoutes);
+      await r2Put('atlas/night-service.json', JSON.stringify(nightServiceIndex));
+      console.log(`  night-service.json → R2 (${nightServiceIndex.routeCount} routes across ${nightServiceIndex.agencyCount} agencies)`);
+    } catch (e) {
+      console.warn(`  [warn] night-service.json R2 write failed — ${e instanceof Error ? e.message : e}`);
     }
   }
 }

@@ -13,8 +13,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-17/latest.zip",
   "region": "Arizona",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedExpiry": null,
+  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20270101",
   "lastFeedVersion": null,
   "cities": [
     "Yuma, Arizona"

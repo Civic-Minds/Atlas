@@ -1,0 +1,34 @@
+{
+  "slug": "breck-free-ride",
+  "name": "Breckenridge Free Ride",
+  "agencyId": "103",
+  "websiteUrl": "https://www.breckfreeride.com/",
+  "region": "Colorado",
+  "center": [
+    39.4817,
+    -106.0384
+  ],
+  "feedUrl": "https://mybreckfreeride.com/gtfs",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.6,124-UWM Summer 26",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Breckenridge, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 155
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

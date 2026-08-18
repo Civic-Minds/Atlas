@@ -12,11 +12,11 @@
     38.49,
     -122.65
   ],
-  "feedUrl": "https://srcity.org/DocumentCenter/View/21635/google_transit",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-santa-rosa-citybus-gtfs-73.zip?alt=media",
-  "lastFeedExpiry": null,
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=SR",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2948/mdb-2948-202608100136/mdb-2948-202608100136.zip",
+  "lastFeedExpiry": "20991231",
+  "lastFeedVersion": "20260809",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Santa Rosa, California"
   ]

@@ -6,10 +6,10 @@
     42.4,
     -83.1
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-suburban-mobility-authority-for-regional-transit-smart-gtfs-414.zip?alt=media",
-  "lastFeedExpiry": "20260621",
-  "lastFeedVersion": "S1000139",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://apps1.smartbus.org/gtfs/smart_gtfs.zip",
+  "lastFeedExpiry": "20260906",
+  "lastFeedVersion": "S1000142",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "https://smartbus.org",
   "cities": [
     "Royal Oak, Michigan",
@@ -22,5 +22,6 @@
     "Dearborn Heights, Michigan",
     "Troy, Michigan",
     "Farmington Hills, Michigan"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-414/mdb-414-202606180051/mdb-414-202606180051.zip"
 }

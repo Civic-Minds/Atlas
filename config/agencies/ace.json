@@ -12,11 +12,11 @@
     38.58,
     -118.24
   ],
-  "feedUrl": "https://transitfeeds.com/p/altamont-corridor-express/823/latest/download",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-altamont-corridor-express-gtfs-1133.zip?alt=media",
-  "lastFeedExpiry": "20241231",
-  "lastFeedVersion": "20231226",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=CE",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2684/mdb-2684-202607230028/mdb-2684-202607230028.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260722",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "https://acerail.com/",
   "cities": [
     "Livermore, California",

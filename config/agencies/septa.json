@@ -12,14 +12,14 @@
     40.3349,
     -74.7521
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
+  "feedUrl": "https://www3.septa.org/developer/google_bus.zip",
   "supplementalFeedUrls": [
-    "https://files.mobilitydatabase.org/mdb-503/mdb-503-202607030135/mdb-503-202607030135.zip"
+    "https://files.mobilitydatabase.org/mdb-503/mdb-503-202608050051/mdb-503-202608050051.zip"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202607030104/mdb-502-202607030104.zip",
-  "lastFeedExpiry": "20260801",
-  "lastFeedVersion": "v202606282",
-  "lastRefreshedAt": "2026-08-09",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202608050207/mdb-502-202608050207.zip",
+  "lastFeedExpiry": "20260822",
+  "lastFeedVersion": "v202608090",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Havertown, Pennsylvania",
     "Philadelphia, Pennsylvania",

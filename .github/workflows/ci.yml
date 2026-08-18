@@ -41,3 +41,13 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Build beta flag configuration
+        env:
+          VITE_BETA_BUILD: 'true'
+          VITE_LIVE_ENABLED: 'true'
+          VITE_HISTORY_ENABLED: 'true'
+          VITE_CARD_CLICK_TO_FLAG_ENABLED: 'true'
+          VITE_DIAGNOSTICS_ENABLED: 'true'
+          VITE_UNEVEN_BANNER_ENABLED: 'true'
+        run: npm run build

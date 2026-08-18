@@ -21,6 +21,12 @@ npm run dev:staging
 
 Country-launch hard gate **does not apply** to non-`atlas` buckets.
 
+The beta app uses the production bucket as its baseline, then routes artifacts for
+`betaOnly` agencies through the beta site's same-origin `/beta-data` proxy to this
+staging host. That lets Metz and future country-rollout agencies appear in beta
+without publishing their files to production. Override the proxy target with
+`VITE_BETA_R2_PUBLIC_URL` only when a different staging bucket is being used.
+
 ## Prod vs staging
 
 | | Prod | Staging |
@@ -30,4 +36,3 @@ Country-launch hard gate **does not apply** to non-`atlas` buckets.
 | Launch gate | On for FR/MX/… | Off |
 
 Do not point staging env at the production bucket.
-

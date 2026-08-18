@@ -21,7 +21,7 @@ Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while 
 | Hamilton Street Railway | `hamilton` | 01, 10 | none | opendata.hamilton.ca |
 | Edmonton Transit System | `edmonton` | 004 | none | gtfs.edmonton.ca |
 | York Region Transit | `yrt` | VIVA Blue | none | rtu.york.ca |
-| Halifax Transit | `halifax` | 1 (adherence); 2, 4, 5, 7A, 7B, FerD (vehiclesOnly — weekday midday ≤15) | none | gtfs.halifax.ca |
+| Halifax Transit | `halifax` | 1, 2, 4, 5, 7A, 7B, FerD | none | gtfs.halifax.ca |
 | SF Muni | `sfmta` | J, K, L, M, N, T | `MUNI_511_API_KEY` | api.511.org |
 
 ### Configured but parked
@@ -53,9 +53,13 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ## History Archiving
 
-Cloudflare Worker (`workers/gtfs-rt-archiver/`) writes to private R2 bucket `atlas-live`. Cron is **every minute** (`* * * * *`); trip-update delay archives **self-gate to every 5th minute**, while vehicle-position samples write **every minute**. Daily cleanup at 04:00 UTC enforces **30-day** retention.
+The Cloudflare Workers in `workers/gtfs-rt-archiver/` write to private R2 bucket `atlas-live`. Five small Workers use the five free Cron slots: TTC positions, TTC trips, Hamilton, STM, and Burlington plus Halifax. Each shard runs every minute; trip-update archives run every 5 minutes, while vehicle-position samples run every minute. R2 lifecycle rules enforce **30-day** retention.
+Deploy the five configs separately: `wrangler.toml`, `wrangler.ttc-trips.toml`,
+`wrangler.hamilton.toml`, `wrangler.stm.toml`, and
+`wrangler.burlington-halifax.toml`. The STM shard also needs its own
+`STM_API_KEY` secret after deployment.
 
-This is **not** the same set as client Live Vehicles (`LIVE_POLLING_ROUTES`). Archive membership lives in `shared/liveArchiveFeeds.ts` (Worker consumes it); feed URLs are locked to `shared/livePollingConfig.ts` by test.
+This is **not** the same set as client Live Vehicles (`LIVE_POLLING_ROUTES`). The Worker hardcodes its own feed lists in `workers/gtfs-rt-archiver/src/index.ts`.
 
 ### Trip-update archives (every ~5 min)
 
@@ -66,7 +70,6 @@ Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Powers `/api/history-adher
 | Toronto Transit Commission | `ttc` | Public feed |
 | Burlington Transit | `burlington` | Public feed |
 | Hamilton Street Railway | `hamilton` | Public feed |
-| Halifax Transit | `halifax` | Public feed (gtfs.halifax.ca) |
 | STM (Montreal) | `stm` | Requires Worker secret `STM_API_KEY` |
 
 ### Vehicle-position archives (every 1 min)
@@ -78,8 +81,8 @@ Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Used for live hi
 | Toronto Transit Commission | `ttc` | Streetcar route_ids only (`/^5(0[1345679]|1[012])$/`) |
 | Burlington Transit | `burlington` | All vehicle positions |
 | Hamilton Street Railway | `hamilton` | All vehicle positions |
-| Halifax Transit | `halifax` | All vehicle positions (public feed) |
 | STM (Montreal) | `stm` | All vehicle positions; requires Worker secret `STM_API_KEY` |
+| Halifax Transit | `halifax` | All vehicle positions |
 
 All other agencies: **static** history snapshots only (headway diffs via `atlas-archive`, written on each pipeline refresh) — not GTFS-RT archives.
 

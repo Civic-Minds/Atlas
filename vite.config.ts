@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { existsSync, statSync, createReadStream } from 'fs';
 import { resolve } from 'path';
-import { DEFAULT_R2_PUBLIC_URL } from './shared/config';
+import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
 
 // https://vitejs.dev/config/
 // base: '/' for local dev and Vercel, '/Atlas/' for GitHub Pages
@@ -18,6 +18,11 @@ export default defineConfig(({ mode }) => {
     || env.VITE_R2_PUBLIC_URL
     || env.R2_PUBLIC_URL
     || DEFAULT_R2_PUBLIC_URL
+  ).replace(/\/$/, '');
+  const betaR2Target = (
+    process.env.VITE_BETA_R2_PUBLIC_URL
+    || env.VITE_BETA_R2_PUBLIC_URL
+    || DEFAULT_BETA_R2_PUBLIC_URL
   ).replace(/\/$/, '');
   if (process.env.ATLAS_ENV === 'staging' || /pub-5f1c48f86b024c42a8d174a4a5dd69ca/.test(r2Target)) {
     console.log(`[vite] /atlas-data proxy → ${r2Target} (staging)`);
@@ -97,6 +102,13 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
+    define: {
+      // Vercel provides the commit that produced each deployment. The beta client uses this
+      // value to tell whether an already-open tab is running an older build.
+      __ATLAS_BUILD_ID__: JSON.stringify(
+        process.env.VERCEL_GIT_COMMIT_SHA || process.env.VERCEL_DEPLOYMENT_ID || 'local',
+      ),
+    },
     base: process.env.GITHUB_ACTIONS ? '/Atlas/' : '/',
     plugins: [
       react(),
@@ -117,6 +129,11 @@ export default defineConfig(({ mode }) => {
           target: r2Target,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/atlas-data/, ''),
+        },
+        '/beta-data': {
+          target: betaR2Target,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/beta-data/, ''),
         },
       },
       historyApiFallback: true,

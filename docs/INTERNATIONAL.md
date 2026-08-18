@@ -6,7 +6,7 @@ Research and planning for taking Atlas coverage beyond Canada/US. Half roadmap, 
 
 ## Why expand internationally
 
-Atlas's coverage has been exclusively Canada/US to date. Mexico (Mi Transporte / Guadalajara) was added as the first test of coverage outside that footprint. The open question this doc tracks: how much of what we learned from Mexico's messy feed is a *Mexico* problem versus a *first-country-of-any-kind* problem — and which country should come next.
+Atlas's public coverage is still primarily Canada/US. Mexico (Mi Transporte / Guadalajara) was added as the first test of coverage outside that footprint, with international candidates kept hidden until their country-wide rollout is ready. The open question this doc tracks: how much of what we learned from Mexico's messy feed is a *Mexico* problem versus a *first-country-of-any-kind* problem — and which country should come next.
 
 ---
 
@@ -64,6 +64,8 @@ Checked as an alternative after the UK's bundling problem surfaced.
 **Takeaway:** the original "France is the easy win" thesis holds up much better than it looked mid-investigation — Metz and Rennes are both genuinely clean or near-clean, Tours has zero real shape corruption, and even Bordeaux/Nancy's real issue rates are low single digits, not the double-digit-to-majority figures first reported. The false-positive detector briefly made this look like a systemic France-wide problem; it wasn't. And with the repair mechanism now in place (validated against live Canada/US feeds, not just French ones), every known shape-corruption case in the France candidate set is resolved.
 
 **Status:** ~142 French agencies are now in the registry as candidates (`hiddenInProduction` + `pmtilesPending`), all dry-run validated with route geometry near the claimed city — covering every métropole région including Corsica gaps and a second mid-size sweep (2026-07-19). Still **zero** production-visible French agencies; nothing launched to live R2 without an explicit country-launch decision. Blocked / rejected this cycle: Montpellier, Lille, Strasbourg, Thionville, Arras, Bastia (stops-only), plus several wrong-geo feed mismatches (e.g. Astuce feed attached to Saint-Quentin). The plan remains: launch France once coverage is broad enough, not city-by-city.
+
+**Fresh launch audit — 2026-08-15:** the candidate registry is stale enough that France is not ready for a broad production launch. Of 142 current feed URLs, 115 responded to a reachability check, 20 returned 404, 6 rejected `HEAD` and need a normal download check, and 1 failed outright. Only 5 candidate GeoJSON artifacts were present in `atlas-staging`. Fresh dry-runs found Metz had no shape anomalies or near-duplicate headsigns but still had 5 frequency metrics to review; Rennes had 181 headway-mismatch flags and 7 near-duplicate headsign flags. Recommendation: review Metz as a possible one-agency pilot, hold Rennes and the broader country launch until feeds are refreshed and revalidated.
 
 ---
 

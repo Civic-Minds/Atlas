@@ -13,9 +13,11 @@
     -74.9
   ],
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-herkimer-oneida-counties-transportation-study-hocts-gtfs-588.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20211231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
-  "pmtilesPending": true
+  "pmtilesPending": true,
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20211231-9dc8f1ca4ed5df71"
 }

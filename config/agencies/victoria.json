@@ -6,13 +6,14 @@
     48.4284,
     -123.3656
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-victoria-regional-transit-system-gtfs-2571.zip?alt=media",
-  "lastFeedExpiry": "20260628",
-  "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "202608100/20260809 21:00:00/20260810 04:00:00",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "https://www.bctransit.com/",
   "cities": [
     "Victoria, British Columbia",
     "Saanich, British Columbia"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2571/mdb-2571-202608100023/mdb-2571-202608100023.zip"
 }

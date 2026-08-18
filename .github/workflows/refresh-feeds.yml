@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       agencies:
-        description: 'Space-separated agency slugs to smoke-test (e.g. "ttc yrt"). Leave empty for a full refresh + PMTiles/history rebuild.'
+        description: 'Space-separated agency slugs to refresh (e.g. "ttc yrt"). PMTiles and history are rebuilt afterward so the map stays in sync.'
         required: false
         type: string
 
@@ -48,14 +48,10 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
-      # Skipped on a scoped smoke-test dispatch: expensive (tippecanoe + full
-      # PMTiles rebuild) and unrelated to what a scoped run is meant to verify.
       - name: Install tippecanoe
-        if: ${{ !inputs.agencies }}
         run: sudo apt-get install -y tippecanoe
 
       - name: Rebuild PMTiles vector tiles
-        if: ${{ !inputs.agencies }}
         run: npm run build-pmtiles
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
@@ -63,6 +59,11 @@ jobs:
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      - name: Verify PMTiles coverage
+        run: npm run verify-pmtiles-coverage
+        env:
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
 
       # NOT gated on inputs.agencies: this always processes the entire
       # atlas-archive/history/ tree (~12k files) regardless of which agencies

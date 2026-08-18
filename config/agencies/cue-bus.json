@@ -6,10 +6,10 @@
     -77.35
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2885/mdb-2885-202511251947/mdb-2885-202511251947.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20501230",
   "lastFeedVersion": null,
   "region": "Virginia",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Centreville, Virginia",
     "Reston, Virginia"

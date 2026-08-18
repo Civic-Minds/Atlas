@@ -215,8 +215,10 @@ export function liveVehicleRowLabel(
 export function agencyDisplayParts(
   name: string,
   cities?: string[],
+  displayArea?: string,
 ): { primary: string; secondary?: string } {
   const result = agencyDisplayPartsFromName(name);
+  if (displayArea) return { ...result, secondary: displayArea };
   // `cities` is derived from real GTFS stop coordinates (pipeline/deriveCities.ts),
   // so it's authoritative over whatever the name-parsing heuristics above guessed —
   // prefer it whenever the primary city isn't already spelled out in the name.
@@ -437,6 +439,7 @@ export function shortenAgencyName(name: string): string {
   // would otherwise collapse both of these Seattle-area agencies to the
   // same bare "Seattle" shortened form.
   if (lower.includes('king county metro')) return 'King County Metro';
+  if (lower.includes('owen sound transit')) return 'Owen Sound Transit';
   if (lower.includes('sound transit')) return 'Sound Transit';
 
   // Long " * Transit/Transportation Authority" names — map to common short/acronym forms used in UI

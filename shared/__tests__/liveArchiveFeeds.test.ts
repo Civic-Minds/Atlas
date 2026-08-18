@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  LIVE_ARCHIVE_SHARDS,
   LIVE_ARCHIVE_POSITION_FEEDS,
   LIVE_ARCHIVE_TRIP_FEEDS,
 } from '../liveArchiveFeeds';
@@ -9,6 +10,17 @@ import {
 } from '../livePollingConfig';
 
 describe('liveArchiveFeeds', () => {
+  it('assigns every archive feed to exactly one free-plan shard', () => {
+    const positionSlugs = LIVE_ARCHIVE_SHARDS.flatMap(shard => shard.positionSlugs);
+    const tripSlugs = LIVE_ARCHIVE_SHARDS.flatMap(shard => shard.tripSlugs);
+    expect(positionSlugs).toHaveLength(LIVE_ARCHIVE_POSITION_FEEDS.length);
+    expect(tripSlugs).toHaveLength(LIVE_ARCHIVE_TRIP_FEEDS.length);
+    expect(new Set(positionSlugs).size).toBe(positionSlugs.length);
+    expect(new Set(tripSlugs).size).toBe(tripSlugs.length);
+    expect(new Set(positionSlugs)).toEqual(new Set(LIVE_ARCHIVE_POSITION_FEEDS.map(feed => feed.slug)));
+    expect(new Set(tripSlugs)).toEqual(new Set(LIVE_ARCHIVE_TRIP_FEEDS.map(feed => feed.slug)));
+  });
+
   it('trip-update archive URLs match LIVE_POLLING endpoints', () => {
     for (const feed of LIVE_ARCHIVE_TRIP_FEEDS) {
       expect(LIVE_TRIP_UPDATES_FEEDS[feed.slug], feed.slug).toBe(feed.url);

@@ -62,6 +62,7 @@ import { VectorTile } from '@mapbox/vector-tile';
 import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2.js';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway, AGENCY_BBOX_PAD, R2_PUBLIC_URL } from '../shared/config.js';
+import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
 import {
   assertAgencyNotAlreadyPublished,
   assertNoBboxOverlap,
@@ -75,8 +76,6 @@ import {
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
-import { bumpPublicDataVersion } from './dataVersion.js';
-import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -225,10 +224,13 @@ async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[];
       `an incremental PMTiles update with no route data — process/refresh the agency first.`,
     );
   }
-  // Same contract as full build: restamp worst-direction before flatten/tippecanoe.
-  for (const f of prepareAgencyRouteFeaturesForTiles(routeData.features, slug)) {
+  routeData.features.forEach(f => {
+    if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
+    f.properties = f.properties || {};
+    f.properties.agencySlug = slug;
+    flattenPeriodHeadwayProps(f.properties);
     routes.push(f);
-  }
+  });
 
   // 2. Stops — best effort, matching build-pmtiles.ts.
   const stopsData = await fetchJson(arts.stopsUrl);
@@ -396,11 +398,6 @@ async function main() {
     console.log(`\nUploading merged atlas.pmtiles to Cloudflare R2 (streaming)...`);
     await r2PutFile('atlas.pmtiles', mergedPath, 'application/octet-stream');
     console.log(`PMTiles uploaded: ${pmtilesUrl}`);
-    try {
-      await bumpPublicDataVersion(`build-pmtiles-incremental ${slug}`);
-    } catch (e) {
-      console.warn(`  [warn] data-version R2 write failed — ${e instanceof Error ? e.message : e}`);
-    }
     console.log(`Incremental build complete for "${slug}". Consider running \`npm run verify-pmtiles-coverage\` to confirm.`);
 
     console.log(`Cleaning up temporary files...`);

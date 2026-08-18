@@ -1,0 +1,9 @@
+{
+  "slug": "lafayette-la",
+  "name": "Lafayette Transit System",
+  "region": "Louisiana",
+  "center": [30.2241, -92.0198],
+  "bbox": [29.9, -92.4, 30.5, -91.6],
+  "feedUrl": "https://lts.syncromatics.com/gtfs",
+  "cities": ["Lafayette, Louisiana"]
+}

@@ -13,9 +13,9 @@
     -77.0406
   ],
   "feedUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20260831",
-  "lastFeedVersion": "S1000234",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270731",
+  "lastFeedVersion": "S1000236",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Alexandria, Virginia",
     "Arlington, Virginia",

@@ -6,10 +6,10 @@
     49.05,
     -122.3
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-fraser-valley-region-gtfs-1991.zip?alt=media",
-  "lastFeedExpiry": "20260627",
-  "lastFeedVersion": "202606030/20260602 21:00:00/20260603 04:00:00",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "202608100/20260809 21:00:00/20260810 04:00:00",
+  "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "https://www.bctransit.com/",
   "cities": [
     "Abbotsford, British Columbia",
@@ -17,5 +17,6 @@
     "Langley, British Columbia",
     "Burnaby, British Columbia",
     "New Westminster, British Columbia"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1991/mdb-1991-202608100127/mdb-1991-202608100127.zip"
 }

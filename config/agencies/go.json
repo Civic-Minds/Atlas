@@ -2,6 +2,7 @@
   "slug": "go",
   "name": "GO Transit",
   "region": "Ontario",
+  "displayArea": "Greater Toronto & Hamilton Area",
   "center": [
     43.6536,
     -79.5844

@@ -2,16 +2,18 @@
   "slug": "rockregion",
   "name": "Rock Region Metro (Little Rock)",
   "center": [
-    34.75,
-    -92.29
+    34.7362,
+    -92.3139
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2264/mdb-2264-202507280407/mdb-2264-202507280407.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20251019",
   "lastFeedVersion": null,
   "region": "Arkansas",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Little Rock, Arkansas",
     "North Little Rock, Arkansas"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20251019-9254f70ee7df65fe"
 }

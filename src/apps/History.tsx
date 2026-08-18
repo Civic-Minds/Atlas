@@ -5,7 +5,12 @@ import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
-import { agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
+import {
+  agencyHistoryTier,
+  agencyQualifiesForHistory,
+  historyTierLabel,
+  type HistoryTier,
+} from '../../shared/historyEligibility';
 
 export interface RouteSnapshot {
   label: string;
@@ -295,6 +300,7 @@ function HistoryAgencyPanel({
   onRouteSelect: (routeShortName: string) => void;
 }) {
   const [routeQuery, setRouteQuery] = useState('');
+  const tier = agencyHistoryTier(agencyHistory) ?? 'recent';
 
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
@@ -326,6 +332,7 @@ function HistoryAgencyPanel({
         route.routeName.toLowerCase().includes(q)
       )
       .sort((a, b) => {
+        // Biggest frequency swing first (worse, then better, then flat)
         if (a.worse && b.worse) return b.ratio - a.ratio;
         if (a.better && b.better) return a.ratio - b.ratio;
         if (a.worse !== b.worse) return a.worse ? -1 : 1;
@@ -338,12 +345,21 @@ function HistoryAgencyPanel({
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
       {/* Header */}
       <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight">{shortenAgencyName(agencyHistory.name)}</h2>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
+              <span className="shrink-0 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                {historyTierLabel(tier)}
+              </span>
+            </div>
             <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
               {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear}–{maxYear}
+              {tier === 'recent' ? ' · recent refreshes' : ' · long archive'}
             </p>
+            {!routeQuery && (
+              <p className="text-[9px] text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
+            )}
           </div>
         </div>
       </div>
@@ -429,7 +445,7 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
 
   const historyAgencies = useMemo(() => {
     return (historyData ?? []).filter(
-      a => a.routes.some(r => r.snapshots.length > 0) && agencyQualifiesForHistoryExplore(a),
+      a => a.routes.some(r => r.snapshots.length > 0) && agencyQualifiesForHistory(a),
     );
   }, [historyData]);
 
@@ -543,6 +559,21 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
     );
   }, [query, historyAgencies, initialAgencySlugs]);
 
+  /** Explore first, then Recent — each section labeled so the 10-year bar stays visible. */
+  const filteredByTier = useMemo(() => {
+    const explore: AgencyHistory[] = [];
+    const recent: AgencyHistory[] = [];
+    for (const agency of filtered) {
+      const tier = agencyHistoryTier(agency);
+      if (tier === 'explore') explore.push(agency);
+      else if (tier === 'recent') recent.push(agency);
+    }
+    const sections: Array<{ tier: HistoryTier; agencies: AgencyHistory[] }> = [];
+    if (explore.length) sections.push({ tier: 'explore', agencies: explore });
+    if (recent.length) sections.push({ tier: 'recent', agencies: recent });
+    return sections;
+  }, [filtered]);
+
   const availableYears = useMemo(() => {
     if (!selectedSlug) return [];
     const agency = historyAgencies.find(a => a.slug === selectedSlug);
@@ -628,32 +659,50 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
             </>
           ) : (
             <>
-              <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)]">
-                <p className="text-[10px] font-bold text-[var(--text-muted)]">Suggestions</p>
-              </div>
               {historyData === null && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
               )}
               {historyData !== null && filtered.length === 0 && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
               )}
-              {filtered.map(agency => (
-                <button
-                  key={agency.slug}
-                  onClick={() => {
-                    saveRecentSearch(query);
-                    setSelectedSlug(agency.slug);
-                  }}
-                  className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-                >
-                  <div>
-                    <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{shortenAgencyName(agency.name)}</p>
-                    <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
-                      {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+              {filteredByTier.map(({ tier, agencies }, sectionIdx) => (
+                <div key={tier}>
+                  <div className={`px-4 pt-3 pb-2 border-b border-[var(--border-primary)] ${sectionIdx > 0 ? 'border-t' : ''}`}>
+                    <p className="text-[10px] font-bold text-[var(--text-muted)]">
+                      {historyTierLabel(tier)}
+                      <span className="font-normal text-[var(--text-dim)] ml-1">
+                        {tier === 'explore' ? '· 10+ years of snapshots' : '· shorter series from refreshes'}
+                      </span>
                     </p>
                   </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                </button>
+                  {agencies.map(agency => (
+                    <button
+                      key={agency.slug}
+                      onClick={() => {
+                        saveRecentSearch(query);
+                        setSelectedSlug(agency.slug);
+                      }}
+                      className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors truncate">
+                            {shortenAgencyName(agency.name)}
+                          </p>
+                          {tier === 'recent' && (
+                            <span className="shrink-0 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                              Recent
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
+                          {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
+                    </button>
+                  ))}
+                </div>
               ))}
             </>
           )}

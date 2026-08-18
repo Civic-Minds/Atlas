@@ -2,8 +2,8 @@
   "slug": "westberkeley",
   "name": "West Berkeley Shuttle",
   "center": [
-    37.8553,
-    -122.291
+    37.8543,
+    -122.2864
   ],
   "region": "California",
   "bbox": [
@@ -14,10 +14,12 @@
   ],
   "feedUrl": "https://gtfs.calitp.org/production/WestBerkeleyShuttleGTFS.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-west-berkeley-shuttle-gtfs-2238.zip?alt=media",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20211231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Berkeley, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20211231-b8f85ab96a9ec3fb"
 }

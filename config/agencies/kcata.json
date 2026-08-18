@@ -5,11 +5,12 @@
     39.1,
     -94.58
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-187/mdb-187-202607020106/mdb-187-202607020106.zip",
-  "lastFeedExpiry": "20260711",
-  "lastFeedVersion": "June 2026_20260630",
+  "feedUrl": "http://www.kc-metro.com/gtf/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-187/mdb-187-202607240150/mdb-187-202607240150.zip",
+  "lastFeedExpiry": "20261003",
+  "lastFeedVersion": "July 2026_20260723",
   "region": "Missouri",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Kansas City, Missouri",
     "Overland Park, Kansas",

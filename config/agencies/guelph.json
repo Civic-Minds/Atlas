@@ -3,8 +3,8 @@
   "name": "Guelph Transit",
   "region": "Ontario",
   "center": [
-    43.5448,
-    -80.2482
+    43.5316,
+    -80.2427
   ],
   "bbox": [
     43.14,
@@ -16,9 +16,11 @@
   "lastFeedExpiry": "20250830",
   "lastFeedVersion": "2025 May _20250801",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.guelphtransit.ca",
   "cities": [
     "Guelph, Ontario"
-  ]
+  ],
+  "timezone": "America/Toronto",
+  "lastRawArchiveKey": "20250830-f57cc654275f6804"
 }

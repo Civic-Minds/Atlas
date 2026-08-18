@@ -1,17 +1,20 @@
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
 
-function atlasPmtilesUrl(): string {
-  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
+export function getAtlasPmtilesUrl(): string {
+  // Keep deployed requests same-origin and expose the range headers PMTiles needs.
+  const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
+    ? `${window.location.origin}/api/atlas-pmtiles`
+    : `${R2_PUBLIC_URL}/atlas.pmtiles`;
+  return `${browserUrl}?v=${currentAgencyDataVersion()}`;
 }
 
 const protocol = new Protocol();
 let protocolRegistered = false;
 
-/** Resolve live data-version then register the PMTiles protocol (await before creating the map). */
 export async function registerProtocol() {
   await resolveAgencyDataVersion();
   if (!protocolRegistered) {
@@ -21,7 +24,7 @@ export async function registerProtocol() {
   // Register our retry-wrapped PMTiles instance under this exact URL so
   // MapLibre's `pmtiles://${url}/{z}/{x}/{y}` requests resolve to it instead
   // of a fresh stock instance (Protocol.get() matches by exact source key).
-  protocol.add(new PMTiles(new RetryingFetchSource(atlasPmtilesUrl())));
+  protocol.add(new PMTiles(new RetryingFetchSource(getAtlasPmtilesUrl())));
 }
 
 export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification => {
@@ -54,10 +57,6 @@ export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification =
         tiles: darkTiles,
         tileSize: 256,
         attribution: 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
-      },
-      'atlas-pmtiles': {
-        type: 'vector',
-        url: `pmtiles://${atlasPmtilesUrl()}`,
       },
     },
     layers: [

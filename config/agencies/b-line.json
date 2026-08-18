@@ -2,8 +2,8 @@
   "slug": "b-line",
   "name": "B-Line (Corpus Christi RTA)",
   "center": [
-    27.76,
-    -97.37
+    27.7446,
+    -97.3736
   ],
   "bbox": [
     27.6,
@@ -13,10 +13,12 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
   "region": "Texas",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20250531",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Corpus Christi, Texas"
-  ]
+  ],
+  "timezone": "America/Chicago",
+  "lastRawArchiveKey": "20250531-11faaa728a80569c"
 }

@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { passesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
+import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
@@ -16,12 +16,16 @@ import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, 
 import type { Agency, FareOverride } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
-import { R2_PUBLIC_URL } from '../../shared/config';
+import { R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
+
+// Versioned because the original preference could accidentally persist only
+// agencies in the current viewport when the bulk "All" action was used.
+const AGENCY_PREF_STORAGE_KEY = 'atlas_pref_agencies_off_v2';
 
 interface Props {
   agencies: Agency[];
@@ -56,13 +60,31 @@ interface Props {
   onSelectionActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
   fareView?: boolean;
+  nightServiceView?: boolean;
+  showMapContext?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
+  hideLowQuality: boolean;
+  setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
+  feedQualityEnabled?: boolean;
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, sidebarLeft, searchBarWidth, searchEnterRef }: Props) {
+function readSavedAgenciesOff(): Set<string> {
+  try {
+    const saved = localStorage.getItem(AGENCY_PREF_STORAGE_KEY);
+    return saved ? new Set(JSON.parse(saved) as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
   const [searchParams] = useSearchParams();
+  const [mapContextOpen, setMapContextOpen] = useState(false);
+  const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
+  const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
+  const [mapContextRouteCount, setMapContextRouteCount] = useState<number | null>(null);
 
   const initialMapCenter = useMemo(() => {
     const lat = parseFloat(searchParams.get('lat') ?? '');
@@ -98,6 +120,12 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
+
+  // An agency selection replaces route disambiguation. Keeping both active
+  // leaves two sidebar cards competing for the same space.
+  useEffect(() => {
+    if (selectedAgencySlug && disambiguationRoutes?.length) setDisambiguationRoutes(null);
+  }, [selectedAgencySlug, disambiguationRoutes]);
 
   const setHoveredBranch = useCallback((branch: HoveredBranch | null) => {
     if (hoverTimeoutRef.current !== null) {
@@ -140,18 +168,28 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   }, [searchFocused]);
 
   // Advanced Filter State
-  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
-    const allSlugs = new Set(agencies.map(a => a.slug));
-    try {
-      const saved = localStorage.getItem('atlas_pref_agencies_off');
-      if (saved) {
-        const off = new Set(JSON.parse(saved) as string[]);
-        // New agencies (not in the saved exclusion list) are included by default
-        return new Set([...allSlugs].filter(s => !off.has(s)));
-      }
-    } catch {}
-    return allSlugs;
-  });
+  //
+  // `agencies` can still be loading (or growing incrementally as nearby agencies resolve) at
+  // mount time. Reading the saved off-list against whatever's loaded *right now* used to lock
+  // in a tiny selectedAgencies set on a slow load, then the write-back effect below would
+  // persist "everything else" as off -- silently, with no user interaction (#428). Read the
+  // saved off-list once into a ref instead of baking it into a lazy initializer, and use the
+  // same ref to fold in any agencies that arrive after mount.
+  const savedAgenciesOffRef = useRef<Set<string>>(readSavedAgenciesOff());
+  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(
+    () => new Set(agencies.filter(a => !savedAgenciesOffRef.current.has(a.slug)).map(a => a.slug)),
+  );
+  const knownAgencySlugsRef = useRef<Set<string>>(new Set(agencies.map(a => a.slug)));
+  useEffect(() => {
+    const newlyLoaded = agencies.filter(a => !knownAgencySlugsRef.current.has(a.slug));
+    if (newlyLoaded.length === 0) return;
+    for (const a of newlyLoaded) knownAgencySlugsRef.current.add(a.slug);
+    setSelectedAgencies(prev => {
+      const next = new Set(prev);
+      for (const a of newlyLoaded) if (!savedAgenciesOffRef.current.has(a.slug)) next.add(a.slug);
+      return next;
+    });
+  }, [agencies]);
   const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
   const [period, setPeriod] = useState<TimePeriod>(() => {
     try {
@@ -186,7 +224,19 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       .catch(() => {});
   }, [fareView]);
 
-  const [bounds, setBounds] = useState<ViewportBounds | null>(null);
+  // Start agency loading from a deep-linked map location instead of waiting for
+  // MapLibre to report its first move. A stalled route tile must not leave the
+  // data loader using the Toronto default while the map is elsewhere.
+  const initialAgencyBounds = useMemo<ViewportBounds | null>(() => {
+    if (!initialMapCenter) return null;
+    return {
+      s: initialMapCenter.lat - VIEWPORT_BBOX_PAD.lat,
+      w: initialMapCenter.lon - VIEWPORT_BBOX_PAD.lon,
+      n: initialMapCenter.lat + VIEWPORT_BBOX_PAD.lat,
+      e: initialMapCenter.lon + VIEWPORT_BBOX_PAD.lon,
+    };
+  }, [initialMapCenter]);
+  const [bounds, setBounds] = useState<ViewportBounds | null>(initialAgencyBounds);
   const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const nearbyPanelRef = useRef<HTMLDivElement>(null);
@@ -201,7 +251,10 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const selectedCorridorFamily = useMemo(() => {
     if (!selectedRoute) return null;
-    const { agencySlug, routeId } = splitRouteKey(selectedRoute);
+    const separator = selectedRoute.indexOf('::');
+    if (separator < 0) return null;
+    const agencySlug = selectedRoute.slice(0, separator);
+    const routeId = selectedRoute.slice(separator + 2);
     const features = layers[agencySlug]?.features ?? [];
     const props = features
       .map(f => f.properties as ShapeProperties)
@@ -233,7 +286,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   }, [userLocation, clearUserLocation]);
 
   const nearbyRoutes = useNearbyRoutes(userLocation, layers, day, period);
-  const { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, routesForStop, tileFilter } = useIntervalStats(layers, {
+  const { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter } = useIntervalStats(layers, {
     query,
     maxHeadway,
     agencies: selectedAgencies,
@@ -252,14 +305,15 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || maxHeadway === Infinity) return false;
-    const { agencySlug: selectedSlug, routeId } = splitRouteKey(selectedRoute);
-    const selectedRouteSlug = selectedSlug;
-    const feature = layers[selectedRouteSlug]?.features.find(f => {
+    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
+    const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;
-      return p?.routeId === routeId && routeKey({ ...p, agencySlug: selectedRouteSlug }) === selectedRoute && (p.day === undefined || p.day === day);
+      return p?.routeId === routeId
+        && (!routeBranch || p.routeBranch === routeBranch)
+        && (p.day === undefined || p.day === day);
     });
-    if (!feature) return false;
-    return !passesRouteFilter(feature.properties as ShapeProperties, selectedRouteSlug, {
+    if (!features?.length) return false;
+    return !anyFeaturePassesRouteFilter(features, slug, {
       maxHeadway,
       agencies: selectedAgencies,
       modes: selectedModes,
@@ -278,7 +332,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
-      localStorage.setItem('atlas_pref_agencies_off', JSON.stringify(off));
+      localStorage.setItem(AGENCY_PREF_STORAGE_KEY, JSON.stringify(off));
     } catch {}
   }, [selectedAgencies, agencies]);
 
@@ -299,7 +353,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
     }) ?? fc.features.find(f => (f.properties as any).routeShortName === pendingLiveRoute.routeShortName);
     if (found) {
       const p = found.properties as any;
-      setSelectedRoute(`${p.agencySlug ?? p.agencyName ?? pendingLiveRoute.slug}::${p.routeId}`);
+      setSelectedRoute(routeKey({ ...p, agencySlug: p.agencySlug ?? p.agencyName ?? pendingLiveRoute.slug } as ShapeProperties));
     }
     onPendingLiveRouteHandled?.();
   }, [pendingLiveRoute, layers, day]);
@@ -329,7 +383,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
   // Drop stale selection when the route card has no data (day change, agency unload, etc.)
   useEffect(() => {
     if (!selectedRoute) return;
-    const { agencySlug: slug } = splitRouteKey(selectedRoute);
+    const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
     const resolvedRoute = resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day);
@@ -392,6 +446,8 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
       <MapCanvas
         agencies={agencies}
         layers={layers}
+        filteredLayers={filteredLayers}
+        mapFilteredLayers={mapFilteredLayers}
         maxHeadway={maxHeadway}
         period={period}
         q={q}
@@ -409,6 +465,13 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         onBoundsChange={onBoundsChange}
         resetViewKey={resetViewKey}
         onLocate={onLocate}
+        showMapContext={showMapContext}
+        mapContextOpen={mapContextOpen}
+        mapContextView={mapContextView}
+        onMapContextOpenChange={setMapContextOpen}
+        onMapContextAgencyCountChange={setMapContextAgencyCount}
+        onMapContextRouteCountChange={setMapContextRouteCount}
+        day={day}
         showRouteLayers={showRouteLayers}
         liveRoutesOnly={liveRoutesOnly}
         showCorridorBand={showCorridorBand}
@@ -421,6 +484,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         selectedAgencySlug={selectedAgencySlug}
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
+        nightServiceView={nightServiceView}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
@@ -440,12 +504,41 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
             </div>
           )}
           {stats && (stats.total > 0 || !isLoading) && (
-            <div className="hidden sm:flex gap-2">
-              <div className={`${MAP_BADGE} h-8`}>
-                <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
-                <span className={MAP_BADGE_LABEL}>routes</span>
-              </div>
-              <div className={`${MAP_BADGE} h-8`}>
+              <div className="hidden sm:flex gap-2">
+                <div className={`${MAP_BADGE} h-8`}>
+                  {showMapContext ? (
+                    <button
+                      type="button"
+                      onClick={() => { setMapContextView('routes'); setMapContextOpen(true); }}
+                      aria-label={`${mapContextRouteCount ?? 0} routes in view`}
+                      aria-expanded={mapContextOpen && mapContextView === 'routes'}
+                      title="Routes in view"
+                      className="flex items-center gap-1.5 cursor-pointer hover:text-[var(--accent)] transition-colors"
+                    >
+                      <span className={MAP_BADGE_COUNT}>{mapContextRouteCount ?? 0}</span>
+                      <span className={MAP_BADGE_LABEL}>routes</span>
+                    </button>
+                  ) : (
+                    <>
+                      <span className={MAP_BADGE_COUNT}>{stats.matching}</span>
+                      <span className={MAP_BADGE_LABEL}>routes</span>
+                    </>
+                  )}
+                </div>
+                {showMapContext && (
+                  <button
+                    type="button"
+                    onClick={() => { setMapContextView('agencies'); setMapContextOpen(true); }}
+                    aria-label={`${mapContextAgencyCount} agencies in view`}
+                    aria-expanded={mapContextOpen && mapContextView === 'agencies'}
+                    title="Agencies in view"
+                    className={`${MAP_BADGE} h-8 cursor-pointer hover:text-[var(--accent)] transition-colors`}
+                  >
+                    <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>
+                    <span className={MAP_BADGE_LABEL}>agencies</span>
+                  </button>
+                )}
+                <div className={`${MAP_BADGE} h-8`}>
                 <span className={MAP_BADGE_COUNT}>
                   {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
                 </span>
@@ -456,7 +549,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
         </div>
       )}
 
-      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard
@@ -529,6 +622,9 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
               bounds={bounds}
+              hideLowQuality={hideLowQuality}
+              setHideLowQuality={setHideLowQuality}
+              feedQualityEnabled={feedQualityEnabled}
             />
           )}
         </div>,

@@ -1,5 +1,6 @@
 import type { GtfsData, GtfsRoute } from '../types/gtfs.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
+import { isRailLikeRoute } from '../shared/modes.js';
 import { haversineDistance } from './utils.js';
 import type { GeoJsonFeature } from './geojson-types.js';
 import type { DayType } from '../shared/dayTypes.js';
@@ -80,6 +81,7 @@ export function buildShapeSelectionContext(
   routeById: Map<string, GtfsRoute>,
   activeServiceIds: Set<string>,
   activeServiceIdsByDay: ReadonlyMap<DayType, ReadonlySet<string>> = new Map(),
+  agencySlug?: string,
 ): ShapeSelectionContext {
   const lastStopByTrip = new Map<string, string>();
   const maxSeqByTrip = new Map<string, number>();
@@ -184,7 +186,13 @@ export function buildShapeSelectionContext(
   for (const [key, counts] of shapeCounts) {
     const routeId = key.split('::')[0];
     const routeType = routeById.get(routeId)?.route_type;
-    const isRail = routeType === '2' || routeType === 2;
+    const route = routeById.get(routeId);
+    const isRail = isRailLikeRoute({
+      routeType,
+      routeLongName: route?.route_long_name,
+      routeShortName: route?.route_short_name,
+      agencySlug,
+    });
 
     if (isRail) {
       const best = [...counts.keys()]
@@ -212,14 +220,24 @@ export function buildShapeSelectionContext(
   for (const [key, shapeIds] of routeDirToAnalysisShapes) {
     const routeId = key.split('::')[0];
     const route = routeById.get(routeId);
-    const isRail = route?.route_type === '2' || route?.route_type === 2;
+    const isRail = isRailLikeRoute({
+      routeType: route?.route_type,
+      routeLongName: route?.route_long_name,
+      routeShortName: route?.route_short_name,
+      agencySlug,
+    });
     if (!isRail) shapeFilterForPhase1.set(key, shapeIds);
   }
 
   for (const [hKey, hShapeCounts] of headsignShapeCounts) {
     const routeId = hKey.split('::')[0];
     const route = routeById.get(routeId);
-    if (route?.route_type === '2' || route?.route_type === 2) continue;
+    if (isRailLikeRoute({
+      routeType: route?.route_type,
+      routeLongName: route?.route_long_name,
+      routeShortName: route?.route_short_name,
+      agencySlug,
+    })) continue;
     const shapeEntries = [...hShapeCounts.entries()]
       .map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) }))
       .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);

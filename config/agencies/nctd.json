@@ -2,14 +2,14 @@
   "slug": "nctd",
   "name": "North County Transit District (NCTD)",
   "center": [
-    33.2,
-    -117.39
+    33.1545,
+    -117.2257
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20250517",
   "lastFeedVersion": "Version_20250205",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "20260811",
   "cities": [
     "Vista, California",
     "Escondido, California",
@@ -20,5 +20,7 @@
     "Mira Mesa, California",
     "Temecula, California",
     "Rancho Penasquitos, California"
-  ]
+  ],
+  "timezone": "America/Los_Angeles",
+  "lastRawArchiveKey": "20250517-3b39f629f5e0d959"
 }

@@ -5,11 +5,11 @@
     34.11,
     -117.29
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-97/mdb-97-202604290039/mdb-97-202604290039.zip",
-  "lastFeedExpiry": "20260809",
-  "lastFeedVersion": "20260504_20260428a",
+  "feedUrl": "http://www.omnitrans.org/google/google_transit.zip",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "20260810_20260710a",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-10",
   "cities": [
     "San Bernardino, California",
     "Fontana, California",
@@ -21,5 +21,6 @@
     "Highland, California",
     "Upland, California",
     "Chino, California"
-  ]
+  ],
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-97/mdb-97-202607310117/mdb-97-202607310117.zip"
 }

@@ -2,12 +2,14 @@
   "slug": "fred-transit",
   "name": "Fredericksburg Regional Transit",
   "center": [
-    38.3,
-    -77.46
+    38.3204,
+    -77.4867
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20250331",
   "lastFeedVersion": null,
   "region": "Virginia",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "20260811",
+  "timezone": "America/New_York",
+  "lastRawArchiveKey": "20250331-57559b8d2e92112e"
 }
