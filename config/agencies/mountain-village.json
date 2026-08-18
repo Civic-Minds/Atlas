@@ -1,0 +1,26 @@
+{
+  "slug": "mountain-village",
+  "name": "Town of Mountain Village Transit",
+  "center": [
+    37.932,
+    -107.856
+  ],
+  "bbox": [
+    37.89,
+    -107.91,
+    38.01,
+    -107.78
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
+  "agencyId": "1702",
+  "websiteUrl": "https://townofmountainvillage.com/getting-around/",
+  "region": "Colorado",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
+  "lastFeedExpiry": "20261019",
+  "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Mountain Village, Colorado",
+    "Telluride, Colorado"
+  ]
+}

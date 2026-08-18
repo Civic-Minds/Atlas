@@ -1,0 +1,14 @@
+{
+  "slug": "orangeville",
+  "name": "Orangeville Transit",
+  "region": "Ontario",
+  "center": [
+    43.9195,
+    -80.0972
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orangeville.zip",
+  "websiteUrl": "https://www.orangeville.ca/en/living-here/schedules-and-map.aspx",
+  "cities": [
+    "Orangeville, Ontario"
+  ]
+}

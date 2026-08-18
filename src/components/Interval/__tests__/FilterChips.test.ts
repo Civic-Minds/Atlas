@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { getNowPeriodForTimezone } from '../FilterChips';
+import { describe, expect, it } from 'vitest';
+import { applyAgencyBulkSelection, getNowPeriodForTimezone } from '../FilterChips';
 
 describe('getNowPeriodForTimezone', () => {
   // 2026-01-15T12:00:00Z -- January, so no DST ambiguity in the northern hemisphere.
@@ -21,5 +21,16 @@ describe('getNowPeriodForTimezone', () => {
   it('falls back to local time instead of throwing on an invalid timezone name', () => {
     const localNoon = new Date(2026, 0, 15, 12, 0, 0);
     expect(getNowPeriodForTimezone('Not/A/Real/Zone', localNoon)).toBe('midday');
+  });
+});
+
+describe('agency bulk selection', () => {
+  it('selects every agency, including agencies outside the current viewport', () => {
+    const allSlugs = ['sudbury', 'toronto'];
+    expect([...applyAgencyBulkSelection(new Set(['sudbury']), allSlugs, true)]).toEqual(allSlugs);
+  });
+
+  it('clears every agency when None is used', () => {
+    expect(applyAgencyBulkSelection(new Set(['sudbury', 'toronto']), ['sudbury', 'toronto'], false).size).toBe(0);
   });
 });

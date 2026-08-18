@@ -10,5 +10,8 @@ ARCHIVE_SHARD = "stm"
 binding = "BUCKET"
 bucket_name = "atlas-live"
 
+[observability]
+enabled = true
+
 [triggers]
 crons = ["* * * * *"]

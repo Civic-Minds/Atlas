@@ -1,0 +1,29 @@
+{
+  "slug": "snowmass-village",
+  "name": "Snowmass Village Shuttle",
+  "center": [
+    39.213,
+    -106.937
+  ],
+  "bbox": [
+    39.16,
+    -107.02,
+    39.28,
+    -106.82
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip",
+  "websiteUrl": "https://www.snowmasstransit.com/133/Routes-Schedules",
+  "region": "Colorado",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-164/latest.zip",
+  "excludeRouteShortNames": [
+    "BC-SMI",
+    "SMI-BC"
+  ],
+  "overrideNote": "The source feed also contains regional BC-SMI/SMI-BC trips already supplied by RFTA; exclude those duplicates and keep the local Village Shuttle routes here.",
+  "lastFeedExpiry": "20260920",
+  "lastFeedVersion": "UTC: 27-May-2026 19:57",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Snowmass Village, Colorado"
+  ]
+}

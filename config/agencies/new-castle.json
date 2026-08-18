@@ -1,0 +1,14 @@
+{
+  "slug": "new-castle",
+  "name": "New Castle Area Transit Authority",
+  "region": "Pennsylvania",
+  "center": [
+    41.0037,
+    -80.347
+  ],
+  "feedUrl": "https://ncata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "websiteUrl": "https://newcastletransit.org/",
+  "cities": [
+    "New Castle, Pennsylvania"
+  ]
+}

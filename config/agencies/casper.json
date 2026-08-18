@@ -1,0 +1,33 @@
+{
+  "slug": "casper",
+  "name": "Casper Area Transit",
+  "websiteUrl": "https://www.cityofcasperwy.com/residents/roads_and_parking/metropolitan_planning_organization/casper_area_transit_/",
+  "region": "Wyoming",
+  "center": [
+    42.8501,
+    -106.3252
+  ],
+  "feedUrl": "https://passio3.com/casper/passioTransit/gtfs/google_transit.zip",
+  "lastFeedExpiry": "20260917",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Casper, Wyoming",
+    "Evansville, Wyoming",
+    "Mills, Wyoming"
+  ],
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 141
+    },
+    "checkedAt": "2026-08-18"
+  }
+}
