@@ -221,6 +221,8 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
 
   return (
     <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4 pt-24 pb-4">
+      {/* Sticky header background to hide scrolling table rows behind the page title */}
+      <div className="fixed top-0 left-0 right-0 h-24 bg-[var(--bg-app)] z-[1050] pointer-events-none" />
       <div className="flex items-start gap-4">
         {/* Keep the filters in the visible viewport, below the fixed page title. */}
         <aside className={`w-64 shrink-0 sticky top-24 h-[calc(100vh-7rem)] ${FLOATING_CARD} p-4 flex flex-col gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto`}>
