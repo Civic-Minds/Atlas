@@ -112,10 +112,21 @@ export function medianTerminalHeadway(branches: ShapeProperties[], period: TimeP
   return vals.length ? medianHeadway(vals) : null;
 }
 
+/** Minimum real stops branches must share before a "Combined" figure is shown -- one shared
+ *  stop can be a coincidental terminal (see MIN_SHARED_STOPS in scripts/detect-route-branches.ts). */
+const MIN_SHARED_STOPS_FOR_TRUNK = 2;
+
 /** True when combined trunk is materially better than typical destination wait. */
 export function shouldShowTrunkSummary(branches: ShapeProperties[], period: TimePeriod): boolean {
   const sustainedBranches = branches.filter(d => !isLimitedBranch(d));
   if (sustainedBranches.length < 2) return false;
+  // Two headsigns sharing a direction_id aren't necessarily branches of one corridor --
+  // an agency can mislabel opposite directions with the same direction_id (Durango's Main
+  // Ave Trolley: "Trolley South" and "Trolley North" are literally the same line reversed,
+  // sharing zero real stops, both direction_id 0 -- #441). Combining unrelated/opposite
+  // directions into "1 / sum(1/h)" produces a number faster than either real direction,
+  // which is never a real wait time a rider experiences.
+  if (sharedStopIdsForBranches(sustainedBranches).length < MIN_SHARED_STOPS_FOR_TRUNK) return false;
   const periodKey = period !== 'all' ? period : 'midday';
   const trunk = groupTrunkHeadway(sustainedBranches, periodKey);
   const terminal = medianTerminalHeadway(sustainedBranches, period);

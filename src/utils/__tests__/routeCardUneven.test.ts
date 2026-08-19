@@ -10,6 +10,7 @@ function branch(headway: number, maxGap: number): ShapeProperties {
     headwayByPeriod: { midday: headway },
     headwayByPeriodSustained: { midday: false },
     maxGapByPeriod: { midday: maxGap },
+    stopOrder: ['a', 'b', 'c'],
   } as ShapeProperties;
 }
 

@@ -17,6 +17,7 @@ const hsrWestBranches: ShapeProperties[] = [
     headwayByPeriod: { pmPeak: 30, evening: 30 },
     minStopHeadway: 8,
     minStopHeadwayByPeriod: { pmPeak: 8, evening: 10 },
+    stopOrder: ['a', 'b', 'c', 'd'],
   },
   {
     routeId: '1', directionId: 0, tier: '30', headway: 15, routeShortName: '05', routeLongName: 'Delaware',
@@ -24,6 +25,7 @@ const hsrWestBranches: ShapeProperties[] = [
     headwayByPeriod: { pmPeak: 15, evening: 30 },
     minStopHeadway: 8,
     minStopHeadwayByPeriod: { pmPeak: 8, evening: 10 },
+    stopOrder: ['x', 'b', 'c', 'y'],
   },
   {
     routeId: '1', directionId: 0, tier: '30', headway: 30, routeShortName: '05', routeLongName: 'Delaware',
@@ -31,6 +33,7 @@ const hsrWestBranches: ShapeProperties[] = [
     headwayByPeriod: { pmPeak: 30, evening: 30 },
     minStopHeadway: 8,
     minStopHeadwayByPeriod: { pmPeak: 8, evening: 10 },
+    stopOrder: ['z', 'b', 'c', 'w'],
   },
 ];
 
