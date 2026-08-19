@@ -1,0 +1,42 @@
+{
+  "slug": "mats",
+  "name": "Mount Adams Transportation Service",
+  "center": [
+    45.7099,
+    -121.1751
+  ],
+  "region": "Washington",
+  "bbox": [
+    45.57,
+    -121.57,
+    45.85,
+    -120.78
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-580/mdb-580-202607010136/mdb-580-202607010136.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-580/mdb-580-202607010136/mdb-580-202607010136.zip",
+  "timezone": "America/Los_Angeles",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 30-Jun-2026 05:12",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "White Salmon, Washington",
+    "Goldendale, Washington",
+    "Hood River, Oregon",
+    "The Dalles, Oregon"
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 shape corrections needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 7
+    },
+    "checkedAt": "2026-08-18"
+  }
+}
