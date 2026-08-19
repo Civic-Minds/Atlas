@@ -109,6 +109,34 @@ describe('routeCardTrunk', () => {
     });
   });
 
+  describe('reversed-loop trunk gating (#441)', () => {
+    const loopStops = ['s1', 's2', 's3', 's4', 's5', 's6'];
+    const reversedLoopBranches: ShapeProperties[] = [
+      {
+        ...hsrWestBranches[0], routeShortName: '1', headsign: 'Trolley North',
+        headway: 20, headwayByPeriod: { pmPeak: 20, evening: 20 },
+        minStopHeadway: 8, minStopHeadwayByPeriod: { pmPeak: 8, evening: 8 },
+        stopOrder: loopStops,
+      },
+      {
+        ...hsrWestBranches[1], routeShortName: '1', headsign: 'Trolley South',
+        headway: 20, headwayByPeriod: { pmPeak: 20, evening: 20 },
+        minStopHeadway: 8, minStopHeadwayByPeriod: { pmPeak: 8, evening: 8 },
+        stopOrder: [...loopStops].reverse(),
+      },
+    ] as ShapeProperties[];
+
+    it('hides Combined for the same loop traveled in reverse, despite full stop overlap', () => {
+      expect(sharedStopIdsForBranches(reversedLoopBranches).length).toBe(loopStops.length);
+      expect(shouldShowTrunkSummary(reversedLoopBranches, 'pmPeak')).toBe(false);
+    });
+
+    it('falls back to the ratio check when real stop order is unavailable for a branch', () => {
+      const noStopData = reversedLoopBranches.map(b => ({ ...b, stopOrder: undefined }));
+      expect(shouldShowTrunkSummary(noStopData as ShapeProperties[], 'pmPeak')).toBe(true);
+    });
+  });
+
   describe('sparklineSourceDirections', () => {
     it('falls back to dir 1 when only dir 1 has hourly data (Anchorage-style)', () => {
       const dirs = [
