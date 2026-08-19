@@ -70,8 +70,9 @@ function FilterPill({ active, onClick, children }: { active: boolean; onClick: (
 
 /**
  * Internal-only route table for spotting bad data by eye across many routes at once --
- * something the map is deliberately not built for. Beta-gated (DIAGNOSTICS_ENABLED), not
- * linked from the nav; reachable only by navigating to /apps/diagnostics/table directly.
+ * something the map is deliberately not built for. Local dev only (import.meta.env.DEV in
+ * main.tsx) -- loads every agency at once with no viewport limit, too heavy to leave reachable
+ * on any deployed build.
  */
 export default function Diagnostics({ agencies }: DiagnosticsProps) {
   const [regionFilter, setRegionFilter] = useState(ALL_REGIONS);
