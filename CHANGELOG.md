@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.20] - 2026-08-19
 
 - The Route Diagnostics table header no longer lets scrolling rows slip above it into the top page padding ([#447](https://github.com/Civic-Minds/Atlas/issues/447)).
 - Durango Transit Route 1 no longer combines opposite directions into a false combined headway because they share a direction ID ([#441](https://github.com/Civic-Minds/Atlas/issues/441)).
