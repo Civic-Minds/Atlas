@@ -534,6 +534,7 @@ export default function App() {
                     ? visibleAgencies.filter(a => a.gtfsFares)
                     : visibleAgencies
               }
+              allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
               query={deferredQuery}
@@ -547,7 +548,8 @@ export default function App() {
               forceShowCorridors={inCorridors}
               fareView={inFares}
               nightServiceView={inNight}
-              showMapContext={BETA_BUILD}
+              showMapContext
+              showMatchPercentage={BETA_BUILD}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
