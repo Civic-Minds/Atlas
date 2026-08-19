@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { ArrowUpDown } from 'lucide-react';
 import type { Agency } from '../App';
 import { useAgencyData } from '../hooks/useAgencyData';
 import type { ShapeProperties } from '../hooks/useAgencyData';
@@ -221,12 +222,9 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
   const inputClass = `h-8 px-3 text-xs font-bold rounded-full ${SURFACE} text-[var(--text-primary)] shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]`;
 
   return (
-    <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4 pt-24 pb-4">
-      {/* Sticky header background to hide scrolling table rows behind the page title */}
-      <div className="fixed top-0 left-0 right-0 h-24 bg-[var(--bg-app)] z-[1050] pointer-events-none" />
+    <div className="h-full w-full overflow-auto bg-[var(--bg-app)] text-[var(--text-primary)] p-4">
       <div className="flex items-start gap-4">
-        {/* Keep the filters in the visible viewport, below the fixed page title. */}
-        <aside className={`w-64 shrink-0 sticky top-24 h-[calc(100vh-7rem)] ${FLOATING_CARD} p-4 flex flex-col gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto`}>
+        <aside className={`w-64 shrink-0 sticky top-4 h-[calc(100vh-2rem)] ${FLOATING_CARD} p-4 flex flex-col gap-4 max-h-[calc(100vh-2rem)] overflow-y-auto`}>
           <label className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-[var(--text-dim)]">Region</span>
             <select value={regionFilter} onChange={e => { setRegionFilter(e.target.value); resetPage(); }} className={`${inputClass} w-full`}>
@@ -311,11 +309,11 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
           <p className="text-xs font-bold text-[var(--text-dim)]">Loading routes…</p>
         ) : (
           <>
-            {/* Let the page own both scroll directions so the header can stick below the fixed title.
-                The table's min-width still gives narrow screens a horizontal page scroll, while
-                keeping the card's rounded bottom edge visible after the final row. */}
+            {/* The page owns both scroll directions so the header can stick to the top of the
+                scroll container. The table's min-width still gives narrow screens a horizontal
+                page scroll, while keeping the card's rounded bottom edge visible after the final row. */}
             <div className={`${FLOATING_CARD} overflow-visible`}>
-              <table className="w-full min-w-[760px] table-fixed text-xs border-collapse">
+              <table className="w-full min-w-[760px] table-fixed text-sm border-collapse">
                 <colgroup>
                   <col className="w-[22%]" />
                   <col className="w-[10%]" />
@@ -325,14 +323,17 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                   <col className="w-[12%]" />
                 </colgroup>
                 <thead className="relative z-20">
-                  <tr className="text-left border-b border-[var(--border-primary)]">
+                  <tr className="text-left border-b border-[var(--border-primary)] text-[var(--text-dim)]">
                     {COLUMNS.map(({ key, label }) => (
-                      <th
-                        key={key}
-                        onClick={() => toggleSort(key)}
-                        className="sticky top-24 z-20 bg-[var(--bg-app)] cursor-pointer select-none px-4 py-2.5 font-black hover:text-[var(--accent)] whitespace-nowrap shadow-[0_1px_0_var(--border-primary)]"
-                      >
-                        {label}{sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
+                      <th key={key} className="sticky top-0 z-20 bg-[var(--bg-app)] px-4 py-3 font-medium whitespace-nowrap shadow-[0_1px_0_var(--border-primary)]">
+                        <button
+                          type="button"
+                          onClick={() => toggleSort(key)}
+                          className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-colors"
+                        >
+                          {label}
+                          <ArrowUpDown className={`w-3 h-3 ${sortKey === key ? 'opacity-100' : 'opacity-30'}`} />
+                        </button>
                       </th>
                     ))}
                   </tr>
@@ -356,14 +357,14 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
                       <React.Fragment key={r.key}>
                         <tr
                           onClick={() => setExpandedKey(expanded ? null : r.key)}
-                          className={`cursor-pointer border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors ${expanded ? 'bg-[var(--bg-btn-hover)]' : ''}`}
+                          className={`cursor-pointer border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)]/40 transition-colors ${expanded ? 'bg-[var(--bg-btn-hover)]/40' : ''}`}
                         >
-                          <td className="px-4 py-2 font-bold" title={r.agencyName}><span className="block truncate">{r.agencyName}</span></td>
-                          <td className="px-4 py-2 font-black whitespace-nowrap"><span className="block truncate">{r.routeLabel}</span></td>
-                          <td className="px-4 py-2" title={r.headsign}><span className="block truncate">{r.headsign}</span></td>
-                          <td className="px-4 py-2 whitespace-nowrap">{r.modeLabel}</td>
-                          <td className="px-4 py-2">{r.tier ?? '—'}</td>
-                          <td className="px-4 py-2 font-black whitespace-nowrap">{r.frequency != null ? `${r.frequency} min` : '—'}</td>
+                          <td className="px-4 py-2.5" title={r.agencyName}><span className="block truncate">{r.agencyName}</span></td>
+                          <td className="px-4 py-2.5 font-medium whitespace-nowrap"><span className="block truncate">{r.routeLabel}</span></td>
+                          <td className="px-4 py-2.5 text-[var(--text-dim)]" title={r.headsign}><span className="block truncate">{r.headsign}</span></td>
+                          <td className="px-4 py-2.5 whitespace-nowrap">{r.modeLabel}</td>
+                          <td className="px-4 py-2.5">{r.tier ?? '—'}</td>
+                          <td className="px-4 py-2.5 whitespace-nowrap">{r.frequency != null ? `${r.frequency} min` : '—'}</td>
                         </tr>
                         {expanded && (
                           <tr className="border-b border-[var(--border-primary)] last:border-0 bg-[var(--bg-app)]">
