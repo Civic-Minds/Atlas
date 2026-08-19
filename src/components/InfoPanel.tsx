@@ -13,11 +13,11 @@ import { qualityStatusLabel } from '../../shared/feedQuality';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
-export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout';
+export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality';
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
@@ -129,6 +129,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'new-schedule-data' ? 'new-schedule-data'
         : helpContext?.topic === 'corrected-data' ? 'corrected-data'
         : helpContext?.topic === 'beta-rollout' ? 'beta-rollout'
+        : helpContext?.topic === 'route-data-quality' ? 'route-data-quality'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilter(featureFilter);
@@ -278,6 +279,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'new-schedule-data' ? 'New schedule data'
     : view === 'corrected-data' ? 'Corrected data'
     : view === 'beta-rollout' ? 'Beta testing'
+    : view === 'route-data-quality' ? 'Route data quality'
     : view === 'sources' ? 'Sources'
     : null;
 
@@ -677,6 +679,22 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
                 </a>
               )}
+            </div>
+          )}
+
+          {view === 'route-data-quality' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              {helpContext?.agencyName && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                  {helpContext.agencyName} has a problem in the source map line for this route.
+                </p>
+              )}
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                Transit agencies publish the map lines Atlas uses to draw routes. Atlas identified a specific problem in this route&apos;s source geometry, so the route stays visible with a warning instead of hiding the entire agency.
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                The line may be incomplete or adjusted. The schedule information is separate from the map geometry.
+              </p>
             </div>
           )}
 
