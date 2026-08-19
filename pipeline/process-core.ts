@@ -354,6 +354,7 @@ export async function processGtfsBuffer(
       properties: {
         routeId: result.route,
         directionId: parseInt(result.dir),
+        routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         tier: result.tier,
         serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,

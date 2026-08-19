@@ -35,6 +35,7 @@ import {
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
+import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -156,6 +157,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
     ? routeAgency.overrideNote
     : undefined;
+  const hasRouteDataQualityWarning = currentRoute.directions.some(
+    direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING,
+  );
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
@@ -500,8 +504,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote) && onInfoOpen && (
+        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+            {hasRouteDataQualityWarning && (
+              <CardHelpNotice
+                message={ROUTE_DATA_QUALITY_WARNING_MESSAGE}
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'route-data-quality',
+                  agencyName: routeAgency?.name,
+                })}
+              />
+            )}
             {routeIsStale && (
               <CardHelpNotice
                 message={`This schedule may be outdated${expDateStr ? ` and ended ${expDateStr}` : ''}.`}
