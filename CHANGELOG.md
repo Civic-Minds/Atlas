@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - The Route Diagnostics table header no longer lets scrolling rows slip above it into the top page padding ([#447](https://github.com/Civic-Minds/Atlas/issues/447)).
 - Durango Transit Route 1 no longer combines opposite directions into a false combined headway because they share a direction ID ([#441](https://github.com/Civic-Minds/Atlas/issues/441)).
+- Beta's "Service is uneven" banner no longer fires on routes with completely normal schedules, just because the first or last bus of a time window lands a normal amount inside it.
 - The PMTiles build and verification pipelines now skip draft configs lacking processed R2 data, preventing 404 errors during map compilation.
 - Added Oregon and Washington regional services for GroveLink, RiverCities Transit, Tillamook, Sunset Empire, Columbia Area Transit, and MATS.
 - Beta Settings now lists degraded and unusable feeds hidden by the feed-quality filter, including the recorded reasons and check dates.
