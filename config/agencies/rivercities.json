@@ -1,0 +1,41 @@
+{
+  "slug": "rivercities",
+  "name": "RiverCities Transit",
+  "center": [
+    45.9434,
+    -122.8418
+  ],
+  "region": "Washington",
+  "bbox": [
+    45.66,
+    -123.06,
+    46.22,
+    -122.63
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-259/mdb-259-202605140126/mdb-259-202605140126.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-259/mdb-259-202605140126/mdb-259-202605140126.zip",
+  "timezone": "America/Los_Angeles",
+  "lastFeedExpiry": "20261130",
+  "lastFeedVersion": "UTC: 13-May-2026 14:03",
+  "lastRefreshedAt": "2026-08-18",
+  "cities": [
+    "Longview, Washington",
+    "Kelso, Washington",
+    "Woodland, Washington"
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 shape correction needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 18
+    },
+    "checkedAt": "2026-08-18"
+  }
+}

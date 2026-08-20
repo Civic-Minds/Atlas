@@ -29,6 +29,7 @@ const AGENCY_PREF_STORAGE_KEY = 'atlas_pref_agencies_off_v2';
 
 interface Props {
   agencies: Agency[];
+  allAgencies?: Agency[];
   lightMode: boolean;
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
   query: string;
@@ -62,6 +63,7 @@ interface Props {
   fareView?: boolean;
   nightServiceView?: boolean;
   showMapContext?: boolean;
+  showMatchPercentage?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
@@ -79,7 +81,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -538,12 +540,14 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
                     <span className={MAP_BADGE_LABEL}>agencies</span>
                   </button>
                 )}
-                <div className={`${MAP_BADGE} h-8`}>
-                <span className={MAP_BADGE_COUNT}>
-                  {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
-                </span>
-                <span className={MAP_BADGE_LABEL}>coverage</span>
-              </div>
+                {showMatchPercentage && (
+                  <div className={`${MAP_BADGE} h-8`}>
+                    <span className={MAP_BADGE_COUNT}>
+                      {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
+                    </span>
+                    <span className={MAP_BADGE_LABEL}>match</span>
+                  </div>
+                )}
             </div>
           )}
         </div>
@@ -592,7 +596,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
               setDay={setDay}
               period={period}
               setPeriod={setPeriod}
-              agencies={agencies}
+              agencies={allAgencies ?? agencies}
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
               bounds={bounds}
@@ -619,6 +623,7 @@ export default function Interval({ agencies, lightMode, setLightMode, query, set
               period={period}
               setPeriod={setPeriod}
               agencies={agencies}
+              allAgencies={allAgencies}
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
               bounds={bounds}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useM
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, DIAGNOSTICS_ENABLED, BETA_BUILD } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, BETA_BUILD } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -474,7 +474,7 @@ export default function App() {
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <div ref={headerPortalRef} className="flex items-center gap-2" />
-        {DIAGNOSTICS_ENABLED && <ToolsMenu />}
+        {import.meta.env.DEV && <ToolsMenu />}
         <button
           onClick={() => openInfo('about')}
           aria-label="About Atlas"
@@ -534,6 +534,7 @@ export default function App() {
                     ? visibleAgencies.filter(a => a.gtfsFares)
                     : visibleAgencies
               }
+              allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
               query={deferredQuery}
@@ -547,7 +548,8 @@ export default function App() {
               forceShowCorridors={inCorridors}
               fareView={inFares}
               nightServiceView={inNight}
-              showMapContext={BETA_BUILD}
+              showMapContext
+              showMatchPercentage={BETA_BUILD}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}

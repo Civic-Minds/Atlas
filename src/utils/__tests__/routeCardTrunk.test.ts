@@ -17,6 +17,7 @@ const hsrWestBranches: ShapeProperties[] = [
     headwayByPeriod: { pmPeak: 30, evening: 30 },
     minStopHeadway: 8,
     minStopHeadwayByPeriod: { pmPeak: 8, evening: 10 },
+    stopOrder: ['a', 'b', 'c', 'd'],
   },
   {
     routeId: '1', directionId: 0, tier: '30', headway: 15, routeShortName: '05', routeLongName: 'Delaware',
@@ -24,6 +25,7 @@ const hsrWestBranches: ShapeProperties[] = [
     headwayByPeriod: { pmPeak: 15, evening: 30 },
     minStopHeadway: 8,
     minStopHeadwayByPeriod: { pmPeak: 8, evening: 10 },
+    stopOrder: ['x', 'b', 'c', 'y'],
   },
   {
     routeId: '1', directionId: 0, tier: '30', headway: 30, routeShortName: '05', routeLongName: 'Delaware',
@@ -31,6 +33,7 @@ const hsrWestBranches: ShapeProperties[] = [
     headwayByPeriod: { pmPeak: 30, evening: 30 },
     minStopHeadway: 8,
     minStopHeadwayByPeriod: { pmPeak: 8, evening: 10 },
+    stopOrder: ['z', 'b', 'c', 'w'],
   },
 ];
 
@@ -103,6 +106,34 @@ describe('routeCardTrunk', () => {
       expect(shouldShowBranchHeadwayRange(8, 11, true)).toBe(false);
       expect(shouldShowBranchHeadwayRange(3, 9, true)).toBe(false);
       expect(shouldShowBranchHeadwayRange(5, 25, true)).toBe(false);
+    });
+  });
+
+  describe('reversed-loop trunk gating (#441)', () => {
+    const loopStops = ['s1', 's2', 's3', 's4', 's5', 's6'];
+    const reversedLoopBranches: ShapeProperties[] = [
+      {
+        ...hsrWestBranches[0], routeShortName: '1', headsign: 'Trolley North',
+        headway: 20, headwayByPeriod: { pmPeak: 20, evening: 20 },
+        minStopHeadway: 8, minStopHeadwayByPeriod: { pmPeak: 8, evening: 8 },
+        stopOrder: loopStops,
+      },
+      {
+        ...hsrWestBranches[1], routeShortName: '1', headsign: 'Trolley South',
+        headway: 20, headwayByPeriod: { pmPeak: 20, evening: 20 },
+        minStopHeadway: 8, minStopHeadwayByPeriod: { pmPeak: 8, evening: 8 },
+        stopOrder: [...loopStops].reverse(),
+      },
+    ] as ShapeProperties[];
+
+    it('hides Combined for the same loop traveled in reverse, despite full stop overlap', () => {
+      expect(sharedStopIdsForBranches(reversedLoopBranches).length).toBe(loopStops.length);
+      expect(shouldShowTrunkSummary(reversedLoopBranches, 'pmPeak')).toBe(false);
+    });
+
+    it('falls back to the ratio check when real stop order is unavailable for a branch', () => {
+      const noStopData = reversedLoopBranches.map(b => ({ ...b, stopOrder: undefined }));
+      expect(shouldShowTrunkSummary(noStopData as ShapeProperties[], 'pmPeak')).toBe(true);
     });
   });
 

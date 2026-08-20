@@ -19,8 +19,8 @@ export default function DiagnosticsPage() {
   }, []);
 
   return (
-    <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden">
-      <div className="absolute top-6 left-6 z-[1100] flex items-center gap-2">
+    <div className="relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden flex flex-col">
+      <div className="shrink-0 z-[1100] bg-[var(--bg-app)]/95 backdrop-blur-md border-b border-[var(--border-primary)] px-6 py-4 flex items-center gap-2">
         <a href="/" aria-label="Back to the frequency map" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity">
             <MapIcon className="w-3.5 h-3.5 text-white" />
@@ -31,10 +31,10 @@ export default function DiagnosticsPage() {
           </div>
         </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
-        <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] leading-none">Route Diagnostics</span>
+        <span className="text-xl sm:text-2xl font-black text-[var(--text-primary)] leading-none">Route Diagnostics</span>
       </div>
 
-      <main className="absolute inset-0 overflow-hidden">
+      <main className="relative flex-1 min-h-0 overflow-hidden">
         {agenciesLoadState === 'loading' ? (
           <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">Loading…</div>
         ) : agenciesLoadState === 'error' ? (
