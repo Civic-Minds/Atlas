@@ -73,22 +73,54 @@ export function findVariantFamily(
     .map(([sn, v]) => ({ shortName: sn, routeId: v.routeId, headway: v.best }))
     .sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }));
 
-  // Additional guard beyond the name pattern + exclusion list above: every other member must
-  // share a real trunk with the (alphabetically) first member, same primitive as
-  // shouldShowTrunkSummary's own first-vs-rest check (routeCardTrunk.ts). Catches future lettered
-  // pairs that aren't yet a confirmed EXCLUDED_VARIANT_FAMILIES entry because nobody's found and
-  // checked them -- see the comment on that list for what this can't catch on its own.
-  const anchorShapes = byShort.get(members[0].shortName)!.shapes;
-  for (let i = 1; i < members.length; i++) {
-    const otherShapes = byShort.get(members[i].shortName)!.shapes;
-    if (!hasSharedTrunk(anchorShapes, otherShapes)) return null;
+  // Additional guard beyond the name pattern + exclusion list above: keep only the largest
+  // group of members that actually share a real trunk with each other, dropping the rest,
+  // rather than requiring every member to connect to one fixed anchor. GRTC's own route map
+  // confirms why this has to be a real graph search and not "compare everyone to the first
+  // member alphabetically": base route 1 (Chamberlayne, a separate northbound corridor) sorts
+  // first, but the real trunk is 1A/1B/1C's shared "Core Route" south of downtown -- anchoring
+  // on 1 would wrongly block the whole family instead of just dropping 1. Confirmed the same
+  // shape on CTA 55/55A/55N (55 = Garfield, an unrelated corridor; 55A/55N share 55th Street).
+  const n = members.length;
+  const adjacency: boolean[][] = Array.from({ length: n }, () => new Array<boolean>(n).fill(false));
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const connected = hasSharedTrunk(byShort.get(members[i].shortName)!.shapes, byShort.get(members[j].shortName)!.shapes);
+      adjacency[i][j] = adjacency[j][i] = connected;
+    }
   }
+  const seen = new Array<boolean>(n).fill(false);
+  const components: number[][] = [];
+  for (let start = 0; start < n; start++) {
+    if (seen[start]) continue;
+    const stack = [start];
+    seen[start] = true;
+    const component = [start];
+    while (stack.length) {
+      const cur = stack.pop()!;
+      for (let k = 0; k < n; k++) {
+        if (!seen[k] && adjacency[cur][k]) {
+          seen[k] = true;
+          stack.push(k);
+          component.push(k);
+        }
+      }
+    }
+    components.push(component);
+  }
+  const largestSize = Math.max(...components.map(c => c.length));
+  const largest = components.filter(c => c.length === largestSize);
+  // No group of 2+ members shares a real trunk, or two equally-sized candidate groups tie --
+  // don't guess which one is the real family.
+  if (largestSize < 2 || largest.length !== 1) return null;
+  const keepIndices = new Set(largest[0]);
+  const foldedMembers = members.filter((_, i) => keepIndices.has(i));
 
   let inv = 0, counted = 0;
-  for (const mbr of members) {
+  for (const mbr of foldedMembers) {
     if (mbr.headway != null && mbr.headway > 0) { inv += 1 / mbr.headway; counted++; }
   }
   const combinedHeadwayMin = counted >= 2 && inv > 0 ? Math.round(1 / inv) : null;
 
-  return { base, members, combinedHeadwayMin };
+  return { base, members: foldedMembers, combinedHeadwayMin };
 }
