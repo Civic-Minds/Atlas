@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
+## [Unreleased]
+
+- Route cards no longer show a bogus "Combined" frequency for lettered route variants (e.g. 2A/2B) that don't actually share a real path — matching letters in the name wasn't evidence they're branches of the same route ([#448](https://github.com/Civic-Minds/Atlas/issues/448)).
+
 ## [3.2.20] - 2026-08-19
 
 - The Route Diagnostics table header no longer lets scrolling rows slip above it into the top page padding ([#447](https://github.com/Civic-Minds/Atlas/issues/447)).

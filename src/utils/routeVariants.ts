@@ -1,5 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { effectiveRouteHeadway } from './effectiveHeadway';
+import { hasSharedTrunk } from './routeBranchGeometry';
 
 /** Numeric base + optional single letter suffix: 1, 1A, 23B — the GRTC-style variant pattern. */
 const BASE_RE = /^(\d{1,3})([A-Z])$/;
@@ -11,6 +12,14 @@ const BASE_RE = /^(\d{1,3})([A-Z])$/;
  * exclusion rather than tightening BASE_RE/the matching logic itself, since this
  * heuristic is shared by every lettered-route agency (GRTC and others) and a naming
  * coincidence on one agency isn't evidence the general pattern is wrong (#294).
+ *
+ * This list is not a stand-in for a real geometry check pending automation -- it's the
+ * permanent authority (#448). findVariantFamily also runs a geometry check (hasSharedTrunk)
+ * below, but that only catches "these clearly don't share a path at all" cases. It can't
+ * catch Windsor- or TheBus-style cases, where two genuinely distinct routes share a long real
+ * downtown trunk (confirmed on live data: 14-50 shared stops, correct order) without being
+ * branches of the same logical route -- geometry answers "do these paths overlap," not "is
+ * this the same service." Keep entries here even after the geometry check exists.
  */
 const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
   'windsor::1', // Transway 1A and 1C are separate routes sharing only a short downtown segment
@@ -43,15 +52,18 @@ export function findVariantFamily(
   const base = m[1];
   if (agencySlug && EXCLUDED_VARIANT_FAMILIES.has(`${agencySlug}::${base}`)) return null;
 
-  const byShort = new Map<string, { routeId: string; best: number | null }>();
+  const byShort = new Map<string, { routeId: string; best: number | null; shapes: ShapeProperties[] }>();
   for (const p of agencyFeatures) {
     const sn = p.routeShortName;
     if (!sn || !p.routeId) continue;
     if (sn !== base && !(BASE_RE.test(sn) && sn.match(BASE_RE)![1] === base)) continue;
     const hw = effectiveRouteHeadway(p, period);
     const cur = byShort.get(sn);
-    if (!cur) byShort.set(sn, { routeId: String(p.routeId), best: hw });
-    else if (hw != null && (cur.best == null || hw < cur.best)) cur.best = hw;
+    if (!cur) byShort.set(sn, { routeId: String(p.routeId), best: hw, shapes: [p] });
+    else {
+      if (hw != null && (cur.best == null || hw < cur.best)) cur.best = hw;
+      cur.shapes.push(p);
+    }
   }
 
   if (byShort.size < 2) return null;
@@ -60,6 +72,17 @@ export function findVariantFamily(
   const members = [...byShort.entries()]
     .map(([sn, v]) => ({ shortName: sn, routeId: v.routeId, headway: v.best }))
     .sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }));
+
+  // Additional guard beyond the name pattern + exclusion list above: every other member must
+  // share a real trunk with the (alphabetically) first member, same primitive as
+  // shouldShowTrunkSummary's own first-vs-rest check (routeCardTrunk.ts). Catches future lettered
+  // pairs that aren't yet a confirmed EXCLUDED_VARIANT_FAMILIES entry because nobody's found and
+  // checked them -- see the comment on that list for what this can't catch on its own.
+  const anchorShapes = byShort.get(members[0].shortName)!.shapes;
+  for (let i = 1; i < members.length; i++) {
+    const otherShapes = byShort.get(members[i].shortName)!.shapes;
+    if (!hasSharedTrunk(anchorShapes, otherShapes)) return null;
+  }
 
   let inv = 0, counted = 0;
   for (const mbr of members) {
