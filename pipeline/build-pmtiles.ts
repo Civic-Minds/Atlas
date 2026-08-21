@@ -64,8 +64,12 @@ async function main() {
 
   const downloadTasks = agencies.map(agency => async () => {
     const slug = agency.slug;
-    if (agency.pmtilesPending || !agency.lastFeedExpiry) {
-      console.log(`Skipping ${slug}: marked "pmtilesPending" or has no lastFeedExpiry (no published artifacts to include).`);
+    // Some valid feeds do not publish feed_end_date, so refresh records an empty
+    // lastFeedExpiry even though it has published the agency artifacts. Use the
+    // refresh marker as the second signal instead of treating an empty expiry as
+    // proof that there is nothing to include.
+    if (agency.pmtilesPending || agency.hiddenInProduction || agency.staged || (!agency.lastFeedExpiry && !agency.lastRefreshedAt)) {
+      console.log(`Skipping ${slug}: not production-visible or has no published refresh marker.`);
       return;
     }
     const arts = getAgencyArtifactUrls(slug);

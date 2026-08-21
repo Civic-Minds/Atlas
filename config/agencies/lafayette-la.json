@@ -2,8 +2,34 @@
   "slug": "lafayette-la",
   "name": "Lafayette Transit System",
   "region": "Louisiana",
-  "center": [30.2241, -92.0198],
-  "bbox": [29.9, -92.4, 30.5, -91.6],
+  "center": [
+    30.2241,
+    -92.0198
+  ],
+  "bbox": [
+    29.9,
+    -92.4,
+    30.5,
+    -91.6
+  ],
   "feedUrl": "https://lts.syncromatics.com/gtfs",
-  "cities": ["Lafayette, Louisiana"]
+  "cities": [
+    "Lafayette, Louisiana"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 26
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "8/18/2026",
+  "lastRefreshedAt": "2026-08-21"
 }

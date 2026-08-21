@@ -2,8 +2,34 @@
   "slug": "hub-city-transit",
   "name": "Hub City Transit",
   "region": "Mississippi",
-  "center": [31.3271, -89.2903],
-  "bbox": [31.1, -89.5, 31.6, -88.9],
+  "center": [
+    31.3271,
+    -89.2903
+  ],
+  "bbox": [
+    31.1,
+    -89.5,
+    31.6,
+    -88.9
+  ],
   "feedUrl": "https://api.transloc.com/gtfs/hct.zip",
-  "cities": ["Hattiesburg, Mississippi"]
+  "cities": [
+    "Hattiesburg, Mississippi"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 7
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20270923",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-08-21"
 }

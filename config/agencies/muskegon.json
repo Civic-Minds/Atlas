@@ -13,12 +13,25 @@
   ],
   "feedUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
   "region": "Michigan",
-  "lastFeedExpiry": null,
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-17",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260807",
+  "lastRefreshedAt": "2026-08-21",
   "cities": [
     "Muskegon, Michigan",
     "Muskegon Heights, Michigan",
     "Norton Shores, Michigan"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 26
+    },
+    "checkedAt": "2026-08-21"
+  }
 }

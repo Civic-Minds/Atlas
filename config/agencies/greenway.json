@@ -2,8 +2,36 @@
   "slug": "greenway",
   "name": "Greenway Public Transportation",
   "region": "North Carolina",
-  "center": [35.7345, -81.3445],
-  "bbox": [35.55, -81.65, 35.95, -80.95],
+  "center": [
+    35.7345,
+    -81.3445
+  ],
+  "bbox": [
+    35.55,
+    -81.65,
+    35.95,
+    -80.95
+  ],
   "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Western%20Piedmont%20Regional%20Transportation%20Association_3/WPRTA.zip",
-  "cities": ["Hickory, North Carolina", "Newton, North Carolina", "Conover, North Carolina"]
+  "cities": [
+    "Hickory, North Carolina",
+    "Newton, North Carolina",
+    "Conover, North Carolina"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 9
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20250101",
+  "lastRefreshedAt": "2026-08-21"
 }

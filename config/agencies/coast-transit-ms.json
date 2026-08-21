@@ -2,8 +2,38 @@
   "slug": "coast-transit-ms",
   "name": "Coast Transit Authority",
   "region": "Mississippi",
-  "center": [30.3674, -89.0928],
-  "bbox": [30.1, -89.6, 30.6, -88.5],
+  "center": [
+    30.3674,
+    -89.0928
+  ],
+  "bbox": [
+    30.1,
+    -89.6,
+    30.6,
+    -88.5
+  ],
   "feedUrl": "https://coasttransit.com/wp-content/uploads/2026/03/CTA_MS_GTFS-1.zip",
-  "cities": ["Gulfport, Mississippi", "Biloxi, Mississippi", "Ocean Springs, Mississippi"]
+  "cities": [
+    "Gulfport, Mississippi",
+    "Biloxi, Mississippi",
+    "Ocean Springs, Mississippi"
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 23
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20260930",
+  "lastFeedVersion": "20260316",
+  "lastRefreshedAt": "2026-08-21"
 }

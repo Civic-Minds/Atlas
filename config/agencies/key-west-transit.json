@@ -2,8 +2,36 @@
   "slug": "key-west-transit",
   "name": "Key West Transit",
   "region": "Florida",
-  "center": [24.5551, -81.78],
-  "bbox": [24.4, -81.9, 24.7, -81.5],
+  "center": [
+    24.5551,
+    -81.78
+  ],
+  "bbox": [
+    24.4,
+    -81.9,
+    24.7,
+    -81.5
+  ],
   "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0",
-  "cities": ["Key West, Florida"]
+  "cities": [
+    "Key West, Florida"
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 9
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261229",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-08-21"
 }

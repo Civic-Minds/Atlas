@@ -2,8 +2,39 @@
   "slug": "coast-rta",
   "name": "Coast RTA",
   "region": "South Carolina",
-  "center": [33.6891, -78.8867],
-  "bbox": [33.1, -79.5, 34.7, -78.3],
+  "center": [
+    33.6891,
+    -78.8867
+  ],
+  "bbox": [
+    33.1,
+    -79.5,
+    34.7,
+    -78.3
+  ],
   "feedUrl": "https://coastrta.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
-  "cities": ["Myrtle Beach, South Carolina", "Conway, South Carolina"]
+  "cities": [
+    "Myrtle Beach, South Carolina",
+    "Conway, South Carolina"
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "1 validation warning.",
+      "2 shape corrections needed.",
+      "1 route frequency metric need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 45
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20501231",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-21"
 }

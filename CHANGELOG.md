@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reprocessed 39 production agencies that were registered but missing from the map, including Orangeville and Owen Sound, and rebuilt the shared route archive.
 - Route cards no longer show a bogus "Combined" frequency for lettered route variants that don't actually share a real path, and for larger families (e.g. GRTC's 1/1A/1B/1C) only the members that truly share one now combine — matching letters or numbers in the name wasn't enough evidence on its own ([#448](https://github.com/Civic-Minds/Atlas/issues/448)).
 
 ## [3.2.20] - 2026-08-19

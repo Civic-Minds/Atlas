@@ -2,8 +2,37 @@
   "slug": "citylink-north",
   "name": "Kootenai County Citylink North",
   "region": "Idaho",
-  "center": [47.6777, -116.7805],
-  "bbox": [47.5, -117, 47.9, -116.5],
+  "center": [
+    47.6777,
+    -116.7805
+  ],
+  "bbox": [
+    47.5,
+    -117,
+    47.9,
+    -116.5
+  ],
   "feedUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
-  "cities": ["Coeur d’Alene, Idaho", "Post Falls, Idaho"]
+  "cities": [
+    "Coeur d’Alene, Idaho",
+    "Post Falls, Idaho"
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20260920",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-08-21"
 }

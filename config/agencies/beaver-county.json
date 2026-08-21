@@ -10,5 +10,21 @@
   "websiteUrl": "https://bcta.com/",
   "cities": [
     "Beaver County, Pennsylvania"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 15
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260710",
+  "lastRefreshedAt": "2026-08-21"
 }

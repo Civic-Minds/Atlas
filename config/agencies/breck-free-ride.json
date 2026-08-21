@@ -9,9 +9,9 @@
     -106.0384
   ],
   "feedUrl": "https://mybreckfreeride.com/gtfs",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "",
   "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.6,124-UWM Summer 26",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-08-21",
   "cities": [
     "Breckenridge, Colorado"
   ],
@@ -27,8 +27,8 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 155
+      "featureCount": 27
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-08-21"
   }
 }

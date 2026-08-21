@@ -109,7 +109,25 @@
       "websiteUrl": "https://www.chatham-kent.ca/transit/Pages/default.aspx",
       "cities": [
         "Chatham-Kent, Ontario"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 20
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261030",
+      "lastFeedVersion": "290",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "cornwall",
@@ -501,7 +519,23 @@
       "websiteUrl": "https://www.orangeville.ca/en/living-here/schedules-and-map.aspx",
       "cities": [
         "Orangeville, Ontario"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 4
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "orillia",
@@ -515,7 +549,23 @@
       "websiteUrl": "https://www.orillia.ca/roads-and-environment/getting-around/transit/",
       "cities": [
         "Orillia, Ontario"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 15
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20280101",
+      "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "owen-sound",
@@ -529,7 +579,25 @@
       "websiteUrl": "https://www.owensound.ca/roads-transportation/public-transit/city-bus-service/",
       "cities": [
         "Owen Sound, Ontario"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 8
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "north-bay",
@@ -543,7 +611,25 @@
       "websiteUrl": "https://northbay.ca/services-payments/north-bay-transit/",
       "cities": [
         "North Bay, Ontario"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270428",
+      "lastFeedVersion": "1/20260428 14:06:38/20260429 04:00:00",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "sarnia",
@@ -595,7 +681,23 @@
       "websiteUrl": "https://www.stthomas.ca/en/live-here/transit.aspx",
       "cities": [
         "St. Thomas, Ontario"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 16
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270526",
+      "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "stratford",
@@ -1750,7 +1852,23 @@
       "websiteUrl": "https://www.butlercountyrta.com/",
       "cities": [
         "Butler County, Ohio"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 42
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Fall 2026 Version 1.01,Fall 2026 Version 1.1",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "seat",
@@ -1765,7 +1883,23 @@
       "cities": [
         "Zanesville, Ohio",
         "Cambridge, Ohio"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 2
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "richland-county-oh",
@@ -1780,7 +1914,23 @@
       "cities": [
         "Mansfield, Ohio",
         "Ontario, Ohio"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 11
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270504",
+      "lastFeedVersion": "21",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "tarta",
@@ -6670,7 +6820,23 @@
       "websiteUrl": "https://bcta.com/",
       "cities": [
         "Beaver County, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 15
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260710",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "butler-pa",
@@ -6684,7 +6850,23 @@
       "websiteUrl": "https://www.butlertransitauthority.com/",
       "cities": [
         "Butler, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 10
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260519",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "camtran",
@@ -6698,7 +6880,26 @@
       "websiteUrl": "https://www.camtranbus.com/",
       "cities": [
         "Johnstown, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 60,
+        "reasons": [
+          "13 shape corrections needed.",
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 13,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 87
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20290131",
+      "lastFeedVersion": "20260716",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "fact",
@@ -6712,7 +6913,23 @@
       "websiteUrl": "https://factbus.com/",
       "cities": [
         "Uniontown, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 14
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270131",
+      "lastFeedVersion": "20260720",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "freedom-transit",
@@ -6726,7 +6943,23 @@
       "websiteUrl": "https://www.freedom-transit.org/",
       "cities": [
         "Washington, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 11
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260302",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "indigo",
@@ -6740,7 +6973,23 @@
       "websiteUrl": "https://www.indigobus.com/",
       "cities": [
         "Indiana, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 35
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270630",
+      "lastFeedVersion": "20260820",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "mmvta",
@@ -6755,7 +7004,25 @@
       "cities": [
         "Monessen, Pennsylvania",
         "Charleroi, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 27
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270731",
+      "lastFeedVersion": "20260819",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "new-castle",
@@ -6769,7 +7036,23 @@
       "websiteUrl": "https://newcastletransit.org/",
       "cities": [
         "New Castle, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260217",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "westmoreland",
@@ -6783,7 +7066,23 @@
       "websiteUrl": "https://www.westmorelandtransit.com/",
       "cities": [
         "Greensburg, Pennsylvania"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 49
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260526",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "uta",
@@ -13600,7 +13899,25 @@
       "feedUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
       "cities": [
         "Durham, North Carolina"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "4 route frequency metrics need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 4,
+          "featureCount": 112
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "20260819",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "jacksonville-nc",
@@ -13619,7 +13936,25 @@
       "feedUrl": "https://passio3.com/jacksonville/passioTransit/gtfs/google_transit.zip",
       "cities": [
         "Jacksonville, North Carolina"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 30
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20260920",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "fast-nc",
@@ -13638,7 +13973,25 @@
       "feedUrl": "https://fast.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
       "cities": [
         "Fayetteville, North Carolina"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 21
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20501230",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "greenway",
@@ -13659,7 +14012,23 @@
         "Hickory, North Carolina",
         "Newton, North Carolina",
         "Conover, North Carolina"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 9
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20250101",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "concord-kannapolis",
@@ -13679,7 +14048,23 @@
       "cities": [
         "Concord, North Carolina",
         "Kannapolis, North Carolina"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 48
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Yellow Route Fixed",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "gaston-county",
@@ -13698,7 +14083,23 @@
       "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
       "cities": [
         "Gastonia, North Carolina"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 1
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20301001",
+      "lastFeedVersion": "1",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "coast-rta",
@@ -13718,7 +14119,27 @@
       "cities": [
         "Myrtle Beach, South Carolina",
         "Conway, South Carolina"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 60,
+        "reasons": [
+          "1 validation warning.",
+          "2 shape corrections needed.",
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 45
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20501231",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "sunshine-bus",
@@ -13737,7 +14158,27 @@
       "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
       "cities": [
         "St. Augustine, Florida"
-      ]
+      ],
+      "feedQuality": {
+        "status": "degraded",
+        "score": 50,
+        "reasons": [
+          "1 validation warning.",
+          "5 shape corrections needed.",
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 5,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 20
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20301031",
+      "lastFeedVersion": "20240118",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "key-west-transit",
@@ -13756,7 +14197,25 @@
       "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=962A0",
       "cities": [
         "Key West, Florida"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 9
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261229",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "citylink-north",
@@ -13776,7 +14235,25 @@
       "cities": [
         "Coeur d’Alene, Idaho",
         "Post Falls, Idaho"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20260920",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "dcta",
@@ -13797,7 +14274,25 @@
         "Denton, Texas",
         "Lewisville, Texas",
         "Highland Village, Texas"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 shape correction needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 1,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 46
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270110",
+      "lastFeedVersion": "Updated: Jul 10, 2026, 7:27 PM",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "waco",
@@ -13817,7 +14312,25 @@
       "cities": [
         "Waco, Texas",
         "McGregor, Texas"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 10
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20501231",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "brazos",
@@ -13842,7 +14355,23 @@
         "Nacogdoches, Texas",
         "Liberty, Texas",
         "Dayton, Texas"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 31
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Mar 25, 2026, 2:20 PM",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "lafayette-la",
@@ -13861,7 +14390,23 @@
       "feedUrl": "https://lts.syncromatics.com/gtfs",
       "cities": [
         "Lafayette, Louisiana"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 26
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "8/18/2026",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "coast-transit-ms",
@@ -13882,7 +14427,25 @@
         "Gulfport, Mississippi",
         "Biloxi, Mississippi",
         "Ocean Springs, Mississippi"
-      ]
+      ],
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 23
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20260930",
+      "lastFeedVersion": "20260316",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "hub-city-transit",
@@ -13901,7 +14464,23 @@
       "feedUrl": "https://api.transloc.com/gtfs/hct.zip",
       "cities": [
         "Hattiesburg, Mississippi"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 7
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270923",
+      "lastFeedVersion": "",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "tank",
@@ -13922,7 +14501,23 @@
         "Covington, Kentucky",
         "Newport, Kentucky",
         "Florence, Kentucky"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 95
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20261106",
+      "lastFeedVersion": "20260713",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "sandusky",
@@ -13942,7 +14537,23 @@
       "cities": [
         "Sandusky, Ohio",
         "Huron, Ohio"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 13
+        },
+        "checkedAt": "2026-08-21"
+      },
+      "lastFeedExpiry": "20270430",
+      "lastFeedVersion": "20260512",
+      "lastRefreshedAt": "2026-08-21"
     },
     {
       "slug": "bay-metro",
@@ -14075,14 +14686,27 @@
       ],
       "feedUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
       "region": "Michigan",
-      "lastFeedExpiry": null,
-      "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-17",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260807",
+      "lastRefreshedAt": "2026-08-21",
       "cities": [
         "Muskegon, Michigan",
         "Muskegon Heights, Michigan",
         "Norton Shores, Michigan"
-      ]
+      ],
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 26
+        },
+        "checkedAt": "2026-08-21"
+      }
     },
     {
       "slug": "telluride",
@@ -14267,9 +14891,9 @@
         -105.7631
       ],
       "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "20501230",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-18",
+      "lastRefreshedAt": "2026-08-21",
       "cities": [
         "Winter Park, Colorado",
         "Fraser, Colorado",
@@ -14287,9 +14911,9 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 107
+          "featureCount": 9
         },
-        "checkedAt": "2026-08-18"
+        "checkedAt": "2026-08-21"
       }
     },
     {
@@ -14339,9 +14963,9 @@
         -106.0384
       ],
       "feedUrl": "https://mybreckfreeride.com/gtfs",
-      "lastFeedExpiry": null,
+      "lastFeedExpiry": "",
       "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.6,124-UWM Summer 26",
-      "lastRefreshedAt": "2026-08-18",
+      "lastRefreshedAt": "2026-08-21",
       "cities": [
         "Breckenridge, Colorado"
       ],
@@ -14357,9 +14981,9 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 155
+          "featureCount": 27
         },
-        "checkedAt": "2026-08-18"
+        "checkedAt": "2026-08-21"
       }
     },
     {
