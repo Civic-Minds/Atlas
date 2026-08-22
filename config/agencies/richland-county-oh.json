@@ -11,5 +11,21 @@
   "cities": [
     "Mansfield, Ohio",
     "Ontario, Ohio"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 11
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20270504",
+  "lastFeedVersion": "21",
+  "lastRefreshedAt": "2026-08-21"
 }

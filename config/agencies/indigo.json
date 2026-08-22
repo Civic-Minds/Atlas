@@ -10,5 +10,21 @@
   "websiteUrl": "https://www.indigobus.com/",
   "cities": [
     "Indiana, Pennsylvania"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 35
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20270630",
+  "lastFeedVersion": "20260820",
+  "lastRefreshedAt": "2026-08-21"
 }

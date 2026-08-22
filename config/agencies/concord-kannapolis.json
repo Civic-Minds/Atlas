@@ -2,8 +2,35 @@
   "slug": "concord-kannapolis",
   "name": "Rider Transit",
   "region": "North Carolina",
-  "center": [35.4088, -80.5795],
-  "bbox": [35.2, -80.9, 35.7, -80.3],
+  "center": [
+    35.4088,
+    -80.5795
+  ],
+  "bbox": [
+    35.2,
+    -80.9,
+    35.7,
+    -80.3
+  ],
   "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Concord%20Kannapolis_209/CKRider.zip",
-  "cities": ["Concord, North Carolina", "Kannapolis, North Carolina"]
+  "cities": [
+    "Concord, North Carolina",
+    "Kannapolis, North Carolina"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 48
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Yellow Route Fixed",
+  "lastRefreshedAt": "2026-08-21"
 }

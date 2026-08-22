@@ -2,8 +2,37 @@
   "slug": "waco",
   "name": "Waco Transit System",
   "region": "Texas",
-  "center": [31.5493, -97.1467],
-  "bbox": [31.3, -97.5, 31.8, -96.8],
+  "center": [
+    31.5493,
+    -97.1467
+  ],
+  "bbox": [
+    31.3,
+    -97.5,
+    31.8,
+    -96.8
+  ],
   "feedUrl": "https://wacotransit.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "cities": ["Waco, Texas", "McGregor, Texas"]
+  "cities": [
+    "Waco, Texas",
+    "McGregor, Texas"
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 10
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20501231",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-21"
 }

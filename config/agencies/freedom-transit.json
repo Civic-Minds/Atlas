@@ -10,5 +10,21 @@
   "websiteUrl": "https://www.freedom-transit.org/",
   "cities": [
     "Washington, Pennsylvania"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 11
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260302",
+  "lastRefreshedAt": "2026-08-21"
 }

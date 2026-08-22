@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression } from '../../utils/colors';
+import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildZoomHeadwayGateExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -1425,7 +1425,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
-    if (hasRoutesHit) map.setFilter('routes-hit-layer', routeFilter as any);
+    if (hasRoutesHit) {
+      // Keep the transparent hit target in sync with the route line's zoom/headway
+      // visibility gate. Without this, a route with no service in the active period
+      // has an invisible but clickable 18px-wide hitbox (e.g. GO 37 at midday).
+      const hitRouteFilter = (!fareView && !nightServiceView)
+        ? concatFilters(
+            routeFilter,
+            selectedRoute
+              ? ['any', routeKeyMatchExpression(selectedRoute), buildZoomHeadwayGateExpression(headwayExpr)]
+              : buildZoomHeadwayGateExpression(headwayExpr),
+          )
+        : routeFilter;
+      map.setFilter('routes-hit-layer', hitRouteFilter as any);
+    }
 
     if (hasRoutes || hasLocalRoutes) {
       // Apply color paint styling — fare view if requested and baseFare present, else tier

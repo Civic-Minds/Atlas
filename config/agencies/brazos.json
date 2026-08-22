@@ -2,8 +2,16 @@
   "slug": "brazos",
   "name": "Brazos Transit District",
   "region": "Texas",
-  "center": [30.628, -96.3344],
-  "bbox": [29.8, -96.5, 32, -93.8],
+  "center": [
+    30.628,
+    -96.3344
+  ],
+  "bbox": [
+    29.8,
+    -96.5,
+    32,
+    -93.8
+  ],
   "feedUrl": "https://www.btd.org/2025btdgtfs/",
   "cities": [
     "College Station, Texas",
@@ -13,5 +21,21 @@
     "Nacogdoches, Texas",
     "Liberty, Texas",
     "Dayton, Texas"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 31
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Mar 25, 2026, 2:20 PM",
+  "lastRefreshedAt": "2026-08-21"
 }

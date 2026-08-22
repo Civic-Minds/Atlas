@@ -10,5 +10,23 @@
   "websiteUrl": "https://www.chatham-kent.ca/transit/Pages/default.aspx",
   "cities": [
     "Chatham-Kent, Ontario"
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 shape corrections needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 20
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261030",
+  "lastFeedVersion": "290",
+  "lastRefreshedAt": "2026-08-21"
 }

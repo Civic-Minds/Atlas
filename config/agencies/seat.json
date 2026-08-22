@@ -11,5 +11,21 @@
   "cities": [
     "Zanesville, Ohio",
     "Cambridge, Ohio"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 2
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-21"
 }

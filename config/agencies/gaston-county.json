@@ -2,8 +2,34 @@
   "slug": "gaston-county",
   "name": "Gaston County Transit",
   "region": "North Carolina",
-  "center": [35.2621, -81.1873],
-  "bbox": [35, -81.5, 35.5, -80.9],
+  "center": [
+    35.2621,
+    -81.1873
+  ],
+  "bbox": [
+    35,
+    -81.5,
+    35.5,
+    -80.9
+  ],
   "feedUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip",
-  "cities": ["Gastonia, North Carolina"]
+  "cities": [
+    "Gastonia, North Carolina"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 1
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20301001",
+  "lastFeedVersion": "1",
+  "lastRefreshedAt": "2026-08-21"
 }

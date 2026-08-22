@@ -10,5 +10,21 @@
   "websiteUrl": "https://www.butlercountyrta.com/",
   "cities": [
     "Butler County, Ohio"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 42
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Fall 2026 Version 1.01,Fall 2026 Version 1.1",
+  "lastRefreshedAt": "2026-08-21"
 }

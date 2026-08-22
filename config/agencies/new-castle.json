@@ -10,5 +10,21 @@
   "websiteUrl": "https://newcastletransit.org/",
   "cities": [
     "New Castle, Pennsylvania"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 34
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "20260217",
+  "lastRefreshedAt": "2026-08-21"
 }

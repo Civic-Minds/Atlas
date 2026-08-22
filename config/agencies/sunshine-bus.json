@@ -2,8 +2,38 @@
   "slug": "sunshine-bus",
   "name": "Sunshine Bus Company",
   "region": "Florida",
-  "center": [29.8947, -81.3145],
-  "bbox": [29.4, -81.8, 30.2, -81],
+  "center": [
+    29.8947,
+    -81.3145
+  ],
+  "bbox": [
+    29.4,
+    -81.8,
+    30.2,
+    -81
+  ],
   "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1011A0",
-  "cities": ["St. Augustine, Florida"]
+  "cities": [
+    "St. Augustine, Florida"
+  ],
+  "feedQuality": {
+    "status": "degraded",
+    "score": 50,
+    "reasons": [
+      "1 validation warning.",
+      "5 shape corrections needed.",
+      "1 route frequency metric need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 5,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 20
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20301031",
+  "lastFeedVersion": "20240118",
+  "lastRefreshedAt": "2026-08-21"
 }

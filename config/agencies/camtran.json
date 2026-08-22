@@ -10,5 +10,24 @@
   "websiteUrl": "https://www.camtranbus.com/",
   "cities": [
     "Johnstown, Pennsylvania"
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "13 shape corrections needed.",
+      "1 route frequency metric need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 13,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 87
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20290131",
+  "lastFeedVersion": "20260716",
+  "lastRefreshedAt": "2026-08-21"
 }

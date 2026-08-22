@@ -2,8 +2,36 @@
   "slug": "tank",
   "name": "Transit Authority of Northern Kentucky (TANK)",
   "region": "Kentucky",
-  "center": [39.0531, -84.5508],
-  "bbox": [38.7, -84.9, 39.3, -84.2],
+  "center": [
+    39.0531,
+    -84.5508
+  ],
+  "bbox": [
+    38.7,
+    -84.9,
+    39.3,
+    -84.2
+  ],
   "feedUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
-  "cities": ["Covington, Kentucky", "Newport, Kentucky", "Florence, Kentucky"]
+  "cities": [
+    "Covington, Kentucky",
+    "Newport, Kentucky",
+    "Florence, Kentucky"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 95
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20261106",
+  "lastFeedVersion": "20260713",
+  "lastRefreshedAt": "2026-08-21"
 }

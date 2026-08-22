@@ -8,9 +8,9 @@
     -105.7631
   ],
   "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20501230",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-08-21",
   "cities": [
     "Winter Park, Colorado",
     "Fraser, Colorado",
@@ -28,8 +28,8 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 107
+      "featureCount": 9
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-08-21"
   }
 }

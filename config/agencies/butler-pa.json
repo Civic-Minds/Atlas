@@ -10,5 +10,21 @@
   "websiteUrl": "https://www.butlertransitauthority.com/",
   "cities": [
     "Butler, Pennsylvania"
-  ]
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 10
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260519",
+  "lastRefreshedAt": "2026-08-21"
 }

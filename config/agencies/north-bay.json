@@ -10,5 +10,23 @@
   "websiteUrl": "https://northbay.ca/services-payments/north-bay-transit/",
   "cities": [
     "North Bay, Ontario"
-  ]
+  ],
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency metric need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 34
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20270428",
+  "lastFeedVersion": "1/20260428 14:06:38/20260429 04:00:00",
+  "lastRefreshedAt": "2026-08-21"
 }

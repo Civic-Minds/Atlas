@@ -2,8 +2,35 @@
   "slug": "sandusky",
   "name": "Sandusky Transit System",
   "region": "Ohio",
-  "center": [41.4489, -82.7079],
-  "bbox": [41.25, -83.05, 41.65, -82.45],
+  "center": [
+    41.4489,
+    -82.7079
+  ],
+  "bbox": [
+    41.25,
+    -83.05,
+    41.65,
+    -82.45
+  ],
   "feedUrl": "https://mjcaction.com/MJC_GTFS_Public/sandusky_google_transit.zip",
-  "cities": ["Sandusky, Ohio", "Huron, Ohio"]
+  "cities": [
+    "Sandusky, Ohio",
+    "Huron, Ohio"
+  ],
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 13
+    },
+    "checkedAt": "2026-08-21"
+  },
+  "lastFeedExpiry": "20270430",
+  "lastFeedVersion": "20260512",
+  "lastRefreshedAt": "2026-08-21"
 }
