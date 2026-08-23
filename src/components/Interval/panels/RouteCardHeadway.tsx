@@ -523,6 +523,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   agencyName: routeAgency?.name,
                   expDateStr: expDateStr || undefined,
                   lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
+                  lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
+                  expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
+                  expiredFeedCheckSince: routeAgency?.expiredFeedCheckSince ?? undefined,
                   websiteUrl: routeAgency?.websiteUrl ?? undefined,
                 })}
               />
@@ -534,6 +537,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   helpTopic: 'new-schedule-data',
                   agencyName: routeAgency?.name,
                   lastRefreshedAt: routeAgency.lastRefreshedAt ?? undefined,
+                  lastFeedCheckAt: routeAgency.lastFeedCheckAt ?? undefined,
+                  expiredFeedCheckCount: routeAgency.expiredFeedCheckCount,
+                  expiredFeedCheckSince: routeAgency.expiredFeedCheckSince ?? undefined,
                   websiteUrl: routeAgency.websiteUrl ?? undefined,
                 })}
               />

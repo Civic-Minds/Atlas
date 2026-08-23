@@ -52,6 +52,10 @@ export interface Agency {
   displayArea?: string;
   lastFeedExpiry?: string | null;
   lastRefreshedAt?: string | null;
+  lastFeedCheckAt?: string | null;
+  expiredFeedCheckCount?: number;
+  expiredFeedCheckSince?: string | null;
+  expiredFeedCheckExpiry?: string | null;
   excludeRouteShortNames?: string[];
   staged?: boolean;
   /** Excluded from production until country coverage is validated. Visible in local dev, and in beta when betaOnly is set. */
@@ -148,6 +152,9 @@ export default function App() {
       agencyName: opts.agencyName,
       expDateStr: opts.expDateStr,
       lastRefreshedAt: opts.lastRefreshedAt,
+      lastFeedCheckAt: opts.lastFeedCheckAt,
+      expiredFeedCheckCount: opts.expiredFeedCheckCount,
+      expiredFeedCheckSince: opts.expiredFeedCheckSince,
       websiteUrl: opts.websiteUrl,
       overrideNote: opts.overrideNote,
       issueUrl: opts.issueUrl,
