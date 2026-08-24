@@ -3171,7 +3171,7 @@
         45.31,
         -122.42
       ],
-      "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
+      "feedUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
       "lastFeedExpiry": "20260102",
       "lastFeedVersion": null,
@@ -4423,7 +4423,7 @@
         38.74,
         -121.45
       ],
-      "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
+      "feedUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
       "lastFeedExpiry": "20260201",
       "lastFeedVersion": null,
@@ -6236,7 +6236,7 @@
         40.4552,
         -105.0936
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
+      "feedUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip",
       "mdbFeedUrl": null,
       "lastFeedExpiry": "20240511",
       "lastFeedVersion": "S1000201",

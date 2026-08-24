@@ -12,7 +12,7 @@
     45.31,
     -122.42
   ],
-  "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
+  "feedUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
   "lastFeedExpiry": "20260102",
   "lastFeedVersion": null,

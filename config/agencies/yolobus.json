@@ -12,7 +12,7 @@
     38.74,
     -121.45
   ],
-  "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
+  "feedUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
   "lastFeedExpiry": "20260201",
   "lastFeedVersion": null,
