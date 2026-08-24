@@ -51,11 +51,13 @@ export function classifyExpiredCandidates(
 ): 'newer-source-found' | 'genuinely-expired' | 'metadata-only-expiry' | 'source-unavailable' | 'needs-manual-source-review' {
   const usable = candidates.filter(candidate => candidate.status !== 'unavailable');
   const current = usable.filter(candidate => candidate.status === 'current');
+  const unavailable = candidates.some(candidate => candidate.status === 'unavailable');
   if (current.some(candidate => candidate.feedExpiry !== null && candidate.feedExpiry > baselineExpiry)) {
     return 'newer-source-found';
   }
   if (current.length > 0) return 'metadata-only-expiry';
   if (usable.length === 0) return 'source-unavailable';
+  if (unavailable) return 'needs-manual-source-review';
   if (usable.every(candidate => candidate.status === 'expired' && (candidate.feedExpiry ?? '') < today)) {
     return 'genuinely-expired';
   }

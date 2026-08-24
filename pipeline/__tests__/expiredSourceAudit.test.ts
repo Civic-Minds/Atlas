@@ -37,4 +37,33 @@ describe('expired source audit', () => {
       stopCount: 10,
     }])).toBe('newer-source-found');
   });
+
+  it('does not call an agency genuinely expired when a candidate could not be checked', () => {
+    expect(classifyExpiredCandidates('20260801', '20260824', [{
+      kind: 'configured',
+      url: 'https://example.com/expired.zip',
+      status: 'expired',
+      feedExpiry: '20260801',
+      feedVersion: null,
+      feedInfoEnd: '20260801',
+      calendarExpiry: '20260801',
+      sha256: 'hash',
+      agencyNames: ['Example Transit'],
+      routeCount: 1,
+      stopCount: 1,
+    }, {
+      kind: 'mdb-latest',
+      url: 'https://example.com/latest.zip',
+      status: 'unavailable',
+      feedExpiry: null,
+      feedVersion: null,
+      feedInfoEnd: null,
+      calendarExpiry: null,
+      sha256: null,
+      agencyNames: [],
+      routeCount: null,
+      stopCount: null,
+      error: 'HTTP 404',
+    }])).toBe('needs-manual-source-review');
+  });
 });
